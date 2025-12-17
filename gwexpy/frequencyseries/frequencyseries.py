@@ -396,6 +396,48 @@ class FrequencySeries(BaseFrequencySeries):
             epoch=self.epoch
         )
 
+    def group_delay(self):
+        """
+        Calculate the group delay of the series.
+
+        Group delay is defined as -d(phase)/d(omega), where omega = 2 * pi * f.
+        It represents the time delay of the envelope of a signal at a given frequency.
+
+        Returns
+        -------
+        `FrequencySeries`
+            A new FrequencySeries representing the group delay in seconds.
+        """
+        # Gradient of unwrapped phase w.r.t frequency
+        orig_phase = self.phase(unwrap=True).value
+        freqs = self.frequencies.value
+        
+        # d(phi)/dw = d(phi) / (2pi * df)
+        # derivative w.r.t. frequency in Hz
+        d_phi_d_f = np.gradient(orig_phase, freqs)
+        
+        # group delay = - d(phi)/dw = - (1/2pi) * d(phi)/df
+        gd = -1 / (2 * np.pi) * d_phi_d_f
+        
+        return self.__class__(
+            gd,
+            frequencies=self.frequencies,
+            unit="s",
+            name=self.name + "_group_delay" if self.name else "group_delay",
+            channel=self.channel,
+            epoch=self.epoch
+        )
+        
+    def to_control_frd(self, frequency_unit="Hz"):
+        """Convert to control.FRD."""
+        from gwexpy.interop import to_control_frd
+        return to_control_frd(self, frequency_unit=frequency_unit)
+        
+    @classmethod
+    def from_control_frd(cls, frd, *, frequency_unit="Hz"):
+        """Create from control.FRD."""
+        from gwexpy.interop import from_control_frd
+        return from_control_frd(cls, frd, frequency_unit=frequency_unit)
 
 # =============================
 # Helpers

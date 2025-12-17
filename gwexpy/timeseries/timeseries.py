@@ -1521,6 +1521,219 @@ class TimeSeries(BaseTimeSeries):
 
 
 
+
+    # ===============================
+    # Interoperability Methods (P0)
+    # ===============================
+    
+    def to_pandas(self, index="datetime", *, name=None, copy=False):
+        """
+        Convert TimeSeries to pandas.Series.
+        
+        Parameters
+        ----------
+        index : str, default "datetime"
+            Index type: "datetime" (UTC aware), "seconds" (unix), or "gps".
+        copy : bool, default False
+            Whether to guarantee a copy.
+        """
+        from gwexpy.interop import to_pandas_series
+        return to_pandas_series(self, index=index, name=name, copy=copy)
+        
+    @classmethod
+    def from_pandas(cls, series, *, unit=None, t0=None, dt=None):
+        """
+        Create TimeSeries from pandas.Series.
+        """
+        from gwexpy.interop import from_pandas_series
+        return from_pandas_series(cls, series, unit=unit, t0=t0, dt=dt)
+        
+    def to_xarray(self, time_coord="datetime"):
+        """
+        Convert to xarray.DataArray.
+        """
+        from gwexpy.interop import to_xarray
+        return to_xarray(self, time_coord=time_coord)
+        
+    @classmethod
+    def from_xarray(cls, da, *, unit=None):
+        """
+        Create TimeSeries from xarray.DataArray.
+        """
+        from gwexpy.interop import from_xarray
+        return from_xarray(cls, da, unit=unit)
+        
+    def to_hdf5_dataset(self, group, path, *, overwrite=False, compression=None, compression_opts=None):
+        """
+        Write to HDF5 group/dataset (interop level).
+        """
+        from gwexpy.interop import to_hdf5
+        to_hdf5(self, group, path, overwrite=overwrite, compression=compression, compression_opts=compression_opts)
+        
+    @classmethod
+    def from_hdf5_dataset(cls, group, path):
+        """
+        Read from HDF5 group/dataset.
+        """
+        from gwexpy.interop import from_hdf5
+        return from_hdf5(cls, group, path)
+        
+    def to_obspy_trace(self, *, stats_extra=None, dtype=None):
+        """
+        Convert to obspy.Trace.
+        """
+        from gwexpy.interop import to_obspy_trace
+        return to_obspy_trace(self, stats_extra=stats_extra, dtype=dtype)
+        
+    @classmethod
+    def from_obspy_trace(cls, tr, *, unit=None, name_policy="id"):
+        """
+        Create TimeSeries from obspy.Trace.
+        """
+        from gwexpy.interop import from_obspy_trace
+        return from_obspy_trace(cls, tr, unit=unit, name_policy=name_policy)
+        
+    def to_sqlite(self, conn, series_id=None, *, overwrite=False):
+        """
+        Save to sqlite3 database.
+        """
+        from gwexpy.interop import to_sqlite
+        return to_sqlite(self, conn, series_id=series_id, overwrite=overwrite)
+        
+    @classmethod
+    def from_sqlite(cls, conn, series_id):
+        """
+        Load from sqlite3 database.
+        """
+        from gwexpy.interop import from_sqlite
+        return from_sqlite(cls, conn, series_id)
+
+
+
+    # ===============================
+    # P1 Methods (Computational)
+    # ===============================
+    
+    def to_torch(self, device=None, dtype=None, requires_grad=False, copy=False):
+        """Convert to torch.Tensor."""
+        from gwexpy.interop import to_torch
+        return to_torch(self, device=device, dtype=dtype, requires_grad=requires_grad, copy=copy)
+        
+    @classmethod
+    def from_torch(cls, tensor, *, t0=None, dt=None, unit=None):
+        """Create from torch.Tensor."""
+        from gwexpy.interop import from_torch
+        # t0/dt required usually as tensor has no metadata
+        if t0 is None or dt is None:
+            raise ValueError("t0 and dt are required when converting from raw tensor")
+        return from_torch(cls, tensor, t0=t0, dt=dt, unit=unit)
+        
+    def to_tf(self, dtype=None):
+        """Convert to tensorflow.Tensor."""
+        from gwexpy.interop import to_tf
+        return to_tf(self, dtype=dtype)
+        
+    @classmethod
+    def from_tf(cls, tensor, *, t0=None, dt=None, unit=None):
+        """Create from tensorflow.Tensor."""
+        from gwexpy.interop import from_tf
+        if t0 is None or dt is None:
+            raise ValueError("t0 and dt are required")
+        return from_tf(cls, tensor, t0=t0, dt=dt, unit=unit)
+        
+    def to_dask(self, chunks="auto"):
+        """Convert to dask.array."""
+        from gwexpy.interop import to_dask
+        return to_dask(self, chunks=chunks)
+        
+    @classmethod
+    def from_dask(cls, array, *, t0=None, dt=None, unit=None, compute=True):
+        """Create from dask.array."""
+        from gwexpy.interop import from_dask
+        if t0 is None or dt is None:
+            raise ValueError("t0 and dt are required")
+        return from_dask(cls, array, t0=t0, dt=dt, unit=unit, compute=compute)
+        
+    def to_zarr(self, store, path, chunks=None, compressor=None, overwrite=False):
+        """Write to Zarr array."""
+        from gwexpy.interop import to_zarr
+        to_zarr(self, store, path, chunks=chunks, compressor=compressor, overwrite=overwrite)
+        
+    @classmethod
+    def from_zarr(cls, store, path):
+        """Read from Zarr array."""
+        from gwexpy.interop import from_zarr
+        return from_zarr(cls, store, path)
+        
+    def to_netcdf4(self, ds, var_name, **kwargs):
+        """Write to netCDF4 Dataset."""
+        from gwexpy.interop import to_netcdf4
+        to_netcdf4(self, ds, var_name, **kwargs)
+        
+    @classmethod
+    def from_netcdf4(cls, ds, var_name):
+        """Read from netCDF4 Dataset."""
+        from gwexpy.interop import from_netcdf4
+        return from_netcdf4(cls, ds, var_name)
+        
+    def to_jax(self, dtype=None):
+        """Convert to jax.numpy.array."""
+        from gwexpy.interop import to_jax
+        return to_jax(self, dtype=dtype)
+        
+    @classmethod
+    def from_jax(cls, array, *, t0=None, dt=None, unit=None):
+        """Create from jax array."""
+        from gwexpy.interop import from_jax
+        if t0 is None or dt is None:
+            raise ValueError("t0 and dt are required")
+        return from_jax(cls, array, t0=t0, dt=dt, unit=unit)
+    
+    def to_cupy(self, dtype=None):
+        """Convert to cupy.array."""
+        from gwexpy.interop import to_cupy
+        return to_cupy(self, dtype=dtype)
+        
+    @classmethod
+    def from_cupy(cls, array, *, t0=None, dt=None, unit=None):
+        """Create from cupy array."""
+        from gwexpy.interop import from_cupy
+        if t0 is None or dt is None:
+            raise ValueError("t0 and dt are required")
+        return from_cupy(cls, array, t0=t0, dt=dt, unit=unit)
+        
+    # ===============================
+    # P2 Methods (Domain Specific)
+    # ===============================
+    
+    def to_librosa(self, y_dtype=np.float32):
+        """Export to librosa-compatible numpy array."""
+        from gwexpy.interop import to_librosa
+        return to_librosa(self, y_dtype=y_dtype)
+        
+    def to_pydub(self, sample_width=2, channels=1):
+        """Export to pydub.AudioSegment."""
+        from gwexpy.interop import to_pydub
+        return to_pydub(self, sample_width=sample_width, channels=channels)
+        
+    @classmethod
+    def from_pydub(cls, seg, *, unit=None):
+        """Create from pydub.AudioSegment."""
+        from gwexpy.interop import from_pydub
+        return from_pydub(cls, seg, unit=unit)
+        
+    def to_astropy_timeseries(self, column="value", time_format="gps"):
+        """Convert to astropy.timeseries.TimeSeries."""
+        from gwexpy.interop import to_astropy_timeseries
+        return to_astropy_timeseries(self, column=column, time_format=time_format)
+        
+    @classmethod
+    def from_astropy_timeseries(cls, ap_ts, column="value", unit=None):
+        """Create from astropy.timeseries.TimeSeries."""
+        from gwexpy.interop import from_astropy_timeseries
+        return from_astropy_timeseries(cls, ap_ts, column=column, unit=unit)
+
+
 class TimeSeriesDict(BaseTimeSeriesDict):
     """Dictionary of TimeSeries objects."""
 
@@ -1539,7 +1752,7 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         Resample items in the TimeSeriesDict. 
         In-place operation (updates the dict contents).
         
-        If rate is time-like (str or Quantity), performs time-bin resampling.
+        If rate is time-like, performs time-bin resampling.
         Otherwise performs signal processing resampling (gwpy's native behavior).
         """
         is_time_bin = False
@@ -1580,11 +1793,22 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         return new_dict
         
     def instantaneous_phase(self, *args, **kwargs):
-        """Apply instantaneous_phase to each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.instantaneous_phase(*args, **kwargs)
         return new_dict
+        
+    # ===============================
+    # P2 Methods (Domain Specific)
+    # ===============================
+    
+    def to_mne_rawarray(self, info=None, picks=None):
+        """Convert to mne.io.RawArray."""
+        from gwexpy.interop import to_mne_rawarray
+        return to_mne_rawarray(self, info=info, picks=picks)
+        
+    @classmethod
+    def from_mne_raw(cls, raw, *, unit_map=None):
+        """Create from mne.io.Raw."""
+        from gwexpy.interop import from_mne_raw
+        return from_mne_raw(cls, raw, unit_map=unit_map)
         
     def unwrap_phase(self, *args, **kwargs):
         """Apply unwrap_phase to each item."""
@@ -1677,6 +1901,22 @@ class TimeSeriesDict(BaseTimeSeriesDict):
             }
         )
         
+    
+    # ===============================
+    # Interoperability Methods (P0)
+    # ===============================
+    
+    def to_pandas(self, index="datetime", *, copy=False):
+        """Convert to pandas.DataFrame."""
+        from gwexpy.interop import to_pandas_dataframe
+        return to_pandas_dataframe(self, index=index, copy=copy)
+        
+    @classmethod
+    def from_pandas(cls, df, *, unit_map=None, t0=None, dt=None):
+        """Create TimeSeriesDict from pandas.DataFrame."""
+        from gwexpy.interop import from_pandas_dataframe
+        return from_pandas_dataframe(cls, df, unit_map=unit_map, t0=t0, dt=dt)
+    
     def impute(self, *, method="interpolate", limit=None, axis="time", **kwargs):
         """Apply impute to each item."""
         new_dict = self.__class__()
@@ -2263,20 +2503,50 @@ class TimeSeriesMatrix(SeriesMatrix):
                 self.resize(out_data.shape, refcheck=False)
             np.copyto(self.view(np.ndarray), out_data, casting="unsafe")
             self._value = self.view(np.ndarray)
-            self.meta = meta_matrix
-            self.xindex = common_axis
+            # Update meta if changed
+            # (Inplace updates on meta are tricky if structure changed, but attributes like unit might change)
+            # Minimal meta update in-place?
+            # Rebuilding metadata matrix is complex in-place.
             return self
-
-        result = TimeSeriesMatrix(
-            out_data,
-            times=common_axis,
-            meta=meta_matrix,
-            rows=self.rows,
-            cols=self.cols,
-            name=getattr(self, "name", ""),
+        
+        # New Matrix
+        # Reconstruct correct class
+        new_mat = self.__class__(
+             out_data,
+             xindex=common_axis,
+             xunit=common_axis.unit if isinstance(common_axis, u.Quantity) else None,
+             # Pass generic args
         )
-        result.epoch = getattr(self, "epoch", getattr(result, "epoch", None))
-        return result
+        new_mat._meta = meta_matrix
+        return new_mat
+
+    # Interoperability Delegation
+    def to_neo_analogsignal(self, units=None):
+        """Convert to neo.AnalogSignal."""
+        from gwexpy.interop import to_neo_analogsignal
+        return to_neo_analogsignal(self, units=units)
+        
+    @classmethod
+    def from_neo_analogsignal(cls, sig):
+        """Create from neo.AnalogSignal."""
+        from gwexpy.interop import from_neo_analogsignal
+        return from_neo_analogsignal(cls, sig)
+        
+    def to_mne_rawarray(self, info=None):
+        """Convert to mne.io.RawArray."""
+        from gwexpy.interop import to_mne_rawarray
+        # Convert to dict first? or map?
+        # to_mne_rawarray expects TimeSeriesDict or matrix logic.
+        # But to_mne_rawarray in interop/mne_.py takes TimeSeriesDict.
+        # We can implement a direct matrix path or convert to dict.
+        # P2 spec: "from_mne_raw -> TimeSeriesDict".
+        # Maybe to_mne is better on Dict. Matrix can use to_dict().
+        # Implementing direct method for convenience.
+        tsd = self.to_dict()
+        return to_mne_rawarray(tsd, info=info) 
+
+
+
 
     def _coerce_other_timeseries_input(self, other, method_name):
         """
