@@ -12,6 +12,9 @@ from enum import Enum
 from typing import Any, Iterable, Optional, TypeVar
 
 import numpy as np
+from astropy import units as u
+import scipy.signal
+
 from gwpy.frequencyseries import FrequencySeries as BaseFrequencySeries
 from gwexpy.types.seriesmatrix import SeriesMatrix
 
@@ -28,7 +31,370 @@ except ImportError:
 
 class FrequencySeries(BaseFrequencySeries):
     """Light wrapper of gwpy's FrequencySeries for compatibility and future extension."""
-    pass
+
+    # --- Phase and Angle ---
+
+    def phase(self, unwrap=False):
+        """
+        Calculate the phase of this FrequencySeries.
+        
+        Parameters
+        ----------
+        unwrap : `bool`, optional
+            If `True`, unwrap the phase to remove discontinuities.
+            Default is `False`.
+            
+        Returns
+        -------
+        `FrequencySeries`
+            The phase of the series, in radians.
+        """
+        val = np.angle(self.value)
+        if unwrap:
+            val = np.unwrap(val)
+        
+        name = self.name + "_phase" if self.name else "phase"
+        
+        return self.__class__(
+            val,
+            frequencies=self.frequencies,
+            unit="rad",
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch
+        )
+
+    def angle(self, unwrap=False):
+        """Alias for `phase(unwrap=unwrap)`."""
+        return self.phase(unwrap=unwrap)
+    
+    def degree(self, unwrap=False):
+        """
+        Calculate the phase of this FrequencySeries in degrees.
+        
+        Parameters
+        ----------
+        unwrap : `bool`, optional
+            If `True`, unwrap the phase before converting to degrees.
+            
+        Returns
+        -------
+        `FrequencySeries`
+            The phase of the series, in degrees.
+        """
+        p = self.phase(unwrap=unwrap)
+        val = np.rad2deg(p.value)
+        
+        name = self.name + "_phase_deg" if self.name else "phase_deg"
+        
+        return self.__class__(
+            val,
+            frequencies=self.frequencies,
+            unit="deg",
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch
+        )
+
+    def group_delay(self):
+        """
+        Calculate the group delay (-dphi/df) of this FrequencySeries.
+        
+        Returns
+        -------
+        `FrequencySeries`
+            The group delay, in seconds.
+        """
+        # Unwrap phase first to ensure smooth derivative
+        p = np.unwrap(np.angle(self.value))
+        f = self.frequencies.value
+        
+        # Calculate derivative -dphi/df
+        # Use simple gradient, but account for 2pi factor if freq is in Hz and phase in rad
+        # Group Delay tau = -1/(2pi) * dphi/df
+        
+        # Check units of frequencies
+        f_unit = self.frequencies.unit
+        if f_unit == u.Hz:
+            factor = -1.0 / (2 * np.pi)
+        else:
+            # Assume general case, might need more robust unit handling
+            # For now stick to standard Hz definition logic
+            factor = -1.0 / (2 * np.pi)
+
+        gd_val = factor * np.gradient(p, f)
+        
+        name = self.name + "_group_delay" if self.name else "group_delay"
+        
+        return self.__class__(
+            gd_val,
+            frequencies=self.frequencies,
+            unit="s",
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch
+        )
+    
+    # --- dB / Logarithmic ---
+
+    def to_db(self, ref=1.0, amplitude=True):
+        """
+        Convert this series to decibels.
+        
+        Parameters
+        ----------
+        ref : `float` or `Quantity`, optional
+            Reference value for 0 dB. Default is 1.0.
+        amplitude : `bool`, optional
+            If `True` (default), treat data as amplitude (20 * log10).
+            If `False`, treat data as power (10 * log10).
+            
+        Returns
+        -------
+        `FrequencySeries`
+            The series in dB.
+        """
+        val = self.value
+        if isinstance(ref, u.Quantity):
+            ref = ref.value
+        
+        # Handle magnitude
+        mag = np.abs(val)
+        
+        # Avoid log(0)
+        # We could use a small epsilon or let numpy handle -inf
+        with np.errstate(divide='ignore'):
+            log_val = np.log10(mag / ref)
+            
+        factor = 20.0 if amplitude else 10.0
+        db_val = factor * log_val
+        
+        name = self.name + "_db" if self.name else "db"
+        
+        return self.__class__(
+            db_val,
+            frequencies=self.frequencies,
+            unit="dB",
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch
+        )
+
+    # --- Time Calculus ---
+
+    def differentiate_time(self):
+        """
+        Apply time differentiation in frequency domain.
+        
+        Multiplies by (2 * pi * i * f).
+        Converting Displacement -> Velocity -> Acceleration.
+        
+        Returns
+        -------
+        `FrequencySeries`
+        """
+        f = self.frequencies.to("Hz").value
+        omega = 2 * np.pi * f
+        
+        # Apply factor (j * omega)
+        factor = 1j * omega
+        
+        new_val = self.value * factor
+        
+        # Update unit: multiply by Hz (1/s)
+        new_unit = self.unit * u.Hz if self.unit else u.Hz
+        
+        name = f"d({self.name})/dt" if self.name else "differentiation"
+        
+        return self.__class__(
+            new_val,
+            frequencies=self.frequencies,
+            unit=new_unit,
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch
+        )
+
+    def integrate_time(self):
+        """
+        Apply time integration in frequency domain.
+        
+        Divides by (2 * pi * i * f).
+        Converting Acceleration -> Velocity -> Displacement.
+        
+        Returns
+        -------
+        `FrequencySeries`
+        """
+        f = self.frequencies.to("Hz").value
+        omega = 2 * np.pi * f
+        
+        # Avoid division by zero at DC
+        with np.errstate(divide='ignore', invalid='ignore'):
+            factor = 1.0 / (1j * omega)
+        
+        # Handle DC (0 Hz) -> set to 0 or leave as inf/nan?
+        # Standard practice is often to set DC to 0 for integration results or keep it if known.
+        # Here we let numpy handle it (likely inf), but the user might want to mask it.
+        if f[0] == 0:
+            factor[0] = 0  # Set DC term to 0 explicitly to avoid NaN propagation
+            
+        new_val = self.value * factor
+        
+        # Update unit: divide by Hz (multiply by s)
+        new_unit = self.unit * u.s if self.unit else u.s
+        
+        name = f"int({self.name})dt" if self.name else "integration"
+        
+        return self.__class__(
+            new_val,
+            frequencies=self.frequencies,
+            unit=new_unit,
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch
+        )
+
+    # --- Analysis & Smoothing ---
+
+    def smooth(self, width, method='amplitude'):
+        """
+        Smooth the frequency series.
+        
+        Parameters
+        ----------
+        width : `int`
+            Number of samples for the smoothing winow (e.g. rolling mean size).
+        method : `str`, optional
+            Smoothing target:
+            - 'amplitude': Smooth absolute value |X|, keep phase 'original' (or 0?). 
+                           Actually, strictly smoothing magnitude destroys phase coherence. 
+                           Returns REAL series (magnitude only).
+            - 'power': Smooth power |X|^2. Returns REAL series.
+            - 'complex': Smooth real and imaginary parts separately. Preserves complex.
+            - 'db': Smooth dB values. Returns REAL series (in dB).
+            
+        Returns
+        -------
+        `FrequencySeries`
+        """
+        if method == 'complex':
+            # Convolve/filter real and imag separately
+            w = np.ones(width) / width
+            # Use 'same' to keep size, but handle boundary effects
+            # scipy.ndimage.uniform_filter1d or regular convolution
+            # Let's use simple convolution for MVP
+            
+            # Boundary handling: 'valid' shrinks, 'same' has edge effects.
+            # GWpy generally prefers exact preservation or careful handling.
+            # We will use 'same' mode convolution.
+            from scipy.ndimage import uniform_filter1d
+            
+            re = uniform_filter1d(self.value.real, size=width)
+            im = uniform_filter1d(self.value.imag, size=width)
+            val = re + 1j * im
+            unit = self.unit
+            
+        elif method == 'amplitude':
+            mag = np.abs(self.value)
+            from scipy.ndimage import uniform_filter1d
+            val = uniform_filter1d(mag, size=width)
+            unit = self.unit
+            
+        elif method == 'power':
+            pwr = np.abs(self.value)**2
+            from scipy.ndimage import uniform_filter1d
+            val = uniform_filter1d(pwr, size=width)
+            unit = self.unit**2
+            
+        elif method == 'db':
+            # To dB
+            mag = np.abs(self.value)
+            with np.errstate(divide='ignore'):
+                 db = 20 * np.log10(mag)
+            from scipy.ndimage import uniform_filter1d
+            # Handle -inf in dB (0 magnitude) by masking? 
+            # For now just smooth what we have
+            val = uniform_filter1d(db, size=width)
+            unit = u.Unit('dB')
+            
+        else:
+            raise ValueError(f"Unknown smoothing method: {method}")
+
+        return self.__class__(
+            val,
+            frequencies=self.frequencies,
+            unit=unit,
+            name=self.name,
+            channel=self.channel,
+            epoch=self.epoch
+        )
+
+    def find_peaks(self, threshold=None, method='amplitude', **kwargs):
+        """
+        Find peaks in the series.
+        
+        Wraps `scipy.signal.find_peaks`.
+        
+        Parameters
+        ----------
+        threshold : `float` or `str`
+            Height threshold.
+        method : `str`, optional
+            'amplitude', 'power', 'db'. Defines what metric to search on.
+        **kwargs
+            Passed to `scipy.signal.find_peaks` (e.g. distance, prominence).
+            
+        Returns
+        -------
+        `tuple`
+            (peaks_indices, peaks_properties)
+        """
+        # Prepare target array
+        if method == 'amplitude':
+            target = np.abs(self.value)
+        elif method == 'power':
+            target = np.abs(self.value)**2
+        elif method == 'db':
+            target = 20 * np.log10(np.abs(self.value))
+        else:
+            raise ValueError(f"Unknown method {method}")
+            
+        if threshold is not None:
+             kwargs['height'] = threshold
+             
+        return scipy.signal.find_peaks(target, **kwargs)
+
+    def quadrature_sum(self, other):
+        """
+        Compute sqrt(self^2 + other^2) assuming checking independence.
+        
+        Operates on magnitude. Phase information is lost (returns real).
+        
+        Parameters
+        ----------
+        other : `FrequencySeries`
+            The other series to add.
+            
+        Returns
+        -------
+        `FrequencySeries`
+            Magnitude combined series.
+        """
+        mag_self = np.abs(self.value)
+        mag_other = np.abs(other.value)
+        
+        # Check compatibility?
+        
+        val = np.sqrt(mag_self**2 + mag_other**2)
+        
+        return self.__class__(
+            val,
+            frequencies=self.frequencies,
+            unit=self.unit,
+            name=f"sqrt({self.name}^2 + {other.name}^2)",
+            epoch=self.epoch
+        )
 
 
 # =============================

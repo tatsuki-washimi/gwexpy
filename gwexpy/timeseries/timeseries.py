@@ -1,7 +1,13 @@
 import inspect
 from enum import Enum
 import numpy as np
+import numpy as np
 from astropy import units as u
+try:
+    import scipy.signal
+except ImportError:
+    pass # scipy is optional dependency for gwpy but required here for hilbert
+
 
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
 from gwpy.timeseries import TimeSeriesDict as BaseTimeSeriesDict
@@ -231,7 +237,956 @@ def _validate_common_epoch(epochs, method_name):
 class TimeSeries(BaseTimeSeries):
     """Light wrapper of gwpy's TimeSeries for compatibility."""
 
-    pass
+    def asfreq(
+        self,
+        rule,
+        method=None,
+        fill_value=np.nan,
+        *,
+        origin='t0',
+        offset=0 * u.s,
+        align='ceil',
+        tolerance=None,
+        max_gap=None,
+        copy=True,
+    ):
+        """
+        Reindex the TimeSeries to a new fixed-interval grid associated with the given rule.
+        """
+        # 1. Parse rule to target dt (Quantity)
+        if isinstance(rule, str):
+            # Simple parser for '1s', '10ms' etc.
+            # Using unit logic from astropy or similar
+            try:
+                target_dt = u.Quantity(rule)
+            except TypeError:
+                # If astropy fails to parse simple string directly, try splitting
+                import re
+                match = re.match(r"([0-9\.]+)([a-zA-Z]+)", rule)
+                if match:
+                    val, unit_str = match.groups()
+                    target_dt = float(val) * u.Unit(unit_str)
+                else:
+                    raise ValueError(f"Could not parse rule: {rule}")
+        elif isinstance(rule, u.Quantity):
+            target_dt = rule
+        else:
+             # Fallback: assume seconds if it's a number? 
+             # Requirement says: "support s/ms/us/ns/min/h/day", numeric not supported by default.
+             raise TypeError("rule must be a string or astropy Quantity (time).")
+
+        if not target_dt.unit.is_equivalent(u.s):
+             raise ValueError("rule must be time-like")
+
+        # 2. Determine Original Times and Span
+        # Prefer using self.times.value (float GPS) for calculation to avoid Quantity overhead loops
+        # But convert everything to the same unit (target_dt.unit or seconds) for precision
+        
+        # Use existing xindex if available (irregular), else construct from t0/dt
+        old_times_q = self.times
+        old_times_val = old_times_q.value
+        time_unit = old_times_q.unit
+        
+        # Handle dimensionless time axis
+        is_dimensionless = (time_unit is None or time_unit == u.dimensionless_unscaled or (hasattr(time_unit, 'physical_type') and time_unit.physical_type == 'dimensionless'))
+        
+        target_dt_in_time_unit = None
+        start_time_val = None
+        stop_time_val = None
+        
+        if is_dimensionless and target_dt.unit.physical_type == 'time':
+             # Assume original data is in seconds
+             time_unit = u.s
+             target_dt_in_time_unit = target_dt.to(u.s)
+             
+             # Extract values directly as they are assumed to be seconds
+             start_time_val = old_times_q[0].value
+             stop_time_val = self.span[1].value if hasattr(self.span[1], 'value') else self.span[1]
+        else:
+             target_dt_in_time_unit = u.Quantity(target_dt, time_unit)
+             start_time_val = u.Quantity(old_times_q[0], time_unit).value
+             stop_time_val = u.Quantity(self.span[1], time_unit).value
+             
+        dt_val = target_dt_in_time_unit.value
+        
+        # 3. Determine Origin Base
+        if origin == 't0':
+            origin_val = start_time_val
+        elif origin == 'gps0':
+            origin_val = 0.0
+        elif isinstance(origin, (u.Quantity, str)):
+            # convert origin to same unit as time_unit (if possible) or seconds
+            # If origin is a Time object etc? simpler to assume quantity or str
+            origin_val = u.Quantity(origin).to(time_unit).value
+        else:
+            origin_val = 0.0 
+            
+        offset_val = u.Quantity(offset).to(time_unit).value
+        base_val = origin_val + offset_val
+        
+        # 4. Generate New Grid
+        # first_grid = base + k * dt >= start_time
+        # k = ceil((start - base)/dt)
+        if align == 'ceil':
+             k = np.ceil((start_time_val - base_val) / dt_val)
+        elif align == 'floor':
+             k = np.floor((start_time_val - base_val) / dt_val)
+        else:
+             raise ValueError("align must be 'ceil' or 'floor'")
+             
+        grid_start = base_val + k * dt_val
+        
+        # Create array
+        # num_points = ceil((stop - grid_start) / dt)
+        # Ensure we don't go strictly >= stop
+        # floating point epsilon care?
+        
+        duration = stop_time_val - grid_start
+        if duration <= 0:
+             n_points = 0
+        else:
+             n_points = int(np.ceil(duration / dt_val))
+             
+        # Check if the last point is exactly stop? bounds are [start, stop)
+        # If grid_start + n*dt == stop, do we include it? usually no.
+        # np.arange(grid_start, stop_time_val, dt_val) is standard.
+        
+        new_times_val = grid_start + np.arange(n_points) * dt_val
+        # Filter strictly < stop in case of numerical slop
+        new_times_val = new_times_val[new_times_val < stop_time_val]
+        
+        # 5. Reindex / Interpolate
+        # If empty
+        if len(new_times_val) == 0:
+             return self.__class__([], t0=start_time, dt=target_dt, channel=self.channel, name=self.name, unit=self.unit)
+
+        new_data = np.full(len(new_times_val), fill_value, dtype=self.dtype)
+        if hasattr(fill_value, 'dtype'):
+             # If fill value is complex etc?
+             pass 
+        if self.dtype.kind == 'c':
+             new_data = new_data.astype(np.complex128)
+        
+        # Mapping logic
+        # For 'method=None', we look for exact matches with tolerance?
+        # Exact match of floats is tricky.
+        
+        # Optimize regular-to-regular case?
+        # If self.regular and dt match and aligned...
+        
+        if method == 'interpolate':
+            # Linear interpolation
+            # Use scipy.interpolate.interp1d or numpy.interp
+            valid_mask = np.isfinite(self.value)
+            if np.any(valid_mask):
+                x = old_times_val
+                y = self.value
+                
+                # Handling NaNs in input? 
+                # If we want to skip NaNs in input for interpolation:
+                # x = x[valid_mask]
+                # y = y[valid_mask]
+                # method='linear'
+                
+                if max_gap is not None:
+                     max_gap_val = u.Quantity(max_gap).to(time_unit).value
+                     # We need to detect gaps in NEW grid that are far from OLD points?
+                     # Or gaps in OLD grid?
+                     # Standard behavior: if interval between source points > max_gap, fill with NaN.
+                     # This is hard to do with simple np.interp.
+                     pass
+
+                # Simple linear interp
+                # For complex data, interp real/imag separately
+                if np.iscomplexobj(y):
+                    new_data = np.interp(new_times_val, x, y.real) + 1j * np.interp(new_times_val, x, y.imag)
+                else:
+                    new_data = np.interp(new_times_val, x, y, left=np.nan, right=np.nan)
+                
+                # Apply fill_value to NaNs (if interp produced NaNs for out of bounds)
+                if np.isnan(fill_value):
+                    pass # already nan
+                else:
+                    mask = np.isnan(new_data)
+                    new_data[mask] = fill_value
+                    
+                # Todo: max_gap implementation for interpolate
+        
+        else:
+            # Nearest, ffill, bfill, or None (exact)
+            # Use searchsorted
+            
+            # idx = np.searchsorted(old_times_val, new_times_val, side='left')
+            # Handle boundary logic for each method
+            
+            # For simplicity/speed on regular/near-regular data, this can be optimized.
+            # But general solution:
+            
+            # Using pandas reindex/asfreq if strict compatibility is needed?
+            # User output says "implement", assumes not using pandas directly if lighter.
+            # GWpy generally avoids pandas dependency for core ops.
+            
+            idx_right = np.searchsorted(old_times_val, new_times_val, side='left')
+            # idx_right is index where new_time would be inserted to keep order.
+            # old[idx-1] <= new < old[idx]
+            
+            # Make sure we clip indices for access
+            idx_prev = np.clip(idx_right - 1, 0, len(old_times_val) - 1)
+            idx_next = np.clip(idx_right, 0, len(old_times_val) - 1)
+            
+            t_prev = old_times_val[idx_prev]
+            # t_next = old_times_val[idx_next]
+            
+            matched_indices = np.full(len(new_times_val), -1, dtype=int)
+            
+            if method == 'ffill' or method == 'pad':
+                 # Use prev if new_time >= prev
+                 # Check boundaries
+                 # searchsorted gives index.
+                 # if new_time < old[0], idx=0. old[idx-1] is last element (wrap) or distinct?
+                 # Need to check cond: old[idx_prev] <= new_time
+                 cond = old_times_val[idx_prev] <= new_times_val + 1e-12 # Numerical slush?
+                 # Also need to handle "before first element" -> NaN
+                 # If idx_right == 0 and new_time < old[0], then prev should be invalid.
+                 valid_prev = (idx_right > 0) | (np.abs(new_times_val - old_times_val[0]) < 1e-12)
+                 
+                 # Refine logic:
+                 # ffill takes the latest observed value.
+                 # If new_t is exactly on a point, take it.
+                 # If in between, take left.
+                 
+                 # Use searchsorted(side='right') -> old[i-1] <= new < old[i]
+                 idx_side_right = np.searchsorted(old_times_val, new_times_val, side='right')
+                 fill_idx = idx_side_right - 1
+                 
+                 valid_f = (fill_idx >= 0)
+                 # Apply max_gap
+                 if max_gap is not None:
+                      limit = u.Quantity(max_gap).to(time_unit).value
+                      dt_diff = new_times_val - old_times_val[np.clip(fill_idx, 0, None)]
+                      valid_f &= (dt_diff <= limit)
+                 
+                 # Assign values
+                 valid_out_indices = np.where(valid_f)[0]
+                 src_indices = fill_idx[valid_f]
+                 new_data[valid_out_indices] = self.value[src_indices]
+                 
+            elif method == 'bfill' or method == 'backfill':
+                 # Use next
+                 idx_side_left = np.searchsorted(old_times_val, new_times_val, side='left')
+                 fill_idx = idx_side_left
+                 
+                 valid_b = (fill_idx < len(old_times_val))
+                 
+                 if max_gap is not None:
+                      limit = u.Quantity(max_gap).to(time_unit).value
+                      dt_diff = old_times_val[np.clip(fill_idx, 0, len(old_times_val)-1)] - new_times_val
+                      valid_b &= (dt_diff <= limit)
+                      
+                 valid_out_indices = np.where(valid_b)[0]
+                 src_indices = fill_idx[valid_b]
+                 new_data[valid_out_indices] = self.value[src_indices]
+                 
+            elif method == 'nearest':
+                 # Compare prev and next
+                 idx_side_left = np.searchsorted(old_times_val, new_times_val, side='left')
+                 
+                 idx_L = np.clip(idx_side_left - 1, 0, len(old_times_val)-1)
+                 idx_R = np.clip(idx_side_left, 0, len(old_times_val)-1)
+                 
+                 dist_L = np.abs(new_times_val - old_times_val[idx_L])
+                 dist_R = np.abs(new_times_val - old_times_val[idx_R])
+                 
+                 # Choose L or R
+                 use_L = dist_L < dist_R
+                 
+                 chosen_idx = np.where(use_L, idx_L, idx_R)
+                 chosen_dist = np.where(use_L, dist_L, dist_R)
+                 
+                 # Check validity (e.g. if new_time < old[0], L wraps or is 0? clip handles it)
+                 # But if new < old[0], idx_side_left=0. idx_L=0. idx_R=0. dist_L==dist_R. use_L=False?
+                 
+                 valid_n = np.ones(len(new_times_val), dtype=bool)
+                 if tolerance is not None:
+                      tol_val = u.Quantity(tolerance).to(time_unit).value
+                      valid_n &= (chosen_dist <= tol_val)
+                      
+                 if max_gap is not None:
+                      limit = u.Quantity(max_gap).to(time_unit).value
+                      valid_n &= (chosen_dist <= limit)
+                      
+                 valid_out = np.where(valid_n)[0]
+                 src_idx = chosen_idx[valid_n]
+                 new_data[valid_out] = self.value[src_idx]
+
+            elif method is None:
+                # Exact match only
+                # Tolerance?
+                # Simple implementation: use tolerance if provided, else almost zero
+                tol_val = 1e-9 if tolerance is None else u.Quantity(tolerance).to(time_unit).value
+                
+                # Nearest + strict tolerance
+                idx_side_left = np.searchsorted(old_times_val, new_times_val, side='left')
+                idx_closest = np.clip(idx_side_left, 0, len(old_times_val)-1)
+                # Check closest
+                # Searchsorted 'left': old[i-1] < new <= old[i]
+                # Actually standard exact check:
+                # Find closest, check diff almost 0
+                
+                # Re-use nearest logic
+                idx_L = np.clip(idx_side_left - 1, 0, len(old_times_val)-1)
+                idx_R = np.clip(idx_side_left, 0, len(old_times_val)-1)
+                dist_L = np.abs(new_times_val - old_times_val[idx_L])
+                dist_R = np.abs(new_times_val - old_times_val[idx_R])
+                
+                # Check min dist
+                min_dist = np.minimum(dist_L, dist_R)
+                chosen_from_min = np.where(dist_L < dist_R, idx_L, idx_R)
+                
+                valid_exact = min_dist <= tol_val
+                
+                valid_out = np.where(valid_exact)[0]
+                src_idx = chosen_from_min[valid_exact]
+                new_data[valid_out] = self.value[src_idx]
+
+        # Construct new TimeSeries
+        return self.__class__(
+            new_data,
+            t0=u.Quantity(new_times_val[0], time_unit),
+            dt=target_dt,
+            unit=self.unit,
+            name=self.name,
+            channel=self.channel
+        )
+
+    def resample(self, rate, *args, **kwargs):
+        """
+        Resample the TimeSeries. 
+        
+        If 'rate' is a time-string (e.g. '1s') or time Quantity, performs time-bin aggregation (pandas-like).
+        Otherwise, performs signal processing resampling (gwpy standard).
+        """
+        is_time_bin = False
+        if isinstance(rate, str):
+            is_time_bin = True
+        elif isinstance(rate, u.Quantity):
+            if rate.unit.physical_type == 'time':
+                is_time_bin = True
+        
+        if is_time_bin:
+            return self._resample_time_bin(rate, **kwargs)
+        else:
+            return super().resample(rate, *args, **kwargs)
+
+    def _resample_time_bin(
+        self,
+        rule,
+        agg='mean',
+        closed='left',
+        label='left',
+        origin='t0',
+        offset=0 * u.s,
+        align='floor',
+        min_count=1,
+        nan_policy='omit',
+        inplace=False,
+    ):
+        """Internal: Bin-based resampling."""
+        # 1. Parse rule to dt
+        if isinstance(rule, str):
+             import re
+             match = re.match(r"([0-9\.]+)([a-zA-Z]+)", rule)
+             if match:
+                val, unit_str = match.groups()
+                bin_dt = float(val) * u.Unit(unit_str)
+             else:
+                bin_dt = u.Quantity(rule)
+        else:
+             bin_dt = rule
+             
+        # 2. Setup Bins
+        old_times_q = self.times
+        time_unit = old_times_q.unit
+        
+        is_dimensionless = (time_unit is None or time_unit == u.dimensionless_unscaled or time_unit.physical_type == 'dimensionless')
+        
+        bin_dt_val = None
+        start_time_val = None
+        stop_time_val = None
+        
+        if is_dimensionless and bin_dt.unit.physical_type == 'time':
+             time_unit = u.s
+             bin_dt_val = bin_dt.to(u.s).value
+             start_time_val = old_times_q[0].value
+             stop_time_val = self.span[1].value if hasattr(self.span[1], 'value') else self.span[1]
+        else:
+             bin_dt_val = u.Quantity(bin_dt, time_unit).value
+             start_time_val = u.Quantity(old_times_q[0], time_unit).value
+             stop_time_val = u.Quantity(self.span[1], time_unit).value
+        
+        # Origin logic (similar to asfreq)
+        
+        if origin == 't0':
+            origin_val = start_time_val
+        elif origin == 'gps0':
+            origin_val = 0.0
+        else:
+            origin_val = 0.0 # Default fallback
+            
+        offset_val = u.Quantity(offset).to(time_unit).value
+        base_val = origin_val + offset_val
+        
+        # Grid alignment
+        if align == 'floor':
+             k = np.floor((start_time_val - base_val) / bin_dt_val)
+        elif align == 'ceil':
+             k = np.ceil((start_time_val - base_val) / bin_dt_val)
+        else:
+            k = np.floor((start_time_val - base_val) / bin_dt_val)
+
+        grid_start = base_val + k * bin_dt_val
+        
+        # Create bin edges
+        # We need edges covering the full range
+        duration = stop_time_val - grid_start
+        n_bins = int(np.ceil(duration / bin_dt_val))
+        
+        if n_bins <= 0:
+             return self.__class__([], dt=bin_dt, unit=self.unit, name=self.name)
+             
+        edges = grid_start + np.arange(n_bins + 1) * bin_dt_val
+        
+        # 3. Aggregate
+        # Digitize
+        # old_times indices into bins
+        # bins: [edge[0], edge[1]), [edge[1], edge[2]), ...
+        
+        # np.digitize returns i such that bins[i-1] <= x < bins[i] (if right=False)
+        # We want 0-based index for bin 0..n_bins-1
+        
+        # Optimization: for regular self.dt, we can calculate indices directly
+        # bin_idx = floor( (t - grid_start) / bin_dt )
+        # This is much faster than digitize
+        
+        # This is much faster than digitize
+        
+        if is_dimensionless and bin_dt.unit.physical_type == 'time':
+             # old_times_q is dimensionless (assumed seconds), so values are seconds
+             old_times_val = old_times_q.value
+        else:
+             old_times_val = old_times_q.to(time_unit).value
+             
+        bin_indices = np.floor((old_times_val - grid_start) / bin_dt_val).astype(int)
+        
+        # Clip or filter valid bins
+        # 0 <= idx < n_bins
+        valid_mask = (bin_indices >= 0) & (bin_indices < n_bins)
+        
+        valid_indices = bin_indices[valid_mask]
+        valid_values = self.value[valid_mask]
+        
+        # Aggregation loop
+        # For 'mean', 'sum' etc., can use scipy.stats.binned_statistic or pandas or pure numpy
+        # pure numpy: bincount for sum and count
+        
+        # Handle nan_policy
+        if hasattr(self.value, 'dtype') and (self.value.dtype.kind == 'f' or self.value.dtype.kind == 'c'):
+             has_nan = np.isnan(valid_values)
+             if np.any(has_nan):
+                  if nan_policy == 'omit':
+                       # Mask out NaNs from aggregation
+                       # BUT careful: simple masking desyncs indices
+                       # Must implement per-bin logic or strictly mask upfront
+                       non_nan_mask = ~has_nan
+                       valid_indices = valid_indices[non_nan_mask]
+                       valid_values = valid_values[non_nan_mask]
+                  elif nan_policy == 'propagate':
+                       # Let sum/mean propagate
+                       pass
+                       
+        # Bincount works for flat data (1D)
+        if agg == 'mean':
+             # Sum / Count
+             sums = np.bincount(valid_indices, weights=valid_values, minlength=n_bins)
+             counts = np.bincount(valid_indices, minlength=n_bins)
+             with np.errstate(invalid='ignore', divide='ignore'):
+                  means = sums / counts
+             # Apply min_count
+             if min_count > 0:
+                  means[counts < min_count] = np.nan
+             out_data = means
+             
+        elif agg == 'sum':
+             sums = np.bincount(valid_indices, weights=valid_values, minlength=n_bins)
+             counts = np.bincount(valid_indices, minlength=n_bins)
+             if min_count > 0:
+                  sums[counts < min_count] = np.nan # Or 0? Usually sum of nothing is 0, but min_count implies invalidity
+             out_data = sums
+             
+        elif callable(agg):
+             # Slow loop
+             out_data = np.full(n_bins, np.nan)
+             for i in range(n_bins):
+                  # This is very slow for large data
+                  in_bin = valid_values[valid_indices == i]
+                  if len(in_bin) >= min_count:
+                       out_data[i] = agg(in_bin)
+        else:
+             # 'max', 'min', etc. use pandas if available?
+             # Or reduceat if sorted? Times are sorted.
+             # If times are sorted, bin_indices are sorted.
+             # We can use np.add.reduceat etc. if valid_indices is monotonic
+             
+             # Fallback to pandas if simple? 
+             # To stay pure numpy:
+             # Find changes in bin_indices to get boundaries
+             pass
+             # For MVP, restrict to mean/sum or use scipy binned_statistic
+             from scipy.stats import binned_statistic
+             if agg == 'median':
+                  stat_func = np.nanmedian if nan_policy=='omit' else np.median
+             elif agg == 'max':
+                  stat_func = np.nanmax
+             elif agg == 'min':
+                  stat_func = np.nanmin
+             elif agg == 'std':
+                  stat_func = np.nanstd
+             else:
+                  stat_func = agg # 'mean' also covered here if fallback needed
+                  
+             # binned_statistic handles this
+             # x=old_times_val[valid_mask], values=valid_values
+             # bins=edges
+             # But binned_statistic might be slower than bincount for simple mean
+             res = binned_statistic(old_times_val[valid_mask], valid_values, statistic=stat_func, bins=edges)
+             out_data = res.statistic
+             
+             # Apply min_count? binned_statistic doesn't support min_count directly (except NaNs)
+             # If we need strict min_count, we need counts too.
+             if min_count > 0:
+                   counts = np.bincount(valid_indices, minlength=n_bins)
+                   if np.issubdtype(out_data.dtype, np.floating):
+                        out_data[counts < min_count] = np.nan
+
+        # 4. Result Times
+        if label == 'left':
+             final_t0 = u.Quantity(edges[0], time_unit)
+        elif label == 'right':
+             final_t0 = u.Quantity(edges[1], time_unit)
+        else:
+             final_t0 = u.Quantity(edges[0] + bin_dt_val/2, time_unit) # Center?
+        
+        # Unit
+        out_unit = self.unit
+        if agg == 'count':
+             out_unit = u.dimensionless_unscaled
+             
+        return self.__class__(
+            out_data,
+            t0=final_t0,
+            dt=bin_dt,
+            unit=out_unit,
+            name=self.name,
+            channel=self.channel 
+        )
+
+    def analytic_signal(
+        self,
+        pad=None,
+        pad_mode='reflect',
+        pad_value=0.0,
+        nan_policy='raise',
+        copy=True,
+    ):
+        """
+        Compute the analytic signal (Hilbert transform) of the TimeSeries.
+        
+        If input is real, returns complex analytic signal z(t) = x(t) + i H[x(t)].
+        If input is complex, returns a copy (casting to complex if needed).
+        """
+        # 1. Complex check
+        if np.iscomplexobj(self.value):
+            return self.astype(complex, copy=copy)
+            
+        # 2. Check regular
+        info = _extract_axis_info(self)
+        if not info['regular']:
+             raise ValueError("analytic_signal requires regular sampling (dt). Use asfreq/resample first.")
+        
+        # 3. Handle NaN
+        if nan_policy == 'raise':
+            if not np.isfinite(self.value).all():
+                raise ValueError("Input contains NaNs or infinite values.")
+        
+        # 4. Padding
+        data = self.value
+        n_pad = 0
+        if pad is not None:
+             if isinstance(pad, u.Quantity):
+                  n_pad = int(round(pad.to(self.times.unit).value / self.dt.to(self.times.unit).value))
+             else:
+                  n_pad = int(pad)
+                  
+             if n_pad > 0:
+                  if pad_mode == 'constant':
+                       kwargs = {'constant_values': pad_value}
+                  else:
+                       kwargs = {}
+                  data = np.pad(data, n_pad, mode=pad_mode, **kwargs)
+                  
+        # 5. Hilbert
+        analytic = scipy.signal.hilbert(data)
+        
+        # 6. Crop if padded
+        if n_pad > 0:
+             analytic = analytic[n_pad:-n_pad]
+             
+        # 7. Wrap
+        return self.__class__(
+             analytic,
+             t0=self.t0,
+             dt=self.dt,
+             unit=self.unit,
+             channel=self.channel,
+             name=self.name
+        )
+        
+    def hilbert(self, *args, **kwargs):
+        """Alias for analytic_signal."""
+        return self.analytic_signal(*args, **kwargs)
+        
+    def envelope(self, *args, **kwargs):
+        """Compute the envelope of the TimeSeries."""
+        analytic = self.analytic_signal(*args, **kwargs)
+        return abs(analytic)
+        
+    def instantaneous_phase(self, deg=False, unwrap=False, **kwargs):
+        """
+        Compute the instantaneous phase of the TimeSeries.
+        """
+        analytic = self.analytic_signal(**kwargs)
+        phi = np.angle(analytic.value, deg=deg)
+        
+        if unwrap:
+             # unwrap expects radians usually, but if deg=True, results are in degrees.
+             # numpy.unwrap default period is 2pi.
+             # If deg=True, we should use period=360? 
+             # numpy.unwrap doc says: 'period: float, optional, default 2*pi'
+             period = 360.0 if deg else 2 * np.pi
+             phi = np.unwrap(phi, period=period)
+             
+        out = self.__class__(
+             phi,
+             t0=self.t0,
+             dt=self.dt,
+             channel=self.channel,
+             name=self.name
+        )
+        
+        # Override unit
+        out.override_unit('deg' if deg else 'rad')
+        return out
+        
+    def unwrap_phase(self, deg=False, **kwargs):
+        """Alias for instantaneous_phase(unwrap=True)."""
+        return self.instantaneous_phase(deg=deg, unwrap=True, **kwargs)
+        
+    def instantaneous_frequency(self, unwrap=True, smooth=None, **kwargs):
+        """
+        Compute the instantaneous frequency of the TimeSeries.
+        Returns unit 'Hz'.
+        """
+        # Force radians for calculation
+        phi_ts = self.instantaneous_phase(deg=False, unwrap=unwrap, **kwargs)
+        phi = phi_ts.value
+        
+        dt_s = self.dt.to('s').value
+        
+        # gradient
+        # dphi / dt
+        dphi_dt = np.gradient(phi, dt_s)
+        
+        # f = (dphi/dt) / 2pi
+        f_inst = dphi_dt / (2 * np.pi)
+        
+        # Smoothing
+        if smooth is not None:
+             # Determine window size
+             # Parse string if needed
+             if isinstance(smooth, str):
+                  smooth = u.Quantity(smooth)
+                  
+             if isinstance(smooth, u.Quantity):
+                  w_s = smooth.to('s').value
+                  w_samples = int(round(w_s / dt_s))
+             else:
+                  w_samples = int(smooth)
+             
+             if w_samples > 1:
+                  # Simple moving average
+                  # Mode 'same' to keep length
+                  # Handle edges? P0 says 'nearest' or simple.
+                  # scipy.ndimage.uniform_filter1d is good, or convolve
+                  window = np.ones(w_samples) / w_samples
+                  # boundary 'symm' or 'replicate' (nearest)
+                  # np.convolve doesn't handle boundary options nicely without manual pad
+                  # explicit pad with 'edge' (nearest)
+                  f_pad = np.pad(f_inst, w_samples//2, mode='edge')
+                  f_smooth = np.convolve(f_pad, window, mode='valid')
+                  
+                  # Size matching might be tricky with odd/even windows in convolve
+                  # convolve(valid) length: N_in - N_win + 1.
+                  # N_pad = N + 2*(w//2). 
+                  # N_out = N + 2*(w//2) - w + 1. 
+                  # If w=3, w//2=1. Pad 1 each side. N+2. Out = N+2 - 3 + 1 = N. Correct.
+                  # If w=4, w//2=2. Pad 2 each side. N+4. Out = N+4 - 4 + 1 = N+1. Too long?
+                  
+                  # Better use scipy.ndimage if available, or just careful indexing
+                  # For P0, simple 'same' convolution is acceptable standard?
+                  # standard convolve(mode='same') uses zero padding which dips at edges.
+                  # Let's stick to the manual pad above but adjust for even w?
+                  if len(f_smooth) > len(f_inst):
+                       f_smooth = f_smooth[:len(f_inst)]
+                  elif len(f_smooth) < len(f_inst):
+                       # Should not happen with valid logic above for odd w
+                       pass
+                  f_inst = f_smooth
+        
+        out = self.__class__(
+             f_inst,
+             t0=self.t0,
+             dt=self.dt,
+             channel=self.channel,
+             name=self.name
+        )
+        out.override_unit('Hz')
+        return out
+
+    def _build_phase_series(
+        self,
+        *,
+        phase=None,
+        f0=None,
+        fdot=0.0,
+        fddot=0.0,
+        phase_epoch=None,
+        phase0=0.0,
+        prefer_dt=True,
+    ):
+        """Internal helper to build phase series in radians."""
+        if (f0 is None and phase is None) or (f0 is not None and phase is not None):
+             raise ValueError("Exactly one of 'f0' or 'phase' must be provided.")
+             
+        if phase is not None:
+             if len(phase) != self.size:
+                  raise ValueError(f"Length of phase ({len(phase)}) does not match TimeSeries ({self.size})")
+             return np.asarray(phase, dtype=float) + phase0
+             
+        # Build from model
+        if isinstance(f0, u.Quantity):
+             f0 = f0.to('Hz').value
+        else:
+             f0 = float(f0)
+             
+        if isinstance(fdot, u.Quantity):
+             fdot = fdot.to('Hz/s').value
+        else:
+             fdot = float(fdot)
+             
+        if isinstance(fddot, u.Quantity):
+             fddot = float(fddot.to('Hz/s^2').value)
+        else:
+             fddot = float(fddot)
+             
+        # Determine t_rel
+        has_dt = False
+        dt_val = None
+        try:
+             # Check if dt is accessible
+             if self.dt is not None:
+                  dt_val = self.dt.to('s').value
+                  has_dt = True
+        except (AttributeError, ValueError):
+             # Irregular axis
+             pass
+
+        if has_dt and prefer_dt and dt_val is not None:
+             # Use regular dt
+             if phase_epoch is None:
+                  t_rel = dt_val * np.arange(self.size)
+             else:
+                  t0_abs = float(self.times.value[0]) # Assumed seconds/compatible
+                  t0_rel = t0_abs - float(phase_epoch)
+                  t_rel = t0_rel + dt_val * np.arange(self.size)
+        else:
+             # Use times array
+             if self.times is None:
+                  raise ValueError("TimeSeries requires times or dt to build phase model.")
+             # Assume times are numerical or Quantity comparable to seconds
+             times_val = self.times.value if hasattr(self.times, 'value') else self.times
+             times_val = np.asarray(times_val, dtype=float)
+             
+             if phase_epoch is None:
+                  t_rel = times_val - times_val[0]
+             else:
+                  t_rel = times_val - float(phase_epoch)
+                  
+        # Calculate phase
+        # phi = 2pi * (f0*t + 0.5*fdot*t^2 + 1/6*fddot*t^3) + phase0
+        # t_rel can be large? standard float64 usually fine for reasonable durations.
+        
+        cycles = f0 * t_rel
+        if fdot != 0.0:
+             cycles += 0.5 * fdot * t_rel**2
+        if fddot != 0.0:
+             cycles += (1.0/6.0) * fddot * t_rel**3
+             
+        return 2 * np.pi * cycles + phase0
+
+    def mix_down(
+        self,
+        *,
+        phase=None,
+        f0=None,
+        fdot=0.0,
+        fddot=0.0,
+        phase_epoch=None,
+        phase0=0.0,
+        singlesided=False,
+        copy=True,
+    ):
+        """
+        Mix the TimeSeries with a complex oscillator.
+        """
+        phase_series = self._build_phase_series(
+            phase=phase,
+            f0=f0,
+            fdot=fdot,
+            fddot=fddot,
+            phase_epoch=phase_epoch,
+            phase0=phase0,
+            prefer_dt=True
+        )
+                  
+        # Mix
+        y = self.value * np.exp(-1j * phase_series)
+        
+        if singlesided:
+             y *= 2.0
+             
+        # Prepare constructor args
+        kwargs = {
+             'unit': self.unit,
+             'channel': self.channel,
+             'name': self.name
+        }
+        
+        # Check regularity again for constructor
+        try:
+             if self.dt is not None:
+                  kwargs['t0'] = self.t0
+                  kwargs['dt'] = self.dt
+             else:
+                  # This likely won"t happen if dt is None but sample_rate is not?
+                  kwargs['t0'] = self.t0
+                  kwargs['sample_rate'] = self.sample_rate
+        except (AttributeError, ValueError):
+             # Irregular - pass times explicit
+             kwargs['times'] = self.times
+             
+        out = self.__class__(y, **kwargs)
+        return out
+
+    def baseband(
+        self,
+        *,
+        phase=None,
+        f0=None,
+        fdot=0.0,
+        fddot=0.0,
+        phase_epoch=None,
+        phase0=0.0,
+        lowpass=None,
+        lowpass_kwargs=None,
+        output_rate=None,
+        singlesided=False,
+    ):
+        """
+        Demodulate the TimeSeries to baseband, optionally applying lowpass filter and resampling.
+        """
+        z = self.mix_down(
+            phase=phase,
+            f0=f0,
+            fdot=fdot,
+            fddot=fddot,
+            phase_epoch=phase_epoch,
+            phase0=phase0,
+            singlesided=singlesided
+        )
+        
+        if lowpass is not None:
+             if z.sample_rate is None:
+                  raise ValueError("lowpass requires defined sample rate.")
+             lp_kwargs = lowpass_kwargs or {}
+             z = z.lowpass(lowpass, **lp_kwargs)
+             
+        if output_rate is not None:
+             z = z.resample(output_rate)
+             
+        return z
+
+    def lock_in(
+        self,
+        *,
+        phase=None,
+        f0=None,
+        fdot=0.0,
+        fddot=0.0,
+        phase_epoch=None,
+        phase0=0.0,
+        stride=1.0,
+        singlesided=True,
+        output='amp_phase',
+        deg=True,
+    ):
+        """
+        Perform lock-in amplification (demodulation + averaging).
+        """
+        if self.dt is None:
+             raise ValueError("lock_in requires regular sampling (dt/sample_rate).")
+             
+        phase_series = self._build_phase_series(
+            phase=phase,
+            f0=f0,
+            fdot=fdot,
+            fddot=fddot,
+            phase_epoch=phase_epoch,
+            phase0=phase0,
+            prefer_dt=True
+        )
+        
+        outc = self.heterodyne(phase_series, stride=stride, singlesided=singlesided)
+              
+        if output == 'complex':
+             return outc
+        elif output == 'amp_phase':
+             mag = outc.abs()
+             ph = self.__class__(
+                  np.angle(outc.value, deg=deg),
+                  t0=outc.t0,
+                  dt=outc.dt,
+                  channel=self.channel,
+                  name=self.name
+             )
+             ph.override_unit('deg' if deg else 'rad')
+             return mag, ph
+        elif output == 'iq':
+             i = self.__class__(outc.value.real, t0=outc.t0, dt=outc.dt, channel=self.channel, name=self.name, unit=self.unit)
+             q = self.__class__(outc.value.imag, t0=outc.t0, dt=outc.dt, channel=self.channel, name=self.name, unit=self.unit)
+             return i, q
+        else:
+             raise ValueError(f"Unknown output format: {output}")
+
 
 
 class TimeSeriesList(BaseTimeSeriesList):
@@ -242,6 +1197,127 @@ class TimeSeriesList(BaseTimeSeriesList):
 
 class TimeSeriesDict(BaseTimeSeriesDict):
     """Dictionary of TimeSeries objects."""
+
+    def asfreq(self, rule, **kwargs):
+        """
+        Apply asfreq to each TimeSeries in the dict.
+        Returns a new TimeSeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.asfreq(rule, **kwargs)
+        return new_dict
+        
+    def resample(self, rate, **kwargs):
+        """
+        Resample items in the TimeSeriesDict. 
+        In-place operation (updates the dict contents).
+        
+        If rate is time-like (str or Quantity), performs time-bin resampling.
+        Otherwise performs signal processing resampling (gwpy's native behavior).
+        """
+        is_time_bin = False
+        if isinstance(rate, str):
+            is_time_bin = True
+        elif isinstance(rate, u.Quantity) and rate.unit.physical_type == 'time':
+            is_time_bin = True
+            
+        if is_time_bin:
+            # Time-bin logic: replace items in-place
+            # We can't strictly modify the objects in-place easily 
+            # (asfreq/resample return new objects usually), 
+            # so we replace the values in the dict.
+            for key in list(self.keys()):
+                 self[key] = self[key].resample(rate, **kwargs)
+            return self
+        else:
+            # Native gwpy resample (signal processing)
+            # gwpy's TimeSeriesDict.resample is in-place
+            return super().resample(rate, **kwargs)
+            
+    def analytic_signal(self, *args, **kwargs):
+        """Apply analytic_signal to each item."""
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.analytic_signal(*args, **kwargs)
+        return new_dict
+        
+    def hilbert(self, *args, **kwargs):
+        """Alias for analytic_signal."""
+        return self.analytic_signal(*args, **kwargs)
+        
+    def envelope(self, *args, **kwargs):
+        """Apply envelope to each item."""
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.envelope(*args, **kwargs)
+        return new_dict
+        
+    def instantaneous_phase(self, *args, **kwargs):
+        """Apply instantaneous_phase to each item."""
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.instantaneous_phase(*args, **kwargs)
+        return new_dict
+        
+    def unwrap_phase(self, *args, **kwargs):
+        """Apply unwrap_phase to each item."""
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.unwrap_phase(*args, **kwargs)
+        return new_dict
+        
+    def instantaneous_frequency(self, *args, **kwargs):
+        """Apply instantaneous_frequency to each item."""
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.instantaneous_frequency(*args, **kwargs)
+        return new_dict
+
+    def mix_down(self, *args, **kwargs):
+        """Apply mix_down to each item."""
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.mix_down(*args, **kwargs)
+        return new_dict
+        
+    def baseband(self, *args, **kwargs):
+        """Apply baseband to each item."""
+        new_dict = self.__class__()
+        for key, ts in self.items():
+             new_dict[key] = ts.baseband(*args, **kwargs)
+        return new_dict
+        
+    def lock_in(self, *args, **kwargs):
+        """
+        Apply lock_in to each item.
+        Returns TimeSeriesDict (if output='complex') or tuple of TimeSeriesDicts.
+        """
+        # We need to know the output structure (tuple vs single)
+        # Peek first item
+        if not self:
+             return self.__class__()
+             
+        keys = list(self.keys())
+        first_res = self[keys[0]].lock_in(*args, **kwargs)
+        
+        if isinstance(first_res, tuple):
+             # Tuple return (e.g. mag, phase or i, q)
+             # Assume logic dictates uniform return type
+             dict_tuple = tuple(self.__class__() for _ in first_res)
+             
+             for key, ts in self.items():
+                  res = ts.lock_in(*args, **kwargs)
+                  for i, val in enumerate(res):
+                       dict_tuple[i][key] = val
+             return dict_tuple
+        else:
+             # Single return
+             new_dict = self.__class__()
+             new_dict[keys[0]] = first_res
+             for key in keys[1:]:
+                  new_dict[key] = self[key].lock_in(*args, **kwargs)
+             return new_dict
 
     def asd(self, fftlength=4, overlap=2):
         from gwexpy.frequencyseries import FrequencySeries
