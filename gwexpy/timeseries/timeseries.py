@@ -1189,6 +1189,140 @@ class TimeSeries(BaseTimeSeries):
 
 
 
+    def fft(
+        self,
+        nfft=None,
+        *,
+        convolution="circular",
+        other_length=None,
+        pad="none",
+        pad_side="right",
+        nfft_strategy="exact",
+        return_info=False,
+    ):
+        """
+        Compute the FFT with optional convolution-safe padding controls.
+
+        The default behavior (convolution='circular', pad='none', pad_side='right',
+        nfft_strategy='exact', return_info=False) matches GWpy bit-for-bit.
+        Use pad='reflect' for spectral edge smoothing (not causal convolution).
+        """
+        default_behavior = (
+            convolution == "circular"
+            and pad == "none"
+            and pad_side == "right"
+            and nfft_strategy == "exact"
+            and other_length is None
+        )
+        if default_behavior and not return_info:
+            return super().fft(nfft=nfft)
+
+        if convolution not in ("circular", "linear"):
+            raise ValueError("convolution must be 'circular' or 'linear'")
+        if pad_side not in ("left", "right", "both"):
+            raise ValueError("pad_side must be 'left', 'right', or 'both'")
+
+        nfft_val = None if nfft is None else int(nfft)
+        n_required = None
+        resolved_other_length = other_length
+
+        if convolution == "linear":
+            resolved_other_length = self.size if other_length is None else int(other_length)
+            if resolved_other_length < 1:
+                raise ValueError("other_length must be a positive integer")
+            n_required = self.size + resolved_other_length - 1
+            if nfft_val is None:
+                nfft_val = n_required
+            elif nfft_val < n_required:
+                raise ValueError(
+                    f"nfft={nfft_val} is smaller than required length {n_required} for linear convolution"
+                )
+
+        if nfft_val is None:
+            nfft_val = self.size
+
+        if nfft_val < 1:
+            raise ValueError("nfft must be positive")
+
+        if nfft_strategy == "next_fast_len":
+            try:
+                from scipy.fft import next_fast_len
+            except Exception as exc:
+                raise ImportError("scipy is required for nfft_strategy='next_fast_len'") from exc
+            nfft_val = next_fast_len(int(nfft_val))
+        elif nfft_strategy != "exact":
+            raise ValueError("nfft_strategy must be 'exact' or 'next_fast_len'")
+
+        if n_required is not None and nfft_val < n_required:
+            raise ValueError(
+                f"nfft={nfft_val} is smaller than required length {n_required} for linear convolution"
+            )
+
+        effective_pad = pad
+        if effective_pad == "none" and (convolution == "linear" or pad_side != "right"):
+            effective_pad = "zero"
+
+        pad_diff = nfft_val - self.size
+        pad_total = pad_diff if pad_diff > 0 else 0
+        pad_left = 0
+        pad_right = 0
+        if pad_total > 0:
+            if pad_side == "left":
+                pad_left = pad_total
+            elif pad_side == "right":
+                pad_right = pad_total
+            else:  # both
+                pad_left = pad_total // 2
+                pad_right = pad_total - pad_left
+
+        apply_padding = effective_pad != "none" or convolution == "linear" or pad_side != "right"
+        x = np.asarray(self.value)
+        if apply_padding:
+            if pad_diff < 0:
+                x = x[:nfft_val]
+            elif effective_pad != "none" and pad_total > 0:
+                if effective_pad == "zero":
+                    x = np.pad(x, (pad_left, pad_right), mode="constant", constant_values=0)
+                elif effective_pad == "reflect":
+                    x = np.pad(x, (pad_left, pad_right), mode="reflect")
+                else:
+                    raise ValueError("pad must be 'none', 'zero', or 'reflect'")
+        else:
+            if pad_diff < 0:
+                x = x[:nfft_val]
+
+        dft = np.fft.rfft(x, n=nfft_val) / nfft_val
+        if dft.shape[0] > 1:
+            dft[1:] *= 2.0
+
+        from gwexpy.frequencyseries import FrequencySeries
+
+        fs = FrequencySeries(
+            dft,
+            epoch=self.epoch,
+            unit=self.unit,
+            name=self.name,
+            channel=self.channel,
+        )
+        fs.frequencies = np.fft.rfftfreq(nfft_val, d=self.dx.value)
+
+        if return_info:
+            info = {
+                "nfft": nfft_val,
+                "convolution": convolution,
+                "other_length": resolved_other_length,
+                "pad": effective_pad,
+                "pad_side": pad_side,
+                "pad_left": pad_left,
+                "pad_right": pad_right,
+            }
+            if n_required is not None:
+                info["n_required"] = n_required
+            return fs, info
+
+        return fs
+
+
 class TimeSeriesList(BaseTimeSeriesList):
     """List of TimeSeries objects."""
 
