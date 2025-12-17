@@ -1193,105 +1193,107 @@ class TimeSeries(BaseTimeSeries):
         self,
         nfft=None,
         *,
-        convolution="circular",
+        mode="gwpy",
+        pad_mode="zero",
+        pad_left=0,
+        pad_right=0,
+        nfft_mode=None,
         other_length=None,
-        pad="none",
-        pad_side="right",
-        nfft_strategy="exact",
-        return_info=False,
+        **kwargs,
     ):
         """
-        Compute the FFT with optional convolution-safe padding controls.
+        Compute the one-dimensional discrete Fourier Transform.
 
-        The default behavior (convolution='circular', pad='none', pad_side='right',
-        nfft_strategy='exact', return_info=False) matches GWpy bit-for-bit.
-        Use pad='reflect' for spectral edge smoothing (not causal convolution).
+        Parameters
+        ----------
+        nfft : `int`, optional
+            Length of the FFT. If `None`, the length of the TimeSeries is used.
+        mode : `str`, optional, default: "gwpy"
+            "gwpy": Standard behavior (circular convolution assumption).
+            "transient": Transient-friendly mode with padding options.
+        pad_mode : `str`, optional, default: "zero"
+            Padding mode for "transient" mode. "zero" or "reflect".
+        pad_left : `int`, optional, default: 0
+            Number of samples to pad on the left (for "transient" mode).
+        pad_right : `int`, optional, default: 0
+            Number of samples to pad on the right (for "transient" mode).
+        nfft_mode : `str`, optional, default: None
+            "next_fast_len": Use scipy.fft.next_fast_len to optimize FFT size.
+            None: Use exact calculated length.
+        other_length : `int`, optional, default: None
+            If provided in "transient" mode, the target length is calculated as
+            len(self) + other_length - 1 (linear convolution size).
+        **kwargs
+            Keyword arguments passed to the `FrequencySeries` constructor.
+
+        Returns
+        -------
+        out : `FrequencySeries`
+            The DFT of the TimeSeries.
         """
-        default_behavior = (
-            convolution == "circular"
-            and pad == "none"
-            and pad_side == "right"
-            and nfft_strategy == "exact"
-            and other_length is None
-        )
-        if default_behavior and not return_info:
-            return super().fft(nfft=nfft)
+        # 1. GWpy compatible mode (default)
+        if mode == "gwpy":
+            # If default args are used, just call super if NFFT matches or is None
+            if (
+                pad_mode == "zero"
+                and pad_left == 0
+                and pad_right == 0
+                and nfft_mode is None
+                and other_length is None
+            ):
+                return super().fft(nfft=nfft, **kwargs)
 
-        if convolution not in ("circular", "linear"):
-            raise ValueError("convolution must be 'circular' or 'linear'")
-        if pad_side not in ("left", "right", "both"):
-            raise ValueError("pad_side must be 'left', 'right', or 'both'")
+            # Fallback to super for gwpy mode even if explicit args (ignore extras)
+            return super().fft(nfft=nfft, **kwargs)
 
-        nfft_val = None if nfft is None else int(nfft)
-        n_required = None
-        resolved_other_length = other_length
+        if mode != "transient":
+            raise ValueError(f"Unknown mode: {mode}")
 
-        if convolution == "linear":
-            resolved_other_length = self.size if other_length is None else int(other_length)
-            if resolved_other_length < 1:
-                raise ValueError("other_length must be a positive integer")
-            n_required = self.size + resolved_other_length - 1
-            if nfft_val is None:
-                nfft_val = n_required
-            elif nfft_val < n_required:
-                raise ValueError(
-                    f"nfft={nfft_val} is smaller than required length {n_required} for linear convolution"
-                )
+        # 2. Transient mode
+        # Create padded array
+        x = self.value
 
-        if nfft_val is None:
-            nfft_val = self.size
+        # Padding
+        if pad_left > 0 or pad_right > 0:
+            if pad_mode == "zero":
+                x = np.pad(x, (pad_left, pad_right), mode="constant", constant_values=0)
+            elif pad_mode == "reflect":
+                x = np.pad(x, (pad_left, pad_right), mode="reflect")
+            else:
+                raise ValueError(f"Unknown pad_mode: {pad_mode}")
 
-        if nfft_val < 1:
-            raise ValueError("nfft must be positive")
+        len_x = x.shape[0]
 
-        if nfft_strategy == "next_fast_len":
-            try:
-                from scipy.fft import next_fast_len
-            except Exception as exc:
-                raise ImportError("scipy is required for nfft_strategy='next_fast_len'") from exc
-            nfft_val = next_fast_len(int(nfft_val))
-        elif nfft_strategy != "exact":
-            raise ValueError("nfft_strategy must be 'exact' or 'next_fast_len'")
-
-        if n_required is not None and nfft_val < n_required:
-            raise ValueError(
-                f"nfft={nfft_val} is smaller than required length {n_required} for linear convolution"
-            )
-
-        effective_pad = pad
-        if effective_pad == "none" and (convolution == "linear" or pad_side != "right"):
-            effective_pad = "zero"
-
-        pad_diff = nfft_val - self.size
-        pad_total = pad_diff if pad_diff > 0 else 0
-        pad_left = 0
-        pad_right = 0
-        if pad_total > 0:
-            if pad_side == "left":
-                pad_left = pad_total
-            elif pad_side == "right":
-                pad_right = pad_total
-            else:  # both
-                pad_left = pad_total // 2
-                pad_right = pad_total - pad_left
-
-        apply_padding = effective_pad != "none" or convolution == "linear" or pad_side != "right"
-        x = np.asarray(self.value)
-        if apply_padding:
-            if pad_diff < 0:
-                x = x[:nfft_val]
-            elif effective_pad != "none" and pad_total > 0:
-                if effective_pad == "zero":
-                    x = np.pad(x, (pad_left, pad_right), mode="constant", constant_values=0)
-                elif effective_pad == "reflect":
-                    x = np.pad(x, (pad_left, pad_right), mode="reflect")
-                else:
-                    raise ValueError("pad must be 'none', 'zero', or 'reflect'")
+        # Determine target_nfft
+        if nfft is not None:
+            if nfft < len_x:
+                raise ValueError(f"nfft={nfft} must be >= padded length {len_x}")
+            target_nfft = int(nfft)
         else:
-            if pad_diff < 0:
-                x = x[:nfft_val]
+            if other_length is not None:
+                target_len = len_x + int(other_length) - 1
+            else:
+                target_len = len_x
 
-        dft = np.fft.rfft(x, n=nfft_val) / nfft_val
+            if nfft_mode == "next_fast_len":
+                try:
+                    from scipy.fft import next_fast_len
+                except ImportError:
+                    try:
+                        from scipy.fftpack import next_fast_len
+                    except ImportError:
+                        # Fallback: just use target_len
+                        def next_fast_len(n):
+                            return n
+
+                target_nfft = next_fast_len(target_len)
+            else:
+                target_nfft = target_len
+
+        # Compute FFT
+        # Normalization: rfft(self.value, n=nfft)/nfft
+        dft = np.fft.rfft(x, n=target_nfft) / target_nfft
+
         if dft.shape[0] > 1:
             dft[1:] *= 2.0
 
@@ -1303,24 +1305,160 @@ class TimeSeries(BaseTimeSeries):
             unit=self.unit,
             name=self.name,
             channel=self.channel,
+            **kwargs,
         )
-        fs.frequencies = np.fft.rfftfreq(nfft_val, d=self.dx.value)
 
-        if return_info:
-            info = {
-                "nfft": nfft_val,
-                "convolution": convolution,
-                "other_length": resolved_other_length,
-                "pad": effective_pad,
-                "pad_side": pad_side,
-                "pad_left": pad_left,
-                "pad_right": pad_right,
-            }
-            if n_required is not None:
-                info["n_required"] = n_required
-            return fs, info
+        # Set frequencies
+        fs.frequencies = np.fft.rfftfreq(target_nfft, d=self.dt.value)
 
         return fs
+
+    def transfer_function(
+        self,
+        other,
+        fftlength=None,
+        overlap=None,
+        window="hann",
+        average="mean",
+        *,
+        method="gwpy",
+        fft_kwargs=None,
+        downsample=None,
+        align="intersection",
+        **kwargs,
+    ):
+        """
+        Compute the transfer function between this TimeSeries and another.
+
+        Parameters
+        ----------
+        other : `TimeSeries`
+            The input TimeSeries.
+        fftlength : `int`, optional
+            Length of the FFT, in seconds (default) or samples.
+        overlap : `int`, optional
+            Overlap between segments, in seconds (default) or samples.
+        window : `str`, `numpy.ndarray`, optional
+            Window function to apply.
+        average : `str`, optional
+            Method to average viewing periods.
+        method : `str`, optional
+            "gwpy" or "csd_psd": Use GWpy CSD/PSD estimator.
+            "fft": Use direct FFT ratio (other.fft() / self.fft()).
+            "auto": Use "fft" if fftlength is None, else "gwpy".
+        fft_kwargs : `dict`, optional
+            Keyword arguments for TimeSeries.fft().
+        downsample : `bool`, `None`, optional
+            If True, downsample to match rates. If False, raise error on mismatch.
+            If None (default), warn and downsample.
+        align : `str`, optional
+            "intersection": Crop to overlapping time.
+            "none": Require exact time match (or at least same array size/start).
+
+        Returns
+        -------
+        out : `FrequencySeries`
+            Transfer function.
+        """
+        import warnings
+
+        use_fft = False
+        if method in ("gwpy", "csd_psd"):
+            use_fft = False
+        elif method == "fft":
+            use_fft = True
+        elif method == "auto":
+            use_fft = fftlength is None
+        else:
+            raise ValueError(f"Unknown method: {method}")
+
+        if not use_fft:
+            # CSD / PSD estimator (GWpy compatible)
+            # Calculate CSD and PSD
+            csd = self.csd(
+                other,
+                fftlength=fftlength,
+                overlap=overlap,
+                window=window,
+                average=average,
+                **kwargs,
+            )
+            psd = self.psd(
+                fftlength=fftlength,
+                overlap=overlap,
+                window=window,
+                average=average,
+                **kwargs,
+            )
+            # Crop to same size if needed (usually csd/psd should match if params same)
+            size = min(csd.size, psd.size)
+            return csd[:size] / psd[:size]
+
+        else:
+            # FFT Ratio
+
+            # Copy fft_kwargs
+            kw = dict(fft_kwargs) if fft_kwargs is not None else {}
+
+            a = self
+            b = other
+
+            # 1. Sample Rate
+            if a.sample_rate != b.sample_rate:
+                if downsample is False:
+                    raise ValueError("Sample rates differ and downsample=False")
+                if downsample is None:
+                    warnings.warn(
+                        "Sample rates differ, downsampling to match.", UserWarning
+                    )
+
+                # Downsample higher to lower
+                rate_a = a.sample_rate.value
+                rate_b = b.sample_rate.value
+
+                if rate_a > rate_b:
+                    a = a.resample(b.sample_rate)
+                elif rate_b > rate_a:
+                    b = b.resample(a.sample_rate)
+
+            # 2. Align
+            if align == "intersection":
+                # Intersection of spans
+                start = max(a.span[0], b.span[0])
+                end = min(a.span[1], b.span[1])
+
+                if end <= start:
+                    raise ValueError("No comparison overlap between TimeSeries")
+
+                a = a.crop(start, end)
+                b = b.crop(start, end)
+
+            elif align == "none":
+                pass
+            else:
+                raise ValueError("align must be 'intersection' or 'none'")
+
+            # 3. Ensure equal length
+            size = min(a.size, b.size)
+            if a.size != size:
+                a = a[:size]
+            if b.size != size:
+                b = b[:size]
+
+            # 4. FFTs
+            fx = a.fft(**kw)
+            fy = b.fft(**kw)
+
+            # Crop to min size (usually same)
+            fsize = min(fx.size, fy.size)
+
+            tf = fy[:fsize] / fx[:fsize]
+
+            # Name
+            if b.name and a.name:
+                tf.name = f"{b.name} / {a.name}"
+
+            return tf
 
 
 class TimeSeriesList(BaseTimeSeriesList):
