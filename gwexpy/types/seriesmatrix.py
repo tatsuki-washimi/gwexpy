@@ -644,6 +644,7 @@ class SeriesMatrix(np.ndarray):
                 data=None,
                 *,
                 meta: Optional[Union["MetaDataMatrix", np.ndarray, list]] = None,
+                unit: Optional[object] = None,
                 units: Optional[np.ndarray] = None,
                 names: Optional[np.ndarray] = None,
                 channels: Optional[np.ndarray] = None,
@@ -660,6 +661,11 @@ class SeriesMatrix(np.ndarray):
         """
         Create a SeriesMatrix with normalized inputs and metadata.
         """
+
+        if unit is not None:
+            if units is not None:
+                raise ValueError("give only one of unit or units")
+            units = unit
 
         value_array, data_attrs, detected_xindex = _normalize_input(
             data=data,

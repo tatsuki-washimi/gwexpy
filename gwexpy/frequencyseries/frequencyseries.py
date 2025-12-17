@@ -663,6 +663,8 @@ class FrequencySeriesMatrix(SeriesMatrix):
     _default_plot_method = "plot"
 
     def __new__(cls, data=None, frequencies=None, df=None, f0=None, **kwargs):
+        channel_names = kwargs.pop("channel_names", None)
+
         # Map frequency-specific arguments to SeriesMatrix generic arguments
         if frequencies is not None:
             kwargs['xindex'] = frequencies
@@ -678,7 +680,10 @@ class FrequencySeriesMatrix(SeriesMatrix):
         if 'xunit' not in kwargs:
             kwargs['xunit'] = cls.default_xunit
 
-        return super().__new__(cls, data, **kwargs)
+        obj = super().__new__(cls, data, **kwargs)
+        if channel_names is not None:
+            obj.channel_names = list(channel_names)
+        return obj
 
     # --- Properties mapping to SeriesMatrix attributes ---
 

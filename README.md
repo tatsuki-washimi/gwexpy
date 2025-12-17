@@ -34,7 +34,11 @@
 ## Installation
 
 ```bash
+# From a released package (e.g. PyPI)
 pip install gwexpy
+
+# From this repository (recommended for development)
+pip install -e . --no-deps
 ```
 *(Note: Requires `gwpy`, `astropy`, `numpy`, `scipy`, `scikit-learn`, `statsmodels`)*
 

@@ -28,9 +28,19 @@ class PCAResult:
     @property
     def components(self):
         return self.sklearn_model.components_
+
+    @property
+    def components_(self):
+        """Alias to match scikit-learn API."""
+        return self.sklearn_model.components_
         
     @property
     def explained_variance_ratio(self):
+        return self.sklearn_model.explained_variance_ratio_
+
+    @property
+    def explained_variance_ratio_(self):
+        """Alias to match scikit-learn API."""
         return self.sklearn_model.explained_variance_ratio_
 
     def summary_dict(self):

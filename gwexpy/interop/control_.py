@@ -36,7 +36,14 @@ def to_control_frd(fs, frequency_unit="Hz"):
     # If we want standard FRD, we should probably output rad/s omega.
     omega = freqs * 2 * np.pi
     
-    return ctl.frd(fs.value, omega)
+    frd = ctl.frd(fs.value, omega)
+    # Provide a name for plotting (control.bode() uses sysname for title).
+    sysname = getattr(fs, "name", None) or "FrequencyResponse"
+    try:
+        frd.sysname = str(sysname)
+    except Exception:
+        pass
+    return frd
 
 def from_control_frd(cls, frd, frequency_unit="Hz"):
     """
@@ -49,21 +56,22 @@ def from_control_frd(cls, frd, frequency_unit="Hz"):
     # Convert omega to Hz
     freqs = omega / (2 * np.pi)
     
-    # Check regular spacing? FRD might be irregular.
-    # FrequencySeries usually expects regular df. 
-    # If irregular, we might need output generic Series or irregular FrequencySeries
-    # GWpy/gwexpy FrequencySeries is regular?
-    # gwpy FrequencySeries has df/f0.
-    # Check linearity
-    
+    # Check regular spacing; fall back to arbitrary-frequency construction if needed.
     diffs = np.diff(freqs)
-    if not np.allclose(diffs, diffs[0]):
-        # Irregular.
-        # gwpy supports arbitrary frequencies array?
-        # Yes, constructing with 'frequencies=...'
-        return cls(data, frequencies=freqs)
-    
-    # Regular
-    df = diffs[0]
-    f0 = freqs[0]
-    return cls(data, df=df, f0=f0)
+    is_regular = np.allclose(diffs, diffs[0])
+
+    # Decide output class: FrequencySeriesMatrix for MIMO responses, otherwise FrequencySeries.
+    is_matrix = data.ndim == 3 and (data.shape[0] > 1 or data.shape[1] > 1)
+    if is_regular:
+        df = diffs[0]
+        f0 = freqs[0]
+        if is_matrix:
+            from gwexpy.frequencyseries import FrequencySeriesMatrix
+            return FrequencySeriesMatrix(data, df=df, f0=f0)
+        return cls(np.asarray(data).reshape(-1), df=df, f0=f0)
+
+    # Irregular frequencies: pass explicit frequencies to the appropriate class.
+    if is_matrix:
+        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        return FrequencySeriesMatrix(data, frequencies=freqs)
+    return cls(np.asarray(data).reshape(-1), frequencies=freqs)

@@ -2071,6 +2071,8 @@ class TimeSeriesMatrix(SeriesMatrix):
     ):
         import warnings
 
+        channel_names = kwargs.pop("channel_names", None)
+
         # 1. Enforce Mutual Exclusivity (GWpy rules)
         if epoch is not None and t0 is not None:
             raise ValueError("give only one of epoch or t0")
@@ -2155,7 +2157,10 @@ class TimeSeriesMatrix(SeriesMatrix):
         if "xunit" not in kwargs:
             kwargs["xunit"] = cls.default_xunit
 
-        return super().__new__(cls, data, **kwargs)
+        obj = super().__new__(cls, data, **kwargs)
+        if channel_names is not None:
+            obj.channel_names = list(channel_names)
+        return obj
 
     # --- Properties mapping to SeriesMatrix attributes ---
 
@@ -2309,6 +2314,15 @@ class TimeSeriesMatrix(SeriesMatrix):
         if return_model:
             return scores, res
         return scores
+
+    # --- Interop helpers (Matrix-level) ---
+
+    def to_torch(self, device=None, dtype=None, requires_grad=False, copy=False):
+        """
+        Convert matrix values to a torch.Tensor (shape preserved).
+        """
+        from gwexpy.interop import to_torch
+        return to_torch(self, device=device, dtype=dtype, requires_grad=requires_grad, copy=copy)
 
     def ica_fit(self, **kwargs):
         """Fit ICA."""
