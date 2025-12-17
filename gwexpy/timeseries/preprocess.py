@@ -335,10 +335,9 @@ def standardize_matrix(matrix, *, axis="time", method="zscore", ddof=0):
     new_mat.value[:] = (val - med) / scale
     
     # Standardize result is dimensionless?
-    # Usually yes. But SeriesMatrix doesn't handle units uniformly yet?
-    # Leave unit as is if it supports it or specific method.
-    
-    return new_mat, model
+    # Usually yes. But SeriesMatrix doesn't handle units uniformly yet,
+    # so we simply return the standardized matrix.
+    return new_mat
     
 def whiten_matrix(matrix, *, method="pca", eps=1e-12, n_components=None):
     """
