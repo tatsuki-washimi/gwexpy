@@ -96,45 +96,6 @@ class FrequencySeries(BaseFrequencySeries):
             epoch=self.epoch
         )
 
-    def group_delay(self):
-        """
-        Calculate the group delay (-dphi/df) of this FrequencySeries.
-        
-        Returns
-        -------
-        `FrequencySeries`
-            The group delay, in seconds.
-        """
-        # Unwrap phase first to ensure smooth derivative
-        p = np.unwrap(np.angle(self.value))
-        f = self.frequencies.value
-        
-        # Calculate derivative -dphi/df
-        # Use simple gradient, but account for 2pi factor if freq is in Hz and phase in rad
-        # Group Delay tau = -1/(2pi) * dphi/df
-        
-        # Check units of frequencies
-        f_unit = self.frequencies.unit
-        if f_unit == u.Hz:
-            factor = -1.0 / (2 * np.pi)
-        else:
-            # Assume general case, might need more robust unit handling
-            # For now stick to standard Hz definition logic
-            factor = -1.0 / (2 * np.pi)
-
-        gd_val = factor * np.gradient(p, f)
-        
-        name = self.name + "_group_delay" if self.name else "group_delay"
-        
-        return self.__class__(
-            gd_val,
-            frequencies=self.frequencies,
-            unit="s",
-            name=name,
-            channel=self.channel,
-            epoch=self.epoch
-        )
-    
     # --- dB / Logarithmic ---
 
     def to_db(self, ref=1.0, amplitude=True):

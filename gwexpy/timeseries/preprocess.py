@@ -147,12 +147,7 @@ def align_timeseries_collection(
              # Fallback or error? User requested "crop all ... else raise" logic implied?
              # "crop all channels to common overlapping span"
              # If no overlap, length is 0 or negative.
-             warnings.warn(f"No overlap found. common_t0={common_t0}, common_end={common_end}")
-             # We can continue and return empty matrix
-             # But let's check strictness.
-             # "else raise ValueError" was for differing sampling rates in options.
-             # I'll raise error here to be safe as usually this is a bug in usage.
-             pass 
+             raise ValueError(f"No overlap found. common_t0={common_t0}, common_end={common_end}")
     elif how == "union":
         common_t0 = float_min(t0s)
         common_end = float_max(ends)
