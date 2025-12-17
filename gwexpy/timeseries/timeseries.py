@@ -1322,8 +1322,8 @@ class TimeSeries(BaseTimeSeries):
             **kwargs,
         )
 
-        # Set frequencies
-        fs.frequencies = np.fft.rfftfreq(target_nfft, d=self.dt.value)
+        # Set frequencies with units
+        fs.frequencies = np.fft.rfftfreq(target_nfft, d=self.dt.value) * u.Hz
 
         return fs
 
@@ -1792,6 +1792,10 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         return new_dict
         
     def instantaneous_phase(self, *args, **kwargs):
+        """Apply instantaneous_phase to each item."""
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.instantaneous_phase(*args, **kwargs)
         return new_dict
         
     # ===============================
@@ -2200,11 +2204,22 @@ class TimeSeriesMatrix(SeriesMatrix):
             return
 
         from gwpy.types.index import Index
-        
-        # Setter logic...
-        # If we have data, we adjust dx? 
-        # For matrix, we assume regular sampling if sample_rate is set.
-        pass # Not changing existing setter logic here, just context match
+
+        rate = value if isinstance(value, u.Quantity) else u.Quantity(value, "Hz")
+        # Update dt/dx
+        new_dt = (1 / rate).to(self.xunit or u.s)
+        self.dx = new_dt
+
+        # Rebuild xindex to preserve start and length
+        length = self.shape[-1]
+        if self.xindex is not None and len(self.xindex) > 0:
+            start = self.xindex[0]
+            if not isinstance(start, u.Quantity):
+                start = u.Quantity(start, self.xunit or new_dt.unit or u.s)
+        else:
+            start = u.Quantity(0, self.xunit or new_dt.unit or u.s)
+
+        self.xindex = Index.define(start, new_dt, length)
         
     # --- Preprocessing & Decomposition ---
     
