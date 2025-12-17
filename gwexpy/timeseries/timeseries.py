@@ -17,6 +17,19 @@ from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
 from gwexpy.frequencyseries.frequencyseries import FrequencySeriesMatrix
 
+# New Imports
+from .preprocess import (
+    impute_timeseries, standardize_timeseries, align_timeseries_collection, 
+    standardize_matrix, whiten_matrix
+)
+from .arima import fit_arima
+from .hurst import hurst, local_hurst
+from .decomposition import (
+    pca_fit, pca_transform, pca_inverse_transform, 
+    ica_fit, ica_transform, ica_inverse_transform
+)
+from .spectral import csd_matrix_from_collection, coherence_matrix_from_collection
+
 
 def _extract_axis_info(ts):
     """
@@ -1277,7 +1290,9 @@ class TimeSeries(BaseTimeSeries):
 
             if nfft_mode == "next_fast_len":
                 try:
-                    from scipy.fft import next_fast_len
+                    import scipy.fft
+                    def next_fast_len(n):
+                        return scipy.fft.next_fast_len(n)
                 except ImportError:
                     try:
                         from scipy.fftpack import next_fast_len
@@ -1312,6 +1327,48 @@ class TimeSeries(BaseTimeSeries):
         fs.frequencies = np.fft.rfftfreq(target_nfft, d=self.dt.value)
 
         return fs
+
+    # --- New Statistical / Info Processing Methods ---
+
+    def impute(self, *, method="interpolate", limit=None, axis="time", **kwargs):
+        """
+        Impute missing values.
+        See gwexpy.timeseries.preprocess.impute_timeseries for details.
+        """
+        from gwexpy.timeseries.preprocess import impute_timeseries
+        return impute_timeseries(self, method=method, limit=limit, axis=axis, **kwargs)
+
+    def standardize(self, *, method="zscore", ddof=0, robust=False):
+        """
+        Standardize the series.
+        See gwexpy.timeseries.preprocess.standardize_timeseries for details.
+        """
+        from gwexpy.timeseries.preprocess import standardize_timeseries
+        return standardize_timeseries(self, method=method, ddof=ddof, robust=robust)
+
+    def fit_arima(self, order=(1, 0, 0), **kwargs):
+        """
+        Fit ARIMA model to the series.
+        See gwexpy.timeseries.arima.fit_arima for details.
+        """
+        from gwexpy.timeseries.arima import fit_arima
+        return fit_arima(self, order=order, **kwargs)
+
+    def hurst(self, **kwargs):
+        """
+        Compute Hurst exponent.
+        See gwexpy.timeseries.hurst.hurst for details.
+        """
+        from gwexpy.timeseries.hurst import hurst
+        return hurst(self, **kwargs)
+
+    def local_hurst(self, window, **kwargs):
+        """
+        Compute local Hurst exponent over a sliding window.
+        See gwexpy.timeseries.hurst.local_hurst for details.
+        """
+        from gwexpy.timeseries.hurst import local_hurst
+        return local_hurst(self, window=window, **kwargs)
 
     def transfer_function(
         self,
@@ -1461,10 +1518,7 @@ class TimeSeries(BaseTimeSeries):
             return tf
 
 
-class TimeSeriesList(BaseTimeSeriesList):
-    """List of TimeSeries objects."""
 
-    pass
 
 
 class TimeSeriesDict(BaseTimeSeriesDict):
@@ -1591,6 +1645,24 @@ class TimeSeriesDict(BaseTimeSeriesDict):
                   new_dict[key] = self[key].lock_in(*args, **kwargs)
              return new_dict
 
+    def csd_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs):
+        return csd_matrix_from_collection(
+            self, other, 
+            fftlength=fftlength, overlap=overlap, window=window, 
+            hermitian=hermitian, include_diagonal=include_diagonal, 
+            **kwargs
+        )
+
+    def coherence_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs):
+        return coherence_matrix_from_collection(
+            self, other,
+            fftlength=fftlength, overlap=overlap, window=window,
+            symmetric=symmetric, include_diagonal=include_diagonal,
+            diagonal_value=diagonal_value,
+            **kwargs
+        )
+
+
     def asd(self, fftlength=4, overlap=2):
         from gwexpy.frequencyseries import FrequencySeries
 
@@ -1604,16 +1676,135 @@ class TimeSeriesDict(BaseTimeSeriesDict):
                 for key, ts in self.items()
             }
         )
+        
+    def impute(self, *, method="interpolate", limit=None, axis="time", **kwargs):
+        """Apply impute to each item."""
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.impute(method=method, limit=limit, axis=axis, **kwargs)
+        return new_dict
+
+    def to_matrix(self, *, align="intersection", **kwargs):
+        """
+        Convert dictionary to TimeSeriesMatrix with alignment.
+        """
+        from gwexpy.timeseries.preprocess import align_timeseries_collection
+        # Ensure consistent order (keys sorted) or specific
+        # Dicts are ordered in modern python but keys() usually safe
+        keys = list(self.keys())
+        series_list = [self[k] for k in keys]
+        
+        vals, times, meta = align_timeseries_collection(series_list, how=align, **kwargs)
+        
+        # SeriesMatrix expects 3D usually (rows, cols, time) or checks last axis
+        # vals: (samples, channels).
+        # We create (channels, 1, samples).
+        data = vals.T[:, None, :]
+        
+        matrix = TimeSeriesMatrix(
+            data,
+            times=times,
+            # meta might contain channel_names from original list (names of TS objects)
+            # But converting dict to matrix usually implies keys become channel names?
+            # User requirement: "preserve labels"
+            # TimeSeries from dict usually inherit name from key if created via read? 
+            # Not always. We should force keys as names?
+            # "Must preserve channel ordering from input."
+        )
+        # Assign channel names from keys
+        matrix.channel_names = keys
+        return matrix
 
 
 try:
     from gwpy.types.index import SeriesType  # pragma: no cover - optional in gwpy
 except ImportError:  # fallback for gwpy versions without SeriesType
+    from enum import Enum
 
     class SeriesType(Enum):
         TIME = "time"
         FREQ = "freq"
 
+
+class TimeSeriesList(BaseTimeSeriesList):
+    """List of TimeSeries objects."""
+    
+    def csd_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs):
+        """
+        Compute Cross Spectral Density Matrix.
+        
+        Parameters
+        ----------
+        other : TimeSeriesDict or TimeSeriesList, optional
+            Other collection for cross-CSD.
+        fftlength, overlap, window :
+            See TimeSeries.csd() arguments.
+        hermitian : bool, default=True
+            If True and other is None, compute only upper triangle and conjugate fill lower.
+        include_diagonal : bool, default=True
+            Whether to compute diagonal elements.
+            
+        Returns
+        -------
+        FrequencySeriesMatrix
+        """
+        return csd_matrix_from_collection(
+            self, other, 
+            fftlength=fftlength, overlap=overlap, window=window, 
+            hermitian=hermitian, include_diagonal=include_diagonal, 
+            **kwargs
+        )
+
+    def coherence_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs):
+        """
+        Compute Coherence Matrix.
+        
+        Parameters
+        ----------
+        other : TimeSeriesDict or TimeSeriesList, optional
+            Other collection.
+        fftlength, overlap, window :
+            See TimeSeries.coherence().
+        symmetric : bool, default=True
+            If True and other is None, compute only upper triangle and copy to lower.
+        include_diagonal : bool, default=True
+            Include diagonal.
+        diagonal_value : float or None, default=1.0
+            Value to fill diagonal if include_diagonal is True. If None, compute diagonal coherence.
+            
+        Returns
+        -------
+        FrequencySeriesMatrix
+        """
+        return coherence_matrix_from_collection(
+            self, other,
+            fftlength=fftlength, overlap=overlap, window=window,
+            symmetric=symmetric, include_diagonal=include_diagonal,
+            diagonal_value=diagonal_value,
+            **kwargs
+        )
+    
+    def impute(self, *, method="interpolate", limit=None, axis="time", **kwargs):
+         new_list = self.__class__()
+         for ts in self:
+             new_list.append(ts.impute(method=method, limit=limit, axis=axis, **kwargs))
+         return new_list
+
+    def to_matrix(self, *, align="intersection", **kwargs):
+        from gwexpy.timeseries.preprocess import align_timeseries_collection
+        vals, times, meta = align_timeseries_collection(list(self), how=align, **kwargs)
+        # Use names from metadata (from TS objects)
+        names = meta.get("channel_names")
+        
+        data = vals.T[:, None, :]
+        
+        matrix = TimeSeriesMatrix(
+            data,
+            times=times,
+        )
+        if names:
+             matrix.channel_names = names
+        return matrix
 
 class TimeSeriesMatrix(SeriesMatrix):
     """
@@ -1765,6 +1956,140 @@ class TimeSeriesMatrix(SeriesMatrix):
             return
 
         from gwpy.types.index import Index
+        
+        # Setter logic...
+        # If we have data, we adjust dx? 
+        # For matrix, we assume regular sampling if sample_rate is set.
+        pass # Not changing existing setter logic here, just context match
+        
+    # --- Preprocessing & Decomposition ---
+    
+    def impute(self, **kwargs):
+        """Impute missing values."""
+        # Matrix-level impute or per-channel?
+        # Provide naive implementation mapping over columns or using decomposition logic?
+        # User requirement says "TimeSeriesDict/List/Matrix: implement impute(...) that applies per-channel"
+        # Since logic isn't in preprocess.py for matrix iteration, we implement it here or call preprocess helper (which I didn't fully genericize).
+        
+        # We can treat each column as a TimeSeries (if regular).
+        # Efficient way:
+        new_val = self.value.copy()
+        
+        # Using impute_timeseries logic inline or map?
+        # Let's map for simplicity/correctness reuse
+        # value is 3D: (channels, 1, time) or similar
+        val_3d = self.value
+        n_rows, n_cols, n_samples = val_3d.shape
+        
+        method = kwargs.get("method", "interpolate")
+        
+        # We need to flatten loops or iterate
+        new_val = val_3d.copy()
+        for r in range(n_rows):
+             for c in range(n_cols):
+                  ts_data = new_val[r, c, :]
+                  ts_tmp = self.series_class(ts_data, dt=self.dt, t0=self.t0)
+                  imp = ts_tmp.impute(**kwargs)
+                  new_val[r, c, :] = imp.value
+            
+        new_mat = self.copy()
+        new_mat.value[:] = new_val
+        return new_mat
+
+    def standardize(self, *, axis="time", method="zscore", ddof=0):
+        """
+        Standardize the matrix.
+        See gwexpy.timeseries.preprocess.standardize_matrix.
+        """
+        # Note: standardize_matrix assumes (channels, time) input correctly now (handles axis).
+        return standardize_matrix(self, axis=axis, method=method, ddof=ddof)
+
+    def whiten_channels(self, *, method="pca", eps=1e-12, n_components=None):
+        """
+        Whiten the matrix (channels/components).
+        Returns (whitened_matrix, WhiteningModel).
+        See gwexpy.timeseries.preprocess.whiten_matrix.
+        """
+        return whiten_matrix(self, method=method, eps=eps, n_components=n_components)
+        
+    def to_dict(self):
+        """Convert to TimeSeriesDict."""
+        # channel_names property should be available if SeriesMatrix logic works
+        # If not, generate defaults
+        names = getattr(self, "channel_names", None)
+        if names is None:
+             names = [str(i) for i in range(self.shape[0])]
+             
+        # Create dict
+        # Assuming we can extract columns as TimeSeries
+        d = TimeSeriesDict()
+        
+        # Flatten structure? Or iterate only rows?
+        # If shape is (channels, 1, time), iterating axis 0 covers channels.
+        # If shape is (1, channels, time), need logic.
+        # We assume flat list of channels for dict.
+        # Flatten non-time dimensions.
+        flat_val = self.value.reshape(-1, self.shape[-1])
+        
+        # Use channel_names if length matches
+        names = getattr(self, "channel_names", None)
+        if names is None or len(names) != flat_val.shape[0]:
+             names = [str(i) for i in range(flat_val.shape[0])]
+        
+        for i, name in enumerate(names):
+             # Extract time series
+             ts_data = flat_val[i]
+             
+             ts = self.series_class(ts_data, t0=self.t0, dt=self.dt, name=name)
+             d[name] = ts
+        return d
+
+    def to_list(self):
+        """Convert to TimeSeriesList."""
+        d = self.to_dict()
+        return TimeSeriesList(d.values())
+
+    # Decomposition
+    def pca_fit(self, **kwargs):
+        """Fit PCA."""
+        return pca_fit(self, **kwargs)
+
+    def pca_transform(self, pca_res, **kwargs):
+        """Transform using PCA."""
+        return pca_transform(pca_res, self, **kwargs)
+        
+    def pca_inverse_transform(self, pca_res, scores):
+        """Inverse transform PCA scores."""
+        return pca_inverse_transform(pca_res, scores)
+
+    def pca(self, return_model=False, **kwargs):
+        """Fit and transform PCA."""
+        res = self.pca_fit(**kwargs)
+        scores = self.pca_transform(res, n_components=kwargs.get("n_components"))
+        if return_model:
+            return scores, res
+        return scores
+
+    def ica_fit(self, **kwargs):
+        """Fit ICA."""
+        return ica_fit(self, **kwargs)
+
+    def ica_transform(self, ica_res):
+        """Transform using ICA."""
+        return ica_transform(ica_res, self)
+
+    def ica_inverse_transform(self, ica_res, sources):
+        """Inverse transform ICA sources."""
+        return ica_inverse_transform(ica_res, sources)
+        
+    def ica(self, return_model=False, **kwargs):
+        """Fit and transform ICA."""
+        res = self.ica_fit(**kwargs)
+        sources = self.ica_transform(res)
+        if return_model:
+            return sources, res
+        return sources
+
 
         if not isinstance(value, u.Quantity):
             value = u.Quantity(value, "Hz")
