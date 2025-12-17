@@ -15,7 +15,6 @@ from gwpy.timeseries import TimeSeriesList as BaseTimeSeriesList
 
 from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
-from gwexpy.frequencyseries.frequencyseries import FrequencySeriesMatrix
 
 # New Imports
 from .preprocess import (
@@ -2591,6 +2590,8 @@ class TimeSeriesMatrix(SeriesMatrix):
         """
         Apply a bivariate TimeSeries spectral method element-wise and return FrequencySeriesMatrix.
         """
+        from gwexpy.frequencyseries.frequencyseries import FrequencySeriesMatrix
+
         if not hasattr(self.series_class, method_name):
             raise NotImplementedError(
                 f"Not implemented: TimeSeries has no method '{method_name}' in this GWpy version"
@@ -2661,6 +2662,8 @@ class TimeSeriesMatrix(SeriesMatrix):
         """
         Apply a univariate TimeSeries spectral method element-wise and return FrequencySeriesMatrix.
         """
+        from gwexpy.frequencyseries.frequencyseries import FrequencySeriesMatrix
+
         if not hasattr(self.series_class, method_name):
             raise NotImplementedError(
                 f"Not implemented: TimeSeries has no method '{method_name}' in this GWpy version"
