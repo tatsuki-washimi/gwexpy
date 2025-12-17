@@ -109,5 +109,15 @@ gwexpy allows seamless conversion between its containers and standard GWpy objec
 - `TimeSeriesMatrix.to_list()` -> `TimeSeriesList`
 - `FrequencySeriesMatrix` elements are standard `gwpy.frequencyseries.FrequencySeries`.
 
+## I/O Extensions (gwexpy.read)
+
+Additional readers are registered to mirror GWpy's `.read()` API:
+- `format='dttxml'` (Diag GUI XML): requires `products=` (`TS`, `PSD`/`ASD`/`FFT`, `TF`/`STF`/`CSD`/`COH`).
+- `format='gbd'` (GRAPHTEC .GBD): **requires** `timezone=` to interpret local timestamps; defaults to `unit='V'`.
+- `format='miniseed'`, `format='sac'` via **ObsPy** (optional dependency); gaps are padded by default (`pad=np.nan`).
+- Stubs for P2 formats (`win`, `win32`, `sdb`, vendor loggers) raise `NotImplementedError` with guidance.
+
+When using `TimeSeries.read`/`TimeSeriesDict.read`/`FrequencySeriesDict.read`, the return type is fixed to the class that is invoked (no implicit upcasting to dicts).
+
 ## Contributing
 Contributions are welcome! Please open issues or submit PRs for new features or bug fixes.
