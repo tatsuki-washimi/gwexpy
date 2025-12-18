@@ -17,6 +17,14 @@ import scipy.signal
 
 from gwpy.frequencyseries import FrequencySeries as BaseFrequencySeries
 from gwexpy.types.seriesmatrix import SeriesMatrix
+from gwexpy.interop import (
+    to_pandas_frequencyseries,
+    from_pandas_frequencyseries,
+    to_xarray_frequencyseries,
+    from_xarray_frequencyseries,
+    to_hdf5_frequencyseries,
+    from_hdf5_frequencyseries,
+)
 
 try:
     from gwpy.types.index import SeriesType  # pragma: no cover - optional in gwpy
@@ -141,7 +149,110 @@ class FrequencySeries(BaseFrequencySeries):
             epoch=self.epoch
         )
 
+    # --- Interop helpers ---
+    def to_pandas(self, index="frequency", *, name=None, copy=False):
+        return to_pandas_frequencyseries(self, index=index, name=name, copy=copy)
+
+    @classmethod
+    def from_pandas(cls, series, **kwargs):
+        return from_pandas_frequencyseries(cls, series, **kwargs)
+
+    def to_xarray(self, freq_coord="Hz"):
+        return to_xarray_frequencyseries(self, freq_coord=freq_coord)
+
+    @classmethod
+    def from_xarray(cls, da, **kwargs):
+        return from_xarray_frequencyseries(cls, da, **kwargs)
+
+    def to_hdf5_dataset(self, group, path, *, overwrite=False, compression=None, compression_opts=None):
+        return to_hdf5_frequencyseries(
+            self,
+            group,
+            path,
+            overwrite=overwrite,
+            compression=compression,
+            compression_opts=compression_opts,
+        )
+
+    @classmethod
+    def from_hdf5_dataset(cls, group, path):
+        return from_hdf5_frequencyseries(cls, group, path)
+
     # --- Time Calculus ---
+
+    def ifft(self, *, mode="auto", trim=True, original_n=None, pad_left=None, pad_right=None, **kwargs):
+        """
+        Inverse FFT returning a gwexpy TimeSeries, supporting transient round-trip.
+
+        Parameters
+        ----------
+        mode : {"auto","gwpy","transient"}
+            auto: use transient復元 if `_gwex_fft_mode=="transient"` を検出、なければ gwpy互換。
+        trim : bool
+            transient時にパディングを除去し、元長へトリムするか。
+        original_n : int, optional
+            明示的に復元後の長さを指定（指定が優先）。
+        pad_left, pad_right : int, optional
+            transient用のパディング長を上書きしたい場合に指定。
+        """
+        from gwexpy.timeseries import TimeSeries
+        mode_to_use = mode
+        if mode == "auto":
+            mode_to_use = "transient" if getattr(self, "_gwex_fft_mode", None) == "transient" else "gwpy"
+
+        if mode_to_use == "gwpy":
+            ts = super().ifft(**kwargs)
+            return TimeSeries(
+                ts.value,
+                times=ts.times,
+                unit=ts.unit,
+                name=ts.name,
+                channel=ts.channel,
+                epoch=ts.epoch,
+            )
+
+        if mode_to_use != "transient":
+            raise ValueError(f"Unknown ifft mode: {mode}")
+
+        # transient inverse: undo factor2 and 1/n normalization
+        n_freq = len(self)
+        target_nfft = getattr(self, "_gwex_target_nfft", None) or (n_freq - 1) * 2
+        spectrum = self.value.copy()
+        if spectrum.shape[-1] > 1:
+            spectrum[..., 1:] /= 2.0
+        time_data = np.fft.irfft(spectrum * target_nfft, n=target_nfft)
+
+        # derive dt from df and nfft
+        if hasattr(self, "df") and self.df is not None:
+            if hasattr(self.df, "unit"):
+                dt = (1 / (self.df * target_nfft)).to("s")
+            else:
+                dt = u.Quantity(1.0 / (float(self.df) * target_nfft), "s")
+        else:
+            dt = None
+
+        # trimming / pad removal
+        pad_l = pad_left if pad_left is not None else getattr(self, "_gwex_pad_left", 0) or 0
+        pad_r = pad_right if pad_right is not None else getattr(self, "_gwex_pad_right", 0) or 0
+        data_trim = time_data
+        if trim and (pad_l or pad_r):
+            if pad_r == 0:
+                data_trim = data_trim[pad_l:]
+            else:
+                data_trim = data_trim[pad_l:-pad_r]
+
+        target_n = original_n if original_n is not None else getattr(self, "_gwex_original_n", None)
+        if trim and target_n is not None:
+            data_trim = data_trim[:target_n]
+
+        return TimeSeries(
+            data_trim,
+            t0=getattr(self, "epoch", None),
+            dt=dt,
+            unit=self.unit,
+            name=self.name,
+            channel=self.channel,
+        )
 
     def differentiate_time(self):
         """

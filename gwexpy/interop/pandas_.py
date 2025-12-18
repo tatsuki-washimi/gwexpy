@@ -66,7 +66,7 @@ def from_pandas_series(cls, series, *, unit=None, t0=None, dt=None):
     
     values = series.values
     index = series.index
-    
+
     # Infer t0, dt if not provided
     inferred_t0 = None
     inferred_dt = None
@@ -88,14 +88,10 @@ def from_pandas_series(cls, series, *, unit=None, t0=None, dt=None):
                 t1_gps = datetime_utc_to_gps(t1_dt)
                 inferred_dt = t1_gps - inferred_t0
         elif isinstance(index, (pd.Index, pd.RangeIndex)) and np.issubdtype(index.dtype, np.number):
-            # Assume GPS or seconds?
-            # Ambiguous. User must supply t0/dt usually, or we assume generic numbers.
-            # If t0 not supplied, take index[0].
-            # If dt not supplied, index[1]-index[0].
-            inferred_t0 = LIGOTimeGPS(index[0])
+            inferred_t0 = float(index[0])
             if len(index) > 1:
-                inferred_dt = LIGOTimeGPS(index[1] - index[0])
-    
+                inferred_dt = float(index[1] - index[0])
+
     final_t0 = t0 if t0 is not None else (inferred_t0 if inferred_t0 is not None else 0)
     final_dt = dt if dt is not None else (inferred_dt if inferred_dt is not None else 1)
     

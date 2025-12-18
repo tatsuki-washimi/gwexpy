@@ -400,20 +400,22 @@ class TimeSeries(BaseTimeSeries):
                 # y = y[valid_mask]
                 # method='linear'
                 
-                if max_gap is not None:
-                     max_gap_val = u.Quantity(max_gap).to(time_unit).value
-                     # We need to detect gaps in NEW grid that are far from OLD points?
-                     # Or gaps in OLD grid?
-                     # Standard behavior: if interval between source points > max_gap, fill with NaN.
-                     # This is hard to do with simple np.interp.
-                     pass
-
                 # Simple linear interp
                 # For complex data, interp real/imag separately
                 if np.iscomplexobj(y):
                     new_data = np.interp(new_times_val, x, y.real) + 1j * np.interp(new_times_val, x, y.imag)
                 else:
                     new_data = np.interp(new_times_val, x, y, left=np.nan, right=np.nan)
+
+                # Enforce max_gap: invalidate interpolated points inside large gaps
+                if max_gap is not None:
+                    max_gap_val = u.Quantity(max_gap).to(time_unit).value
+                    gaps = np.where(np.diff(x) > max_gap_val)[0]
+                    for gi in gaps:
+                        start = x[gi]
+                        end = x[gi + 1]
+                        mask_gap = (new_times_val > start) & (new_times_val < end)
+                        new_data[mask_gap] = np.nan
                 
                 # Apply fill_value to NaNs (if interp produced NaNs for out of bounds)
                 if np.isnan(fill_value):
@@ -1253,10 +1255,38 @@ class TimeSeries(BaseTimeSeries):
                 and nfft_mode is None
                 and other_length is None
             ):
-                return super().fft(nfft=nfft, **kwargs)
+                base_fs = super().fft(nfft=nfft, **kwargs)
+                try:
+                    from gwexpy.frequencyseries import FrequencySeries as GWEXFrequencySeries
+                except Exception:
+                    return base_fs
+                if isinstance(base_fs, GWEXFrequencySeries):
+                    return base_fs
+                return GWEXFrequencySeries(
+                    base_fs.value,
+                    frequencies=base_fs.frequencies,
+                    unit=base_fs.unit,
+                    name=base_fs.name,
+                    channel=base_fs.channel,
+                    epoch=base_fs.epoch,
+                )
 
             # Fallback to super for gwpy mode even if explicit args (ignore extras)
-            return super().fft(nfft=nfft, **kwargs)
+            base_fs = super().fft(nfft=nfft, **kwargs)
+            try:
+                from gwexpy.frequencyseries import FrequencySeries as GWEXFrequencySeries
+            except Exception:
+                return base_fs
+            if isinstance(base_fs, GWEXFrequencySeries):
+                return base_fs
+            return GWEXFrequencySeries(
+                base_fs.value,
+                frequencies=base_fs.frequencies,
+                unit=base_fs.unit,
+                name=base_fs.name,
+                channel=base_fs.channel,
+                epoch=base_fs.epoch,
+            )
 
         if mode != "transient":
             raise ValueError(f"Unknown mode: {mode}")
@@ -1324,6 +1354,14 @@ class TimeSeries(BaseTimeSeries):
 
         # Set frequencies with units
         fs.frequencies = np.fft.rfftfreq(target_nfft, d=self.dt.value) * u.Hz
+        # Store transient metadata for round-trip ifft
+        fs._gwex_fft_mode = "transient"
+        fs._gwex_pad_left = pad_left
+        fs._gwex_pad_right = pad_right
+        fs._gwex_pad_mode = pad_mode
+        fs._gwex_target_nfft = target_nfft
+        fs._gwex_original_n = len(self)
+        fs._gwex_other_length = other_length
 
         return fs
 
@@ -1368,6 +1406,32 @@ class TimeSeries(BaseTimeSeries):
         """
         from gwexpy.timeseries.hurst import local_hurst
         return local_hurst(self, window=window, **kwargs)
+
+    # Rolling statistics
+    def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Rolling mean over time."""
+        from gwexpy.timeseries.rolling import rolling_mean
+        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
+    def rolling_std(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ddof=0):
+        """Rolling standard deviation over time."""
+        from gwexpy.timeseries.rolling import rolling_std
+        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof)
+
+    def rolling_median(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Rolling median over time."""
+        from gwexpy.timeseries.rolling import rolling_median
+        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
+    def rolling_min(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Rolling minimum over time."""
+        from gwexpy.timeseries.rolling import rolling_min
+        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
+    def rolling_max(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Rolling maximum over time."""
+        from gwexpy.timeseries.rolling import rolling_max
+        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
 
     def transfer_function(
         self,
@@ -1516,9 +1580,84 @@ class TimeSeries(BaseTimeSeries):
 
             return tf
 
+    def xcorr(
+        self,
+        other,
+        *,
+        maxlag=None,
+        normalize=None,
+        mode="full",
+        demean=True,
+    ):
+        """
+        Compute time-domain cross-correlation between two TimeSeries.
+        """
+        from scipy import signal
 
+        dt_self = self.dt if isinstance(self.dt, u.Quantity) else u.Quantity(self.dt, "s")
+        dt_other = other.dt if isinstance(other.dt, u.Quantity) else u.Quantity(other.dt, "s")
+        if dt_self != dt_other:
+            raise ValueError("TimeSeries must share the same dt/sample_rate for xcorr")
+        dt = dt_self
 
+        x = self.value.astype(float)
+        y = other.value.astype(float)
+        if demean:
+            x = x - np.nanmean(x)
+            y = y - np.nanmean(y)
 
+        corr = signal.correlate(x, y, mode=mode, method="auto")
+        lags = signal.correlation_lags(len(x), len(y), mode=mode)
+
+        # Normalization
+        if normalize is None:
+            pass
+        elif normalize == "biased":
+            corr = corr / len(x)
+        elif normalize == "unbiased":
+            corr = corr / (len(x) - np.abs(lags))
+        elif normalize == "coeff":
+            denom = np.sqrt(np.sum(x * x) * np.sum(y * y))
+            if denom != 0:
+                corr = corr / denom
+        else:
+            raise ValueError("normalize must be None|'biased'|'unbiased'|'coeff'")
+
+        # Max lag trimming
+        if maxlag is not None:
+            if isinstance(maxlag, u.Quantity):
+                lag_samples = int(np.floor(np.abs(maxlag.to(dt.unit).value / dt.value)))
+            else:
+                lag_samples = int(maxlag)
+            mask = np.abs(lags) <= lag_samples
+            corr = corr[mask]
+            lags = lags[mask]
+
+        lag_times = lags * dt
+        name = f"xcorr({self.name},{getattr(other, 'name', '')})"
+        return self.__class__(
+            corr,
+            times=lag_times,
+            unit=self.unit * getattr(other, "unit", 1),
+            name=name,
+        )
+    
+    def append(self, other, inplace=True, pad=None, gap=None, resize=True):
+        """
+        Append another TimeSeries (GWpy-compatible), returning gwexpy TimeSeries.
+        """
+        res = super().append(other, inplace=inplace, pad=pad, gap=gap, resize=resize)
+        if inplace:
+            return self
+        if isinstance(res, self.__class__):
+            return res
+        return self.__class__(
+            res.value,
+            times=res.times,
+            unit=res.unit,
+            name=res.name,
+            channel=getattr(res, "channel", None),
+        )
 
 
     # ===============================
@@ -1927,6 +2066,31 @@ class TimeSeriesDict(BaseTimeSeriesDict):
             new_dict[key] = ts.impute(method=method, limit=limit, axis=axis, **kwargs)
         return new_dict
 
+    def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Apply rolling mean to each item."""
+        from gwexpy.timeseries.rolling import rolling_mean
+        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
+    def rolling_std(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ddof=0):
+        """Apply rolling std to each item."""
+        from gwexpy.timeseries.rolling import rolling_std
+        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof)
+
+    def rolling_median(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Apply rolling median to each item."""
+        from gwexpy.timeseries.rolling import rolling_median
+        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
+    def rolling_min(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Apply rolling min to each item."""
+        from gwexpy.timeseries.rolling import rolling_min
+        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
+    def rolling_max(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Apply rolling max to each item."""
+        from gwexpy.timeseries.rolling import rolling_max
+        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
     def to_matrix(self, *, align="intersection", **kwargs):
         """
         Convert dictionary to TimeSeriesMatrix with alignment.
@@ -2032,6 +2196,31 @@ class TimeSeriesList(BaseTimeSeriesList):
          for ts in self:
              new_list.append(ts.impute(method=method, limit=limit, axis=axis, **kwargs))
          return new_list
+
+    def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Apply rolling mean to each element."""
+        from gwexpy.timeseries.rolling import rolling_mean
+        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
+    def rolling_std(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ddof=0):
+        """Apply rolling std to each element."""
+        from gwexpy.timeseries.rolling import rolling_std
+        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof)
+
+    def rolling_median(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Apply rolling median to each element."""
+        from gwexpy.timeseries.rolling import rolling_median
+        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
+    def rolling_min(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Apply rolling min to each element."""
+        from gwexpy.timeseries.rolling import rolling_min
+        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
+    def rolling_max(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Apply rolling max to each element."""
+        from gwexpy.timeseries.rolling import rolling_max
+        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
 
     def to_matrix(self, *, align="intersection", **kwargs):
         from gwexpy.timeseries.preprocess import align_timeseries_collection
@@ -2270,6 +2459,31 @@ class TimeSeriesMatrix(SeriesMatrix):
         See gwexpy.timeseries.preprocess.whiten_matrix.
         """
         return whiten_matrix(self, method=method, eps=eps, n_components=n_components)
+
+    def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Rolling mean along the time axis."""
+        from gwexpy.timeseries.rolling import rolling_mean
+        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
+    def rolling_std(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ddof=0):
+        """Rolling standard deviation along the time axis."""
+        from gwexpy.timeseries.rolling import rolling_std
+        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof)
+
+    def rolling_median(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Rolling median along the time axis."""
+        from gwexpy.timeseries.rolling import rolling_median
+        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
+    def rolling_min(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Rolling minimum along the time axis."""
+        from gwexpy.timeseries.rolling import rolling_min
+        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+
+    def rolling_max(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+        """Rolling maximum along the time axis."""
+        from gwexpy.timeseries.rolling import rolling_max
+        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
         
     def to_dict(self):
         """Convert to TimeSeriesDict."""
