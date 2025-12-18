@@ -433,7 +433,16 @@ class FrequencySeries(BaseFrequencySeries):
             raise ValueError(f"Unknown method {method}")
             
         if threshold is not None:
-             kwargs['height'] = threshold
+            if hasattr(threshold, 'unit'):  # astropy.units.Quantity
+                if method == 'amplitude':
+                    threshold = threshold.to(self.unit).value
+                elif method == 'power':
+                    threshold = threshold.to(self.unit**2).value
+                elif method == 'db':
+                    # dB is logically dimensionless but let's just use .value if it's already dB-like?
+                    # Usually users pass plain float for dB.
+                    threshold = threshold.value
+            kwargs['height'] = threshold
              
         return scipy.signal.find_peaks(target, **kwargs)
 

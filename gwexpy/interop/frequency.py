@@ -42,7 +42,11 @@ def to_xarray_frequencyseries(fs, freq_coord="Hz"):
         dims=("frequency",),
         coords={"frequency": coord},
         name=fs.name,
-        attrs={"unit": str(fs.unit), "channel": str(getattr(fs, "channel", "")), "epoch": getattr(fs, "epoch", None)},
+        attrs={
+            "unit": str(fs.unit),
+            "channel": str(getattr(fs, "channel", "")),
+            "epoch": float(fs.epoch.to("s").value) if getattr(fs, "epoch", None) is not None and hasattr(fs.epoch, "to") else getattr(fs, "epoch", None)
+        },
     )
     return da
 
@@ -69,7 +73,11 @@ def to_hdf5_frequencyseries(fs, group, path, overwrite=False, compression=None, 
     if getattr(fs, "channel", None):
         dset.attrs["channel"] = str(fs.channel)
     if getattr(fs, "epoch", None) is not None:
-        dset.attrs["epoch"] = float(fs.epoch)
+        epoch_val = fs.epoch
+        if hasattr(epoch_val, "to"):
+            dset.attrs["epoch"] = float(epoch_val.to("s").value)
+        else:
+            dset.attrs["epoch"] = float(epoch_val)
     if getattr(fs, "df", None) is not None:
         df_val = fs.df
         if hasattr(df_val, "to"):
