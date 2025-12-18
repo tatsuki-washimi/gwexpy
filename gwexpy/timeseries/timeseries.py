@@ -1297,12 +1297,27 @@ class TimeSeries(BaseTimeSeries):
 
         # Padding
         if pad_left > 0 or pad_right > 0:
-            if pad_mode == "zero":
-                x = np.pad(x, (pad_left, pad_right), mode="constant", constant_values=0)
-            elif pad_mode == "reflect":
-                x = np.pad(x, (pad_left, pad_right), mode="reflect")
-            else:
-                raise ValueError(f"Unknown pad_mode: {pad_mode}")
+            # Handle duration if float or Quantity
+            if hasattr(pad_left, "to"):
+                pad_left = pad_left.to("s").value * self.sample_rate.value
+            elif isinstance(pad_left, float):
+                pad_left = pad_left * self.sample_rate.value
+
+            if hasattr(pad_right, "to"):
+                pad_right = pad_right.to("s").value * self.sample_rate.value
+            elif isinstance(pad_right, float):
+                pad_right = pad_right * self.sample_rate.value
+
+            pad_left = int(round(float(pad_left)))
+            pad_right = int(round(float(pad_right)))
+
+            if pad_left > 0 or pad_right > 0:
+                if pad_mode == "zero":
+                    x = np.pad(x, (pad_left, pad_right), mode="constant", constant_values=0)
+                elif pad_mode == "reflect":
+                    x = np.pad(x, (pad_left, pad_right), mode="reflect")
+                else:
+                    raise ValueError(f"Unknown pad_mode: {pad_mode}")
 
         len_x = x.shape[0]
 

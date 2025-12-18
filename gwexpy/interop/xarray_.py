@@ -11,7 +11,7 @@ def to_xarray(ts, time_coord="datetime"):
     xr = require_optional("xarray")
 
     data = ts.value
-    attrs = {"unit": str(ts.unit), "name": str(ts.name), "channel": str(ts.channel), "epoch": float(ts.t0)}
+    attrs = {"unit": str(ts.unit), "name": str(ts.name), "channel": str(ts.channel), "epoch": float(ts.t0.value if hasattr(ts.t0, 'value') else ts.t0)}
 
     times_gps = ts.times.value
     if time_coord == "datetime":
