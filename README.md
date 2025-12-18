@@ -131,6 +131,70 @@ loader = to_torch_dataloader(ds, batch_size=8, shuffle=True)
 for batch in loader:
     # batch is a torch Tensor of shape (B, C, window)
     pass
+
+```
+
+### 6. Signal Transforms
+```python
+ts = s1 # TimeSeries
+
+# Discrete Cosine Transform
+fs_dct = ts.dct(norm="ortho")
+rec_ts = fs_dct.idct(norm="ortho")
+
+# Cepstrum
+fs_cep = ts.cepstrum(kind="real", detrend=True)
+# Axis is quefrency (seconds)
+
+# Continuous Wavelet Transform (CWT)
+# Requires PyWavelets (and Scipy). Returns a Spectrogram centered on given frequencies.
+spectrogram = ts.cwt(frequencies=np.linspace(10, 100, 50), output="spectrogram", wavelet="cmor1.5-1.0")
+spectrogram.plot()
+```
+
+### 7. Hilbert-Huang Transform (HHT)
+Designed for **non-linear and non-stationary** signal analysis (e.g., chirps, gravitational wave bursts).
+
+**Concepts**:
+- **Empirical Mode Decomposition (EMD)**: Adaptive decomposition into Intrinsic Mode Functions (IMFs).
+- **Hilbert Spectral Analysis (HSA)**: Computes Instantaneous Frequency (IF) and Amplitude (IA).
+
+```python
+# HHT requires: pip install EMD-signal
+try:
+    # 1. Full HHT (EMD + HSA) -> Hilbert Spectrum
+    hht_spec = ts.hht(method="eemd", output="spectrogram")
+    hht_spec.plot()
+
+    # 2. Detailed decomposition
+    res = ts.hht(output="dict")
+    # res['imfs'] : TimeSeriesDict of IMFs
+    # res['if']   : TimeSeriesDict of Instantaneous Frequencies
+    # res['ia']   : TimeSeriesDict of Instantaneous Amplitudes
+
+    # Plot IMF1's instantaneous frequency
+    res['if']['IMF1'].plot(ylabel="Frequency [Hz]")
+except ImportError:
+    print("Please install EMD-signal for HHT features.")
+```
+
+### 8. Laplace Transform
+One-sided finite-interval Laplace transform (single window).
+
+```python
+# Compute Laplace Transform L(s) for s = sigma + i*2*pi*f
+# sigma=0 roughly corresponds to Fourier Transform (with different normalization options)
+sigma = -1.0 # Probing exponential decay
+fs_lap = ts.laplace(sigma=sigma, normalize="integral")
+
+# Custom frequencies and time segment
+freqs = np.linspace(0, 100, 100)
+fs_seg = ts.laplace(
+    sigma=0, 
+    frequencies=freqs, 
+    t_start=0*u.s, 
+    t_stop=1*u.s
+)
 ```
 
 ## Compatibility

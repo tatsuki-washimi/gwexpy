@@ -254,6 +254,69 @@ class FrequencySeries(BaseFrequencySeries):
             channel=self.channel,
         )
 
+    def idct(self, type=2, norm="ortho", *, n=None):
+        """
+        Compute the Inverse Discrete Cosine Transform (IDCT).
+        
+        Parameters
+        ----------
+        type : `int`, optional
+            DCT type (1-4).
+        norm : `str`, optional
+            Normalization mode.
+        n : `int`, optional
+            Length of the output time series. If not specified, tries to use metadata `original_n`.
+
+        Returns
+        -------
+        out : `TimeSeries`
+            The IDCT result.
+        """
+        try:
+             import scipy.fft
+        except ImportError:
+             raise ImportError("scipy is required for idct")
+             
+        # Check metadata if available
+        meta_n = getattr(self, "original_n", None)
+        meta_dt = getattr(self, "dt", None)
+        
+        target_n = n if n is not None else meta_n
+        
+        # IDCT
+        out_data = scipy.fft.idct(self.value, type=type, norm=norm, n=target_n)
+        
+        # Determine dt
+        if meta_dt is not None:
+             dt = meta_dt
+        elif self.df is not None:
+             N_out = len(out_data)
+             # Handle quantity df
+             if isinstance(self.df, u.Quantity):
+                  df_val = self.df.to("Hz").value
+             else:
+                  df_val = self.df
+             
+             with np.errstate(divide='ignore'):
+                  if df_val > 0:
+                       dt_val = 1.0 / (2 * N_out * df_val)
+                       dt = u.Quantity(dt_val, "s")
+                  else:
+                       dt = 1.0 * u.s # Fallback
+        else:
+             dt = 1.0 * u.s
+             
+        from gwexpy.timeseries import TimeSeries
+        
+        return TimeSeries(
+            out_data,
+            t0=self.epoch,
+            dt=dt,
+            unit=self.unit,
+            name=self.name + "_idct" if self.name else "idct",
+            channel=self.channel 
+        )
+
     def differentiate_time(self):
         """
         Apply time differentiation in frequency domain.
