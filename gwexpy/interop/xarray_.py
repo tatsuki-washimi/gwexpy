@@ -16,7 +16,7 @@ def to_xarray(ts, time_coord="datetime"):
     times_gps = ts.times.value
     if time_coord == "datetime":
         from astropy.time import Time
-        t_vals = Time(times_gps, format="gps").to_datetime64()
+        t_vals = Time(times_gps, format="gps").to_datetime()
     elif time_coord == "seconds":
         from astropy.time import Time
         t_vals = Time(times_gps, format="gps").unix

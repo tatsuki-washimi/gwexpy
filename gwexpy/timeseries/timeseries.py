@@ -2029,7 +2029,7 @@ class TimeSeries(BaseTimeSeries):
         # We will assume:
         # IMFs + Residual
         
-        from gwpy.timeseries import TimeSeriesDict
+        # from gwpy.timeseries import TimeSeriesDict
         
         out_dict = TimeSeriesDict()
         
@@ -2168,7 +2168,7 @@ class TimeSeries(BaseTimeSeries):
         imfs = self.emd(method=emd_method, **emd_kwargs)
         
         # 2. HSA for each IMF
-        from gwpy.timeseries import TimeSeriesDict
+        # from gwpy.timeseries import TimeSeriesDict
         
         ia_dict = TimeSeriesDict()
         if_dict = TimeSeriesDict()
@@ -2563,6 +2563,100 @@ class TimeSeries(BaseTimeSeries):
             name=res.name,
             channel=getattr(res, "channel", None),
         )
+
+    def find_peaks(
+        self,
+        height=None,
+        threshold=None,
+        distance=None,
+        prominence=None,
+        width=None,
+        wlen=None,
+        rel_height=0.5,
+        plateau_size=None,
+    ):
+        """
+        Find peaks in the TimeSeries.
+        
+        Wraps `scipy.signal.find_peaks`.
+        
+        Returns
+        -------
+        peaks : TimeSeries
+             A TimeSeries containing only the peak values at their corresponding times.
+        properties : dict
+             Properties returned by scipy.signal.find_peaks.
+        """
+        from scipy.signal import find_peaks
+        
+        # Handle unit quantities
+        val = self.value
+        
+        def _to_val(x, unit=None):
+             if hasattr(x, "value"):
+                  if unit and hasattr(x, "to"):
+                      return x.to(unit).value
+                  return x.value
+             return x
+             
+        # Height/Threshold: relative to data units
+        h = _to_val(height, self.unit)
+        t = _to_val(threshold, self.unit)
+        p = _to_val(prominence, self.unit) # Prominence same unit as data
+        
+        # Distance/Width: time or samples
+        # Scipy uses samples.
+        dist = distance
+        wid = width
+        
+        if self.dt is not None:
+             fs = self.sample_rate.to("Hz").value
+             # If distance is time quantity
+             if hasattr(dist, "to"):
+                  dist = int(dist.to("s").value * fs)
+             
+             # If width is quantity (or tuple of quantities)
+             if np.iterable(wid):
+                  new_wid = []
+                  for w in wid:
+                       if hasattr(w, "to"):
+                            new_wid.append(w.to("s").value * fs)
+                       else:
+                            new_wid.append(w)
+                  wid = tuple(new_wid) if isinstance(wid, tuple) else new_wid
+             elif hasattr(wid, "to"):
+                  wid = wid.to("s").value * fs
+                  
+        # Call scipy
+        peaks_indices, props = find_peaks(
+             val,
+             height=h,
+             threshold=t,
+             distance=dist,
+             prominence=p,
+             width=wid,
+             wlen=wlen,
+             rel_height=rel_height,
+             plateau_size=plateau_size
+        )
+        
+        if len(peaks_indices) == 0:
+             # Return empty
+             # Regular/Irregular handling for times?
+             # Empty timeseries usually fine with list
+             return self.__class__([], times=[], unit=self.unit, name=self.name, channel=self.channel), props
+             
+        peak_times = self.times[peaks_indices]
+        peak_vals = val[peaks_indices]
+        
+        out = self.__class__(
+             peak_vals,
+             times=peak_times,
+             unit=self.unit,
+             name=f"{self.name}_peaks" if self.name else "peaks",
+             channel=self.channel
+        )
+        return out, props
 
 
     # ===============================
@@ -3369,13 +3463,16 @@ class TimeSeriesMatrix(SeriesMatrix):
         # Note: standardize_matrix assumes (channels, time) input correctly now (handles axis).
         return standardize_matrix(self, axis=axis, method=method, ddof=ddof)
 
-    def whiten_channels(self, *, method="pca", eps=1e-12, n_components=None):
+    def whiten_channels(self, *, method="pca", eps=1e-12, n_components=None, return_model=False):
         """
         Whiten the matrix (channels/components).
-        Returns (whitened_matrix, WhiteningModel).
+        Returns whitened_matrix, or (whitened_matrix, WhiteningModel) if return_model=True.
         See gwexpy.timeseries.preprocess.whiten_matrix.
         """
-        return whiten_matrix(self, method=method, eps=eps, n_components=n_components)
+        mat, model = whiten_matrix(self, method=method, eps=eps, n_components=n_components)
+        if return_model:
+            return mat, model
+        return mat
 
     def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
         """Rolling mean along the time axis."""
