@@ -5,6 +5,14 @@ from .hdf5_ import to_hdf5, from_hdf5
 from .obspy_ import to_obspy_trace, from_obspy_trace
 from .sqlite_ import to_sqlite, from_sqlite
 from ._optional import require_optional
+from .frequency import (
+    to_pandas_frequencyseries,
+    from_pandas_frequencyseries,
+    to_xarray_frequencyseries,
+    from_xarray_frequencyseries,
+    to_hdf5_frequencyseries,
+    from_hdf5_frequencyseries,
+)
 
 # P1
 from .torch_ import to_torch, from_torch
@@ -21,3 +29,4 @@ from .pydub_ import to_librosa, to_pydub, from_pydub
 from .astropy_ import to_astropy_timeseries, from_astropy_timeseries
 from .mne_ import to_mne_rawarray, from_mne_raw
 from .neo_ import to_neo_analogsignal, from_neo_analogsignal
+from .torch_dataset import TimeSeriesWindowDataset, to_torch_dataset, to_torch_dataloader

@@ -103,6 +103,36 @@ H = ts.hurst()
 local_H = ts.local_hurst(window=2*u.s)
 ```
 
+### 4. High-Level Pipelines & Rolling Stats
+```python
+from gwexpy.timeseries import Pipeline, ImputeTransform, StandardizeTransform, PCATransform
+
+# Build a preprocessing chain
+pipe = Pipeline([
+    ("impute", ImputeTransform(method="mean")),
+    ("standardize", StandardizeTransform(method="zscore")),
+    ("pca", PCATransform(n_components=2)),
+])
+
+clean_scores = pipe.fit_transform(mat)          # works on TimeSeriesMatrix
+restored = pipe.inverse_transform(clean_scores) # preserves t0/dt metadata
+
+# Rolling statistics on single channel or collections
+smooth = s1.rolling_mean(2*u.s, nan_policy="omit")
+stds = mat.rolling_std(5, center=True)
+```
+
+### 5. Torch Dataset Interop
+```python
+from gwexpy.interop import to_torch_dataset, to_torch_dataloader
+
+ds = to_torch_dataset(s1, window=256, stride=128)
+loader = to_torch_dataloader(ds, batch_size=8, shuffle=True)
+for batch in loader:
+    # batch is a torch Tensor of shape (B, C, window)
+    pass
+```
+
 ## Compatibility
 gwexpy allows seamless conversion between its containers and standard GWpy objects:
 - `TimeSeriesMatrix.to_dict()` -> `TimeSeriesDict`
