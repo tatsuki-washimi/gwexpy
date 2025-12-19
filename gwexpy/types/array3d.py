@@ -2,6 +2,7 @@
 import numpy as np
 from astropy.units import Quantity, dimensionless_unscaled
 
+from gwpy.types.array import Array as GwpyArray
 from .array import Array
 from .axis import AxisDescriptor, coerce_1d_quantity
 from .plane2d import Plane2D
@@ -39,6 +40,9 @@ class Array3D(Array):
 
         if axis2 is None: obj._axis2_index = np.arange(obj.shape[2]) * dimensionless_unscaled
         else: obj._axis2_index = coerce_1d_quantity(axis2)
+
+        if getattr(obj, "_axis_names", None) is not None:
+            obj._axis_names = [obj._axis0_name, obj._axis1_name, obj._axis2_name]
 
         return obj
 
@@ -78,6 +82,9 @@ class Array3D(Array):
              if getattr(self, "_axis2_index", None) is None:
                  self._axis2_index = np.arange(self.shape[2]) * dimensionless_unscaled
 
+        if getattr(self, "_axis_names", None) is not None and self.ndim == 3:
+            self._axis_names = [self._axis0_name, self._axis1_name, self._axis2_name]
+
     @property
     def axes(self):
         return (
@@ -91,123 +98,175 @@ class Array3D(Array):
         elif index == 1: self._axis1_name = name
         elif index == 2: self._axis2_name = name
         else: raise IndexError(index)
+        if getattr(self, "_axis_names", None) is not None and len(self._axis_names) == 3:
+            self._axis_names = [self._axis0_name, self._axis1_name, self._axis2_name]
+
+    def __getitem__(self, item):
+        return self._getitem_with_axis_metadata(item)
 
     def _isel_tuple(self, item_tuple):
-        new_data = self.__getitem__(item_tuple)
-        if new_data.ndim == 0:
-            return new_data 
-        
-        # Reconstruct axes tracking logic (same as before)
+        return self._getitem_with_axis_metadata(item_tuple)
+
+    def _getitem_with_axis_metadata(self, item):
+        raw = GwpyArray.__getitem__(self, item)
+        items_list = self._normalize_item(item)
+        if items_list is None:
+            return self._to_plain(raw)
+
         current_axes = [
             (self._axis0_name, self._axis0_index),
             (self._axis1_name, self._axis1_index),
             (self._axis2_name, self._axis2_index),
         ]
         kept_axes = []
-        
-        items_list = list(item_tuple)
-        if len(items_list) < 3:
-             items_list += [slice(None)] * (3 - len(items_list))
-             
-        def slice_axis(idx_array, sl):
-            if isinstance(sl, slice): return idx_array[sl]
-            try:
-                 int(sl); return None
-            except: 
-                 return idx_array[sl] 
-        
+
         for i, sl in enumerate(items_list):
-            if i >= 3: break
             name, idx_arr = current_axes[i]
-            new_idx = slice_axis(idx_arr, sl)
-            if new_idx is not None:
-                kept_axes.append((name, new_idx))
-        
-        if new_data.ndim == 3:
-            if len(kept_axes) != 3: return new_data 
+            if isinstance(sl, slice):
+                kept_axes.append((name, idx_arr[sl]))
+            elif self._is_int_index(sl):
+                continue
+            else:
+                return self._to_plain(raw)
+
+        expected_ndim = len(kept_axes)
+        if getattr(raw, "ndim", None) != expected_ndim:
+            return self._to_plain(raw)
+
+        if expected_ndim == 3:
+            value, unit = self._value_unit(raw)
+            meta = self._metadata_kwargs(raw)
             return Array3D(
-                new_data, 
+                value,
+                unit=unit,
                 axis_names=[n for n, _ in kept_axes],
-                axis0=kept_axes[0][1], axis1=kept_axes[1][1], axis2=kept_axes[2][1]
+                axis0=kept_axes[0][1],
+                axis1=kept_axes[1][1],
+                axis2=kept_axes[2][1],
+                copy=False,
+                **meta,
             )
-        elif new_data.ndim == 2:
-            if len(kept_axes) != 2: return new_data
-            p_obj = Plane2D(
-                new_data,
-                axis1_name=kept_axes[0][0], axis2_name=kept_axes[1][0],
-                yindex=kept_axes[0][1], xindex=kept_axes[1][1]  
+        if expected_ndim == 2:
+            value, unit = self._value_unit(raw)
+            meta = self._metadata_kwargs(raw)
+            return Plane2D(
+                value,
+                unit=unit,
+                axis1_name=kept_axes[0][0],
+                axis2_name=kept_axes[1][0],
+                yindex=kept_axes[0][1],
+                xindex=kept_axes[1][1],
+                copy=False,
+                **meta,
             )
-            # Force indices to ensure correct axis mapping
-            p_obj.yindex = kept_axes[0][1]
-            p_obj.xindex = kept_axes[1][1]
-            return p_obj
-        else:
-            if new_data.ndim == 0: return new_data
-            # For 1D, return simple Quantity/Array?
-            # Or perhaps just return new_data as is (which is already an Array subclass instance)
-            if new_data.ndim == 1:
-                # If we don't have Array1D, just return it.
-                return new_data
-            raise NotImplementedError("Unexpected dim return from Array3D slicing")
+
+        return self._to_plain(raw)
+
+    @staticmethod
+    def _is_int_index(value):
+        return isinstance(value, (int, np.integer)) and not isinstance(value, (bool, np.bool_))
+
+    @staticmethod
+    def _normalize_item(item):
+        if not isinstance(item, tuple):
+            item = (item,)
+        if any(val is None for val in item):
+            return None
+        if Ellipsis in item:
+            if item.count(Ellipsis) > 1:
+                return None
+            ellipsis_idx = item.index(Ellipsis)
+            num_specified = len(item) - 1
+            fill = 3 - num_specified
+            if fill < 0:
+                return None
+            item = item[:ellipsis_idx] + (slice(None),) * fill + item[ellipsis_idx + 1:]
+        if len(item) > 3:
+            return None
+        if len(item) < 3:
+            item = item + (slice(None),) * (3 - len(item))
+        if any(val is None for val in item):
+            return None
+        return list(item)
+
+    @staticmethod
+    def _value_unit(raw):
+        if isinstance(raw, Quantity):
+            return raw.value, raw.unit
+        return raw, None
+
+    def _metadata_kwargs(self, raw):
+        meta = {}
+        for attr in getattr(GwpyArray, "_metadata_slots", ()):
+            if hasattr(raw, attr):
+                val = getattr(raw, attr)
+            elif hasattr(self, attr):
+                val = getattr(self, attr)
+            else:
+                continue
+            if val is not None:
+                meta[attr] = val
+        return meta
+
+    @staticmethod
+    def _to_plain(raw):
+        if isinstance(raw, Quantity):
+            return raw.view(Quantity)
+        return raw
+
+    def _apply_axis_metadata(self, obj, order):
+        names = [self._axis0_name, self._axis1_name, self._axis2_name]
+        indices = [self._axis0_index, self._axis1_index, self._axis2_index]
+        obj._axis0_name, obj._axis1_name, obj._axis2_name = [names[i] for i in order]
+        obj._axis0_index, obj._axis1_index, obj._axis2_index = [indices[i] for i in order]
+        if getattr(obj, "_axis_names", None) is not None:
+            obj._axis_names = [names[i] for i in order]
 
     def _swapaxes_int(self, a, b):
-        new_data = GwpyArray.swapaxes(self, a, b) # numpy swap
-        # Manually swap metadata on new object
-        # Note: new_data is a view/copy of Array3D.
-        # It has metadata copied via __array_finalize__.
-        
-        # We need to swap names and indices to match data swap
-        
-        # Helper to swap attrs
-        def swap_attr(obj, attr_list, i, j):
-            v1 = getattr(obj, attr_list[i])
-            v2 = getattr(obj, attr_list[j])
-            setattr(obj, attr_list[i], v2)
-            setattr(obj, attr_list[j], v1)
-            
-        names = ["_axis0_name", "_axis1_name", "_axis2_name"]
-        indices = ["_axis0_index", "_axis1_index", "_axis2_index"]
-        
-        swap_attr(new_data, names, a, b)
-        swap_attr(new_data, indices, a, b)
-        
+        new_data = GwpyArray.swapaxes(self, a, b)
+        order = [0, 1, 2]
+        order[a], order[b] = order[b], order[a]
+        self._apply_axis_metadata(new_data, order)
+        return new_data
+
+    def _transpose_int(self, axes: tuple[int, ...]):
+        if len(axes) != 3 or set(axes) != {0, 1, 2}:
+            raise ValueError(f"Invalid transpose axes for 3D: {axes}")
+        new_data = GwpyArray.transpose(self, axes)
+        self._apply_axis_metadata(new_data, list(axes))
         return new_data
 
     def plane(self, drop_axis, drop_index, *, axis1=None, axis2=None):
         drop_axis_idx = self._get_axis_index(drop_axis)
-        all_indices = {0, 1, 2}
-        remaining = sorted(list(all_indices - {drop_axis_idx}))
+        remaining = [i for i in range(3) if i != drop_axis_idx]
         target_indices = list(remaining)
-        
+
         if axis1 is not None or axis2 is not None:
-            pool = list(remaining)
-            idx1 = -1
-            idx2 = -1
-            
-            if axis1 is not None:
-                idx1 = self._get_axis_index(axis1)
-                if idx1 in pool: pool.remove(idx1)
-            if axis2 is not None:
-                idx2 = self._get_axis_index(axis2)
-                if idx2 in pool: pool.remove(idx2)
-            
-            if axis1 is None: idx1 = pool.pop(0)
-            if axis2 is None: idx2 = pool.pop(0)
-                
-            if idx1 == idx2: raise ValueError("axis1 and axis2 cannot be the same axis")
-            if idx1 == drop_axis_idx or idx2 == drop_axis_idx: raise ValueError("cannot use dropped axis as output axis")
-                
+            idx1 = self._get_axis_index(axis1) if axis1 is not None else None
+            idx2 = self._get_axis_index(axis2) if axis2 is not None else None
+
+            if idx1 is not None and idx1 not in remaining:
+                raise ValueError("axis1 must refer to a remaining axis")
+            if idx2 is not None and idx2 not in remaining:
+                raise ValueError("axis2 must refer to a remaining axis")
+            if idx1 is not None and idx2 is not None and idx1 == idx2:
+                raise ValueError("axis1 and axis2 cannot be the same axis")
+
+            pool = [i for i in remaining if i not in (idx1, idx2)]
+            if idx1 is None:
+                idx1 = pool.pop(0)
+            if idx2 is None:
+                idx2 = pool.pop(0)
+
             target_indices = [idx1, idx2]
 
         sl = [slice(None)] * 3
         sl[drop_axis_idx] = drop_index
-        sliced = self._isel_tuple(tuple(sl))
-        
-        # If we got Plane2D, check order
-        if isinstance(sliced, Plane2D):
-             # _isel_tuple returns in remaining order 
-             current_order = remaining
-             if target_indices != current_order:
-                 sliced = sliced.T
-                 
+        sliced = self._getitem_with_axis_metadata(tuple(sl))
+        if not isinstance(sliced, Plane2D):
+            return sliced
+
+        if target_indices != remaining:
+            sliced = sliced.T
+
         return sliced

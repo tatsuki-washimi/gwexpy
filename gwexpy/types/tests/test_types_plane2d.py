@@ -50,3 +50,17 @@ def test_plane2d_accessors():
     # The requirement was "x/y の語をユーザー API に出さない" in this class definition context
     # but we can't delete them from instance easily without breaking things or complex descriptors.
     # Verification that we don't *use* u/v is main point.
+
+def test_plane2d_swapaxes_metadata():
+    data = np.arange(6).reshape(2, 3)
+    axis1 = np.array([0.0, 2.0]) * u.s
+    axis2 = np.array([10.0, 20.0, 30.0]) * u.m
+    p = Plane2D(data, axis1_name="re_s", axis2_name="im_s", yindex=axis1, xindex=axis2)
+
+    s = p.swapaxes(0, 1)
+
+    assert s.axis1.name == "im_s"
+    assert s.axis2.name == "re_s"
+    assert np.all(s.axis1.index == axis2)
+    assert np.all(s.axis2.index == axis1)
+    assert np.all(s.value == p.value.T)
