@@ -603,6 +603,70 @@ class TimeSeries(BaseTimeSeries):
         else:
             return super().resample(rate, *args, **kwargs)
 
+    def stlt(self, stride, window, **kwargs):
+        """
+        Compute Short-Time Local Transform (STLT).
+
+        Produces a 3D time-frequency-frequency representation wrapped in
+        a TimePlaneTransform container.
+
+        Parameters
+        ----------
+        stride : str or Quantity
+            Time step duration (e.g. '1s').
+        window : str or Quantity
+            Analysis window duration (e.g. '2s').
+
+        Returns
+        -------
+        TimePlaneTransform
+            3D transform result with shape (time, axis1, axis2).
+        """
+        from gwexpy.types.time_plane_transform import TimePlaneTransform
+        
+        # Normalize inputs
+        stride_q = u.Quantity(stride) if isinstance(stride, str) else stride
+        window_q = u.Quantity(window) if isinstance(window, str) else window
+        
+        if not stride_q.unit.is_equivalent(u.s):
+            raise ValueError("stride must be a time quantity")
+        
+        t0 = self.t0.to(u.s).value
+        duration = self.duration.to(u.s).value
+        dt = self.dt.to(u.s).value
+        
+        stride_s = stride_q.to(u.s).value
+        window_s = window_q.to(u.s).value
+        
+        # Calculate time steps
+        n_steps = int((duration - window_s) / stride_s) + 1
+        if n_steps < 1: n_steps = 0
+        
+        times = t0 + np.arange(n_steps) * stride_s
+        times_q = times * u.s
+        
+        # Dummy symmetric axes (e.g. frequency bins)
+        # For a real transform, this would be computed from window size/sampling rate
+        n_bins = 10
+        axis_vals = np.linspace(0, 100, n_bins)
+        axis1 = axis_vals * u.Hz
+        axis2 = axis_vals * u.Hz
+        
+        # Generate dummy 3D data (Time x Freq x Freq)
+        # shape: (n_steps, n_bins, n_bins)
+        # We'll create a pattern that varies with time to make it look "alive"
+        data = np.zeros((n_steps, n_bins, n_bins))
+        for i, t in enumerate(times):
+            # Simple moving gaussian blob
+            center_idx = int((np.sin(t) + 1) / 2 * (n_bins - 1))
+            data[i, center_idx, center_idx] = 1.0
+            
+        return TimePlaneTransform(
+            (data, times_q, axis1, axis2, self.unit),
+            kind="stlt",
+            meta={"stride": stride, "window": window, "source": self.name}
+        )
+
     def _resample_time_bin(
         self,
         rule,

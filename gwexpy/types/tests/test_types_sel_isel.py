@@ -67,3 +67,13 @@ def test_isel_mixed():
     assert sliced.axis_names == ("axis0", "axis2")
     assert sliced.axis1.name == "axis0"
     assert sliced.axis2.name == "axis2"
+
+def test_sel_nonuniform_axis():
+    freqs = np.array([10, 20, 25, 40, 50]) * u.Hz
+    data = np.arange(2 * 3 * 5).reshape(2, 3, 5)
+    arr = Array3D(data, axis2=freqs, axis_names=("t", "x", "f"))
+
+    sliced = arr.sel(f=22 * u.Hz, method="nearest")
+
+    assert sliced.shape == (2, 3)
+    assert np.all(sliced.value == data[:, :, 1])
