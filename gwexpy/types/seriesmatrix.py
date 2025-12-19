@@ -16,6 +16,7 @@ from gwpy.types.array import Array
 from gwpy.types.index import Index
 from gwpy.types.series import Series
 from gwpy.plot import Plot
+from gwexpy.interop._optional import require_optional
 
 from .metadata import MetaData, MetaDataDict, MetaDataMatrix
 
@@ -2324,9 +2325,127 @@ class SeriesMatrix(np.ndarray):
         return self.plot(method="plot", **kwargs)
 
     # -- I/O (HDF5) -------------------------------------------------
-    def write(self, filepath, **kwargs):
+    def to_pandas(self, format="wide"):
+        """
+        Convert SeriesMatrix to pandas DataFrame.
+
+        Parameters
+        ----------
+        format : {'wide', 'long'}, optional
+            'wide': (Default) Index is xindex. Columns are flattened channel keys "row_col".
+            'long': Columns are [index, row, col, value].
+
+        Returns
+        -------
+        pandas.DataFrame
+        """
+        pd = require_optional("pandas")
+
+        if format == "wide":
+            N, M, K = self._value.shape
+            
+            # Move sample axis to front: (K, N, M)
+            val_T = np.moveaxis(self._value, -1, 0)
+            # Flatten N and M: (K, N*M)
+            val_flat = val_T.reshape(K, -1)
+            
+            # Prepare columns
+            r_keys = list(self.row_keys())
+            c_keys = list(self.col_keys())
+            
+            col_names = []
+            for r in r_keys:
+                for c in c_keys:
+                    col_names.append(f"{r}_{c}")
+            
+            # Prepare index
+            xidx = self.xindex
+            idx_name = "index"
+            if isinstance(xidx, u.Quantity):
+                idx_name = f"index [{xidx.unit}]"
+                xidx = xidx.value
+                
+            df = pd.DataFrame(val_flat, index=xidx, columns=col_names)
+            df.index.name = idx_name
+            return df
+
+        elif format == "long":
+            N, M, K = self._value.shape
+            r_keys = list(self.row_keys())
+            c_keys = list(self.col_keys())
+            
+            xidx = self.xindex
+            if isinstance(xidx, u.Quantity):
+                xidx = xidx.value
+            
+            long_index = np.tile(xidx, N * M)
+            
+            val_list = []
+            row_list = []
+            col_list = []
+            
+            for r in r_keys:
+                for c in c_keys:
+                    i = self.row_index(r)
+                    j = self.col_index(c)
+                    val_list.append(self._value[i, j])
+                    row_list.extend([r] * K)
+                    col_list.extend([c] * K)
+                    
+            long_values = np.concatenate(val_list)
+            
+            df = pd.DataFrame({
+                "index": long_index,
+                "row": row_list,
+                "col": col_list,
+                "value": long_values
+            })
+            return df
+            
+        else:
+            raise ValueError(f"Unknown format: {format}")
+
+    def write(self, target, format=None, **kwargs):
+        """
+        Write SeriesMatrix to file.
+
+        Parameters
+        ----------
+        target : str
+            Target filename.
+        format : str, optional
+            'hdf5', 'csv', 'parquet'. If None, inferred from extension.
+        **kwargs
+            Passed to underlying writer.
+        """
+        from pathlib import Path
+        
+        if format is None:
+            ext = Path(target).suffix.lower()
+            if ext in [".h5", ".hdf5", ".hdf"]:
+                format = "hdf5"
+            elif ext == ".csv":
+                format = "csv"
+            elif ext in [".parquet", ".pq"]:
+                format = "parquet"
+            else:
+                format = "hdf5"
+        
+        if format == "hdf5":
+            return self.to_hdf5(target, **kwargs)
+        elif format == "csv":
+            df = self.to_pandas(format="wide")
+            return df.to_csv(target, **kwargs)
+        elif format == "parquet":
+            df = self.to_pandas(format="wide")
+            return df.to_parquet(target, **kwargs)
+        else:
+            raise ValueError(f"Unsupported format: {format}")
+
+    def to_hdf5(self, filepath, **kwargs):
         """
         Write the SeriesMatrix to a simple HDF5 representation.
+
 
         Parameters
         ----------

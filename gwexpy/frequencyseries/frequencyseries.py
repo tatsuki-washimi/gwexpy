@@ -583,6 +583,145 @@ class FrequencySeries(BaseFrequencySeries):
         from gwexpy.interop import from_control_frd
         return from_control_frd(cls, frd, frequency_unit=frequency_unit)
 
+    # --- ML Framework Interop ---
+
+    def to_torch(self, device=None, dtype=None, requires_grad=False, copy=False):
+        """
+        Convert to torch.Tensor.
+        
+        Parameters
+        ----------
+        device : `str` or `torch.device`, optional
+            Target device (e.g. 'cpu', 'cuda').
+        dtype : `torch.dtype`, optional
+            Target data type. Defaults to preserving complex64/128 or float32/64.
+        requires_grad : `bool`, optional
+            If `True`, enable gradient tracking.
+        copy : `bool`, optional
+            If `True`, force a copy of the data.
+            
+        Returns
+        -------
+        `torch.Tensor`
+        """
+        from gwexpy.interop.torch_ import to_torch
+        return to_torch(self, device=device, dtype=dtype, requires_grad=requires_grad, copy=copy)
+
+    @classmethod
+    def from_torch(cls, tensor, frequencies, unit=None):
+        """
+        Create FrequencySeries from torch.Tensor.
+        
+        Parameters
+        ----------
+        tensor : `torch.Tensor`
+            Input tensor.
+        frequencies : `Array` or `Quantity`
+            Frequency array matching the tensor size.
+        unit : `Unit` or `str`, optional
+            Data unit.
+            
+        Returns
+        -------
+        `FrequencySeries`
+        """
+        from gwexpy.interop.torch_ import from_torch
+        # Wrapper to adapt signature (from_torch calls cls(data, t0, dt) for TimeSeries)
+        # We need a custom implementation for FrequencySeries or adapt from_torch logic.
+        # Since from_torch in interop is tailored for TimeSeries (takes t0, dt),
+        # we pull the data extraction logic specifically.
+        
+        data = tensor.detach().cpu().resolve_conj().resolve_neg().numpy()
+        return cls(data, frequencies=frequencies, unit=unit)
+
+    def to_tf(self, dtype=None):
+        """
+        Convert to tensorflow.Tensor.
+        
+        Returns
+        -------
+        `tensorflow.Tensor`
+        """
+        from gwexpy.interop.tensorflow_ import to_tf
+        return to_tf(self, dtype=dtype)
+        
+    @classmethod
+    def from_tf(cls, tensor, frequencies, unit=None):
+        """Create FrequencySeries from tensorflow.Tensor."""
+        data = tensor.numpy()
+        return cls(data, frequencies=frequencies, unit=unit)
+
+    def to_jax(self, dtype=None):
+        """
+        Convert to JAX array.
+        
+        Returns
+        -------
+        `jax.Array`
+        """
+        from gwexpy.interop.jax_ import to_jax
+        return to_jax(self, dtype=dtype)
+        
+    @classmethod
+    def from_jax(cls, array, frequencies, unit=None):
+        """Create FrequencySeries from JAX array."""
+        import numpy as np
+        data = np.array(array)
+        return cls(data, frequencies=frequencies, unit=unit)
+        
+    def to_cupy(self, dtype=None):
+        """
+        Convert to CuPy array.
+        
+        Returns
+        -------
+        `cupy.ndarray`
+        """
+        from gwexpy.interop.cupy_ import to_cupy
+        return to_cupy(self, dtype=dtype)
+        
+    @classmethod
+    def from_cupy(cls, array, frequencies, unit=None):
+        """Create FrequencySeries from CuPy array."""
+        from gwexpy.interop.cupy_ import require_optional
+        cp = require_optional("cupy")
+        data = cp.asnumpy(array)
+        return cls(data, frequencies=frequencies, unit=unit)
+
+    # --- Domain Specific Interop ---
+
+    def to_mne_spectrum(self):
+        """
+        Convert to MNE Spectrum object.
+        
+        Raises
+        ------
+        NotImplementedError
+            MNE Spectrum objects are typically derived from Raw/Epochs/Evoked data. 
+            Direct creation from frequency domain data is not standard in MNE API 
+            without wrapping in a time-domain container first.
+        """
+        raise NotImplementedError(
+            "MNE Spectrum objects are typically derived from Raw/Epochs/Evoked data. "
+            "Direct creation from frequency domain data is not fully supported."
+        )
+
+    def to_obspy_spectrum(self):
+        """
+        Convert to ObsPy spectrum representation.
+        
+        Raises
+        ------
+        NotImplementedError
+            ObsPy primarily manages time-domain Traces and Streams. 
+            There is no standard standalone Spectrum container in ObsPy 
+            comparable to FrequencySeries.
+        """
+        raise NotImplementedError(
+            "ObsPy primarily manages time-domain Traces and Streams. "
+            "No standard standalone Spectrum container exists in ObsPy."
+        )
+
 # =============================
 # Helpers
 # =============================
