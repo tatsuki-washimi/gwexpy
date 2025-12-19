@@ -626,7 +626,10 @@ class TimeSeries(BaseTimeSeries):
         try:
             import scipy.signal
         except ImportError:
-            raise ImportError("scipy is required for stlt")
+            raise ImportError(
+                "scipy is required for stlt. "
+                "Please install it via `pip install scipy`."
+            )
         
         # Normalize inputs
         stride_q = u.Quantity(stride) if isinstance(stride, str) else stride
@@ -1606,7 +1609,8 @@ class TimeSeries(BaseTimeSeries):
             import scipy.signal
         except ImportError:
             raise ImportError(
-                "scipy is required for dct"
+                "scipy is required for dct. "
+                "Please install it via `pip install scipy`."
             )
 
         data = self.value.copy()
@@ -1909,7 +1913,10 @@ class TimeSeries(BaseTimeSeries):
              import scipy.fft
              import scipy.signal
         except ImportError:
-             raise ImportError("scipy is required for cepstrum")
+            raise ImportError(
+                "scipy is required for cepstrum. "
+                "Please install it via `pip install scipy`."
+            )
 
         data = self.value.copy()
 
@@ -2019,7 +2026,10 @@ class TimeSeries(BaseTimeSeries):
              import pywt
              import scipy.signal
         except ImportError as e:
-             raise ImportError(f"pywt (PyWavelets) and scipy are required for cwt: {e}")
+             raise ImportError(
+                 f"pywt (PyWavelets) and scipy are required for cwt. "
+                 f"Please install them via `pip install PyWavelets scipy`. Error: {e}"
+             )
 
         data = self.value.copy()
         
@@ -4212,6 +4222,84 @@ class TimeSeriesMatrix(SeriesMatrix):
         )
 
     # --- Spectral Methods ---
+
+
+    def lock_in(self, **kwargs):
+        """
+        Apply lock-in amplification element-wise.
+        
+        Returns
+        -------
+        TimeSeriesMatrix or tuple of TimeSeriesMatrix
+            If output='amp_phase' (default) or 'iq', returns (matrix1, matrix2).
+            If output='complex', returns a single complex TimeSeriesMatrix.
+        """
+        output = kwargs.get("output", "amp_phase")
+        expect_tuple = output in ["amp_phase", "iq"]
+        
+        N, M, _ = self.shape
+        if N == 0 or M == 0:
+             if expect_tuple:
+                 return self.copy(), self.copy()
+             return self.copy()
+
+        vals1 = [[None for _ in range(M)] for _ in range(N)]
+        vals2 = [[None for _ in range(M)] for _ in range(N)] if expect_tuple else None
+        
+        meta1 = np.empty((N, M), dtype=object)
+        meta2 = np.empty((N, M), dtype=object) if expect_tuple else None
+        
+        ax_infos = []
+        method_name = "lock_in"
+        dtype1 = None
+        dtype2 = None
+
+        for i in range(N):
+            for j in range(M):
+                ts = self[i, j]
+                res = ts.lock_in(**kwargs)
+                
+                if expect_tuple:
+                    r1, r2 = res
+                    vals1[i][j] = np.asarray(r1.value)
+                    meta1[i, j] = MetaData(unit=str(r1.unit), name=r1.name, channel=r1.channel)
+                    dtype1 = np.result_type(dtype1, r1.value.dtype) if dtype1 else r1.value.dtype
+                    
+                    vals2[i][j] = np.asarray(r2.value)
+                    meta2[i, j] = MetaData(unit=str(r2.unit), name=r2.name, channel=r2.channel)
+                    dtype2 = np.result_type(dtype2, r2.value.dtype) if dtype2 else r2.value.dtype
+                    
+                    ax_infos.append(_extract_axis_info(r1))
+                else:
+                    # Single return
+                    vals1[i][j] = np.asarray(res.value)
+                    meta1[i, j] = MetaData(unit=str(res.unit), name=res.name, channel=res.channel)
+                    dtype1 = np.result_type(dtype1, res.value.dtype) if dtype1 else res.value.dtype
+                    ax_infos.append(_extract_axis_info(res))
+
+
+        # Validate common axis
+        common_axis, axis_len = _validate_common_axis(ax_infos, method_name)
+        
+        def _build(v, d, m):
+            out_shape = (N, M, axis_len)
+            out = np.empty(out_shape, dtype=d)
+            for r in range(N):
+                for c in range(M):
+                    out[r, c, :] = v[r][c]
+            new_mat = self.__class__(
+                 out,
+                 xindex=common_axis,
+                 xunit=common_axis.unit if isinstance(common_axis, u.Quantity) else None,
+            )
+            new_mat.meta = MetaDataMatrix(m)
+            return new_mat
+            
+        m1 = _build(vals1, dtype1, meta1)
+        if expect_tuple:
+            m2 = _build(vals2, dtype2, meta2)
+            return m1, m2
+        return m1
 
     def fft(self, **kwargs):
         """
