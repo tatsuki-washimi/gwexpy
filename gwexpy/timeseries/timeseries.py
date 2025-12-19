@@ -623,6 +623,10 @@ class TimeSeries(BaseTimeSeries):
             3D transform result with shape (time, axis1, axis2).
         """
         from gwexpy.types.time_plane_transform import TimePlaneTransform
+        try:
+            import scipy.signal
+        except ImportError:
+            raise ImportError("scipy is required for stlt")
         
         # Normalize inputs
         stride_q = u.Quantity(stride) if isinstance(stride, str) else stride
@@ -631,39 +635,73 @@ class TimeSeries(BaseTimeSeries):
         if not stride_q.unit.is_equivalent(u.s):
             raise ValueError("stride must be a time quantity")
         
-        t0 = self.t0.to(u.s).value
-        duration = self.duration.to(u.s).value
-        dt = self.dt.to(u.s).value
+        # Parameters for STFT
+        # fs (sampling rate)
+        dt_s = self.dt.to(u.s).value
+        fs_val = 1.0 / dt_s
         
+        # Window samples
+        nperseg = int(np.round((window_q.to(u.s).value / dt_s)))
+        # Overlap samples
+        # stride = window - overlap => overlap = window - stride
         stride_s = stride_q.to(u.s).value
-        window_s = window_q.to(u.s).value
+        noverlap_samples = int(np.round((window_q.to(u.s).value - stride_s) / dt_s))
         
-        # Calculate time steps
-        n_steps = int((duration - window_s) / stride_s) + 1
-        if n_steps < 1: n_steps = 0
+        if nperseg <= 0:
+             raise ValueError("Window size too small")
+             
+        # STFT
+        # Returns f, t, Zxx
+        # f: Array of sample frequencies.
+        # t: Array of segment times.
+        # Zxx: STFT of x. Shape (n_freqs, n_segments)
+        # Note: scipy stft pads or truncates? It centers windows by default.
+        # boundary='zeros', padded=True is default.
+        f, t_segs, Zxx = scipy.signal.stft(
+             self.value, 
+             fs=fs_val, 
+             window='hann', 
+             nperseg=nperseg, 
+             noverlap=noverlap_samples,
+             boundary=None, # Avoid padding artifacts at edges for physics data usually, or 'zeros'? Default is 'zeros'.
+                            # strict spacing requires careful handling.
+                            # Let's use default for robustness unless alignment issues arise.
+             padded=False   # If False, no padding. "boundary argument must be None" if padded=False? No.
+                            # padded=False checks if x is multiple of nperseg? No.
+                            # Docs: "If boundary is None, the input signal is assumed to be periodic extension... no, wait."
+                            # Scipy defaults: boundary='zeros', padded=True.
+                            # Let's use standard default for safety, but check shape.
+        )
         
-        times = t0 + np.arange(n_steps) * stride_s
-        times_q = times * u.s
+        # Zxx shape: (F, T)
+        # We want (T, F, F)
+        # 1. Transpose to (T, F)
+        Z = Zxx.T
         
-        # Dummy symmetric axes (e.g. frequency bins)
-        # For a real transform, this would be computed from window size/sampling rate
-        n_bins = 10
-        axis_vals = np.linspace(0, 100, n_bins)
-        axis1 = axis_vals * u.Hz
-        axis2 = axis_vals * u.Hz
+        # 2. Compute Magnitude Outer Product: |S(t, f1)| * |S(t, f2)|
+        # This represents the magnitude correlation between frequencies at each time.
+        mag = np.abs(Z) # (T, F)
         
-        # Generate dummy 3D data (Time x Freq x Freq)
-        # shape: (n_steps, n_bins, n_bins)
-        # We'll create a pattern that varies with time to make it look "alive"
-        data = np.zeros((n_steps, n_bins, n_bins))
-        for i, t in enumerate(times):
-            # Simple moving gaussian blob
-            center_idx = int((np.sin(t) + 1) / 2 * (n_bins - 1))
-            data[i, center_idx, center_idx] = 1.0
-            
+        # Shape: (T, F, F)
+        # Use broadcasting
+        data = mag[:, :, None] * mag[:, None, :]
+        
+        # 3. Construct axes
+        # Time axis
+        # t_segs are relative to start. Add t0.
+        # scipy returns segment centers or starts? "Segment times".
+        # Usually centered on the window.
+        # We map it to absolute time.
+        # Note: t_segs from scipy often starts at window/2 if boundary='zeros'.
+        t0_val = self.t0.to(u.s).value
+        times_q = (t0_val + t_segs) * u.s
+        
+        # Freq axis
+        axis_f = f * u.Hz
+        
         return TimePlaneTransform(
-            (data, times_q, axis1, axis2, self.unit),
-            kind="stlt",
+            (data, times_q, axis_f, axis_f, self.unit**2),
+            kind="stlt_mag_outer",
             meta={"stride": stride, "window": window, "source": self.name}
         )
 
@@ -812,6 +850,94 @@ class TimeSeries(BaseTimeSeries):
                   sums[counts < min_count] = np.nan # Or 0? Usually sum of nothing is 0, but min_count implies invalidity
              out_data = sums
              
+        elif agg in ['median', 'min', 'max', 'std']:
+             # Use scipy.stats.binned_statistic if available (no pandas dependency required)
+             # or use numpy logic for simple cases.
+             # Median is hard in pure numpy without loop or sort.
+             # But binned_statistic supports 'median' (since scipy 0.17), 'std', 'min', 'max'.
+             try:
+                 from scipy.stats import binned_statistic
+                 # valid_values are float? Complex median/min/max is undefined generally.
+                 # Assuming float/real.
+                 if np.iscomplexobj(valid_values):
+                     raise NotImplementedError(f"Aggregation '{agg}' not supported for complex data yet")
+                     
+                 # valid_indices are 0..n_bins-1, produced by np.digitize equivalent
+                 # binned_statistic(x, values, statistic=agg, bins=...)
+                 # We already have indices. But binned_statistic wants x.
+                 # We can pass x=valid_indices, bins=range(n_bins+1).
+                 # This aligns perfectly.
+                 
+                 stat_val, _, _ = binned_statistic(
+                      valid_indices, 
+                      valid_values, 
+                      statistic=agg, 
+                      bins=np.arange(n_bins + 1)
+                 )
+                 out_data = stat_val
+                 
+                 # Apply min_count via counts if not handled by binned_statistic
+                 # binned_statistic doesn't support min_count directly.
+                 # We have counts from earlier? No, need to compute.
+                 if min_count > 1:
+                     counts = np.bincount(valid_indices, minlength=n_bins)
+                     out_data[counts < min_count] = np.nan
+                     
+             except ImportError:
+                 # Fallback to pandas
+                 try:
+                     import pandas as pd
+                     df = pd.DataFrame({'val': valid_values, 'bin': valid_indices})
+                     grouped = df.groupby('bin')['val']
+                     if agg == 'median':
+                         res = grouped.median()
+                     elif agg == 'min':
+                         res = grouped.min()
+                     elif agg == 'max':
+                         res = grouped.max()
+                     elif agg == 'std':
+                         res = grouped.std(ddof=1) # sample std
+                     
+                     # Reindex to all bins
+                     # res is indexed by bin. Missing bins are missing.
+                     out_data = np.full(n_bins, np.nan)
+                     if not res.empty:
+                         # Filter indices in range
+                         res_idx = res.index.values.astype(int)
+                         mask = (res_idx >= 0) & (res_idx < n_bins)
+                         out_data[res_idx[mask]] = res.values[mask]
+                         
+                     # min_count check using counts
+                     if min_count > 1:
+                         cts = grouped.count()
+                         cts_idx = cts.index.values.astype(int)
+                         mask_c = (cts_idx >= 0) & (cts_idx < n_bins)
+                         # Set NaN where count < min_count
+                         # Note: pandas aggregate might have done some logic, but explicit check matches 'mean' logic.
+                         bad_bins = cts_idx[mask_c][cts.values[mask_c] < min_count]
+                         out_data[bad_bins] = np.nan
+                         
+                 except ImportError:
+                     # Fallback to loop
+                     out_data = np.full(n_bins, np.nan)
+                     import warnings
+                     warnings.warn(f"Using slow fallback for {agg} resampling (install scipy or pandas for speed).")
+                     if agg == 'median':
+                          func = np.median
+                     elif agg == 'min':
+                          func = np.min
+                     elif agg == 'max':
+                          func = np.max
+                     elif agg == 'std':
+                          func = np.std
+                     else:
+                          func = lambda x: np.nan
+                          
+                     for i in range(n_bins):
+                          in_bin = valid_values[valid_indices == i]
+                          if len(in_bin) >= min_count:
+                               out_data[i] = func(in_bin)
+
         elif callable(agg):
              # Slow loop
              out_data = np.full(n_bins, np.nan)
@@ -2336,13 +2462,13 @@ class TimeSeries(BaseTimeSeries):
 
     # --- New Statistical / Info Processing Methods ---
 
-    def impute(self, *, method="interpolate", limit=None, axis="time", **kwargs):
+    def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
         """
         Impute missing values.
         See gwexpy.timeseries.preprocess.impute_timeseries for details.
         """
         from gwexpy.timeseries.preprocess import impute_timeseries
-        return impute_timeseries(self, method=method, limit=limit, axis=axis, **kwargs)
+        return impute_timeseries(self, method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs)
 
     def standardize(self, *, method="zscore", ddof=0, robust=False):
         """
@@ -3134,11 +3260,11 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         from gwexpy.interop import from_pandas_dataframe
         return from_pandas_dataframe(cls, df, unit_map=unit_map, t0=t0, dt=dt)
     
-    def impute(self, *, method="interpolate", limit=None, axis="time", **kwargs):
+    def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
         """Apply impute to each item."""
         new_dict = self.__class__()
         for key, ts in self.items():
-            new_dict[key] = ts.impute(method=method, limit=limit, axis=axis, **kwargs)
+            new_dict[key] = ts.impute(method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs)
         return new_dict
 
     def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
@@ -3266,10 +3392,10 @@ class TimeSeriesList(BaseTimeSeriesList):
             **kwargs
         )
     
-    def impute(self, *, method="interpolate", limit=None, axis="time", **kwargs):
+    def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
          new_list = self.__class__()
          for ts in self:
-             new_list.append(ts.impute(method=method, limit=limit, axis=axis, **kwargs))
+             new_list.append(ts.impute(method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs))
          return new_list
 
     def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
@@ -3487,7 +3613,7 @@ class TimeSeriesMatrix(SeriesMatrix):
         
     # --- Preprocessing & Decomposition ---
     
-    def impute(self, **kwargs):
+    def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
         """Impute missing values."""
         # Matrix-level impute or per-channel?
         # Provide naive implementation mapping over columns or using decomposition logic?
@@ -3504,15 +3630,14 @@ class TimeSeriesMatrix(SeriesMatrix):
         val_3d = self.value
         n_rows, n_cols, n_samples = val_3d.shape
         
-        method = kwargs.get("method", "interpolate")
-        
         # We need to flatten loops or iterate
         new_val = val_3d.copy()
         for r in range(n_rows):
              for c in range(n_cols):
                   ts_data = new_val[r, c, :]
                   ts_tmp = self.series_class(ts_data, dt=self.dt, t0=self.t0)
-                  imp = ts_tmp.impute(**kwargs)
+                  # Passing explicit args
+                  imp = ts_tmp.impute(method=method, limit=limit, max_gap=max_gap, axis=axis, **kwargs)
                   new_val[r, c, :] = imp.value
             
         new_mat = self.copy()

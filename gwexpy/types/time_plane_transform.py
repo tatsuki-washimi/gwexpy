@@ -193,15 +193,79 @@ class TimePlaneTransform:
         """
         # 1. Resolve time index
         time_ax = self.axes[0]
+        # Access index quantity directly locally to perform interpolation logic
+        times = time_ax.index 
         
-        if method == "nearest":
-            idx = time_ax.iloc_nearest(t)
+        # Ensure t is comparable (value check)
+        if hasattr(t, 'unit') and hasattr(times, 'unit') and times.unit is not None:
+             t_val = t.to(times.unit).value
+             times_val = times.value
+        elif hasattr(t, 'value'): # t is Quantity, times might be dimensionless
+             t_val = t.value
+             times_val = times.value if hasattr(times, 'value') else times
         else:
-            raise NotImplementedError(f"Method '{method}' not implemented yet.")
+             t_val = t
+             times_val = times.value if hasattr(times, 'value') else times
+             
+        if method == "nearest":
+            # idx = time_ax.iloc_nearest(t)
+            # Use direct numpy for consistency with linear logic if desired, but reuse existing if reliable.
+            # Assuming axis class works, but let's be robust:
+            idx = np.abs(times_val - t_val).argmin()
+            return self.plane(0, idx)
+            
+        elif method == "linear":
+            # Find insertion point
+            i = np.searchsorted(times_val, t_val, side='right')
+            
+            # Clamp to boundaries
+            if i <= 0:
+                return self.plane(0, 0)
+            if i >= len(times_val):
+                return self.plane(0, len(times_val) - 1)
+                
+            idx_prev = i - 1
+            idx_next = i
+            
+            t_prev = times_val[idx_prev]
+            t_next = times_val[idx_next]
+            
+            # Check for zero duration interval (duplicates)
+            denom = t_next - t_prev
+            if denom == 0:
+                 return self.plane(0, idx_prev)
+                 
+            alpha = (t_val - t_prev) / denom
+            
+            p_prev = self.plane(0, idx_prev)
+            p_next = self.plane(0, idx_next)
+            
+            # Interpolate values
+            # Plane2D should expose .value? Checked file_view earlier, doesn't explicitly show Plane2D def but usage implies it.
+            # TimePlaneTransform.value uses self._data.value.
+            # We assume p_prev.value is accessible (standard gwexpy object).
+            
+            val_interp = (1.0 - alpha) * p_prev.value + alpha * p_next.value
+            
+            # Construct new Plane2D
+            # Plane2D(data, axis1_name=..., axis2_name=..., yindex=..., xindex=...)
+            # Plane2D axis1 -> Array2D axis0 (yindex)
+            # Plane2D axis2 -> Array2D axis1 (xindex)
+            
+            return p_prev.__class__(
+                val_interp,
+                unit=p_prev.unit,
+                axis1_name=p_prev.axis1.name,
+                axis2_name=p_prev.axis2.name,
+                yindex=p_prev.axis1.index,
+                xindex=p_prev.axis2.index
+            )
+            
+        else:
+            raise NotImplementedError(f"Method '{method}' not implemented. Supported: 'nearest', 'linear'.")
         
-        # 2. Slice
-        # drop_axis=0 (time)
-        return self.plane(0, idx)
+        # 2. Slice (nearest case handled above)
+        # return self.plane(0, idx)
 
     def to_array3d(self):
         """Return the underlying Array3D object (advanced usage)."""

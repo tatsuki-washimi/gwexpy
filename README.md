@@ -1,6 +1,6 @@
 # gwexpy: GWpy Expansions for Experiments
 
-**gwexpy** is an extension library for **GWpy**, designed to facilitate advanced time-series analysis, matrix operations, and signal processing for experimental physics and gravitational wave data analysis. It builds upon GWpy's core data objects (`TimeSeries`, `FrequencySeries`) and introduces high-level containers and methods for multivariate analysis.
+**gwexpy** is an (unofficial) extension library for **GWpy**, designed to facilitate advanced time-series analysis, matrix operations, and signal processing for experimental physics and gravitational wave data analysis. It builds upon GWpy's core data objects (`TimeSeries`, `FrequencySeries`) and introduces high-level containers and methods for multivariate analysis.
 
 ## Key Features
 
@@ -18,7 +18,7 @@
 
 ### 3. Preprocessing & Decomposition
 - **Alignment**: `align_timeseries_collection` to synchronize varying start times and sample rates.
-- **Imputation**: `impute_timeseries` / `TimeSeries.impute()` for handling gaps (interpolation, padding).
+- **Imputation**: `impute_timeseries` / `TimeSeries.impute()` for handling gaps (interpolation, padding). Supports `max_gap` to prevent interpolating across large missing intervals.
 - **Standardization**: Z-score and robust scaling for `TimeSeries` and `TimeSeriesMatrix`.
 - **Whitening**: `whiten_channels` (PCA/ZCA) for multivariate whitening.
 - **Decomposition**: Integrated **PCA** and **ICA`** methods for `TimeSeriesMatrix`.
@@ -34,8 +34,8 @@
 ## Installation
 
 ```bash
-# From a released package (e.g. PyPI)
-pip install gwexpy
+# From a released package (No PyPI/conda support)
+pip install git+https://github.com/tatsuki-washimi/gwexpy
 
 # From this repository (recommended for development)
 pip install -e . --no-deps
@@ -62,7 +62,7 @@ s3 = TimeSeries(np.random.randn(1000), times=t, name="Ch3")
 mat = TimeSeriesMatrix.from_list([s1, s2, s3]) # Shape: (3, 1, 1000)
 
 # Preprocessing
-mat_clean = mat.impute(method="interpolate").standardize()
+mat_clean = mat.impute(method="interpolate", max_gap=0.5*u.s).standardize()
 
 # Principal Component Analysis (PCA)
 scores, model = mat_clean.pca(n_components=2, return_model=True)
@@ -209,7 +209,7 @@ Additional readers are registered to mirror GWpy's `.read()` API:
 - `format='dttxml'` (Diag GUI XML): requires `products=` (`TS`, `PSD`/`ASD`/`FFT`, `TF`/`STF`/`CSD`/`COH`).
 - `format='gbd'` (GRAPHTEC .GBD): **requires** `timezone=` to interpret local timestamps; defaults to `unit='V'`.
 - `format='miniseed'`, `format='sac'` via **ObsPy** (optional dependency); gaps are padded by default (`pad=np.nan`).
-- Stubs for P2 formats (`win`, `win32`, `sdb`, vendor loggers) raise `NotImplementedError` with guidance.
+- Stubs for P2 formats (`win`, `win32`, `sdb`, `orf`, etc.) raise `IoNotImplementedError` with specific implementation guidance.
 
 When using `TimeSeries.read`/`TimeSeriesDict.read`/`FrequencySeriesDict.read`, the return type is fixed to the class that is invoked (no implicit upcasting to dicts).
 

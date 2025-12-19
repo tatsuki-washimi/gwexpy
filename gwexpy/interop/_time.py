@@ -17,7 +17,10 @@ def gps_to_datetime_utc(gps, *, leap='raise') -> datetime:
     gps : LIGOTimeGPS, float
         GPS time.
     leap : str, optional
-        Policy for leap seconds: 'raise' (default).
+        Policy for handling leap seconds that cannot be represented in standard datetime:
+        - 'raise' (default): Raise LeapSecondConversionError.
+        - 'floor': Clamp to 59.999999s of the previous second.
+        - 'ceil': Round up to 00.000000s of the next minute.
         
     Returns
     -------
@@ -39,10 +42,30 @@ def gps_to_datetime_utc(gps, *, leap='raise') -> datetime:
         if "leap second" in str(e).lower() or "second must be in" in str(e).lower():
              if leap == 'raise':
                  raise LeapSecondConversionError(f"Cannot allow leap second {gps} in datetime") from e
+             elif leap == 'floor':
+                 # Clamp to end of previous second (59.999999)
+                 vals = t_gps.ymdhms
+                 dt = datetime(
+                     vals.year, vals.month, vals.day, 
+                     vals.hour, vals.minute, 
+                     59, 999999, 
+                     tzinfo=timezone.utc
+                 )
+             elif leap == 'ceil':
+                 # Round to start of next minute
+                 from datetime import timedelta
+                 vals = t_gps.ymdhms
+                 # Construct base and add minute
+                 dt = datetime(
+                     vals.year, vals.month, vals.day,
+                     vals.hour, vals.minute,
+                     0, 0,
+                     tzinfo=timezone.utc
+                 ) + timedelta(minutes=1)
              else:
-                 # TODO: Implement floor/ceil logic if requested
                  raise NotImplementedError(f"Leap policy {leap} not implemented")
-        raise e
+        else:
+            raise e
         
     return dt
 

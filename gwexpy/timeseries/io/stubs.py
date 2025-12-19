@@ -22,10 +22,8 @@ _P2_FORMATS = [
 
 def _stub(fmt):
     def _reader(*args, **kwargs):
-        raise NotImplementedError(
-            f"Format '{fmt}' is not implemented yet. "
-            "Please supply a specification / sample file / reference parser."
-        )
+        from ...interop.errors import raise_unimplemented_io
+        raise_unimplemented_io(fmt)
 
     return _reader
 

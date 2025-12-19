@@ -196,31 +196,205 @@ def align_timeseries_collection(
     return matrix, common_times, meta
 
 
-def impute_timeseries(ts, *, method="interpolate", limit=None, axis="time", **kwargs):
+def impute_timeseries(ts, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
     """
     Impute missing values in a TimeSeries.
+
+    Parameters
+    ----------
+    ts : TimeSeries
+        Series to impute.
+    method : str
+        'interpolate', 'ffill', 'bfill', 'mean', 'median'.
+    limit : int
+        Pandas-style limit (max consecutive NaNs to fill).
+    axis : str
+        Axis to operate on (default 'time').
+    max_gap : float or Quantity, optional
+        Maximum gap duration to simple fill. If a gap is larger than this, it is left as NaN.
+        If float, assumes same unit as ts.times (usually seconds if dimensionless).
+    
+    Returns
+    -------
+    TimeSeries
+        Imputed series.
     """
     val = ts.value.copy()
     nans = np.isnan(val)
     if not np.any(nans):
         return ts.copy()
 
+    # Determine timing info if max_gap is requested
+    has_gap_constraint = max_gap is not None
+    gap_threshold = None
+    times_val = None
+    
+    if has_gap_constraint:
+         # Try to get times
+         try:
+             # Use times value directly (float, usually seconds or GPS)
+             times_val = ts.times.value
+             time_unit = ts.times.unit
+             
+             if hasattr(max_gap, 'to'): # Quantity
+                  if time_unit:
+                       gap_threshold = max_gap.to(time_unit).value
+                  else:
+                       # TimeSeries is dimensionless or unknown unit?
+                       # Assume seconds if max_gap has time unit
+                       if max_gap.unit.physical_type == 'time':
+                           gap_threshold = max_gap.to(u.s).value
+                           # We assume times_val is seconds if unit is None/dimensionless 
+                           # (GWpy convention usually)
+                       else:
+                           gap_threshold = max_gap.value
+             else:
+                  gap_threshold = float(max_gap)
+         except Exception:
+             # If no times mechanism, fallback or warn?
+             # For TimeSeries, .times should exist.
+             # If regular, dt * samples.
+             if hasattr(ts, 'dt'):
+                 dt = ts.dt
+                 if hasattr(dt, 'value'): dt = dt.value
+                 # Use index-based check if we can't get times array easily?
+                 # Actually if we have dt, gap size in indices = max_gap / dt
+                 pass
+             times_val = None
+
     if method == "interpolate":
         valid = ~nans
-        x = np.arange(len(val))
-        val[nans] = np.interp(x[nans], x[valid], val[valid])
+        # Use time-based interpolation if possible, or index
+        if times_val is not None:
+             x = times_val
+        else:
+             x = np.arange(len(val))
+             
+        # Interpolate
+        # Note: np.interp works on complex by treating as float? No.
+        # If max_gap is set, we strictly avoid edge extrapolation (per requirements).
+        # Otherwise preserve existing behavior (default extrapolation).
+        left_val = np.nan if has_gap_constraint else None
+        right_val = np.nan if has_gap_constraint else None
+
+        if np.iscomplexobj(val):
+             real_part = np.interp(x[nans], x[valid], val[valid].real, left=left_val, right=right_val)
+             imag_part = np.interp(x[nans], x[valid], val[valid].imag, left=left_val, right=right_val)
+             val[nans] = real_part + 1j * imag_part
+        else:
+             val[nans] = np.interp(x[nans], x[valid], val[valid], left=left_val, right=right_val)
+             
+        # Apply max_gap constraint
+        if has_gap_constraint and times_val is not None:
+             # Identify gaps in original VALID data
+             # A "gap" is an interval between two valid points where NaNs existed.
+             # If distance(valid[i+1], valid[i]) > threshold, then points in between should be NaN.
+             
+             valid_indices = np.where(valid)[0]
+             if len(valid_indices) > 0:
+                  valid_times = x[valid_indices]
+                  diffs = np.diff(valid_times)
+                  
+                  # Find intervals larger than threshold
+                  big_gaps = np.where(diffs > gap_threshold - 1e-12)[0] # Tolerance
+                  
+                  for idx in big_gaps:
+                       t_start = valid_times[idx]
+                       t_end = valid_times[idx+1]
+                       
+                       # Mask points in this interval (exclusive of boundaries)
+                       # Logic: boundaries are valid, everything strictly between was interpolated
+                       # so we revert it to NaN.
+                       mask = (x > t_start) & (x < t_end)
+                       val[mask] = np.nan
+                       
     elif method == "ffill":
         from pandas import Series
         s = Series(val)
+        # Pandas limit is by COUNT, not time gap.
+        # So we use standard limit if provided.
+        # If max_gap is provided, we post-filter?
+        # ffill fills forward.
+        # If we have max_gap, we shouldn't fill if time_curr - time_last_valid > max_gap.
+        # Harder to map to pandas directly.
+        # Manual implementation might be needed for max_gap + ffill?
+        # P0 spec says: "max_gap は「補間対象区間の選別」だけに責務を限定する"
+        # Since interpolation fills the gap, if gap > max_gap, we just revert.
+        
         val = s.ffill(limit=limit).values
+        
+        if has_gap_constraint and times_val is not None:
+             # Check validity
+             # For ffill: for each point, time - time_of_last_valid <= max_gap
+             # But we can just use the generic logic:
+             # Find original gaps. If gap > max_gap, revert ALL points in that gap to NaN?
+             # Yes, "区間長 > max_gap の区間は補間しない（NaN のまま残す）"
+             # This applies regardless of method.
+             
+             valid_indices = np.where(~nans)[0]
+             if len(valid_indices) > 0:
+                  valid_times = times_val[valid_indices]
+                  diffs = np.diff(valid_times)
+                  big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
+                  
+                  for idx in big_gaps:
+                       t_start = valid_times[idx]
+                       t_end = valid_times[idx+1]
+                       mask = (times_val > t_start) & (times_val < t_end)
+                       # Only revert points that were originally NaN (to be safe? val was replaced)
+                       # Yes, revert to NaN.
+                       val[mask] = np.nan
+                       
     elif method == "bfill":
         from pandas import Series
         s = Series(val)
         val = s.bfill(limit=limit).values
+        
+        # Apply max_gap generic rollback
+        if has_gap_constraint and times_val is not None:
+             valid_indices = np.where(~nans)[0]
+             if len(valid_indices) > 0:
+                  valid_times = times_val[valid_indices]
+                  diffs = np.diff(valid_times)
+                  big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
+                  for idx in big_gaps:
+                       t_start = valid_times[idx]
+                       t_end = valid_times[idx+1]
+                       mask = (times_val > t_start) & (times_val < t_end)
+                       val[mask] = np.nan
     elif method == "mean":
         val[nans] = np.nanmean(val)
+        # Mean fills everything.
+        # Max gap? 
+        # "区間長 > max_gap の区間は補間しない"
+        # Does 'mean' imputation imply bridging gaps? Usually it's global fill.
+        # But if the requirement stands, we should not fill in large gaps even with global mean?
+        # That seems consistent.
+        if has_gap_constraint and times_val is not None:
+             valid_indices = np.where(~nans)[0]
+             if len(valid_indices) > 0:
+                  valid_times = times_val[valid_indices]
+                  diffs = np.diff(valid_times)
+                  big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
+                  for idx in big_gaps:
+                       t_start = valid_times[idx]
+                       t_end = valid_times[idx+1]
+                       mask = (times_val > t_start) & (times_val < t_end)
+                       val[mask] = np.nan
+                       
     elif method == "median":
         val[nans] = np.nanmedian(val)
+        if has_gap_constraint and times_val is not None:
+             valid_indices = np.where(~nans)[0]
+             if len(valid_indices) > 0:
+                  valid_times = times_val[valid_indices]
+                  diffs = np.diff(valid_times)
+                  big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
+                  for idx in big_gaps:
+                       t_start = valid_times[idx]
+                       t_end = valid_times[idx+1]
+                       mask = (times_val > t_start) & (times_val < t_end)
+                       val[mask] = np.nan
     else:
         raise ValueError(f"Unknown impute method '{method}'")
 
