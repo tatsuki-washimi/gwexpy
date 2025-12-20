@@ -317,9 +317,10 @@ class TimeSeries(BaseTimeSeries):
              start_time_val = old_times_q[0].value
              stop_time_val = self.span[1].value if hasattr(self.span[1], 'value') else self.span[1]
         else:
-             target_dt_in_time_unit = u.Quantity(target_dt, time_unit)
-             start_time_val = u.Quantity(old_times_q[0], time_unit).value
-             stop_time_val = u.Quantity(self.span[1], time_unit).value
+             safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
+             target_dt_in_time_unit = u.Quantity(target_dt, safe_unit)
+             start_time_val = u.Quantity(old_times_q[0], safe_unit).value
+             stop_time_val = u.Quantity(self.span[1], safe_unit).value
              
         dt_val = target_dt_in_time_unit.value
         

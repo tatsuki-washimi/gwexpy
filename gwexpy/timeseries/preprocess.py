@@ -107,10 +107,13 @@ def align_timeseries_collection(
     # Helper to get start/end in seconds
     def get_span_s(ts):
         t0 = ts.t0.to(common_time_unit).value
-        # Calculate end from t0 + len*dt (safer than span[1] if gaps or irregular?)
-        # BaseTimeSeries usually regular.
-        duration = (len(ts) * ts.dt).to(common_time_unit).value
-        return t0, t0 + duration
+        # Use valid span end directly
+        end_q = ts.span[1]
+        if hasattr(end_q, "to"):
+             end = end_q.to(common_time_unit).value
+        else:
+             end = end_q
+        return t0, end
 
     starts = []
     ends = []
