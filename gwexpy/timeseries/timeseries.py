@@ -251,6 +251,21 @@ def _validate_common_epoch(epochs, method_name):
 class TimeSeries(BaseTimeSeries):
     """Light wrapper of gwpy's TimeSeries for compatibility."""
 
+    def crop(self, start=None, end=None, copy=False):
+        """
+        Crop this series to the given GPS start and end times.
+        Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
+        """
+        from gwexpy.time import to_gps
+        # Convert inputs to GPS if provided
+        if start is not None:
+             start = to_gps(start)
+        if end is not None:
+             end = to_gps(end)
+            
+        return super().crop(start=start, end=end, copy=copy)
+
+
     def asfreq(
         self,
         rule,
@@ -3361,14 +3376,22 @@ class TimeSeriesDict(BaseTimeSeriesDict):
 
     # --- Waveform Operations ---
 
-    def crop(self, *args, **kwargs) -> "TimeSeriesDict":
+    def crop(self, start=None, end=None, copy=False) -> "TimeSeriesDict":
         """
         Crop each TimeSeries in the dict.
+        Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         Returns a new TimeSeriesDict.
         """
+        from gwexpy.time import to_gps
+        # Convert inputs to GPS if provided
+        if start is not None:
+            start = to_gps(start)
+        if end is not None:
+            end = to_gps(end)
+            
         new_dict = self.__class__()
         for key, ts in self.items():
-            new_dict[key] = ts.crop(*args, **kwargs)
+            new_dict[key] = ts.crop(start=start, end=end, copy=copy)
         return new_dict
 
     def append(self, *args, **kwargs) -> "TimeSeriesDict":
@@ -3731,14 +3754,22 @@ class TimeSeriesList(BaseTimeSeriesList):
 
     # --- Waveform Operations ---
 
-    def crop(self, *args, **kwargs) -> "TimeSeriesList":
+    def crop(self, start=None, end=None, copy=False) -> "TimeSeriesList":
         """
         Crop each TimeSeries in the list.
+        Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         Returns a new TimeSeriesList.
         """
+        from gwexpy.time import to_gps
+        # Convert inputs to GPS if provided
+        if start is not None:
+            start = to_gps(start)
+        if end is not None:
+            end = to_gps(end)
+            
         new_list = self.__class__()
         for ts in self:
-            list.append(new_list, ts.crop(*args, **kwargs))
+            list.append(new_list, ts.crop(start=start, end=end, copy=copy))
         return new_list
 
     # def append(self, *args, **kwargs) -> "TimeSeriesList":
@@ -4264,7 +4295,20 @@ class TimeSeriesMatrix(SeriesMatrix):
         from gwexpy.timeseries.rolling import rolling_max
         return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
         
+    def crop(self, start=None, end=None, copy=False):
+        """
+        Crop this matrix to the given GPS start and end times.
+        Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
+        """
+        from gwexpy.time import to_gps
+        if start is not None:
+             start = float(to_gps(start))
+        if end is not None:
+             end = float(to_gps(end))
+        return super().crop(start=start, end=end, copy=copy)
+
     def to_dict(self):
+
         """Convert to TimeSeriesDict."""
         # channel_names property should be available if SeriesMatrix logic works
         # If not, generate defaults

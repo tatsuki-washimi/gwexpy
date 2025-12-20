@@ -1,6 +1,7 @@
 
 from .metadata import MetaData, MetaDataDict, MetaDataMatrix
 from .seriesmatrix import SeriesMatrix
+from .series_creator import as_series
 
 from .axis import *
 from .axis_api import *
