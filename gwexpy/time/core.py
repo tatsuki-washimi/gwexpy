@@ -1,5 +1,8 @@
 import numpy as np
-import pandas as pd
+try:
+    import pandas as pd
+except ImportError:
+    pd = None
 from astropy.time import Time
 from gwpy.time import to_gps as _gwpy_to_gps
 from gwpy.time import tconvert as _gwpy_tconvert
@@ -9,15 +12,17 @@ __all__ = ["to_gps", "from_gps", "tconvert"]
 
 def _is_array(obj):
     """Check if the object is an array-like (list, numpy, pandas), but not a string."""
+    is_pd = False
+    if pd is not None:
+        is_pd = isinstance(obj, (pd.Series, pd.Index))
     return (
-        isinstance(obj, (list, tuple, np.ndarray, pd.Series, pd.Index)) 
-        and not isinstance(obj, (str, bytes))
-    )
+        isinstance(obj, (list, tuple, np.ndarray)) or is_pd
+    ) and not isinstance(obj, (str, bytes))
 
 def _normalize_time_input(t):
     """Normalize input to standard types (datetime, numpy array, etc.) for interoperability."""
     # Pandas types
-    if isinstance(t, (pd.Timestamp, pd.DatetimeIndex, pd.Series)):
+    if pd is not None and isinstance(t, (pd.Timestamp, pd.DatetimeIndex, pd.Series)):
         if hasattr(t, "values"):
             return t.values
         return t.to_pydatetime()
@@ -55,10 +60,12 @@ def to_gps(t, *args, **kwargs):
 
     # Vectorized conversion
     try:
-        # Check if already numeric (assuming GPS numbers)
+        # Check if numeric or can be converted to numeric (e.g. numeric strings)
         t_arr = np.asarray(t_norm)
-        if np.issubdtype(t_arr.dtype, np.number):
+        try:
             return t_arr.astype(float)
+        except (ValueError, TypeError):
+            pass
         
         # Astropy vectorized conversion
         return Time(t_norm, *args, **kwargs).gps
@@ -93,8 +100,16 @@ def tconvert(t="now", *args, **kwargs):
 
     if _is_array(t_norm):
         arr = np.asarray(t_norm)
+        # Check if numeric or can be converted to numeric (e.g. GPS strings)
+        is_numeric = False
+        try:
+             arr.astype(float)
+             is_numeric = True
+        except (ValueError, TypeError):
+             pass
+
         # If numeric, assumes GPS -> datetime
-        if np.issubdtype(arr.dtype, np.number):
+        if is_numeric:
             return from_gps(t_norm, *args, **kwargs)
         # Otherwise, assumes time input -> GPS
         else:

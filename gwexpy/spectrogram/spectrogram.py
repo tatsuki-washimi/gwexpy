@@ -10,7 +10,7 @@ import h5py
 from astropy import units as u
 
 from gwpy.spectrogram import Spectrogram
-from gwpy.plot import Plot
+from gwexpy.plot import Plot
 
 # Optional dependencies
 try:
@@ -39,12 +39,59 @@ class SpectrogramMatrix(np.ndarray):
     unit : Unit
     name : str
     """
-    def __new__(cls, input_array, times=None, frequencies=None, unit=None, name=None):
+    def __new__(cls, input_array, times=None, frequencies=None, unit=None, name=None, 
+                rows=None, cols=None, meta=None):
         obj = np.asarray(input_array).view(cls)
         obj.times = times
         obj.frequencies = frequencies
         obj.unit = unit
         obj.name = name
+        
+        # Metadata for indexing rows/cols if applicable
+        from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
+        
+        def _entries_len(entries):
+            if entries is None:
+                return None
+            try:
+                return len(entries)
+            except TypeError:
+                return None
+
+        if obj.ndim == 3:
+             N = obj.shape[0]
+             row_len = _entries_len(rows)
+             col_len = _entries_len(cols)
+             use_grid = False
+
+             if row_len is not None or col_len is not None:
+                 if row_len is None and col_len:
+                     if N % col_len == 0:
+                         row_len = N // col_len
+                 if col_len is None and row_len:
+                     if N % row_len == 0:
+                         col_len = N // row_len
+                 if row_len and col_len and row_len * col_len == N:
+                     use_grid = True
+
+             if use_grid:
+                 obj.rows = MetaDataDict(rows, expected_size=row_len, key_prefix='row')
+                 obj.cols = MetaDataDict(cols, expected_size=col_len, key_prefix='col')
+                 obj.meta = MetaDataMatrix(meta, shape=(row_len, col_len))
+             else:
+                 obj.rows = MetaDataDict(rows, expected_size=N, key_prefix='batch')
+                 obj.cols = MetaDataDict(None, expected_size=1, key_prefix='col') # Not really used for 3D but for consistency
+                 obj.meta = MetaDataMatrix(meta, shape=(N, 1))
+        elif obj.ndim == 4:
+             nrow, ncol = obj.shape[:2]
+             obj.rows = MetaDataDict(rows, expected_size=nrow, key_prefix='row')
+             obj.cols = MetaDataDict(cols, expected_size=ncol, key_prefix='col')
+             obj.meta = MetaDataMatrix(meta, shape=(nrow, ncol))
+        else:
+             obj.rows = None
+             obj.cols = None
+             obj.meta = None
+
         return obj
 
     def __array_finalize__(self, obj):
@@ -53,6 +100,9 @@ class SpectrogramMatrix(np.ndarray):
         self.frequencies = getattr(obj, 'frequencies', None)
         self.unit = getattr(obj, 'unit', None)
         self.name = getattr(obj, 'name', None)
+        self.rows = getattr(obj, 'rows', None)
+        self.cols = getattr(obj, 'cols', None)
+        self.meta = getattr(obj, 'meta', None)
 
     def mean(self, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         res = super().mean(axis=axis, dtype=dtype, out=out, keepdims=keepdims, where=where)
@@ -60,30 +110,192 @@ class SpectrogramMatrix(np.ndarray):
         # Typically (N, Time, Freq) -> mean(axis=1) -> (N, Freq)
         return res
 
+    def row_keys(self):
+        return list(self.rows.keys()) if self.rows else []
+
+    def col_keys(self):
+        return list(self.cols.keys()) if self.cols else []
+
     def plot(self, **kwargs):
         """
         Plot the matrix data.
-        If it is 3D (Batch, Time, Freq), defaults to plotting mean spectrogram.
-        Kwargs: monitor=int (index), method='pcolormesh'
+        
+        If it is 3D (Batch, Time, Freq), plots a vertical list of spectrograms.
+        If it is 4D (Row, Col, Time, Freq), plots a grid of spectrograms.
+        If row/col metadata implies a grid for 3D, that grid is used instead
+        of a single column.
+        
+        Optional Kwargs:
+            monitor: int or (row, col) to plot a single element
+            method: 'pcolormesh' (default)
+            separate: bool (default True for 4D)
+            geometry: tuple (default based on shape)
+            yscale: 'log' (default)
+            xscale: 'linear' (default)
         """
         kwargs.setdefault("method", "pcolormesh")
+        kwargs.setdefault("yscale", "log")
+        kwargs.setdefault("xscale", "linear")
+
+        def _normalize_names(names, keys, count):
+            if names is not None and len(names) == count:
+                if any(name not in (None, "") for name in names):
+                    return [str(name) if name is not None else None for name in names]
+            if keys is not None and len(keys) == count:
+                return [str(key) for key in keys]
+            return [None] * count
+
+        def _spectrogram_name(row_name, col_name):
+            if row_name and col_name:
+                return f"{row_name},{col_name}"
+            if row_name:
+                return str(row_name)
+            if col_name:
+                return str(col_name)
+            return None
+
+        def _apply_grid_labels(plot_obj, nrow, ncol, row_names, col_names):
+            axes = plot_obj.axes[: nrow * ncol]
+            if 'ylabel' not in kwargs:
+                for i, name in enumerate(row_names):
+                    idx = i * ncol
+                    if idx < len(axes) and name:
+                        axes[idx].set_ylabel(str(name))
+            if 'title' not in kwargs:
+                for j, name in enumerate(col_names):
+                    if j < len(axes) and name:
+                        axes[j].set_title(str(name), pad=8)
+            if kwargs.get("constrained_layout", True):
+                try:
+                    plot_obj.set_constrained_layout(True)
+                except Exception:
+                    pass
+            return plot_obj
+        
+        monitor = kwargs.pop("monitor", None)
+
         if self.ndim == 3:
-             index = kwargs.pop("monitor", None)
+             index = monitor
              if index is not None:
                   data = self[index]
-                  title = f"Channel {index}"
+                  title = self.rows.names[index] if self.rows else f"Channel {index}"
+                  s = Spectrogram(
+                       data,
+                       times=self.times,
+                       frequencies=self.frequencies,
+                       unit=self.unit,
+                       name=self.name or title
+                  )
+                  return s.plot(**kwargs)
              else:
-                  data = np.mean(self, axis=0)
-                  title = "Mean Spectrogram"
-             
-             s = Spectrogram(
-                  data,
-                  times=self.times,
-                  frequencies=self.frequencies,
-                  unit=self.unit,
-                  name=self.name or title
+                  # If no monitor, plot as a grid if row/col metadata implies one
+                  n_items = self.shape[0]
+                  geometry = kwargs.get("geometry")
+                  if geometry is not None:
+                      nrow, ncol = geometry
+                  else:
+                      row_count = len(self.rows) if self.rows else 0
+                      col_count = len(self.cols) if self.cols else 0
+                      if row_count and col_count:
+                          if row_count * col_count == n_items:
+                              nrow, ncol = row_count, col_count
+                          elif col_count == n_items:
+                              nrow, ncol = 1, col_count
+                          elif row_count == n_items:
+                              nrow, ncol = row_count, 1
+                          else:
+                              nrow, ncol = n_items, 1
+                      else:
+                          nrow, ncol = n_items, 1
+
+                  row_names = _normalize_names(
+                      self.rows.names if self.rows else None,
+                      list(self.rows.keys()) if self.rows else None,
+                      nrow,
+                  )
+                  col_names = _normalize_names(
+                      self.cols.names if self.cols else None,
+                      list(self.cols.keys()) if self.cols else None,
+                      ncol,
+                  )
+
+                  specs = []
+                  for i in range(nrow):
+                       for j in range(ncol):
+                            idx = i * ncol + j
+                            if idx >= n_items:
+                                break
+                            name = _spectrogram_name(row_names[i], col_names[j])
+                            s = Spectrogram(
+                                 self[idx],
+                                 times=self.times,
+                                 frequencies=self.frequencies,
+                                 unit=self.unit,
+                                 name=name
+                            )
+                            specs.append(s)
+                  kwargs.setdefault("separate", True)
+                  kwargs.setdefault("geometry", (nrow, ncol))
+                  plot = Plot(*specs, **kwargs)
+                  return _apply_grid_labels(plot, nrow, ncol, row_names, col_names)
+        
+        elif self.ndim == 4:
+             nrow, ncol = self.shape[:2]
+             r_names = _normalize_names(
+                 self.rows.names if self.rows else None,
+                 list(self.rows.keys()) if self.rows else None,
+                 nrow,
              )
-             return s.plot(**kwargs)
+             c_names = _normalize_names(
+                 self.cols.names if self.cols else None,
+                 list(self.cols.keys()) if self.cols else None,
+                 ncol,
+             )
+
+             if monitor is not None:
+                  if isinstance(monitor, tuple) and len(monitor) == 2:
+                       row, col = monitor
+                  elif isinstance(monitor, (int, np.integer)):
+                       if ncol == 1:
+                            row, col = int(monitor), 0
+                       elif nrow == 1:
+                            row, col = 0, int(monitor)
+                       else:
+                            row = int(monitor) // ncol
+                            col = int(monitor) % ncol
+                  else:
+                       raise TypeError("monitor must be int or (row, col)")
+
+                  if row < 0 or col < 0 or row >= nrow or col >= ncol:
+                       raise IndexError("monitor index out of range")
+
+                  name = _spectrogram_name(r_names[row], c_names[col])
+                  s = Spectrogram(
+                       self[row, col],
+                       times=self.times,
+                       frequencies=self.frequencies,
+                       unit=self.unit,
+                       name=name
+                  )
+                  return s.plot(**kwargs)
+
+             # Expand into flat list of Spectrogram objects
+             specs = []
+             for i in range(nrow):
+                  for j in range(ncol):
+                       s = Spectrogram(
+                            self[i, j],
+                            times=self.times,
+                            frequencies=self.frequencies,
+                            unit=self.unit,
+                            name=_spectrogram_name(r_names[i], c_names[j])
+                       )
+                       specs.append(s)
+             kwargs.setdefault("separate", True)
+             kwargs.setdefault("geometry", (nrow, ncol))
+             plot = Plot(*specs, **kwargs)
+             return _apply_grid_labels(plot, nrow, ncol, r_names, c_names)
+             
         return Plot()
 
     def to_torch(self, device=None, dtype=None):
@@ -239,10 +451,17 @@ class SpectrogramList(UserList):
         return target
 
     def plot(self, **kwargs):
-        """Plot all spectrograms."""
+        """Plot all spectrograms stacked vertically."""
         kwargs.setdefault("method", "pcolormesh")
+        kwargs.setdefault("yscale", "log")
+        kwargs.setdefault("xscale", "linear")
         if not self:
              return Plot()
+        
+        # Default to vertical stacking
+        kwargs.setdefault("separate", True)
+        kwargs.setdefault("geometry", (len(self), 1))
+        
         return Plot(*self, **kwargs)
 
     def to_matrix(self):
@@ -413,9 +632,17 @@ class SpectrogramDict(UserDict):
         return target
 
     def plot(self, **kwargs):
+        """Plot all spectrograms stacked vertically."""
         kwargs.setdefault("method", "pcolormesh")
+        kwargs.setdefault("yscale", "log")
+        kwargs.setdefault("xscale", "linear")
         if not self:
              return Plot()
+        
+        # Default to vertical stacking
+        kwargs.setdefault("separate", True)
+        kwargs.setdefault("geometry", (len(self), 1))
+        
         return Plot(*self.values(), **kwargs)
 
     def to_matrix(self):

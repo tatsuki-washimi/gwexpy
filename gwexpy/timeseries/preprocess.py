@@ -391,7 +391,7 @@ def impute_timeseries(ts, *, method="interpolate", limit=None, axis="time", max_
         # If we have max_gap, we shouldn't fill if time_curr - time_last_valid > max_gap.
         # Harder to map to pandas directly.
         # Manual implementation might be needed for max_gap + ffill?
-        # P0 spec says: "max_gap は「補間対象区間の選別」だけに責務を限定する"
+        # P0 spec says: "max_gap responsibility is limited to selecting target intervals for interpolation"
         # Since interpolation fills the gap, if gap > max_gap, we just revert.
         
         val = s.ffill(limit=limit).values
@@ -401,7 +401,7 @@ def impute_timeseries(ts, *, method="interpolate", limit=None, axis="time", max_
              # For ffill: for each point, time - time_of_last_valid <= max_gap
              # But we can just use the generic logic:
              # Find original gaps. If gap > max_gap, revert ALL points in that gap to NaN?
-             # Yes, "区間長 > max_gap の区間は補間しない（NaN のまま残す）"
+             # Yes, "intervals longer than max_gap are not interpolated (remain as NaN)"
              # This applies regardless of method.
              
              valid_indices = np.where(~nans)[0]
@@ -439,7 +439,7 @@ def impute_timeseries(ts, *, method="interpolate", limit=None, axis="time", max_
         val[nans] = np.nanmean(val)
         # Mean fills everything.
         # Max gap? 
-        # "区間長 > max_gap の区間は補間しない"
+        # "intervals longer than max_gap are not interpolated"
         # Does 'mean' imputation imply bridging gaps? Usually it's global fill.
         # But if the requirement stands, we should not fill in large gaps even with global mean?
         # That seems consistent.

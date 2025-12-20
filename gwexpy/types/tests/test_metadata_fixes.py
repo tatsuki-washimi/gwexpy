@@ -6,7 +6,7 @@ from gwexpy.types.metadata import MetaData
 
 
 def test_metadata_right_hand_operations_dimensionless():
-    """右側演算で MetaData の name/channel を保持し例外にならないこと"""
+    """Ensure name/channel are preserved and no exception occurs during right-hand operations."""
     m = MetaData(name="a", unit=u.dimensionless_unscaled)
 
     out1 = 2 + m
@@ -17,20 +17,20 @@ def test_metadata_right_hand_operations_dimensionless():
     for out in (out1, out2, out3, out4):
         assert isinstance(out, MetaData)
         assert out.name == "a"
-        # channel は Channel("") だが比較は文字列で十分
+        # channel is Channel(""), but string comparison is sufficient.
         assert str(out.channel) == ""
         assert out.unit.is_equivalent(u.dimensionless_unscaled)
 
 
 def test_metadata_right_hand_unit_mismatch_raises():
-    """非互換単位の加算は UnitConversionError を送出"""
+    """Addition with incompatible units should raise UnitConversionError."""
     m = MetaData(name="a", unit=u.m)
     with pytest.raises(u.UnitConversionError):
         _ = 2 + m
 
 
 def test_metadata_right_hand_quantity_left():
-    """Quantity 左側でも MetaData 情報を保持して演算できる"""
+    """MetaData information is preserved even when a Quantity is on the left-hand side."""
     m = MetaData(name="a", unit=u.dimensionless_unscaled)
     out = (3 * u.m) * m
     assert isinstance(out, MetaData)

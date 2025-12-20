@@ -259,9 +259,9 @@ class TimeSeries(BaseTimeSeries):
         from gwexpy.time import to_gps
         # Convert inputs to GPS if provided
         if start is not None:
-             start = to_gps(start)
+             start = float(to_gps(start))
         if end is not None:
-             end = to_gps(end)
+             end = float(to_gps(end))
             
         return super().crop(start=start, end=end, copy=copy)
 
@@ -273,7 +273,7 @@ class TimeSeries(BaseTimeSeries):
         fill_value=np.nan,
         *,
         origin='t0',
-        offset=0 * u.s,
+        offset=None,
         align='ceil',
         tolerance=None,
         max_gap=None,
@@ -283,26 +283,28 @@ class TimeSeries(BaseTimeSeries):
         Reindex the TimeSeries to a new fixed-interval grid associated with the given rule.
         """
         # 1. Parse rule to target dt (Quantity)
-        if isinstance(rule, str):
+        if isinstance(rule, (int, float, np.number)):
+            target_dt = u.Quantity(rule)
+        elif isinstance(rule, str):
             # Simple parser for '1s', '10ms' etc.
-            # Using unit logic from astropy or similar
             try:
                 target_dt = u.Quantity(rule)
-            except TypeError:
+            except (TypeError, ValueError):
                 # If astropy fails to parse simple string directly, try splitting
                 import re
-                match = re.match(r"([0-9\.]+)([a-zA-Z]+)", rule)
+                match = re.match(r"([0-9\.]+)([a-zA-Z]*)", rule)
                 if match:
                     val, unit_str = match.groups()
-                    target_dt = float(val) * u.Unit(unit_str)
+                    if not unit_str:
+                        target_dt = u.Quantity(float(val))
+                    else:
+                        target_dt = float(val) * u.Unit(unit_str)
                 else:
                     raise ValueError(f"Could not parse rule: {rule}")
         elif isinstance(rule, u.Quantity):
             target_dt = rule
         else:
-             # Fallback: assume seconds if it's a number? 
-             # Requirement says: "support s/ms/us/ns/min/h/day", numeric not supported by default.
-             raise TypeError("rule must be a string or astropy Quantity (time).")
+             raise TypeError("rule must be a string, number, or astropy Quantity.")
 
         # Validate rule unit compatibility
         is_time = target_dt.unit.physical_type == 'time'
@@ -340,14 +342,31 @@ class TimeSeries(BaseTimeSeries):
                   stop_time_val = old_times_q[-1].value
         else:
              safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
-             target_dt_in_time_unit = u.Quantity(target_dt, safe_unit)
-             start_time_val = u.Quantity(old_times_q[0], safe_unit).value
+             # target_dt might be numeric (dimensionless) or already have safe_unit
+             if target_dt.unit == u.dimensionless_unscaled:
+                  target_dt_in_time_unit = u.Quantity(target_dt.value, safe_unit)
+                  # Override target_dt to ensure it has units compatible with constructor
+                  target_dt = target_dt_in_time_unit
+             else:
+                  target_dt_in_time_unit = target_dt.to(safe_unit)
+
+             # start_time_val
+             if old_times_q.unit == u.dimensionless_unscaled:
+                  start_time_val = old_times_q[0].value
+             else:
+                  start_time_val = old_times_q[0].to(safe_unit).value
              
              if hasattr(self, 'dt') and self.dt is not None:
-                 dt_input = u.Quantity(self.dt, safe_unit).value
+                 if self.dt.unit == u.dimensionless_unscaled:
+                      dt_input = self.dt.value
+                 else:
+                      dt_input = self.dt.to(safe_unit).value
                  stop_time_val = start_time_val + (len(self) * dt_input)
              else:
-                 stop_time_val = u.Quantity(old_times_q[-1], safe_unit).value
+                 if old_times_q.unit == u.dimensionless_unscaled:
+                      stop_time_val = old_times_q[-1].value
+                 else:
+                      stop_time_val = old_times_q[-1].to(safe_unit).value
              
         dt_val = target_dt_in_time_unit.value
         
@@ -377,7 +396,18 @@ class TimeSeries(BaseTimeSeries):
         else:
             origin_val = 0.0 
             
-        offset_val = u.Quantity(offset).to(safe_unit).value
+        if offset is None:
+            offset_val = 0.0
+        else:
+            try:
+                offset_val = u.Quantity(offset).to(safe_unit).value
+            except u.UnitConversionError:
+                # Be lenient if user passed numeric 0 or Quantity 0 of incompatible unit
+                if u.Quantity(offset).value == 0:
+                    offset_val = 0.0
+                else:
+                    raise
+
         base_val = origin_val + offset_val
         
         # 4. Generate New Grid
@@ -3275,6 +3305,90 @@ class TimeSeriesDict(BaseTimeSeriesDict):
             **kwargs
         )
 
+    def csd(self, other=None, *, fftlength=None, overlap=None, window="hann", hermitian=True, include_diagonal=True, **kwargs):
+        """
+        Compute CSD for each element or as a matrix depending on `other`.
+        """
+        if other is self:
+            other = None
+        if other is None or (isinstance(other, str) and other.lower() == "self"):
+            return self.csd_matrix(
+                fftlength=fftlength,
+                overlap=overlap,
+                window=window,
+                hermitian=hermitian,
+                include_diagonal=include_diagonal,
+                **kwargs,
+            )
+
+        if isinstance(other, BaseTimeSeries):
+            from gwexpy.frequencyseries import FrequencySeriesDict
+            new_dict = FrequencySeriesDict()
+            for key, ts in self.items():
+                new_dict[key] = ts.csd(
+                    other, fftlength=fftlength, overlap=overlap, window=window, **kwargs
+                )
+            return new_dict
+
+        if isinstance(other, (BaseTimeSeriesList, BaseTimeSeriesDict, list, dict)):
+            return csd_matrix_from_collection(
+                self,
+                other,
+                fftlength=fftlength,
+                overlap=overlap,
+                window=window,
+                hermitian=hermitian,
+                include_diagonal=include_diagonal,
+                **kwargs,
+            )
+
+        raise TypeError(
+            "other must be TimeSeries, TimeSeriesList/Dict, or None/'self'"
+        )
+
+    def coherence(self, other=None, *, fftlength=None, overlap=None, window="hann", symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs):
+        """
+        Compute coherence for each element or as a matrix depending on `other`.
+        """
+        if other is self:
+            other = None
+        if other is None or (isinstance(other, str) and other.lower() == "self"):
+            return self.coherence_matrix(
+                fftlength=fftlength,
+                overlap=overlap,
+                window=window,
+                symmetric=symmetric,
+                include_diagonal=include_diagonal,
+                diagonal_value=diagonal_value,
+                **kwargs,
+            )
+
+        if isinstance(other, BaseTimeSeries):
+            from gwexpy.frequencyseries import FrequencySeriesDict
+            new_dict = FrequencySeriesDict()
+            for key, ts in self.items():
+                new_dict[key] = ts.coherence(
+                    other, fftlength=fftlength, overlap=overlap, window=window, **kwargs
+                )
+            return new_dict
+
+        if isinstance(other, (BaseTimeSeriesList, BaseTimeSeriesDict, list, dict)):
+            return coherence_matrix_from_collection(
+                self,
+                other,
+                fftlength=fftlength,
+                overlap=overlap,
+                window=window,
+                symmetric=symmetric,
+                include_diagonal=include_diagonal,
+                diagonal_value=diagonal_value,
+                **kwargs,
+            )
+
+        raise TypeError(
+            "other must be TimeSeries, TimeSeriesList/Dict, or None/'self'"
+        )
+
 
     def asd(self, fftlength=4, overlap=2):
         from gwexpy.frequencyseries import FrequencySeries
@@ -3289,7 +3403,40 @@ class TimeSeriesDict(BaseTimeSeriesDict):
                 for key, ts in self.items()
             }
         )
-        
+
+    def spectrogram(self, *args, **kwargs):
+        """
+        Compute spectrogram for each TimeSeries in the dict.
+        Returns a SpectrogramDict.
+        """
+        from gwexpy.spectrogram import SpectrogramDict
+        new_dict = SpectrogramDict()
+        for key, ts in self.items():
+            new_dict[key] = ts.spectrogram(*args, **kwargs)
+        return new_dict
+
+    def spectrogram2(self, *args, **kwargs):
+        """
+        Compute spectrogram2 for each TimeSeries in the dict.
+        Returns a SpectrogramDict.
+        """
+        from gwexpy.spectrogram import SpectrogramDict
+        new_dict = SpectrogramDict()
+        for key, ts in self.items():
+            new_dict[key] = ts.spectrogram2(*args, **kwargs)
+        return new_dict
+
+    def q_transform(self, *args, **kwargs):
+        """
+        Compute Q-transform for each TimeSeries in the dict.
+        Returns a SpectrogramDict.
+        """
+        from gwexpy.spectrogram import SpectrogramDict
+        new_dict = SpectrogramDict()
+        for key, ts in self.items():
+            new_dict[key] = ts.q_transform(*args, **kwargs)
+        return new_dict
+
     
     # ===============================
     # Interoperability Methods (P0)
@@ -3385,9 +3532,9 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         from gwexpy.time import to_gps
         # Convert inputs to GPS if provided
         if start is not None:
-            start = to_gps(start)
+            start = float(to_gps(start))
         if end is not None:
-            end = to_gps(end)
+            end = float(to_gps(end))
             
         new_dict = self.__class__()
         for key, ts in self.items():
@@ -3700,6 +3847,90 @@ class TimeSeriesList(BaseTimeSeriesList):
             diagonal_value=diagonal_value,
             **kwargs
         )
+
+    def csd(self, other=None, *, fftlength=None, overlap=None, window="hann", hermitian=True, include_diagonal=True, **kwargs):
+        """
+        Compute CSD for each element or as a matrix depending on `other`.
+        """
+        if other is self:
+            other = None
+        if other is None or (isinstance(other, str) and other.lower() == "self"):
+            return self.csd_matrix(
+                fftlength=fftlength,
+                overlap=overlap,
+                window=window,
+                hermitian=hermitian,
+                include_diagonal=include_diagonal,
+                **kwargs,
+            )
+
+        if isinstance(other, BaseTimeSeries):
+            from gwexpy.frequencyseries import FrequencySeriesList
+            new_list = FrequencySeriesList()
+            for ts in self:
+                list.append(new_list, ts.csd(
+                    other, fftlength=fftlength, overlap=overlap, window=window, **kwargs
+                ))
+            return new_list
+
+        if isinstance(other, (BaseTimeSeriesList, BaseTimeSeriesDict, list, dict)):
+            return csd_matrix_from_collection(
+                self,
+                other,
+                fftlength=fftlength,
+                overlap=overlap,
+                window=window,
+                hermitian=hermitian,
+                include_diagonal=include_diagonal,
+                **kwargs,
+            )
+
+        raise TypeError(
+            "other must be TimeSeries, TimeSeriesList/Dict, or None/'self'"
+        )
+
+    def coherence(self, other=None, *, fftlength=None, overlap=None, window="hann", symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs):
+        """
+        Compute coherence for each element or as a matrix depending on `other`.
+        """
+        if other is self:
+            other = None
+        if other is None or (isinstance(other, str) and other.lower() == "self"):
+            return self.coherence_matrix(
+                fftlength=fftlength,
+                overlap=overlap,
+                window=window,
+                symmetric=symmetric,
+                include_diagonal=include_diagonal,
+                diagonal_value=diagonal_value,
+                **kwargs,
+            )
+
+        if isinstance(other, BaseTimeSeries):
+            from gwexpy.frequencyseries import FrequencySeriesList
+            new_list = FrequencySeriesList()
+            for ts in self:
+                list.append(new_list, ts.coherence(
+                    other, fftlength=fftlength, overlap=overlap, window=window, **kwargs
+                ))
+            return new_list
+
+        if isinstance(other, (BaseTimeSeriesList, BaseTimeSeriesDict, list, dict)):
+            return coherence_matrix_from_collection(
+                self,
+                other,
+                fftlength=fftlength,
+                overlap=overlap,
+                window=window,
+                symmetric=symmetric,
+                include_diagonal=include_diagonal,
+                diagonal_value=diagonal_value,
+                **kwargs,
+            )
+
+        raise TypeError(
+            "other must be TimeSeries, TimeSeriesList/Dict, or None/'self'"
+        )
     
     def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
          new_list = self.__class__()
@@ -3763,9 +3994,9 @@ class TimeSeriesList(BaseTimeSeriesList):
         from gwexpy.time import to_gps
         # Convert inputs to GPS if provided
         if start is not None:
-            start = to_gps(start)
+            start = float(to_gps(start))
         if end is not None:
-            end = to_gps(end)
+            end = float(to_gps(end))
             
         new_list = self.__class__()
         for ts in self:
@@ -3955,6 +4186,39 @@ class TimeSeriesList(BaseTimeSeriesList):
         new_list = FrequencySeriesList()
         for ts in self:
             list.append(new_list, ts.asd(*args, **kwargs))
+        return new_list
+
+    def spectrogram(self, *args, **kwargs):
+        """
+        Compute spectrogram for each TimeSeries in the list.
+        Returns a SpectrogramList.
+        """
+        from gwexpy.spectrogram import SpectrogramList
+        new_list = SpectrogramList()
+        for ts in self:
+            new_list.append(ts.spectrogram(*args, **kwargs))
+        return new_list
+
+    def spectrogram2(self, *args, **kwargs):
+        """
+        Compute spectrogram2 for each TimeSeries in the list.
+        Returns a SpectrogramList.
+        """
+        from gwexpy.spectrogram import SpectrogramList
+        new_list = SpectrogramList()
+        for ts in self:
+            new_list.append(ts.spectrogram2(*args, **kwargs))
+        return new_list
+
+    def q_transform(self, *args, **kwargs):
+        """
+        Compute Q-transform for each TimeSeries in the list.
+        Returns a SpectrogramList.
+        """
+        from gwexpy.spectrogram import SpectrogramList
+        new_list = SpectrogramList()
+        for ts in self:
+            new_list.append(ts.q_transform(*args, **kwargs))
         return new_list
 
     # --- Statistics & Measurements ---
@@ -4259,10 +4523,11 @@ class TimeSeriesMatrix(SeriesMatrix):
         # Note: standardize_matrix assumes (channels, time) input correctly now (handles axis).
         return standardize_matrix(self, axis=axis, method=method, ddof=ddof)
 
-    def whiten_channels(self, *, method="pca", eps=1e-12, n_components=None, return_model=False):
+    def whiten_channels(self, *, method="pca", eps=1e-12, n_components=None, return_model=True):
         """
         Whiten the matrix (channels/components).
-        Returns whitened_matrix, or (whitened_matrix, WhiteningModel) if return_model=True.
+        Returns (whitened_matrix, WhiteningModel) by default.
+        Set return_model=False to return only the whitened matrix.
         See gwexpy.timeseries.preprocess.whiten_matrix.
         """
         mat, model = whiten_matrix(self, method=method, eps=eps, n_components=n_components)
@@ -4779,6 +5044,102 @@ class TimeSeriesMatrix(SeriesMatrix):
             epoch=common_epoch,
         )
 
+    def _apply_spectrogram_method(self, method_name, *args, **kwargs):
+        """
+        Apply a TimeSeries spectrogram method element-wise and return SpectrogramMatrix.
+        """
+        from gwexpy.spectrogram import SpectrogramMatrix
+
+        if not hasattr(self.series_class, method_name):
+            raise NotImplementedError(
+                f"Not implemented: TimeSeries has no method '{method_name}' in this GWpy version"
+            )
+
+        N, M, _ = self.shape
+        if N == 0 or M == 0:
+            return SpectrogramMatrix(np.empty((N, M, 0, 0)))
+
+        values = [[None for _ in range(M)] for _ in range(N)]
+        meta_array = np.empty((N, M), dtype=object)
+        time_infos = []
+        freq_infos = []
+        epochs = []
+        dtype = None
+        unit_ref = None
+        name_ref = None
+
+        for i in range(N):
+            for j in range(M):
+                ts = self[i, j]
+                result = getattr(ts, method_name)(*args, **kwargs)
+                if not hasattr(result, "times") or not hasattr(result, "frequencies"):
+                    raise TypeError(
+                        f"{method_name} must return a Spectrogram-like object"
+                    )
+
+                time_info = _extract_axis_info(result)
+                freq_info = _extract_freq_axis_info(result)
+                time_infos.append(time_info)
+                freq_infos.append(freq_info)
+                epochs.append(getattr(result, "epoch", None))
+
+                data_arr = np.asarray(result.value)
+                if data_arr.ndim != 2:
+                    raise ValueError(
+                        f"{method_name} must return 2D spectrogram data"
+                    )
+                values[i][j] = data_arr
+                meta_array[i, j] = MetaData(
+                    unit=getattr(result, "unit", None),
+                    name=getattr(result, "name", None),
+                    channel=getattr(result, "channel", None),
+                )
+
+                unit = getattr(result, "unit", None)
+                if unit_ref is None:
+                    unit_ref = unit
+                elif unit != unit_ref:
+                    raise ValueError(
+                        f"{method_name} requires common unit; mismatch in unit"
+                    )
+
+                if name_ref is None:
+                    name_ref = getattr(result, "name", None)
+
+                dtype = (
+                    data_arr.dtype
+                    if dtype is None
+                    else np.result_type(dtype, data_arr.dtype)
+                )
+
+        common_times, n_time = _validate_common_axis(time_infos, method_name)
+        common_freqs, _, _, n_freq = _validate_common_frequency_axis(
+            freq_infos, method_name
+        )
+        _validate_common_epoch(epochs, method_name)
+
+        out_data = np.empty((N, M, n_time, n_freq), dtype=dtype)
+        for i in range(N):
+            for j in range(M):
+                if values[i][j].shape != (n_time, n_freq):
+                    raise ValueError(
+                        f"{method_name} produced inconsistent spectrogram shapes"
+                    )
+                out_data[i, j, :, :] = values[i][j]
+
+        meta_matrix = MetaDataMatrix(meta_array)
+
+        return SpectrogramMatrix(
+            out_data,
+            times=common_times,
+            frequencies=common_freqs,
+            unit=unit_ref,
+            name=getattr(self, "name", None) or name_ref,
+            rows=self.rows,
+            cols=self.cols,
+            meta=meta_matrix,
+        )
+
     def _run_spectral_method(self, method_name, **kwargs):
         """
         Helper for fft, psd, asd.
@@ -4931,6 +5292,27 @@ class TimeSeriesMatrix(SeriesMatrix):
         Returns FrequencySeriesMatrix.
         """
         return self._run_spectral_method("asd", **kwargs)
+
+    def spectrogram(self, *args, **kwargs):
+        """
+        Compute spectrogram of each element.
+        Returns SpectrogramMatrix.
+        """
+        return self._apply_spectrogram_method("spectrogram", *args, **kwargs)
+
+    def spectrogram2(self, *args, **kwargs):
+        """
+        Compute spectrogram2 of each element.
+        Returns SpectrogramMatrix.
+        """
+        return self._apply_spectrogram_method("spectrogram2", *args, **kwargs)
+
+    def q_transform(self, *args, **kwargs):
+        """
+        Compute Q-transform of each element.
+        Returns SpectrogramMatrix.
+        """
+        return self._apply_spectrogram_method("q_transform", *args, **kwargs)
 
     def _repr_string_(self):
         if self.size > 0:

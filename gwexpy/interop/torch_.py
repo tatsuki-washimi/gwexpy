@@ -8,16 +8,17 @@ def to_torch(ts, device=None, dtype=None, requires_grad=False, copy=False):
     """
     torch = require_optional("torch")
     
+    # Use .value if ts is a Quantity (which it usually is in GWpy/gwexpy)
+    # However, ts itself might be the TimeSeries/FrequencySeries object.
+    # GWpy Series objects have a .value property (inherited from ndarray view).
     data = ts.value
-    # torch.tensor(data) copies by default? 
-    # torch.as_tensor(data) avoids copy if possible.
-    # Spec says: copy=False (default).
+    if hasattr(data, 'value'):
+        # Just in case data is still an astropy Quantity
+        data = data.value
     
     if copy:
         tensor = torch.tensor(data, device=device, dtype=dtype, requires_grad=requires_grad)
     else:
-        # as_tensor doesn't support requires_grad directly in all versions, 
-        # but safely creates tensor sharing memory if possible (NumPy bridge).
         tensor = torch.as_tensor(data, device=device, dtype=dtype)
         if requires_grad:
             tensor.requires_grad_(True)

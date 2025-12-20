@@ -34,9 +34,9 @@ def test_value_internal_storage():
     assert sm.shape3D == (2, 3, 10), f"shape3D incorrect: {sm.shape3D}"
     assert sm.N_samples == 10, f"N_samples should be 10, got {sm.N_samples}"
     
-    print(f"✓ _value shape: {sm._value.shape}")
-    print(f"✓ shape3D: {sm.shape3D}")
-    print(f"✓ N_samples: {sm.N_samples}")
+    print(f"PASS: _value shape: {sm._value.shape}")
+    print(f"PASS: shape3D: {sm.shape3D}")
+    print(f"PASS: N_samples: {sm.N_samples}")
     print("PASS\n")
 
 
@@ -76,9 +76,9 @@ def test_xarray_duration_no_double_units():
     # duration should be 9 Hz (last - first in frequency space)
     assert np.isclose(duration.value, 9.0), f"duration value should be ~9, got {duration.value}"
     
-    print("✓ xarray has correct unit (Hz, not Hz²)")
-    print("✓ duration has correct unit (Hz, not Hz²)")
-    print("✓ duration value is correct (9 Hz)")
+    print("PASS: xarray has correct unit (Hz, not Hz^2)")
+    print("PASS: duration has correct unit (Hz, not Hz^2)")
+    print("PASS: duration value is correct (9 Hz)")
     print("PASS\n")
 
 
@@ -104,7 +104,7 @@ def test_quantity_input_unit_defaults():
             print(f"Cell ({i},{j}) unit: {unit}")
             assert unit == u.W, f"Cell ({i},{j}) should have unit W, got {unit}"
     
-    print("✓ All cells have Watts unit from input Quantity")
+    print("PASS: All cells have Watts unit from input Quantity")
     print("PASS\n")
 
 
@@ -127,12 +127,12 @@ def test_xindex_quantity_preserves_unit():
     assert hasattr(sm.xindex, 'unit'), "xindex should be a Quantity"
     assert sm.xindex.unit == u.s, f"xindex unit should be s, got {sm.xindex.unit}"
     
-    # xarray should also have seconds unit (not seconds²)
+    # xarray should also have seconds unit (not seconds^2)
     xarray = sm.xarray
     assert xarray.unit == u.s, f"xarray unit should be s, got {xarray.unit}"
     
-    print("✓ xindex preserves Quantity unit (seconds)")
-    print("✓ xarray has correct unit (seconds, not seconds²)")
+    print("PASS: xindex preserves Quantity unit (seconds)")
+    print("PASS: xarray has correct unit (seconds, not seconds^2)")
     print("PASS\n")
 
 
@@ -151,8 +151,8 @@ def test_basic_import_and_instantiation():
     assert sm.N_samples == 20, f"N_samples incorrect: {sm.N_samples}"
     assert sm.name == "test_matrix", f"Name incorrect: {sm.name}"
     
-    print(f"✓ Created SeriesMatrix with shape {sm.shape}")
-    print(f"✓ N_samples = {sm.N_samples}")
+    print(f"PASS: Created SeriesMatrix with shape {sm.shape}")
+    print(f"PASS: N_samples = {sm.N_samples}")
     print("PASS\n")
 
 
@@ -169,31 +169,31 @@ def test_array_ufunc_comparison_returns_bool():
 
 
 def test_array_ufunc_quantity_broadcast_shapes():
-    """Quantity は (0D|1D|2D|3D) を明示ルールでブロードキャストして演算できる"""
+    """Quantity can be broadcasted (0D|1D|2D|3D) with explicit rules for operations"""
     data = np.ones((2, 3, 4), dtype=float)
     xindex = np.arange(4, dtype=float)
     sm = SeriesMatrix(data, xindex=xindex, units=np.full((2, 3), u.m))
 
-    # 0D: 全要素に一様適用
+    # 0D: Uniformly applied to all elements
     r0 = sm * (2 * u.s)
     assert np.allclose(r0.value, 2.0)
     assert r0.meta[0, 0].unit == (u.m * u.s)
 
-    # 1D: サンプル軸 (N_samples,) のみ許可
+    # 1D: Only sample axis (N_samples,) allowed
     q1 = u.Quantity(np.arange(4, dtype=float), u.s)
     r1 = sm * q1
     assert np.allclose(r1.value[0, 0], q1.value)
     assert np.allclose(r1.value[1, 2], q1.value)
     assert r1.meta[1, 2].unit == (u.m * u.s)
 
-    # 2D: (Nrow,Ncol) のみ許可（サンプル軸は一様）
+    # 2D: Only (Nrow, Ncol) allowed (sample axis is uniform)
     q2 = u.Quantity(np.arange(6, dtype=float).reshape(2, 3), u.s)
     r2 = sm * q2
     assert np.allclose(r2.value[:, :, 0], q2.value)
     assert np.allclose(r2.value[:, :, -1], q2.value)
     assert r2.meta[0, 2].unit == (u.m * u.s)
 
-    # 3D: (Nrow,Ncol,Nsample) のみ許可（完全に要素対応）
+    # 3D: Only (Nrow, Ncol, Nsample) allowed (element-wise correspondence)
     q3 = u.Quantity(np.arange(24, dtype=float).reshape(2, 3, 4), u.s)
     r3 = sm * q3
     assert np.allclose(r3.value, q3.value)
@@ -201,7 +201,7 @@ def test_array_ufunc_quantity_broadcast_shapes():
 
 
 def test_array_ufunc_quantity_broadcast_invalid_shapes_raise():
-    """Quantity の形状が規約に合わない場合は例外"""
+    """Raise exception if Quantity shape doesn't follow conventions"""
     data = np.ones((2, 3, 4), dtype=float)
     xindex = np.arange(4, dtype=float)
     sm = SeriesMatrix(data, xindex=xindex)
@@ -249,7 +249,7 @@ def test_logical_ufunc_skips_meta():
 
 
 def test_logical_not_bool_output():
-    """logical_notもメタに触らずbool出力を返す"""
+    """logical_not also returns bool output without touching metadata"""
     sm = SeriesMatrix(np.arange(6).reshape(2, 1, 3), xindex=np.arange(3))
     out = np.logical_not(sm)
     assert out.value.dtype == np.bool_
@@ -257,7 +257,7 @@ def test_logical_not_bool_output():
 
 
 def test_update_resize_false_behaviour():
-    """update は append(resize=False) 相当（末尾に新データを付けて古い分を左に押し出す）"""
+    """update is equivalent to append(resize=False) (appends new data and shifts old data left)"""
     base = SeriesMatrix(np.arange(4).reshape(1, 1, 4), xindex=np.arange(4))
     new = SeriesMatrix(np.array([[[10, 11]]]), xindex=np.array([4, 5]))
 
@@ -268,18 +268,18 @@ def test_update_resize_false_behaviour():
 
 
 def test_diff_on_sample_axis():
-    """diff はサンプル軸で shape が1サンプル短くなる"""
+    """diff results in one sample shorter shape on the sample axis"""
     data = np.arange(12).reshape(1, 1, 12)
     sm = SeriesMatrix(data, xindex=np.arange(12))
     out = sm.diff(n=2)
     assert out.shape == (1, 1, 10)
     assert np.allclose(out.value[0, 0, :3], np.array([0, 0, 0]))
-    # xindex は2ステップ進む（長さが2減る）
+    # xindex advances by 2 steps (length decreases by 2)
     assert np.array_equal(np.asarray(out.xindex), np.arange(2, 12))
 
 
 def test_value_at_returns_matrix_slice():
-    """value_at は (Nrow,Ncol) 行列を返す"""
+    """value_at returns a (Nrow, Ncol) matrix"""
     data = np.array([[[1, 2, 3], [4, 5, 6]]])
     xindex = np.array([0, 1, 2])
     sm = SeriesMatrix(data, xindex=xindex)
@@ -289,31 +289,31 @@ def test_value_at_returns_matrix_slice():
 
 
 def test_pad_regular_xindex():
-    """pad は正則 xindex を前提にサンプル軸方向に拡張する"""
+    """pad assumes regular xindex and expands along the sample axis"""
     data = np.ones((1, 1, 3))
     sm = SeriesMatrix(data, xindex=np.arange(3))
     out = sm.pad(2, constant_values=0)
     assert out.shape == (1, 1, 7)
-    # 追加された両端は0、元データは中央に残る
+    # Both padded ends are 0, original data remains in the middle
     assert np.array_equal(out.value[0, 0, :2], np.array([0, 0]))
     assert np.array_equal(out.value[0, 0, 2:5], np.ones(3))
     assert np.array_equal(out.value[0, 0, 5:], np.array([0, 0]))
-    # xindex が dx=1 で前後に拡張される
+    # xindex expanded forward and backward with dx=1
     assert np.array_equal(np.asarray(out.xindex), np.arange(-2, 5))
 
 
 def test_shift_moves_xindex():
-    """shift は xindex を平行移動させる"""
+    """shift translates xindex"""
     data = np.zeros((1, 1, 3))
     sm = SeriesMatrix(data, xindex=np.array([0.0, 1.0, 2.0]))
     sm.shift(5.0)
     assert np.array_equal(np.asarray(sm.xindex), np.array([5.0, 6.0, 7.0]))
-    # _x0 も更新されているはず
+    # _x0 should also be updated
     assert sm.x0 == 5.0
 
 
 def test_copy_is_independent():
-    """copy したオブジェクトを変更しても元に影響しない"""
+    """Modifying a copied object should not affect the original"""
     data = np.array([[[1.0, 2.0]]])
     sm = SeriesMatrix(data, xindex=np.array([0.0, 1.0]), rows={"r0": {"name": "r0"}}, cols={"c0": {"name": "c0"}})
     cp = sm.copy()
@@ -328,7 +328,7 @@ def test_copy_is_independent():
 
 
 def test_step_returns_plot():
-    """step は例外なく Plot を返す（描画自体はスモーク）"""
+    """step returns a Plot without exception (plotting itself is just a smoke test)"""
     data = np.arange(6).reshape(1, 2, 3)
     sm = SeriesMatrix(data, xindex=np.array([0.0, 1.0, 2.0]))
     plot_obj = sm.step(where="post")
@@ -336,24 +336,24 @@ def test_step_returns_plot():
 
 
 def test_xindex_setter_length_check_and_cache_reset():
-    """xindex setter が長さチェックし、キャッシュをクリアする"""
+    """xindex setter checks length and clears cache"""
     data = np.arange(6).reshape(1, 1, 6)
     sm = SeriesMatrix(data, xindex=np.arange(6))
-    # キャッシュ生成
+    # Generate cache
     dx_before = sm.dx
     assert dx_before == 1
-    # 長さ不一致はエラー
+    # Length mismatch raises error
     with pytest.raises(ValueError):
         sm.xindex = np.arange(5)
-    # 長さ一致なら更新され、_dx がリセットされる
+    # If length matches, it's updated and _dx is reset
     sm.xindex = np.arange(10, 16)
     assert sm.x0 == 10
     assert sm.dx == 1
 
 
 def test_hdf5_io_roundtrip(tmp_path):
-    """HDF5 read/write の往復でメタと値が保持される"""
-    # データとメタを用意
+    """Meta and values preserved during HDF5 read/write roundrip"""
+    # Prepare data and metadata
     data = np.array([[[1.0, 2.0], [3.0, 4.0]]])
     xindex = u.Quantity([0, 1], "s")
     units = np.array([[u.V, u.V]], dtype=object)
@@ -387,7 +387,7 @@ def test_hdf5_io_roundtrip(tmp_path):
 
 
 def test_channel_mismatch_raises():
-    """channels引数とmeta.channelが不一致ならエラーを投げる"""
+    """Raise error if channels argument and meta.channel mismatch"""
     data = np.zeros((1, 1, 3))
     xindex = np.arange(3)
     meta_arr = np.empty((1, 1), dtype=object)
@@ -399,7 +399,7 @@ def test_channel_mismatch_raises():
 
 
 def test_channel_string_matches_channel_object():
-    """channelsに文字列、metaにChannelオブジェクトで同名なら許容される"""
+    """Allow if channels is string and meta is Channel object with matching name"""
     data = np.zeros((1, 1, 3))
     xindex = np.arange(3)
     meta_arr = np.empty((1, 1), dtype=object)
@@ -411,7 +411,7 @@ def test_channel_string_matches_channel_object():
 
 
 def test_append_gap_and_pad_unitless():
-    """単位なしxindexでgap/pad付きappendが正しくパディングとインデックスを生成する"""
+    """Ensure unitless xindex append with gap/pad correctly generates padding and indices"""
     x1 = np.array([0.0, 1.0, 2.0])
     x2 = np.array([5.0, 6.0, 7.0])
     sm1 = SeriesMatrix(np.zeros((1, 1, 3)), xindex=x1)
@@ -421,13 +421,13 @@ def test_append_gap_and_pad_unitless():
 
     assert combined.shape == (1, 1, 8)
     assert np.array_equal(combined.xindex, np.array([0., 1., 2., 3., 4., 5., 6., 7.]))
-    # padding部分は0、それ以外は元の値
+    # Padded parts are 0, otherwise original values
     expected = np.concatenate([np.zeros(3), np.zeros(2), np.ones(3)])
     assert np.array_equal(combined.value.flatten(), expected)
 
 
 def test_getitem_preserves_3d_on_scalar_sample():
-    """サンプル軸を整数指定しても3次元を維持する"""
+    """Preserve 3D even if sample axis is specified with an integer"""
     data = np.arange(24).reshape(2, 3, 4)
     xindex = np.arange(4)
     sm = SeriesMatrix(data, xindex=xindex)
@@ -438,7 +438,7 @@ def test_getitem_preserves_3d_on_scalar_sample():
 
 
 def test_is_compatible_converts_units():
-    """xindexが同値でも単位が異なる場合に互換とみなす"""
+    """Consider compatible if xindex values are same but units differ"""
     x_s = np.array([0.0, 1.0, 2.0]) * u.s
     x_ms = np.array([0.0, 1000.0, 2000.0]) * u.ms
     sm_s = SeriesMatrix(np.zeros((1, 1, 3)), xindex=x_s)
@@ -447,7 +447,7 @@ def test_is_compatible_converts_units():
 
 
 def test_is_compatible_raises_on_incompatible_units():
-    """変換不能な単位なら互換エラー"""
+    """Incompatible error if units are not convertible"""
     x_s = np.array([0.0, 1.0, 2.0]) * u.s
     x_hz = np.array([0.0, 1.0, 2.0]) * u.Hz
     sm_s = SeriesMatrix(np.zeros((1, 1, 3)), xindex=x_s)
@@ -526,10 +526,10 @@ if __name__ == "__main__":
         test_xarray_duration_no_double_units()
         
         print("\n" + "=" * 60)
-        print("ALL TESTS PASSED ✓")
+        print("ALL TESTS PASSED [PASS]")
         print("=" * 60)
     except Exception as e:
-        print(f"\n❌ TEST FAILED: {e}")
+        print(f"\n[FAIL] TEST FAILED: {e}")
         import traceback
         traceback.print_exc()
         exit(1)

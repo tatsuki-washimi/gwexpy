@@ -186,14 +186,14 @@ class FrequencySeries(BaseFrequencySeries):
 
         Parameters
         ----------
-        mode : {"auto","gwpy","transient"}
-            auto: use transient復元 if `_gwex_fft_mode=="transient"` を検出、なければ gwpy互換。
+        mode : {"auto", "gwpy", "transient"}
+            auto: use transient restoration if `_gwex_fft_mode=="transient"` is detected, otherwise GWpy compatible.
         trim : bool
-            transient時にパディングを除去し、元長へトリムするか。
+            Whether to remove padding and trim to original length during transient mode.
         original_n : int, optional
-            明示的に復元後の長さを指定（指定が優先）。
+            Explicitly specify the length after restoration (takes priority).
         pad_left, pad_right : int, optional
-            transient用のパディング長を上書きしたい場合に指定。
+            Specify padding lengths for transient mode to override defaults.
         """
         from gwexpy.timeseries import TimeSeries
         mode_to_use = mode
