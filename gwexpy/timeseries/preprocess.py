@@ -101,24 +101,42 @@ def align_timeseries_collection(
     dts = [ts.dt for ts in series_list]
     target_dt = max(dts)
     
-    # 2. Determine time bounds in common unit (seconds)
-    common_time_unit = u.s 
+    # 2. Determine time bounds
+    # Use first series unit as common unit (fallback to dimensionless)
+    ref_u = series_list[0].times.unit
+    common_time_unit = ref_u if ref_u is not None else u.dimensionless_unscaled
     
-    # Helper to get start/end in seconds
-    def get_span_s(ts):
-        t0 = ts.t0.to(common_time_unit).value
-        # Use valid span end directly
+    # Helper to get start/end in common unit
+    def get_span_val(ts):
+        # Handle cases where ts has no unit (dimensionless)
+        ts_u = ts.times.unit if ts.times.unit is not None else u.dimensionless_unscaled
+        
+        # t0 conversion
+        if ts_u != common_time_unit:
+             # Try conversion
+             try:
+                 t0 = ts.t0.to(common_time_unit).value
+             except u.UnitConversionError:
+                 raise ValueError(f"Incompatible time units in collection: {ts_u} vs {common_time_unit}")
+        else:
+             t0 = ts.t0.value
+             
+        # End conversion
         end_q = ts.span[1]
         if hasattr(end_q, "to"):
-             end = end_q.to(common_time_unit).value
+             try:
+                 end = end_q.to(common_time_unit).value
+             except u.UnitConversionError:
+                 raise ValueError(f"Incompatible span unit: {end_q.unit} vs {common_time_unit}")    
         else:
              end = end_q
+             
         return t0, end
 
     starts = []
     ends = []
     for ts in series_list:
-        s, e = get_span_s(ts)
+        s, e = get_span_val(ts)
         starts.append(s)
         ends.append(e)
     
