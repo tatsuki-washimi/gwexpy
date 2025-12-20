@@ -30,11 +30,11 @@ fft,〇,〇,〇,〇,
 average_fft,〇,〇,〇,×,
 psd,〇,〇,〇,〇,Matrixは全Ch計算
 asd,〇,〇,〇,〇,
-csd,〇,×,×,〇,2変数間の計算
-coherence,〇,×,×,〇,
-spectrogram,〇,×,×,×,戻り値が3次元になるため未対応
-spectrogram2,〇,×,×,×,
-q_transform,〇,×,×,×,
+csd,〇,〇,〇,〇,List/DictはotherによりFrequencySeriesList/Dict/Matrix
+coherence,〇,〇,〇,〇,List/DictはotherによりFrequencySeriesList/Dict/Matrix
+spectrogram,〇,〇,〇,〇,戻り値はSpectrogramList/Dict/Matrix
+spectrogram2,〇,〇,〇,〇,戻り値はSpectrogramList/Dict/Matrix
+q_transform,〇,〇,〇,〇,戻り値はSpectrogramList/Dict/Matrix
 rms,〇,〇,〇,×,Matrixはrolling_rmsのみ
 min / max,〇,〇,〇,〇,ndarray継承
 mean / std,〇,〇,〇,〇,ndarray継承

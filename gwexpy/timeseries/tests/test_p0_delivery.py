@@ -48,7 +48,7 @@ def test_impute_max_gap_irregular():
     assert not np.isnan(imputed2.value).any()
 
 def test_impute_max_gap_edges_safe():
-    # Requirement: "端点欠損（先頭/末尾）→ max_gap 指定時も安全側（補間しない）であること"
+    # Requirement: "Endpoint missing data (start/end) -> Ensure safe side (no interpolation) even when max_gap is specified"
     data = np.array([np.nan, np.nan, 1, 2, np.nan], dtype=float)
     ts = TimeSeries(data, dt=1*u.s)
     

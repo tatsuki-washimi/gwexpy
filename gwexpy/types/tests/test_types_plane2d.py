@@ -47,7 +47,7 @@ def test_plane2d_accessors():
     
     # Should not expose x/y logic if we really want to hide it, 
     # but underlying Array2D might have .x .y properties.
-    # The requirement was "x/y の語をユーザー API に出さない" in this class definition context
+    # The requirement was "Avoid exposing x/y terms in the user-facing API" in this class definition context
     # but we can't delete them from instance easily without breaking things or complex descriptors.
     # Verification that we don't *use* u/v is main point.
 

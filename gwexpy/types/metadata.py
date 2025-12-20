@@ -1,7 +1,10 @@
 import warnings
 import sys
 import numpy as np
-import pandas as pd
+try:
+    import pandas as pd
+except ImportError:
+    pd = None
 from html import escape
 from collections import OrderedDict
 from typing import Optional, Union, Mapping, Any
@@ -118,7 +121,7 @@ class MetaData(dict):
             base = lhs if isinstance(lhs, MetaData) else rhs
             return MetaData(name=base.name, channel=base.channel, unit=lhs_unit)
 
-        # comparisons -> dimensionless (bool結果)
+        # comparisons -> dimensionless (bool result)
         if ufunc in [np.less, np.less_equal, np.equal, np.not_equal,
                      np.greater, np.greater_equal]:
             if not lhs_unit.is_equivalent(rhs_unit):
@@ -175,7 +178,7 @@ class MetaData(dict):
 
 class MetaDataDict(OrderedDict):
     def __init__(self,
-                 entries: Optional[Union[dict, list, pd.DataFrame, 'MetaDataDict']] = None,
+                 entries: Optional[Union[dict, list, 'pd.DataFrame', 'MetaDataDict']] = None,
                  expected_size: Optional[int] = None,
                  key_prefix: str = 'key'):
 
@@ -217,8 +220,8 @@ class MetaDataDict(OrderedDict):
             actual_size = len(entries)
             for key, entry in entries.items():
                 final_entries[key] = MetaData(**entry) if isinstance(entry, dict) else entry
-            # Python 3.7+ では dict の挿入順が言語仕様として保証されるため警告しない。
-            # Python 3.6 以下では保証されないため OrderedDict の利用を促す。
+            # Dict insertion order is guaranteed in Python 3.7+ as part of language spec.
+            # For Python 3.6 or lower, explicitly suggest OrderedDict if order matters.
             if isinstance(entries, dict) and sys.version_info < (3, 7):
                 warnings.warn(
                     "Order of a standard dict is not guaranteed; consider using OrderedDict",
@@ -226,7 +229,7 @@ class MetaDataDict(OrderedDict):
                     stacklevel=2,
                 )
 
-        elif isinstance(entries, pd.DataFrame):
+        elif pd is not None and isinstance(entries, pd.DataFrame):
             actual_size = len(entries)
             for key, row in entries.iterrows():
                 meta_data_kwargs = row.dropna().to_dict()
@@ -256,6 +259,8 @@ class MetaDataDict(OrderedDict):
         return [entry.unit for entry in self.values()]
 
     def to_dataframe(self):
+        if pd is None:
+            raise ImportError("pandas is required for to_dataframe()")
         data = [{**entry, "key": key} for key, entry in self.items()]
         df = pd.DataFrame(data).set_index("key")
         return df
@@ -265,6 +270,8 @@ class MetaDataDict(OrderedDict):
 
     @classmethod
     def read(cls, path, **kwargs):
+        if pd is None:
+            raise ImportError("pandas is required for read()")
         df = pd.read_csv(path, index_col=0, **kwargs)
         return cls(df)
         
@@ -437,6 +444,8 @@ class MetaDataMatrix(np.ndarray):
                  "col": idx %  cols       # column index
                 } for idx, meta in enumerate(self.flat)]
 
+        if pd is None:
+            raise ImportError("pandas is required for to_dataframe()")
         df = pd.DataFrame(data)
         if "unit" in df.columns:
             df["unit"] = df["unit"].astype(str)
@@ -457,6 +466,8 @@ class MetaDataMatrix(np.ndarray):
 
     @classmethod
     def read(cls, filepath, **kwargs):
+        if pd is None:
+            raise ImportError("pandas is required for read()")
         df = pd.read_csv(filepath, **kwargs)
         return cls.from_dataframe(df)
 

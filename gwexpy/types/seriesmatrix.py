@@ -1,7 +1,10 @@
 import warnings
 import itertools
 import numpy as np
-import pandas as pd
+try:
+    import pandas as pd
+except ImportError:
+    pd = None
 import matplotlib.pyplot as plt
 from html import escape
 import json
@@ -15,7 +18,6 @@ from gwpy.time import LIGOTimeGPS, to_gps
 from gwpy.types.array import Array
 from gwpy.types.index import Index
 from gwpy.types.series import Series
-from gwpy.plot import Plot
 from gwexpy.interop._optional import require_optional
 
 from .metadata import MetaData, MetaDataDict, MetaDataMatrix
@@ -1341,6 +1343,13 @@ class SeriesMatrix(np.ndarray):
         else:
             raise TypeError("Only Series objects can be assigned to SeriesMatrix elements.")
        
+    def plot(self, **kwargs):
+        """
+        Plot this SeriesMatrix using gwexpy.plot.Plot.
+        """
+        from gwexpy.plot import Plot
+        return Plot(self, **kwargs)
+
     ##### as a Matrix #####
 
     def _all_element_units_equivalent(self):
@@ -1355,10 +1364,10 @@ class SeriesMatrix(np.ndarray):
         ref_unit = self.meta[0, 0].unit
         try:
             units = np.array(self.meta.units, dtype=object)
-            # 全セルが None なら等価とみなす
+            # If all cells are None, consider them equivalent
             if units.size == 0:
                 return True, ref_unit
-            # ref_unit と等価かをベクトル化判定
+            # Vectorized check for equivalence to ref_unit
             def _eq(u_):
                 try:
                     return u_.is_equivalent(ref_unit)
@@ -1369,7 +1378,7 @@ class SeriesMatrix(np.ndarray):
                 return True, ref_unit
             return False, ref_unit
         except Exception:
-            # フォールバック: 逐次チェック
+            # Fallback: sequential check
             for meta in self.meta.flat:
                 try:
                     if not meta.unit.is_equivalent(ref_unit):
@@ -1387,7 +1396,7 @@ class SeriesMatrix(np.ndarray):
         if units.size == 0:
             return np.array(self._value, copy=True)
 
-        # 等価ユニットの場合は一括変換
+        # Batch conversion for equivalent units
         try:
             def _eq(u_):
                 try:
@@ -1400,7 +1409,7 @@ class SeriesMatrix(np.ndarray):
         except Exception:
             pass
 
-        # 非等価あり: セルごとに換算
+        # Mixed units: convert per cell
         result = np.empty((N, M, K), dtype=np.result_type(self._value, float))
         for i in range(N):
             for j in range(M):
@@ -1636,7 +1645,7 @@ class SeriesMatrix(np.ndarray):
         if not ok:
             raise u.UnitConversionError("All element units must be equivalent for det()")
         common = self._to_common_unit_values(ref_unit)
-        # (N, N, K) -> (K, N, N) で一括計算
+        # Batch computation: (N, N, K) -> (K, N, N)
         mats = np.moveaxis(common, 2, 0)
         det_vals = np.linalg.det(mats)
         result_unit = ref_unit ** nrow
@@ -1744,10 +1753,10 @@ class SeriesMatrix(np.ndarray):
         c_keep = len(keep_cols_idx)
 
         if len(eliminate_rows_idx) == 0:
-            # 何も除去しない場合はそのまま抜き出し
+            # If nothing to remove, extract as is
             result_vals = common[np.ix_(keep_rows_idx, keep_cols_idx)]
         else:
-            # バッチ線形代数: (N, N, K) -> (K, N, N)
+            # Batch linear algebra: (N, N, K) -> (K, N, N)
             stack = np.moveaxis(common, 2, 0)
             A = np.take(np.take(stack, keep_rows_idx, axis=1), keep_cols_idx, axis=2)
             B = np.take(np.take(stack, keep_rows_idx, axis=1), eliminate_cols_idx, axis=2)
@@ -1847,8 +1856,8 @@ class SeriesMatrix(np.ndarray):
         if pad is None and gap == 'pad':
             pad = 0.0
 
-        # ここでは self を直接使い、非 inplace でも不要な deep copy をしない
-        # (append_exact/is_contiguous は新しい配列を生成するため self は破壊されない)
+        # Use self directly here to avoid unnecessary deep copy even if not inplace
+        # (append_exact/is_contiguous creates new array, so self is not destroyed)
         target = self
 
         base_unit = getattr(target.xindex, "unit", getattr(other.xindex, "unit", None))
@@ -1900,7 +1909,7 @@ class SeriesMatrix(np.ndarray):
             if _use_pad:
                 if not _is_regular(target.xindex):
                     raise ValueError("Padding gap requires regular xindex")
-                # pad を許可する場合でも、順序が逆/重複は先に弾く
+                # Even if pad is allowed, reject reversed or duplicate order first
                 s0, s1 = target.xspan
                 o0, _ = other.xspan
                 s0b = _to_base(s0)
@@ -1945,7 +1954,7 @@ class SeriesMatrix(np.ndarray):
             self._value = self.view(np.ndarray)
             return self
         except Exception:
-            # フォールバック: 非破壊で out_full を返す
+            # Fallback: return out_full non-destructively
             return out_full
 
     def append_exact(self, other, inplace=False, pad=None, gap=None, tol=1/2.**18):
@@ -2642,169 +2651,3 @@ class SeriesMatrix(np.ndarray):
     
         return html
 
-
-
-    
-    def plot(self, subplots=False, separate=None, method='plot', legend=True, **kwargs):
-        """
-        Visualize all elements of the SeriesMatrix.
-
-        Parameters
-        ----------
-        subplots : bool or {'row', 'col'}, optional
-            If False/None, overlay all elements on a single axes. If True, create
-            an ``(nrow, ncol)`` grid of subplots. ``'row'`` creates one axes per
-            row (all columns overlaid); ``'col'`` creates one axes per column.
-        separate : bool or {'row', 'col'} or None, optional
-            Alias for ``subplots``; only one of ``subplots`` or ``separate`` should be set.
-        method : str, optional
-            Plotting method passed to gwpy ``Plot``/Series (e.g., ``'plot'`` or ``'step'``).
-        legend : bool, optional
-            Whether to show legends on the created axes.
-        **kwargs :
-            Additional plotting keyword arguments forwarded to gwpy/matplotlib.
-
-        Returns
-            ``gwpy.plot.Plot`` when ``subplots`` is False/None; otherwise a matplotlib Figure.
-        """
-        if separate is not None:
-            if separate == 'row':
-                subplots = 'col'
-            elif separate == 'col':
-                subplots = 'row'
-            else:
-                subplots = separate
-    
-        nrow, ncol, nsample = self._value.shape
-        row_names = list(self.rows.names)
-        col_names = list(self.cols.names)
-        try:
-            xindex = self.xindex.value
-        except Exception:
-            xindex = np.asarray(self.xindex)
-        xlabel = str(getattr(self, 'xunit', '')) if hasattr(self, 'xunit') else ''
-
-        # Auto-Log Scale Logic (migrated from Plot class)
-        # Check if we are likely a FrequencySeriesMatrix (or just have frequency x-axis)
-        # We can check if xunit is Hz-like or if class name suggests it
-        is_frequency = False
-        if hasattr(self, 'xunit'):
-             try:
-                 if self.xunit.physical_type == 'frequency':
-                     is_frequency = True
-             except Exception:
-                 pass
-        
-        # Fallback check
-        if not is_frequency:
-             cls_name = self.__class__.__name__
-             if 'Frequency' in cls_name:
-                 is_frequency = True
-
-        if is_frequency:
-             # Y Scale Logic
-             if 'yscale' not in kwargs:
-                 try:
-                     # Check unit of first element
-                     unit = self.meta[0, 0].unit
-                     is_linear = False
-                     
-                     # Check strict matches
-                     if unit == u.deg or unit == u.rad or unit == u.dB:
-                         is_linear = True
-                     else:
-                         u_str = str(unit)
-                         if 'deg' in u_str or 'rad' in u_str or 'dB' in u_str:
-                             is_linear = True
-                     
-                     name_str = str(getattr(self.meta[0, 0], 'name', '')).lower()
-                     if 'delay' in name_str or 'phase' in name_str or 'angle' in name_str:
-                         is_linear = True
-                     
-                     if not is_linear:
-                         kwargs['yscale'] = 'log'
-                 except Exception:
-                     kwargs['yscale'] = 'log'
-
-             # X Scale Logic
-             if 'xscale' not in kwargs:
-                 if nsample > 256:
-                     kwargs['xscale'] = 'log'
-
-        # Default Layout Settings
-        apply_constrained_layout = False
-        if subplots:
-            # Don't put constrained_layout in kwargs as gwpy forwards it to plot command
-            apply_constrained_layout = kwargs.pop('constrained_layout', True)
-            
-            if 'figsize' not in kwargs:
-                 # Heuristic for figsize
-                 # Base size: 6 inch wide per col, 4 inch high per row
-                 if subplots is True:
-                     w, h = ncol, nrow
-                 elif subplots == 'row' or subplots == 'col':
-                     # For row/col subplots, we have 1D geometry
-                     if subplots == 'row':
-                         w, h = 1, nrow
-                     else:
-                         w, h = ncol, 1
-                 
-                 fig_width = min(24, 6 * w)
-                 fig_height = min(24, 4 * h)
-                 kwargs['figsize'] = (fig_width, fig_height)
-
-        if not subplots or subplots is False:
-            series_list = self.to_series_1Dlist()
-            plot = Plot(series_list, sharex=True, method=method, **kwargs)
-            if legend:
-                ax = plot.gca()
-                ax.legend([series.name for series in series_list], ncols=ncol)
-            return plot
-
-        if subplots is True:
-            series_list = self.to_series_1Dlist()
-            plot = Plot(*series_list, geometry=(nrow, ncol), sharex=True, sharey=True, method=method, **kwargs)
-            axes = np.array(plot.get_axes()).reshape((nrow, ncol))
-            if legend:
-                for i in range(nrow):
-                    for j in range(ncol):
-                        axes[i, j].legend([series_list[i*ncol + j].name])           
-            for j in range(ncol):
-                axes[0, j].set_title(col_names[j])
-            for i in range(nrow):
-                axes[i, 0].set_ylabel(row_names[i])
-                
-            if apply_constrained_layout:
-                 plot.set_constrained_layout(True)
-            return plot
-
-        if subplots == 'row':
-            series_list = self.to_series_2Dlist()
-            plot = Plot(*series_list, geometry=(nrow, 1), sharex=True, sharey=True, method=method, **kwargs)
-            axes = plot.get_axes()
-            if legend:
-                for i in range(nrow):
-                    axes[i].legend([series.name for series in series_list[i]])
-            for i in range(nrow):
-                axes[i].set_ylabel(row_names[i])
-                
-            if apply_constrained_layout:
-                 plot.set_constrained_layout(True)
-            return plot
-
-        if subplots == 'col':
-            series_list = self.to_series_2Dlist()
-            series_list = [list(series) for series in zip(*series_list)]
-            plot = Plot(*series_list, geometry=(1, ncol), sharex=True, sharey=True, method=method, **kwargs)
-            axes = plot.get_axes()
-            if legend:
-                for i in range(ncol):
-                    axes[i].legend([series.name for series in series_list[i]])
-            for i in range(ncol):
-                axes[i].set_title(col_names[i])
-                
-            if apply_constrained_layout:
-                 plot.set_constrained_layout(True)
-            return plot      
-
-        raise ValueError("subplots must be False/True/'row'/'col' or use separate='row'/'col'")
