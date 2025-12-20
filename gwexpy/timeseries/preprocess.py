@@ -148,7 +148,8 @@ def align_timeseries_collection(
     if duration <= 0:
          n_samples = 0
     else:
-         n_samples = int(np.round(duration / target_dt_s))
+         # Use ceil to ensure we cover the full range, matching asfreq behavior
+         n_samples = int(np.ceil(duration / target_dt_s))
     
     # Create common times in Seconds
     common_times_s = common_t0 + np.arange(n_samples) * target_dt_s
