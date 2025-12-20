@@ -102,18 +102,33 @@ def align_timeseries_collection(
     target_dt = max(dts)
     
     # 2. Determine time bounds
-    # Use first series unit as common unit (fallback to dimensionless)
-    ref_u = series_list[0].times.unit
-    common_time_unit = ref_u if ref_u is not None else u.dimensionless_unscaled
+    # Check if we should operate in physical time (seconds)
+    is_time_based = False
+    if target_dt.unit.physical_type == 'time':
+        is_time_based = True
+    else:
+        # If any series has time unit, force time-based
+        for ts in series_list:
+             if ts.times.unit is not None and ts.times.unit.physical_type == 'time':
+                  is_time_based = True
+                  break
+    
+    if is_time_based:
+        common_time_unit = u.s
+    else:
+        # Fallback to first unit (or dimensionless)
+        ref_u = series_list[0].times.unit
+        common_time_unit = ref_u if ref_u is not None else u.dimensionless_unscaled
     
     # Helper to get start/end in common unit
     def get_span_val(ts):
-        # Handle cases where ts has no unit (dimensionless)
         ts_u = ts.times.unit if ts.times.unit is not None else u.dimensionless_unscaled
         
         # t0 conversion
-        if ts_u != common_time_unit:
-             # Try conversion
+        if is_time_based and ts_u == u.dimensionless_unscaled:
+             # Treat dimensionless as seconds
+             t0 = ts.t0.value
+        elif ts_u != common_time_unit:
              try:
                  t0 = ts.t0.to(common_time_unit).value
              except u.UnitConversionError:
@@ -123,12 +138,18 @@ def align_timeseries_collection(
              
         # End conversion
         end_q = ts.span[1]
-        if hasattr(end_q, "to"):
+        
+        # If end_q is dimensionless quantity and we are in time mode, treat as seconds value
+        if is_time_based and (not hasattr(end_q, "unit") or end_q.unit == u.dimensionless_unscaled or end_q.unit is None):
+              end = end_q.value if hasattr(end_q, "value") else end_q
+        elif hasattr(end_q, "to"):
              try:
                  end = end_q.to(common_time_unit).value
              except u.UnitConversionError:
+                 # Backup: if unit mismatch but one is None? already checked.
                  raise ValueError(f"Incompatible span unit: {end_q.unit} vs {common_time_unit}")    
         else:
+             # float or similar
              end = end_q
              
         return t0, end
@@ -146,13 +167,9 @@ def align_timeseries_collection(
     if how == "intersection":
         common_t0 = float_max(starts)
         common_end = float_min(ends)
-        if common_end <= common_t0:
-             # If exact match edge case?
-             # Check if they are effectively same
-             if np.isclose(common_end, common_t0):
-                  pass
-             else:
-                  raise ValueError(f"No overlap found. common_t0={common_t0}, common_end={common_end}")
+        # Numerical tolerance for "empty" intersection
+        if common_end < common_t0 and not np.isclose(common_end, common_t0):
+             raise ValueError(f"No overlap found. common_t0={common_t0}, common_end={common_end}")
     elif how == "union":
         common_t0 = float_min(starts)
         common_end = float_max(ends)
@@ -160,8 +177,8 @@ def align_timeseries_collection(
         raise ValueError(f"Unknown alignment how='{how}'.")
 
     # 3. Create common time axis
-    # Use unit from first series for output
-    out_unit = series_list[0].times.unit
+    # Use common_time_unit for output
+    out_unit = common_time_unit
     
     duration = common_end - common_t0
     target_dt_s = target_dt.to(common_time_unit).value
@@ -196,7 +213,13 @@ def align_timeseries_collection(
         # This ensures grid points match common_times exactly phase-wise.
         
         # Origin must be compatible with ts.times unit or convertible
-        if ts.times.unit is None:
+        # If is_time_based=True, asfreq will coerce dimensionless ts to seconds.
+        # So we should pass origin in seconds (common_time_unit).
+        
+        if is_time_based:
+             # Regardless of ts.unit, we pass origin as Quantity(common_time_unit)
+             origin_val = u.Quantity(common_t0, common_time_unit)
+        elif ts.times.unit is None:
              origin_val = u.Quantity(common_t0, u.dimensionless_unscaled)
         else:
              origin_val = u.Quantity(common_t0, common_time_unit).to(ts.times.unit)
