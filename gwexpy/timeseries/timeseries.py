@@ -341,8 +341,20 @@ class TimeSeries(BaseTimeSeries):
             origin_val = 0.0
         elif isinstance(origin, (u.Quantity, str)):
             # convert origin to same unit as time_unit (if possible) or seconds
-            # If origin is a Time object etc? simpler to assume quantity or str
-            origin_val = u.Quantity(origin).to(safe_unit).value
+            try:
+                origin_val = u.Quantity(origin).to(safe_unit).value
+            except u.UnitConversionError:
+                 # Check if origin is dimensionless and safe_unit is physical
+                 q_origin = u.Quantity(origin)
+                 if q_origin.unit == u.dimensionless_unscaled and safe_unit.physical_type == 'time':
+                      raise TypeError("Cannot use dimensionless origin for time-based series.")
+                 raise
+        elif isinstance(origin, (int, float, np.number)):
+            # Calling side passed a number.
+            # If safe_unit is physical time, this is ambiguous.
+            if safe_unit.physical_type == 'time':
+                 raise TypeError("origin must be a Quantity or time string when series has time unit.")
+            origin_val = float(origin)
         else:
             origin_val = 0.0 
             
