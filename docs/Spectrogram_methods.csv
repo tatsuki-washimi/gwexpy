@@ -1,0 +1,20 @@
+Method/Property,Spectrogram (gwpy),SpectrogramList (gwexpy),SpectrogramDict (gwexpy),SpectrogramMatrix (gwexpy),備考
+__init__,〇,〇,〇,〇,
+read,〇,〇,〇,×,List/DictはHDF5対応(一括読込)
+write,〇,〇,〇,×,List/DictはHDF5対応(一括保存)
+plot,〇,〇,〇,〇,Matrixは平均または指定Chのプロット
+crop,〇,〇,〇,×,Matrixはスライスで対応可
+crop_frequencies,〇,〇,〇,×,
+rebin,〇,〇,〇,×,
+interpolate,〇,〇,〇,×,
+to_matrix,-,〇,〇,〇,List/DictからMatrixへ変換
+to_torch,×,〇,〇,〇,PyTorch Tensorへ変換
+to_cupy,×,〇,〇,〇,CuPy Arrayへ変換
+mean,〇,-,-,〇,MatrixはBatch/Time平均計算可
+shape,〇,-,-,〇,
+__len__,〇,〇,〇,〇,Spectrogramは時間点数
+__getitem__,〇,〇,〇,〇,
+append,-,〇,-,-,
+extend,-,〇,-,-,
+update,-,-,〇,-,
+inplace,-,〇,〇,-,crop/rebin等でinplace=Trueをサポート

@@ -6,6 +6,7 @@ except ImportError:
     from collections import MutableMapping as UserDict
 
 import numpy as np
+import h5py
 from astropy import units as u
 
 from gwpy.spectrogram import Spectrogram
@@ -53,6 +54,38 @@ class SpectrogramMatrix(np.ndarray):
         self.unit = getattr(obj, 'unit', None)
         self.name = getattr(obj, 'name', None)
 
+    def mean(self, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
+        res = super().mean(axis=axis, dtype=dtype, out=out, keepdims=keepdims, where=where)
+        # If result is 1D and matches frequency length, it might be a spectrum
+        # Typically (N, Time, Freq) -> mean(axis=1) -> (N, Freq)
+        return res
+
+    def plot(self, **kwargs):
+        """
+        Plot the matrix data.
+        If it is 3D (Batch, Time, Freq), defaults to plotting mean spectrogram.
+        Kwargs: monitor=int (index), method='pcolormesh'
+        """
+        kwargs.setdefault("method", "pcolormesh")
+        if self.ndim == 3:
+             index = kwargs.pop("monitor", None)
+             if index is not None:
+                  data = self[index]
+                  title = f"Channel {index}"
+             else:
+                  data = np.mean(self, axis=0)
+                  title = "Mean Spectrogram"
+             
+             s = Spectrogram(
+                  data,
+                  times=self.times,
+                  frequencies=self.frequencies,
+                  unit=self.unit,
+                  name=self.name or title
+             )
+             return s.plot(**kwargs)
+        return Plot()
+
     def to_torch(self, device=None, dtype=None):
         if torch is None:
             raise ImportError("torch not installed")
@@ -71,9 +104,7 @@ class SpectrogramList(UserList):
 
     .. note::
        Spectrogram objects can be very large in memory. 
-       Methods like `crop`, `rebin`, etc. typically return new objects 
-       (deep copies of data), which may double memory usage temporarily.
-       Use `inplace=True` where supported (standard gwpy objects usually return copies).
+       Use `inplace=True` where possible to avoid deep copies.
     """
     def __init__(self, initlist=None):
         super().__init__(initlist)
@@ -99,132 +130,123 @@ class SpectrogramList(UserList):
         self._validate_items(other)
         super().extend(other)
 
-    def read(self, *args, **kwargs):
-        raise NotImplementedError("Batch read not implemented")
-
-    def write(self, *args, **kwargs):
-        raise NotImplementedError("Batch write not implemented")
-
-    def crop(self, t0, t1):
-        """
-        Crop each spectrogram in the list by time.
-        
-        Parameters
-        ----------
-        t0 : `float` or `~astropy.units.Quantity`
-            start time of crop
-        t1 : `float` or `~astropy.units.Quantity`
-            stop time of crop
-        
-        Returns
-        -------
-        SpectrogramList
-            A new list containing cropped spectrograms.
-            Note: Spectrogram.crop returns a copy by default.
-        """
+    def read(self, source, *args, **kwargs):
+        """Read spectrograms into the list from HDF5."""
+        format = kwargs.get("format", "hdf5")
         new_list = self.__class__()
-        for s in self:
-             new_list.append(s.crop(t0, t1))
-        return new_list
+        if format == "hdf5":
+             with h5py.File(source, "r") as f:
+                  keys = sorted(f.keys(), key=lambda x: int(x) if x.isdigit() else x)
+                  for k in keys:
+                       try:
+                           new_list.append(Spectrogram.read(f[k], format="hdf5"))
+                       except Exception:
+                           pass
+        else:
+             raise NotImplementedError(f"Format {format} not supported")
+        self.extend(new_list)
+        return self
 
-    def crop_frequencies(self, f0, f1):
-        """
-        Crop each spectrogram in the list by frequency.
+    def write(self, target, *args, **kwargs):
+        """Write list to HDF5 file (each item as a group)."""
+        format = kwargs.get("format", "hdf5")
+        mode = kwargs.get("mode", "w")
+        if format == "hdf5":
+             with h5py.File(target, mode) as f:
+                  for i, s in enumerate(self):
+                       grp = f.create_group(str(i))
+                       s.write(grp, format="hdf5")
+        else:
+             raise NotImplementedError(f"Format {format} not supported")
+
+    def crop(self, t0, t1, inplace=False):
+        """Crop each spectrogram."""
+        if inplace:
+             target = self
+        else:
+             target = self.__class__()
         
-        Parameters
-        ----------
-        f0 : `float` or `~astropy.units.Quantity`
-            start frequency of crop
-        f1 : `float` or `~astropy.units.Quantity`
-            stop frequency of crop
-            
-        Returns
-        -------
-        SpectrogramList
-        """
-        new_list = self.__class__()
-        for s in self:
+        for i, s in enumerate(self):
+             res = s.crop(t0, t1)
+             if inplace:
+                  self[i] = res
+             else:
+                  target.append(res)
+        if inplace:
+             return self
+        return target
+
+    def crop_frequencies(self, f0, f1, inplace=False):
+        """Crop frequencies."""
+        if inplace:
+             target = self
+        else:
+             target = self.__class__()
+
+        for i, s in enumerate(self):
              if hasattr(s, 'crop_frequencies'):
-                 new_list.append(s.crop_frequencies(f0, f1))
+                  res = s.crop_frequencies(f0, f1)
              else:
-                 # Fallback if method is missing on specific version
-                 # Frequency is axis 1
-                 if isinstance(f0, u.Quantity):
-                     f0 = f0.to(s.yunit).value
-                 if isinstance(f1, u.Quantity):
-                     f1 = f1.to(s.yunit).value
-                 
-                 # Assuming s.frequencies contains the grid
-                 freqs = s.frequencies.value
-                 idx = (freqs >= f0) & (freqs <= f1)
-                 # Slicing: s operates as Array2D. Array2D[time, freq] ?
-                 # Spectrogram[idx, :] is time? 
-                 # Spectrogram documentation says `self[start:stop]` cuts time.
-                 # `self[:, start:stop]` cuts frequency?
-                 # Need to find indices.
-                 # Implementation detail: exact match or range?
-                 # s.df and s.f0 can determine indices too.
-                 
-                 # Simpler: use boolean mask on axis 1? 
-                 # Objects might not support advanced indexing on axis 1 easily?
-                 # We will assume new Spectrogram supports valid slicing.
-                 # s[:, sub_freqs] might fail if it expects slice.
-                 # Let's trust crop_frequencies exists (as verified).
-                 new_list.append(s.crop_frequencies(f0, f1))
-        return new_list
+                  if isinstance(f0, u.Quantity): f0 = f0.to(s.yunit).value
+                  if isinstance(f1, u.Quantity): f1 = f1.to(s.yunit).value
+                  res = s.crop_frequencies(f0, f1)
+             
+             if inplace:
+                  self[i] = res
+             else:
+                  target.append(res)
+        if inplace:
+             return self
+        return target
 
-    def rebin(self, dt, df):
-        """
-        Rebin each spectrogram in the list.
-        
-        Parameters
-        ----------
-        dt : `float` or `~astropy.units.Quantity`
-            New time bin size
-        df : `float` or `~astropy.units.Quantity`
-            New frequency bin size
-            
-        Returns
-        -------
-        SpectrogramList
-        """
-        new_list = self.__class__()
-        for s in self:
+    def rebin(self, dt, df, inplace=False):
+        """Rebin each spectrogram."""
+        if inplace:
+             target = self
+        else:
+             target = self.__class__()
+             
+        for i, s in enumerate(self):
              if hasattr(s, 'rebin'):
-                  new_list.append(s.rebin(dt, df)) # Verify signature match
+                  res = s.rebin(dt, df)
+                  if inplace:
+                       self[i] = res
+                  else:
+                       target.append(res)
              else:
-                  # Attempt to use resample or custom
-                  warnings.warn(f"Spectrogram object does not support rebin, skipping/failing {type(s)}")
-                  raise NotImplementedError("rebin not supported by underlying Spectrogram")
-        return new_list
+                  raise NotImplementedError("rebin not supported")
+        if inplace:
+             return self
+        return target
 
-    def interpolate(self, dt, df):
-        """
-        Interpolate each spectrogram in the list.
-        """
-        new_list = self.__class__()
-        for s in self:
+    def interpolate(self, dt, df, inplace=False):
+        """Interpolate each spectrogram."""
+        if inplace:
+             target = self
+        else:
+             target = self.__class__()
+        for i, s in enumerate(self):
              if hasattr(s, 'interpolate'):
-                  new_list.append(s.interpolate(dt, df))
+                  res = s.interpolate(dt, df)
+                  if inplace:
+                       self[i] = res
+                  else:
+                       target.append(res)
              else:
-                  warnings.warn("Spectrogram.interpolate not found")
-                  raise NotImplementedError("interpolate not supported by underlying Spectrogram")
-        return new_list
+                  raise NotImplementedError("interpolate not supported")
+        if inplace:
+             return self
+        return target
 
     def plot(self, **kwargs):
-        """
-        Plot all spectrograms.
-        Default method='pcolormesh'.
-        """
+        """Plot all spectrograms."""
         kwargs.setdefault("method", "pcolormesh")
         if not self:
              return Plot()
         return Plot(*self, **kwargs)
 
     def to_matrix(self):
-        """
-        Convert to SpectrogramMatrix (N, Time, Freq).
-        """
+        """Convert to SpectrogramMatrix (N, Time, Freq)."""
         if not self:
              return SpectrogramMatrix(np.empty((0,0,0)))
         
@@ -245,13 +267,11 @@ class SpectrogramList(UserList):
         )
 
     def to_torch(self, device=None, dtype=None):
-        """Convert elements to torch tensors (List of Tensors)."""
         if torch is None:
              raise ImportError("torch not installed")
         return [torch.tensor(s.value, device=device, dtype=dtype) for s in self]
 
     def to_cupy(self, dtype=None):
-        """Convert elements to cupy arrays (List of Arrays)."""
         if cupy is None:
              raise ImportError("cupy not installed")
         return [cupy.array(s.value, dtype=dtype) for s in self]
@@ -261,8 +281,8 @@ class SpectrogramDict(UserDict):
     Dictionary of Spectrogram objects.
     
     .. note::
-       Spectrogram objects can be very large in memory. 
-       Methods typically return new dictionaries/objects (copies).
+       Spectrogram objects can be very large in memory.
+       Use `inplace=True` where possible to update container in-place.
     """
     def __init__(self, dict=None, **kwargs):
         self.data = {}
@@ -293,55 +313,104 @@ class SpectrogramDict(UserDict):
         for k, v in kwargs.items():
              self[k] = v
 
-    def read(self, *args, **kwargs):
-        raise NotImplementedError("Batch read not implemented")
+    def read(self, source, *args, **kwargs):
+        """Read dictionary from HDF5 file keys -> dict keys."""
+        format = kwargs.get("format", "hdf5")
+        if format == "hdf5":
+             with h5py.File(source, "r") as f:
+                  for k in f.keys():
+                       try:
+                           s = Spectrogram.read(f[k], format="hdf5")
+                           self[k] = s
+                       except Exception:
+                           pass
+        else:
+             raise NotImplementedError(f"Format {format} not supported")
+        return self
         
-    def write(self, *args, **kwargs):
-        raise NotImplementedError("Batch write not implemented")
+    def write(self, target, *args, **kwargs):
+        """Write dictionary to HDF5 file keys -> groups."""
+        format = kwargs.get("format", "hdf5")
+        mode = kwargs.get("mode", "w")
+        if format == "hdf5":
+             with h5py.File(target, mode) as f:
+                  for k, s in self.items():
+                       grp = f.create_group(str(k))
+                       s.write(grp, format="hdf5")
+        else:
+             raise NotImplementedError(f"Format {format} not supported")
 
-    def crop(self, t0, t1):
-        new_dict = self.__class__()
+    def crop(self, t0, t1, inplace=False):
+        if inplace:
+             target = self
+        else:
+             target = self.__class__()
         for k, v in self.items():
-            new_dict[k] = v.crop(t0, t1)
-        return new_dict
+            res = v.crop(t0, t1)
+            if inplace:
+                 self[k] = res
+            else:
+                 target[k] = res
+        if inplace:
+             return self
+        return target
 
-    def crop_frequencies(self, f0, f1):
-        new_dict = self.__class__()
+    def crop_frequencies(self, f0, f1, inplace=False):
+        if inplace:
+             target = self
+        else:
+             target = self.__class__()
         for k, v in self.items():
             if hasattr(v, 'crop_frequencies'):
-                new_dict[k] = v.crop_frequencies(f0, f1)
+                res = v.crop_frequencies(f0, f1)
             else:
-                # Fallback
-                 if isinstance(f0, u.Quantity):
-                     f0 = f0.to(v.yunit).value
-                 if isinstance(f1, u.Quantity):
-                     f1 = f1.to(v.yunit).value
-                 freqs = v.frequencies.value
-                 idx = (freqs >= f0) & (freqs <= f1)
-                 # Assume slicing works on axis 1
-                 # Unfortunately, basic array slicing might not work for non-regular or if Spectrogram overrides it.
-                 # But we assume validity.
-                 # If crop_frequencies is standard in modern gwpy, this branch is rarely taken.
-                 new_dict[k] = v.crop_frequencies(f0, f1)
-        return new_dict
+                 if isinstance(f0, u.Quantity): f0 = f0.to(v.yunit).value
+                 if isinstance(f1, u.Quantity): f1 = f1.to(v.yunit).value
+                 res = v.crop_frequencies(f0, f1)
+            
+            if inplace:
+                 self[k] = res
+            else:
+                 target[k] = res
+        if inplace:
+             return self
+        return target
 
-    def rebin(self, dt, df):
-        new_dict = self.__class__()
+    def rebin(self, dt, df, inplace=False):
+        if inplace:
+             target = self
+        else:
+             target = self.__class__()
         for k, v in self.items():
             if hasattr(v, 'rebin'):
-                new_dict[k] = v.rebin(dt, df)
+                res = v.rebin(dt, df)
+                if inplace:
+                     self[k] = res
+                else:
+                     target[k] = res
             else:
-                raise NotImplementedError("rebin not supported on Spectrogram item")
-        return new_dict
+                raise NotImplementedError("rebin not supported")
+        if inplace:
+             return self
+        return target
 
-    def interpolate(self, dt, df):
-        new_dict = self.__class__()
+    def interpolate(self, dt, df, inplace=False):
+        if inplace:
+             target = self
+        else:
+             target = self.__class__()
         for k, v in self.items():
             if hasattr(v, 'interpolate'):
-                new_dict[k] = v.interpolate(dt, df)
+                res = v.interpolate(dt, df)
+                if inplace:
+                     self[k] = res
+                else:
+                     target[k] = res
             else:
-                raise NotImplementedError("interpolate not supported on Spectrogram item")
-        return new_dict
+                raise NotImplementedError("interpolate not supported")
+        if inplace:
+             return self
+        return target
 
     def plot(self, **kwargs):
         kwargs.setdefault("method", "pcolormesh")
@@ -350,7 +419,6 @@ class SpectrogramDict(UserDict):
         return Plot(*self.values(), **kwargs)
 
     def to_matrix(self):
-        """Convert values to SpectrogramMatrix (N, Time, Freq)."""
         vals = list(self.values())
         if not vals:
              return SpectrogramMatrix(np.empty((0,0,0)))
@@ -372,13 +440,11 @@ class SpectrogramDict(UserDict):
         return matrix
 
     def to_torch(self, device=None, dtype=None):
-        """Convert elements to dict of tensors."""
         if torch is None:
              raise ImportError("torch")
         return {k: torch.tensor(v.value, device=device, dtype=dtype) for k, v in self.items()}
 
     def to_cupy(self, dtype=None):
-        """Convert elements to dict of cupy arrays."""
         if cupy is None:
              raise ImportError("cupy")
         return {k: cupy.array(v.value, dtype=dtype) for k, v in self.items()}
