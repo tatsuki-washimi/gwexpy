@@ -27,17 +27,20 @@ audio = ["librosa", "pydub", "torchaudio"]
 data = ["xarray", "h5py", "netCDF4", "obspy", "mne", "neo"]
 control = ["control"]
 gpu = ["cupy"]
+geophysics = ["wintools", "win2ndarray", "mth5", "mt_metadata", "mtpy"]
 interop = [
     "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr",
     "librosa", "pydub", "torchaudio",
     "xarray", "h5py", "netCDF4", "obspy", "mne", "neo",
-    "control", "cupy"
+    "control", "cupy",
+    "wintools", "win2ndarray", "mth5", "mt_metadata", "mtpy"
 ]
 all = [
     "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr",
     "librosa", "pydub", "torchaudio",
     "xarray", "h5py", "netCDF4", "obspy", "mne", "neo",
-    "control", "cupy"
+    "control", "cupy",
+    "wintools", "win2ndarray", "mth5", "mt_metadata", "mtpy"
 ]
 
 [tool.setuptools.packages.find]

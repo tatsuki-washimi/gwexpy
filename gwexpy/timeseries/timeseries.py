@@ -325,6 +325,8 @@ class TimeSeries(BaseTimeSeries):
         dt_val = target_dt_in_time_unit.value
         
         # 3. Determine Origin Base
+        safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
+        
         if origin == 't0':
             origin_val = start_time_val
         elif origin == 'gps0':
@@ -332,11 +334,11 @@ class TimeSeries(BaseTimeSeries):
         elif isinstance(origin, (u.Quantity, str)):
             # convert origin to same unit as time_unit (if possible) or seconds
             # If origin is a Time object etc? simpler to assume quantity or str
-            origin_val = u.Quantity(origin).to(time_unit).value
+            origin_val = u.Quantity(origin).to(safe_unit).value
         else:
             origin_val = 0.0 
             
-        offset_val = u.Quantity(offset).to(time_unit).value
+        offset_val = u.Quantity(offset).to(safe_unit).value
         base_val = origin_val + offset_val
         
         # 4. Generate New Grid
