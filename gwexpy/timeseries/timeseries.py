@@ -289,8 +289,12 @@ class TimeSeries(BaseTimeSeries):
              # Requirement says: "support s/ms/us/ns/min/h/day", numeric not supported by default.
              raise TypeError("rule must be a string or astropy Quantity (time).")
 
-        if not target_dt.unit.is_equivalent(u.s):
-             raise ValueError("rule must be time-like")
+        # Validate rule unit compatibility
+        is_time = target_dt.unit.physical_type == 'time'
+        is_dimless = (target_dt.unit is None or target_dt.unit == u.dimensionless_unscaled or target_dt.unit.physical_type == 'dimensionless')
+        
+        if not is_time and not is_dimless:
+             raise ValueError("rule must be time-like or dimensionless")
 
         # 2. Determine Original Times and Span
         # Prefer using self.times.value (float GPS) for calculation to avoid Quantity overhead loops

@@ -38,11 +38,17 @@
 ## Installation
 
 ```bash
-# From a released package (No PyPI/conda support yet)
-pip install git+https://github.com/tatsuki-washimi/gwexpy
+# Standard installation
+pip install .
 
-# From this repository (recommended for development)
-pip install -e . --no-deps
+# Install with ALL optional dependencies (Recommended)
+pip install ".[all]"
+
+# Install specific features
+pip install ".[interop]"     # All interoperability features
+pip install ".[geophysics]"  # Obspy, MTh5, etc.
+pip install ".[torch]"       # PyTorch support
+pip install ".[audio]"       # Librosa, Pydub, Torchaudio
 ```
 *(Note: Core dependencies include `gwpy`, `astropy`, `numpy`, `scipy`. Some features require `torch`, `tensorflow`, `dask`, `zarr`, `pydub`, `librosa`, etc.)*
 
