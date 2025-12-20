@@ -2665,8 +2665,6 @@ class SeriesMatrix(np.ndarray):
             Additional plotting keyword arguments forwarded to gwpy/matplotlib.
 
         Returns
-        -------
-        plot : gwpy.plot.Plot or matplotlib.figure.Figure
             ``gwpy.plot.Plot`` when ``subplots`` is False/None; otherwise a matplotlib Figure.
         """
         if separate is not None:
@@ -2685,6 +2683,75 @@ class SeriesMatrix(np.ndarray):
         except Exception:
             xindex = np.asarray(self.xindex)
         xlabel = str(getattr(self, 'xunit', '')) if hasattr(self, 'xunit') else ''
+
+        # Auto-Log Scale Logic (migrated from Plot class)
+        # Check if we are likely a FrequencySeriesMatrix (or just have frequency x-axis)
+        # We can check if xunit is Hz-like or if class name suggests it
+        is_frequency = False
+        if hasattr(self, 'xunit'):
+             try:
+                 if self.xunit.physical_type == 'frequency':
+                     is_frequency = True
+             except Exception:
+                 pass
+        
+        # Fallback check
+        if not is_frequency:
+             cls_name = self.__class__.__name__
+             if 'Frequency' in cls_name:
+                 is_frequency = True
+
+        if is_frequency:
+             # Y Scale Logic
+             if 'yscale' not in kwargs:
+                 try:
+                     # Check unit of first element
+                     unit = self.meta[0, 0].unit
+                     is_linear = False
+                     
+                     # Check strict matches
+                     if unit == u.deg or unit == u.rad or unit == u.dB:
+                         is_linear = True
+                     else:
+                         u_str = str(unit)
+                         if 'deg' in u_str or 'rad' in u_str or 'dB' in u_str:
+                             is_linear = True
+                     
+                     name_str = str(getattr(self.meta[0, 0], 'name', '')).lower()
+                     if 'delay' in name_str or 'phase' in name_str or 'angle' in name_str:
+                         is_linear = True
+                     
+                     if not is_linear:
+                         kwargs['yscale'] = 'log'
+                 except Exception:
+                     kwargs['yscale'] = 'log'
+
+             # X Scale Logic
+             if 'xscale' not in kwargs:
+                 if nsample > 256:
+                     kwargs['xscale'] = 'log'
+
+        # Default Layout Settings
+        apply_constrained_layout = False
+        if subplots:
+            # Don't put constrained_layout in kwargs as gwpy forwards it to plot command
+            apply_constrained_layout = kwargs.pop('constrained_layout', True)
+            
+            if 'figsize' not in kwargs:
+                 # Heuristic for figsize
+                 # Base size: 6 inch wide per col, 4 inch high per row
+                 if subplots is True:
+                     w, h = ncol, nrow
+                 elif subplots == 'row' or subplots == 'col':
+                     # For row/col subplots, we have 1D geometry
+                     if subplots == 'row':
+                         w, h = 1, nrow
+                     else:
+                         w, h = ncol, 1
+                 
+                 fig_width = min(24, 6 * w)
+                 fig_height = min(24, 4 * h)
+                 kwargs['figsize'] = (fig_width, fig_height)
 
         if not subplots or subplots is False:
             series_list = self.to_series_1Dlist()
@@ -2705,30 +2772,39 @@ class SeriesMatrix(np.ndarray):
             for j in range(ncol):
                 axes[0, j].set_title(col_names[j])
             for i in range(nrow):
-                axes[i, 0].set_ylabel(row_names[i])         
+                axes[i, 0].set_ylabel(row_names[i])
+                
+            if apply_constrained_layout:
+                 plot.set_constrained_layout(True)
             return plot
 
         if subplots == 'row':
             series_list = self.to_series_2Dlist()
-            plot = Plot(*series_list, geometry=(nrow, 1), sharex=True, sharey=True)
+            plot = Plot(*series_list, geometry=(nrow, 1), sharex=True, sharey=True, method=method, **kwargs)
             axes = plot.get_axes()
             if legend:
                 for i in range(nrow):
                     axes[i].legend([series.name for series in series_list[i]])
             for i in range(nrow):
-                axes[i].set_ylabel(row_names[i])          
+                axes[i].set_ylabel(row_names[i])
+                
+            if apply_constrained_layout:
+                 plot.set_constrained_layout(True)
             return plot
 
         if subplots == 'col':
             series_list = self.to_series_2Dlist()
             series_list = [list(series) for series in zip(*series_list)]
-            plot = Plot(*series_list, geometry=(1, ncol), sharex=True, sharey=True)
+            plot = Plot(*series_list, geometry=(1, ncol), sharex=True, sharey=True, method=method, **kwargs)
             axes = plot.get_axes()
             if legend:
                 for i in range(ncol):
                     axes[i].legend([series.name for series in series_list[i]])
             for i in range(ncol):
-                axes[i].set_title(col_names[i])          
+                axes[i].set_title(col_names[i])
+                
+            if apply_constrained_layout:
+                 plot.set_constrained_layout(True)
             return plot      
 
         raise ValueError("subplots must be False/True/'row'/'col' or use separate='row'/'col'")
