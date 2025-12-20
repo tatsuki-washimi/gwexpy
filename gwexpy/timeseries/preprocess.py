@@ -178,7 +178,10 @@ def align_timeseries_collection(
         # This ensures grid points match common_times exactly phase-wise.
         
         # Origin must be compatible with ts.times unit or convertible
-        origin_val = u.Quantity(common_t0, common_time_unit).to(ts.times.unit)
+        if ts.times.unit is None:
+             origin_val = u.Quantity(common_t0, u.dimensionless_unscaled)
+        else:
+             origin_val = u.Quantity(common_t0, common_time_unit).to(ts.times.unit)
         
         # We process the whole series onto the grid defined by common_t0
         # asfreq returns the coverage of the original series but on the new grid.
