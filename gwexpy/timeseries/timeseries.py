@@ -1,7 +1,6 @@
 import inspect
 from enum import Enum
 import numpy as np
-import numpy as np
 from astropy import units as u
 try:
     import scipy.signal
@@ -17,15 +16,7 @@ from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
 
 # --- Monkey Patch TimeSeriesDict ---
-# Since we want to provide HHT for TimeSeriesDict but we don't have our own subclass for it in this file
-# (we import BaseTimeSeriesDict), we will monkey patch it or rely on gwexpy's structure.
-# The previous `mix_down` was added to `TimeSeriesDict` in earlier code? 
-# Wait, I saw `TimeSeriesDict.mix_down` in Step 28 grep output?
-# Ah, Step 28 output showed:
-# {"File":".../timeseries.py","NodePath":"TimeSeriesDict.mix_down", ... "Content":"def mix_down(self, *args, **kwargs):\n    \"\"\"Apply mix_down to each item.\"\"\"\n    new_dict = self.__class__()\n    for key, ts in self.items():\n        new_dict[key] = ts.mix_down(*args, **kwargs)\n    return new_dict","ContentType":"raw_content"}
-# This implies `class TimeSeriesDict(...)` IS defined in this file.
-# But where? Step 25 output didn't show it clearly (it was truncated).
-# Let's find where TimeSeriesDict is defined.
+
 
 # New Imports
 from .preprocess import (
@@ -381,7 +372,9 @@ class TimeSeries(BaseTimeSeries):
         # 5. Reindex / Interpolate
         # If empty
         if len(new_times_val) == 0:
-             return self.__class__([], t0=start_time, dt=target_dt, channel=self.channel, name=self.name, unit=self.unit)
+             # Safety fallback for t0 if grid is empty: use grid_start 
+             safe_t0 = u.Quantity(grid_start, time_unit)
+             return self.__class__([], t0=safe_t0, dt=target_dt, channel=self.channel, name=self.name, unit=self.unit)
 
         new_data = np.full(len(new_times_val), fill_value, dtype=self.dtype)
         if hasattr(fill_value, 'dtype'):

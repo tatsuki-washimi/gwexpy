@@ -18,6 +18,13 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest"]
+torch = ["torch"]
+tensorflow = ["tensorflow"]
+jax = ["jax", "jaxlib"]
+dask = ["dask"]
+zarr = ["zarr"]
+audio = ["librosa", "pydub"]
+all = ["torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "librosa", "pydub"]
 
 [tool.setuptools.packages.find]
 where = ["."]

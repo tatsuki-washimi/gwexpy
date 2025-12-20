@@ -80,11 +80,10 @@ def align_timeseries_collection(
     fill_value : float, optional
         Value to fill missing data with when how="union". Default is np.nan.
     method : str, optional
-        Interpolation method for resampling/alignment.
-        If None, uses nearest/exact or whatever underlying resample uses if rates differ.
-        If provided, passed to relevant interpolation methods.
+        Interpolation method for resampling/alignment (e.g. 'linear', 'nearest', 'pad').
+        Passed to TimeSeries.asfreq.
     tolerance : float, optional
-        Tolerance for time comparison in seconds.
+        Tolerance for time comparison in seconds. Passed to TimeSeries.asfreq.
 
     Returns
     -------
@@ -102,98 +101,122 @@ def align_timeseries_collection(
     dts = [ts.dt for ts in series_list]
     target_dt = max(dts)
     
-    resampled_list = []
+    # 2. Determine time bounds in common unit (seconds)
+    common_time_unit = u.s 
+    
+    # Helper to get start/end in seconds
+    def get_span_s(ts):
+        t0 = ts.t0.to(common_time_unit).value
+        # Calculate end from t0 + len*dt (safer than span[1] if gaps or irregular?)
+        # BaseTimeSeries usually regular.
+        duration = (len(ts) * ts.dt).to(common_time_unit).value
+        return t0, t0 + duration
+
+    starts = []
+    ends = []
     for ts in series_list:
-        if ts.dt != target_dt:
-             # Resample to target_dt (anti-aliasing)
-             if method is not None:
-                 # gwpy native resample
-                 ts_new = ts.resample(1/target_dt)
-             else:
-                 ts_new = ts.resample(1/target_dt)
-             resampled_list.append(ts_new)
-        else:
-             resampled_list.append(ts)
-             
-    series_list = resampled_list
-    
-    # 2. Determine time bounds
-    # Ensure all t0 and span[1] are in compatible units before comparison
-    # Convert all to a common time unit, e.g., seconds, for internal calculations for consistency
-    common_time_unit = u.s # Use seconds for internal calculations for consistency
-    t0s = [ts.t0.to(common_time_unit).value for ts in series_list]
-    
-    def _get_val(x):
-         return x.value if hasattr(x, 'value') else x
-         
-    ends = [_get_val(ts.span[1]) for ts in series_list]
-    
-    # If using unit conversion logic for ends, we should be careful if they are not quantities.
-    # To be safe, we rely on TimeSeries.t0 and dt being quantities or consistent.
-    # If ts.span returning floats, we assume they are compatible with t0s (seconds).
-    # If they have value, we take it.
-    
-    if hasattr(series_list[0].span[1], 'unit'):
-         # Convert to common unit
-         ends = [ts.span[1].to(common_time_unit).value for ts in series_list]
+        s, e = get_span_s(ts)
+        starts.append(s)
+        ends.append(e)
     
     def float_min(x): return min(x)
     def float_max(x): return max(x)
 
     if how == "intersection":
-        common_t0 = float_max(t0s)
+        common_t0 = float_max(starts)
         common_end = float_min(ends)
         if common_end <= common_t0:
-             # Fallback or error? User requested "crop all ... else raise" logic implied?
-             # "crop all channels to common overlapping span"
-             # If no overlap, length is 0 or negative.
-             raise ValueError(f"No overlap found. common_t0={common_t0}, common_end={common_end}")
+             # If exact match edge case?
+             # Check if they are effectively same
+             if np.isclose(common_end, common_t0):
+                  pass
+             else:
+                  raise ValueError(f"No overlap found. common_t0={common_t0}, common_end={common_end}")
     elif how == "union":
-        common_t0 = float_min(t0s)
+        common_t0 = float_min(starts)
         common_end = float_max(ends)
     else:
         raise ValueError(f"Unknown alignment how='{how}'.")
 
     # 3. Create common time axis
-    unit = series_list[0].times.unit
+    # Use unit from first series for output
+    out_unit = series_list[0].times.unit
+    
     duration = common_end - common_t0
-    target_dt_val = target_dt.to(unit).value
+    target_dt_s = target_dt.to(common_time_unit).value
     
     if duration <= 0:
          n_samples = 0
     else:
-         n_samples = int(np.round(duration / target_dt_val))
+         n_samples = int(np.round(duration / target_dt_s))
     
-    common_times = np.linspace(common_t0, common_t0 + (n_samples-1)*target_dt_val, n_samples) * unit
+    # Create common times in Seconds
+    common_times_s = common_t0 + np.arange(n_samples) * target_dt_s
+    # Convert to output unit
+    common_times = (common_times_s * common_time_unit).to(out_unit)
     
     if n_samples <= 0 and how == "intersection":
-        raise ValueError(f"Intersection resulted in empty interval: [{common_t0}, {common_end}]")
+         # Fallback for empty
+         pass
 
     # 4. Fill matrix
     n_channels = len(series_list)
-    matrix = np.full((n_samples, n_channels), fill_value, dtype=float)
+    # Determine output dtype (promote if needed)
+    # For now assume float or complex
+    is_complex = any(ts.dtype.kind == 'c' for ts in series_list)
+    dtype = np.complex128 if is_complex else np.float64
+    
+    values = np.full((n_samples, n_channels), fill_value, dtype=dtype)
     
     for i, ts in enumerate(series_list):
-        ts_t0_val = ts.t0.value
-        offset = int(np.round((ts_t0_val - common_t0) / target_dt_val))
-        ts_len = len(ts)
+        # Align using asfreq
+        # We specify the target grid by using origin=common_t0.
+        # This ensures grid points match common_times exactly phase-wise.
         
-        mat_start = max(0, offset)
-        mat_end = min(n_samples, offset + ts_len)
+        # Origin must be compatible with ts.times unit or convertible
+        origin_val = u.Quantity(common_t0, common_time_unit).to(ts.times.unit)
+        
+        # We process the whole series onto the grid defined by common_t0
+        # asfreq returns the coverage of the original series but on the new grid.
+        
+        ts_aligned = ts.asfreq(
+            target_dt,
+            method=method,
+            fill_value=fill_value,
+            origin=origin_val,
+            tolerance=tolerance,
+            align='floor'
+        )
+        
+        # Calculate offset of ts_aligned.t0 relative to common_t0
+        # Both are on the grid defined by common_t0 and target_dt.
+        t0_aligned_s = ts_aligned.t0.to(common_time_unit).value
+        
+        # Index offset
+        offset = int(np.round((t0_aligned_s - common_t0) / target_dt_s))
+        
+        # Copy valid overlap into values buffer
+        # Buffer range: [0, n_samples)
+        # TS range: [offset, offset + len)
+        
+        # Overlap in buffer coordinates
+        buf_start = max(0, offset)
+        buf_end = min(n_samples, offset + len(ts_aligned))
+        
+        # Overlap in TS coordinates
         ts_start = max(0, -offset)
-        ts_end = ts_start + (mat_end - mat_start)
+        ts_end = ts_start + (buf_end - buf_start)
         
-        if mat_end > mat_start and ts_end > ts_start:
-             val_slice = ts.value[ts_start:ts_end]
-             matrix[mat_start:mat_end, i] = val_slice
+        if buf_end > buf_start:
+             values[buf_start:buf_end, i] = ts_aligned.value[ts_start:ts_end]
              
     meta = {
-        "t0": common_t0 * unit,
+        "t0": u.Quantity(common_t0, common_time_unit).to(out_unit),
         "dt": target_dt,
         "channel_names": [ts.name for ts in series_list],
     }
     
-    return matrix, common_times, meta
+    return values, common_times, meta
 
 
 def impute_timeseries(ts, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
