@@ -313,14 +313,22 @@ class TimeSeries(BaseTimeSeries):
              time_unit = u.s
              target_dt_in_time_unit = target_dt.to(u.s)
              
-             # Extract values directly as they are assumed to be seconds
              start_time_val = old_times_q[0].value
-             stop_time_val = self.span[1].value if hasattr(self.span[1], 'value') else self.span[1]
+             
+             if hasattr(self, 'dt') and self.dt is not None:
+                  stop_time_val = start_time_val + (len(self) * self.dt.to(u.s).value)
+             else:
+                  stop_time_val = old_times_q[-1].value
         else:
              safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
              target_dt_in_time_unit = u.Quantity(target_dt, safe_unit)
              start_time_val = u.Quantity(old_times_q[0], safe_unit).value
-             stop_time_val = u.Quantity(self.span[1], safe_unit).value
+             
+             if hasattr(self, 'dt') and self.dt is not None:
+                 dt_input = u.Quantity(self.dt, safe_unit).value
+                 stop_time_val = start_time_val + (len(self) * dt_input)
+             else:
+                 stop_time_val = u.Quantity(old_times_q[-1], safe_unit).value
              
         dt_val = target_dt_in_time_unit.value
         

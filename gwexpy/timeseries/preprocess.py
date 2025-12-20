@@ -197,7 +197,9 @@ def align_timeseries_collection(
         t0_aligned_s = ts_aligned.t0.to(common_time_unit).value
         
         # Index offset
-        offset = int(np.round((t0_aligned_s - common_t0) / target_dt_s))
+        # Since we aligned to the grid, the difference should be integer multiple of dt
+        # We use floor(x + 0.5) to snap to nearest integer safely.
+        offset = int(np.floor((t0_aligned_s - common_t0) / target_dt_s + 0.5))
         
         # Copy valid overlap into values buffer
         # Buffer range: [0, n_samples)
