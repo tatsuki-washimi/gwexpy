@@ -372,8 +372,9 @@ class TimeSeries(BaseTimeSeries):
         # 5. Reindex / Interpolate
         # If empty
         if len(new_times_val) == 0:
-             # Safety fallback for t0 if grid is empty: use grid_start 
-             safe_t0 = u.Quantity(grid_start, time_unit)
+             # Safety fallback for t0 if grid is empty
+             safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
+             safe_t0 = u.Quantity(grid_start, safe_unit)
              return self.__class__([], t0=safe_t0, dt=target_dt, channel=self.channel, name=self.name, unit=self.unit)
 
         new_data = np.full(len(new_times_val), fill_value, dtype=self.dtype)
