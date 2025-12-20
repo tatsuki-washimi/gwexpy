@@ -861,6 +861,273 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
 
     EntryClass = FrequencySeries
 
+    # ===============================
+    # 1. Axis & Edit Operations
+    # ===============================
+
+    def crop(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Crop each FrequencySeries in the dict.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.crop(*args, **kwargs)
+        return new_dict
+
+    def pad(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Pad each FrequencySeries in the dict.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.pad(*args, **kwargs)
+        return new_dict
+
+    def interpolate(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Interpolate each FrequencySeries in the dict.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.interpolate(*args, **kwargs)
+        return new_dict
+
+    # --- In-place Element Operations ---
+
+    def append(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Append to each FrequencySeries in the dict (in-place).
+        Returns self.
+        """
+        for fs in self.values():
+            fs.append(*args, **kwargs)
+        return self
+
+    def prepend(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Prepend to each FrequencySeries in the dict (in-place).
+        Returns self.
+        """
+        for fs in self.values():
+            fs.prepend(*args, **kwargs)
+        return self
+
+    # def update(self, *args, **kwargs) -> "FrequencySeriesDict":
+    #     """
+    #     Update each FrequencySeries in the dict (in-place).
+    #     Returns self.
+    #     """
+    #     for fs in self.values():
+    #         fs.update(*args, **kwargs)
+    #     return self
+
+    # ===============================
+    # 2. Filter & Response
+    # ===============================
+
+    def zpk(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Apply ZPK filter to each FrequencySeries.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.zpk(*args, **kwargs)
+        return new_dict
+
+    def filter(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Apply filter to each FrequencySeries.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.filter(*args, **kwargs)
+        return new_dict
+
+    def apply_response(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Apply response to each FrequencySeries.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.apply_response(*args, **kwargs)
+        return new_dict
+
+    # ===============================
+    # 3. Analysis & Conversion
+    # ===============================
+
+    def phase(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Compute phase of each FrequencySeries.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.phase(*args, **kwargs)
+        return new_dict
+
+    def angle(self, *args, **kwargs) -> "FrequencySeriesDict":
+        return self.phase(*args, **kwargs)
+
+    def degree(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Compute phase (in degrees) of each FrequencySeries.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.degree(*args, **kwargs)
+        return new_dict
+
+    def to_db(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Convert each FrequencySeries to dB.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.to_db(*args, **kwargs)
+        return new_dict
+
+    def differentiate_time(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Apply time differentiation to each item.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.differentiate_time(*args, **kwargs)
+        return new_dict
+
+    def integrate_time(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Apply time integration to each item.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.integrate_time(*args, **kwargs)
+        return new_dict
+
+    def group_delay(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Compute group delay of each item.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.group_delay(*args, **kwargs)
+        return new_dict
+
+    def smooth(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """
+        Smooth each FrequencySeries.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.smooth(*args, **kwargs)
+        return new_dict
+
+    # ===============================
+    # 4. Time Domain Conversion
+    # ===============================
+
+    def ifft(self, *args, **kwargs):
+        """
+        Compute IFFT of each FrequencySeries.
+        Returns a TimeSeriesDict.
+        """
+        from gwexpy.timeseries import TimeSeriesDict
+        new_dict = TimeSeriesDict()
+        for key, fs in self.items():
+            new_dict[key] = fs.ifft(*args, **kwargs)
+        return new_dict
+
+    # ===============================
+    # 5. External Library Interop
+    # ===============================
+
+    def to_control_frd(self, *args, **kwargs) -> dict:
+        """
+        Convert each item to control.FRD.
+        Returns a dict of FRD objects.
+        """
+        return {key: fs.to_control_frd(*args, **kwargs) for key, fs in self.items()}
+
+    def to_torch(self, *args, **kwargs) -> dict:
+        """
+        Convert each item to torch.Tensor.
+        Returns a dict of Tensors.
+        """
+        return {key: fs.to_torch(*args, **kwargs) for key, fs in self.items()}
+
+    def to_tf(self, *args, **kwargs) -> dict:
+        """
+        Convert each item to tensorflow.Tensor.
+        Returns a dict of Tensors.
+        """
+        return {key: fs.to_tf(*args, **kwargs) for key, fs in self.items()}
+
+    def to_jax(self, *args, **kwargs) -> dict:
+        """
+        Convert each item to jax.Array.
+        Returns a dict of Arrays.
+        """
+        return {key: fs.to_jax(*args, **kwargs) for key, fs in self.items()}
+
+    def to_cupy(self, *args, **kwargs) -> dict:
+        """
+        Convert each item to cupy.ndarray.
+        Returns a dict of Arrays.
+        """
+        return {key: fs.to_cupy(*args, **kwargs) for key, fs in self.items()}
+
+    # ===============================
+    # 6. Aggregation
+    # ===============================
+
+    def to_pandas(self, **kwargs):
+        """
+        Convert to pandas.DataFrame.
+        Keys become columns.
+        """
+        import pandas as pd
+        data = {}
+        for key, fs in self.items():
+            # Extract Series with index from FrequencySeries
+            if hasattr(fs, "to_pandas"):
+                # to_pandas(index="frequency") ensures index is frequency
+                s = fs.to_pandas(index="frequency", copy=False)
+                # s could be Series or DataFrame (gwpy usually returns Series for 1D)
+                if isinstance(s, pd.DataFrame):
+                    s = s.iloc[:, 0]
+                elif not isinstance(s, pd.Series): # Fallback
+                     s = pd.Series(fs.value, index=fs.frequencies.value)
+            else:
+                s = pd.Series(fs.value, index=fs.frequencies.value)
+            data[key] = s
+            
+        return pd.DataFrame(data)
+
+    def to_xarray(self):
+        """
+        Convert to xarray.Dataset.
+        Keys become data variables.
+        """
+        import xarray as xr
+        ds = xr.Dataset()
+        for key, fs in self.items():
+             # FrequencySeries.to_xarray returns DataArray
+             ds[key] = fs.to_xarray()
+        return ds
+
 
 class FrequencySeriesBaseList(list[_FS]):
     """List container for `FrequencySeries` objects with type enforcement."""
@@ -927,6 +1194,278 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
     """List of `FrequencySeries` objects."""
 
     EntryClass = FrequencySeries
+
+    # ===============================
+    # 1. Axis & Edit Operations
+    # ===============================
+
+    def crop(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Crop each FrequencySeries in the list.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.crop(*args, **kwargs))
+        return new_list
+
+    def pad(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Pad each FrequencySeries in the list.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.pad(*args, **kwargs))
+        return new_list
+
+    def interpolate(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Interpolate each FrequencySeries in the list.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.interpolate(*args, **kwargs))
+        return new_list
+
+    # --- In-place Element Operations ---
+
+    # def append(self, *args, **kwargs) -> "FrequencySeriesList":
+    #     """
+    #     Append to each FrequencySeries in the list (in-place).
+    #     Returns self.
+    #     """
+    #     for fs in self:
+    #         fs.append(*args, **kwargs)
+    #     return self
+
+    # def prepend(self, *args, **kwargs) -> "FrequencySeriesList":
+    #     """
+    #     Prepend to each FrequencySeries in the list (in-place).
+    #     Returns self.
+    #     """
+    #     for fs in self:
+    #         fs.prepend(*args, **kwargs)
+    #     return self
+
+    # def update(self, *args, **kwargs) -> "FrequencySeriesList":
+    #     """
+    #     Update each FrequencySeries in the list (in-place).
+    #     Returns self.
+    #     """
+    #     for fs in self:
+    #         fs.update(*args, **kwargs)
+    #     return self
+
+    # ===============================
+    # 2. Filter & Response
+    # ===============================
+
+    def zpk(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Apply ZPK filter to each FrequencySeries in the list.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.zpk(*args, **kwargs))
+        return new_list
+
+    def filter(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Apply filter to each FrequencySeries in the list.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.filter(*args, **kwargs))
+        return new_list
+
+    def apply_response(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Apply response to each FrequencySeries in the list.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.apply_response(*args, **kwargs))
+        return new_list
+
+    # ===============================
+    # 3. Analysis & Conversion
+    # ===============================
+
+    def phase(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Compute phase of each FrequencySeries.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.phase(*args, **kwargs))
+        return new_list
+
+    def angle(self, *args, **kwargs) -> "FrequencySeriesList":
+        return self.phase(*args, **kwargs)
+
+    def degree(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Compute phase (in degrees) of each FrequencySeries.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.degree(*args, **kwargs))
+        return new_list
+
+    def to_db(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Convert each FrequencySeries to dB.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.to_db(*args, **kwargs))
+        return new_list
+
+    def differentiate_time(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Apply time differentiation to each item.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.differentiate_time(*args, **kwargs))
+        return new_list
+
+    def integrate_time(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Apply time integration to each item.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.integrate_time(*args, **kwargs))
+        return new_list
+
+    def group_delay(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Compute group delay of each item.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.group_delay(*args, **kwargs))
+        return new_list
+
+    def smooth(self, *args, **kwargs) -> "FrequencySeriesList":
+        """
+        Smooth each FrequencySeries.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.smooth(*args, **kwargs))
+        return new_list
+
+    # ===============================
+    # 4. Time Domain Conversion
+    # ===============================
+
+    def ifft(self, *args, **kwargs):
+        """
+        Compute IFFT of each FrequencySeries.
+        Returns a TimeSeriesList.
+        """
+        from gwexpy.timeseries import TimeSeriesList
+        new_list = TimeSeriesList()
+        for fs in self:
+            list.append(new_list, fs.ifft(*args, **kwargs))
+        return new_list
+
+    # ===============================
+    # 5. External Library Interop
+    # ===============================
+
+    def to_control_frd(self, *args, **kwargs) -> list:
+        """
+        Convert each item to control.FRD.
+        Returns a list of FRD objects.
+        """
+        return [fs.to_control_frd(*args, **kwargs) for fs in self]
+
+    def to_torch(self, *args, **kwargs) -> list:
+        """
+        Convert each item to torch.Tensor.
+        Returns a list of Tensors.
+        """
+        return [fs.to_torch(*args, **kwargs) for fs in self]
+
+    def to_tf(self, *args, **kwargs) -> list:
+        """
+        Convert each item to tensorflow.Tensor.
+        Returns a list of Tensors.
+        """
+        return [fs.to_tf(*args, **kwargs) for fs in self]
+
+    def to_jax(self, *args, **kwargs) -> list:
+        """
+        Convert each item to jax.Array.
+        Returns a list of Arrays.
+        """
+        return [fs.to_jax(*args, **kwargs) for fs in self]
+
+    def to_cupy(self, *args, **kwargs) -> list:
+        """
+        Convert each item to cupy.ndarray.
+        Returns a list of Arrays.
+        """
+        return [fs.to_cupy(*args, **kwargs) for fs in self]
+
+    # ===============================
+    # 6. Aggregation
+    # ===============================
+
+    def to_pandas(self, **kwargs):
+        """
+        Convert to pandas.DataFrame.
+        Columns are named by channel name or index.
+        """
+        import pandas as pd
+        data = {}
+        for i, fs in enumerate(self):
+            name = fs.name or f"series_{i}"
+            if hasattr(fs, "to_pandas"):
+                s = fs.to_pandas(index="frequency", copy=False)
+                if isinstance(s, pd.DataFrame):
+                     s = s.iloc[:, 0]
+                elif not isinstance(s, pd.Series):
+                     s = pd.Series(fs.value, index=fs.frequencies.value)
+            else:
+                s = pd.Series(fs.value, index=fs.frequencies.value)
+            data[name] = s
+            
+        return pd.DataFrame(data)
+
+    def to_xarray(self):
+        """
+        Convert to xarray.DataArray.
+        Concatenates along a new dimension 'channel'.
+        """
+        import xarray as xr
+        # Requires common coords usually, but concat handles it
+        das = [fs.to_xarray() for fs in self]
+        
+        # We need a new dimension for channel.
+        # If das have names, we can use them as coordinates?
+        # But DataArrays are concatenated.
+        
+        # Check if we should assign channel names
+        names = [getattr(fs, 'name', f'ch{i}') for i, fs in enumerate(self)]
+        
+        # Concat
+        return xr.concat(das, dim=xr.DataArray(names, dims="channel", name="channel"))
 
 
 # =============================
