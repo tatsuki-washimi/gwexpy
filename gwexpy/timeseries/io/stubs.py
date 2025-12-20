@@ -30,7 +30,7 @@ def _stub(fmt):
 
 for _fmt in _P2_FORMATS:
     reader = _stub(_fmt)
-    io_registry.register_reader(_fmt, TimeSeries, reader)
-    io_registry.register_reader(_fmt, TimeSeriesDict, reader)
-    io_registry.register_reader(_fmt, TimeSeriesMatrix, reader)
+    io_registry.register_reader(_fmt, TimeSeries, reader, force=True)
+    io_registry.register_reader(_fmt, TimeSeriesDict, reader, force=True)
+    io_registry.register_reader(_fmt, TimeSeriesMatrix, reader, force=True)
 

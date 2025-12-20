@@ -1,0 +1,51 @@
+Method/Property,TimeSeries (gwpy),TimeSeriesList (gwexpy),TimeSeriesDict (gwexpy),TimeSeriesMatrix (gwexpy),備考
+__init__,〇,〇,〇,〇,
+read,〇,〇,〇,〇,Matrixは全Chを一括読込
+write,〇,〇,〇,〇,
+plot,〇,〇,〇,△,Matrixは簡易プロットのみ
+__getitem__ (slice),〇,〇,〇,〇,Matrixは[ch, time]の2次元
+__add__ / __sub__ (演算),〇,×,×,〇,Matrixはndarrayとして計算
+__len__,〇,〇,〇,〇,Matrixはチャンネル数
+shape,〇,-,-,〇,
+crop,〇,×,×,〇,
+append,〇,〇,×,〇,Matrixは時間軸方向に結合
+prepend,〇,×,×,〇,
+update,〇,×,×,〇,
+pad,〇,〇,〇,〇,gwexpyでList/Dictにも追加
+shift,〇,×,×,〇,Matrixは時間軸シフト
+resample,〇,×,×,〇,MatrixはWrapper
+decimate,〇,×,×,×,
+filter,〇,×,×,〇,MatrixはWrapper
+whiten,〇,×,×,〇,MatrixはWrapper
+notch,〇,×,×,〇,MatrixはWrapper
+zpk,〇,×,×,×,Matrix未実装
+detrend,〇,×,×,〇,MatrixはWrapper
+taper,〇,×,×,〇,MatrixはWrapper
+gate,〇,×,×,×,Matrix未実装
+convolve,〇,×,×,×,
+correlate,〇,×,×,×,Matrixは xcorr (相互相関)あり
+inject,〇,×,×,×,
+fft,〇,×,×,〇,
+average_fft,〇,×,×,×,
+psd,〇,×,×,〇,Matrixは全Ch計算
+asd,〇,×,×,〇,
+csd,〇,×,×,〇,2変数間の計算
+coherence,〇,×,×,〇,
+spectrogram,〇,×,×,×,戻り値が3次元になるため未対応
+spectrogram2,〇,×,×,×,
+q_transform,〇,×,×,×,
+rms,〇,×,×,×,Matrixはrolling_rmsのみ
+min / max,〇,×,×,〇,ndarray継承
+mean / std,〇,×,×,〇,ndarray継承
+value_at,〇,×,×,〇,指定時刻の値を取得
+is_contiguous,〇,×,×,〇,
+state_segments,〇,×,×,×,
+mask,〇,×,×,×,
+to_lal,〇,×,×,×,
+to_pycbc,〇,×,×,×,
+to_pandas,〇,×,×,〇,
+to_matrix,×,〇,〇,〇,gwexpy独自の変換メソッド
+rolling_mean,×,〇,〇,〇,gwexpy独自
+impute,×,〇,〇,〇,欠損値補間 (gwexpy独自)
+pca / ica,×,×,×,〇,主成分分析等 (Matrix独自)
+fetch / find,〇,×,×,×,クラスメソッド

@@ -3334,6 +3334,261 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         return matrix
 
 
+    # ===============================
+    # Batch Processing Methods (P1)
+    # ===============================
+
+    # --- Waveform Operations ---
+
+    def crop(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Crop each TimeSeries in the dict.
+        Returns a new TimeSeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.crop(*args, **kwargs)
+        return new_dict
+
+    def append(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Append to each TimeSeries in the dict (in-place). 
+        Returns self.
+        """
+        for ts in self.values():
+            ts.append(*args, **kwargs)
+        return self
+
+    def prepend(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Prepend to each TimeSeries in the dict (in-place). 
+        Returns self.
+        """
+        for ts in self.values():
+            ts.prepend(*args, **kwargs)
+        return self
+
+    # def update(self, *args, **kwargs) -> "TimeSeriesDict":
+    #     """
+    #     Update each TimeSeries in the dict (in-place). 
+    #     Returns self.
+    #     """
+    #     for ts in self.values():
+    #         ts.update(*args, **kwargs)
+    #     return self
+
+    def shift(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Shift each TimeSeries in the dict.
+        Returns a new TimeSeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.shift(*args, **kwargs)
+        return new_dict
+
+    def gate(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Gate each TimeSeries in the dict.
+        Returns a new TimeSeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.gate(*args, **kwargs)
+        return new_dict
+
+    def mask(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Mask each TimeSeries in the dict.
+        Returns a new TimeSeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.mask(*args, **kwargs)
+        return new_dict
+
+    # --- Signal Processing ---
+
+    def decimate(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Decimate each TimeSeries in the dict.
+        Returns a new TimeSeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.decimate(*args, **kwargs)
+        return new_dict
+
+    def filter(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Filter each TimeSeries in the dict.
+        Returns a new TimeSeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.filter(*args, **kwargs)
+        return new_dict
+
+    def whiten(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Whiten each TimeSeries in the dict.
+        Returns a new TimeSeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.whiten(*args, **kwargs)
+        return new_dict
+
+    def notch(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Notch filter each TimeSeries in the dict.
+        Returns a new TimeSeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.notch(*args, **kwargs)
+        return new_dict
+
+    def zpk(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Apply ZPK filter to each TimeSeries in the dict.
+        Returns a new TimeSeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.zpk(*args, **kwargs)
+        return new_dict
+
+    def detrend(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Detrend each TimeSeries in the dict.
+        Returns a new TimeSeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.detrend(*args, **kwargs)
+        return new_dict
+
+    def taper(self, *args, **kwargs) -> "TimeSeriesDict":
+        """
+        Taper each TimeSeries in the dict.
+        Returns a new TimeSeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.taper(*args, **kwargs)
+        return new_dict
+
+    # --- Spectral Conversion ---
+
+    def fft(self, *args, **kwargs):
+        """
+        Apply FFT to each TimeSeries in the dict.
+        Returns a FrequencySeriesDict.
+        """
+        from gwexpy.frequencyseries import FrequencySeriesDict
+        new_dict = FrequencySeriesDict()
+        for key, ts in self.items():
+            new_dict[key] = ts.fft(*args, **kwargs)
+        return new_dict
+
+    def average_fft(self, *args, **kwargs):
+        """
+        Apply averge_fft to each TimeSeries in the dict.
+        Returns a FrequencySeriesDict.
+        """
+        from gwexpy.frequencyseries import FrequencySeriesDict
+        new_dict = FrequencySeriesDict()
+        for key, ts in self.items():
+            new_dict[key] = ts.average_fft(*args, **kwargs)
+        return new_dict
+
+    def psd(self, *args, **kwargs):
+        """
+        Compute PSD for each TimeSeries in the dict.
+        Returns a FrequencySeriesDict.
+        """
+        from gwexpy.frequencyseries import FrequencySeriesDict
+        new_dict = FrequencySeriesDict()
+        for key, ts in self.items():
+            new_dict[key] = ts.psd(*args, **kwargs)
+        return new_dict
+
+    # --- Statistics & Measurements ---
+
+    def _apply_scalar_or_map(self, method_name, *args, **kwargs):
+        """
+        Internal: apply a method that can return TimeSeries or scalar.
+        If TimeSeries -> return TimeSeriesDict.
+        If scalar -> return pandas.Series.
+        """
+        import pandas as pd
+        results = {}
+        is_ts = False
+        first = True
+        
+        for key, ts in self.items():
+            method = getattr(ts, method_name)
+            res = method(*args, **kwargs)
+            
+            if first:
+                first = False
+                # Check for TimeSeries-like structure
+                if hasattr(res, "value") and hasattr(res, "dt"):
+                    is_ts = True
+                    results = self.__class__()
+            
+            if is_ts:
+                # Ensure consistency
+                if not (hasattr(res, "value") and hasattr(res, "dt")):
+                     # Mixed types not supported cleanly here, defaulting to dict of objects
+                     pass
+            
+            results[key] = res
+            
+        if is_ts:
+            return results
+        else:
+            return pd.Series(results)
+
+    def rms(self, *args, **kwargs):
+        return self._apply_scalar_or_map("rms", *args, **kwargs)
+
+    def min(self, *args, **kwargs):
+        return self._apply_scalar_or_map("min", *args, **kwargs)
+
+    def max(self, *args, **kwargs):
+        return self._apply_scalar_or_map("max", *args, **kwargs)
+
+    def mean(self, *args, **kwargs):
+        return self._apply_scalar_or_map("mean", *args, **kwargs)
+
+    def std(self, *args, **kwargs):
+        return self._apply_scalar_or_map("std", *args, **kwargs)
+
+    def value_at(self, *args, **kwargs):
+        return self._apply_scalar_or_map("value_at", *args, **kwargs)
+
+    def is_contiguous(self, *args, **kwargs):
+        return self._apply_scalar_or_map("is_contiguous", *args, **kwargs)
+
+    # --- State Analysis ---
+
+    def state_segments(self, *args, **kwargs):
+        """Run state_segments on each item (returns Series of SegmentLists)."""
+        return self._apply_scalar_or_map("state_segments", *args, **kwargs)
+
+    # --- Multivariate ---
+
+    def pca(self, *args, **kwargs):
+        """Perform PCA decomposition across channels."""
+        return self.to_matrix().pca(*args, **kwargs)
+
+    def ica(self, *args, **kwargs):
+        """Perform ICA decomposition across channels."""
+        return self.to_matrix().ica(*args, **kwargs)
+
+
 try:
     from gwpy.types.index import SeriesType  # pragma: no cover - optional in gwpy
 except ImportError:  # fallback for gwpy versions without SeriesType
@@ -3405,7 +3660,7 @@ class TimeSeriesList(BaseTimeSeriesList):
     def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
          new_list = self.__class__()
          for ts in self:
-             new_list.append(ts.impute(method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs))
+             list.append(new_list, ts.impute(method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs))
          return new_list
 
     def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
@@ -3448,6 +3703,296 @@ class TimeSeriesList(BaseTimeSeriesList):
         if names:
              matrix.channel_names = names
         return matrix
+
+    # ===============================
+    # Batch Processing Methods (P1)
+    # ===============================
+
+    # --- Waveform Operations ---
+
+    def crop(self, *args, **kwargs) -> "TimeSeriesList":
+        """
+        Crop each TimeSeries in the list.
+        Returns a new TimeSeriesList.
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.crop(*args, **kwargs))
+        return new_list
+
+    # def append(self, *args, **kwargs) -> "TimeSeriesList":
+    #     """
+    #     Append to each TimeSeries in the list (in-place). 
+    #     Returns self.
+    #     """
+    #     for ts in self:
+    #         ts.append(*args, **kwargs)
+    #     return self
+
+    # def prepend(self, *args, **kwargs) -> "TimeSeriesList":
+    #     """
+    #     Prepend to each TimeSeries in the list (in-place). 
+    #     Returns self.
+    #     """
+    #     for ts in self:
+    #         ts.prepend(*args, **kwargs)
+    #     return self
+
+    # def update(self, *args, **kwargs) -> "TimeSeriesList":
+    #     """
+    #     Update each TimeSeries in the list (in-place). 
+    #     Returns self.
+    #     """
+    #     for ts in self:
+    #         ts.update(*args, **kwargs)
+    #     return self
+
+    def shift(self, *args, **kwargs) -> "TimeSeriesList":
+        """
+        Shift each TimeSeries in the list.
+        Returns a new TimeSeriesList.
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.shift(*args, **kwargs))
+        return new_list
+
+    def gate(self, *args, **kwargs) -> "TimeSeriesList":
+        """
+        Gate each TimeSeries in the list.
+        Returns a new TimeSeriesList.
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.gate(*args, **kwargs))
+        return new_list
+
+    def mask(self, *args, **kwargs) -> "TimeSeriesList":
+        """
+        Mask each TimeSeries in the list.
+        Returns a new TimeSeriesList.
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.mask(*args, **kwargs))
+        return new_list
+
+    # --- Signal Processing ---
+
+    def resample(self, *args, **kwargs) -> "TimeSeriesList":
+        """
+        Resample each TimeSeries in the list.
+        Returns a new TimeSeriesList.
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.resample(*args, **kwargs))
+        return new_list
+
+    def decimate(self, *args, **kwargs) -> "TimeSeriesList":
+        """
+        Decimate each TimeSeries in the list.
+        Returns a new TimeSeriesList.
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.decimate(*args, **kwargs))
+        return new_list
+
+    def filter(self, *args, **kwargs) -> "TimeSeriesList":
+        """
+        Filter each TimeSeries in the list.
+        Returns a new TimeSeriesList.
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.filter(*args, **kwargs))
+        return new_list
+
+    def whiten(self, *args, **kwargs) -> "TimeSeriesList":
+        """
+        Whiten each TimeSeries in the list.
+        Returns a new TimeSeriesList.
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.whiten(*args, **kwargs))
+        return new_list
+
+    def notch(self, *args, **kwargs) -> "TimeSeriesList":
+        """
+        Notch filter each TimeSeries in the list.
+        Returns a new TimeSeriesList.
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.notch(*args, **kwargs))
+        return new_list
+
+    def zpk(self, *args, **kwargs) -> "TimeSeriesList":
+        """
+        ZPK filter each TimeSeries in the list.
+        Returns a new TimeSeriesList.
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.zpk(*args, **kwargs))
+        return new_list
+
+    def detrend(self, *args, **kwargs) -> "TimeSeriesList":
+        """
+        Detrend each TimeSeries in the list.
+        Returns a new TimeSeriesList.
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.detrend(*args, **kwargs))
+        return new_list
+
+    def taper(self, *args, **kwargs) -> "TimeSeriesList":
+        """
+        Taper each TimeSeries in the list.
+        Returns a new TimeSeriesList.
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.taper(*args, **kwargs))
+        return new_list
+    
+    # --- Spectral Conversion ---
+
+    def fft(self, *args, **kwargs):
+        """
+        Apply FFT to each TimeSeries in the list.
+        Returns a FrequencySeriesList.
+        """
+        from gwexpy.frequencyseries import FrequencySeriesList
+        new_list = FrequencySeriesList()
+        for ts in self:
+            list.append(new_list, ts.fft(*args, **kwargs))
+        return new_list
+
+    def average_fft(self, *args, **kwargs):
+        """
+        Apply average_fft to each TimeSeries in the list.
+        Returns a FrequencySeriesList.
+        """
+        from gwexpy.frequencyseries import FrequencySeriesList
+        new_list = FrequencySeriesList()
+        for ts in self:
+            list.append(new_list, ts.average_fft(*args, **kwargs))
+        return new_list
+
+    def psd(self, *args, **kwargs):
+        """
+        Compute PSD for each TimeSeries in the list.
+        Returns a FrequencySeriesList.
+        """
+        from gwexpy.frequencyseries import FrequencySeriesList
+        new_list = FrequencySeriesList()
+        for ts in self:
+            list.append(new_list, ts.psd(*args, **kwargs))
+        return new_list
+
+    def asd(self, *args, **kwargs):
+        """
+        Compute ASD for each TimeSeries in the list.
+        Returns a FrequencySeriesList.
+        """
+        from gwexpy.frequencyseries import FrequencySeriesList
+        new_list = FrequencySeriesList()
+        for ts in self:
+            list.append(new_list, ts.asd(*args, **kwargs))
+        return new_list
+
+    # --- Statistics & Measurements ---
+
+    def _apply_scalar_or_map(self, method_name, *args, **kwargs):
+        """
+        Internal: apply a method that can return TimeSeries or scalar.
+        If TimeSeries -> return TimeSeriesList.
+        If scalar -> return list.
+        """
+        results = []
+        is_ts = False
+        first = True
+        
+        for ts in self:
+            method = getattr(ts, method_name)
+            res = method(*args, **kwargs)
+            
+            if first:
+                first = False
+                if hasattr(res, "value") and hasattr(res, "dt"):
+                    is_ts = True
+                    results = self.__class__()
+            
+            if is_ts:
+                # Type check?
+                pass
+                
+            if isinstance(results, self.__class__):
+                list.append(results, res)
+            else:
+                list.append(results, res)
+            
+        return results
+
+    def rms(self, *args, **kwargs):
+        return self._apply_scalar_or_map("rms", *args, **kwargs)
+
+    def min(self, *args, **kwargs):
+        return self._apply_scalar_or_map("min", *args, **kwargs)
+
+    def max(self, *args, **kwargs):
+        return self._apply_scalar_or_map("max", *args, **kwargs)
+
+    def mean(self, *args, **kwargs):
+        return self._apply_scalar_or_map("mean", *args, **kwargs)
+
+    def std(self, *args, **kwargs):
+        return self._apply_scalar_or_map("std", *args, **kwargs)
+        
+    def value_at(self, *args, **kwargs):
+        return self._apply_scalar_or_map("value_at", *args, **kwargs)
+    
+    def is_contiguous(self, *args, **kwargs):
+        return self._apply_scalar_or_map("is_contiguous", *args, **kwargs)
+
+    # --- State Analysis ---
+    
+    def state_segments(self, *args, **kwargs):
+        return self._apply_scalar_or_map("state_segments", *args, **kwargs)
+
+    # --- Multivariate ---
+
+    def to_pandas(self, **kwargs):
+        """
+        Convert TimeSeriesList to pandas DataFrame.
+        Each element becomes a column.
+        ASSUMES common time axis.
+        """
+        import pandas as pd
+        
+        data = {}
+        for i, ts in enumerate(self):
+            name = ts.name or f"series_{i}"
+            if hasattr(ts, "to_pandas"):
+                 s = ts.to_pandas()
+            else:
+                 s = pd.Series(ts.value, index=ts.times.value)
+            
+            data[name] = s
+            
+        return pd.DataFrame(data)
+
+    def pca(self, *args, **kwargs):
+        """Perform PCA decomposition across channels."""
+        return self.to_matrix().pca(*args, **kwargs)
+
+    def ica(self, *args, **kwargs):
+        """Perform ICA decomposition across channels."""
+        return self.to_matrix().ica(*args, **kwargs)
 
 class TimeSeriesMatrix(SeriesMatrix):
     """
