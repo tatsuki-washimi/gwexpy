@@ -15,7 +15,7 @@ from gwexpy.io.utils import (
     parse_timezone,
     set_provenance,
 )
-from ..timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
 def _import_obspy():

@@ -1,143 +1,203 @@
+"""
+gwexpy.interop.mt_
+------------------
+
+Interoperability with MTH5 (Magnetotelluric HDF5) format.
+
+Provides read/write functionality for magnetotelluric time series data.
+Requires the `mth5` package.
+"""
+
+from __future__ import annotations
+
+from typing import Optional, Union
 
 from ._optional import require_optional
 
-# MT handling is complex, placeholder
-# xarray interop is key
+__all__ = ["to_mth5", "from_mth5"]
 
-# MT handling is complex, minimal implementation
-# xarray interop is key
 
-def to_mth5(series_or_collection, mth5_obj, station=None, run=None, channel_type="electric"):
+def to_mth5(
+    series,
+    mth5_obj: Union[str, "mth5.mth5.MTH5"],
+    station: Optional[str] = None,
+    run: Optional[str] = None,
+    channel_type: str = "electric",
+) -> None:
     """
-    Write a TimeSeries to an MTH5 file/object.
+    Write a TimeSeries to an MTH5 file.
 
     Parameters
     ----------
-    series_or_collection : TimeSeries
-        Data to write. P1 scope covers single TimeSeries.
-    mth5_obj : mth5.mth5.MTH5 or str
-        Open MTH5 object or path to filename.
+    series : TimeSeries
+        Data to write.
+    mth5_obj : str or mth5.mth5.MTH5
+        Open MTH5 object or path to HDF5 file.
+    station : str, optional
+        Station name. Defaults to 'Station01'.
+    run : str, optional
+        Run name. Defaults to 'Run01'.
+    channel_type : {'electric', 'magnetic', 'auxiliary'}, optional
+        Channel type for metadata. Default is 'electric'.
+
+    Raises
+    ------
+    ImportError
+        If mth5 package is not installed.
+
+    Examples
+    --------
+    >>> from gwexpy.timeseries import TimeSeries
+    >>> from gwexpy.interop.mt_ import to_mth5
+    >>> ts = TimeSeries([1, 2, 3], dt=0.001, name="Ex")
+    >>> to_mth5(ts, "data.h5", station="Site01", run="Run01")
+    """
+    mth5_mod = require_optional("mth5")
+
+    # Handle filename vs open object
+    file_managed = False
+    if isinstance(mth5_obj, str):
+        filename = mth5_obj
+        mth5_obj = mth5_mod.mth5.MTH5()
+        mth5_obj.open_mth5(filename, mode="a")
+        file_managed = True
+
+    try:
+        # Set defaults
+        station = station or "Station01"
+        run = run or "Run01"
+
+        # Get or create station group
+        if not mth5_obj.has_station(station):
+            st_group = mth5_obj.add_station(station)
+        else:
+            st_group = mth5_obj.get_station(station)
+
+        # Get or create run group
+        if not st_group.has_run(run):
+            run_group = st_group.add_run(run)
+        else:
+            run_group = st_group.get_run(run)
+
+        # Extract TimeSeries metadata
+        comp = series.name if series.name else "Ex"
+
+        # Calculate sample rate
+        if hasattr(series, "sample_rate"):
+            sr = float(series.sample_rate.value)
+        elif hasattr(series, "dt") and series.dt is not None:
+            dt_sec = series.dt.to("s").value
+            sr = 1.0 / dt_sec if dt_sec > 0 else 1.0
+        else:
+            sr = 1.0
+
+        # Get start time
+        start = 0.0
+        if hasattr(series, "t0") and series.t0 is not None:
+            try:
+                start = float(series.t0.to("s").value)
+            except (AttributeError, TypeError):
+                start = 0.0
+
+        # Add channel with data
+        run_group.add_channel(
+            comp,
+            channel_type,
+            data=series.value,
+            sample_rate=sr,
+            start=start,
+        )
+
+    finally:
+        if file_managed:
+            mth5_obj.close_mth5()
+
+
+def from_mth5(
+    mth5_obj: Union[str, "mth5.mth5.MTH5"],
+    station: str,
+    run: str,
+    channel: str,
+):
+    """
+    Read a channel from MTH5 to TimeSeries.
+
+    Parameters
+    ----------
+    mth5_obj : str or mth5.mth5.MTH5
+        Open MTH5 object or path to HDF5 file.
     station : str
         Station name.
     run : str
         Run name.
-    channel_type : str
-        'electric', 'magnetic', 'auxiliary'.
-    """
-    from ._optional import require_optional
-    mth5 = require_optional("mth5")
-    
-    # Handle filename
-    file_managed = False
-    if isinstance(mth5_obj, str):
-         # It's a path
-         filename = mth5_obj
-         mth5_obj = mth5.mth5.MTH5()
-         mth5_obj.open_mth5(filename, mode='a')
-         file_managed = True
-         
-    try:
-         # Ensure station exists
-         if station is None:
-              station = "Station01"
-         if not mth5_obj.has_station(station):
-              st_group = mth5_obj.add_station(station)
-         else:
-              st_group = mth5_obj.get_station(station)
-              
-         # Ensure run exists
-         if run is None:
-              run = "Run01"
-         if not st_group.has_run(run):
-              run_group = st_group.add_run(run)
-         else:
-              run_group = st_group.get_run(run)
-              
-         # Add Channel
-         # Map TimeSeries metadata
-         ts = series_or_collection
-         
-         # Identify component
-         comp = ts.name if ts.name else "Ex"
-         
-         # Sample rate
-         if hasattr(ts, 'sample_rate'):
-             sr = ts.sample_rate.value
-         elif hasattr(ts, 'dt'):
-             sr = 1.0 / ts.dt.to('s').value
-         else:
-             sr = 1.0
-             
-         data = ts.value
-         
-         # MTH5 add_channel expects xarray or numpy?
-         # It usually takes a numpy array and metadata.
-         run_group.add_channel(
-             comp, 
-             channel_type, 
-             data=data, 
-             sample_rate=sr,
-             start=ts.t0.to('s').value if ts.t0 else 0
-         )
-         
-    finally:
-         if file_managed:
-              mth5_obj.close_mth5()
+    channel : str
+        Channel name to read.
 
-def from_mth5(mth5_obj, station, run, channel):
+    Returns
+    -------
+    TimeSeries
+        The loaded time series data.
+
+    Raises
+    ------
+    ImportError
+        If mth5 package is not installed.
+    KeyError
+        If station, run, or channel is not found.
+
+    Examples
+    --------
+    >>> from gwexpy.interop.mt_ import from_mth5
+    >>> ts = from_mth5("data.h5", "Site01", "Run01", "Ex")
     """
-    Read a channel from MTH5 to TimeSeries.
-    """
-    from ._optional import require_optional
-    mth5 = require_optional("mth5")
+    mth5_mod = require_optional("mth5")
     from gwexpy.timeseries import TimeSeries
     import astropy.units as u
-    
+
+    # Handle filename vs open object
     file_managed = False
     if isinstance(mth5_obj, str):
-         filename = mth5_obj
-         mth5_obj = mth5.mth5.MTH5()
-         mth5_obj.open_mth5(filename, mode='r')
-         file_managed = True
-         
+        filename = mth5_obj
+        mth5_obj = mth5_mod.mth5.MTH5()
+        mth5_obj.open_mth5(filename, mode="r")
+        file_managed = True
+
     try:
-         st_group = mth5_obj.get_station(station)
-         run_group = st_group.get_run(run)
-         ch_obj = run_group.get_channel(channel)
-         
-         # Convert to TimeSeries
-         # ch_obj.to_xarray() often handy
-         # Or access hdf5 dataset directly: ch_obj.hdf5_dataset[()]
-         # mth5 channel object wraps dataset.
-         
-         # mth5 > 0.x provides .ts (mth5.timeseries.ChannelTS)
-         # Using raw data fetch
-         data = ch_obj.time_slice(0, ch_obj.n_samples) # Get all?
-         # Wait, time_slice isn't standard? 
-         # ch_obj.hdf5_dataset is h5py dataset
-         val = ch_obj.hdf5_dataset[:]
-         
-         # Meta
-         sr = ch_obj.sample_rate
-         dt = (1.0 / sr) * u.s
-         start = ch_obj.start
-         # start might be string or float GPS? MTH5 uses ISO string usually.
-         # We need to parse.
-         from astropy.time import Time
-         try:
-              t0 = Time(start).gps * u.s
-         except:
-              t0 = 0 * u.s
-              
-         # Unit?
-         try:
-              unit_str = ch_obj.units
-              unit = u.Unit(unit_str)
-         except:
-              unit = None
-              
-         return TimeSeries(val, dt=dt, t0=t0, unit=unit, name=channel)
-         
+        st_group = mth5_obj.get_station(station)
+        run_group = st_group.get_run(run)
+        ch_obj = run_group.get_channel(channel)
+
+        # Read data from HDF5 dataset
+        data = ch_obj.hdf5_dataset[:]
+
+        # Extract metadata
+        sr = ch_obj.sample_rate
+        dt = (1.0 / sr) * u.s if sr > 0 else 1.0 * u.s
+
+        # Parse start time
+        start = ch_obj.start
+        t0 = 0 * u.s
+        if start is not None:
+            from astropy.time import Time
+            try:
+                t0 = Time(start).gps * u.s
+            except (ValueError, TypeError):
+                # Fall back to float interpretation
+                try:
+                    t0 = float(start) * u.s
+                except (ValueError, TypeError):
+                    t0 = 0 * u.s
+
+        # Parse unit
+        unit = None
+        if hasattr(ch_obj, "units") and ch_obj.units:
+            try:
+                unit = u.Unit(ch_obj.units)
+            except (ValueError, TypeError):
+                unit = None
+
+        return TimeSeries(data, dt=dt, t0=t0, unit=unit, name=channel)
+
     finally:
-         if file_managed:
-              mth5_obj.close_mth5()
+        if file_managed:
+            mth5_obj.close_mth5()

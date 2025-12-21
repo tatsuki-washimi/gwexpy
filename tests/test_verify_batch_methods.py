@@ -1,12 +1,6 @@
-
-import sys
-import os
 import numpy as np
 import pandas as pd
 from astropy import units as u
-
-# Ensure local gwexpy is importable
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesList, TimeSeriesDict
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList, FrequencySeriesDict
@@ -151,14 +145,3 @@ def test_frequencyseries_batch():
     print("FrequencySeries batch verification OK.")
 
 
-if __name__ == "__main__":
-    try:
-        test_timeseries_batch()
-        print("-" * 30)
-        test_frequencyseries_batch()
-        print("\nALL TESTS PASSED SUCCESSFULLY.")
-    except Exception as e:
-        print(f"\nTEST FAILED: {e}")
-        import traceback
-        traceback.print_exc()
-        sys.exit(1)

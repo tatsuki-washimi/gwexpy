@@ -4,7 +4,7 @@ Placeholder readers for unsupported formats (WIN/WIN32, SDB, vendor loggers).
 
 from gwpy.io import registry as io_registry
 
-from ..timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 _P2_FORMATS = [
     "win",

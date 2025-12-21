@@ -110,7 +110,7 @@ def from_hdf5_frequencyseries(cls, group, path):
         try:
             import astropy.units as u
             freqs = freqs * u.Unit(freq_unit) if freq_unit else freqs
-        except Exception:
+        except (ImportError, ValueError):
             pass
     unit = attrs.get("unit", "")
     name = attrs.get("name", None)

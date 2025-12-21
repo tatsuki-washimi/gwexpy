@@ -1,26 +1,30 @@
 
 import numpy as np
+import pytest
 import gwpy.frequencyseries._fdcommon as fd
-try:
-    # Test with typical filter (e.g. zpk)
+
+
+def test_parse_filter_zpk():
+    """Test parse_filter with zpk (zeros, poles, gain) format."""
     filt = ([1], [1], 1)
     parsed = fd.parse_filter(filt)
-    print(f"Type: {type(parsed)}")
-    print(f"Value: {parsed}")
+    assert parsed is not None
+    # Verify it returns a proper filter representation
     if hasattr(parsed, 'freqresp'):
-        print("Has freqresp method")
-    
-    # Test 2 args (b, a)
-    # filt2 = ([1], [1])
-    # parsed2 = fd.parse_filter(filt2)
-    # print(f"Type 2: {type(parsed2)}")
+        freqs = np.array([1.0, 10.0, 100.0])
+        resp = parsed.freqresp(2 * np.pi * freqs)
+        assert resp is not None
 
-except Exception as e:
-    print(f"Error: {e}")
 
-try:
-    # Check if parse_filter handles analog keyword
-    # It might be in kwargs or args
-    pass
-except:
-    pass
+def test_parse_filter_sos():
+    """Test parse_filter with second-order sections format."""
+    # Create a simple SOS filter
+    sos = np.array([[1, 0, 0, 1, 0, 0]])  # Unity gain section
+    parsed = fd.parse_filter(sos)
+    assert parsed is not None
+
+
+def test_parse_filter_invalid():
+    """Test parse_filter with invalid input raises appropriate error."""
+    with pytest.raises((ValueError, TypeError)):
+        fd.parse_filter("not_a_filter")

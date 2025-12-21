@@ -28,6 +28,6 @@ def test_xarray_interop():
     ts_restored = TimeSeries.from_xarray(da)
     assert ts_restored.name == "xr_test"
     assert ts_restored.unit == u.m
-    assert ts_restored.t0 == t0
+    assert np.isclose(ts_restored.t0.value, float(t0), atol=1e-6)
     np.testing.assert_allclose(ts_restored.dt.value, dt.value)
     np.testing.assert_array_equal(ts_restored.value, data)

@@ -1,14 +1,18 @@
+"""gwexpy.spectrogram - Spectrogram data containers and operations."""
+
 from .spectrogram import SpectrogramList, SpectrogramDict, SpectrogramMatrix
 
-# Dynamic import from gwpy
-import sys
-import gwpy.spectrogram
+__all__ = [
+    "SpectrogramList",
+    "SpectrogramDict",
+    "SpectrogramMatrix",
+]
 
-_this_module = sys.modules[__name__]
-_gwpy_module = gwpy.spectrogram
+# Dynamic import from gwpy (PEP 562)
+import gwpy.spectrogram as _gwpy_spectrogram
 
-for _name in dir(_gwpy_module):
-    if not _name.startswith("_") and not hasattr(_this_module, _name):
-        setattr(_this_module, _name, getattr(_gwpy_module, _name))
+def __getattr__(name):
+    return getattr(_gwpy_spectrogram, name)
 
-__all__ = [k for k in dir(_this_module) if not k.startswith("_") and k not in ["gwpy", "sys"]]
+def __dir__():
+    return sorted(set(__all__) | set(dir(_gwpy_spectrogram)))

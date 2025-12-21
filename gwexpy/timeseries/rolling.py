@@ -9,7 +9,9 @@ try:
 except ImportError:  # pragma: no cover - bottleneck is optional
     _BN_AVAILABLE = False
 
-from .timeseries import TimeSeries, TimeSeriesMatrix, TimeSeriesDict, TimeSeriesList
+from .timeseries import TimeSeries
+from .collections import TimeSeriesDict, TimeSeriesList
+from .matrix import TimeSeriesMatrix
 
 
 def _resolve_window(window, dt):

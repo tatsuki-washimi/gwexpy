@@ -1,7 +1,7 @@
 import contextlib
 import datetime as _dt
 from zoneinfo import ZoneInfo
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Optional, Union, Dict, Iterable
 
 import numpy as np
 from astropy import units as u
@@ -95,7 +95,7 @@ def apply_unit(series: Any, unit: Optional[Any]) -> Any:
         return series
     try:
         from gwexpy.types.seriesmatrix import SeriesMatrix  # lazy import
-    except Exception:  # pragma: no cover - optional
+    except ImportError:  # pragma: no cover - optional
         SeriesMatrix = tuple()
     if isinstance(series, SeriesMatrix):
         try:
@@ -103,12 +103,12 @@ def apply_unit(series: Any, unit: Optional[Any]) -> Any:
                 for j in range(series.meta.shape[1]):
                     series.meta[i, j]["unit"] = u.Unit(unit)
             return series
-        except Exception:
+        except (KeyError, IndexError, AttributeError):
             pass
     try:
         series.unit = u.Unit(unit)
         return series
-    except Exception:
+    except (AttributeError, TypeError):
         # fallback to constructor
         try:
             return series.__class__(
@@ -124,7 +124,7 @@ def apply_unit(series: Any, unit: Optional[Any]) -> Any:
                 name=getattr(series, "name", None),
                 epoch=getattr(series, "epoch", None),
             )
-        except Exception as exc:  # pragma: no cover - defensive
+        except (TypeError, ValueError) as exc:  # pragma: no cover - defensive
             raise ValueError(f"Could not apply unit {unit!r}") from exc
 
 
@@ -136,9 +136,9 @@ def set_provenance(obj: Any, info: Dict[str, Any]) -> None:
         if hasattr(obj, "attrs") and isinstance(obj.attrs, dict):
             obj.attrs.update(info)
             return
-    except Exception:
+    except (TypeError, AttributeError):
         pass
-    with contextlib.suppress(Exception):
+    with contextlib.suppress(AttributeError, TypeError):
         setattr(obj, "_gwexpy_io", {**info})
 
 

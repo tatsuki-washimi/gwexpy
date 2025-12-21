@@ -1,3 +1,4 @@
+from __future__ import annotations
 import warnings
 import sys
 import numpy as np
@@ -7,7 +8,7 @@ except ImportError:
     pd = None
 from html import escape
 from collections import OrderedDict
-from typing import Optional, Union, Mapping, Any
+from typing import Optional, Union, Mapping, Any, Iterable, List, Iterable, List
 from astropy import units as u
 from astropy.units import Unit, UnitBase, UnitConversionError
 from gwpy.detector import Channel
@@ -30,7 +31,7 @@ class MetaData(dict):
 
         try:
             self["channel"] = Channel(self.get("channel"))
-        except Exception:
+        except (ValueError, TypeError):
             self["channel"] = Channel("")
         
         raw_unit = kwargs.get("unit", u.dimensionless_unscaled)
@@ -41,7 +42,7 @@ class MetaData(dict):
                 self["unit"] = u.Unit(raw_unit) if raw_unit else u.dimensionless_unscaled
             else:
                 self["unit"] = u.Unit(raw_unit)
-        except Exception:
+        except (ValueError, TypeError):
             self["unit"] = u.dimensionless_unscaled
 
 
@@ -178,7 +179,7 @@ class MetaData(dict):
 
 class MetaDataDict(OrderedDict):
     def __init__(self,
-                 entries: Optional[Union[dict, list, 'pd.DataFrame', 'MetaDataDict']] = None,
+                 entries: Optional[Union[dict, list, pd.DataFrame, MetaDataDict]] = None,
                  expected_size: Optional[int] = None,
                  key_prefix: str = 'key'):
 
@@ -383,7 +384,7 @@ class MetaDataMatrix(np.ndarray):
                 # Fallback: infer unit and wrap into MetaData
                 try:
                     unit = get_unit(v)
-                except Exception:
+                except (AttributeError, TypeError, ValueError):
                     unit = u.dimensionless_unscaled
                 converted.append(MetaData(unit=unit, name="", channel=""))
                 needs_writeback = True
@@ -405,7 +406,7 @@ class MetaDataMatrix(np.ndarray):
 
         Parameters
         ----------
-        value : MetaData | dict
+        value : Union[MetaData, dict]
             MetaData instance used as-is, or mapping passed once to ``MetaData(**value)``.
 
         Notes
@@ -529,7 +530,7 @@ def get_unit(obj):
     elif hasattr(obj, "unit"):
         try:
             return Unit(obj.unit)
-        except Exception:
+        except (ValueError, TypeError):
             warnings.warn(f"Cannot interpret .unit from {type(obj)}: {obj.unit} - treating as dimensionless")
             return u.dimensionless_unscaled
 

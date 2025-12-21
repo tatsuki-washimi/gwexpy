@@ -113,7 +113,7 @@ def _parse_channel_info(path):
                     'name': full_name,
                     'gain': gain
                 }
-            except Exception:
+            except (ValueError, IndexError):
                 continue
                 
     return ch_map

@@ -3,7 +3,7 @@ import pytest
 import numpy as np
 from astropy import units as u
 
-from gwexpy.timeseries.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 from gwexpy.timeseries.preprocess import align_timeseries_collection
 
 # Optional deps
@@ -53,6 +53,27 @@ def test_align_union():
     np.testing.assert_array_equal(mat[:, 0], [1, 2, -1, -1])
     # ts2: 3, 4 at 2, 3. Rest filled
     np.testing.assert_array_equal(mat[:, 1], [-1, -1, 3, 4])
+
+def test_align_time_based_with_dimensionless_dt():
+    t = np.arange(4) * u.s
+    ts_time = TimeSeries([1, 2, 3, 4], times=t, name="ts_time")
+    ts_dim = TimeSeries([10, 20, 30, 40], t0=0, dt=1, xunit=u.dimensionless_unscaled, name="ts_dim")
+
+    mat, times, meta = align_timeseries_collection([ts_time, ts_dim], how="intersection")
+
+    assert times.unit == u.s
+    assert meta["dt"].unit.physical_type == "time"
+    np.testing.assert_array_equal(mat[:, 0], [1, 2, 3, 4])
+    np.testing.assert_array_equal(mat[:, 1], [10, 20, 30, 40])
+
+
+def test_align_time_based_rejects_non_time_dt():
+    t = np.arange(4) * u.s
+    ts_time = TimeSeries([1, 2, 3, 4], times=t, name="ts_time")
+    ts_bad = TimeSeries([10, 20, 30, 40], t0=0, dt=1, xunit=u.Hz, name="ts_bad")
+
+    with pytest.raises(ValueError, match="time-like dt"):
+        align_timeseries_collection([ts_time, ts_bad], how="intersection")
 
 def test_impute():
     data = [1.0, np.nan, 3.0, np.nan, 5.0]

@@ -1,3 +1,35 @@
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Build artifacts
+*.egg-info/
+build/
+dist/
+*.egg
+.eggs/
+
+# Jupyter
 .ipynb_checkpoints/
+
+# pytest
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local test artifacts
+tmp_gbd/
+tmp_gbd2/
+tmp_test_zarr.zarr/
+*.h5
+*.hdf5
+
+# Coverage
+.coverage
+htmlcov/
+

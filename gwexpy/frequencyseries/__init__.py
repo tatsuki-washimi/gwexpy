@@ -1,17 +1,27 @@
-from .frequencyseries import FrequencySeries, FrequencySeriesDict, FrequencySeriesList, FrequencySeriesMatrix
+"""gwexpy.frequencyseries - Frequency series data containers and operations."""
+
+from .frequencyseries import (
+    FrequencySeries,
+    FrequencySeriesDict,
+    FrequencySeriesList,
+    FrequencySeriesMatrix,
+)
+
+__all__ = [
+    "FrequencySeries",
+    "FrequencySeriesDict",
+    "FrequencySeriesList",
+    "FrequencySeriesMatrix",
+]
 
 # Register I/O readers on import
 from . import io as _io  # noqa: F401
 
-# Dynamic import from gwpy
-import sys
-import gwpy.frequencyseries
+# Dynamic import from gwpy (PEP 562)
+import gwpy.frequencyseries as _gwpy_frequencyseries
 
-_this_module = sys.modules[__name__]
-_gwpy_module = gwpy.frequencyseries
+def __getattr__(name):
+    return getattr(_gwpy_frequencyseries, name)
 
-for _name in dir(_gwpy_module):
-    if not _name.startswith("_") and not hasattr(_this_module, _name):
-        setattr(_this_module, _name, getattr(_gwpy_module, _name))
-
-__all__ = [k for k in dir(_this_module) if not k.startswith("_") and k not in ["gwpy", "sys"]]
+def __dir__():
+    return sorted(set(__all__) | set(dir(_gwpy_frequencyseries)))

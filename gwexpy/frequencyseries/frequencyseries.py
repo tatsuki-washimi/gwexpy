@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from enum import Enum
-from typing import Any, Iterable, Optional, TypeVar
+from typing import Any, Optional, Union, List, Iterable, TypeVar
 
 import numpy as np
 from astropy import units as u
@@ -868,12 +868,10 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
     def crop(self, *args, **kwargs) -> "FrequencySeriesDict":
         """
         Crop each FrequencySeries in the dict.
-        Returns a new FrequencySeriesDict.
+        In-place operation (GWpy-compatible). Returns self.
         """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.crop(*args, **kwargs)
-        return new_dict
+        super().crop(*args, **kwargs)
+        return self
 
     def pad(self, *args, **kwargs) -> "FrequencySeriesDict":
         """

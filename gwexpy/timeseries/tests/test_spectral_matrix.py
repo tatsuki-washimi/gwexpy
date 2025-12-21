@@ -2,8 +2,8 @@
 import numpy as np
 import pytest
 from astropy import units as u
-from gwexpy.timeseries.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
-from gwexpy.frequencyseries.frequencyseries import FrequencySeriesMatrix
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
+from gwexpy.frequencyseries import FrequencySeriesMatrix
 
 def test_csd_matrix_dict():
     # Setup data

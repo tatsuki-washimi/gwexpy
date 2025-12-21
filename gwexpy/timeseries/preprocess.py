@@ -4,62 +4,24 @@ import warnings
 import scipy.linalg
 from astropy import units as u
 
+# Import low-level algorithms from signal.preprocessing
+from gwexpy.signal.preprocessing import (
+    WhiteningModel,
+    StandardizationModel,
+    whiten as _whiten_array,
+    standardize as _standardize_array,
+    impute as _impute_array,
+)
+
 try:
     from typing import TYPE_CHECKING
     if TYPE_CHECKING:
-        from .timeseries import TimeSeries, TimeSeriesMatrix
+        from .timeseries import TimeSeries
+        from .matrix import TimeSeriesMatrix
 except ImportError:
     pass
 
-class WhiteningModel:
-    def __init__(self, mean, W):
-        self.mean = mean
-        self.W = W
-        self.W_inv = np.linalg.pinv(W)
 
-    def inverse_transform(self, X_w):
-        """
-        Project whitened data back to original space.
-        """
-        # X_rec = (X_w @ W_inv.T) + mean
-        # X_w is (n_samples, n_components)
-        # W_inv is (n_original, n_components)
-        # W_inv.T is (n_components, n_original)
-        # Wait: W was (n_components, n_original)
-        # W_inv is (n_original, n_components)
-        # X_w @ W_inv.T ? shape check: (n, k) @ (k, p) -> (n, p)
-        # Yes.
-        
-        # Check if X_w is a matrix object or array
-        if hasattr(X_w, 'value'):
-             val = X_w.value
-        else:
-             val = X_w
-             
-        X_rec = (val @ self.W_inv.T) + self.mean
-        return X_rec
-
-
-class StandardizationModel:
-    def __init__(self, mean, scale, axis):
-        self.mean = mean
-        self.scale = scale
-        self.axis = axis
-        
-    def inverse_transform(self, X_std):
-        """
-        Undo standardization: X = X_std * scale + mean
-        """
-        # Broadcasting depends on axis.
-        # This implementation assumes simple broadcasting or manual handling.
-        # This method is here for completeness.
-        if hasattr(X_std, 'value'):
-             val = X_std.value
-        else:
-             val = X_std
-             
-        # If scale/mean are arrays, ensure shapes match or broadcast
-        return val * self.scale + self.mean
 def align_timeseries_collection(
     series_list,
     *,
@@ -98,27 +60,55 @@ def align_timeseries_collection(
         raise ValueError("No timeseries provided to align.")
 
     # 1. Determine common sample rate (minimum rate / maximum dt)
-    dts = [ts.dt for ts in series_list]
-    target_dt = max(dts)
-    
+    dts = []
+    has_time_dt = False
+    for ts in series_list:
+        if ts.dt is None:
+            raise ValueError("align_timeseries_collection requires dt for all series")
+        dt_q = ts.dt if isinstance(ts.dt, u.Quantity) else u.Quantity(ts.dt)
+        dt_vals = np.asanyarray(dt_q.value)
+        if np.any(dt_vals <= 0):
+            raise ValueError("align_timeseries_collection requires dt > 0")
+        dts.append(dt_q)
+        if getattr(dt_q.unit, "physical_type", None) == "time":
+            has_time_dt = True
+
     # 2. Determine time bounds
     # Check if we should operate in physical time (seconds)
-    is_time_based = False
-    if target_dt.unit.physical_type == 'time':
-        is_time_based = True
-    else:
+    is_time_based = has_time_dt
+    if not is_time_based:
         # If any series has time unit, force time-based
         for ts in series_list:
-             if ts.times.unit is not None and ts.times.unit.physical_type == 'time':
-                  is_time_based = True
-                  break
-    
+            if ts.times.unit is not None and ts.times.unit.physical_type == 'time':
+                is_time_based = True
+                break
+
     if is_time_based:
         common_time_unit = u.s
+        dt_candidates = []
+        for dt_q in dts:
+            if dt_q.unit is None or dt_q.unit == u.dimensionless_unscaled:
+                dt_candidates.append(u.Quantity(dt_q.value, u.s))
+            elif dt_q.unit.physical_type == "dimensionless":
+                dt_candidates.append(u.Quantity(dt_q.value, u.s))
+            elif dt_q.unit.physical_type == "time":
+                dt_candidates.append(dt_q.to(u.s))
+            else:
+                raise ValueError(
+                    f"align_timeseries_collection requires time-like dt when time-based alignment is used: {dt_q}"
+                )
+        target_dt = max(dt_candidates)
     else:
         # Fallback to first unit (or dimensionless)
         ref_u = series_list[0].times.unit
         common_time_unit = ref_u if ref_u is not None else u.dimensionless_unscaled
+        target_dt = max(dts)
+        try:
+            target_dt.to(common_time_unit)
+        except u.UnitConversionError as exc:
+            raise ValueError(
+                f"Incompatible dt unit in collection: {target_dt.unit} vs {common_time_unit}"
+            ) from exc
     
     # Helper to get start/end in common unit
     def get_span_val(ts):
@@ -323,7 +313,7 @@ def impute_timeseries(ts, *, method="interpolate", limit=None, axis="time", max_
                            gap_threshold = max_gap.value
              else:
                   gap_threshold = float(max_gap)
-         except Exception:
+         except (AttributeError, TypeError, ValueError):
              # If no times mechanism, fallback or warn?
              # For TimeSeries, .times should exist.
              # If regular, dt * samples.
@@ -647,7 +637,7 @@ def whiten_matrix(matrix, *, method="pca", eps=1e-12, n_components=None):
                  new_data = X_whitened.T[:, None, :]
                  new_mat = cls(new_data, t0=matrix.t0, dt=matrix.dt)
                  
-    except Exception:
+    except (IndexError, ValueError):
          new_data = X_whitened.T[:, None, :]
          new_mat = cls(new_data, t0=matrix.t0, dt=matrix.dt)
         

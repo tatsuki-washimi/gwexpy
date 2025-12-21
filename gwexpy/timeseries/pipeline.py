@@ -4,7 +4,9 @@ from typing import List, Sequence, Tuple, Dict, Any, Optional
 import numpy as np
 from astropy import units as u
 
-from .timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList, TimeSeriesMatrix
+from .timeseries import TimeSeries
+from .collections import TimeSeriesDict, TimeSeriesList
+from .matrix import TimeSeriesMatrix
 from .preprocess import impute_timeseries, whiten_matrix, WhiteningModel
 from .decomposition import (
     pca_fit,
@@ -204,7 +206,7 @@ class StandardizeTransform(Transform):
         new_ts.value[:] = (ts.value - center) / scale
         try:
             new_ts.unit = u.dimensionless_unscaled
-        except Exception:
+        except AttributeError:
             pass
         return new_ts
 

@@ -42,17 +42,29 @@ def test_mne_interop():
     tsd['ch1'] = TimeSeries(np.arange(100), dt=0.01)
     tsd['ch2'] = TimeSeries(np.arange(100)*2, dt=0.01)
     
-    # 1. to_mne
-    raw = tsd.to_mne_rawarray()
+    # 1. to_mne (multi-channel)
+    raw = tsd.to_mne_raw()
     assert isinstance(raw, mne.io.RawArray)
     assert raw.info['nchan'] == 2
     assert raw.info['sfreq'] == 100.0
+
+    raw_picked = tsd.to_mne_raw(picks=["ch2"])
+    assert isinstance(raw_picked, mne.io.RawArray)
+    assert raw_picked.info["nchan"] == 1
+    assert raw_picked.ch_names == ["ch2"]
     
     # 2. from_mne
     tsd2 = TimeSeriesDict.from_mne_raw(raw)
     assert 'ch1' in tsd2
     assert 'ch2' in tsd2
     assert np.allclose(tsd2['ch1'].value, tsd['ch1'].value)
+
+    # 3. single-channel convenience
+    ts = TimeSeries(np.arange(100), dt=0.01, name="ch1")
+    raw_single = ts.to_mne_raw()
+    assert isinstance(raw_single, mne.io.RawArray)
+    assert raw_single.info["nchan"] == 1
+    assert raw_single.info["sfreq"] == 100.0
 
 @pytest.mark.skipif(neo is None, reason="neo not installed")
 def test_neo_interop():

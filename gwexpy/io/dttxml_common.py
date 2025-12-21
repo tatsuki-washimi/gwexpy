@@ -5,9 +5,11 @@ Shared utilities for parsing dttxml (Diag GUI XML) files.
 from __future__ import annotations
 
 import re
+import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
+import warnings
 
 import numpy as np
 
@@ -16,10 +18,18 @@ SUPPORTED_FREQ = {"PSD", "ASD", "FFT"}
 SUPPORTED_MATRIX = {"TF", "STF", "CSD", "COH"}
 
 
-def _load_external_parser():
+def _load_external_parser() -> Optional[object]:
+    if os.environ.get("GWEXPY_ALLOW_EXEC", "0") != "1":
+        return None
+
     project_root = Path(__file__).resolve().parents[2]
     candidate = project_root / "dttxml_source.txt"
     if candidate.exists():
+        warnings.warn(
+            f"Loading external parser from {candidate} via exec(). "
+            "Ensure the source is trusted.",
+            UserWarning
+        )
         ns: Dict[str, object] = {}
         code = candidate.read_text()
         exec(compile(code, str(candidate), "exec"), ns, ns)
@@ -68,7 +78,7 @@ def load_dttxml_products(source):
                     normalized[str(prod).upper()] = payload
             if normalized:
                 return normalized
-        except Exception:
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError):
             pass
 
     tree = ET.parse(source)

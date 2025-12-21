@@ -28,6 +28,7 @@ class Plot(BasePlot):
         
         # 1. Inspect args to find SeriesMatrix objects
         matrices = [arg for arg in args if isinstance(arg, (SeriesMatrix, SpectrogramMatrix))]
+        use_smart_layout = False
         
         # subplots argument support (as alias/expansion of separate)
         subplots = kwargs.pop('subplots', None)
@@ -161,7 +162,7 @@ class Plot(BasePlot):
                              if not is_linear:
                                  kwargs['yscale'] = 'log'
                      
-                     except Exception:
+                     except (TypeError, ValueError, AttributeError):
                          # If checking fails, default to log for FrequencySeries is standard behavior
                          kwargs['yscale'] = 'log'
 
@@ -256,12 +257,12 @@ class Plot(BasePlot):
         if use_cl:
              try:
                  self.set_constrained_layout(True)
-             except:
+             except (TypeError, ValueError, AttributeError):
                  pass
         if use_tl:
              try:
                  self.tight_layout()
-             except:
+             except (TypeError, ValueError, AttributeError):
                  pass
         
         # Overlay additional matrices and other_args on separate grid if applicable
@@ -299,7 +300,7 @@ class Plot(BasePlot):
                             try:
                                  val = m[r, c]
                                  _plot_on_ax(ax, val)
-                            except:
+                            except (TypeError, ValueError, AttributeError):
                                  pass
                                  
                        # 2. Overlay single series (only once per axis)
@@ -369,16 +370,16 @@ class Plot(BasePlot):
                             # We use self.add_colorbar which is a gwpy method
                             # It creates a new axis for the colorbar
                             self.add_colorbar(ax=ax, mappable=mappable, fraction=0.046, pad=0.04)
-                       except Exception:
+                       except (TypeError, ValueError, AttributeError):
                             # Fallback to standard matplotlib if needed
                             try:
                                  self.colorbar(mappable, ax=ax)
-                            except:
+                            except (TypeError, ValueError, AttributeError):
                                  pass
 
         # Final layout polish
         if kwargs.get('constrained_layout', True):
              try:
                  self.set_constrained_layout(True)
-             except:
+             except (TypeError, ValueError, AttributeError):
                  pass

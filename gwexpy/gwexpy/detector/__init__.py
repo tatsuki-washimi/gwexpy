@@ -1,1 +1,0 @@
-from gwpy.detector import *

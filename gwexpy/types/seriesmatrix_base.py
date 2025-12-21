@@ -1,0 +1,488 @@
+import warnings
+import numpy as np
+from collections import OrderedDict
+from typing import Optional, Union, Any
+from astropy import units as u
+from gwpy.types.index import Index
+
+from .metadata import MetaData, MetaDataDict, MetaDataMatrix
+from .seriesmatrix_validation import (
+    _normalize_input,
+    _check_attribute_consistency,
+    _fill_missing_attributes,
+    _make_meta_matrix,
+    _check_shape_consistency,
+    build_index_if_needed,
+    check_shape_xindex_compatibility,
+    check_add_sub_compatibility
+)
+
+from .seriesmatrix_ops import SeriesMatrixOps
+
+class SeriesMatrix(SeriesMatrixOps, np.ndarray):
+    def __new__(cls, 
+                data=None,
+                *,
+                meta: Optional[Union["MetaDataMatrix", np.ndarray, list]] = None,
+                unit: Optional[object] = None,
+                units: Optional[np.ndarray] = None,
+                names: Optional[np.ndarray] = None,
+                channels: Optional[np.ndarray] = None,
+                rows=None,
+                cols=None,
+                shape=None,
+                xindex=None,
+                dx=None,
+                x0=None,
+                xunit=None,
+                name="",
+                epoch=0.0,
+                attrs=None):
+        """
+        Create a SeriesMatrix with normalized inputs and metadata.
+        """
+
+        if unit is not None:
+            if units is not None:
+                raise ValueError("give only one of unit or units")
+            units = unit
+
+        value_array, data_attrs, detected_xindex = _normalize_input(
+            data=data,
+            units=units,
+            names=names,
+            channels=channels,
+            shape=shape,
+            xindex=xindex,
+            dx=dx,
+            x0=x0,
+            xunit=xunit
+        )
+
+        if meta is not None:
+            if not isinstance(meta, MetaDataMatrix):
+                try:
+                    meta = MetaDataMatrix(meta)
+                except Exception as e:
+                    raise TypeError(
+                        "meta must be a MetaDataMatrix or a 2D array-like of MetaData/dict"
+                    ) from e
+            if units is None:
+                data_attrs["unit"] = None
+            if names is None:
+                data_attrs["name"] = None
+            if channels is None:
+                data_attrs["channel"] = None
+            _check_attribute_consistency(
+                data_attrs=data_attrs,
+                meta=meta
+            )
+            units_arr, names_arr, channels_arr = _fill_missing_attributes(
+                data_attrs=data_attrs,
+                meta=meta
+            )
+        else:
+            units_arr = data_attrs.get("unit", None)
+            names_arr = data_attrs.get("name", None)
+            channels_arr = data_attrs.get("channel", None)
+
+        meta_matrix = _make_meta_matrix(
+            shape=value_array.shape[:2],
+            units=units_arr,
+            names=names_arr,
+            channels=channels_arr
+        )
+
+        if xindex is None:
+            if detected_xindex is not None:
+                xindex = detected_xindex
+            else:
+                if value_array.shape[2] == 0 and dx is None and x0 is None:
+                    xindex = np.asarray([])
+                else:
+                    xindex = build_index_if_needed(
+                        xindex=None,
+                        dx=dx,
+                        x0=x0,
+                        xunit=xunit,
+                        length=value_array.shape[2]
+                    )
+        
+        _check_shape_consistency(
+            value_array=value_array,
+            meta_matrix=meta_matrix,
+            xindex=xindex
+        )
+
+        obj = np.asarray(value_array).view(cls)
+
+        obj._value = obj.view(np.ndarray)
+
+        obj.meta = meta_matrix
+        N, M = value_array.shape[:2]
+        if isinstance(rows, dict) and not isinstance(rows, OrderedDict):
+            rows = OrderedDict(rows)
+        if isinstance(cols, dict) and not isinstance(cols, OrderedDict):
+            cols = OrderedDict(cols)
+        obj.rows = MetaDataDict(rows, expected_size=N, key_prefix="row")
+        obj.cols = MetaDataDict(cols, expected_size=M, key_prefix="col")
+        obj.xindex = xindex
+        obj.name = name
+        obj.epoch = epoch
+        obj.attrs = attrs or {}
+
+        return obj
+
+    def __array_finalize__(self, obj):
+        if obj is None: 
+            return
+        self._value = self.view(np.ndarray)
+        self._suppress_xindex_check = True
+        self.xindex = getattr(obj, 'xindex', None)
+        if hasattr(self, "_suppress_xindex_check"):
+            delattr(self, "_suppress_xindex_check")
+        self.meta   = getattr(obj, 'meta', None)
+        self.rows   = getattr(obj, 'rows', None)
+        self.cols   = getattr(obj, 'cols', None)
+        self.name   = getattr(obj, 'name', "")
+        self.epoch  = getattr(obj, 'epoch', 0.0)
+        self.attrs  = getattr(obj, 'attrs', getattr(self, "attrs", {}))
+
+    def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
+        if method != '__call__':
+            base_inputs = [inp.view(np.ndarray) if isinstance(inp, SeriesMatrix) else inp for inp in inputs]
+            try:
+                return np.ndarray.__array_ufunc__(self.view(np.ndarray), ufunc, method, *base_inputs, **kwargs)
+            except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+                return NotImplemented
+    
+        casted_inputs = []
+        xindex = self.xindex
+        shape  = self._value.shape
+        meta   = self.meta
+        rows   = self.rows
+        cols   = self.cols
+        epoch  = getattr(self, "epoch", 0.0)
+        name   = getattr(self, "name", "")
+        attrs  = getattr(self, "attrs", {})
+    
+        for inp in inputs:
+            if isinstance(inp, SeriesMatrix):
+                casted_inputs.append(inp)
+            elif isinstance(inp, u.Quantity):
+                val = np.asarray(inp.value)
+                N, M, K = shape
+                if val.ndim == 0:
+                    arr = np.full(shape, val)
+                elif val.ndim == 1:
+                    if val.shape != (K,):
+                        raise ValueError(f"1D Quantity must have length N_samples={K}, got {val.shape}")
+                    arr = np.broadcast_to(val.reshape(1, 1, K), shape)
+                elif val.ndim == 2:
+                    if val.shape != (N, M):
+                        raise ValueError(f"2D Quantity must have shape (Nrow,Ncol)={(N, M)}, got {val.shape}")
+                    arr = np.broadcast_to(val.reshape(N, M, 1), shape)
+                elif val.ndim == 3:
+                    if val.shape != shape:
+                        raise ValueError(f"3D Quantity must have shape {shape}, got {val.shape}")
+                    arr = val
+                else:
+                    raise ValueError(f"Quantity with ndim={val.ndim} is not supported in __array_ufunc__")
+                unit = inp.unit
+                meta_array = np.empty(self._value.shape[:2], dtype=object)
+                for i in range(self._value.shape[0]):
+                    for j in range(self._value.shape[1]):
+                        meta_array[i, j] = MetaData(unit=unit, name=f"s{i}{j}")
+                meta_matrix = MetaDataMatrix(meta_array)
+                casted_inputs.append(SeriesMatrix(arr, xindex=xindex, meta=meta_matrix, shape=self._value.shape))
+            elif isinstance(inp, (float, int, complex)):
+                arr = np.full(self._value.shape, inp)
+                unit = u.dimensionless_unscaled
+                meta_array = np.empty(self._value.shape[:2], dtype=object)
+                for i in range(self._value.shape[0]):
+                    for j in range(self._value.shape[1]):
+                        meta_array[i, j] = MetaData(unit=unit, name=f"s{i}{j}")
+                meta_matrix = MetaDataMatrix(meta_array)
+                casted_inputs.append(SeriesMatrix(arr, xindex=xindex, meta=meta_matrix, shape=self._value.shape))
+            elif isinstance(inp, np.ndarray):
+                val = np.asarray(inp)
+                N, M, K = shape
+                if val.ndim == 0:
+                    arr = np.full(shape, val)
+                elif val.ndim == 1:
+                    if val.shape != (K,):
+                        raise ValueError(
+                            f"1D ndarray must have length N_samples={K}, got {val.shape}"
+                        )
+                    arr = np.broadcast_to(val.reshape(1, 1, K), shape)
+                elif val.ndim == 2:
+                    if val.shape != (N, M):
+                        raise ValueError(
+                            f"2D ndarray must have shape (Nrow,Ncol)={(N, M)}, got {val.shape}"
+                        )
+                    arr = np.broadcast_to(val.reshape(N, M, 1), shape)
+                elif val.ndim == 3:
+                    if val.shape != shape:
+                        raise ValueError(f"3D ndarray must have shape {shape}, got {val.shape}")
+                    arr = val
+                else:
+                    raise ValueError(
+                        f"ndarray with ndim={val.ndim} is not supported in __array_ufunc__"
+                    )
+
+                casted_inputs.append(SeriesMatrix(arr, xindex=xindex, shape=self._value.shape))
+            else:
+                return NotImplemented
+    
+        check_shape_xindex_compatibility(*casted_inputs)
+    
+        if ufunc in [np.add, np.subtract, np.less, np.less_equal, np.equal, np.not_equal, np.greater, np.greater_equal]:
+            check_add_sub_compatibility(*casted_inputs)
+    
+        value_arrays = [inp.view(np.ndarray) for inp in casted_inputs]
+    
+        meta_matrices = [inp.meta for inp in casted_inputs]
+    
+        ufunc_kwargs = {k: v for k, v in kwargs.items() if k not in ('out', 'where')}
+        
+        N, M = self._value.shape[:2]
+        logical_ufuncs = {
+            np.logical_and, np.logical_or, np.logical_xor, np.logical_not,
+            np.isfinite, np.isinf, np.isnan, np.isclose
+        }
+        meta_passthrough_ufuncs = logical_ufuncs | {
+            np.sign, np.floor, np.ceil, np.trunc, np.rint,
+            np.mod, np.remainder, np.clip
+        }
+        try:
+            probe_val_args = [v[0, 0] for v in value_arrays]
+            probe_result = ufunc(*probe_val_args, **ufunc_kwargs)
+            boolean_ufuncs = {np.less, np.less_equal, np.equal, np.not_equal,
+                              np.greater, np.greater_equal,
+                              np.logical_and, np.logical_or, np.logical_xor,
+                              np.logical_not, np.isfinite, np.isinf, np.isnan,
+                              np.isclose}
+            if ufunc in boolean_ufuncs:
+                result_dtype = np.bool_
+            else:
+                result_dtype = np.asarray(probe_result).dtype
+        except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+            result_dtype = self._value.dtype
+        
+        result_values = np.empty(self._value.shape, dtype=result_dtype)
+        result_meta   = np.empty(self._value.shape[:2], dtype=object)
+        bool_result = np.issubdtype(result_dtype, np.bool_)
+
+        for i in range(N):
+            for j in range(M):
+                val_args = [v[i, j] for v in value_arrays]
+                meta_args = [m[i, j] for m in meta_matrices]
+                try:
+                    result_values[i, j] = ufunc(*val_args, **ufunc_kwargs)
+                except Exception as e:
+                    raise type(e)(f"Error at cell ({i},{j}): {e}")
+                try:
+                    if bool_result or ufunc in meta_passthrough_ufuncs or ufunc.__name__ == "clip":
+                        result_meta[i, j] = meta_args[0]
+                    else:
+                        result_meta[i, j] = ufunc(*meta_args, **ufunc_kwargs)
+                except Exception as e:
+                    raise type(e)(f"MetaData ufunc error at ({i},{j}): {e}")
+    
+        result_meta_matrix = MetaDataMatrix(result_meta)
+        result_units = result_meta_matrix.units
+        return self.__class__(
+            result_values,
+            xindex=self.xindex,
+            meta=result_meta_matrix,
+            units=result_units,
+            rows=rows,
+            cols=cols,
+            name=name,
+            epoch=epoch,
+            attrs=attrs
+        )
+
+    ##### xindex Information #####
+    @property
+    def xindex(self):
+        return getattr(self, "_xindex", None)
+
+    @xindex.setter
+    def xindex(self, value):
+        if value is None:
+            self._xindex = None
+        else:
+            if isinstance(value, Index):
+                xi = value
+            elif isinstance(value, u.Quantity):
+                xi = value
+            else:
+                xi = np.asarray(value)
+            try:
+                n_samples = self._value.shape[2]
+            except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+                n_samples = None
+            suppress = getattr(self, "_suppress_xindex_check", False)
+            if (not suppress) and n_samples is not None and hasattr(xi, "__len__") and len(xi) != n_samples:
+                raise ValueError(f"xindex length mismatch: expected {n_samples}, got {len(xi)}")
+            self._xindex = xi
+        for attr in ("_dx", "_x0"):
+            if hasattr(self, attr):
+                delattr(self, attr)
+
+    @property
+    def x0(self):
+        try:
+            return self._x0
+        except AttributeError:
+            try:
+                self._x0 = self.xindex[0]
+            except (AttributeError, IndexError):
+                self._x0 = u.Quantity(0, self.xunit)
+            return self._x0
+        
+    @property
+    def dx(self):
+        try:
+            return self._dx
+        except AttributeError:
+            if not hasattr(self, "xindex") or self.xindex is None:
+                raise AttributeError("dx is undefined because xindex is not set")
+            if hasattr(self.xindex, "regular") and not self.xindex.regular:
+                raise AttributeError("This SeriesMatrix has an irregular x-axis index, so 'dx' is not well defined")
+            dx = self.xindex[1] - self.xindex[0]
+            if not isinstance(dx, u.Quantity):
+                xunit = getattr(self.xindex, 'unit', u.dimensionless_unscaled)
+                dx = u.Quantity(dx, xunit)
+            self._dx = dx
+            return self._dx
+
+    @property
+    def xspan(self):
+        xindex = self.xindex
+        try:
+            if hasattr(xindex, "regular") and xindex.regular:
+                return (xindex[0], xindex[-1] + self.dx)
+            if len(xindex) > 1:
+                step = xindex[-1] - xindex[-2]
+                return (xindex[0], xindex[-1] + step)
+            return (xindex[0], xindex[0])
+        except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+            return (xindex[0], xindex[-1])
+    
+    @property
+    def xunit(self):
+        try:
+            return self._dx.unit
+        except AttributeError:
+            try:
+                return self._x0.unit
+            except AttributeError:
+                return u.dimensionless_unscaled
+    
+    @property
+    def N_samples(self):
+        return len(self.xindex) if self.xindex is not None else 0
+
+    @property
+    def xarray(self):
+        """
+        Return the sample axis values.
+        """
+        return self.xindex
+
+    @property
+    def duration(self):
+        """
+        Duration covered by the samples.
+        """
+        if self.N_samples == 0:
+            try:
+                return 0 * self.xunit
+            except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+                return 0
+        return self.xindex[-1] - self.xindex[0]
+
+    def is_compatible(self, other):
+        """
+        Compatibility check.
+        """
+        if not isinstance(other, SeriesMatrix):
+            arr = np.asarray(other)
+            if arr.shape != self._value.shape:
+                raise ValueError(f"shape does not match: {self._value.shape} vs {arr.shape}")
+            return True
+
+        if self._value.shape[:2] != other._value.shape[:2]:
+            raise ValueError(f"matrix shape does not match: {self._value.shape[:2]} vs {other._value.shape[:2]}")
+
+        xunit_self = getattr(self.xindex, "unit", None)
+        xunit_other = getattr(other.xindex, "unit", None)
+        if xunit_self is not None and xunit_other is not None:
+            try:
+                if not u.Unit(xunit_self).is_equivalent(u.Unit(xunit_other)):
+                    raise ValueError(f"xindex unit does not match: {xunit_self} vs {xunit_other}")
+            except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+                raise ValueError(f"xindex unit does not match: {xunit_self} vs {xunit_other}")
+
+        try:
+            dx_self = self.dx
+            dx_other = other.dx
+            if dx_self != dx_other:
+                raise ValueError(f"dx does not match: {dx_self} vs {dx_other}")
+        except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+            lhs = np.asarray(self.xindex)
+            rhs = np.asarray(other.xindex)
+            if not np.array_equal(lhs, rhs):
+                raise ValueError("xindex does not match")
+
+        for i in range(self._value.shape[0]):
+            for j in range(self._value.shape[1]):
+                u1 = self.meta[i, j].unit
+                u2 = other.meta[i, j].unit
+                if u1 != u2:
+                    raise ValueError(f"unit does not match at ({i},{j}): {u1} vs {u2}")
+        return True
+
+    ##### rows/cols Information #####
+    def row_keys(self):
+        return tuple(self.rows.keys())
+
+    def col_keys(self):
+        return tuple(self.cols.keys())
+        
+    def keys(self):
+        return (self.row_keys(), self.col_keys())
+
+    def row_index(self, key):
+        try:
+            return list(self.row_keys()).index(key)
+        except ValueError:
+            raise KeyError(f"Invalid row key: {key}")
+
+    def col_index(self, key):
+        try:
+            return list(self.col_keys()).index(key)
+        except ValueError:
+            raise KeyError(f"Invalid column key: {key}")
+
+    def get_index(self, key_row, key_col):
+        return self.row_index(key_row), self.col_index(key_col)
+
+    ##### Elements Metadata #####    
+    @property
+    def MetaDataMatrix(self):
+        return self.meta
+        
+    @property
+    def units(self):
+        return self.meta.units
+    
+    @property
+    def names(self):
+        return self.meta.names
+
+    @property
+    def channels(self):
+        return self.meta.channels
