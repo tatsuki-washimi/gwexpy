@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import inspect
 from enum import Enum
 import numpy as np
@@ -51,14 +53,14 @@ class TimeSeriesMatrix(SeriesMatrix):
 
     def __new__(
         cls,
-        data=None,
-        times=None,
-        dt=None,
-        t0=None,
-        sample_rate=None,
-        epoch=None,
-        **kwargs,
-    ):
+        data: Any = None,
+        times: Any = None,
+        dt: Any = None,
+        t0: Any = None,
+        sample_rate: Any = None,
+        epoch: Any = None,
+        **kwargs: Any,
+    ) -> "TimeSeriesMatrix":
         import warnings
 
         channel_names = kwargs.pop("channel_names", None)
@@ -155,27 +157,27 @@ class TimeSeriesMatrix(SeriesMatrix):
     # --- Properties mapping to SeriesMatrix attributes ---
 
     @property
-    def dt(self):
+    def dt(self) -> Any:
         """Time spacing (dx)."""
         return self.dx
 
     @property
-    def t0(self):
+    def t0(self) -> Any:
         """Start time (x0)."""
         return self.x0
 
     @property
-    def times(self):
+    def times(self) -> Any:
         """Time array (xindex)."""
         return self.xindex
 
     @property
-    def span(self):
+    def span(self) -> Any:
         """Time span (xspan)."""
         return self.xspan
 
     @property
-    def sample_rate(self):
+    def sample_rate(self) -> Any:
         """Sampling rate (1/dt)."""
         if self.dt is None:
             return None
@@ -185,7 +187,7 @@ class TimeSeriesMatrix(SeriesMatrix):
         return u.Quantity(rate, "Hz")
 
     @sample_rate.setter
-    def sample_rate(self, value):
+    def sample_rate(self, value: Any) -> None:
         if value is None:
             self.xindex = None
             return
@@ -210,7 +212,15 @@ class TimeSeriesMatrix(SeriesMatrix):
         
     # --- Preprocessing & Decomposition ---
     
-    def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
+    def impute(
+        self,
+        *,
+        method: str = "interpolate",
+        limit: Optional[int] = None,
+        axis: str = "time",
+        max_gap: Optional[float] = None,
+        **kwargs: Any,
+    ) -> Any:
         """Impute missing values."""
         # Matrix-level impute or per-channel?
         # Provide naive implementation mapping over columns or using decomposition logic?
@@ -241,7 +251,7 @@ class TimeSeriesMatrix(SeriesMatrix):
         new_mat.value[:] = new_val
         return new_mat
 
-    def standardize(self, *, axis="time", method="zscore", ddof=0):
+    def standardize(self, *, axis: str = "time", method: str = "zscore", ddof: int = 0) -> Any:
         """
         Standardize the matrix.
         See gwexpy.timeseries.preprocess.standardize_matrix.
@@ -249,7 +259,14 @@ class TimeSeriesMatrix(SeriesMatrix):
         # Note: standardize_matrix assumes (channels, time) input correctly now (handles axis).
         return standardize_matrix(self, axis=axis, method=method, ddof=ddof)
 
-    def whiten_channels(self, *, method="pca", eps=1e-12, n_components=None, return_model=True):
+    def whiten_channels(
+        self,
+        *,
+        method: str = "pca",
+        eps: float = 1e-12,
+        n_components: Optional[int] = None,
+        return_model: bool = True,
+    ) -> Any:
         """
         Whiten the matrix (channels/components).
         Returns (whitened_matrix, WhiteningModel) by default.
@@ -261,32 +278,73 @@ class TimeSeriesMatrix(SeriesMatrix):
             return mat, model
         return mat
 
-    def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_mean(
+        self,
+        window: Any,
+        *,
+        center: bool = False,
+        min_count: int = 1,
+        nan_policy: str = "omit",
+        backend: str = "auto",
+    ) -> Any:
         """Rolling mean along the time axis."""
         from gwexpy.timeseries.rolling import rolling_mean
         return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
 
-    def rolling_std(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ddof=0):
+    def rolling_std(
+        self,
+        window: Any,
+        *,
+        center: bool = False,
+        min_count: int = 1,
+        nan_policy: str = "omit",
+        backend: str = "auto",
+        ddof: int = 0,
+    ) -> Any:
         """Rolling standard deviation along the time axis."""
         from gwexpy.timeseries.rolling import rolling_std
         return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof)
 
-    def rolling_median(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_median(
+        self,
+        window: Any,
+        *,
+        center: bool = False,
+        min_count: int = 1,
+        nan_policy: str = "omit",
+        backend: str = "auto",
+    ) -> Any:
         """Rolling median along the time axis."""
         from gwexpy.timeseries.rolling import rolling_median
         return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
 
-    def rolling_min(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_min(
+        self,
+        window: Any,
+        *,
+        center: bool = False,
+        min_count: int = 1,
+        nan_policy: str = "omit",
+        backend: str = "auto",
+    ) -> Any:
         """Rolling minimum along the time axis."""
         from gwexpy.timeseries.rolling import rolling_min
         return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
 
-    def rolling_max(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_max(
+        self,
+        window: Any,
+        *,
+        center: bool = False,
+        min_count: int = 1,
+        nan_policy: str = "omit",
+        backend: str = "auto",
+    ) -> Any:
         """Rolling maximum along the time axis."""
         from gwexpy.timeseries.rolling import rolling_max
         return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
         
-    def crop(self, start=None, end=None, copy=False):
+    def crop(self, start: Any = None, end: Any = None, copy: bool = False) -> "TimeSeriesMatrix":
         """
         Crop this matrix to the given GPS start and end times.
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
@@ -298,7 +356,7 @@ class TimeSeriesMatrix(SeriesMatrix):
              end = float(to_gps(end))
         return super().crop(start=start, end=end, copy=copy)
 
-    def to_dict(self):
+    def to_dict(self) -> "TimeSeriesDict":
 
         """Convert to TimeSeriesDict."""
         # channel_names property should be available if SeriesMatrix logic works
@@ -331,25 +389,25 @@ class TimeSeriesMatrix(SeriesMatrix):
              d[name] = ts
         return d
 
-    def to_list(self):
+    def to_list(self) -> "TimeSeriesList":
         """Convert to TimeSeriesList."""
         d = self.to_dict()
         return TimeSeriesList(d.values())
 
     # Decomposition
-    def pca_fit(self, **kwargs):
+    def pca_fit(self, **kwargs: Any) -> Any:
         """Fit PCA."""
         return pca_fit(self, **kwargs)
 
-    def pca_transform(self, pca_res, **kwargs):
+    def pca_transform(self, pca_res: Any, **kwargs: Any) -> Any:
         """Transform using PCA."""
         return pca_transform(pca_res, self, **kwargs)
         
-    def pca_inverse_transform(self, pca_res, scores):
+    def pca_inverse_transform(self, pca_res: Any, scores: Any) -> Any:
         """Inverse transform PCA scores."""
         return pca_inverse_transform(pca_res, scores)
 
-    def pca(self, return_model=False, **kwargs):
+    def pca(self, return_model: bool = False, **kwargs: Any) -> Any:
         """Fit and transform PCA."""
         res = self.pca_fit(**kwargs)
         scores = self.pca_transform(res, n_components=kwargs.get("n_components"))
@@ -359,26 +417,32 @@ class TimeSeriesMatrix(SeriesMatrix):
 
     # --- Interop helpers (Matrix-level) ---
 
-    def to_torch(self, device=None, dtype=None, requires_grad=False, copy=False):
+    def to_torch(
+        self,
+        device: Optional[str] = None,
+        dtype: Any = None,
+        requires_grad: bool = False,
+        copy: bool = False,
+    ) -> Any:
         """
         Convert matrix values to a torch.Tensor (shape preserved).
         """
         from gwexpy.interop import to_torch
         return to_torch(self, device=device, dtype=dtype, requires_grad=requires_grad, copy=copy)
 
-    def ica_fit(self, **kwargs):
+    def ica_fit(self, **kwargs: Any) -> Any:
         """Fit ICA."""
         return ica_fit(self, **kwargs)
 
-    def ica_transform(self, ica_res):
+    def ica_transform(self, ica_res: Any) -> Any:
         """Transform using ICA."""
         return ica_transform(ica_res, self)
 
-    def ica_inverse_transform(self, ica_res, sources):
+    def ica_inverse_transform(self, ica_res: Any, sources: Any) -> Any:
         """Inverse transform ICA sources."""
         return ica_inverse_transform(ica_res, sources)
         
-    def ica(self, return_model=False, **kwargs):
+    def ica(self, return_model: bool = False, **kwargs: Any) -> Any:
         """Fit and transform ICA."""
         res = self.ica_fit(**kwargs)
         sources = self.ica_transform(res)
@@ -417,7 +481,7 @@ class TimeSeriesMatrix(SeriesMatrix):
 
     # --- Element Access ---
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: Any) -> Any:
         """
         Return TimeSeries for single element access, or TimeSeriesMatrix for slicing.
         """
@@ -460,7 +524,7 @@ class TimeSeriesMatrix(SeriesMatrix):
 
     # --- Plotting ---
 
-    def plot(self, **kwargs):
+    def plot(self, **kwargs: Any) -> Any:
         """
         Plot the matrix data.
         """
@@ -468,7 +532,7 @@ class TimeSeriesMatrix(SeriesMatrix):
             kwargs["xscale"] = "auto-gps"
         return super().plot(**kwargs)
 
-    def _apply_timeseries_method(self, method_name, *args, **kwargs):
+    def _apply_timeseries_method(self, method_name: str, *args: Any, **kwargs: Any) -> Any:
         """
         Apply a TimeSeries method element-wise and rebuild a TimeSeriesMatrix.
 
@@ -577,18 +641,18 @@ class TimeSeriesMatrix(SeriesMatrix):
         return new_mat
 
     # Interoperability Delegation
-    def to_neo_analogsignal(self, units=None):
+    def to_neo_analogsignal(self, units: Optional[str] = None) -> Any:
         """Convert to neo.AnalogSignal."""
         from gwexpy.interop import to_neo_analogsignal
         return to_neo_analogsignal(self, units=units)
         
     @classmethod
-    def from_neo_analogsignal(cls, sig):
+    def from_neo_analogsignal(cls: type["TimeSeriesMatrix"], sig: Any) -> Any:
         """Create from neo.AnalogSignal."""
         from gwexpy.interop import from_neo_analogsignal
         return from_neo_analogsignal(cls, sig)
         
-    def to_mne_rawarray(self, info=None):
+    def to_mne_rawarray(self, info: Any = None) -> Any:
         """Convert to mne.io.RawArray."""
         from gwexpy.interop import to_mne_rawarray
         # Convert to dict first? or map?
@@ -601,14 +665,14 @@ class TimeSeriesMatrix(SeriesMatrix):
         tsd = self.to_dict()
         return to_mne_rawarray(tsd, info=info) 
 
-    def to_mne_raw(self, info=None):
+    def to_mne_raw(self, info: Any = None) -> Any:
         """Alias for :meth:`to_mne_rawarray`."""
         return self.to_mne_rawarray(info=info)
 
 
 
 
-    def _coerce_other_timeseries_input(self, other, method_name):
+    def _coerce_other_timeseries_input(self, other: Any, method_name: str) -> Any:
         """
         Normalize 'other' input for bivariate spectral methods.
         """
@@ -633,7 +697,7 @@ class TimeSeriesMatrix(SeriesMatrix):
             "other must be TimeSeriesMatrix or TimeSeries for bivariate spectral methods"
         )
 
-    def _apply_bivariate_spectral_method(self, method_name, other, *args, **kwargs):
+    def _apply_bivariate_spectral_method(self, method_name: str, other: Any, *args: Any, **kwargs: Any) -> Any:
         """
         Apply a bivariate TimeSeries spectral method element-wise and return FrequencySeriesMatrix.
         """
@@ -705,7 +769,7 @@ class TimeSeriesMatrix(SeriesMatrix):
             epoch=common_epoch,
         )
 
-    def _apply_univariate_spectral_method(self, method_name, *args, **kwargs):
+    def _apply_univariate_spectral_method(self, method_name: str, *args: Any, **kwargs: Any) -> Any:
         """
         Apply a univariate TimeSeries spectral method element-wise and return FrequencySeriesMatrix.
         """
@@ -774,7 +838,7 @@ class TimeSeriesMatrix(SeriesMatrix):
             epoch=common_epoch,
         )
 
-    def _apply_spectrogram_method(self, method_name, *args, **kwargs):
+    def _apply_spectrogram_method(self, method_name: str, *args: Any, **kwargs: Any) -> Any:
         """
         Apply a TimeSeries spectrogram method element-wise and return SpectrogramMatrix.
         """
@@ -870,7 +934,7 @@ class TimeSeriesMatrix(SeriesMatrix):
             meta=meta_matrix,
         )
 
-    def _run_spectral_method(self, method_name, **kwargs):
+    def _run_spectral_method(self, method_name: str, **kwargs: Any) -> Any:
         """
         Helper for fft, psd, asd.
         """
@@ -925,7 +989,7 @@ class TimeSeriesMatrix(SeriesMatrix):
     # --- Spectral Methods ---
 
 
-    def lock_in(self, **kwargs):
+    def lock_in(self, **kwargs: Any) -> Any:
         """
         Apply lock-in amplification element-wise.
         
@@ -1002,49 +1066,49 @@ class TimeSeriesMatrix(SeriesMatrix):
             return m1, m2
         return m1
 
-    def fft(self, **kwargs):
+    def fft(self, **kwargs: Any) -> Any:
         """
         Compute FFT of each element.
         Returns FrequencySeriesMatrix.
         """
         return self._run_spectral_method("fft", **kwargs)
 
-    def psd(self, **kwargs):
+    def psd(self, **kwargs: Any) -> Any:
         """
         Compute PSD of each element.
         Returns FrequencySeriesMatrix.
         """
         return self._run_spectral_method("psd", **kwargs)
 
-    def asd(self, **kwargs):
+    def asd(self, **kwargs: Any) -> Any:
         """
         Compute ASD of each element.
         Returns FrequencySeriesMatrix.
         """
         return self._run_spectral_method("asd", **kwargs)
 
-    def spectrogram(self, *args, **kwargs):
+    def spectrogram(self, *args: Any, **kwargs: Any) -> Any:
         """
         Compute spectrogram of each element.
         Returns SpectrogramMatrix.
         """
         return self._apply_spectrogram_method("spectrogram", *args, **kwargs)
 
-    def spectrogram2(self, *args, **kwargs):
+    def spectrogram2(self, *args: Any, **kwargs: Any) -> Any:
         """
         Compute spectrogram2 of each element.
         Returns SpectrogramMatrix.
         """
         return self._apply_spectrogram_method("spectrogram2", *args, **kwargs)
 
-    def q_transform(self, *args, **kwargs):
+    def q_transform(self, *args: Any, **kwargs: Any) -> Any:
         """
         Compute Q-transform of each element.
         Returns SpectrogramMatrix.
         """
         return self._apply_spectrogram_method("q_transform", *args, **kwargs)
 
-    def _repr_string_(self):
+    def _repr_string_(self) -> str:
         if self.size > 0:
             u = self.meta[0, 0].unit
         else:

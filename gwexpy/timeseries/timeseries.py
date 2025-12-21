@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import inspect
 from enum import Enum
 import numpy as np
@@ -37,7 +39,16 @@ from .utils import *
 class TimeSeries(BaseTimeSeries):
     """Light wrapper of gwpy's TimeSeries for compatibility."""
 
-    def crop(self, start=None, end=None, copy=False):
+    def tail(self, n: int = 5) -> "TimeSeries":
+        """Return the last `n` samples of this series."""
+        if n is None:
+            return self
+        n = int(n)
+        if n <= 0:
+            return self[:0]
+        return self[-n:]
+
+    def crop(self, start: Any = None, end: Any = None, copy: bool = False) -> "TimeSeries":
         """
         Crop this series to the given GPS start and end times.
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
@@ -54,17 +65,17 @@ class TimeSeries(BaseTimeSeries):
 
     def asfreq(
         self,
-        rule,
-        method=None,
-        fill_value=np.nan,
+        rule: Any,
+        method: Optional[str] = None,
+        fill_value: Any = np.nan,
         *,
-        origin='t0',
-        offset=None,
-        align='ceil',
-        tolerance=None,
-        max_gap=None,
-        copy=True,
-    ):
+        origin: str = "t0",
+        offset: Any = None,
+        align: str = "ceil",
+        tolerance: Optional[float] = None,
+        max_gap: Optional[float] = None,
+        copy: bool = True,
+    ) -> "TimeSeries":
         """
         Reindex the TimeSeries to a new fixed-interval grid associated with the given rule.
         """
@@ -441,7 +452,7 @@ class TimeSeries(BaseTimeSeries):
             channel=self.channel
         )
 
-    def resample(self, rate, *args, **kwargs):
+    def resample(self, rate: Any, *args: Any, **kwargs: Any) -> "TimeSeries":
         """
         Resample the TimeSeries. 
         
@@ -460,7 +471,7 @@ class TimeSeries(BaseTimeSeries):
         else:
             return super().resample(rate, *args, **kwargs)
 
-    def stlt(self, stride, window, **kwargs):
+    def stlt(self, stride: Any, window: Any, **kwargs: Any) -> Any:
         """
         Compute Short-Time Local Transform (STLT).
 
@@ -567,17 +578,17 @@ class TimeSeries(BaseTimeSeries):
 
     def _resample_time_bin(
         self,
-        rule,
-        agg='mean',
-        closed='left',
-        label='left',
-        origin='t0',
-        offset=0 * u.s,
-        align='floor',
-        min_count=1,
-        nan_policy='omit',
-        inplace=False,
-    ):
+        rule: Any,
+        agg: str = "mean",
+        closed: str = "left",
+        label: str = "left",
+        origin: str = "t0",
+        offset: Any = 0 * u.s,
+        align: str = "floor",
+        min_count: int = 1,
+        nan_policy: str = "omit",
+        inplace: bool = False,
+    ) -> Any:
         """Internal: Bin-based resampling."""
         # 1. Parse rule to dt
         if isinstance(rule, str):
@@ -867,12 +878,12 @@ class TimeSeries(BaseTimeSeries):
 
     def analytic_signal(
         self,
-        pad=None,
-        pad_mode='reflect',
-        pad_value=0.0,
-        nan_policy='raise',
-        copy=True,
-    ):
+        pad: Any = None,
+        pad_mode: str = "reflect",
+        pad_value: float = 0.0,
+        nan_policy: str = "raise",
+        copy: bool = True,
+    ) -> "TimeSeries":
         """
         Compute the analytic signal (Hilbert transform) of the TimeSeries.
         
@@ -926,16 +937,16 @@ class TimeSeries(BaseTimeSeries):
              name=self.name
         )
         
-    def hilbert(self, *args, **kwargs):
+    def hilbert(self, *args: Any, **kwargs: Any) -> "TimeSeries":
         """Alias for analytic_signal."""
         return self.analytic_signal(*args, **kwargs)
         
-    def envelope(self, *args, **kwargs):
+    def envelope(self, *args: Any, **kwargs: Any) -> "TimeSeries":
         """Compute the envelope of the TimeSeries."""
         analytic = self.analytic_signal(*args, **kwargs)
         return abs(analytic)
         
-    def instantaneous_phase(self, deg=False, unwrap=False, **kwargs):
+    def instantaneous_phase(self, deg: bool = False, unwrap: bool = False, **kwargs: Any) -> "TimeSeries":
         """
         Compute the instantaneous phase of the TimeSeries.
         """
@@ -962,11 +973,11 @@ class TimeSeries(BaseTimeSeries):
         out.override_unit('deg' if deg else 'rad')
         return out
         
-    def unwrap_phase(self, deg=False, **kwargs):
+    def unwrap_phase(self, deg: bool = False, **kwargs: Any) -> "TimeSeries":
         """Alias for instantaneous_phase(unwrap=True)."""
         return self.instantaneous_phase(deg=deg, unwrap=True, **kwargs)
         
-    def instantaneous_frequency(self, unwrap=True, smooth=None, **kwargs):
+    def instantaneous_frequency(self, unwrap: bool = True, smooth: Any = None, **kwargs: Any) -> "TimeSeries":
         """
         Compute the instantaneous frequency of the TimeSeries.
         Returns unit 'Hz'.
@@ -1040,14 +1051,14 @@ class TimeSeries(BaseTimeSeries):
     def _build_phase_series(
         self,
         *,
-        phase=None,
-        f0=None,
-        fdot=0.0,
-        fddot=0.0,
-        phase_epoch=None,
-        phase0=0.0,
-        prefer_dt=True,
-    ):
+        phase: Any = None,
+        f0: Any = None,
+        fdot: Any = 0.0,
+        fddot: Any = 0.0,
+        phase_epoch: Any = None,
+        phase0: float = 0.0,
+        prefer_dt: bool = True,
+    ) -> np.ndarray:
         """Internal helper to build phase series in radians."""
         if (f0 is None and phase is None) or (f0 is not None and phase is not None):
              raise ValueError("Exactly one of 'f0' or 'phase' must be provided.")
@@ -1121,15 +1132,15 @@ class TimeSeries(BaseTimeSeries):
     def mix_down(
         self,
         *,
-        phase=None,
-        f0=None,
-        fdot=0.0,
-        fddot=0.0,
-        phase_epoch=None,
-        phase0=0.0,
-        singlesided=False,
-        copy=True,
-    ):
+        phase: Any = None,
+        f0: Any = None,
+        fdot: Any = 0.0,
+        fddot: Any = 0.0,
+        phase_epoch: Any = None,
+        phase0: float = 0.0,
+        singlesided: bool = False,
+        copy: bool = True,
+    ) -> "TimeSeries":
         """
         Mix the TimeSeries with a complex oscillator.
         """
@@ -1175,17 +1186,17 @@ class TimeSeries(BaseTimeSeries):
     def baseband(
         self,
         *,
-        phase=None,
-        f0=None,
-        fdot=0.0,
-        fddot=0.0,
-        phase_epoch=None,
-        phase0=0.0,
-        lowpass=None,
-        lowpass_kwargs=None,
-        output_rate=None,
-        singlesided=False,
-    ):
+        phase: Any = None,
+        f0: Any = None,
+        fdot: Any = 0.0,
+        fddot: Any = 0.0,
+        phase_epoch: Any = None,
+        phase0: float = 0.0,
+        lowpass: Optional[float] = None,
+        lowpass_kwargs: Optional[dict[str, Any]] = None,
+        output_rate: Optional[float] = None,
+        singlesided: bool = False,
+    ) -> "TimeSeries":
         """
         Demodulate the TimeSeries to baseband, optionally applying lowpass filter and resampling.
         """
@@ -1213,17 +1224,17 @@ class TimeSeries(BaseTimeSeries):
     def lock_in(
         self,
         *,
-        phase=None,
-        f0=None,
-        fdot=0.0,
-        fddot=0.0,
-        phase_epoch=None,
-        phase0=0.0,
-        stride=1.0,
-        singlesided=True,
-        output='amp_phase',
-        deg=True,
-    ):
+        phase: Any = None,
+        f0: Any = None,
+        fdot: Any = 0.0,
+        fddot: Any = 0.0,
+        phase_epoch: Any = None,
+        phase0: float = 0.0,
+        stride: float = 1.0,
+        singlesided: bool = True,
+        output: str = "amp_phase",
+        deg: bool = True,
+    ) -> Any:
         """
         Perform lock-in amplification (demodulation + averaging).
         """
@@ -1266,16 +1277,16 @@ class TimeSeries(BaseTimeSeries):
 
     def fft(
         self,
-        nfft=None,
+        nfft: Optional[int] = None,
         *,
-        mode="gwpy",
-        pad_mode="zero",
-        pad_left=0,
-        pad_right=0,
-        nfft_mode=None,
-        other_length=None,
-        **kwargs,
-    ):
+        mode: str = "gwpy",
+        pad_mode: str = "zero",
+        pad_left: int = 0,
+        pad_right: int = 0,
+        nfft_mode: Optional[str] = None,
+        other_length: Optional[int] = None,
+        **kwargs: Any,
+    ) -> Any:
         """
         Compute the one-dimensional discrete Fourier Transform.
 
@@ -1441,7 +1452,7 @@ class TimeSeries(BaseTimeSeries):
 
         return fs
 
-    def dct(self, type=2, norm="ortho", *, window=None, detrend=False):
+    def dct(self, type: int = 2, norm: str = "ortho", *, window: Any = None, detrend: bool = False) -> Any:
         """
         Compute the Discrete Cosine Transform (DCT) of the TimeSeries.
 
@@ -1526,17 +1537,17 @@ class TimeSeries(BaseTimeSeries):
     def laplace(
         self,
         *,
-        sigma=0.0,
-        frequencies=None,
-        t_start=None,
-        t_stop=None,
-        window=None,
-        detrend=False,
-        normalize="integral",   # "integral" | "mean"
-        dtype=None,
-        chunk_size=None,
-        **kwargs,
-    ):
+        sigma: Any = 0.0,
+        frequencies: Any = None,
+        t_start: Any = None,
+        t_stop: Any = None,
+        window: Any = None,
+        detrend: bool = False,
+        normalize: str = "integral",   # "integral" | "mean"
+        dtype: Any = None,
+        chunk_size: Optional[int] = None,
+        **kwargs: Any,
+    ) -> Any:
         """
         One-sided finite-interval Laplace transform.
 
@@ -1744,7 +1755,15 @@ class TimeSeries(BaseTimeSeries):
         
         return fs
 
-    def cepstrum(self, kind="real", *, window=None, detrend=False, eps=None, fft_mode="gwpy"):
+    def cepstrum(
+        self,
+        kind: str = "real",
+        *,
+        window: Any = None,
+        detrend: bool = False,
+        eps: Optional[float] = None,
+        fft_mode: str = "gwpy",
+    ) -> Any:
         """
         Compute the Cepstrum of the TimeSeries.
 
@@ -1853,7 +1872,17 @@ class TimeSeries(BaseTimeSeries):
         
         return fs
 
-    def cwt(self, wavelet="cmor1.5-1.0", widths=None, frequencies=None, *, window=None, detrend=False, output="spectrogram", **kwargs):
+    def cwt(
+        self,
+        wavelet: str = "cmor1.5-1.0",
+        widths: Any = None,
+        frequencies: Any = None,
+        *,
+        window: Any = None,
+        detrend: bool = False,
+        output: str = "spectrogram",
+        **kwargs: Any,
+    ) -> Any:
         """
         Compute the Continuous Wavelet Transform (CWT) using PyWavelets.
 
@@ -1991,15 +2020,15 @@ class TimeSeries(BaseTimeSeries):
     def emd(
         self,
         *,
-        method="eemd",
-        max_imf=None,
-        sift_max_iter=1000,
-        stopping_criterion="default",
-        eemd_noise_std=0.2,
-        eemd_trials=100,
-        random_state=None,
-        return_residual=True,
-    ):
+        method: str = "eemd",
+        max_imf: Optional[int] = None,
+        sift_max_iter: int = 1000,
+        stopping_criterion: Any = "default",
+        eemd_noise_std: float = 0.2,
+        eemd_trials: int = 100,
+        random_state: Optional[int] = None,
+        return_residual: bool = True,
+    ) -> Any:
         """
         Perform Empirical Mode Decomposition (EMD) or EEMD.
 
@@ -2134,7 +2163,7 @@ class TimeSeries(BaseTimeSeries):
              
         return out_dict
 
-    def hilbert_analysis(self, *, unwrap_phase=True, frequency_unit="Hz"):
+    def hilbert_analysis(self, *, unwrap_phase: bool = True, frequency_unit: str = "Hz") -> dict[str, Any]:
         """
         Perform Hilbert Spectral Analysis (HSA) to get instantaneous properties.
 
@@ -2208,11 +2237,11 @@ class TimeSeries(BaseTimeSeries):
     def hht(
         self,
         *,
-        emd_method="eemd",
-        emd_kwargs=None,
-        hilbert_kwargs=None,
-        output="dict",
-    ):
+        emd_method: str = "eemd",
+        emd_kwargs: Optional[dict[str, Any]] = None,
+        hilbert_kwargs: Optional[dict[str, Any]] = None,
+        output: str = "dict",
+    ) -> Any:
         """
         Perform Hilbert-Huang Transform (HHT): EMD + HSA.
 
@@ -2343,7 +2372,15 @@ class TimeSeries(BaseTimeSeries):
 
     # --- New Statistical / Info Processing Methods ---
 
-    def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
+    def impute(
+        self,
+        *,
+        method: str = "interpolate",
+        limit: Optional[int] = None,
+        axis: str = "time",
+        max_gap: Optional[float] = None,
+        **kwargs: Any,
+    ) -> Any:
         """
         Impute missing values.
         See gwexpy.timeseries.preprocess.impute_timeseries for details.
@@ -2351,7 +2388,7 @@ class TimeSeries(BaseTimeSeries):
         from gwexpy.timeseries.preprocess import impute_timeseries
         return impute_timeseries(self, method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs)
 
-    def standardize(self, *, method="zscore", ddof=0, robust=False):
+    def standardize(self, *, method: str = "zscore", ddof: int = 0, robust: bool = False) -> Any:
         """
         Standardize the series.
         See gwexpy.timeseries.preprocess.standardize_timeseries for details.
@@ -2359,7 +2396,7 @@ class TimeSeries(BaseTimeSeries):
         from gwexpy.timeseries.preprocess import standardize_timeseries
         return standardize_timeseries(self, method=method, ddof=ddof, robust=robust)
 
-    def fit_arima(self, order=(1, 0, 0), **kwargs):
+    def fit_arima(self, order: tuple[int, int, int] = (1, 0, 0), **kwargs: Any) -> Any:
         """
         Fit ARIMA model to the series.
         See gwexpy.timeseries.arima.fit_arima for details.
@@ -2367,7 +2404,7 @@ class TimeSeries(BaseTimeSeries):
         from gwexpy.timeseries.arima import fit_arima
         return fit_arima(self, order=order, **kwargs)
 
-    def hurst(self, **kwargs):
+    def hurst(self, **kwargs: Any) -> Any:
         """
         Compute Hurst exponent.
         See gwexpy.timeseries.hurst.hurst for details.
@@ -2375,7 +2412,7 @@ class TimeSeries(BaseTimeSeries):
         from gwexpy.timeseries.hurst import hurst
         return hurst(self, **kwargs)
 
-    def local_hurst(self, window, **kwargs):
+    def local_hurst(self, window: Any, **kwargs: Any) -> Any:
         """
         Compute local Hurst exponent over a sliding window.
         See gwexpy.timeseries.hurst.local_hurst for details.
@@ -2384,45 +2421,86 @@ class TimeSeries(BaseTimeSeries):
         return local_hurst(self, window=window, **kwargs)
 
     # Rolling statistics
-    def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_mean(
+        self,
+        window: Any,
+        *,
+        center: bool = False,
+        min_count: int = 1,
+        nan_policy: str = "omit",
+        backend: str = "auto",
+    ) -> Any:
         """Rolling mean over time."""
         from gwexpy.timeseries.rolling import rolling_mean
         return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
 
-    def rolling_std(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ddof=0):
+    def rolling_std(
+        self,
+        window: Any,
+        *,
+        center: bool = False,
+        min_count: int = 1,
+        nan_policy: str = "omit",
+        backend: str = "auto",
+        ddof: int = 0,
+    ) -> Any:
         """Rolling standard deviation over time."""
         from gwexpy.timeseries.rolling import rolling_std
         return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof)
 
-    def rolling_median(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_median(
+        self,
+        window: Any,
+        *,
+        center: bool = False,
+        min_count: int = 1,
+        nan_policy: str = "omit",
+        backend: str = "auto",
+    ) -> Any:
         """Rolling median over time."""
         from gwexpy.timeseries.rolling import rolling_median
         return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
 
-    def rolling_min(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_min(
+        self,
+        window: Any,
+        *,
+        center: bool = False,
+        min_count: int = 1,
+        nan_policy: str = "omit",
+        backend: str = "auto",
+    ) -> Any:
         """Rolling minimum over time."""
         from gwexpy.timeseries.rolling import rolling_min
         return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
 
-    def rolling_max(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_max(
+        self,
+        window: Any,
+        *,
+        center: bool = False,
+        min_count: int = 1,
+        nan_policy: str = "omit",
+        backend: str = "auto",
+    ) -> Any:
         """Rolling maximum over time."""
         from gwexpy.timeseries.rolling import rolling_max
         return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
 
     def transfer_function(
         self,
-        other,
-        fftlength=None,
-        overlap=None,
-        window="hann",
-        average="mean",
+        other: Any,
+        fftlength: Optional[float] = None,
+        overlap: Optional[float] = None,
+        window: Any = "hann",
+        average: str = "mean",
         *,
-        method="gwpy",
-        fft_kwargs=None,
-        downsample=None,
-        align="intersection",
-        **kwargs,
-    ):
+        method: str = "gwpy",
+        fft_kwargs: Optional[dict[str, Any]] = None,
+        downsample: Optional[float] = None,
+        align: str = "intersection",
+        **kwargs: Any,
+    ) -> Any:
         """
         Compute the transfer function between this TimeSeries and another.
 
@@ -2558,13 +2636,13 @@ class TimeSeries(BaseTimeSeries):
 
     def xcorr(
         self,
-        other,
+        other: Any,
         *,
-        maxlag=None,
-        normalize=None,
-        mode="full",
-        demean=True,
-    ):
+        maxlag: Optional[float] = None,
+        normalize: Optional[str] = None,
+        mode: str = "full",
+        demean: bool = True,
+    ) -> "TimeSeries":
         """
         Compute time-domain cross-correlation between two TimeSeries.
         """
@@ -2618,7 +2696,14 @@ class TimeSeries(BaseTimeSeries):
             name=name,
         )
     
-    def append(self, other, inplace=True, pad=None, gap=None, resize=True):
+    def append(
+        self,
+        other: Any,
+        inplace: bool = True,
+        pad: Any = None,
+        gap: Any = None,
+        resize: bool = True,
+    ) -> "TimeSeries":
         """
         Append another TimeSeries (GWpy-compatible), returning gwexpy TimeSeries.
         """
@@ -2637,15 +2722,15 @@ class TimeSeries(BaseTimeSeries):
 
     def find_peaks(
         self,
-        height=None,
-        threshold=None,
-        distance=None,
-        prominence=None,
-        width=None,
-        wlen=None,
-        rel_height=0.5,
-        plateau_size=None,
-    ):
+        height: Any = None,
+        threshold: Any = None,
+        distance: Any = None,
+        prominence: Any = None,
+        width: Any = None,
+        wlen: Optional[int] = None,
+        rel_height: float = 0.5,
+        plateau_size: Any = None,
+    ) -> tuple["TimeSeries", dict[str, Any]]:
         """
         Find peaks in the TimeSeries.
         
@@ -2734,7 +2819,7 @@ class TimeSeries(BaseTimeSeries):
     # Interoperability Methods (P0)
     # ===============================
     
-    def to_pandas(self, index="datetime", *, name=None, copy=False):
+    def to_pandas(self, index: str = "datetime", *, name: Optional[str] = None, copy: bool = False) -> Any:
         """
         Convert TimeSeries to pandas.Series.
         
@@ -2749,14 +2834,21 @@ class TimeSeries(BaseTimeSeries):
         return to_pandas_series(self, index=index, name=name, copy=copy)
         
     @classmethod
-    def from_pandas(cls, series, *, unit=None, t0=None, dt=None):
+    def from_pandas(
+        cls: type["TimeSeries"],
+        series: Any,
+        *,
+        unit: Optional[Any] = None,
+        t0: Any = None,
+        dt: Any = None,
+    ) -> Any:
         """
         Create TimeSeries from pandas.Series.
         """
         from gwexpy.interop import from_pandas_series
         return from_pandas_series(cls, series, unit=unit, t0=t0, dt=dt)
         
-    def to_xarray(self, time_coord="datetime"):
+    def to_xarray(self, time_coord: str = "datetime") -> Any:
         """
         Convert to xarray.DataArray.
         """
@@ -2764,14 +2856,22 @@ class TimeSeries(BaseTimeSeries):
         return to_xarray(self, time_coord=time_coord)
         
     @classmethod
-    def from_xarray(cls, da, *, unit=None):
+    def from_xarray(cls: type["TimeSeries"], da: Any, *, unit: Optional[Any] = None) -> Any:
         """
         Create TimeSeries from xarray.DataArray.
         """
         from gwexpy.interop import from_xarray
         return from_xarray(cls, da, unit=unit)
         
-    def to_hdf5_dataset(self, group, path, *, overwrite=False, compression=None, compression_opts=None):
+    def to_hdf5_dataset(
+        self,
+        group: Any,
+        path: str,
+        *,
+        overwrite: bool = False,
+        compression: Optional[str] = None,
+        compression_opts: Any = None,
+    ) -> None:
         """
         Write to HDF5 group/dataset (interop level).
         """
@@ -2779,14 +2879,14 @@ class TimeSeries(BaseTimeSeries):
         to_hdf5(self, group, path, overwrite=overwrite, compression=compression, compression_opts=compression_opts)
         
     @classmethod
-    def from_hdf5_dataset(cls, group, path):
+    def from_hdf5_dataset(cls: type["TimeSeries"], group: Any, path: str) -> Any:
         """
         Read from HDF5 group/dataset.
         """
         from gwexpy.interop import from_hdf5
         return from_hdf5(cls, group, path)
         
-    def to_obspy_trace(self, *, stats_extra=None, dtype=None):
+    def to_obspy_trace(self, *, stats_extra: Optional[dict[str, Any]] = None, dtype: Any = None) -> Any:
         """
         Convert to obspy.Trace.
         """
@@ -2794,14 +2894,20 @@ class TimeSeries(BaseTimeSeries):
         return to_obspy_trace(self, stats_extra=stats_extra, dtype=dtype)
         
     @classmethod
-    def from_obspy_trace(cls, tr, *, unit=None, name_policy="id"):
+    def from_obspy_trace(
+        cls: type["TimeSeries"],
+        tr: Any,
+        *,
+        unit: Optional[Any] = None,
+        name_policy: str = "id",
+    ) -> Any:
         """
         Create TimeSeries from obspy.Trace.
         """
         from gwexpy.interop import from_obspy_trace
         return from_obspy_trace(cls, tr, unit=unit, name_policy=name_policy)
         
-    def to_sqlite(self, conn, series_id=None, *, overwrite=False):
+    def to_sqlite(self, conn: Any, series_id: Optional[str] = None, *, overwrite: bool = False) -> Any:
         """
         Save to sqlite3 database.
         """
@@ -2809,7 +2915,7 @@ class TimeSeries(BaseTimeSeries):
         return to_sqlite(self, conn, series_id=series_id, overwrite=overwrite)
         
     @classmethod
-    def from_sqlite(cls, conn, series_id):
+    def from_sqlite(cls: type["TimeSeries"], conn: Any, series_id: Any) -> Any:
         """
         Load from sqlite3 database.
         """
@@ -2822,13 +2928,26 @@ class TimeSeries(BaseTimeSeries):
     # P1 Methods (Computational)
     # ===============================
     
-    def to_torch(self, device=None, dtype=None, requires_grad=False, copy=False):
+    def to_torch(
+        self,
+        device: Optional[str] = None,
+        dtype: Any = None,
+        requires_grad: bool = False,
+        copy: bool = False,
+    ) -> Any:
         """Convert to torch.Tensor."""
         from gwexpy.interop import to_torch
         return to_torch(self, device=device, dtype=dtype, requires_grad=requires_grad, copy=copy)
         
     @classmethod
-    def from_torch(cls, tensor, *, t0=None, dt=None, unit=None):
+    def from_torch(
+        cls: type["TimeSeries"],
+        tensor: Any,
+        *,
+        t0: Any = None,
+        dt: Any = None,
+        unit: Optional[Any] = None,
+    ) -> Any:
         """Create from torch.Tensor."""
         from gwexpy.interop import from_torch
         # t0/dt required usually as tensor has no metadata
@@ -2836,74 +2955,110 @@ class TimeSeries(BaseTimeSeries):
             raise ValueError("t0 and dt are required when converting from raw tensor")
         return from_torch(cls, tensor, t0=t0, dt=dt, unit=unit)
         
-    def to_tf(self, dtype=None):
+    def to_tf(self, dtype: Any = None) -> Any:
         """Convert to tensorflow.Tensor."""
         from gwexpy.interop import to_tf
         return to_tf(self, dtype=dtype)
         
     @classmethod
-    def from_tf(cls, tensor, *, t0=None, dt=None, unit=None):
+    def from_tf(
+        cls: type["TimeSeries"],
+        tensor: Any,
+        *,
+        t0: Any = None,
+        dt: Any = None,
+        unit: Optional[Any] = None,
+    ) -> Any:
         """Create from tensorflow.Tensor."""
         from gwexpy.interop import from_tf
         if t0 is None or dt is None:
             raise ValueError("t0 and dt are required")
         return from_tf(cls, tensor, t0=t0, dt=dt, unit=unit)
         
-    def to_dask(self, chunks="auto"):
+    def to_dask(self, chunks: Any = "auto") -> Any:
         """Convert to dask.array."""
         from gwexpy.interop import to_dask
         return to_dask(self, chunks=chunks)
         
     @classmethod
-    def from_dask(cls, array, *, t0=None, dt=None, unit=None, compute=True):
+    def from_dask(
+        cls: type["TimeSeries"],
+        array: Any,
+        *,
+        t0: Any = None,
+        dt: Any = None,
+        unit: Optional[Any] = None,
+        compute: bool = True,
+    ) -> Any:
         """Create from dask.array."""
         from gwexpy.interop import from_dask
         if t0 is None or dt is None:
             raise ValueError("t0 and dt are required")
         return from_dask(cls, array, t0=t0, dt=dt, unit=unit, compute=compute)
         
-    def to_zarr(self, store, path, chunks=None, compressor=None, overwrite=False):
+    def to_zarr(
+        self,
+        store: Any,
+        path: str,
+        chunks: Any = None,
+        compressor: Any = None,
+        overwrite: bool = False,
+    ) -> None:
         """Write to Zarr array."""
         from gwexpy.interop import to_zarr
         to_zarr(self, store, path, chunks=chunks, compressor=compressor, overwrite=overwrite)
         
     @classmethod
-    def from_zarr(cls, store, path):
+    def from_zarr(cls: type["TimeSeries"], store: Any, path: str) -> Any:
         """Read from Zarr array."""
         from gwexpy.interop import from_zarr
         return from_zarr(cls, store, path)
         
-    def to_netcdf4(self, ds, var_name, **kwargs):
+    def to_netcdf4(self, ds: Any, var_name: str, **kwargs: Any) -> None:
         """Write to netCDF4 Dataset."""
         from gwexpy.interop import to_netcdf4
         to_netcdf4(self, ds, var_name, **kwargs)
         
     @classmethod
-    def from_netcdf4(cls, ds, var_name):
+    def from_netcdf4(cls: type["TimeSeries"], ds: Any, var_name: str) -> Any:
         """Read from netCDF4 Dataset."""
         from gwexpy.interop import from_netcdf4
         return from_netcdf4(cls, ds, var_name)
         
-    def to_jax(self, dtype=None):
+    def to_jax(self, dtype: Any = None) -> Any:
         """Convert to jax.numpy.array."""
         from gwexpy.interop import to_jax
         return to_jax(self, dtype=dtype)
         
     @classmethod
-    def from_jax(cls, array, *, t0=None, dt=None, unit=None):
+    def from_jax(
+        cls: type["TimeSeries"],
+        array: Any,
+        *,
+        t0: Any = None,
+        dt: Any = None,
+        unit: Optional[Any] = None,
+    ) -> Any:
         """Create from jax array."""
         from gwexpy.interop import from_jax
         if t0 is None or dt is None:
             raise ValueError("t0 and dt are required")
         return from_jax(cls, array, t0=t0, dt=dt, unit=unit)
     
-    def to_cupy(self, dtype=None):
+    def to_cupy(self, dtype: Any = None) -> Any:
         """Convert to cupy.array."""
         from gwexpy.interop import to_cupy
         return to_cupy(self, dtype=dtype)
         
     @classmethod
-    def from_cupy(cls, array, *, t0=None, dt=None, unit=None):
+    def from_cupy(
+        cls: type["TimeSeries"],
+        array: Any,
+        *,
+        t0: Any = None,
+        dt: Any = None,
+        unit: Optional[Any] = None,
+    ) -> Any:
         """Create from cupy array."""
         from gwexpy.interop import from_cupy
         if t0 is None or dt is None:
@@ -2914,40 +3069,43 @@ class TimeSeries(BaseTimeSeries):
     # P2 Methods (Domain Specific)
     # ===============================
     
-    def to_librosa(self, y_dtype=np.float32):
+    def to_librosa(self, y_dtype: Any = np.float32) -> Any:
         """Export to librosa-compatible numpy array."""
         from gwexpy.interop import to_librosa
         return to_librosa(self, y_dtype=y_dtype)
         
-    def to_pydub(self, sample_width=2, channels=1):
+    def to_pydub(self, sample_width: int = 2, channels: int = 1) -> Any:
         """Export to pydub.AudioSegment."""
         from gwexpy.interop import to_pydub
         return to_pydub(self, sample_width=sample_width, channels=channels)
         
     @classmethod
-    def from_pydub(cls, seg, *, unit=None):
+    def from_pydub(cls: type["TimeSeries"], seg: Any, *, unit: Optional[Any] = None) -> Any:
         """Create from pydub.AudioSegment."""
         from gwexpy.interop import from_pydub
         return from_pydub(cls, seg, unit=unit)
         
-    def to_astropy_timeseries(self, column="value", time_format="gps"):
+    def to_astropy_timeseries(self, column: str = "value", time_format: str = "gps") -> Any:
         """Convert to astropy.timeseries.TimeSeries."""
         from gwexpy.interop import to_astropy_timeseries
         return to_astropy_timeseries(self, column=column, time_format=time_format)
         
     @classmethod
-    def from_astropy_timeseries(cls, ap_ts, column="value", unit=None):
+    def from_astropy_timeseries(
+        cls: type["TimeSeries"],
+        ap_ts: Any,
+        column: str = "value",
+        unit: Optional[Any] = None,
+    ) -> Any:
         """Create from astropy.timeseries.TimeSeries."""
         from gwexpy.interop import from_astropy_timeseries
         return from_astropy_timeseries(cls, ap_ts, column=column, unit=unit)
 
-    def to_mne_rawarray(self, info=None):
+    def to_mne_rawarray(self, info: Any = None) -> Any:
         """Convert to ``mne.io.RawArray`` (single-channel)."""
         from gwexpy.interop import to_mne_rawarray
         return to_mne_rawarray(self, info=info)
 
-    def to_mne_raw(self, info=None):
+    def to_mne_raw(self, info: Any = None) -> Any:
         """Alias for :meth:`to_mne_rawarray`."""
         return self.to_mne_rawarray(info=info)
-
-

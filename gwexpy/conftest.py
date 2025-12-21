@@ -91,9 +91,22 @@ def _datafind_network_fallback(monkeypatch):
     original = _gwpy_ts.TimeSeriesDict.find.__func__
 
     def _wrapped(cls, *args, **kwargs):
+        network_exceptions = [OSError, TimeoutError, socket.gaierror]
+        try:
+            import requests
+        except ImportError:
+            requests = None
+        try:
+            import urllib3
+        except ImportError:
+            urllib3 = None
+        if requests is not None:
+            network_exceptions.append(requests.exceptions.RequestException)
+        if urllib3 is not None:
+            network_exceptions.append(urllib3.exceptions.HTTPError)
         try:
             return original(cls, *args, **kwargs)
-        except Exception as exc:
+        except tuple(network_exceptions) as exc:
             if _is_network_error(exc) and kwargs.get("observatory") is None:
                 raise RuntimeError("datafind network unavailable") from exc
             raise

@@ -59,7 +59,7 @@ def _read_obspy_stream(format_name, source, *, pad=np.nan, gap="pad", **kwargs):
     obspy = _import_obspy()
     try:
         stream = obspy.read(source, format=format_name, **kwargs)
-    except Exception as exc:
+    except (OSError, TypeError, ValueError) as exc:
         # Fallback: try reading without format specifier if specifically WIN/KNET fails obscurely
         # but usually we want to respect the format_name.
         raise ValueError(f"Failed to read {format_name} file: {exc}") from exc
@@ -201,4 +201,3 @@ for fmt in ["win", "win32"]:
     io_registry.register_reader(fmt, TimeSeriesDict, read_win_timeseriesdict)
     io_registry.register_reader(fmt, TimeSeries, lambda *a, **k: _adapt_timeseries(read_win_timeseriesdict, *a, **k))
     io_registry.register_reader(fmt, TimeSeriesMatrix, lambda *a, **k: _adapt_matrix(read_win_timeseriesdict, *a, **k))
-

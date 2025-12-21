@@ -1,6 +1,6 @@
 import contextlib
 import datetime as _dt
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from typing import Any, Optional, Union, Dict, Iterable
 
 import numpy as np
@@ -21,7 +21,7 @@ def parse_timezone(tz: Any) -> _dt.tzinfo:
     if isinstance(tz, (int, float)):
         return _dt.timezone(_dt.timedelta(hours=float(tz)))
     if isinstance(tz, str):
-        with contextlib.suppress(Exception):
+        with contextlib.suppress(ZoneInfoNotFoundError):
             return ZoneInfo(tz)
         # parse \"+09:00\" or \"-0800\"
         cleaned = tz.strip()
@@ -40,7 +40,7 @@ def parse_timezone(tz: Any) -> _dt.tzinfo:
         try:
             delta = _dt.timedelta(hours=sign * int(hours), minutes=sign * int(minutes))
             return _dt.timezone(delta)
-        except Exception as exc:  # pragma: no cover - defensive
+        except (ValueError, TypeError, OverflowError) as exc:  # pragma: no cover - defensive
             raise ValueError(f"Could not parse timezone {tz!r}") from exc
     raise ValueError(f"Unsupported timezone specifier: {tz!r}")
 

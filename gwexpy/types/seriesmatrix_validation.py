@@ -275,7 +275,7 @@ def _normalize_input(
                     tgt = data.unit
                 try:
                     val = data.to_value(tgt)
-                except Exception as e:
+                except (u.UnitConversionError, TypeError, ValueError) as e:
                     raise u.UnitConversionError(f"Unit conversion failed for scalar Quantity: {e}")
                 arr[i, j, :] = val
         name_arr = _broadcast_attr(names, shape[:2], "names") if names is not None else np.full(shape[:2], None)
@@ -293,7 +293,7 @@ def _normalize_input(
             tgt = unit_arr[0, 0]
             try:
                 arr[0, 0] = u.Quantity(arr[0, 0], data.unit).to_value(tgt)
-            except Exception as e:
+            except (u.UnitConversionError, TypeError, ValueError) as e:
                 raise u.UnitConversionError(f"Unit conversion failed for Series input: {e}")
         return arr, {"unit": unit_arr, "name": name_arr, "channel": channel_arr}, data.xindex
 
@@ -306,7 +306,7 @@ def _normalize_input(
             tgt = unit_arr[0, 0]
             try:
                 arr[0, 0] = u.Quantity(arr[0, 0], data.unit).to_value(tgt)
-            except Exception as e:
+            except (u.UnitConversionError, TypeError, ValueError) as e:
                 raise u.UnitConversionError(f"Unit conversion failed for Array input: {e}")
         return arr, {"unit": unit_arr, "name": name_arr, "channel": channel_arr}, None
 
@@ -333,7 +333,7 @@ def _normalize_input(
                     tgt = unit_arr[i, j]
                     try:
                         arr[i, j] = u.Quantity(arr[i, j], base_unit).to_value(tgt)
-                    except Exception as e:
+                    except (u.UnitConversionError, TypeError, ValueError) as e:
                         raise u.UnitConversionError(f"Unit conversion failed at ({i},{j}): {e}")
         return arr, {"unit": unit_arr, "name": name_arr, "channel": channel_arr}, None
 
@@ -353,7 +353,7 @@ def _normalize_input(
                     tgt = unit_arr[i, j]
                     try:
                         out[i, j] = u.Quantity(arr[i, j], _unit).to_value(tgt)
-                    except Exception as e:
+                    except (u.UnitConversionError, TypeError, ValueError) as e:
                         raise u.UnitConversionError(f"Unit conversion failed at ({i},{j}): {e}")
             arr = out
         return arr, {"unit": unit_arr, "name": name_arr, "channel": channel_arr}, None
@@ -422,7 +422,7 @@ def _normalize_input(
                     if explicit_unit[i, j]:
                         try:
                             arr[i, j] = u.Quantity(arr[i, j], unit_arr[i, j]).to_value(tgt)
-                        except Exception as e:
+                        except (u.UnitConversionError, TypeError, ValueError) as e:
                             raise u.UnitConversionError(f"Unit conversion failed at ({i},{j}): {e}")
             unit_arr = target_units
 
@@ -530,7 +530,7 @@ def _normalize_input(
                     if explicit_unit[i, j]:
                         try:
                             arr[i, j] = u.Quantity(arr[i, j], unit_arr[i, j]).to_value(tgt)
-                        except Exception as e:
+                        except (u.UnitConversionError, TypeError, ValueError) as e:
                             raise u.UnitConversionError(f"Unit conversion failed at ({i},{j}): {e}")
             unit_arr = target_units
 

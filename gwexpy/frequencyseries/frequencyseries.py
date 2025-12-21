@@ -42,7 +42,7 @@ class FrequencySeries(BaseFrequencySeries):
 
     # --- Phase and Angle ---
 
-    def phase(self, unwrap=False):
+    def phase(self, unwrap: bool = False) -> "FrequencySeries":
         """
         Calculate the phase of this FrequencySeries.
         
@@ -72,11 +72,11 @@ class FrequencySeries(BaseFrequencySeries):
             epoch=self.epoch
         )
 
-    def angle(self, unwrap=False):
+    def angle(self, unwrap: bool = False) -> "FrequencySeries":
         """Alias for `phase(unwrap=unwrap)`."""
         return self.phase(unwrap=unwrap)
     
-    def degree(self, unwrap=False):
+    def degree(self, unwrap: bool = False) -> "FrequencySeries":
         """
         Calculate the phase of this FrequencySeries in degrees.
         
@@ -106,7 +106,7 @@ class FrequencySeries(BaseFrequencySeries):
 
     # --- dB / Logarithmic ---
 
-    def to_db(self, ref=1.0, amplitude=True):
+    def to_db(self, ref: Any = 1.0, amplitude: bool = True) -> "FrequencySeries":
         """
         Convert this series to decibels.
         
@@ -150,21 +150,29 @@ class FrequencySeries(BaseFrequencySeries):
         )
 
     # --- Interop helpers ---
-    def to_pandas(self, index="frequency", *, name=None, copy=False):
+    def to_pandas(self, index: str = "frequency", *, name: Optional[str] = None, copy: bool = False) -> Any:
         return to_pandas_frequencyseries(self, index=index, name=name, copy=copy)
 
     @classmethod
-    def from_pandas(cls, series, **kwargs):
+    def from_pandas(cls: type["FrequencySeries"], series: Any, **kwargs: Any) -> Any:
         return from_pandas_frequencyseries(cls, series, **kwargs)
 
-    def to_xarray(self, freq_coord="Hz"):
+    def to_xarray(self, freq_coord: str = "Hz") -> Any:
         return to_xarray_frequencyseries(self, freq_coord=freq_coord)
 
     @classmethod
-    def from_xarray(cls, da, **kwargs):
+    def from_xarray(cls: type["FrequencySeries"], da: Any, **kwargs: Any) -> Any:
         return from_xarray_frequencyseries(cls, da, **kwargs)
 
-    def to_hdf5_dataset(self, group, path, *, overwrite=False, compression=None, compression_opts=None):
+    def to_hdf5_dataset(
+        self,
+        group: Any,
+        path: str,
+        *,
+        overwrite: bool = False,
+        compression: Optional[str] = None,
+        compression_opts: Any = None,
+    ) -> Any:
         return to_hdf5_frequencyseries(
             self,
             group,
@@ -175,12 +183,21 @@ class FrequencySeries(BaseFrequencySeries):
         )
 
     @classmethod
-    def from_hdf5_dataset(cls, group, path):
+    def from_hdf5_dataset(cls: type["FrequencySeries"], group: Any, path: str) -> Any:
         return from_hdf5_frequencyseries(cls, group, path)
 
     # --- Time Calculus ---
 
-    def ifft(self, *, mode="auto", trim=True, original_n=None, pad_left=None, pad_right=None, **kwargs):
+    def ifft(
+        self,
+        *,
+        mode: str = "auto",
+        trim: bool = True,
+        original_n: Optional[int] = None,
+        pad_left: Optional[int] = None,
+        pad_right: Optional[int] = None,
+        **kwargs: Any,
+    ) -> Any:
         """
         Inverse FFT returning a gwexpy TimeSeries, supporting transient round-trip.
 
@@ -254,7 +271,7 @@ class FrequencySeries(BaseFrequencySeries):
             channel=self.channel,
         )
 
-    def idct(self, type=2, norm="ortho", *, n=None):
+    def idct(self, type: int = 2, norm: str = "ortho", *, n: Optional[int] = None) -> Any:
         """
         Compute the Inverse Discrete Cosine Transform (IDCT).
         
@@ -317,7 +334,7 @@ class FrequencySeries(BaseFrequencySeries):
             channel=self.channel 
         )
 
-    def differentiate_time(self):
+    def differentiate_time(self) -> Any:
         """
         Apply time differentiation in frequency domain.
         
@@ -350,7 +367,7 @@ class FrequencySeries(BaseFrequencySeries):
             epoch=self.epoch
         )
 
-    def integrate_time(self):
+    def integrate_time(self) -> Any:
         """
         Apply time integration in frequency domain.
         
@@ -392,7 +409,7 @@ class FrequencySeries(BaseFrequencySeries):
 
     # --- Analysis & Smoothing ---
 
-    def smooth(self, width, method='amplitude'):
+    def smooth(self, width: Any, method: str = "amplitude") -> Any:
         """
         Smooth the frequency series.
         
@@ -465,7 +482,7 @@ class FrequencySeries(BaseFrequencySeries):
             epoch=self.epoch
         )
 
-    def find_peaks(self, threshold=None, method='amplitude', **kwargs):
+    def find_peaks(self, threshold: Optional[float] = None, method: str = "amplitude", **kwargs: Any) -> Any:
         """
         Find peaks in the series.
         
@@ -509,7 +526,7 @@ class FrequencySeries(BaseFrequencySeries):
              
         return scipy.signal.find_peaks(target, **kwargs)
 
-    def quadrature_sum(self, other):
+    def quadrature_sum(self, other: Any) -> Any:
         """
         Compute sqrt(self^2 + other^2) assuming checking independence.
         
@@ -540,7 +557,7 @@ class FrequencySeries(BaseFrequencySeries):
             epoch=self.epoch
         )
 
-    def group_delay(self):
+    def group_delay(self) -> Any:
         """
         Calculate the group delay of the series.
 
@@ -572,20 +589,26 @@ class FrequencySeries(BaseFrequencySeries):
             epoch=self.epoch
         )
         
-    def to_control_frd(self, frequency_unit="Hz"):
+    def to_control_frd(self, frequency_unit: str = "Hz") -> Any:
         """Convert to control.FRD."""
         from gwexpy.interop import to_control_frd
         return to_control_frd(self, frequency_unit=frequency_unit)
         
     @classmethod
-    def from_control_frd(cls, frd, *, frequency_unit="Hz"):
+    def from_control_frd(cls: type["FrequencySeries"], frd: Any, *, frequency_unit: str = "Hz") -> Any:
         """Create from control.FRD."""
         from gwexpy.interop import from_control_frd
         return from_control_frd(cls, frd, frequency_unit=frequency_unit)
 
     # --- ML Framework Interop ---
 
-    def to_torch(self, device=None, dtype=None, requires_grad=False, copy=False):
+    def to_torch(
+        self,
+        device: Optional[str] = None,
+        dtype: Any = None,
+        requires_grad: bool = False,
+        copy: bool = False,
+    ) -> Any:
         """
         Convert to torch.Tensor.
         
@@ -608,7 +631,7 @@ class FrequencySeries(BaseFrequencySeries):
         return to_torch(self, device=device, dtype=dtype, requires_grad=requires_grad, copy=copy)
 
     @classmethod
-    def from_torch(cls, tensor, frequencies, unit=None):
+    def from_torch(cls: type["FrequencySeries"], tensor: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
         """
         Create FrequencySeries from torch.Tensor.
         
@@ -634,7 +657,7 @@ class FrequencySeries(BaseFrequencySeries):
         data = tensor.detach().cpu().resolve_conj().resolve_neg().numpy()
         return cls(data, frequencies=frequencies, unit=unit)
 
-    def to_tf(self, dtype=None):
+    def to_tf(self, dtype: Any = None) -> Any:
         """
         Convert to tensorflow.Tensor.
         
@@ -646,12 +669,12 @@ class FrequencySeries(BaseFrequencySeries):
         return to_tf(self, dtype=dtype)
         
     @classmethod
-    def from_tf(cls, tensor, frequencies, unit=None):
+    def from_tf(cls: type["FrequencySeries"], tensor: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
         """Create FrequencySeries from tensorflow.Tensor."""
         data = tensor.numpy()
         return cls(data, frequencies=frequencies, unit=unit)
 
-    def to_jax(self, dtype=None):
+    def to_jax(self, dtype: Any = None) -> Any:
         """
         Convert to JAX array.
         
@@ -663,13 +686,13 @@ class FrequencySeries(BaseFrequencySeries):
         return to_jax(self, dtype=dtype)
         
     @classmethod
-    def from_jax(cls, array, frequencies, unit=None):
+    def from_jax(cls: type["FrequencySeries"], array: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
         """Create FrequencySeries from JAX array."""
         import numpy as np
         data = np.array(array)
         return cls(data, frequencies=frequencies, unit=unit)
         
-    def to_cupy(self, dtype=None):
+    def to_cupy(self, dtype: Any = None) -> Any:
         """
         Convert to CuPy array.
         
@@ -681,7 +704,7 @@ class FrequencySeries(BaseFrequencySeries):
         return to_cupy(self, dtype=dtype)
         
     @classmethod
-    def from_cupy(cls, array, frequencies, unit=None):
+    def from_cupy(cls: type["FrequencySeries"], array: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
         """Create FrequencySeries from CuPy array."""
         from gwexpy.interop.cupy_ import require_optional
         cp = require_optional("cupy")
@@ -690,7 +713,7 @@ class FrequencySeries(BaseFrequencySeries):
 
     # --- Domain Specific Interop ---
 
-    def to_mne_spectrum(self):
+    def to_mne_spectrum(self) -> Any:
         """
         Convert to MNE Spectrum object.
         
@@ -706,7 +729,7 @@ class FrequencySeries(BaseFrequencySeries):
             "Direct creation from frequency domain data is not fully supported."
         )
 
-    def to_obspy_spectrum(self):
+    def to_obspy_spectrum(self) -> Any:
         """
         Convert to ObsPy spectrum representation.
         
@@ -733,7 +756,7 @@ def as_series_dict_class(seriesclass):
     `FrequencySeries.DictClass` to point to the matching dict container.
     """
 
-    def decorate_class(cls):
+    def decorate_class(cls: type["FrequencySeries"]) -> type["FrequencySeries"]:
         seriesclass.DictClass = cls
         return cls
 

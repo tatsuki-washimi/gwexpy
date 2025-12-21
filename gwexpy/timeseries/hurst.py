@@ -3,6 +3,7 @@ import numpy as np
 import warnings
 from dataclasses import dataclass
 from typing import Optional, Any, Union, Dict
+from astropy import units as u
 
 try:
     from typing import TYPE_CHECKING
@@ -214,31 +215,40 @@ def local_hurst(
     
     x = timeseries.value
     N = len(x)
-    dt = timeseries.dt.value
-    u_time = timeseries.times.unit
+    dt = timeseries.dt
+    u_time = getattr(timeseries.times, "unit", None) or u.dimensionless_unscaled
+    if isinstance(dt, u.Quantity) and hasattr(u_time, "physical_type") and u_time.physical_type == "time" and dt.unit.is_equivalent(u_time):
+        dt_val = dt.to_value(u_time)
+    else:
+        dt_val = dt.value if isinstance(dt, u.Quantity) else float(dt)
     
     # window can be samples (int) or quantity
-    if isinstance(window, (u.Quantity, float)): # float assumed seconds if notQuantity?
-         # Check if float > 1 and int-like? 
-         # User says "seconds or samples". Ambiguous if float.
-         # Assume if int -> samples, if float -> seconds?
-         # Or if float -> seconds. 
-         # Best check:
-         if isinstance(window, int):
-             w_samples = window
-         else:
-             # Assume time
-             w_samples = int(np.round(window / dt))
+    if isinstance(window, u.Quantity):
+        w_samples = int(np.round((window / (dt if isinstance(dt, u.Quantity) else dt_val * u.s)).decompose().value))
+    elif isinstance(window, (int, np.integer)):
+        w_samples = int(window)
+    elif isinstance(window, (float, np.floating)):
+        if isinstance(dt, u.Quantity) and dt.unit.physical_type == "time":
+            w_samples = int(np.round(((window * u.s) / dt).decompose().value))
+        else:
+            w_samples = int(np.round(window))
     else:
          w_samples = int(window) # fallback
          
     if step is None:
         step_samples = w_samples // 2
     else:
-        if isinstance(step, int):
-            step_samples = step
+        if isinstance(step, u.Quantity):
+            step_samples = int(np.round((step / (dt if isinstance(dt, u.Quantity) else dt_val * u.s)).decompose().value))
+        elif isinstance(step, (int, np.integer)):
+            step_samples = int(step)
+        elif isinstance(step, (float, np.floating)):
+            if isinstance(dt, u.Quantity) and dt.unit.physical_type == "time":
+                step_samples = int(np.round(((step * u.s) / dt).decompose().value))
+            else:
+                step_samples = int(np.round(step))
         else:
-            step_samples = int(np.round(step / dt))
+            step_samples = int(step)
             
     if step_samples < 1: step_samples = 1
     
@@ -270,12 +280,13 @@ def local_hurst(
         segment_val = x_full[s:e]
         
         # Determine time
+        t0_val = float(timeseries.t0.value if hasattr(timeseries.t0, "value") else timeseries.t0)
         if center:
             # mid point index
             mid = s + w_samples / 2.0
-            t_vals[i] = timeseries.t0.value + mid * dt
+            t_vals[i] = t0_val + mid * dt_val
         else:
-            t_vals[i] = timeseries.t0.value + s * dt
+            t_vals[i] = t0_val + s * dt_val
             
         # Check NaNs in segment
         if np.any(np.isnan(segment_val)):
@@ -312,4 +323,3 @@ def local_hurst(
         # But we computed times. Use `times` arg.
         unit=u.dimensionless_unscaled
     )
-
