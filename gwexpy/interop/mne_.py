@@ -118,7 +118,7 @@ def to_mne_rawarray(tsd, info=None, picks=None):
             if data.shape[0] != len(ch_names):
                 raise ValueError("Unexpected channel dimension after alignment")
             ch_names = list(getattr(mat, "channel_names", ch_names))
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError, IndexError, KeyError) as e:
             raise ValueError(
                 "Channels have mismatched lengths and could not be aligned via to_matrix()"
             ) from e

@@ -242,7 +242,7 @@ class SeriesMatrixOps:
                 u_ij = self.meta[i, j].unit
                 try:
                     vals = u.Quantity(self._value[i, j], u_ij).to_value(ref_unit)
-                except Exception as e:
+                except (u.UnitConversionError, TypeError, ValueError) as e:
                     raise type(e)(f"Unit conversion failed at ({i},{j}): {e}")
                 result[i, j] = vals
         return result

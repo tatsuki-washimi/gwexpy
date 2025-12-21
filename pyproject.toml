@@ -47,6 +47,9 @@ all = [
 where = ["."]
 include = ["gwexpy*"]
 
+[tool.setuptools.package-data]
+gwexpy = ["py.typed"]
+
 [tool.pytest.ini_options]
 addopts = ["-ra"]
 pythonpath = ["."]
@@ -56,3 +59,22 @@ markers = [
     "requires: Conditional dependency checks",
     "remote: Requires network access",
 ]
+
+[tool.mypy]
+python_version = "3.9"
+ignore_missing_imports = true
+show_error_codes = true
+warn_unused_ignores = true
+
+[tool.coverage.run]
+branch = true
+source = ["gwexpy"]
+omit = [
+    "gwexpy/**/tests/*",
+    "tests/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 70

@@ -21,23 +21,23 @@ from .seriesmatrix_ops import SeriesMatrixOps
 
 class SeriesMatrix(SeriesMatrixOps, np.ndarray):
     def __new__(cls, 
-                data=None,
+                data: Any = None,
                 *,
                 meta: Optional[Union["MetaDataMatrix", np.ndarray, list]] = None,
                 unit: Optional[object] = None,
                 units: Optional[np.ndarray] = None,
                 names: Optional[np.ndarray] = None,
                 channels: Optional[np.ndarray] = None,
-                rows=None,
-                cols=None,
-                shape=None,
-                xindex=None,
-                dx=None,
-                x0=None,
-                xunit=None,
-                name="",
-                epoch=0.0,
-                attrs=None):
+                rows: Any = None,
+                cols: Any = None,
+                shape: Any = None,
+                xindex: Any = None,
+                dx: Any = None,
+                x0: Any = None,
+                xunit: Any = None,
+                name: str = "",
+                epoch: float = 0.0,
+                attrs: Optional[dict[str, Any]] = None) -> "SeriesMatrix":
         """
         Create a SeriesMatrix with normalized inputs and metadata.
         """
@@ -63,7 +63,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
             if not isinstance(meta, MetaDataMatrix):
                 try:
                     meta = MetaDataMatrix(meta)
-                except Exception as e:
+                except (TypeError, ValueError) as e:
                     raise TypeError(
                         "meta must be a MetaDataMatrix or a 2D array-like of MetaData/dict"
                     ) from e
@@ -133,7 +133,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
 
         return obj
 
-    def __array_finalize__(self, obj):
+    def __array_finalize__(self, obj: Any) -> None:
         if obj is None: 
             return
         self._value = self.view(np.ndarray)
@@ -148,7 +148,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
         self.epoch  = getattr(obj, 'epoch', 0.0)
         self.attrs  = getattr(obj, 'attrs', getattr(self, "attrs", {}))
 
-    def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
+    def __array_ufunc__(self, ufunc: Any, method: str, *inputs: Any, **kwargs: Any) -> Any:
         if method != '__call__':
             base_inputs = [inp.view(np.ndarray) if isinstance(inp, SeriesMatrix) else inp for inp in inputs]
             try:
@@ -279,14 +279,14 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
                 meta_args = [m[i, j] for m in meta_matrices]
                 try:
                     result_values[i, j] = ufunc(*val_args, **ufunc_kwargs)
-                except Exception as e:
+                except (TypeError, ValueError, AttributeError, IndexError, KeyError) as e:
                     raise type(e)(f"Error at cell ({i},{j}): {e}")
                 try:
                     if bool_result or ufunc in meta_passthrough_ufuncs or ufunc.__name__ == "clip":
                         result_meta[i, j] = meta_args[0]
                     else:
                         result_meta[i, j] = ufunc(*meta_args, **ufunc_kwargs)
-                except Exception as e:
+                except (TypeError, ValueError, AttributeError, IndexError, KeyError) as e:
                     raise type(e)(f"MetaData ufunc error at ({i},{j}): {e}")
     
         result_meta_matrix = MetaDataMatrix(result_meta)
@@ -305,11 +305,11 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
 
     ##### xindex Information #####
     @property
-    def xindex(self):
+    def xindex(self) -> Any:
         return getattr(self, "_xindex", None)
 
     @xindex.setter
-    def xindex(self, value):
+    def xindex(self, value: Any) -> None:
         if value is None:
             self._xindex = None
         else:
@@ -332,7 +332,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
                 delattr(self, attr)
 
     @property
-    def x0(self):
+    def x0(self) -> Any:
         try:
             return self._x0
         except AttributeError:
@@ -343,7 +343,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
             return self._x0
         
     @property
-    def dx(self):
+    def dx(self) -> Any:
         try:
             return self._dx
         except AttributeError:
@@ -359,7 +359,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
             return self._dx
 
     @property
-    def xspan(self):
+    def xspan(self) -> Any:
         xindex = self.xindex
         try:
             if hasattr(xindex, "regular") and xindex.regular:
@@ -372,7 +372,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
             return (xindex[0], xindex[-1])
     
     @property
-    def xunit(self):
+    def xunit(self) -> Any:
         try:
             return self._dx.unit
         except AttributeError:
@@ -382,18 +382,18 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
                 return u.dimensionless_unscaled
     
     @property
-    def N_samples(self):
+    def N_samples(self) -> int:
         return len(self.xindex) if self.xindex is not None else 0
 
     @property
-    def xarray(self):
+    def xarray(self) -> np.ndarray:
         """
         Return the sample axis values.
         """
         return self.xindex
 
     @property
-    def duration(self):
+    def duration(self) -> Any:
         """
         Duration covered by the samples.
         """
@@ -404,7 +404,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
                 return 0
         return self.xindex[-1] - self.xindex[0]
 
-    def is_compatible(self, other):
+    def is_compatible(self, other: Any) -> bool:
         """
         Compatibility check.
         """
@@ -446,43 +446,43 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
         return True
 
     ##### rows/cols Information #####
-    def row_keys(self):
+    def row_keys(self) -> list[Any]:
         return tuple(self.rows.keys())
 
-    def col_keys(self):
+    def col_keys(self) -> list[Any]:
         return tuple(self.cols.keys())
         
-    def keys(self):
+    def keys(self) -> list[tuple[Any, Any]]:
         return (self.row_keys(), self.col_keys())
 
-    def row_index(self, key):
+    def row_index(self, key: Any) -> int:
         try:
             return list(self.row_keys()).index(key)
         except ValueError:
             raise KeyError(f"Invalid row key: {key}")
 
-    def col_index(self, key):
+    def col_index(self, key: Any) -> int:
         try:
             return list(self.col_keys()).index(key)
         except ValueError:
             raise KeyError(f"Invalid column key: {key}")
 
-    def get_index(self, key_row, key_col):
+    def get_index(self, key_row: Any, key_col: Any) -> tuple[int, int]:
         return self.row_index(key_row), self.col_index(key_col)
 
     ##### Elements Metadata #####    
     @property
-    def MetaDataMatrix(self):
+    def MetaDataMatrix(self) -> "MetaDataMatrix":
         return self.meta
         
     @property
-    def units(self):
+    def units(self) -> np.ndarray:
         return self.meta.units
     
     @property
-    def names(self):
+    def names(self) -> np.ndarray:
         return self.meta.names
 
     @property
-    def channels(self):
+    def channels(self) -> np.ndarray:
         return self.meta.channels
