@@ -1,6 +1,6 @@
 # gwexpy: GWpy Expansions for Experiments
 
-**gwexpy** is an (unofficial) extension library for **GWpy**, designed to facilitate advanced time-series analysis, matrix operations, and signal processing for experimental physics and gravitational wave data analysis. It builds upon GWpy's core data objects (`TimeSeries`, `FrequencySeries`) and introduces high-level containers and methods for multivariate analysis and interoperability with the broader Python scientific ecosystem.
+**gwexpy** is an (unofficial) extension library for **GWpy**, designed to facilitate advanced time-series analysis, matrix operations, and signal processing for experimental physics and gravitational wave data analysis. It builds upon GWpy's core data objects (`TimeSeries`, `FrequencySeries`) and introduces high-level containers and methods for multivariate analysis, vectorized time conversion, auto Series creation, and interoperability with the broader Python scientific ecosystem.
 
 ## Key Features
 
@@ -8,6 +8,7 @@
 - **`TimeSeriesMatrix`**: A 3D container `(channels, 1, time)` for handling multi-channel time-series data with shared time axes. Supports element-wise operations, slicing, PCA/ICA decomposition, and bulk processing.
 - **`FrequencySeriesMatrix`**: A matrix container for frequency-domain data, ideal for representing Transfer Functions, CSD, and Coherence matrices.
 - **`TimePlaneTransform`**: A container for 2D time-frequency representations (like STLT output), supporting interpolation along the time axis.
+- **Auto-expanding `SeriesMatrix`**: Assigning to new `(row_key, col_key)` adds rows/cols automatically (e.g. `mat["H1", "Strain"] = ts`).
 
 ### 2. Spectral Analysis Extensions
 - **Spectral Matrices**: Easily compute Cross-Spectral Density (CSD) and Coherence matrices for entire collections.
@@ -33,6 +34,10 @@
 - **ARIMA**: Forecasting and residual analysis.
 - **Hurst Exponent**: Global and local Hurst exponent estimation.
 
+### 6. Time Utilities & Auto Series
+- **Vectorized time conversion**: `gwexpy.time.to_gps/from_gps/tconvert` handle numpy arrays, pandas, ObsPy, and string arrays.
+- **Axis → Series helper**: `as_series` converts a 1D axis (`gwpy.types.index.Index` or `astropy.units.Quantity`) into a `TimeSeries` or `FrequencySeries` (identity mapping). Angular frequency inputs (`rad/s`) are treated as frequency axes and converted to Hz for the x-axis.
+
 ---
 
 ## Installation
@@ -56,11 +61,28 @@ pip install ".[audio]"       # Librosa, Pydub, Torchaudio
 
 ## Usage Examples
 
-### 1. Interoperability (Deep Learning & Big Data)
+### 1. Time Conversion & Auto Series
+```python
+import numpy as np
+from astropy import units as u
+import pandas as pd
+from gwexpy import as_series
+from gwexpy.time import to_gps, from_gps
+
+times = pd.to_datetime(["2025-01-01 00:00:00", "2025-01-01 00:00:01"])
+gps = to_gps(times)  # vectorized -> numpy array
+iso = from_gps(gps)  # back to time strings
+
+# Convert axes to Series (values are the axis values, optionally converted)
+ts = as_series((1419724818 + np.arange(10)) * u.s, unit="h")  # TimeSeries (values in hours)
+fs = as_series(np.arange(5) * u.Hz, unit="mHz")  # FrequencySeries (values in mHz)
+```
+
+### 2. Interoperability (Deep Learning & Big Data)
 gwexpy provides seamless conversion to/from major data science frameworks:
 
 ```python
-from gwexpy.interop import to_torch, to_tf, to_jax, to_dask, to_zarr
+from gwexpy.interop import to_torch, to_tf, to_jax, to_cupy, to_dask, to_zarr
 ts = ... # TimeSeries
 
 # Deep Learning Frameworks
@@ -70,8 +92,8 @@ tensor_jax = to_jax(ts)       # JAX Array
 tensor_cupy = to_cupy(ts)     # CuPy Array
 
 # Big Data & Storage
-dask_arr = to_dask(ts, chunksize=1000) # Dask Array
-zarr_arr = to_zarr(ts, path="data.zarr") # Save to Zarr
+dask_arr = to_dask(ts, chunks=1000)  # Dask Array
+to_zarr(ts, store="data.zarr", path="my_array", overwrite=True)  # Save to Zarr
 
 # Audio & Other Domains
 # Supports: Librosa (standard numpy), Pydub (AudioSegment), ObsPy (Trace), MNE, Neo
@@ -80,7 +102,7 @@ audio_seg = to_pydub(ts)
 trace = to_obspy_trace(ts)
 ```
 
-### 2. TimeSeriesMatrix & Decomposition
+### 3. TimeSeriesMatrix & Decomposition
 ```python
 import numpy as np
 from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
@@ -98,7 +120,7 @@ scores, model = mat_clean.pca(n_components=2, return_model=True)
 sources = mat_clean.ica(n_components=2)
 ```
 
-### 3. Peak Finding
+### 4. Peak Finding
 ```python
 # Find peaks with physical unit constraints
 peaks, props = s2.find_peaks(
@@ -109,7 +131,7 @@ peaks, props = s2.find_peaks(
 peaks.plot(style='o')
 ```
 
-### 4. Signal Transforms (STLT & HHT)
+### 5. Signal Transforms (STLT & HHT)
 ```python
 # Short-Time Local Transform
 stlt_res = s1.stlt(window='2s', stride='0.5s') 
@@ -118,13 +140,13 @@ val_at_5s = stlt_res.at_time(5*u.s, method="linear")
 
 # Hilbert-Huang Transform (requires EMD-signal)
 try:
-    hht_spec = s1.hht(method="eemd", output="spectrogram")
+    hht_spec = s1.hht(emd_method="eemd", output="spectrogram")
     hht_spec.plot()
 except ImportError:
     print("Install EMD-signal for HHT")
 ```
 
-### 5. Torch Dataset Helper
+### 6. Torch Dataset Helper
 ```python
 from gwexpy.interop import to_torch_dataset, to_torch_dataloader
 
@@ -134,6 +156,12 @@ for batch in loader:
     # batch: (B, C, window)
     pass
 ```
+
+## Testing
+```bash
+python -m pytest
+```
+Some tests are skipped if optional dependencies or network access are unavailable.
 
 ## Contributing
 Contributions are welcome! Please open issues or submit PRs for new features or bug fixes.

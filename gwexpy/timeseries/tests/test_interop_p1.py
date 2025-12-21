@@ -5,16 +5,6 @@ from gwexpy.timeseries import TimeSeries
 from gwexpy.interop import require_optional
 
 try:
-    import torch
-except ImportError:
-    torch = None
-
-try:
-    import tensorflow as tf
-except ImportError:
-    tf = None
-
-try:
     import dask.array as da
 except ImportError:
     da = None
@@ -23,6 +13,17 @@ try:
     import zarr
 except ImportError:
     zarr = None
+
+# Import order matters: dask -> torch/tf avoids segfaults in some envs.
+try:
+    import torch
+except ImportError:
+    torch = None
+
+try:
+    import tensorflow as tf
+except ImportError:
+    tf = None
 
 @pytest.mark.skipif(torch is None, reason="torch not installed")
 def test_torch_interop():

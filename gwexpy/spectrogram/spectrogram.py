@@ -168,7 +168,7 @@ class SpectrogramMatrix(np.ndarray):
             if kwargs.get("constrained_layout", True):
                 try:
                     plot_obj.set_constrained_layout(True)
-                except Exception:
+                except (TypeError, ValueError, AttributeError):
                     pass
             return plot_obj
         
@@ -352,7 +352,7 @@ class SpectrogramList(UserList):
                   for k in keys:
                        try:
                            new_list.append(Spectrogram.read(f[k], format="hdf5"))
-                       except Exception:
+                       except (TypeError, ValueError, AttributeError):
                            pass
         else:
              raise NotImplementedError(f"Format {format} not supported")
@@ -541,7 +541,7 @@ class SpectrogramDict(UserDict):
                        try:
                            s = Spectrogram.read(f[k], format="hdf5")
                            self[k] = s
-                       except Exception:
+                       except (TypeError, ValueError, AttributeError):
                            pass
         else:
              raise NotImplementedError(f"Format {format} not supported")

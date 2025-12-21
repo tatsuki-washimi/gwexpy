@@ -1,3 +1,9 @@
-
-from gwpy.plot import *
 from .plot import Plot
+# Dynamic import from gwpy (PEP 562)
+import gwpy.plot
+
+def __getattr__(name):
+    return getattr(gwpy.plot, name)
+
+def __dir__():
+    return sorted(set(globals().keys()) | set(dir(gwpy.plot)))

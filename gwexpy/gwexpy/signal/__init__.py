@@ -1,1 +1,0 @@
-from gwpy.signal import *

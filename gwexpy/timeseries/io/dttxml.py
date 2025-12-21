@@ -7,7 +7,7 @@ This module supports a minimal XML parser and will use an external
 
 from __future__ import annotations
 
-from typing import Iterable
+from typing import Iterable, Optional, Union, Any, List
 
 import numpy as np
 from gwpy.io import registry as io_registry
@@ -21,7 +21,7 @@ from gwexpy.io.utils import (
     parse_timezone,
     set_provenance,
 )
-from ..timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
 def _build_epoch(value, timezone):
@@ -40,7 +40,7 @@ def read_timeseriesdict_dttxml(
     source,
     *,
     products=None,
-    channels: Iterable[str] | None = None,
+    channels: Optional[Iterable[str]] = None,
     unit=None,
     epoch=None,
     timezone=None,

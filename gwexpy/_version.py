@@ -1,1 +1,1 @@
-from gwpy._version import *
+__version__ = "0.1.0"

@@ -1,4 +1,5 @@
 
+from typing import Optional, Union
 import numpy as np
 from dataclasses import dataclass
 from astropy.units import Quantity, Unit
@@ -40,7 +41,7 @@ class AxisDescriptor:
             return (self.name == other.name and 
                     self.index.shape == other.index.shape and 
                     np.all(self.index == other.index))
-        except:
+        except (AttributeError, TypeError, ValueError):
             return False
 
     @property
@@ -57,7 +58,7 @@ class AxisDescriptor:
         return bool(np.isclose(np.diff(diffs), 0).all())
 
     @property
-    def delta(self) -> Quantity | None:
+    def delta(self) -> Optional[Quantity]:
         if self.size > 1 and self.regular:
              return self.index[1] - self.index[0]
         return None

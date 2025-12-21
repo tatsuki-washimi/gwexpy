@@ -75,7 +75,7 @@ def to_gps(t, *args, **kwargs):
         if _is_numeric_array(arr):
             return arr.astype(float)
         return Time(t_norm, *args, **kwargs).gps
-    except Exception:
+    except (ValueError, TypeError):
         return np.array([_gwpy_to_gps(x, *args, **kwargs) for x in t_norm])
 
 
@@ -93,7 +93,7 @@ def from_gps(gps, *args, **kwargs):
         if arr.dtype.kind not in ("i", "u", "f"):
             arr = arr.astype(float)
         return Time(arr, format="gps", *args, **kwargs).to_datetime()
-    except Exception:
+    except (ValueError, TypeError):
         return np.array([_gwpy_from_gps(x, *args, **kwargs) for x in gps_norm])
 
 
@@ -106,7 +106,7 @@ def tconvert(t="now", *args, **kwargs):
     try:
         arr = np.asarray(t_norm)
         is_numeric = _is_numeric_array(arr)
-    except Exception:
+    except (ValueError, TypeError):
         is_numeric = False
 
     if is_numeric:

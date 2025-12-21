@@ -12,7 +12,7 @@ import io
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, List, Tuple
+from typing import Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 from astropy import units as u
@@ -25,7 +25,7 @@ from gwexpy.io.utils import (
     parse_timezone,
     set_provenance,
 )
-from ..timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 from gwpy.io import registry as io_registry
 
 
@@ -49,7 +49,7 @@ def read_timeseriesdict_gbd(
     source,
     *,
     timezone=None,
-    channels: Iterable[str] | None = None,
+    channels: Optional[Iterable[str]] = None,
     unit=None,
     epoch=None,
     pad=np.nan,
@@ -197,7 +197,7 @@ def _parse_header(header_text: str, header_size: int) -> GBDHeader:
     )
 
 
-def _find_field(text: str, pattern: str, default: str | None = None) -> str:
+def _find_field(text: str, pattern: str, default: Optional[str] = None) -> str:
     match = re.search(pattern, text, re.IGNORECASE)
     if match:
         return match.group(1).strip()
