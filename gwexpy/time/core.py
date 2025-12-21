@@ -1,119 +1,114 @@
 import numpy as np
+from astropy.time import Time
+from gwpy.time import to_gps as _gwpy_to_gps
+from gwpy.time import from_gps as _gwpy_from_gps
+from gwpy.time import tconvert as _gwpy_tconvert
+
 try:
     import pandas as pd
 except ImportError:
     pd = None
-from astropy.time import Time
-from gwpy.time import to_gps as _gwpy_to_gps
-from gwpy.time import tconvert as _gwpy_tconvert
-from gwpy.time import from_gps as _gwpy_from_gps
 
 __all__ = ["to_gps", "from_gps", "tconvert"]
 
+
 def _is_array(obj):
-    """Check if the object is an array-like (list, numpy, pandas), but not a string."""
-    is_pd = False
-    if pd is not None:
-        is_pd = isinstance(obj, (pd.Series, pd.Index))
-    return (
-        isinstance(obj, (list, tuple, np.ndarray)) or is_pd
-    ) and not isinstance(obj, (str, bytes))
+    if isinstance(obj, (str, bytes)):
+        return False
+    if pd is not None and isinstance(obj, (pd.Series, pd.Index, pd.DatetimeIndex)):
+        return True
+    if isinstance(obj, np.ndarray):
+        return obj.ndim > 0
+    return isinstance(obj, (list, tuple))
+
+
+def _is_numeric_array(arr):
+    if arr.dtype.kind in ("i", "u", "f"):
+        return True
+    if arr.dtype.kind == "M":
+        return False
+    try:
+        arr.astype(float)
+        return True
+    except (TypeError, ValueError):
+        return False
+
 
 def _normalize_time_input(t):
-    """Normalize input to standard types (datetime, numpy array, etc.) for interoperability."""
-    # Pandas types
-    if pd is not None and isinstance(t, (pd.Timestamp, pd.DatetimeIndex, pd.Series)):
-        if hasattr(t, "values"):
-            return t.values
-        return t.to_pydatetime()
-    
-    # ObsPy UTCDateTime (avoid hard dependency check by name)
-    # We check for 'datetime' attribute which ObsPy objects usually have
+    if pd is not None:
+        if isinstance(t, pd.Timestamp):
+            return t.to_pydatetime()
+        if isinstance(t, (pd.Series, pd.Index, pd.DatetimeIndex)):
+            return t.to_numpy()
+
     if type(t).__name__ == "UTCDateTime" and hasattr(t, "datetime"):
         return t.datetime
-    
-    # List/Array containing ObsPy UTCDateTime objects
-    # Efficiently check only the first element if iterable
-    if isinstance(t, (list, tuple, np.ndarray)) and len(t) > 0:
+
+    if _is_array(t):
+        try:
+            if len(t) == 0:
+                return t
+        except TypeError:
+            return t
         first = t[0]
+        if pd is not None and isinstance(first, pd.Timestamp):
+            return [x.to_pydatetime() for x in t]
         if type(first).__name__ == "UTCDateTime" and hasattr(first, "datetime"):
-            # Convert all to datetimes
             return [x.datetime for x in t]
 
     return t
 
+
 def to_gps(t, *args, **kwargs):
-    """
-    Convert a time input (scalar or array) to GPS seconds.
-    
-    Supports Pandas, ObsPy, and NumPy types seamlessly.
-    Returns float array for vector inputs, or LIGOTimeGPS/float for scalar inputs.
-    """
     t_norm = _normalize_time_input(t)
-    
+
+    if isinstance(t_norm, Time):
+        return t_norm.gps
+
     if not _is_array(t_norm):
-        # Handle numpy scalar (e.g. numpy.datetime64)
-        # gwpy might expect standard python types or strings
         if isinstance(t_norm, np.datetime64):
-             t_norm = t_norm.item()
+            t_norm = t_norm.item()
         return _gwpy_to_gps(t_norm, *args, **kwargs)
 
-    # Vectorized conversion
     try:
-        # Check if numeric or can be converted to numeric (e.g. numeric strings)
-        t_arr = np.asarray(t_norm)
-        try:
-            return t_arr.astype(float)
-        except (ValueError, TypeError):
-            pass
-        
-        # Astropy vectorized conversion
+        arr = np.asarray(t_norm)
+        if _is_numeric_array(arr):
+            return arr.astype(float)
         return Time(t_norm, *args, **kwargs).gps
-
     except Exception:
-        # Fallback to loop
         return np.array([_gwpy_to_gps(x, *args, **kwargs) for x in t_norm])
 
+
 def from_gps(gps, *args, **kwargs):
-    """
-    Convert GPS time(s) to datetime object(s).
-    """
     gps_norm = _normalize_time_input(gps)
+
+    if isinstance(gps_norm, Time):
+        return gps_norm.to_datetime()
 
     if not _is_array(gps_norm):
         return _gwpy_from_gps(gps_norm, *args, **kwargs)
-    
+
     try:
-        return Time(gps_norm, format='gps', *args, **kwargs).to_datetime()
+        arr = np.asarray(gps_norm)
+        if arr.dtype.kind not in ("i", "u", "f"):
+            arr = arr.astype(float)
+        return Time(arr, format="gps", *args, **kwargs).to_datetime()
     except Exception:
         return np.array([_gwpy_from_gps(x, *args, **kwargs) for x in gps_norm])
 
+
 def tconvert(t="now", *args, **kwargs):
-    """
-    Convert time to GPS, or GPS to datetime, supporting arrays and interops.
-    """
     t_norm = _normalize_time_input(t)
 
-    # Scalar keyword handling (e.g. "now")
-    if isinstance(t_norm, str) and not _is_array(t_norm):
+    if not _is_array(t_norm):
         return _gwpy_tconvert(t_norm, *args, **kwargs)
 
-    if _is_array(t_norm):
+    try:
         arr = np.asarray(t_norm)
-        # Check if numeric or can be converted to numeric (e.g. GPS strings)
+        is_numeric = _is_numeric_array(arr)
+    except Exception:
         is_numeric = False
-        try:
-             arr.astype(float)
-             is_numeric = True
-        except (ValueError, TypeError):
-             pass
 
-        # If numeric, assumes GPS -> datetime
-        if is_numeric:
-            return from_gps(t_norm, *args, **kwargs)
-        # Otherwise, assumes time input -> GPS
-        else:
-            return to_gps(t_norm, *args, **kwargs)
-            
-    # Scalar fallback
-    return _gwpy_tconvert(t_norm, *args, **kwargs)
+    if is_numeric:
+        return from_gps(t_norm, *args, **kwargs)
+    return to_gps(t_norm, *args, **kwargs)
