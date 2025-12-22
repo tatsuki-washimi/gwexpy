@@ -59,6 +59,16 @@ markers = [
     "requires: Conditional dependency checks",
     "remote: Requires network access",
 ]
+filterwarnings = [
+    "ignore:.*joblib will operate in serial mode.*:UserWarning:joblib._multiprocessing_helpers",
+    "ignore:Ignoring n_components with whiten=False.*:UserWarning:sklearn.decomposition._fastica",
+    "ignore:xindex was given to .* will be ignored:UserWarning:gwpy.types.series",
+    "ignore:Converting time units .* to GPS seconds for alignment\\.:UserWarning:gwexpy.timeseries.preprocess",
+    "ignore:Support for identity-based X\\.509 credentials.*:DeprecationWarning:igwn_auth_utils.requests",
+    "ignore:divisions involving a unit and a 'str' instance are deprecated.*:astropy.utils.exceptions.AstropyDeprecationWarning:gwpy.timeseries.tests.test_timeseries",
+    "ignore:invalid value encountered in divide:RuntimeWarning:astropy.units.quantity",
+    "ignore:invalid value encountered in divide:RuntimeWarning",
+]
 
 [tool.mypy]
 python_version = "3.9"

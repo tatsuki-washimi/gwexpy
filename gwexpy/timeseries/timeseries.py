@@ -54,6 +54,30 @@ class TimeSeries(
     
     Inherits from gwpy.timeseries.TimeSeries for full compatibility.
     """
+
+    def __new__(cls, data, *args, **kwargs):
+        from gwexpy.timeseries.utils import _coerce_t0_gps
+
+        should_coerce = True
+        xunit = kwargs.get("xunit", None)
+        if xunit is not None:
+            try:
+                should_coerce = u.Unit(xunit).is_equivalent(u.s)
+            except (ValueError, TypeError):
+                should_coerce = False
+        else:
+            dt = kwargs.get("dt", None)
+            if isinstance(dt, u.Quantity):
+                phys = getattr(dt.unit, "physical_type", None)
+                if dt.unit != u.dimensionless_unscaled and phys != "time":
+                    should_coerce = False
+
+        if should_coerce:
+            if "t0" in kwargs and kwargs["t0"] is not None:
+                kwargs["t0"] = _coerce_t0_gps(kwargs["t0"])
+            if "epoch" in kwargs and kwargs["epoch"] is not None:
+                kwargs["epoch"] = _coerce_t0_gps(kwargs["epoch"])
+        return super().__new__(cls, data, *args, **kwargs)
     
     # ===============================
     # Override methods from _core.py 
