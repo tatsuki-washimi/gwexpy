@@ -9,7 +9,7 @@ import numpy as np
 import h5py
 from astropy import units as u
 
-from gwpy.spectrogram import Spectrogram
+from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 from gwexpy.plot import Plot
 
 # Optional dependencies
@@ -25,6 +25,25 @@ except ImportError:
 
 # We can reuse SeriesMatrix if we want, but SpectrogramMatrix has different dimensions (Time, Freq)
 from gwexpy.types.seriesmatrix import SeriesMatrix
+
+class Spectrogram(BaseSpectrogram):
+    """
+    Extends gwpy.spectrogram.Spectrogram with additional interop methods.
+    """
+    def to_th2d(self, error=None):
+        """
+        Convert to ROOT TH2D.
+        """
+        from gwexpy.interop import to_th2d
+        return to_th2d(self, error=error)
+        
+    @classmethod
+    def from_root(cls, obj, return_error=False):
+        """
+        Create Spectrogram from ROOT TH2D.
+        """
+        from gwexpy.interop import from_root
+        return from_root(cls, obj, return_error=return_error)
 
 class SpectrogramMatrix(np.ndarray):
     """
@@ -360,9 +379,12 @@ class SpectrogramList(UserList):
         return self
 
     def write(self, target, *args, **kwargs):
-        """Write list to HDF5 file (each item as a group)."""
+        """Write list to file."""
         format = kwargs.get("format", "hdf5")
         mode = kwargs.get("mode", "w")
+        if format == "root" or (isinstance(target, str) and target.endswith(".root")):
+             from gwexpy.interop import write_root_file
+             return write_root_file(self, target, **kwargs)
         if format == "hdf5":
              with h5py.File(target, mode) as f:
                   for i, s in enumerate(self):
@@ -548,9 +570,12 @@ class SpectrogramDict(UserDict):
         return self
         
     def write(self, target, *args, **kwargs):
-        """Write dictionary to HDF5 file keys -> groups."""
+        """Write dictionary to file."""
         format = kwargs.get("format", "hdf5")
         mode = kwargs.get("mode", "w")
+        if format == "root" or (isinstance(target, str) and target.endswith(".root")):
+             from gwexpy.interop import write_root_file
+             return write_root_file(self, target, **kwargs)
         if format == "hdf5":
              with h5py.File(target, mode) as f:
                   for k, s in self.items():

@@ -29,7 +29,7 @@ def gps_to_datetime_utc(gps, *, leap='raise') -> datetime:
     """
     # Use astropy for robust conversion including leap seconds
     # verify input is LIGOTimeGPS compatible
-    t_gps = Time(gps, format='gps', scale='utc')
+    t_gps = Time(gps, format='gps').utc
     
     # Check if this time is actually a leap second?
     # Astropy handles leap seconds by representing them (e.g. :60) depending on format.

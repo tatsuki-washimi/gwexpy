@@ -14,6 +14,7 @@ dependencies = [
   "numpy",
   "pandas",
   "scipy",
+  "matplotlib"
 ]
 
 [project.optional-dependencies]
@@ -23,68 +24,29 @@ tensorflow = ["tensorflow"]
 jax = ["jax", "jaxlib"]
 dask = ["dask"]
 zarr = ["zarr"]
+polars = ["polars"]
 audio = ["librosa", "pydub", "torchaudio"]
-data = ["xarray", "h5py", "netCDF4", "obspy", "mne", "neo"]
+data = ["xarray", "h5py"]
+bio = ["mne", "neo"]
 control = ["control"]
-gpu = ["cupy"]
-geophysics = ["wintools", "win2ndarray", "mth5", "mt_metadata", "mtpy"]
-interop = [
-    "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr",
-    "librosa", "pydub", "torchaudio",
-    "xarray", "h5py", "netCDF4", "obspy", "mne", "neo",
-    "control", "cupy",
-    "wintools", "win2ndarray", "mth5", "mt_metadata", "mtpy"
+gpu = ["cupy", "torch", "tensorflow", "jax", "jaxlib"]
+gw = ["gwinc", "dttxml"]
+geophysics = ["wintools", "win2ndarray", "mth5", "mt_metadata", "mtpy", "obspy", "netCDF4"]
+analysis = [
+    "PyEMD",          # emd, hht
+    "hurst",          # hurst指数
+    "pywt",           # wavelet変換 (cwt)
+    "librosa",        # audio‑signal 前処理
+    "obspy"           # ノイズスペクトル解析
 ]
+stats = ["statsmodels", "scikit-learn", "bottleneck"]
+
 all = [
-    "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr",
+    "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "polars",
     "librosa", "pydub", "torchaudio",
-    "xarray", "h5py", "netCDF4", "obspy", "mne", "neo",
+    "xarray", "h5py", "netCDF4", "obspy", "mne", "neo", "gwinc", "dttxml",
     "control", "cupy",
-    "wintools", "win2ndarray", "mth5", "mt_metadata", "mtpy"
+    "wintools", "win2ndarray", "mth5", "mt_metadata", "mtpy",
+    "PyEMD", "hurst", "pywt",
+    "statsmodels", "scikit-learn", "bottleneck"
 ]
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["gwexpy*"]
-
-[tool.setuptools.package-data]
-gwexpy = ["py.typed"]
-
-[tool.pytest.ini_options]
-addopts = ["-ra"]
-pythonpath = ["."]
-markers = [
-    "freeze_time: Freeze time for testing",
-    "cvmfs: Requires CVMFS available",
-    "requires: Conditional dependency checks",
-    "remote: Requires network access",
-]
-filterwarnings = [
-    "ignore:.*joblib will operate in serial mode.*:UserWarning:joblib._multiprocessing_helpers",
-    "ignore:Ignoring n_components with whiten=False.*:UserWarning:sklearn.decomposition._fastica",
-    "ignore:xindex was given to .* will be ignored:UserWarning:gwpy.types.series",
-    "ignore:Converting time units .* to GPS seconds for alignment\\.:UserWarning:gwexpy.timeseries.preprocess",
-    "ignore:Support for identity-based X\\.509 credentials.*:DeprecationWarning:igwn_auth_utils.requests",
-    "ignore:divisions involving a unit and a 'str' instance are deprecated.*:astropy.utils.exceptions.AstropyDeprecationWarning:gwpy.timeseries.tests.test_timeseries",
-    "ignore:invalid value encountered in divide:RuntimeWarning:astropy.units.quantity",
-    "ignore:invalid value encountered in divide:RuntimeWarning",
-]
-
-[tool.mypy]
-python_version = "3.9"
-ignore_missing_imports = true
-show_error_codes = true
-warn_unused_ignores = true
-
-[tool.coverage.run]
-branch = true
-source = ["gwexpy"]
-omit = [
-    "gwexpy/**/tests/*",
-    "tests/*",
-]
-
-[tool.coverage.report]
-show_missing = true
-skip_covered = true
-fail_under = 70

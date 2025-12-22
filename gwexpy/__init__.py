@@ -22,6 +22,7 @@ from .frequencyseries import (
     FrequencySeriesMatrix,
 )
 from .spectrogram import (
+    Spectrogram,
     SpectrogramList,
     SpectrogramDict,
     SpectrogramMatrix,
@@ -77,6 +78,7 @@ __all__ = [
     "FrequencySeriesList",
     "FrequencySeriesMatrix",
     # Spectrogram types
+    "Spectrogram",
     "SpectrogramList",
     "SpectrogramDict",
     "SpectrogramMatrix",

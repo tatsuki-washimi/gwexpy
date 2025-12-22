@@ -1,6 +1,6 @@
 Method,FrequencySeries (gwexpy),FrequencySeriesList,FrequencySeriesDict,FrequencySeriesMatrix,備考
 __init__,〇,〇,〇,〇,
-read / write,〇,〇,〇,〇,Matrixは全Ch一括
+read / write,〇,〇,〇,〇,Matrixは全Ch一括 / ROOT(.root)対応
 plot / plot_all,〇,〇,〇,△,Matrixは簡易プロットのみ
 __getitem__,〇,〇,〇,〇,Matrixは[ch, freq]
 __add__ / __sub__,〇,×,×,〇,Matrixはndarrayとして計算
@@ -38,3 +38,5 @@ to_jax / from_jax,〇,〇,〇,×,JAX連携
 to_cupy / from_cupy,〇,〇,〇,〇,CuPy連携
 to_control_frd / from_frd,〇,〇,〇,×,Controlライブラリ連携
 span / segments,×,〇,〇,-,周波数範囲の取得
+to_tgraph,〇,×,×,×,CERN ROOT TGraph変換
+to_tmultigraph,×,〇,〇,×,CERN ROOT TMultiGraph変換

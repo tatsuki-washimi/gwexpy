@@ -3,6 +3,16 @@ from .pandas_ import to_pandas_series, from_pandas_series, to_pandas_dataframe, 
 from .xarray_ import to_xarray, from_xarray
 from .hdf5_ import to_hdf5, from_hdf5
 from .obspy_ import to_obspy_trace, from_obspy_trace
+from .polars_ import (
+    to_polars_series,
+    to_polars_dataframe,
+    from_polars_series,
+    from_polars_dataframe,
+    to_polars_frequencyseries,
+    to_polars_dict,
+    from_polars_dict,
+)
+from .root_ import to_tgraph, to_th1d, to_th2d, from_root, to_tmultigraph, write_root_file
 from .sqlite_ import to_sqlite, from_sqlite
 from ._optional import require_optional
 from .frequency import (

@@ -355,6 +355,30 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         from gwexpy.interop import from_pandas_dataframe
         return from_pandas_dataframe(cls, df, unit_map=unit_map, t0=t0, dt=dt)
     
+    def to_polars(self, time_column="time", time_unit="datetime"):
+        """Convert to polars.DataFrame."""
+        from gwexpy.interop import to_polars_dict
+        return to_polars_dict(self, time_column=time_column, time_unit=time_unit)
+        
+    @classmethod
+    def from_polars(cls, df, *, time_column="time", unit_map=None):
+        """Create TimeSeriesDict from polars.DataFrame."""
+        from gwexpy.interop import from_polars_dict
+        return from_polars_dict(cls, df, time_column=time_column, unit_map=unit_map)
+    
+    def to_tmultigraph(self, name: Optional[str] = None) -> Any:
+        """Convert to ROOT TMultiGraph."""
+        from gwexpy.interop import to_tmultigraph
+        return to_tmultigraph(self, name=name)
+
+    def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
+        fmt = kwargs.get("format")
+        if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
+             from gwexpy.interop.root_ import write_root_file
+             return write_root_file(self, target, **kwargs)
+        return super().write(target, *args, **kwargs)
+
+
     def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
         """Apply impute to each item."""
         new_dict = self.__class__()
@@ -1197,6 +1221,20 @@ class TimeSeriesList(BaseTimeSeriesList):
             data[name] = s
             
         return pd.DataFrame(data)
+
+
+    def to_tmultigraph(self, name: Optional[str] = None) -> Any:
+        """Convert to ROOT TMultiGraph."""
+        from gwexpy.interop import to_tmultigraph
+        return to_tmultigraph(self, name=name)
+
+    def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
+        fmt = kwargs.get("format")
+        if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
+             from gwexpy.interop.root_ import write_root_file
+             return write_root_file(self, target, **kwargs)
+        from astropy.io import registry
+        return registry.write(self, target, *args, **kwargs)
 
     def pca(self, *args, **kwargs):
         """Perform PCA decomposition across channels."""

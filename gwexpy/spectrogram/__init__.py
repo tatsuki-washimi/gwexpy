@@ -1,8 +1,9 @@
 """gwexpy.spectrogram - Spectrogram data containers and operations."""
 
-from .spectrogram import SpectrogramList, SpectrogramDict, SpectrogramMatrix
+from .spectrogram import Spectrogram, SpectrogramList, SpectrogramDict, SpectrogramMatrix
 
 __all__ = [
+    "Spectrogram",
     "SpectrogramList",
     "SpectrogramDict",
     "SpectrogramMatrix",
