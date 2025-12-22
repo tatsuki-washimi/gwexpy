@@ -38,6 +38,8 @@ class TimeSeriesWindowDataset:
 
         from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix, TimeSeriesDict, TimeSeriesList
 
+        from .base import to_plain_array
+
         data_obj = series
         if multivariate and isinstance(series, (TimeSeriesDict, TimeSeriesList)):
             data_obj = series.to_matrix(align=align)
@@ -45,14 +47,14 @@ class TimeSeriesWindowDataset:
         if isinstance(data_obj, TimeSeriesMatrix):
             self.t0 = data_obj.t0
             self.dt = data_obj.dt
-            vals = np.asarray(data_obj.value)
+            vals = to_plain_array(data_obj)
             self._feature_names = getattr(data_obj, "channel_names", None)
             self.data = vals.reshape(-1, vals.shape[-1])
             self.unit = None
         elif isinstance(data_obj, TimeSeries):
             self.t0 = data_obj.t0
             self.dt = data_obj.dt
-            self.data = np.asarray(data_obj.value)[None, :]
+            self.data = to_plain_array(data_obj)[None, :]
             self.unit = getattr(data_obj, "unit", None)
             self._feature_names = [data_obj.name] if getattr(data_obj, "name", None) else None
         else:
@@ -60,7 +62,7 @@ class TimeSeriesWindowDataset:
 
         self.labels = labels
         if isinstance(labels, (TimeSeries, TimeSeriesMatrix)):
-            label_vals = np.asarray(labels.value)
+            label_vals = to_plain_array(labels)
             self.label_array = label_vals.reshape(-1, label_vals.shape[-1])
         elif isinstance(labels, np.ndarray):
             arr = labels

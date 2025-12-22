@@ -4,7 +4,8 @@ import numpy as np
 
 def to_jax(ts, dtype=None):
     jax = require_optional("jax")
-    return jax.numpy.array(ts.value, dtype=dtype)
+    from .base import to_plain_array
+    return jax.numpy.array(to_plain_array(ts), dtype=dtype)
 
 def from_jax(cls, array, t0, dt, unit=None):
     # jax array to numpy

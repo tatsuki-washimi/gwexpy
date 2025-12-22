@@ -35,17 +35,8 @@ def to_torch(series, device=None, dtype=None, requires_grad=False, copy=False):
     """
     torch = require_optional("torch")
 
-    data = series
-    if hasattr(data, "value"):
-        data = data.value
-
-    try:
-        from astropy.units import Quantity
-    except ImportError:
-        Quantity = ()
-
-    if Quantity and isinstance(data, Quantity):
-        data = data.value
+    from .base import to_plain_array
+    data = to_plain_array(series, copy=copy)
 
     if copy:
         tensor = torch.tensor(data, device=device, dtype=dtype, requires_grad=requires_grad)

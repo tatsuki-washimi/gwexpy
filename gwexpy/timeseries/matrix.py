@@ -210,54 +210,87 @@ class TimeSeriesMatrix(SeriesMatrix):
 
         self.xindex = Index.define(start, new_dt, length)
         
+    @property
+    def is_regular(self) -> bool:
+        """Return True if this TimeSeriesMatrix has a regular sample rate."""
+        if self.times is None:
+            return True
+        if hasattr(self.times, "regular"):
+            return self.times.regular
+        if len(self.times) < 2:
+            return True
+        # np.asarray(self.times) extracts values from Index/ndarray
+        times_val = np.asarray(self.times)
+        diffs = np.diff(times_val)
+        return np.allclose(diffs, diffs[0], atol=1e-12, rtol=1e-10)
+
+    def _check_regular(self, method_name: Optional[str] = None):
+        """Helper to ensure the matrix has a regular sample rate."""
+        if not self.is_regular:
+            method = method_name or "This method"
+            raise ValueError(
+                f"{method} requires a regular sample rate (constant dt). "
+                "Consider using .asfreq() or .interpolate() to regularized the matrix first."
+            )
+        
     # --- Preprocessing & Decomposition ---
+
+    def resample(self, rate: Any, *args: Any, **kwargs: Any) -> "TimeSeriesMatrix":
+        """
+        Resample the TimeSeriesMatrix.
+        
+        If 'rate' is a time-string (e.g. '1s') or time Quantity, performs time-bin aggregation.
+        Otherwise, performs signal processing resampling.
+        """
+        is_time_bin = False
+        if isinstance(rate, str):
+            is_time_bin = True
+        elif isinstance(rate, u.Quantity):
+            if rate.unit.physical_type == 'time':
+                is_time_bin = True
+        
+        if is_time_bin:
+            # We need to apply _resample_time_bin (which is currently logic-only in TimeSeries)
+            # Actually, TimeSeries._resample_time_bin is implemented using bincount which works on arrays.
+            # However, it expects a 1D 'self'.
+            # We can either genericize _resample_time_bin or loop.
+            # For matrices, looping is safe but genericizing to work with any ndarray (axis=-1) is better.
+            
+            from .timeseries import TimeSeries
+            # For now, let's use the robust mapping behavior of _apply_timeseries_method
+            # but handle the rate logic.
+            return self._apply_timeseries_method("resample", rate, *args, **kwargs)
+        else:
+            # Signal processing resampling (GWpy)
+            self._check_regular("Signal processing resample")
+            return super().resample(rate, *args, **kwargs)
     
     def impute(
         self,
         *,
-        method: str = "interpolate",
+        method: str = "linear",
         limit: Optional[int] = None,
         axis: str = "time",
         max_gap: Optional[float] = None,
         **kwargs: Any,
     ) -> Any:
-        """Impute missing values."""
-        # Matrix-level impute or per-channel?
-        # Provide naive implementation mapping over columns or using decomposition logic?
-        # User requirement says "TimeSeriesDict/List/Matrix: implement impute(...) that applies per-channel"
-        # Since logic isn't in preprocess.py for matrix iteration, we implement it here or call preprocess helper (which I didn't fully genericize).
+        """Impute missing values in the matrix."""
+        # Use vectorized impute_timeseries from preprocess.py
+        # TimeSeriesMatrix.value is (channels, 1, time) or (rows, cols, time)
+        # We operate along 'time' (axis=-1) or specific axis.
+        new_val = impute_timeseries(self.value, method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs)
         
-        # We can treat each column as a TimeSeries (if regular).
-        # Efficient way:
-        new_val = self.value.copy()
-        
-        # Using impute_timeseries logic inline or map?
-        # Let's map for simplicity/correctness reuse
-        # value is 3D: (channels, 1, time) or similar
-        val_3d = self.value
-        n_rows, n_cols, n_samples = val_3d.shape
-        
-        # We need to flatten loops or iterate
-        new_val = val_3d.copy()
-        for r in range(n_rows):
-             for c in range(n_cols):
-                  ts_data = new_val[r, c, :]
-                  ts_tmp = self.series_class(ts_data, dt=self.dt, t0=self.t0)
-                  # Passing explicit args
-                  imp = ts_tmp.impute(method=method, limit=limit, max_gap=max_gap, axis=axis, **kwargs)
-                  new_val[r, c, :] = imp.value
-            
         new_mat = self.copy()
         new_mat.value[:] = new_val
         return new_mat
 
-    def standardize(self, *, axis: str = "time", method: str = "zscore", ddof: int = 0) -> Any:
+    def standardize(self, *, axis: str = "time", method: str = "zscore", ddof: int = 0, **kwargs: Any) -> Any:
         """
         Standardize the matrix.
         See gwexpy.timeseries.preprocess.standardize_matrix.
         """
-        # Note: standardize_matrix assumes (channels, time) input correctly now (handles axis).
-        return standardize_matrix(self, axis=axis, method=method, ddof=ddof)
+        from .preprocess import standardize_matrix
+        return standardize_matrix(self, axis=axis, method=method, ddof=ddof, **kwargs)
 
     def whiten_channels(
         self,
@@ -351,9 +384,15 @@ class TimeSeriesMatrix(SeriesMatrix):
         """
         from gwexpy.time import to_gps
         if start is not None:
-             start = float(to_gps(start))
+             start_gps = to_gps(start)
+             if isinstance(start_gps, (np.ndarray, list)) and np.ndim(start_gps) > 0:
+                 start_gps = start_gps[0]
+             start = float(start_gps)
         if end is not None:
-             end = float(to_gps(end))
+             end_gps = to_gps(end)
+             if isinstance(end_gps, (np.ndarray, list)) and np.ndim(end_gps) > 0:
+                 end_gps = end_gps[0]
+             end = float(end_gps)
         return super().crop(start=start, end=end, copy=copy)
 
     def to_dict(self) -> "TimeSeriesDict":

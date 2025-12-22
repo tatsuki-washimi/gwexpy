@@ -1,15 +1,10 @@
 """
-gwexpy.timeseries.timeseries - Extended TimeSeries class
+Core TimeSeries class definition and basic operations.
 
-This module provides the main TimeSeries class for gwexpy, which extends
-gwpy's TimeSeries with additional functionality.
-
-The implementation is modularized across several files:
-- _core.py: Core class definition and basic operations
-- _spectral.py: Spectral transforms (FFT, CWT, etc.)
-- _timeseries_legacy.py: Remaining methods (signal, resampling, analysis, interop)
-
-This module integrates all Mixins into a single TimeSeries class.
+This module contains the base TimeSeries class with essential functionality:
+- Basic operations (tail, crop, append)
+- Regularity checking (is_regular, _check_regular)
+- Peak finding
 """
 
 from __future__ import annotations
@@ -18,58 +13,34 @@ import numpy as np
 from astropy import units as u
 from typing import Optional, Any
 
-# Import Mixins
-from ._core import TimeSeriesCore
-from ._spectral import TimeSeriesSpectralMixin
-from ._signal import TimeSeriesSignalMixin
-from ._resampling import TimeSeriesResamplingMixin
-from ._analysis import TimeSeriesAnalysisMixin
-from ._interop import TimeSeriesInteropMixin
-
-# Import legacy for remaining methods
-from ._timeseries_legacy import TimeSeries as _LegacyTimeSeries
+from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
 
-class TimeSeries(
-    TimeSeriesInteropMixin,    # Interoperability (highest priority)
-    TimeSeriesAnalysisMixin,   # Analysis
-    TimeSeriesResamplingMixin, # Resampling
-    TimeSeriesSignalMixin,     # Signal processing
-    TimeSeriesSpectralMixin,   # Spectral transforms
-    _LegacyTimeSeries,         # All legacy methods including BaseTimeSeries
-):
-
-
-
-
+class TimeSeriesCore(BaseTimeSeries):
     """
-    Extended TimeSeries with all gwexpy functionality.
+    Core Ti meSeries class with basic operations.
     
-    This class combines functionality from multiple modules:
-    - Core operations: is_regular, _check_regular, tail, crop, append, find_peaks
-    - Spectral transforms: fft, psd, cwt, laplace, etc.
-    - Signal processing: analytic_signal, mix_down, xcorr, etc.
-    - Analysis: impute, standardize, rolling_*, etc.
-    - Interoperability: to_pandas, to_torch, to_xarray, etc.
-    
-    Inherits from gwpy.timeseries.TimeSeries for full compatibility.
+    This is the base class that other mixins will extend.
+    Inherits from gwpy.timeseries.TimeSeries for compatibility.
     """
-    
+
     # ===============================
-    # Override methods from _core.py 
-    # (These take precedence over _LegacyTimeSeries versions)
+    # Properties
     # ===============================
-    
+
     @property
     def is_regular(self) -> bool:
         """Return True if this TimeSeries has a regular sample rate."""
+        # Use underlying index safely to avoid triggering GWpy AttributeErrors on irregular series
         try:
+            # Try to get the index without triggering property logic that checks .dt
             idx = getattr(self, "xindex", None)
             if idx is None:
                 return True
             if hasattr(idx, "regular"):
                  return idx.regular
             
+            # Manual check
             times_val = np.asarray(idx)
             if len(times_val) < 2:
                 return True
@@ -87,7 +58,11 @@ class TimeSeries(
                 "Consider using .asfreq() or .interpolate() to regularized the series first."
             )
 
-    def tail(self, n: int = 5) -> "TimeSeries":
+    # ===============================
+    # Basic Operations
+    # ===============================
+
+    def tail(self, n: int = 5) -> "TimeSeriesCore":
         """Return the last `n` samples of this series."""
         if n is None:
             return self
@@ -96,12 +71,13 @@ class TimeSeries(
             return self[:0]
         return self[-n:]
 
-    def crop(self, start: Any = None, end: Any = None, copy: bool = False) -> "TimeSeries":
+    def crop(self, start: Any = None, end: Any = None, copy: bool = False) -> "TimeSeriesCore":
         """
         Crop this series to the given GPS start and end times.
-        Accepts any time format supported by gwexpy.time.to_gps.
+        Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         """
         from gwexpy.time import to_gps
+        # Convert inputs to GPS if provided
         if start is not None:
              start = to_gps(start)
              if isinstance(start, (np.ndarray, list)) and np.ndim(start) > 0:
@@ -113,8 +89,7 @@ class TimeSeries(
                  end = end[0]
              end = float(end)
             
-        from gwpy.timeseries import TimeSeries as BaseTimeSeries
-        return BaseTimeSeries.crop(self, start=start, end=end, copy=copy)
+        return super().crop(start=start, end=end, copy=copy)
 
     def append(
         self,
@@ -123,12 +98,11 @@ class TimeSeries(
         pad: Any = None,
         gap: Any = None,
         resize: bool = True,
-    ) -> "TimeSeries":
+    ) -> "TimeSeriesCore":
         """
         Append another TimeSeries (GWpy-compatible), returning gwexpy TimeSeries.
         """
-        from gwpy.timeseries import TimeSeries as BaseTimeSeries
-        res = BaseTimeSeries.append(self, other, inplace=inplace, pad=pad, gap=gap, resize=resize)
+        res = super().append(other, inplace=inplace, pad=pad, gap=gap, resize=resize)
         if inplace:
             return self
         if isinstance(res, self.__class__):
@@ -151,14 +125,22 @@ class TimeSeries(
         wlen: Optional[int] = None,
         rel_height: float = 0.5,
         plateau_size: Any = None,
-    ) -> tuple["TimeSeries", dict[str, Any]]:
+    ) -> tuple["TimeSeriesCore", dict[str, Any]]:
         """
         Find peaks in the TimeSeries.
         
         Wraps `scipy.signal.find_peaks`.
+        
+        Returns
+        -------
+        peaks : TimeSeries
+             A TimeSeries containing only the peak values at their corresponding times.
+        properties : dict
+             Properties returned by scipy.signal.find_peaks.
         """
         from scipy.signal import find_peaks
         
+        # Handle unit quantities
         val = self.value
         
         def _to_val(x, unit=None):
@@ -168,18 +150,23 @@ class TimeSeries(
                   return x.value
              return x
              
+        # Height/Threshold: relative to data units
         h = _to_val(height, self.unit)
         t = _to_val(threshold, self.unit)
-        p = _to_val(prominence, self.unit)
+        p = _to_val(prominence, self.unit)  # Prominence same unit as data
         
+        # Distance/Width: time or samples
+        # Scipy uses samples.
         dist = distance
         wid = width
         
         if self.dt is not None:
              fs = self.sample_rate.to("Hz").value
+             # If distance is time quantity
              if hasattr(dist, "to"):
                   dist = int(dist.to("s").value * fs)
              
+             # If width is quantity (or tuple of quantities)
              if np.iterable(wid):
                   new_wid = []
                   for w in wid:
@@ -191,6 +178,7 @@ class TimeSeries(
              elif hasattr(wid, "to"):
                   wid = wid.to("s").value * fs
                   
+        # Call scipy
         peaks_indices, props = find_peaks(
              val,
              height=h,
@@ -204,6 +192,7 @@ class TimeSeries(
         )
         
         if len(peaks_indices) == 0:
+             # Return empty
              return self.__class__([], times=[], unit=self.unit, name=self.name, channel=self.channel), props
              
         peak_times = self.times[peaks_indices]
@@ -217,6 +206,3 @@ class TimeSeries(
              channel=self.channel
         )
         return out, props
-
-
-__all__ = ["TimeSeries"]

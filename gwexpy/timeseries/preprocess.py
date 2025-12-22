@@ -63,11 +63,29 @@ def align_timeseries_collection(
     dts = []
     has_time_dt = False
     for ts in series_list:
-        if ts.dt is None:
-            raise ValueError("align_timeseries_collection requires dt for all series")
+        # Check regularity safely
+        from .timeseries import TimeSeries
+        if isinstance(ts, TimeSeries):
+             is_regular = ts.is_regular
+        else:
+             # Fallback for BaseTimeSeries or other objects
+             is_regular = getattr(ts, 'regular', True)
         
-        # Ensure dt is a Quantity
-        dt_q = ts.dt if isinstance(ts.dt, u.Quantity) else u.Quantity(ts.dt, u.dimensionless_unscaled)
+        if not is_regular:
+             # For irregular series, we can't use .dt safely.
+             # We estimate an average dt for alignment purposes.
+             times_val = np.asarray(ts.times)
+             if len(times_val) > 1:
+                  avg_dt = (times_val[-1] - times_val[0]) / (len(times_val) - 1)
+                  dt_q = u.Quantity(avg_dt, ts.times.unit or u.s)
+             else:
+                  # fallback if 1 point
+                  dt_q = u.Quantity(1.0, ts.times.unit or u.s)
+        else:
+             if ts.dt is None:
+                  raise ValueError("align_timeseries_collection requires dt for all series")
+             # Ensure dt is a Quantity
+             dt_q = ts.dt if isinstance(ts.dt, u.Quantity) else u.Quantity(ts.dt, u.dimensionless_unscaled)
         
         dt_vals = np.asanyarray(dt_q.value)
         if np.any(dt_vals <= 0):
@@ -305,216 +323,176 @@ def align_timeseries_collection(
     return values, common_times, meta
 
 
-def impute_timeseries(ts, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
-    """
-    Impute missing values in a TimeSeries.
-
-    Parameters
-    ----------
-    ts : TimeSeries
-        Series to impute.
-    method : str
-        'interpolate', 'ffill', 'bfill', 'mean', 'median'.
-    limit : int
-        Pandas-style limit (max consecutive NaNs to fill).
-    axis : str
-        Axis to operate on (default 'time').
-    max_gap : float or Quantity, optional
-        Maximum gap duration to simple fill. If a gap is larger than this, it is left as NaN.
-        If float, assumes same unit as ts.times (usually seconds if dimensionless).
+def _impute_1d(val_1d, x, method, has_gap_constraint, gap_threshold):
+    """Internal 1D imputation core."""
+    import pandas as pd
+    from scipy.interpolate import interp1d
     
-    Returns
-    -------
-    TimeSeries
-        Imputed series.
-    """
-    val = ts.value.copy()
-    nans = np.isnan(val)
-    if not np.any(nans):
-        return ts.copy()
+    nans_1d = np.isnan(val_1d)
+    if not np.any(nans_1d):
+        return val_1d
+    
+    valid_1d = ~nans_1d
+    if not np.any(valid_1d):
+        return val_1d # All NaNs
 
-    # Determine timing info if max_gap is requested
+    x_valid = x[valid_1d]
+    y_valid = val_1d[valid_1d]
+    
+    # Boundary handling
+    left_fill = np.nan if has_gap_constraint else None
+    right_fill = np.nan if has_gap_constraint else None
+
+    if method in ["linear", "nearest", "slinear", "quadratic", "cubic"]:
+        if np.iscomplexobj(val_1d):
+            f_real = interp1d(x_valid, y_valid.real, kind=method, bounds_error=False, fill_value=(left_fill, right_fill))
+            f_imag = interp1d(x_valid, y_valid.imag, kind=method, bounds_error=False, fill_value=(left_fill, right_fill))
+            val_1d[nans_1d] = f_real(x[nans_1d]) + 1j * f_imag(x[nans_1d])
+        else:
+            f = interp1d(x_valid, y_valid, kind=method, bounds_error=False, fill_value=(left_fill, right_fill))
+            val_1d[nans_1d] = f(x[nans_1d])
+    elif method == "ffill":
+        val_1d[:] = pd.Series(val_1d).ffill().values
+    elif method == "bfill":
+        val_1d[:] = pd.Series(val_1d).bfill().values
+    elif method == "mean":
+        val_1d[nans_1d] = np.nanmean(val_1d)
+    elif method == "median":
+        val_1d[nans_1d] = np.nanmedian(val_1d)
+        
+    if has_gap_constraint and gap_threshold is not None:
+        valid_indices = np.where(valid_1d)[0]
+        if len(valid_indices) > 1:
+            diffs = np.diff(x[valid_indices])
+            big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
+            for idx in big_gaps:
+                t_start = x[valid_indices[idx]]
+                t_end = x[valid_indices[idx+1]]
+                mask = (x > t_start) & (x < t_end)
+                val_1d[mask] = np.nan
+                
+    return val_1d
+
+def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None, **kwargs):
+    """
+    Impute missing values in a TimeSeries or array. Supports multi-dimensional data.
+    """
+    from scipy.interpolate import interp1d
+    
+    if hasattr(ts, 'value'):
+        val = ts.value.copy()
+        is_ts = True
+    else:
+        val = np.asarray(ts).copy()
+        is_ts = False
+        
+    if method == "interpolate":
+        method = "linear"
+        
+    if axis == "time":
+        axis = -1
+    axis = axis % val.ndim
+    
+    times_val = None
+    time_unit = None
+    if is_ts:
+        try:
+            times_val = ts.times.value
+            time_unit = ts.times.unit
+        except AttributeError:
+            pass
+
+    if times_val is None:
+        times_val = np.arange(val.shape[axis])
+        
     has_gap_constraint = max_gap is not None
     gap_threshold = None
-    times_val = None
-    
     if has_gap_constraint:
-         # Try to get times
-         try:
-             # Use times value directly (float, usually seconds or GPS)
-             times_val = ts.times.value
-             time_unit = ts.times.unit
-             
-             if hasattr(max_gap, 'to'): # Quantity
-                  if time_unit:
-                       gap_threshold = max_gap.to(time_unit).value
-                  else:
-                       # TimeSeries is dimensionless or unknown unit?
-                       # Assume seconds if max_gap has time unit
-                       if max_gap.unit.physical_type == 'time':
-                           gap_threshold = max_gap.to(u.s).value
-                           # We assume times_val is seconds if unit is None/dimensionless 
-                           # (GWpy convention usually)
-                       else:
-                           gap_threshold = max_gap.value
-             else:
-                  gap_threshold = float(max_gap)
-         except (AttributeError, TypeError, ValueError):
-             # If no times mechanism, fallback or warn?
-             # For TimeSeries, .times should exist.
-             # If regular, dt * samples.
-             if hasattr(ts, 'dt'):
-                 dt = ts.dt
-                 if hasattr(dt, 'value'): dt = dt.value
-                 # Use index-based check if we can't get times array easily?
-                 # Actually if we have dt, gap size in indices = max_gap / dt
-                 pass
-             times_val = None
-
-    if method == "interpolate":
-        valid = ~nans
-        # Use time-based interpolation if possible, or index
-        if times_val is not None:
-             x = times_val
+        if hasattr(max_gap, 'to') and time_unit:
+            gap_threshold = max_gap.to(time_unit).value
+        elif hasattr(max_gap, 'to'):
+            gap_threshold = max_gap.to(u.s).value if max_gap.unit.physical_type == 'time' else max_gap.value
         else:
-             x = np.arange(len(val))
-             
-        # Interpolate
-        # Note: np.interp works on complex by treating as float? No.
-        # If max_gap is set, we strictly avoid edge extrapolation (per requirements).
-        # Otherwise preserve existing behavior (default extrapolation).
-        left_val = np.nan if has_gap_constraint else None
-        right_val = np.nan if has_gap_constraint else None
+            gap_threshold = float(max_gap)
 
-        if np.iscomplexobj(val):
-             real_part = np.interp(x[nans], x[valid], val[valid].real, left=left_val, right=right_val)
-             imag_part = np.interp(x[nans], x[valid], val[valid].imag, left=left_val, right=right_val)
-             val[nans] = real_part + 1j * imag_part
-        else:
-             val[nans] = np.interp(x[nans], x[valid], val[valid], left=left_val, right=right_val)
-             
-        # Apply max_gap constraint
-        if has_gap_constraint and times_val is not None:
-             # Identify gaps in original VALID data
-             # A "gap" is an interval between two valid points where NaNs existed.
-             # If distance(valid[i+1], valid[i]) > threshold, then points in between should be NaN.
-             
-             valid_indices = np.where(valid)[0]
-             if len(valid_indices) > 0:
-                  valid_times = x[valid_indices]
-                  diffs = np.diff(valid_times)
-                  
-                  # Find intervals larger than threshold
-                  big_gaps = np.where(diffs > gap_threshold - 1e-12)[0] # Tolerance
-                  
-                  for idx in big_gaps:
-                       t_start = valid_times[idx]
-                       t_end = valid_times[idx+1]
-                       
-                       # Mask points in this interval (exclusive of boundaries)
-                       # Logic: boundaries are valid, everything strictly between was interpolated
-                       # so we revert it to NaN.
-                       mask = (x > t_start) & (x < t_end)
-                       val[mask] = np.nan
-                       
-    elif method == "ffill":
-        from pandas import Series
-        s = Series(val)
-        # Pandas limit is by COUNT, not time gap.
-        # So we use standard limit if provided.
-        # If max_gap is provided, we post-filter?
-        # ffill fills forward.
-        # If we have max_gap, we shouldn't fill if time_curr - time_last_valid > max_gap.
-        # Harder to map to pandas directly.
-        # Manual implementation might be needed for max_gap + ffill?
-        # P0 spec says: "max_gap responsibility is limited to selecting target intervals for interpolation"
-        # Since interpolation fills the gap, if gap > max_gap, we just revert.
+    nans = np.isnan(val)
+    if not np.any(nans):
+        return ts.copy() if is_ts else val
         
-        val = s.ffill(limit=limit).values
-        
-        if has_gap_constraint and times_val is not None:
-             # Check validity
-             # For ffill: for each point, time - time_of_last_valid <= max_gap
-             # But we can just use the generic logic:
-             # Find original gaps. If gap > max_gap, revert ALL points in that gap to NaN?
-             # Yes, "intervals longer than max_gap are not interpolated (remain as NaN)"
-             # This applies regardless of method.
-             
-             valid_indices = np.where(~nans)[0]
-             if len(valid_indices) > 0:
-                  valid_times = times_val[valid_indices]
-                  diffs = np.diff(valid_times)
-                  big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
-                  
-                  for idx in big_gaps:
-                       t_start = valid_times[idx]
-                       t_end = valid_times[idx+1]
-                       mask = (times_val > t_start) & (times_val < t_end)
-                       # Only revert points that were originally NaN (to be safe? val was replaced)
-                       # Yes, revert to NaN.
-                       val[mask] = np.nan
-                       
-    elif method == "bfill":
-        from pandas import Series
-        s = Series(val)
-        val = s.bfill(limit=limit).values
-        
-        # Apply max_gap generic rollback
-        if has_gap_constraint and times_val is not None:
-             valid_indices = np.where(~nans)[0]
-             if len(valid_indices) > 0:
-                  valid_times = times_val[valid_indices]
-                  diffs = np.diff(valid_times)
-                  big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
-                  for idx in big_gaps:
-                       t_start = valid_times[idx]
-                       t_end = valid_times[idx+1]
-                       mask = (times_val > t_start) & (times_val < t_end)
-                       val[mask] = np.nan
-    elif method == "mean":
-        val[nans] = np.nanmean(val)
-        # Mean fills everything.
-        # Max gap? 
-        # "intervals longer than max_gap are not interpolated"
-        # Does 'mean' imputation imply bridging gaps? Usually it's global fill.
-        # But if the requirement stands, we should not fill in large gaps even with global mean?
-        # That seems consistent.
-        if has_gap_constraint and times_val is not None:
-             valid_indices = np.where(~nans)[0]
-             if len(valid_indices) > 0:
-                  valid_times = times_val[valid_indices]
-                  diffs = np.diff(valid_times)
-                  big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
-                  for idx in big_gaps:
-                       t_start = valid_times[idx]
-                       t_end = valid_times[idx+1]
-                       mask = (times_val > t_start) & (times_val < t_end)
-                       val[mask] = np.nan
-                       
-    elif method == "median":
-        val[nans] = np.nanmedian(val)
-        if has_gap_constraint and times_val is not None:
-             valid_indices = np.where(~nans)[0]
-             if len(valid_indices) > 0:
-                  valid_times = times_val[valid_indices]
-                  diffs = np.diff(valid_times)
-                  big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
-                  for idx in big_gaps:
-                       t_start = valid_times[idx]
-                       t_end = valid_times[idx+1]
-                       mask = (times_val > t_start) & (times_val < t_end)
-                       val[mask] = np.nan
+    other_axes = [i for i in range(val.ndim) if i != axis]
+    if other_axes:
+        nans_reduced = np.any(nans, axis=tuple(other_axes))
+        # Broadcast nans_reduced back to original shape for comparison
+        reshape_dims = [1] * val.ndim
+        reshape_dims[axis] = -1
+        nans_broadcast = nans_reduced.reshape(reshape_dims)
+        nans_common = np.all(nans == nans_broadcast)
     else:
-        raise ValueError(f"Unknown impute method '{method}'")
+        nans_common = True
+        nans_reduced = nans
 
-    new_ts = ts.copy()
-    new_ts.value[:] = val
-    return new_ts
+    if nans_common and method not in ["ffill", "bfill", "mean", "median"]:
+        valid_mask = ~nans_reduced
+        if not np.any(valid_mask):
+             return ts.copy() if is_ts else val
+             
+        x_valid = times_val[valid_mask]
+        slices = [slice(None)] * val.ndim
+        slices[axis] = valid_mask
+        y_valid = val[tuple(slices)]
+        
+        left_fill = np.nan if has_gap_constraint else None
+        right_fill = np.nan if has_gap_constraint else None
 
-def standardize_timeseries(ts, *, method="zscore", ddof=0, robust=False):
+        if method in ["linear", "nearest", "slinear", "quadratic", "cubic"]:
+            if np.iscomplexobj(val):
+                f_real = interp1d(x_valid, y_valid.real, kind=method, axis=axis, bounds_error=False, fill_value=(left_fill, right_fill))
+                f_imag = interp1d(x_valid, y_valid.imag, kind=method, axis=axis, bounds_error=False, fill_value=(left_fill, right_fill))
+                nan_mask_idx = np.where(nans_reduced)[0]
+                nan_slices = [slice(None)] * val.ndim
+                nan_slices[axis] = nan_mask_idx
+                val[tuple(nan_slices)] = f_real(times_val[nan_mask_idx]) + 1j * f_imag(times_val[nan_mask_idx])
+            else:
+                f = interp1d(x_valid, y_valid, kind=method, axis=axis, bounds_error=False, fill_value=(left_fill, right_fill))
+                nan_mask_idx = np.where(nans_reduced)[0]
+                nan_slices = [slice(None)] * val.ndim
+                nan_slices[axis] = nan_mask_idx
+                val[tuple(nan_slices)] = f(times_val[nan_mask_idx])
+             
+        if has_gap_constraint:
+            diffs = np.diff(x_valid)
+            big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
+            for idx in big_gaps:
+                t_start = x_valid[idx]
+                t_end = x_valid[idx+1]
+                mask_idx = np.where((times_val > t_start) & (times_val < t_end))[0]
+                revert_slc = [slice(None)] * val.ndim
+                revert_slc[axis] = mask_idx
+                val[tuple(revert_slc)] = np.nan
+    else:
+        it = np.ndindex(tuple(s for i, s in enumerate(val.shape) if i != axis))
+        for idxs in it:
+            slc = [slice(None)] * val.ndim
+            j = 0
+            for i in range(val.ndim):
+                if i != axis:
+                    slc[i] = idxs[j]
+                    j += 1
+            val[tuple(slc)] = _impute_1d(val[tuple(slc)], times_val, method, has_gap_constraint, gap_threshold)
+
+    if is_ts:
+        new_ts = ts.copy()
+        new_ts.value[:] = val
+        return new_ts
+    return val
+
+def standardize_timeseries(ts, *, method="zscore", ddof=0, robust=None):
     """
     Standardize a TimeSeries.
     """
+    if robust is True:
+        method = "robust"
+    
     val = ts.value
     if robust or method == "robust":
         med = np.nanmedian(val)
@@ -572,10 +550,12 @@ def standardize_timeseries(ts, *, method="zscore", ddof=0, robust=False):
     model = StandardizationModel(mean=np.array([med]), scale=np.array([scale]), axis="time")
     return new_ts, model
 
-def standardize_matrix(matrix, *, axis="time", method="zscore", ddof=0):
+def standardize_matrix(matrix, *, axis="time", method="zscore", ddof=0, robust=None):
     """
     Standardize a TimeSeriesMatrix.
     """
+    if robust is True:
+        method = "robust"
     val = matrix.value.copy()
     # TimeSeriesMatrix layout: (channels, time) usually, or (rows, cols, time).
     # Time is always the last axis (-1).

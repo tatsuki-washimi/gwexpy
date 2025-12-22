@@ -40,6 +40,30 @@ except ImportError:
 class FrequencySeries(BaseFrequencySeries):
     """Light wrapper of gwpy's FrequencySeries for compatibility and future extension."""
 
+    @property
+    def is_regular(self) -> bool:
+        """Return True if this FrequencySeries has a regular frequency grid."""
+        try:
+            idx = getattr(self, "xindex", None)
+            if idx is None:
+                return True
+            if hasattr(idx, "regular"):
+                return idx.regular
+            
+            freqs = np.asarray(idx)
+            if len(freqs) < 2:
+                return True
+            df = np.diff(freqs)
+            return np.allclose(df, df[0], atol=1e-12, rtol=1e-10)
+        except (AttributeError, ValueError, TypeError):
+             return False
+
+    def _check_regular(self, method_name: Optional[str] = None):
+        """Helper to ensure the series has a regular frequency grid."""
+        if not self.is_regular:
+            method = method_name or "This method"
+            raise ValueError(f"{method} requires a regular frequency grid.")
+
     # --- Phase and Angle ---
 
     def phase(self, unwrap: bool = False) -> "FrequencySeries":
@@ -209,9 +233,10 @@ class FrequencySeries(BaseFrequencySeries):
             Whether to remove padding and trim to original length during transient mode.
         original_n : int, optional
             Explicitly specify the length after restoration (takes priority).
-        pad_left, pad_right : int, optional
+        pad_right, pad_left : int, optional
             Specify padding lengths for transient mode to override defaults.
         """
+        self._check_regular("ifft")
         from gwexpy.timeseries import TimeSeries
         mode_to_use = mode
         if mode == "auto":
@@ -287,8 +312,9 @@ class FrequencySeries(BaseFrequencySeries):
         Returns
         -------
         out : `TimeSeries`
-            The IDCT result.
+            The TimeSeries.
         """
+        self._check_regular("idct")
         try:
              import scipy.fft
         except ImportError:
@@ -1536,7 +1562,31 @@ class FrequencySeriesMatrix(SeriesMatrix):
         return self.dx
 
     @property
-    def f0(self):
+    def is_regular(self) -> bool:
+        """Return True if this FrequencySeriesMatrix has a regular frequency grid."""
+        try:
+            idx = getattr(self, "xindex", None)
+            if idx is None:
+                return True
+            if hasattr(idx, "regular"):
+                return idx.regular
+            
+            freqs = np.asarray(idx)
+            if len(freqs) < 2:
+                return True
+            df = np.diff(freqs)
+            return np.allclose(df, df[0], atol=1e-12, rtol=1e-10)
+        except (AttributeError, ValueError, TypeError):
+             return False
+
+    def _check_regular(self, method_name: Optional[str] = None):
+        """Helper to ensure the matrix has a regular frequency grid."""
+        if not self.is_regular:
+            method = method_name or "This method"
+            raise ValueError(f"{method} requires a regular frequency grid.")
+
+    @property
+    def f0(self) -> Any:
         """Starting frequency (x0)."""
         return self.x0
 
@@ -1681,3 +1731,54 @@ class FrequencySeriesMatrix(SeriesMatrix):
             return self
         else:
             return self * h
+
+    def smooth(self, width: int, method: str = "amplitude") -> "FrequencySeriesMatrix":
+        """
+        Smooth the frequency series matrix along the frequency axis.
+        Vectorized implementation using uniform_filter1d.
+        
+        Parameters
+        ----------
+        width : int
+            Full width of the smoothing window in samples.
+        method : str, optional
+            Smoothing method: 'amplitude', 'power', 'complex', 'db'.
+            Default is 'amplitude'.
+        """
+        from scipy.ndimage import uniform_filter1d
+        from astropy import units as u
+        
+        val = self.value
+        # FrequencySeriesMatrix elements can have different units. 
+        # We take the first one as representative for calculation, or handle carefully.
+        unit = self.meta[0, 0].unit
+        axis = -1 # Frequency axis is always last
+
+        if method == 'complex':
+            # Complex data: smooth real and imag parts separately
+            re = uniform_filter1d(val.real, size=width, axis=axis)
+            im = uniform_filter1d(val.imag, size=width, axis=axis)
+            new_val = re + 1j * im
+        elif method == 'amplitude':
+            new_val = uniform_filter1d(np.abs(val), size=width, axis=axis)
+        elif method == 'power':
+            new_val = uniform_filter1d(np.abs(val)**2, size=width, axis=axis)
+            unit = unit**2
+        elif method == 'db':
+            # Convert to dB first
+            with np.errstate(divide='ignore'):
+                 db = 20 * np.log10(np.abs(val))
+            new_val = uniform_filter1d(db, size=width, axis=axis)
+            unit = u.Unit('dB')
+        else:
+            raise ValueError(f"Unknown smoothing method: {method}")
+
+        new_mat = self.copy()
+        new_mat.value[:] = new_val
+        # Note: if unit changed (power, db), update all metadata.
+        if unit != self.meta[0, 0].unit:
+             for r in range(new_mat.shape[0]):
+                 for c in range(new_mat.shape[1]):
+                      new_mat.meta[r, c].unit = unit
+                      
+        return new_mat

@@ -269,25 +269,53 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
         except (IndexError, KeyError, TypeError, ValueError, AttributeError):
             result_dtype = self._value.dtype
         
-        result_values = np.empty(self._value.shape, dtype=result_dtype)
+        # Vectorized value calculation
+        try:
+            result_values = ufunc(*value_arrays, **ufunc_kwargs)
+        except Exception:
+            # Fallback to loop if vectorized call fails
+            result_values = np.empty(self._value.shape, dtype=result_dtype)
+            for i in range(N):
+                for j in range(M):
+                    val_args = [v[i, j] for v in value_arrays]
+                    result_values[i, j] = ufunc(*val_args, **ufunc_kwargs)
+
         result_meta   = np.empty(self._value.shape[:2], dtype=object)
         bool_result = np.issubdtype(result_dtype, np.bool_)
 
-        for i in range(N):
-            for j in range(M):
-                val_args = [v[i, j] for v in value_arrays]
-                meta_args = [m[i, j] for m in meta_matrices]
-                try:
-                    result_values[i, j] = ufunc(*val_args, **ufunc_kwargs)
-                except (TypeError, ValueError, AttributeError, IndexError, KeyError) as e:
-                    raise type(e)(f"Error at cell ({i},{j}): {e}")
-                try:
-                    if bool_result or ufunc in meta_passthrough_ufuncs or ufunc.__name__ == "clip":
-                        result_meta[i, j] = meta_args[0]
-                    else:
-                        result_meta[i, j] = ufunc(*meta_args, **ufunc_kwargs)
-                except (TypeError, ValueError, AttributeError, IndexError, KeyError) as e:
-                    raise type(e)(f"MetaData ufunc error at ({i},{j}): {e}")
+        # Optimize Metadata calculation
+        # If all input matrices have uniform units, we can avoid the loop
+        def _get_uniform_meta(meta_mat):
+            first = meta_mat[0, 0]
+            # Check if all elements are effectively the same in terms of ufunc result
+            # For simplicity, we check if all have the same unit.
+            if np.all(meta_mat.units == first.unit):
+                return first
+            return None
+
+        uniform_metas = [_get_uniform_meta(m) for m in meta_matrices]
+        all_uniform = all(m is not None for m in uniform_metas)
+
+        if all_uniform and not (bool_result or ufunc in meta_passthrough_ufuncs):
+            try:
+                # Compute resulting meta once
+                res_meta_obj = ufunc(*uniform_metas, **ufunc_kwargs)
+                result_meta = np.full((N, M), res_meta_obj, dtype=object)
+            except Exception:
+                all_uniform = False
+
+        if not all_uniform:
+            result_meta = np.empty((N, M), dtype=object)
+            for i in range(N):
+                for j in range(M):
+                    meta_args = [m[i, j] for m in meta_matrices]
+                    try:
+                        if bool_result or ufunc in meta_passthrough_ufuncs:
+                            result_meta[i, j] = meta_args[0]
+                        else:
+                            result_meta[i, j] = ufunc(*meta_args, **ufunc_kwargs)
+                    except Exception as e:
+                        raise type(e)(f"MetaData ufunc error at ({i},{j}): {e}")
     
         result_meta_matrix = MetaDataMatrix(result_meta)
         result_units = result_meta_matrix.units
