@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from iminuit import Minuit
-from iminuit.cost import LeastSquares
 from iminuit.util import describe, make_func_code
 from .models import get_model
 
@@ -47,6 +46,36 @@ class ComplexLeastSquares:
     def ndata(self):
         # Effectively 2 * len(x) data points
         return 2 * len(self.x)
+
+
+class RealLeastSquares:
+    """
+    Least Squares cost function for real-valued data.
+
+    This is a small, dependency-light replacement for `iminuit.cost.LeastSquares`
+    to avoid optional JIT/caching side effects in some environments.
+    """
+
+    errordef = Minuit.LEAST_SQUARES
+
+    def __init__(self, x, y, dy, model):
+        self.x = x
+        self.y = y
+        self.dy = dy
+        self.model = model
+
+        params = describe(model)[1:]
+        self.func_code = make_func_code(params)
+
+    def __call__(self, *args):
+        ym = self.model(self.x, *args)
+        res = (self.y - ym) / self.dy
+        return np.sum(res**2)
+
+    @property
+    def ndata(self):
+        return len(self.x)
+
 
 class FitResult:
     def __init__(self, minuit_obj, model, x, y, dy=None, cost_func=None, x_label=None, y_label=None):
@@ -334,7 +363,7 @@ def fit_series(series, model, x_range=None, sigma=None,
     if is_complex:
         cost = ComplexLeastSquares(x, y, dy, model)
     else:
-        cost = LeastSquares(x, y, dy, model)
+        cost = RealLeastSquares(x, y, dy, model)
     
     # 3. Minuit 初期化
     init_params = p0 if p0 else {}

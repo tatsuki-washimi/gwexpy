@@ -30,6 +30,32 @@ class Spectrogram(BaseSpectrogram):
     """
     Extends gwpy.spectrogram.Spectrogram with additional interop methods.
     """
+    def bootstrap_asd(
+        self,
+        n_boot=1000,
+        average="median",
+        ci=0.68,
+        window="hann",
+        nperseg=None,
+        noverlap=None,
+    ):
+        """
+        Estimate robust ASD from this spectrogram using bootstrap resampling.
+
+        This is a convenience wrapper around `gwexpy.spectral.bootstrap_spectrogram`.
+        """
+        from gwexpy.spectral import bootstrap_spectrogram
+
+        return bootstrap_spectrogram(
+            self,
+            n_boot=n_boot,
+            average=average,
+            ci=ci,
+            window=window,
+            nperseg=nperseg,
+            noverlap=noverlap,
+        )
+
     def to_th2d(self, error=None):
         """
         Convert to ROOT TH2D.
