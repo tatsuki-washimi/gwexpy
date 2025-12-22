@@ -65,50 +65,93 @@ def align_timeseries_collection(
     for ts in series_list:
         if ts.dt is None:
             raise ValueError("align_timeseries_collection requires dt for all series")
-        dt_q = ts.dt if isinstance(ts.dt, u.Quantity) else u.Quantity(ts.dt)
+        
+        # Ensure dt is a Quantity
+        dt_q = ts.dt if isinstance(ts.dt, u.Quantity) else u.Quantity(ts.dt, u.dimensionless_unscaled)
+        
         dt_vals = np.asanyarray(dt_q.value)
         if np.any(dt_vals <= 0):
             raise ValueError("align_timeseries_collection requires dt > 0")
         dts.append(dt_q)
-        if getattr(dt_q.unit, "physical_type", None) == "time":
+        
+        # Check physical type safely
+        dt_unit = getattr(dt_q, "unit", None)
+        if dt_unit is not None and getattr(dt_unit, "physical_type", None) == "time":
             has_time_dt = True
 
-    # 2. Determine time bounds
+    # 2. Determine time bounds and common unit
     # Check if we should operate in physical time (seconds)
     is_time_based = has_time_dt
     if not is_time_based:
-        # If any series has time unit, force time-based
+        # If any series has time unit in its axis, force time-based
         for ts in series_list:
-            if ts.times.unit is not None and ts.times.unit.physical_type == 'time':
+            t_unit = getattr(ts.times, "unit", None)
+            if t_unit is not None and getattr(t_unit, "physical_type", None) == 'time':
                 is_time_based = True
                 break
 
     if is_time_based:
-        common_time_unit = u.s
+        # Determine base time unit. Prefer seconds but keep original if all are same.
+        time_units = set()
+        for dt_q in dts:
+            if getattr(dt_q.unit, "physical_type", None) == "time":
+                time_units.add(dt_q.unit)
+        for ts in series_list:
+            t_unit = getattr(ts.times, "unit", None)
+            if t_unit is not None and getattr(t_unit, "physical_type", None) == 'time':
+                time_units.add(t_unit)
+        
+        if len(time_units) == 1:
+            common_time_unit = list(time_units)[0]
+        else:
+            common_time_unit = u.s
+            if time_units:
+                warnings.warn(
+                    f"Mixed time units found in collection ({time_units}). "
+                    "Forcing alignment to seconds."
+                )
+            
         dt_candidates = []
         for dt_q in dts:
-            if dt_q.unit is None or dt_q.unit == u.dimensionless_unscaled:
-                dt_candidates.append(u.Quantity(dt_q.value, u.s))
-            elif dt_q.unit.physical_type == "dimensionless":
-                dt_candidates.append(u.Quantity(dt_q.value, u.s))
-            elif dt_q.unit.physical_type == "time":
-                dt_candidates.append(dt_q.to(u.s))
+            # Safer access to physical_type
+            phys = getattr(dt_q.unit, "physical_type", None)
+            if dt_q.unit == u.dimensionless_unscaled or phys == "dimensionless":
+                # Interpret dimensionless as common_time_unit
+                dt_candidates.append(u.Quantity(dt_q.value, common_time_unit))
+            elif phys == "time":
+                dt_candidates.append(dt_q.to(common_time_unit))
             else:
                 raise ValueError(
                     f"align_timeseries_collection requires time-like dt when time-based alignment is used: {dt_q}"
                 )
         target_dt = max(dt_candidates)
     else:
-        # Fallback to first unit (or dimensionless)
-        ref_u = series_list[0].times.unit
-        common_time_unit = ref_u if ref_u is not None else u.dimensionless_unscaled
-        target_dt = max(dts)
-        try:
-            target_dt.to(common_time_unit)
-        except u.UnitConversionError as exc:
-            raise ValueError(
-                f"Incompatible dt unit in collection: {target_dt.unit} vs {common_time_unit}"
-            ) from exc
+        # Fallback to first unit found in dts or times
+        common_time_unit = u.dimensionless_unscaled
+        for dt_q in dts:
+            if dt_q.unit != u.dimensionless_unscaled:
+                common_time_unit = dt_q.unit
+                break
+        if common_time_unit == u.dimensionless_unscaled:
+            for ts in series_list:
+                t_unit = getattr(ts.times, "unit", None)
+                if t_unit is not None and t_unit != u.dimensionless_unscaled:
+                    common_time_unit = t_unit
+                    break
+        
+        # Convert all to common_time_unit, treating dimensionless specifically
+        dt_candidates = []
+        for dt_q in dts:
+            if dt_q.unit == u.dimensionless_unscaled:
+                 dt_candidates.append(u.Quantity(dt_q.value, common_time_unit))
+            else:
+                 try:
+                     dt_candidates.append(dt_q.to(common_time_unit))
+                 except u.UnitConversionError as exc:
+                     raise ValueError(
+                         f"Incompatible dt unit in collection: {dt_q.unit} vs {common_time_unit}"
+                     ) from exc
+        target_dt = max(dt_candidates)
     
     # Helper to get start/end in common unit
     def get_span_val(ts):
@@ -195,6 +238,9 @@ def align_timeseries_collection(
     is_complex = any(ts.dtype.kind == 'c' for ts in series_list)
     dtype = np.complex128 if is_complex else np.float64
     
+    if fill_value is None:
+        fill_value = np.nan
+        
     values = np.full((n_samples, n_channels), fill_value, dtype=dtype)
     
     for i, ts in enumerate(series_list):

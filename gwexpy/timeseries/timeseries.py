@@ -56,9 +56,15 @@ class TimeSeries(BaseTimeSeries):
         from gwexpy.time import to_gps
         # Convert inputs to GPS if provided
         if start is not None:
-             start = float(to_gps(start))
+             start = to_gps(start)
+             if isinstance(start, (np.ndarray, list)) and np.ndim(start) > 0:
+                 start = start[0]
+             start = float(start)
         if end is not None:
-             end = float(to_gps(end))
+             end = to_gps(end)
+             if isinstance(end, (np.ndarray, list)) and np.ndim(end) > 0:
+                 end = end[0]
+             end = float(end)
             
         return super().crop(start=start, end=end, copy=copy)
 
@@ -251,6 +257,15 @@ class TimeSeries(BaseTimeSeries):
              safe_t0 = u.Quantity(grid_start, safe_unit)
              return self.__class__([], t0=safe_t0, dt=target_dt, channel=self.channel, name=self.name, unit=self.unit)
 
+        if fill_value is None:
+             if self.dtype.kind in ('f', 'c'):
+                 fill_value = np.nan
+             else:
+                 # For integers or others, None stays None and might fail in np.full
+                 # unless we decide to promote to float. 
+                 # Given this is asfreq (reindexing), float promotion is common.
+                 pass
+
         new_data = np.full(len(new_times_val), fill_value, dtype=self.dtype)
         if hasattr(fill_value, 'dtype'):
              # If fill value is complex etc?
@@ -297,7 +312,13 @@ class TimeSeries(BaseTimeSeries):
                         new_data[mask_gap] = np.nan
                 
                 # Apply fill_value to NaNs (if interp produced NaNs for out of bounds)
-                if np.isnan(fill_value):
+                is_fill_nan = False
+                try:
+                    is_fill_nan = np.isnan(fill_value)
+                except (TypeError, ValueError):
+                    pass
+
+                if is_fill_nan:
                     pass # already nan
                 else:
                     mask = np.isnan(new_data)

@@ -75,13 +75,38 @@ def as_series(axis, unit=None, *, name=None):
     name
         Optional series name.
     """
+    from gwexpy.time import to_gps
     axis_unit = getattr(axis, "unit", None)
+
     if isinstance(axis, u.Quantity):
         axis_q = _to_quantity_1d(axis)
     elif axis_unit is not None:
-        axis_q = _to_quantity_1d(u.Quantity(np.asarray(axis), u.Unit(axis_unit)))
+        try:
+            axis_q = _to_quantity_1d(u.Quantity(np.asarray(axis), u.Unit(axis_unit)))
+        except (ValueError, TypeError) as e:
+            raise TypeError(
+                f"Could not convert axis with unit '{axis_unit}' to Quantity: {e}. "
+                "The input values may be incompatible with the specified unit."
+            ) from e
     else:
-        raise TypeError("as_series expects a 1D gwpy.types.index.Index or astropy.units.Quantity")
+        # Try to convert to GPS if it looks like time (datetime, strings, etc)
+        try:
+            axis_gps = to_gps(axis)
+            # If to_gps returned a numeric array from a non-numeric input, we treat it as seconds.
+            # But if it was already numeric and had no unit, we should maybe be more strict?
+            # For now, following the user request to support datetime arrays.
+            if isinstance(axis, (np.ndarray, list)) and len(axis) > 0 and not isinstance(axis[0], (int, float, np.number)):
+                 axis_q = _to_quantity_1d(u.Quantity(np.asarray(axis_gps), u.s))
+            else:
+                 # If it was already numeric and reached here, it means it had no .unit.
+                 # We still try to wrap it in case to_gps did something useful, 
+                 # but this is where the "unclear error" usually happened.
+                 axis_q = _to_quantity_1d(u.Quantity(np.asarray(axis_gps), u.s))
+        except (ValueError, TypeError, AttributeError) as e:
+            raise TypeError(
+                f"as_series expects a 1D axis-like input (Quantity, Index with unit, or datetime array). "
+                f"Current input type '{type(axis)}' could not be quantified: {e}"
+            ) from e
 
     if _is_time_unit(axis_q.unit):
         value_unit = u.Unit(unit) if unit is not None else u.Unit(axis_q.unit)
@@ -90,7 +115,7 @@ def as_series(axis, unit=None, *, name=None):
 
         from gwexpy.timeseries import TimeSeries
         values_q = axis_q.to(value_unit)
-        times_axis = axis
+        times_axis = axis_q
         return TimeSeries(values_q.value, times=times_axis, unit=value_unit, name=name)
 
     if _is_freq_unit(axis_q.unit) or _is_angular_frequency(axis_q.unit):

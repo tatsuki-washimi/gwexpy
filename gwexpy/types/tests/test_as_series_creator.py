@@ -41,3 +41,16 @@ def test_as_series_angular_frequency_quantity_uses_hz_axis():
 
     assert fs.unit == u.Unit("Hz")
     assert np.allclose(fs.value, np.arange(5))
+
+
+def test_as_series_datetime_array():
+    from gwexpy.types import as_series
+    from datetime import datetime
+    
+    times = [datetime(2020, 1, 1, 0, 0, 0), datetime(2020, 1, 1, 0, 0, 1)]
+    ts = as_series(times)
+    
+    assert ts.t0.value == 1261872018.0 # GPS
+    assert ts.dt.value == 1.0
+    assert ts.unit == u.s
+    assert np.allclose(ts.value, [1261872018.0, 1261872019.0])
