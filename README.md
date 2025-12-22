@@ -37,6 +37,11 @@
 ### 6. Time Utilities & Auto Series
 - **Vectorized time conversion**: `gwexpy.time.to_gps/from_gps/tconvert` handle numpy arrays, pandas, ObsPy, and string arrays.
 - **Axis → Series helper**: `as_series` converts a 1D axis (`gwpy.types.index.Index` or `astropy.units.Quantity`) into a `TimeSeries` or `FrequencySeries` (identity mapping). Angular frequency inputs (`rad/s`) are treated as frequency axes and converted to Hz for the x-axis.
+40: 
+41: ### 7. Noise & Physics Models
+42: - **`gwexpy.noise`**: Easily fetch standard noise models.
+43:   - `from_pygwinc()`: Detector noise budgets (aLIGO, KAGRA, etc.).
+44:   - `from_obspy()`: Earth noise models (NLNM/NHNM) and Infrasound models with automatic integration and unit conversion (e.g., Acceleration to Displacement).
 
 ---
 
@@ -51,11 +56,11 @@ pip install ".[all]"
 
 # Install specific features
 pip install ".[interop]"     # All interoperability features
-pip install ".[geophysics]"  # Obspy, MTh5, etc.
+pip install ".[geophysics]"  # Obspy, MTh5, pygwinc, etc.
 pip install ".[torch]"       # PyTorch support
 pip install ".[audio]"       # Librosa, Pydub, Torchaudio
 ```
-*(Note: Core dependencies include `gwpy`, `astropy`, `numpy`, `scipy`. Some features require `torch`, `tensorflow`, `dask`, `zarr`, `pydub`, `librosa`, etc.)*
+*(Note: Core dependencies include `gwpy`, `astropy`, `numpy`, `scipy`. Some features require `pygwinc`, `obspy`, `torch`, `tensorflow`, `dask`, etc.)*
 
 ---
 

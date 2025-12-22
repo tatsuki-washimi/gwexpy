@@ -60,6 +60,7 @@ from . import (
     types,
     io,
     interop,
+    noise,
 )
 
 __all__ = [
@@ -105,4 +106,5 @@ __all__ = [
     "types",
     "io",
     "interop",
+    "noise",
 ]
