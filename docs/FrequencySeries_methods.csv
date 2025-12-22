@@ -1,39 +1,40 @@
 Method,FrequencySeries (gwexpy),FrequencySeriesList,FrequencySeriesDict,FrequencySeriesMatrix,備考
 __init__,〇,〇,〇,〇,
-read,〇,〇,〇,〇,Matrixは全Ch一括読込
-write,〇,〇,〇,〇,
-plot,〇,〇,〇,△,Matrixは簡易プロットのみ(bode等は不可)
+read / write,〇,〇,〇,〇,Matrixは全Ch一括
+plot / plot_all,〇,〇,〇,△,Matrixは簡易プロットのみ
 __getitem__,〇,〇,〇,〇,Matrixは[ch, freq]
 __add__ / __sub__,〇,×,×,〇,Matrixはndarrayとして計算
 shape,〇,-,-,〇,
-crop,〇,〇,〇,〇,Dictは全要素に適用
+crop,〇,〇,〇,〇,
 pad,〇,〇,〇,〇,
-append,×,△,△,〇,Matrixは周波数軸結合(要確認)またはCh追加
+append,×,△,△,〇,周波数軸またはCh追加
 prepend,×,△,△,〇,
-update,〇,△,△,〇,Dictは辞書更新, Matrixはデータ更新
+update,〇,△,△,〇,
 interpolate,〇,〇,〇,×,周波数軸の再サンプリング
-zpk,〇,〇,〇,×,Matrix未実装(ZPKフィルタ生成・適用)
+zpk,〇,〇,〇,×,Matrix未実装
 filter,〇,〇,〇,〇,Matrixはfdfilterラッパー
-apply_response,〇,〇,〇,〇,gwexpy独自(複素応答の適用)
-ifft,〇,〇,〇,〇,Transient対応(gwexpy拡張)
-idct,〇,×,×,×,gwexpy独自(逆DCT)
-phase / angle,〇,〇,〇,×,gwexpy独自
+apply_response,〇,〇,〇,〇,gwexpy独自 (複素応答の適用)
+ifft,〇,〇,〇,〇,Transient対応 (gwexpy拡張)
+idct,〇,×,×,×,gwexpy独自 (逆DCT)
+phase / angle,〇,〇,〇,〇,Matrixはangleプロパティ
 degree,〇,〇,〇,×,gwexpy独自
 to_db,〇,〇,〇,×,gwexpy独自
-differentiate_time,〇,〇,〇,×,gwexpy独自(jω倍)
-integrate_time,〇,〇,〇,×,gwexpy独自(1/jω倍)
+differentiate_time,〇,〇,〇,×,gwexpy独自 (jω倍)
+integrate_time,〇,〇,〇,×,gwexpy独自 (1/jω倍)
 group_delay,〇,〇,〇,×,gwexpy独自
-smooth,〇,〇,〇,×,gwexpy独自(平滑化)
-find_peaks,〇,×,×,×,gwexpy独自(ピーク検出)
+smooth,〇,〇,〇,×,gwexpy独自 (平滑化)
+find_peaks,〇,×,×,×,gwexpy独自 (ピーク検出)
 quadrature_sum,〇,×,×,×,gwexpy独自
+to_mne_spectrum,〇,×,×,×,MNE-Python連携
+to_obspy_spectrum,〇,×,×,×,ObsPy連携
 to_lal / from_lal,〇,×,×,×,LAL連携
 to_pycbc / from_pycbc,〇,×,×,×,PyCBC連携
-to_pandas,〇,〇,〇,〇,
-to_xarray,〇,〇,〇,〇,
-to_hdf5_dataset,〇,×,×,〇,
-to_torch,〇,〇,〇,〇,PyTorch連携
-to_tf,〇,〇,〇,×,TensorFlow連携(Matrix未実装)
-to_jax,〇,〇,〇,×,JAX連携(Matrix未実装)
-to_cupy,〇,〇,〇,〇,CuPy連携
-to_control_frd,〇,〇,〇,×,Controlライブラリ連携
+to_pandas / from_pandas,〇,〇,〇,〇,
+to_xarray / from_xarray,〇,〇,〇,〇,
+to_hdf5_dataset / from_hdf5,〇,×,×,〇,
+to_torch / from_torch,〇,〇,〇,〇,PyTorch連携
+to_tf / from_tf,〇,〇,〇,×,TensorFlow連携
+to_jax / from_jax,〇,〇,〇,×,JAX連携
+to_cupy / from_cupy,〇,〇,〇,〇,CuPy連携
+to_control_frd / from_frd,〇,〇,〇,×,Controlライブラリ連携
 span / segments,×,〇,〇,-,周波数範囲の取得
