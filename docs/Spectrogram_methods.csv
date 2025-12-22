@@ -1,7 +1,7 @@
 Method/Property,Spectrogram (gwpy),SpectrogramList (gwexpy),SpectrogramDict (gwexpy),SpectrogramMatrix (gwexpy),備考
 __init__,〇,〇,〇,〇,
-read,〇,〇,〇,×,List/DictはHDF5対応(一括読込)
-write,〇,〇,〇,×,List/DictはHDF5対応(一括保存)
+read,〇,〇,〇,×,List/DictはHDF5/ROOT対応
+write,〇,〇,〇,×,List/DictはHDF5/ROOT対応
 plot,〇,〇,〇,〇,Matrixはグリッド/スタック表示可
 crop,〇,〇,〇,×,Matrixは正規スライスで対応
 crop_frequencies,〇,〇,〇,×,
@@ -19,3 +19,4 @@ extend,-,〇,-,-,
 update,-,-,〇,-,
 inplace,-,〇,〇,-,crop/rebin等でinplace=Trueをサポート
 row_keys / col_keys,×,×,×,〇,Matrixのメタデータキー取得
+to_th2d,〇,×,×,×,CERN ROOT TH2D変換

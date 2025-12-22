@@ -80,6 +80,118 @@ class TimeSeriesInteropMixin:
         return from_pandas_series(cls, series, unit=unit, t0=t0, dt=dt)
 
     # ===============================
+    # polars
+    # ===============================
+
+    def to_polars(self, name: Optional[str] = None, as_dataframe: bool = True, time_column: str = "time", time_unit: str = "datetime") -> Any:
+        """
+        Convert TimeSeries to polars object.
+        
+        Parameters
+        ----------
+        name : str, optional
+            Name for the polars Series/Column.
+        as_dataframe : bool, default True
+            If True, returns a DataFrame with a time column.
+            If False, returns a raw Series of values.
+        time_column : str, default "time"
+            Name of the time column (only if as_dataframe=True).
+        time_unit : str, default "datetime"
+            Format of the time column: "datetime", "gps", or "unix".
+            
+        Returns
+        -------
+        polars.DataFrame or polars.Series
+        """
+        if as_dataframe:
+             from gwexpy.interop import to_polars_dataframe
+             return to_polars_dataframe(self, time_column=time_column, time_unit=time_unit)
+        else:
+             from gwexpy.interop import to_polars_series
+             return to_polars_series(self, name=name)
+
+    @classmethod
+    def from_polars(cls, data: Any, time_column: Optional[str] = "time", unit: Optional[Any] = None) -> Any:
+        """
+        Create TimeSeries from polars.DataFrame or polars.Series.
+        
+        Parameters
+        ----------
+        data : polars.DataFrame or polars.Series
+            Input data.
+        time_column : str, optional
+            If data is a DataFrame, name of the column to use as time.
+        unit : Unit, optional
+            Physical unit.
+            
+        Returns
+        -------
+        TimeSeries
+        """
+        import polars as pl
+        if isinstance(data, pl.DataFrame):
+             from gwexpy.interop import from_polars_dataframe
+             return from_polars_dataframe(cls, data, time_column=time_column, unit=unit)
+        else:
+             from gwexpy.interop import from_polars_series
+             return from_polars_series(cls, data, unit=unit)
+
+    # ===============================
+    # ROOT
+    # ===============================
+
+    def to_tgraph(self, error: Optional[Any] = None) -> Any:
+        """
+        Convert to ROOT TGraph or TGraphErrors.
+        
+        Parameters
+        ----------
+        error : Series, Quantity, or array-like, optional
+            Error bars for the y-axis.
+            
+        Returns
+        -------
+        ROOT.TGraph or ROOT.TGraphErrors
+        """
+        from gwexpy.interop import to_tgraph
+        return to_tgraph(self, error=error)
+
+    def to_th1d(self, error: Optional[Any] = None) -> Any:
+        """
+        Convert to ROOT TH1D.
+        
+        Parameters
+        ----------
+        error : Series, Quantity, or array-like, optional
+            Bin errors.
+            
+        Returns
+        -------
+        ROOT.TH1D
+        """
+        from gwexpy.interop import to_th1d
+        return to_th1d(self, error=error)
+
+    @classmethod
+    def from_root(cls, obj: Any, return_error: bool = False) -> Any:
+        """
+        Create TimeSeries from ROOT TGraph or TH1.
+        
+        Parameters
+        ----------
+        obj : ROOT.TGraph or ROOT.TH1
+            Input ROOT object.
+        return_error : bool, default False
+            If True, return (series, error_series).
+            
+        Returns
+        -------
+        TimeSeries or tuple of TimeSeries
+        """
+        from gwexpy.interop import from_root
+        return from_root(cls, obj, return_error=return_error)
+
+    # ===============================
     # xarray
     # ===============================
         

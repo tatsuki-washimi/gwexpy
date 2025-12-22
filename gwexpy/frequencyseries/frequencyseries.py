@@ -181,6 +181,53 @@ class FrequencySeries(BaseFrequencySeries):
     def from_pandas(cls: type["FrequencySeries"], series: Any, **kwargs: Any) -> Any:
         return from_pandas_frequencyseries(cls, series, **kwargs)
 
+    def to_polars(self, name: Optional[str] = None, as_dataframe: bool = True, index_column: str = "frequency") -> Any:
+        """
+        Convert FrequencySeries to polars object.
+        """
+        if as_dataframe:
+             from gwexpy.interop import to_polars_frequencyseries
+             return to_polars_frequencyseries(self, index_column=index_column)
+        else:
+             from gwexpy.interop import to_polars_series
+             return to_polars_series(self, name=name)
+
+    @classmethod
+    def from_polars(cls: type["FrequencySeries"], data: Any, index_column: Optional[str] = "frequency", **kwargs: Any) -> Any:
+        """
+        Create FrequencySeries from polars object.
+        """
+        import polars as pl
+        if isinstance(data, pl.DataFrame):
+             # We reuse from_polars_dataframe but might need specific frequency logic
+             from gwexpy.interop import from_polars_dataframe
+             return from_polars_dataframe(cls, data, time_column=index_column, **kwargs)
+        else:
+             from gwexpy.interop import from_polars_series
+             return from_polars_series(cls, data, **kwargs)
+
+    def to_tgraph(self, error: Optional[Any] = None) -> Any:
+        """
+        Convert to ROOT TGraph or TGraphErrors.
+        """
+        from gwexpy.interop import to_tgraph
+        return to_tgraph(self, error=error)
+
+    def to_th1d(self, error: Optional[Any] = None) -> Any:
+        """
+        Convert to ROOT TH1D.
+        """
+        from gwexpy.interop import to_th1d
+        return to_th1d(self, error=error)
+
+    @classmethod
+    def from_root(cls: type["FrequencySeries"], obj: Any, return_error: bool = False, **kwargs: Any) -> Any:
+        """
+        Create FrequencySeries from ROOT TGraph or TH1.
+        """
+        from gwexpy.interop import from_root
+        return from_root(cls, obj, return_error=return_error, **kwargs)
+
     def to_xarray(self, freq_coord: str = "Hz") -> Any:
         return to_xarray_frequencyseries(self, freq_coord=freq_coord)
 
@@ -1175,6 +1222,20 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
              ds[key] = fs.to_xarray()
         return ds
 
+    def to_tmultigraph(self, name: Optional[str] = None) -> Any:
+        """Convert to ROOT TMultiGraph."""
+        from gwexpy.interop import to_tmultigraph
+        return to_tmultigraph(self, name=name)
+    def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
+        fmt = kwargs.get("format")
+        if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
+             from gwexpy.interop.root_ import write_root_file
+             return write_root_file(self, target, **kwargs)
+        from astropy.io import registry
+        return registry.write(self, target, *args, **kwargs)
+
+
+
 
 class FrequencySeriesBaseList(list[_FS]):
     """List container for `FrequencySeries` objects with type enforcement."""
@@ -1513,6 +1574,18 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
         
         # Concat
         return xr.concat(das, dim=xr.DataArray(names, dims="channel", name="channel"))
+
+    def to_tmultigraph(self, name: Optional[str] = None) -> Any:
+        """Convert to ROOT TMultiGraph."""
+        from gwexpy.interop import to_tmultigraph
+        return to_tmultigraph(self, name=name)
+    def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
+        fmt = kwargs.get("format")
+        if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
+             from gwexpy.interop.root_ import write_root_file
+             return write_root_file(self, target, **kwargs)
+        from astropy.io import registry
+        return registry.write(self, target, *args, **kwargs)
 
 
 # =============================

@@ -1,7 +1,7 @@
 Method/Property,TimeSeries (gwpy),TimeSeriesList (gwexpy),TimeSeriesDict (gwexpy),TimeSeriesMatrix (gwexpy),備考
 __init__,〇,〇,〇,〇,
 read,〇,〇,〇,〇,Matrixは全Ch一括読込
-write,〇,〇,〇,〇,
+write,〇,〇,〇,〇,ROOTフォーマット(.root)対応
 plot,〇,〇,〇,△,Matrixは簡易プロットのみ
 __getitem__ (slice),〇,〇,〇,〇,Matrixは[ch, time]の2次元
 __add__ / __sub__ (演算),〇,×,×,〇,Matrixはndarrayとして計算
@@ -74,6 +74,8 @@ to_matrix,×,〇,〇,〇,gwexpy独自の変換メソッド
 to_torch / from_torch,〇,×,×,〇,PyTorch連携
 to_cupy / from_cupy,〇,×,×,×,CuPy連携
 to_jax / from_jax,〇,×,×,×,JAX連携
+to_tgraph,〇,×,×,×,CERN ROOT TGraph変換
+to_tmultigraph,×,〇,〇,×,CERN ROOT TMultiGraph変換
 rolling_mean / std / etc,×,〇,〇,〇,gwexpy独自 (移動統計量)
 impute,×,〇,〇,〇,欠損値補間 (gwexpy独自)
 pca / ica,×,〇,〇,〇,主成分分析等 (gwexpy独自)

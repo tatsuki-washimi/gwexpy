@@ -37,11 +37,11 @@
 ### 6. Time Utilities & Auto Series
 - **Vectorized time conversion**: `gwexpy.time.to_gps/from_gps/tconvert` handle numpy arrays, pandas, ObsPy, and string arrays.
 - **Axis → Series helper**: `as_series` converts a 1D axis (`gwpy.types.index.Index` or `astropy.units.Quantity`) into a `TimeSeries` or `FrequencySeries` (identity mapping). Angular frequency inputs (`rad/s`) are treated as frequency axes and converted to Hz for the x-axis.
-40: 
-41: ### 7. Noise & Physics Models
-42: - **`gwexpy.noise`**: Easily fetch standard noise models.
-43:   - `from_pygwinc()`: Detector noise budgets (aLIGO, KAGRA, etc.).
-44:   - `from_obspy()`: Earth noise models (NLNM/NHNM) and Infrasound models with automatic integration and unit conversion (e.g., Acceleration to Displacement).
+
+### 7. Noise & Physics Models
+- **`gwexpy.noise`**: Easily fetch standard noise models.
+  - `from_pygwinc()`: Detector noise budgets (aLIGO, KAGRA, etc.).
+  - `from_obspy()`: Earth noise models (NLNM/NHNM) and Infrasound models with automatic integration and unit conversion (e.g., Acceleration to Displacement).
 
 ---
 
@@ -60,7 +60,41 @@ pip install ".[geophysics]"  # Obspy, MTh5, pygwinc, etc.
 pip install ".[torch]"       # PyTorch support
 pip install ".[audio]"       # Librosa, Pydub, Torchaudio
 ```
-*(Note: Core dependencies include `gwpy`, `astropy`, `numpy`, `scipy`. Some features require `pygwinc`, `obspy`, `torch`, `tensorflow`, `dask`, etc.)*
+### Dependencies
+
+#### Core Dependencies (Required)
+These are automatically installed with `pip install .`.
+
+| Package | Purpose |
+| :--- | :--- |
+| `gwpy` | Base library for gravitational wave and time-series data |
+| `astropy` | Physical units, time conversion, and coordinate systems |
+| `numpy` | N-dimensional array processing |
+| `pandas` | Time-indexed dataframes and table operations |
+| `scipy` | Signal processing, peak finding, and interpolation |
+| `matplotlib` | Plotting and visualization |
+
+#### Optional Dependencies
+Required only for specific submodules or interpolation features.
+
+| Extra Name | Packages | Features |
+| :--- | :--- | :--- |
+| `[analysis]` | `pyemd`, `hurst`, `pywt`, `librosa`, `obspy` | HHT/EMD, Hurst exponent, Wavelets, advanced audio/seismic signal processing |
+| `[stats]` | `statsmodels`, `scikit-learn`, `bottleneck` | ARIMA, ICA/PCA decomposition, fast rolling statistics |
+| `[gw]` | `gwinc`, `dttxml` | `gwexpy.noise`, GW noise budgets & `dttxml` reading |
+| `[geophysics]` | `obspy`, `netCDF4`, `mth5`, `mt_metadata`, `mtpy`, `wintools`, `win2ndarray` | Seismic/EM data I/O, noise models |
+| `[bio]` | `mne`, `neo` | EEG/MEG & Electrophysiology data I/O |
+| `[gpu]` | `cupy`, `torch`, `tensorflow`, `jax` | GPU‑accelerated array support & Deep Learning |
+| `[audio]` | `librosa`, `pydub`, `torchaudio` | Audio format export/import (mp3, wav) |
+| `[data]` | `xarray`, `h5py` | HDF5 and XArray data structures |
+| `[control]` | `control` | Control system analysis (`to_control_frd`) |
+| `[polars]` | `polars` | Fast DataFrames support (`to_polars`) |
+| `[dask]` | `dask` | Parallel array processing |
+| `[zarr]` | `zarr` | Chunked, compressed, binary storage |
+| `[dev]` | `pytest`, `pytest-cov`, `ruff`, `mypy` | Tooling for development and testing |
+
+To install everything at once, use: `pip install ".[all]"`.
+
 
 ---
 
@@ -95,16 +129,22 @@ tensor_pt = to_torch(ts)      # PyTorch Tensor
 tensor_tf = to_tf(ts)         # TensorFlow Tensor
 tensor_jax = to_jax(ts)       # JAX Array
 tensor_cupy = to_cupy(ts)     # CuPy Array
+df_pl = ts.to_polars()        # Polars DataFrame
 
 # Big Data & Storage
 dask_arr = to_dask(ts, chunks=1000)  # Dask Array
 to_zarr(ts, store="data.zarr", path="my_array", overwrite=True)  # Save to Zarr
 
 # Audio & Other Domains
-# Supports: Librosa (standard numpy), Pydub (AudioSegment), ObsPy (Trace), MNE, Neo
-from gwexpy.interop import to_pydub, to_obspy_trace
+# Supports: Librosa (standard numpy), Pydub (AudioSegment), ObsPy (Trace), MNE, Neo, ROOT
+from gwexpy.interop import to_pydub, to_obspy_trace, write_root_file
 audio_seg = to_pydub(ts)
 trace = to_obspy_trace(ts)
+
+# CERN ROOT Interoperability
+# Converts to ROOT TGraph/TMultiGraph/TH2D and saves to .root files
+tsd.write("data.root")  # Automatic .root detection for Dictionary/List
+mg = tsd.to_tmultigraph(name="comparison")
 ```
 
 ### 3. TimeSeriesMatrix & Decomposition
