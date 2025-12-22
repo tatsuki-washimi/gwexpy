@@ -12,6 +12,7 @@ from gwexpy.signal.preprocessing import (
     standardize as _standardize_array,
     impute as _impute_array,
 )
+from .utils import _coerce_t0_gps
 
 try:
     from typing import TYPE_CHECKING
@@ -107,6 +108,24 @@ def align_timeseries_collection(
             if t_unit is not None and getattr(t_unit, "physical_type", None) == 'time':
                 is_time_based = True
                 break
+    if not is_time_based:
+        # Treat dimensionless axes as GPS seconds by default
+        all_dimless = True
+        for dt_q in dts:
+            unit = getattr(dt_q, "unit", None)
+            phys = getattr(unit, "physical_type", None) if unit is not None else None
+            if unit is not None and unit != u.dimensionless_unscaled and phys != "dimensionless":
+                all_dimless = False
+                break
+        if all_dimless:
+            for ts in series_list:
+                t_unit = getattr(ts.times, "unit", None)
+                phys = getattr(t_unit, "physical_type", None) if t_unit is not None else None
+                if t_unit is not None and t_unit != u.dimensionless_unscaled and phys != "dimensionless":
+                    all_dimless = False
+                    break
+        if all_dimless:
+            is_time_based = True
 
     if is_time_based:
         # Determine base time unit. Prefer seconds but keep original if all are same.
@@ -119,15 +138,11 @@ def align_timeseries_collection(
             if t_unit is not None and getattr(t_unit, "physical_type", None) == 'time':
                 time_units.add(t_unit)
         
-        if len(time_units) == 1:
-            common_time_unit = list(time_units)[0]
-        else:
-            common_time_unit = u.s
-            if time_units:
-                warnings.warn(
-                    f"Mixed time units found in collection ({time_units}). "
-                    "Forcing alignment to seconds."
-                )
+        common_time_unit = u.s
+        if time_units and (len(time_units) > 1 or list(time_units)[0] != u.s):
+            warnings.warn(
+                f"Converting time units {time_units} to GPS seconds for alignment."
+            )
             
         dt_candidates = []
         for dt_q in dts:
@@ -174,11 +189,14 @@ def align_timeseries_collection(
     # Helper to get start/end in common unit
     def get_span_val(ts):
         ts_u = ts.times.unit if ts.times.unit is not None else u.dimensionless_unscaled
-        
+
         # t0 conversion
-        if is_time_based and ts_u == u.dimensionless_unscaled:
-             # Treat dimensionless as seconds
-             t0 = ts.t0.value
+        if is_time_based:
+             t0_q = _coerce_t0_gps(ts.t0)
+             if hasattr(t0_q, "to"):
+                 t0 = t0_q.to(common_time_unit).value
+             else:
+                 t0 = float(t0_q)
         elif ts_u != common_time_unit:
              try:
                  t0 = ts.t0.to(common_time_unit).value
@@ -189,10 +207,21 @@ def align_timeseries_collection(
              
         # End conversion
         end_q = ts.span[1]
-        
+
         # If end_q is dimensionless quantity and we are in time mode, treat as seconds value
         if is_time_based and (not hasattr(end_q, "unit") or end_q.unit == u.dimensionless_unscaled or end_q.unit is None):
-              end = end_q.value if hasattr(end_q, "value") else end_q
+              dt_q = getattr(ts, "dt", None)
+              if dt_q is not None:
+                   dt_unit = getattr(dt_q, "unit", None)
+                   phys = getattr(dt_unit, "physical_type", None) if dt_unit is not None else None
+                   if dt_unit is None or dt_unit == u.dimensionless_unscaled or phys == "dimensionless":
+                        dt_base = dt_q.value if hasattr(dt_q, "value") else dt_q
+                        dt_val = u.Quantity(dt_base, u.s).to(common_time_unit).value
+                   else:
+                        dt_val = u.Quantity(dt_q).to(common_time_unit).value
+                   end = t0 + (len(ts) * dt_val)
+              else:
+                   end = end_q.value if hasattr(end_q, "value") else end_q
         elif hasattr(end_q, "to"):
              try:
                  end = end_q.to(common_time_unit).value
@@ -292,7 +321,10 @@ def align_timeseries_collection(
         
         # Calculate offset of ts_aligned.t0 relative to common_t0
         # Both are on the grid defined by common_t0 and target_dt.
-        t0_aligned_s = ts_aligned.t0.to(common_time_unit).value
+        if hasattr(ts_aligned.t0, "to"):
+             t0_aligned_s = ts_aligned.t0.to(common_time_unit).value
+        else:
+             t0_aligned_s = float(ts_aligned.t0)
         
         # Index offset
         # Since we aligned to the grid, the difference should be integer multiple of dt
@@ -340,16 +372,18 @@ def _impute_1d(val_1d, x, method, has_gap_constraint, gap_threshold):
     y_valid = val_1d[valid_1d]
     
     # Boundary handling
-    left_fill = np.nan if has_gap_constraint else None
-    right_fill = np.nan if has_gap_constraint else None
+    if has_gap_constraint:
+        fill_value = (np.nan, np.nan)
+    else:
+        fill_value = "extrapolate"
 
     if method in ["linear", "nearest", "slinear", "quadratic", "cubic"]:
         if np.iscomplexobj(val_1d):
-            f_real = interp1d(x_valid, y_valid.real, kind=method, bounds_error=False, fill_value=(left_fill, right_fill))
-            f_imag = interp1d(x_valid, y_valid.imag, kind=method, bounds_error=False, fill_value=(left_fill, right_fill))
+            f_real = interp1d(x_valid, y_valid.real, kind=method, bounds_error=False, fill_value=fill_value)
+            f_imag = interp1d(x_valid, y_valid.imag, kind=method, bounds_error=False, fill_value=fill_value)
             val_1d[nans_1d] = f_real(x[nans_1d]) + 1j * f_imag(x[nans_1d])
         else:
-            f = interp1d(x_valid, y_valid, kind=method, bounds_error=False, fill_value=(left_fill, right_fill))
+            f = interp1d(x_valid, y_valid, kind=method, bounds_error=False, fill_value=fill_value)
             val_1d[nans_1d] = f(x[nans_1d])
     elif method == "ffill":
         val_1d[:] = pd.Series(val_1d).ffill().values
@@ -441,19 +475,21 @@ def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None,
         slices[axis] = valid_mask
         y_valid = val[tuple(slices)]
         
-        left_fill = np.nan if has_gap_constraint else None
-        right_fill = np.nan if has_gap_constraint else None
+        if has_gap_constraint:
+            fill_value = (np.nan, np.nan)
+        else:
+            fill_value = "extrapolate"
 
         if method in ["linear", "nearest", "slinear", "quadratic", "cubic"]:
             if np.iscomplexobj(val):
-                f_real = interp1d(x_valid, y_valid.real, kind=method, axis=axis, bounds_error=False, fill_value=(left_fill, right_fill))
-                f_imag = interp1d(x_valid, y_valid.imag, kind=method, axis=axis, bounds_error=False, fill_value=(left_fill, right_fill))
+                f_real = interp1d(x_valid, y_valid.real, kind=method, axis=axis, bounds_error=False, fill_value=fill_value)
+                f_imag = interp1d(x_valid, y_valid.imag, kind=method, axis=axis, bounds_error=False, fill_value=fill_value)
                 nan_mask_idx = np.where(nans_reduced)[0]
                 nan_slices = [slice(None)] * val.ndim
                 nan_slices[axis] = nan_mask_idx
                 val[tuple(nan_slices)] = f_real(times_val[nan_mask_idx]) + 1j * f_imag(times_val[nan_mask_idx])
             else:
-                f = interp1d(x_valid, y_valid, kind=method, axis=axis, bounds_error=False, fill_value=(left_fill, right_fill))
+                f = interp1d(x_valid, y_valid, kind=method, axis=axis, bounds_error=False, fill_value=fill_value)
                 nan_mask_idx = np.where(nans_reduced)[0]
                 nan_slices = [slice(None)] * val.ndim
                 nan_slices[axis] = nan_mask_idx

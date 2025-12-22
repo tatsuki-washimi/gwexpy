@@ -254,6 +254,8 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
             np.sign, np.floor, np.ceil, np.trunc, np.rint,
             np.mod, np.remainder, np.clip
         }
+        ufunc_name = getattr(ufunc, "__name__", None)
+        meta_passthrough = ufunc in meta_passthrough_ufuncs or ufunc_name in {"clip"}
         try:
             probe_val_args = [v[0, 0] for v in value_arrays]
             probe_result = ufunc(*probe_val_args, **ufunc_kwargs)
@@ -296,7 +298,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
         uniform_metas = [_get_uniform_meta(m) for m in meta_matrices]
         all_uniform = all(m is not None for m in uniform_metas)
 
-        if all_uniform and not (bool_result or ufunc in meta_passthrough_ufuncs):
+        if all_uniform and not (bool_result or meta_passthrough):
             try:
                 # Compute resulting meta once
                 res_meta_obj = ufunc(*uniform_metas, **ufunc_kwargs)
@@ -310,7 +312,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
                 for j in range(M):
                     meta_args = [m[i, j] for m in meta_matrices]
                     try:
-                        if bool_result or ufunc in meta_passthrough_ufuncs:
+                        if bool_result or meta_passthrough:
                             result_meta[i, j] = meta_args[0]
                         else:
                             result_meta[i, j] = ufunc(*meta_args, **ufunc_kwargs)

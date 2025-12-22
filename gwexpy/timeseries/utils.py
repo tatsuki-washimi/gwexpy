@@ -8,6 +8,8 @@ Utility functions for time series axis validation and extraction.
 import numpy as np
 from astropy import units as u
 
+from gwexpy.time import to_gps
+
 __all__ = [
     "_extract_axis_info",
     "_validate_common_axis",
@@ -16,6 +18,41 @@ __all__ = [
     "_validate_common_epoch",
     "SeriesType",
 ]
+
+def _coerce_t0_gps(t0):
+    """
+    Normalize t0 to LIGO GPS seconds (Quantity, u.s).
+
+    Rules:
+    - int/float (dimensionless) -> seconds
+    - time-like Quantity -> converted to seconds
+    - datetime/Time/LIGOTimeGPS -> converted via to_gps
+    """
+    if t0 is None:
+        return None
+
+    if isinstance(t0, u.Quantity):
+        unit = t0.unit
+        phys = getattr(unit, "physical_type", None)
+        if unit is None or unit == u.dimensionless_unscaled or phys == "dimensionless":
+            return u.Quantity(float(np.asarray(t0.value).flat[0]), u.s)
+        if phys == "time":
+            return t0.to(u.s)
+        return t0
+
+    if isinstance(t0, (int, float, np.number)):
+        return u.Quantity(float(t0), u.s)
+
+    try:
+        gps = to_gps(t0)
+    except Exception:
+        return t0
+
+    if isinstance(gps, (np.ndarray, list)):
+        gps_val = float(np.asarray(gps).flat[0])
+    else:
+        gps_val = float(gps)
+    return u.Quantity(gps_val, u.s)
 
 
 def _extract_axis_info(ts):
@@ -68,6 +105,8 @@ def _extract_axis_info(ts):
                 t0 = None
         if t0 is None:
             regular = False
+        else:
+            t0 = _coerce_t0_gps(t0)
 
     try:
         n = len(axis)

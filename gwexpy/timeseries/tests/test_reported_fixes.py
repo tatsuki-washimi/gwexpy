@@ -22,18 +22,18 @@ def test_align_mixed_dimensionless_unit():
     assert np.all(values[:, 0] == [1, 2, 3])
     assert np.all(values[:, 1] == [10, 20, 30])
 
-def test_align_preserves_unit():
-    # Test case: both are in minutes
+def test_align_converts_to_gps_seconds():
+    # Test case: inputs are in minutes, output aligns to GPS seconds
     min_unit = u.min
     ts1 = TimeSeries([1, 2, 3], dt=1*min_unit, t0=0*min_unit)
     ts2 = TimeSeries([10, 20, 30], dt=1*min_unit, t0=1*min_unit)
     
     values, times, meta = align_timeseries_collection([ts1, ts2])
     
-    # Should preserve minutes if both are minutes
-    assert meta['dt'].unit == min_unit
-    assert times.unit == min_unit
-    assert meta['t0'].unit == min_unit
+    # GPS seconds should be used for t0/time axis
+    assert meta['dt'].unit == u.s
+    assert times.unit == u.s
+    assert meta['t0'].unit == u.s
 
 def test_crop_with_array_to_gps():
     # Use valid datetime objects away from epoch to avoid edge cases

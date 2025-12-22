@@ -105,8 +105,15 @@ class TimeSeriesResamplingMixin:
         old_times_q = self.times
         old_times_val = old_times_q.value
         time_unit = old_times_q.unit
+        unit_is_dimensionless = (
+            time_unit is None
+            or time_unit == u.dimensionless_unscaled
+            or (hasattr(time_unit, 'physical_type') and time_unit.physical_type == 'dimensionless')
+        )
+        if unit_is_dimensionless:
+            time_unit = u.s
         
-        is_dimensionless = (time_unit is None or time_unit == u.dimensionless_unscaled or (hasattr(time_unit, 'physical_type') and time_unit.physical_type == 'dimensionless'))
+        is_dimensionless = unit_is_dimensionless
         
         target_dt_in_time_unit = None
         start_time_val = None
@@ -135,7 +142,7 @@ class TimeSeriesResamplingMixin:
              else:
                   target_dt_in_time_unit = target_dt.to(safe_unit)
 
-             if old_times_q.unit == u.dimensionless_unscaled:
+             if unit_is_dimensionless or old_times_q.unit == u.dimensionless_unscaled:
                   start_time_val = old_times_q[0].value
              else:
                   start_time_val = old_times_q[0].to(safe_unit).value
@@ -147,12 +154,22 @@ class TimeSeriesResamplingMixin:
                       dt_input = self.dt.to(safe_unit).value
                  stop_time_val = start_time_val + (len(self) * dt_input)
              else:
-                 if old_times_q.unit == u.dimensionless_unscaled:
+                 if unit_is_dimensionless or old_times_q.unit == u.dimensionless_unscaled:
                       stop_time_val = old_times_q[-1].value
                  else:
                       stop_time_val = old_times_q[-1].to(safe_unit).value
              
         dt_val = target_dt_in_time_unit.value
+
+        def _to_time_value(val):
+            q = u.Quantity(val)
+            try:
+                return q.to(time_unit).value
+            except u.UnitConversionError:
+                phys = getattr(q.unit, "physical_type", None)
+                if q.unit == u.dimensionless_unscaled or phys == "dimensionless":
+                    return q.value
+                raise
         
         # 3. Determine Origin Base
         safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
@@ -170,8 +187,6 @@ class TimeSeriesResamplingMixin:
                       raise TypeError("Cannot use dimensionless origin for time-based series.")
                  raise
         elif isinstance(origin, (int, float, np.number)):
-            if safe_unit.physical_type == 'time':
-                 raise TypeError("origin must be a Quantity or time string when series has time unit.")
             origin_val = float(origin)
         else:
             origin_val = 0.0 
@@ -179,11 +194,13 @@ class TimeSeriesResamplingMixin:
         if offset is None:
             offset_val = 0.0
         else:
+            q_offset = u.Quantity(offset)
             try:
-                offset_val = u.Quantity(offset).to(safe_unit).value
+                offset_val = q_offset.to(safe_unit).value
             except u.UnitConversionError:
-                if u.Quantity(offset).value == 0:
-                    offset_val = 0.0
+                phys = getattr(q_offset.unit, "physical_type", None)
+                if q_offset.unit == u.dimensionless_unscaled or phys == "dimensionless":
+                    offset_val = q_offset.value
                 else:
                     raise
 
@@ -214,12 +231,25 @@ class TimeSeriesResamplingMixin:
              safe_t0 = u.Quantity(grid_start, safe_unit)
              return self.__class__([], t0=safe_t0, dt=target_dt, channel=self.channel, name=self.name, unit=self.unit)
 
+        out_dtype = self.dtype
         if fill_value is None:
              if self.dtype.kind in ('f', 'c'):
                  fill_value = np.nan
+             else:
+                 fill_value = np.nan
+                 out_dtype = np.float64
 
-        new_data = np.full(len(new_times_val), fill_value, dtype=self.dtype)
-        if self.dtype.kind == 'c':
+        is_fill_nan = False
+        try:
+            is_fill_nan = np.isnan(fill_value)
+        except (TypeError, ValueError):
+            pass
+        if is_fill_nan and self.dtype.kind not in ('f', 'c'):
+            out_dtype = np.float64
+
+        out_dtype = np.dtype(out_dtype)
+        new_data = np.full(len(new_times_val), fill_value, dtype=out_dtype)
+        if out_dtype.kind == 'c':
              new_data = new_data.astype(np.complex128)
         
         if method == 'interpolate':
@@ -234,7 +264,7 @@ class TimeSeriesResamplingMixin:
                     new_data = np.interp(new_times_val, x, y, left=np.nan, right=np.nan)
 
                 if max_gap is not None:
-                    max_gap_val = u.Quantity(max_gap).to(time_unit).value
+                    max_gap_val = _to_time_value(max_gap)
                     gaps = np.where(np.diff(x) > max_gap_val)[0]
                     for gi in gaps:
                         start = x[gi]
@@ -263,7 +293,7 @@ class TimeSeriesResamplingMixin:
                  
                  valid_f = (fill_idx >= 0)
                  if max_gap is not None:
-                      limit = u.Quantity(max_gap).to(time_unit).value
+                      limit = _to_time_value(max_gap)
                       dt_diff = new_times_val - old_times_val[np.clip(fill_idx, 0, None)]
                       valid_f &= (dt_diff <= limit)
                  
@@ -278,7 +308,7 @@ class TimeSeriesResamplingMixin:
                  valid_b = (fill_idx < len(old_times_val))
                  
                  if max_gap is not None:
-                      limit = u.Quantity(max_gap).to(time_unit).value
+                      limit = _to_time_value(max_gap)
                       dt_diff = old_times_val[np.clip(fill_idx, 0, len(old_times_val)-1)] - new_times_val
                       valid_b &= (dt_diff <= limit)
                       
@@ -302,11 +332,11 @@ class TimeSeriesResamplingMixin:
                  
                  valid_n = np.ones(len(new_times_val), dtype=bool)
                  if tolerance is not None:
-                      tol_val = u.Quantity(tolerance).to(time_unit).value
+                      tol_val = _to_time_value(tolerance)
                       valid_n &= (chosen_dist <= tol_val)
                       
                  if max_gap is not None:
-                      limit = u.Quantity(max_gap).to(time_unit).value
+                      limit = _to_time_value(max_gap)
                       valid_n &= (chosen_dist <= limit)
                       
                  valid_out = np.where(valid_n)[0]
@@ -314,7 +344,7 @@ class TimeSeriesResamplingMixin:
                  new_data[valid_out] = self.value[src_idx]
 
             elif method is None:
-                tol_val = 1e-9 if tolerance is None else u.Quantity(tolerance).to(time_unit).value
+                tol_val = 1e-9 if tolerance is None else _to_time_value(tolerance)
                 
                 idx_side_left = np.searchsorted(old_times_val, new_times_val, side='left')
                 
@@ -404,8 +434,15 @@ class TimeSeriesResamplingMixin:
         # 2. Setup Bins
         old_times_q = self.times
         time_unit = old_times_q.unit
+        unit_is_dimensionless = (
+            time_unit is None
+            or time_unit == u.dimensionless_unscaled
+            or time_unit.physical_type == 'dimensionless'
+        )
+        if unit_is_dimensionless:
+            time_unit = u.s
         
-        is_dimensionless = (time_unit is None or time_unit == u.dimensionless_unscaled or time_unit.physical_type == 'dimensionless')
+        is_dimensionless = unit_is_dimensionless
         
         bin_dt_val = None
         start_time_val = None
@@ -429,7 +466,10 @@ class TimeSeriesResamplingMixin:
         else:
             origin_val = 0.0
             
-        offset_val = u.Quantity(offset).to(time_unit).value
+        try:
+            offset_val = u.Quantity(offset).to(time_unit).value
+        except u.UnitConversionError:
+            offset_val = float(u.Quantity(offset).value)
         base_val = origin_val + offset_val
         
         # Grid alignment

@@ -62,8 +62,20 @@ class TimeSeriesMatrix(SeriesMatrix):
         **kwargs: Any,
     ) -> "TimeSeriesMatrix":
         import warnings
+        from gwexpy.timeseries.utils import _coerce_t0_gps
 
         channel_names = kwargs.pop("channel_names", None)
+        should_coerce = True
+        xunit = kwargs.get("xunit", None)
+        if xunit is not None:
+            try:
+                should_coerce = u.Unit(xunit).is_equivalent(u.s)
+            except (ValueError, TypeError):
+                should_coerce = False
+        elif isinstance(dt, u.Quantity):
+            phys = getattr(dt.unit, "physical_type", None)
+            if dt.unit != u.dimensionless_unscaled and phys != "time":
+                should_coerce = False
 
         # 1. Enforce Mutual Exclusivity (GWpy rules)
         if epoch is not None and t0 is not None:
@@ -131,9 +143,9 @@ class TimeSeriesMatrix(SeriesMatrix):
 
             # 4. Handle t0 / epoch -> x0
             if t0 is not None:
-                kwargs["x0"] = t0
+                kwargs["x0"] = _coerce_t0_gps(t0) if should_coerce else t0
             elif epoch is not None and "x0" not in kwargs:
-                kwargs["x0"] = epoch
+                kwargs["x0"] = _coerce_t0_gps(epoch) if should_coerce else epoch
 
             # Default x0 when needed (SeriesMatrix builds index from x0, dx)
             # Only if times is None and (dx is provided) and x0 is missing
