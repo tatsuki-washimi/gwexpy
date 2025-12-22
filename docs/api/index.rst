@@ -7,4 +7,5 @@ API Reference
    timeseries
    frequencyseries
    spectrogram
+   spectral
    types

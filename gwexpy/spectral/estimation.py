@@ -1,0 +1,214 @@
+import numpy as np
+import warnings
+from scipy.signal import get_window
+from gwexpy.frequencyseries import FrequencySeries
+
+
+def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
+    """
+    Calculate the variance inflation factor for Welch's method with overlap.
+
+    This computes the correction factor by numerically calculating the normalized
+    squared autocorrelation of the window function. The correction accounts for
+    reduced effective degrees of freedom due to correlated (overlapping) segments.
+
+    References:
+    - Bendat, J. S., & Piersol, A. G., "Random Data".
+    - Percival, D. B., & Walden, A. T., "Spectral Analysis for Physical Applications".
+    - Ingram, A. (2019), "Error formulae for the energy-dependent cross-spectrum".
+
+    Formula:
+        factor = sqrt(1 + 2 * sum_{k=1}^{M-1} (1 - k/M) * |rho_window(k * S)|^2)
+        where rho_window is the normalized autocorrelation of the window.
+
+    Parameters
+    ----------
+    window : str, tuple, or array_like
+        Window function used for FFT.
+    nperseg : int
+        Length of each segment (N_fft).
+    noverlap : int
+        Number of overlapping samples.
+    n_blocks : int
+        Number of segments available for averaging.
+
+    Returns
+    -------
+    float
+        Multiplicative correction factor for the standard error.
+    """
+    if window is None or nperseg is None or noverlap is None or n_blocks <= 1:
+        return 1.0
+
+    try:
+        if isinstance(window, (list, np.ndarray)):
+            win_array = np.asarray(window)
+            if len(win_array) != nperseg:
+                return 1.0
+        else:
+            win_array = get_window(window, nperseg)
+    except Exception:
+        warnings.warn(
+            f"Could not generate window '{window}'. Assuming independent segments (factor=1.0)."
+        )
+        return 1.0
+
+    step = nperseg - noverlap
+    if step <= 0:
+        return 1.0
+
+    energy = np.sum(win_array**2)
+    if energy == 0:
+        return 1.0
+
+    rho_sq_weighted_sum = 0.0
+    max_lag = int(np.ceil(nperseg / step))
+
+    for k in range(1, min(n_blocks, max_lag)):
+        shift = k * step
+        if shift >= nperseg:
+            break
+
+        autocorr = np.sum(win_array[:-shift] * win_array[shift:])
+        rho = autocorr / energy
+        weight = 1.0 - (k / n_blocks)
+        rho_sq_weighted_sum += weight * (rho**2)
+
+    vif = 1.0 + 2.0 * rho_sq_weighted_sum
+    return np.sqrt(vif)
+
+
+def _infer_overlap_ratio(spectrogram):
+    """Infer overlap ratio from spectrogram metadata."""
+    stride = getattr(spectrogram, "dt", None)
+    resolution = getattr(spectrogram, "df", None)
+    if stride is None or resolution is None:
+        return None
+    try:
+        stride_val = stride.value
+        duration = 1.0 / resolution.value
+    except Exception:
+        return None
+    if stride_val <= 0 or duration <= 0:
+        return None
+    return duration / stride_val
+
+
+def bootstrap_spectrogram(
+    spectrogram,
+    n_boot=1000,
+    average="median",
+    ci=0.68,
+    window="hann",
+    nperseg=None,
+    noverlap=None,
+):
+    """
+    Estimate robust ASD from a spectrogram using bootstrap resampling.
+
+    Error bars are corrected for correlation between overlapping segments
+    based on the window function's autocorrelation.
+
+    Parameters
+    ----------
+    spectrogram : gwpy.spectrogram.Spectrogram
+        Input spectrogram (Time x Frequency).
+    n_boot : int
+        Number of bootstrap iterations.
+    average : str
+        "median" (default, robust to outliers) or "mean".
+    ci : float
+        Confidence interval probability (e.g., 0.68 for 1-sigma).
+    window : str or array, optional
+        Window function used to generate the spectrogram (default: "hann").
+    nperseg : int, optional
+        Segment length in samples. If None, inferred from metadata if possible.
+    noverlap : int, optional
+        Overlap length in samples. If None, inferred from metadata if possible.
+
+    Returns
+    -------
+    FrequencySeries
+        Central estimate (median/mean).
+        Attributes `.error_low` and `.error_high` contain FrequencySeries error bars.
+    """
+    data = spectrogram.value
+    n_time = data.shape[0]
+
+    if n_time < 2:
+        raise ValueError("Spectrogram must have at least 2 time bins.")
+    if n_boot < 1:
+        raise ValueError("n_boot must be >= 1.")
+    if not (0 < ci < 1):
+        raise ValueError("ci must be between 0 and 1.")
+
+    avg = average.lower()
+    if avg not in {"median", "mean"}:
+        raise ValueError("average must be 'median' or 'mean'.")
+
+    indices = np.random.randint(0, n_time, size=(n_boot, n_time))
+    resampled_stats = np.zeros((n_boot, data.shape[1]))
+
+    for i in range(n_boot):
+        sample = data[indices[i]]
+        if avg == "median":
+            resampled_stats[i] = np.median(sample, axis=0)
+        else:
+            resampled_stats[i] = np.mean(sample, axis=0)
+
+    if avg == "median":
+        center = np.median(resampled_stats, axis=0)
+    else:
+        center = np.mean(resampled_stats, axis=0)
+
+    alpha = (1 - ci) / 2
+    p_low = np.percentile(resampled_stats, 100 * alpha, axis=0)
+    p_high = np.percentile(resampled_stats, 100 * (1 - alpha), axis=0)
+
+    err_low = center - p_low
+    err_high = p_high - center
+
+    overlap_ratio = _infer_overlap_ratio(spectrogram)
+    factor = 1.0
+
+    if nperseg is None:
+        if overlap_ratio is not None and overlap_ratio > 1:
+            dummy_step = 100
+            dummy_nperseg = int(round(dummy_step * overlap_ratio))
+            if dummy_nperseg > dummy_step:
+                dummy_noverlap = dummy_nperseg - dummy_step
+                factor = calculate_correlation_factor(
+                    window, dummy_nperseg, dummy_noverlap, n_time
+                )
+    else:
+        if noverlap is None and overlap_ratio is not None and overlap_ratio > 1:
+            inferred_noverlap = int(round(nperseg - (nperseg / overlap_ratio)))
+            noverlap = max(0, inferred_noverlap)
+        if noverlap is None:
+            noverlap = 0
+        factor = calculate_correlation_factor(window, nperseg, noverlap, n_time)
+
+    err_low *= factor
+    err_high *= factor
+
+    name = f"{spectrogram.name} (Bootstrap {avg})"
+    fs = FrequencySeries(
+        center,
+        frequencies=spectrogram.frequencies,
+        unit=spectrogram.unit,
+        name=name,
+    )
+    fs.error_low = FrequencySeries(
+        err_low,
+        frequencies=spectrogram.frequencies,
+        unit=spectrogram.unit,
+        name="Error Low",
+    )
+    fs.error_high = FrequencySeries(
+        err_high,
+        frequencies=spectrogram.frequencies,
+        unit=spectrogram.unit,
+        name="Error High",
+    )
+
+    return fs
