@@ -4,8 +4,8 @@ from ._time import gps_to_datetime_utc, datetime_utc_to_gps
 
 def to_obspy_trace(ts, stats_extra=None, dtype=None):
     obspy = require_optional("obspy")
-    
-    data = ts.value
+    from .base import to_plain_array
+    data = to_plain_array(ts)
     if dtype:
         data = data.astype(dtype)
         

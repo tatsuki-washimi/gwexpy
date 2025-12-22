@@ -6,8 +6,8 @@ def to_tf(ts, dtype=None):
     Convert TimeSeries to tensorflow.Tensor.
     """
     tf = require_optional("tensorflow")
-    
-    return tf.convert_to_tensor(ts.value, dtype=dtype)
+    from .base import to_plain_array
+    return tf.convert_to_tensor(to_plain_array(ts), dtype=dtype)
 
 def from_tf(cls, tensor, t0, dt, unit=None):
     """

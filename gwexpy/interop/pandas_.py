@@ -20,13 +20,11 @@ def to_pandas_series(ts, index="datetime", name=None, copy=False):
     pandas.Series
     """
     pd = require_optional("pandas")
-    
-    data = ts.value
-    if copy:
-        data = data.copy()
+    from .base import to_plain_array
+    data = to_plain_array(ts, copy=copy)
         
     # Build index
-    times_gps = ts.times.value # float array of GPS
+    times_gps = to_plain_array(ts.times)
     
     if index == "gps":
         idx = pd.Index(times_gps, name="gps_time")
@@ -63,8 +61,8 @@ def from_pandas_series(cls, series, *, unit=None, t0=None, dt=None):
     Create TimeSeries from pandas.Series.
     """
     pd = require_optional("pandas")
-    
-    values = series.values
+    from .base import to_plain_array
+    values = to_plain_array(series) # Use to_plain_array on the series values
     index = series.index
 
     # Infer t0, dt if not provided
@@ -148,13 +146,11 @@ def to_pandas_frequencyseries(fs, index="frequency", name=None, copy=False):
         "frequency" or "index" (integer sample index).
     """
     pd = require_optional("pandas")
-    
-    data = fs.value
-    if copy:
-        data = data.copy()
+    from .base import to_plain_array
+    data = to_plain_array(fs, copy=copy)
         
     if index == "frequency":
-        freqs = fs.frequencies.value
+        freqs = to_plain_array(fs.frequencies)
         if hasattr(fs.frequencies, "unit") and fs.frequencies.unit:
              # Try to normalize to Hz if possible for consistency, or keep raw
              # Usually frequencies is Quantity(Hz).

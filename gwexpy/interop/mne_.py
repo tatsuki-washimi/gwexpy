@@ -76,7 +76,8 @@ def to_mne_rawarray(tsd, info=None, picks=None):
         if picks is not None:
             raise TypeError("picks is only supported for mapping inputs")
 
-        data_1d = np.asarray(getattr(tsd, "value", tsd))
+        from .base import to_plain_array
+        data_1d = to_plain_array(tsd)
         if data_1d.ndim != 1:
             raise ValueError("Single-channel input must be 1D")
 
@@ -110,9 +111,10 @@ def to_mne_rawarray(tsd, info=None, picks=None):
         try:
             tsd_sel = tsd.__class__()  # TimeSeriesDict-like
             for k, ts in items:
-                tsd_sel[k] = ts
+                 tsd_sel[k] = ts
+            from .base import to_plain_array
             mat = tsd_sel.to_matrix()
-            data = np.asarray(mat.value)
+            data = to_plain_array(mat)
             if data.ndim == 3:
                 data = data[:, 0, :]
             if data.shape[0] != len(ch_names):
