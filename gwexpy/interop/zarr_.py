@@ -15,15 +15,26 @@ def to_zarr(ts, store, path, chunks=None, compressor=None, overwrite=False):
     # We assume 'store' can be valid input to zarr.open
     
     # Save array
-    arr = zarr.open_array(
-        store=store, 
-        mode=mode, 
-        path=path, 
-        shape=ts.shape, 
-        dtype=ts.dtype,
-        chunks=chunks,
-        compressor=compressor
-    )
+    open_kwargs = {
+        "store": store,
+        "mode": mode,
+        "path": path,
+        "shape": ts.shape,
+        "dtype": ts.dtype,
+        "chunks": chunks,
+    }
+    if compressor is not None:
+        open_kwargs["compressor"] = compressor
+        # Prefer Zarr v2 when an explicit compressor is requested (Zarr v3 uses codecs).
+        open_kwargs["zarr_format"] = 2
+    try:
+        arr = zarr.open_array(**open_kwargs)
+    except TypeError as exc:
+        if "zarr_format" in open_kwargs and "zarr_format" in str(exc):
+            open_kwargs.pop("zarr_format")
+            arr = zarr.open_array(**open_kwargs)
+        else:
+            raise
     arr[:] = ts.value
     
     # Attributes
