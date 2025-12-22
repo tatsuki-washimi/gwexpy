@@ -3,12 +3,12 @@ Installation
 
 GWExPy requires Python 3.9+ and depends on GWpy, NumPy, SciPy, and Astropy.
 
-Basic install
+Basic install (from GitHub, no PyPI/conda release)
 -------------
 
 .. code-block:: bash
 
-   pip install gwexpy
+   pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 
 Development install
 -------------------

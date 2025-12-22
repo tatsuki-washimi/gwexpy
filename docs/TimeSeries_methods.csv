@@ -1,6 +1,6 @@
 Method/Property,TimeSeries (gwpy),TimeSeriesList (gwexpy),TimeSeriesDict (gwexpy),TimeSeriesMatrix (gwexpy),備考
 __init__,〇,〇,〇,〇,
-read,〇,〇,〇,〇,Matrixは全Chを一括読込
+read,〇,〇,〇,〇,Matrixは全Ch一括読込
 write,〇,〇,〇,〇,
 plot,〇,〇,〇,△,Matrixは簡易プロットのみ
 __getitem__ (slice),〇,〇,〇,〇,Matrixは[ch, time]の2次元
@@ -14,7 +14,7 @@ update,〇,△,△,〇,List/Dictは波形操作ではなくコンテナ操作
 pad,〇,〇,〇,〇,gwexpyでList/Dictにも追加
 shift,〇,〇,〇,〇,Matrixは時間軸シフト
 resample,〇,〇,〇,〇,MatrixはWrapper
-asfreq,〇,〇,〇,〇,指定グリッドへの再インデックス (gwexpy強化版: 無次元対応 & 堅牢な整列)
+asfreq,〇,〇,〇,〇,指定グリッドへの再インデックス (gwexpy強化版)
 decimate,〇,〇,〇,×,
 filter,〇,〇,〇,〇,MatrixはWrapper
 whiten,〇,〇,〇,〇,MatrixはWrapper
@@ -24,29 +24,57 @@ detrend,〇,〇,〇,〇,MatrixはWrapper
 taper,〇,〇,〇,〇,MatrixはWrapper
 gate,〇,〇,〇,×,Matrix未実装
 convolve,〇,×,×,×,
-correlate,〇,×,×,×,Matrixは xcorr (相互相関)あり
+correlate / xcorr,〇,×,×,〇,Matrixは xcorr (相互相関)あり
 inject,〇,×,×,×,
+analytic_signal / hilbert,〇,〇,〇,×,gwexpy拡張
+envelope,〇,〇,〇,×,gwexpy拡張
+instantaneous_phase,〇,〇,〇,×,gwexpy拡張
+unwrap_phase,〇,〇,〇,×,gwexpy拡張
+instantaneous_frequency,〇,〇,〇,×,gwexpy拡張
+mix_down / baseband,〇,〇,〇,×,gwexpy拡張
+lock_in,〇,〇,〇,〇,gwexpy拡張 (Matrixは要素適用)
+hht / emd,〇,〇,〇,×,gwexpy独自 (HHT/EMD分析)
+stlt,〇,×,×,×,gwexpy独自 (STLT分析)
+cwt,〇,×,×,×,連続ウェーブレット変換
+cepstrum,〇,×,×,×,ケプストラム分析
+dct,〇,×,×,×,離散コサイン変換
 fft,〇,〇,〇,〇,
 average_fft,〇,〇,〇,×,
 psd,〇,〇,〇,〇,Matrixは全Ch計算
 asd,〇,〇,〇,〇,
 csd,〇,〇,〇,〇,List/DictはotherによりFrequencySeriesList/Dict/Matrix
 coherence,〇,〇,〇,〇,List/DictはotherによりFrequencySeriesList/Dict/Matrix
+csd_matrix / coherence_matrix,×,〇,〇,〇,Matrix形式で戻す(gwexpy独自)
 spectrogram,〇,〇,〇,〇,戻り値はSpectrogramList/Dict/Matrix
 spectrogram2,〇,〇,〇,〇,戻り値はSpectrogramList/Dict/Matrix
 q_transform,〇,〇,〇,〇,戻り値はSpectrogramList/Dict/Matrix
+transfer_function,〇,×,×,×,伝達関数推定
+hurst / local_hurst,〇,×,×,×,ハースト指数計算 (gwexpy独自)
+fit_arima,〇,×,×,×,ARIMAモデル適合 (gwexpy独自)
 rms,〇,〇,〇,×,Matrixはrolling_rmsのみ
 min / max,〇,〇,〇,〇,ndarray継承
 mean / std,〇,〇,〇,〇,ndarray継承
+standardize,〇,〇,〇,〇,gwexpy独自
+whiten_channels,×,×,×,〇,チャンネル間白色化 (Matrix独自)
 value_at,〇,〇,〇,〇,指定時刻の値を取得
 is_contiguous,〇,〇,〇,〇,
 state_segments,〇,〇,〇,×,
 mask,〇,〇,〇,×,
-to_lal,〇,×,×,×,
-to_pycbc,〇,×,×,×,
-to_pandas,〇,〇,〇,〇,
+tail,〇,〇,〇,〇,末尾サンプル取得
+to_obspy_trace,〇,×,×,×,ObsPy連携
+from_obspy_trace,〇,×,×,×,
+to_astropy_timeseries,〇,×,×,×,Astropy連携
+from_astropy_timeseries,〇,×,×,×,
+to_mne_raw / rawarray,×,〇,〇,〇,MNE-Python連携
+from_mne_raw / rawarray,×,〇,〇,〇,
+to_neo_analogsignal,×,×,×,〇,Neo連携
+to_pandas / from_pandas,〇,〇,〇,〇,
+to_xarray / from_xarray,〇,×,×,×,
 to_matrix,×,〇,〇,〇,gwexpy独自の変換メソッド
-rolling_mean,×,〇,〇,〇,gwexpy独自
+to_torch / from_torch,〇,×,×,〇,PyTorch連携
+to_cupy / from_cupy,〇,×,×,×,CuPy連携
+to_jax / from_jax,〇,×,×,×,JAX連携
+rolling_mean / std / etc,×,〇,〇,〇,gwexpy独自 (移動統計量)
 impute,×,〇,〇,〇,欠損値補間 (gwexpy独自)
-pca / ica,×,×,×,〇,主成分分析等 (Matrix独自)
+pca / ica,×,〇,〇,〇,主成分分析等 (gwexpy独自)
 fetch / find,〇,×,×,×,クラスメソッド
