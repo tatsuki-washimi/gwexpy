@@ -5,6 +5,14 @@ from iminuit.cost import LeastSquares
 from iminuit.util import describe, make_func_code
 from .models import get_model
 
+# Optional imports for MCMC
+try:
+    import emcee
+    import corner
+except ImportError:
+    emcee = None
+    corner = None
+
 class ComplexLeastSquares:
     """
     Least Squares cost function for complex-valued data.
@@ -50,6 +58,9 @@ class FitResult:
         self.cost_func = cost_func
         self.x_label = x_label
         self.y_label = y_label
+        self.sampler = None
+        self.samples = None
+        self.mcmc_labels = None
         
     @property
     def params(self):
@@ -76,6 +87,11 @@ class FitResult:
             n_data *= 2
         n_params = self.minuit.nfit
         return max(0, n_data - n_params)
+
+    @property
+    def reduced_chi2(self):
+        """Reduced Chi-square value."""
+        return self.chi2 / self.ndof if self.ndof > 0 else np.nan
 
     def __str__(self):
         """Delegate to Minuit's pretty printer."""
@@ -179,6 +195,81 @@ class FitResult:
         ax_phase.set_xscale('log')
         
         return (ax_mag, ax_phase)
+
+    def run_mcmc(self, n_walkers=32, n_steps=3000, burn_in=500, progress=True):
+        """
+        Run MCMC using emcee starting from the best-fit parameters.
+        """
+        if emcee is None:
+            raise ImportError("Please install 'emcee' and 'corner' to use MCMC features.")
+
+        # 1. Parameter Information Extraction
+        # Filter out fixed parameters for MCMC
+        float_params = [p for p in self.minuit.parameters if not self.minuit.fixed[p]]
+        ndim = len(float_params)
+        
+        # Dictionary of fixed parameters
+        fixed_params = {p: self.minuit.values[p] for p in self.minuit.parameters if self.minuit.fixed[p]}
+
+        # Log Probability Function
+        def log_prob(theta):
+            # theta: array of float values for float_params
+            
+            # Construct full parameter dictionary
+            current_params = fixed_params.copy()
+            for name, val in zip(float_params, theta):
+                current_params[name] = val
+                
+                # Check limits defined in minuit
+                if name in self.minuit.limits:
+                    vmin, vmax = self.minuit.limits[name]
+                    if not (vmin <= val <= vmax):
+                        return -np.inf
+
+            # iminuit Cost (Chi2) -> log_prob = -0.5 * Chi2
+            # LeastSquares(*args) expects arguments in order
+            try:
+                args = [current_params[p] for p in self.minuit.parameters]
+                
+                # Support custom cost functions (like ComplexLeastSquares)
+                # Note: iminuit costs usually take *args
+                chi2 = self.cost_func(*args)
+                return -0.5 * chi2
+            except Exception:
+                return -np.inf
+
+        # Initial state: small ball around minuit result
+        p0_float = np.array([self.minuit.values[p] for p in float_params])
+        # Use hessian errors for initialization spread, or small value if fixed/zero
+        stds = np.array([self.minuit.errors[p] if self.minuit.errors[p] > 0 else 1e-4 * abs(v) + 1e-8
+                         for p, v in zip(float_params, p0_float)])
+        
+        pos = p0_float + stds * 1e-1 * np.random.randn(n_walkers, ndim)
+        
+        # Run emcee
+        self.sampler = emcee.EnsembleSampler(n_walkers, ndim, log_prob)
+        self.sampler.run_mcmc(pos, n_steps, progress=progress)
+        
+        # Save flattened samples (discarding burn-in)
+        self.samples = self.sampler.get_chain(discard=burn_in, flat=True)
+        self.mcmc_labels = float_params
+        
+        return self.sampler
+
+    def plot_corner(self, **kwargs):
+        """Plot corner plot of MCMC samples."""
+        if corner is None: 
+            raise ImportError("Please install 'corner' to use plot_corner.")
+        if self.samples is None: 
+            raise RuntimeError("Run .run_mcmc() first.")
+        
+        # Show BestFit truth lines
+        if self.mcmc_labels:
+            truths = [self.minuit.values[p] for p in self.mcmc_labels]
+            kwargs.setdefault('truths', truths)
+            kwargs.setdefault('labels', self.mcmc_labels)
+        
+        return corner.corner(self.samples, **kwargs)
 
 def fit_series(series, model, x_range=None, sigma=None, 
                p0=None, limits=None, fixed=None, **kwargs):
