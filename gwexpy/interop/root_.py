@@ -112,14 +112,18 @@ def to_th1d(series, error=None):
         edges[-1] = x[-1] + (x[-1] - edges[-2])
         hist = ROOT.TH1D(name, title, n, edges)
         
-    # Fill bins (TH1 bins are 1-indexed, 0 is underflow)
-    for i in range(n):
-        hist.SetBinContent(i + 1, y[i])
+    # Fill bins (vectorized)
+    # TH1 has n+2 bins (0=underflow, n+1=overflow)
+    content = np.zeros(n + 2, dtype=np.float64)
+    content[1:-1] = y
+    hist.SetContent(content)
         
     if error is not None:
         ey = _extract_error_array(series, error).astype(float)
-        for i in range(n):
-            hist.SetBinError(i + 1, ey[i])
+        # Check if SetError is available (usually is for TH1)
+        err_content = np.zeros(n + 2, dtype=np.float64)
+        err_content[1:-1] = ey
+        hist.SetError(err_content)
             
     # Labels
     xunit = str(series.xunit) if hasattr(series, "xunit") else ""
@@ -163,18 +167,25 @@ def to_th2d(spec, error=None):
     name = str(spec.name or "spectrogram")
     hist = ROOT.TH2D(name, name, nt, t_edges, nf, f_edges)
     
-    # Fill
-    for i in range(nt):
-        for j in range(nf):
-            hist.SetBinContent(i+1, j+1, data[i, j])
+    # Fill (vectorized)
+    # ROOT stores data as linearized array with index = x + (nx+2)*y
+    # This corresponds to a C-style flattened array of shape (ny+2, nx+2)
+    # where y is major (slow) and x is minor (fast).
+    # We construct the 2D array in (ny+2, nx+2) shape, then flatten.
+    
+    full_content = np.zeros((nf + 2, nt + 2), dtype=np.float64)
+    # Assign data. data is (nt, nf) -> tranpose to (nf, nt) to match [y, x]
+    full_content[1:-1, 1:-1] = data.T
+    
+    hist.SetContent(full_content.flatten())
             
     if error is not None:
         err_arr = np.asarray(error).astype(float)
         if err_arr.shape != data.shape:
              raise ValueError("Error shape mismatch")
-        for i in range(nt):
-            for j in range(nf):
-                hist.SetBinError(i+1, j+1, err_arr[i, j])
+        full_error = np.zeros((nf + 2, nt + 2), dtype=np.float64)
+        full_error[1:-1, 1:-1] = err_arr.T
+        hist.SetError(full_error.flatten())
                 
     # Labels
     hist.GetXaxis().SetTitle(_get_label(spec.times, spec.times.unit, default_name="time"))
@@ -205,11 +216,35 @@ def from_root(cls, obj, return_error=False):
         z = np.zeros((nx, ny))
         ez = np.zeros((nx, ny)) if return_error else None
         
-        for i in range(nx):
-            for j in range(ny):
-                z[i, j] = obj.GetBinContent(i+1, j+1)
-                if return_error:
-                    ez[i, j] = obj.GetBinError(i+1, j+1)
+        # Optimize reading using GetArray (returns pointer to linearized array)
+        # Array size is (nx+2)*(ny+2)
+        total_size = (nx + 2) * (ny + 2)
+        buff_ptr = obj.GetArray()
+        # Copy to numpy
+        arr_flat = np.frombuffer(buff_ptr, dtype=np.float64, count=total_size)
+        
+        # Reshape to (ny+2, nx+2) to match ROOT layout [y][x]
+        arr_2d = arr_flat.reshape((ny + 2, nx + 2))
+        
+        # Extract central part and transpose to getting (nx, ny) -> (Time, Freq)
+        z = arr_2d[1:-1, 1:-1].T.copy()
+        
+        if return_error:
+            # GetSumw2() usually stores errors squared? No GetBinError uses fSumw2 if present.
+            # But direct access to errors might be tricky if fSumw2 is not just an array.
+            # TH2::GetBinError(bin) = sqrt(fSumw2[bin])
+            # Getting fSumw2 array directly: obj.GetSumw2().GetArray()
+            # If default errors (sqrt(N)), GetSumw2 might be empty.
+            if obj.GetSumw2N() > 0:
+                err_ptr = obj.GetSumw2().GetArray()
+                err_flat = np.frombuffer(err_ptr, dtype=np.float64, count=total_size)
+                err_2d = err_flat.reshape((ny + 2, nx + 2))
+                # sqrt needed? fSumw2 stores variance (sigma^2).
+                # GetBinError returns sqrt(content) if Sumw2 not set, or sqrt(Sumw2) if set.
+                ez = np.sqrt(err_2d[1:-1, 1:-1].T).copy()
+            else:
+                # Default Poisson errors
+                ez = np.sqrt(z)
         
         # In GWpy Spectrogram, typically shape is (Time, Freq)
         name = obj.GetName()
@@ -228,10 +263,23 @@ def from_root(cls, obj, return_error=False):
         return res
 
     if is_hist:
+        # TH1
         n = obj.GetNbinsX()
         x = np.array([obj.GetBinCenter(i+1) for i in range(n)])
-        y = np.array([obj.GetBinContent(i+1) for i in range(n)])
-        ey = np.array([obj.GetBinError(i+1) for i in range(n)]) if return_error else None
+        
+        buff_ptr = obj.GetArray()
+        # buffer size n+2
+        y = np.frombuffer(buff_ptr, dtype=np.float64, count=n+2)[1:-1].copy()
+        
+        if return_error:
+             if obj.GetSumw2N() > 0:
+                 err_ptr = obj.GetSumw2().GetArray()
+                 err_raw = np.frombuffer(err_ptr, dtype=np.float64, count=n+2)[1:-1]
+                 ey = np.sqrt(err_raw).copy()
+             else:
+                 ey = np.sqrt(y)
+        else:
+             ey = None
     else: # is_graph
         n = obj.GetN()
         # buffer access is faster
