@@ -12,13 +12,11 @@ import io
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import Iterable, List, Optional, Tuple
 
 import numpy as np
-from astropy import units as u
 
 from gwexpy.io.utils import (
-    apply_unit,
     datetime_to_gps,
     ensure_datetime,
     filter_by_channels,

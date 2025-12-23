@@ -4,8 +4,8 @@ Shared utilities for parsing dttxml (Diag GUI XML) files.
 
 from __future__ import annotations
 
-import re
 import os
+import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Dict, Optional
@@ -19,21 +19,30 @@ SUPPORTED_MATRIX = {"TF", "STF", "CSD", "COH"}
 
 
 def _load_external_parser() -> Optional[object]:
-    if os.environ.get("GWEXPY_ALLOW_EXEC", "0") != "1":
+    # Security: This mechanism is primarily for internal legacy interop.
+    # It is disabled by default and requires explicit environment opt-in.
+    if os.environ.get("GWEXPY_ALLOW_DTTXML_EXEC", "0") != "1":
         return None
 
+    # Limit search path to a fixed location relative to the package
     project_root = Path(__file__).resolve().parents[2]
     candidate = project_root / "dttxml_source.txt"
+    
     if candidate.exists():
         warnings.warn(
             f"Loading external parser from {candidate} via exec(). "
-            "Ensure the source is trusted.",
+            "Only use this with trusted source files.",
             UserWarning
         )
-        ns: Dict[str, object] = {}
-        code = candidate.read_text()
-        exec(compile(code, str(candidate), "exec"), ns, ns)
-        return ns.get("dtt_read")
+        try:
+            ns: Dict[str, object] = {}
+            # Use a more restricted compile if possible, but here we just need exec
+            code = candidate.read_text()
+            exec(compile(code, str(candidate), "exec"), ns, ns)
+            return ns.get("dtt_read")
+        except Exception as e:
+            warnings.warn(f"Failed to load external parser: {e}")
+            return None
     return None
 
 

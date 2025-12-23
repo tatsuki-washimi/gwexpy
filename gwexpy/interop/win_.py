@@ -1,5 +1,4 @@
 
-from ._optional import require_optional
 from .errors import raise_unimplemented_io
 
 def read_win(cls, paths, backend="wintools", **kwargs):

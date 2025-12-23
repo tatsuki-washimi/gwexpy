@@ -3,7 +3,7 @@ import pandas as pd
 from astropy import units as u
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesList, TimeSeriesDict
-from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList, FrequencySeriesDict
+from gwexpy.frequencyseries import FrequencySeriesList, FrequencySeriesDict
 
 def test_timeseries_batch():
     print("=== Testing TimeSeries Batch Operations ===")

@@ -3,7 +3,6 @@ Tests for gwexpy.signal.preprocessing module.
 """
 
 import numpy as np
-import pytest
 from gwexpy.signal.preprocessing import (
     whiten,
     standardize,

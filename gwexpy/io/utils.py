@@ -1,7 +1,7 @@
 import contextlib
 import datetime as _dt
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-from typing import Any, Optional, Union, Dict, Iterable
+from typing import Any, Optional, Dict, Iterable
 
 import numpy as np
 from astropy import units as u

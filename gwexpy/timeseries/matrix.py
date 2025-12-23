@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import inspect
-from enum import Enum
 import numpy as np
 from astropy import units as u
-from typing import Optional, Union, Any, List, Iterable
+from typing import Optional, Any
 try:
     import scipy.signal
 except ImportError:
@@ -12,8 +11,6 @@ except ImportError:
 
 
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
-from gwpy.timeseries import TimeSeriesDict as BaseTimeSeriesDict
-from gwpy.timeseries import TimeSeriesList as BaseTimeSeriesList
 
 from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
@@ -23,16 +20,12 @@ from gwexpy.types.metadata import MetaData, MetaDataMatrix
 
 # New Imports
 from .preprocess import (
-    impute_timeseries, standardize_timeseries, align_timeseries_collection, 
-    standardize_matrix, whiten_matrix
+    impute_timeseries, standardize_matrix, whiten_matrix
 )
-from .arima import fit_arima
-from .hurst import hurst, local_hurst
 from .decomposition import (
     pca_fit, pca_transform, pca_inverse_transform, 
     ica_fit, ica_transform, ica_inverse_transform
 )
-from .spectral import csd_matrix_from_collection, coherence_matrix_from_collection
 
 
 from .utils import *
@@ -268,7 +261,6 @@ class TimeSeriesMatrix(SeriesMatrix):
             # We can either genericize _resample_time_bin or loop.
             # For matrices, looping is safe but genericizing to work with any ndarray (axis=-1) is better.
             
-            from .timeseries import TimeSeries
             # For now, let's use the robust mapping behavior of _apply_timeseries_method
             # but handle the rate logic.
             return self._apply_timeseries_method("resample", rate, *args, **kwargs)
@@ -301,7 +293,6 @@ class TimeSeriesMatrix(SeriesMatrix):
         Standardize the matrix.
         See gwexpy.timeseries.preprocess.standardize_matrix.
         """
-        from .preprocess import standardize_matrix
         return standardize_matrix(self, axis=axis, method=method, ddof=ddof, **kwargs)
 
     def whiten_channels(

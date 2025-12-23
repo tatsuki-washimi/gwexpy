@@ -19,7 +19,6 @@ from astropy import units as u
 from typing import Optional, Any
 
 # Import Mixins
-from ._core import TimeSeriesCore
 from ._spectral import TimeSeriesSpectralMixin
 from ._signal import TimeSeriesSignalMixin
 from ._resampling import TimeSeriesResamplingMixin

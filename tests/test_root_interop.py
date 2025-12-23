@@ -1,23 +1,28 @@
-
 import numpy as np
 import os
 import pytest
 from astropy import units as u
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
-from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict, FrequencySeriesList
+from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
 from gwexpy.spectrogram import Spectrogram, SpectrogramDict
 
-# Try importing ROOT; skip tests if not available
-try:
-    import ROOT
-    HAS_ROOT = True
-except ImportError:
-    HAS_ROOT = False
+def get_root():
+    try:
+        import ROOT
+        ROOT.gROOT.SetBatch(True)
+        return ROOT
+    except:
+        return None
 
-pytestmark = pytest.mark.skipif(not HAS_ROOT, reason="ROOT (pyroot) not installed")
+@pytest.fixture
+def ROOT():
+    r = get_root()
+    if r is None:
+        pytest.skip("ROOT (pyroot) not installed")
+    return r
 
-def test_spectrogram_root():
+def test_spectrogram_root(ROOT):
     times = np.linspace(0, 1, 10)
     freqs = np.linspace(0, 100, 5)
     data = np.random.rand(len(times), len(freqs))
@@ -43,7 +48,7 @@ def test_spectrogram_root():
     # Check if value matches
     assert np.allclose(spec3.value, spec.value)
 
-def test_timeseries_dict_root():
+def test_timeseries_dict_root(ROOT, tmp_path):
     ts1 = TimeSeries([1, 2, 3], t0=0, dt=1, name="ch1")
     ts2 = TimeSeries([4, 5, 6], t0=0, dt=1, name="ch2")
     tsd = TimeSeriesDict({"H1": ts1, "L1": ts2})
@@ -54,8 +59,7 @@ def test_timeseries_dict_root():
     assert mg.GetListOfGraphs().GetSize() == 2
     
     # Write
-    filename = "test_tsd.root"
-    if os.path.exists(filename): os.remove(filename)
+    filename = str(tmp_path / "test_tsd.root")
     tsd.write(filename)
     assert os.path.exists(filename)
     
@@ -63,42 +67,38 @@ def test_timeseries_dict_root():
     assert isinstance(f.Get("H1"), ROOT.TGraph)
     assert isinstance(f.Get("L1"), ROOT.TGraph)
     f.Close()
-    if os.path.exists(filename): os.remove(filename)
 
-def test_timeseries_list_root():
+def test_timeseries_list_root(ROOT, tmp_path):
     ts1 = TimeSeries([1, 2], name="ts1")
     tsl = TimeSeriesList(ts1)
     
-    filename = "test_tsl.root"
+    filename = str(tmp_path / "test_tsl.root")
     tsl.write(filename)
     assert os.path.exists(filename)
     f = ROOT.TFile.Open(filename)
     assert f.Get("ts1")
     f.Close()
-    if os.path.exists(filename): os.remove(filename)
 
-def test_frequencyseries_dict_root():
+def test_frequencyseries_dict_root(ROOT, tmp_path):
     fs1 = FrequencySeries([10, 20], frequencies=[1, 2], name="fs1")
     fsd = FrequencySeriesDict({"A": fs1})
     
-    filename = "test_fsd.root"
+    filename = str(tmp_path / "test_fsd.root")
     fsd.write(filename, format="root")
     assert os.path.exists(filename)
     f = ROOT.TFile.Open(filename)
     assert f.Get("A")
     f.Close()
-    if os.path.exists(filename): os.remove(filename)
 
-def test_spectrogram_dict_root():
+def test_spectrogram_dict_root(ROOT, tmp_path):
     times = np.linspace(0, 1, 5)
     freqs = np.linspace(0, 10, 3)
     spec = Spectrogram(np.zeros((5, 3)), times=times, frequencies=freqs)
     sd = SpectrogramDict({"S1": spec})
     
-    filename = "test_sd.root"
+    filename = str(tmp_path / "test_sd.root")
     sd.write(filename)
     assert os.path.exists(filename)
     f = ROOT.TFile.Open(filename)
     assert isinstance(f.Get("S1"), ROOT.TH2D)
     f.Close()
-    if os.path.exists(filename): os.remove(filename)

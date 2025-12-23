@@ -159,7 +159,6 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
         casted_inputs = []
         xindex = self.xindex
         shape  = self._value.shape
-        meta   = self.meta
         rows   = self.rows
         cols   = self.cols
         epoch  = getattr(self, "epoch", 0.0)
@@ -274,8 +273,9 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
         # Vectorized value calculation
         try:
             result_values = ufunc(*value_arrays, **ufunc_kwargs)
-        except Exception:
-            # Fallback to loop if vectorized call fails
+        except (TypeError, ValueError, AttributeError, RuntimeError) as e:
+            # Fallback to loop if vectorized call fails (likely due to custom ufunc or mixed types)
+            warnings.warn(f"ufunc {ufunc.__name__} failed vectorized execution; falling back to loop. Error: {e}", PerformanceWarning)
             result_values = np.empty(self._value.shape, dtype=result_dtype)
             for i in range(N):
                 for j in range(M):

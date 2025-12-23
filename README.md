@@ -55,9 +55,10 @@ pip install .
 pip install ".[all]"
 
 # Install specific features
-pip install ".[interop]"     # All interoperability features
-pip install ".[geophysics]"  # Obspy, MTh5, pygwinc, etc.
-pip install ".[torch]"       # PyTorch support
+pip install ".[interop]"     # All interoperability features (torch, jax, etc.)
+pip install ".[geophysics]"  # Obspy, MTh5, wintools, etc.
+pip install ".[analysis]"    # EMD, Wavelet, Hurst, etc.
+pip install ".[gw]"          # pygwinc, dttxml
 pip install ".[audio]"       # Librosa, Pydub, Torchaudio
 ```
 ### Dependencies
@@ -82,12 +83,13 @@ Required only for specific submodules or interpolation features.
 | `[analysis]` | `pyemd`, `hurst`, `pywt`, `librosa`, `obspy` | HHT/EMD, Hurst exponent, Wavelets, advanced audio/seismic signal processing |
 | `[stats]` | `statsmodels`, `scikit-learn`, `bottleneck` | ARIMA, ICA/PCA decomposition, fast rolling statistics |
 | `[gw]` | `gwinc`, `dttxml` | `gwexpy.noise`, GW noise budgets & `dttxml` reading |
-| `[geophysics]` | `obspy`, `netCDF4`, `mth5`, `mt_metadata`, `mtpy`, `wintools`, `win2ndarray` | Seismic/EM data I/O, noise models |
+| `[geophysics]` | `obspy`, `mth5`, `mt_metadata`, `mtpy`, `wintools`, `win2ndarray` | Seismic/EM data I/O, noise models |
 | `[bio]` | `mne`, `neo` | EEG/MEG & Electrophysiology data I/O |
 | `[gpu]` | `cupy`, `torch`, `tensorflow`, `jax` | GPU‑accelerated array support & Deep Learning |
 | `[audio]` | `librosa`, `pydub`, `torchaudio` | Audio format export/import (mp3, wav) |
-| `[data]` | `xarray`, `h5py` | HDF5 and XArray data structures |
+| `[data]` | `xarray`, `h5py`, `netCDF4` | HDF5, netCDF and XArray data structures |
 | `[control]` | `control` | Control system analysis (`to_control_frd`) |
+| `[interop]` | `torch`, `jax`, `dask`, `polars`, etc. | Bulk install of all interoperability extras |
 | `[polars]` | `polars` | Fast DataFrames support (`to_polars`) |
 | `[dask]` | `dask` | Parallel array processing |
 | `[zarr]` | `zarr` | Chunked, compressed, binary storage |
@@ -191,7 +193,23 @@ except ImportError:
     print("Install EMD-signal for HHT")
 ```
 
-### 6. Torch Dataset Helper
+### 6. Series Fitting
+`gwexpy` provides a powerful fitting API based on `iminuit`. Note that the `.fit()` method on `TimeSeries` and `FrequencySeries` is **opt-in** to avoid automatic modification of `gwpy` classes.
+
+Supported built-in models: `gaussian` (or `gaus`), `exponential` (or `exp`), `landau`, `power_law`, `damped_oscillation`, and polynomials (e.g., `pol1`, `pol2`).
+
+```python
+from gwexpy.fitting import enable_fitting_monkeypatch
+enable_fitting_monkeypatch()
+
+# Fit a TimeSeries to a model
+# result = ts.fit('gaussian', p0={'A': 10, 'mu': 5, 'sigma': 1})
+# result = ts.fit('damped_oscillation', p0={'A': 1, 'tau': 0.1, 'f': 50})
+# print(result.params)
+# result.plot()
+```
+
+### 7. Torch Dataset Helper
 ```python
 from gwexpy.interop import to_torch_dataset, to_torch_dataloader
 

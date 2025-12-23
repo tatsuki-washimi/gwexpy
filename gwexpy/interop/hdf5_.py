@@ -7,7 +7,7 @@ def to_hdf5(ts, group, path, overwrite=False, compression=None, compression_opts
     wrapper for ts.write(..., format='hdf5') usually, but here we implement direct
     low-level if strict control is needed, OR delegate.
     """
-    h5py = require_optional("h5py")
+    require_optional("h5py")
     
     # Check overwrite
     if path in group:
@@ -39,7 +39,7 @@ def to_hdf5(ts, group, path, overwrite=False, compression=None, compression_opts
         
 def from_hdf5(cls, group, path):
     """Read TimeSeries from HDF5 group."""
-    h5py = require_optional("h5py")
+    require_optional("h5py")
     
     dset = group[path]
     data = dset[()]

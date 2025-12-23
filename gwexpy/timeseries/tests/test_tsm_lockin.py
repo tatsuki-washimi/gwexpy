@@ -1,5 +1,4 @@
 
-import pytest
 import numpy as np
 from gwexpy.timeseries import TimeSeriesMatrix
 import astropy.units as u

@@ -4,11 +4,11 @@
 # Local preprocessing module
 from . import preprocessing
 from .preprocessing import (
-    WhiteningModel,
-    whiten,
-    StandardizationModel,
-    standardize,
-    impute,
+    WhiteningModel as WhiteningModel,
+    whiten as whiten,
+    StandardizationModel as StandardizationModel,
+    standardize as standardize,
+    impute as impute,
 )
 
 # Dynamic import from gwpy (PEP 562)

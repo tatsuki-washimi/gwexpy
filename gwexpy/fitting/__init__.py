@@ -16,8 +16,12 @@ def _lazy_series_fit(self: Series, *args: Any, **kwargs: Any) -> Any:
     return fit_series(self, *args, **kwargs)
 
 
-if not hasattr(Series, "fit"):
-    Series.fit = _lazy_series_fit
+def enable_fitting_monkeypatch() -> None:
+    """
+    Opt-in function to add .fit() method to gwpy.types.Series.
+    """
+    if not hasattr(Series, "fit"):
+        Series.fit = _lazy_series_fit
 
 
 def __getattr__(name: str) -> Any:

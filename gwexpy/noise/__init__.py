@@ -33,19 +33,28 @@ def __getattr__(name: str) -> Any:
         return from_obspy
     if name in ("power_law", "white_noise", "pink_noise", "red_noise"):
         from .colored import power_law, white_noise, pink_noise, red_noise
-        if name == "power_law": return power_law
-        if name == "white_noise": return white_noise
-        if name == "pink_noise": return pink_noise
-        if name == "red_noise": return red_noise
+        if name == "power_law":
+            return power_law
+        if name == "white_noise":
+            return white_noise
+        if name == "pink_noise":
+            return pink_noise
+        if name == "red_noise":
+            return red_noise
     if name in ("schumann_resonance", "geomagnetic_background"):
         from .magnetic import schumann_resonance, geomagnetic_background
-        if name == "schumann_resonance": return schumann_resonance
-        if name == "geomagnetic_background": return geomagnetic_background
+        if name == "schumann_resonance":
+            return schumann_resonance
+        if name == "geomagnetic_background":
+            return geomagnetic_background
     if name in ("lorentzian_line", "gaussian_line", "voigt_line"):
         from .peaks import lorentzian_line, gaussian_line, voigt_line
-        if name == "lorentzian_line": return lorentzian_line
-        if name == "gaussian_line": return gaussian_line
-        if name == "voigt_line": return voigt_line
+        if name == "lorentzian_line":
+            return lorentzian_line
+        if name == "gaussian_line":
+            return gaussian_line
+        if name == "voigt_line":
+            return voigt_line
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 

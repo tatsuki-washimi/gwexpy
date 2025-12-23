@@ -1,6 +1,5 @@
 
 from ._optional import require_optional
-import numpy as np
 
 def to_zarr(ts, store, path, chunks=None, compressor=None, overwrite=False):
     """

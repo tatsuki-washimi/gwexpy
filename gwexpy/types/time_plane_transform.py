@@ -1,10 +1,7 @@
 
 import numpy as np
-from astropy.units import Quantity, dimensionless_unscaled
 
 from .array3d import Array3D
-from .plane2d import Plane2D
-from .axis import AxisDescriptor, coerce_1d_quantity
 
 __all__ = ["TimePlaneTransform"]
 
@@ -122,7 +119,8 @@ class TimePlaneTransform:
         Resolve axis key (int or str) to integer index (0, 1, 2).
         """
         if isinstance(key, int):
-            if key < 0: key += 3
+            if key < 0:
+                key += 3
             if not (0 <= key <= 2):
                 raise ValueError(f"Axis index {key} out of range (0-2)")
             return key

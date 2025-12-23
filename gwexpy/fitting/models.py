@@ -15,6 +15,20 @@ def exponential(x, A, tau):
     """
     return A * np.exp(-x / tau)
 
+def power_law(x, A, alpha):
+    """
+    Power law.
+    f(x) = A * x^alpha
+    """
+    return A * x ** alpha
+
+def damped_oscillation(x, A, tau, f, phi=0):
+    """
+    Damped oscillation.
+    f(x) = A * exp(-x / tau) * sin(2 * pi * f * x + phi)
+    """
+    return A * np.exp(-x / tau) * np.sin(2 * np.pi * f * x + phi)
+
 def landau(x, A, mu, sigma):
     """
     Landau distribution approximation (Moyal distribution).
@@ -30,11 +44,15 @@ def make_pol_func(n):
     """
     param_names = [f'p{i}' for i in range(n + 1)]
     
-    def pol_func(x, *args):
-        # args corresponds to p0, p1, ..., pn
-        # We assume validity because iminuit passes exactly what's in signature
+    def pol_func(x, *args, **kwargs):
+        # Handle both positional and keyword arguments
+        if kwargs:
+            p_vals = [kwargs[name] for name in param_names]
+        else:
+            p_vals = args
+            
         res = 0
-        for i, p in enumerate(args):
+        for i, p in enumerate(p_vals):
             res += p * x**i
         return res
     
@@ -55,6 +73,8 @@ MODELS = {
     'expo': exponential,  # ROOT style
     'exponential': exponential,
     'landau': landau,
+    'power_law': power_law,
+    'damped_oscillation': damped_oscillation,
 }
 
 # Add pol0 to pol9

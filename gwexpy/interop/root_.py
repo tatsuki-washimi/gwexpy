@@ -66,8 +66,8 @@ def to_tgraph(series, error=None):
     graph.SetTitle(name)
     
     # Axis labels
-    xunit = str(series.xunit) if hasattr(series, "xunit") else ""
-    yunit = str(series.unit) if hasattr(series, "unit") else ""
+    str(series.xunit) if hasattr(series, "xunit") else ""
+    str(series.unit) if hasattr(series, "unit") else ""
     
     graph.GetXaxis().SetTitle(_get_label(series.xindex, series.xunit, default_name="x"))
     graph.GetYaxis().SetTitle(_get_label(series, series.unit, default_name="y"))
@@ -126,8 +126,8 @@ def to_th1d(series, error=None):
         hist.SetError(err_content)
             
     # Labels
-    xunit = str(series.xunit) if hasattr(series, "xunit") else ""
-    yunit = str(series.unit) if hasattr(series, "unit") else ""
+    str(series.xunit) if hasattr(series, "xunit") else ""
+    str(series.unit) if hasattr(series, "unit") else ""
     hist.GetXaxis().SetTitle(_get_label(series.xindex, series.xunit, default_name="x"))
     hist.GetYaxis().SetTitle(_get_label(series, series.unit, default_name="y"))
     
@@ -254,7 +254,8 @@ def from_root(cls, obj, return_error=False):
         if "[" in z_title and "]" in z_title:
              import re
              match = re.search(r"\[(.*?)\]", z_title)
-             if match: unit = match.group(1)
+             if match:
+                 unit = match.group(1)
              
         res = cls(z, times=x, frequencies=y, unit=unit, name=name)
         if return_error:

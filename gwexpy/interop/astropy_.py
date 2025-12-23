@@ -1,7 +1,4 @@
 
-from ._optional import require_optional
-from ._time import gps_to_datetime_utc, datetime_utc_to_gps, unix_to_gps
-import numpy as np
 
 def to_astropy_timeseries(ts, column="value", time_format="gps"):
     """

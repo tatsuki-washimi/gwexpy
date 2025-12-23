@@ -22,10 +22,11 @@ Optional extras
 
 GWExPy exposes optional extras for interoperability:
 
-- ``.[data]`` for I/O helpers (xarray, h5py, netCDF4, obspy, mne, neo)
+- ``.[data]`` for I/O helpers (xarray, h5py, netCDF4)
+- ``.[geophysics]`` for obspy, mth5, etc.
+- ``.[interop]`` for high-level interoperability (torch, jax, dask, etc.)
 - ``.[control]`` for python-control integration
 - ``.[audio]`` for librosa/pydub helpers
-- ``.[torch]``, ``.[tensorflow]``, ``.[jax]``, ``.[dask]``, ``.[zarr]``
 
 Combine extras as needed, for example:
 

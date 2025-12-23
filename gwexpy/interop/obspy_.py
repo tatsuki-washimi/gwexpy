@@ -27,7 +27,7 @@ def to_obspy_trace(ts, stats_extra=None, dtype=None):
     return obspy.Trace(data=data, header=stats)
 
 def from_obspy_trace(cls, tr, unit=None, name_policy="id"):
-    obspy = require_optional("obspy")
+    require_optional("obspy")
     
     data = tr.data
     stats = tr.stats

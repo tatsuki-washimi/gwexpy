@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 from astropy import units as u
 from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 from gwexpy.frequencyseries import FrequencySeriesMatrix
@@ -72,8 +71,8 @@ def test_fsm_smooth():
 
 def test_is_regular():
     ts = TimeSeries([1, 2, 3], dt=1.0)
-    assert ts.is_regular == True
+    assert ts.is_regular
     
     # Irregular
     ts_irr = TimeSeries([1, 2, 4], times=[0, 1, 3])
-    assert ts_irr.is_regular == False
+    assert not ts_irr.is_regular

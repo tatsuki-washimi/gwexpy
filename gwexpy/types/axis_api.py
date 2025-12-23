@@ -1,8 +1,6 @@
 
 from abc import ABC, abstractmethod
-from typing import Tuple, Dict, Union, Any
-import numpy as np
-from astropy.units import Quantity
+from typing import Tuple, Dict, Union
 
 from .axis import AxisDescriptor
 

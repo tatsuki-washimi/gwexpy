@@ -1,5 +1,4 @@
 
-import pytest
 import numpy as np
 from astropy import units as u
 from gwexpy.types import TimePlaneTransform, Array3D, Plane2D

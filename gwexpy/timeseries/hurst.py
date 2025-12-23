@@ -1,16 +1,12 @@
 
 import numpy as np
-import warnings
 from dataclasses import dataclass
-from typing import Optional, Any, Union, Dict
+from typing import Any, Union, Dict
 from astropy import units as u
 
-try:
-    from typing import TYPE_CHECKING
-    if TYPE_CHECKING:
-        from .timeseries import TimeSeries
-except ImportError:
-    pass
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .timeseries import TimeSeries
 
 @dataclass
 class HurstResult:
@@ -250,7 +246,8 @@ def local_hurst(
         else:
             step_samples = int(step)
             
-    if step_samples < 1: step_samples = 1
+    if step_samples < 1:
+        step_samples = 1
     
     # Slide
     # Output times

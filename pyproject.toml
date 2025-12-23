@@ -26,12 +26,12 @@ dask = ["dask"]
 zarr = ["zarr"]
 polars = ["polars"]
 audio = ["librosa", "pydub", "torchaudio"]
-data = ["xarray", "h5py"]
+data = ["xarray", "h5py", "netCDF4"]
 bio = ["mne", "neo"]
 control = ["control"]
 gpu = ["cupy", "torch", "tensorflow", "jax", "jaxlib"]
 gw = ["gwinc", "dttxml"]
-geophysics = ["wintools", "win2ndarray", "mth5", "mt_metadata", "mtpy", "obspy", "netCDF4"]
+geophysics = ["obspy", "mth5", "mt_metadata", "mtpy", "wintools", "win2ndarray"]
 analysis = [
     "PyEMD",          # emd, hht
     "hurst",          # hurst指数
@@ -40,6 +40,10 @@ analysis = [
     "obspy"           # ノイズスペクトル解析
 ]
 stats = ["statsmodels", "scikit-learn", "bottleneck"]
+interop = [
+    "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "polars",
+    "xarray", "h5py", "netCDF4", "obspy", "mne", "neo"
+]
 
 all = [
     "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "polars",
@@ -50,3 +54,9 @@ all = [
     "PyEMD", "hurst", "pywt",
     "statsmodels", "scikit-learn", "bottleneck"
 ]
+
+[tool.setuptools.package-data]
+gwexpy = ["py.typed"]
+
+[project.scripts]
+gwexpy = "gwexpy.cli:main"

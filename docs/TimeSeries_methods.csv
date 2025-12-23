@@ -51,6 +51,7 @@ q_transform,〇,〇,〇,〇,戻り値はSpectrogramList/Dict/Matrix
 transfer_function,〇,×,×,×,伝達関数推定
 hurst / local_hurst,〇,×,×,×,ハースト指数計算 (gwexpy独自)
 fit_arima,〇,×,×,×,ARIMAモデル適合 (gwexpy独自)
+fit,〇,×,×,×,一般的関数適合 (gwexpy拡張、要オプトイン)
 rms,〇,〇,〇,×,Matrixはrolling_rmsのみ
 min / max,〇,〇,〇,〇,ndarray継承
 mean / std,〇,〇,〇,〇,ndarray継承
@@ -69,11 +70,18 @@ to_mne_raw / rawarray,×,〇,〇,〇,MNE-Python連携
 from_mne_raw / rawarray,×,〇,〇,〇,
 to_neo_analogsignal,×,×,×,〇,Neo連携
 to_pandas / from_pandas,〇,〇,〇,〇,
+to_polars / from_polars,〇,×,×,×,Polars連携
 to_xarray / from_xarray,〇,×,×,×,
 to_matrix,×,〇,〇,〇,gwexpy独自の変換メソッド
 to_torch / from_torch,〇,×,×,〇,PyTorch連携
+to_tf / from_tf,〇,×,×,×,TensorFlow連携
 to_cupy / from_cupy,〇,×,×,×,CuPy連携
 to_jax / from_jax,〇,×,×,×,JAX連携
+to_dask / from_dask,〇,×,×,×,Dask連携
+to_zarr / from_zarr,〇,×,×,×,Zarr連携
+to_netcdf4 / from_netcdf4,〇,×,×,×,netCDF4連携
+to_pydub / from_pydub,〇,×,×,×,Pydub連携
+to_librosa,〇,×,×,×,Librosa連携
 to_tgraph,〇,×,×,×,CERN ROOT TGraph変換
 to_tmultigraph,×,〇,〇,×,CERN ROOT TMultiGraph変換
 rolling_mean / std / etc,×,〇,〇,〇,gwexpy独自 (移動統計量)

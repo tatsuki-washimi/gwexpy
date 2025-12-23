@@ -28,7 +28,8 @@ class Plane2D(Array2D):
         return self.axes[1]
     
     def _swapaxes_int(self, a, b):
-        if {a, b} != {0, 1}: raise ValueError(f"Invalid axis indices: {a}, {b}")
+        if {a, b} != {0, 1}:
+            raise ValueError(f"Invalid axis indices: {a}, {b}")
         new_data = GwpyArray2D.swapaxes(self, a, b)
         
         # Explicit construction for Plane2D logic

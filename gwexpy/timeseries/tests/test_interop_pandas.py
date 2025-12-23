@@ -4,7 +4,6 @@ import pytest
 from astropy import units as u
 from gwpy.time import LIGOTimeGPS
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
-from gwexpy.interop import require_optional
 
 # Optional dependencies check
 try:

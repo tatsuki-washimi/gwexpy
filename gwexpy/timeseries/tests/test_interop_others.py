@@ -6,7 +6,6 @@ import os
 import sqlite3
 from gwpy.time import LIGOTimeGPS
 from gwexpy.timeseries import TimeSeries
-from gwexpy.interop import require_optional
 
 def test_sqlite_interop():
     t0 = LIGOTimeGPS(1234567890, 0)

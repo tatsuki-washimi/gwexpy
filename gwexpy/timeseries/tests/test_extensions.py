@@ -3,7 +3,7 @@ import pytest
 import numpy as np
 from astropy import units as u
 
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 from gwexpy.timeseries.preprocess import align_timeseries_collection
 
 # Optional deps

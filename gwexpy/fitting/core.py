@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from iminuit import Minuit
 from iminuit.util import describe, make_func_code
+import inspect
 from .models import get_model
 
 # Optional imports for MCMC
@@ -90,6 +91,9 @@ class FitResult:
         self.sampler = None
         self.samples = None
         self.mcmc_labels = None
+        self.has_dy = dy is not None
+        if self.dy is None:
+            self.dy = np.ones_like(y)
         
     @property
     def params(self):
@@ -152,7 +156,7 @@ class FitResult:
         ax.plot(x_plot, y_plot, label='Fit', **kwargs)
 
         # Plot Data (Second)
-        if self.dy is not None:
+        if self.has_dy:
             ax.errorbar(self.x, self.y, yerr=self.dy, fmt='.', label='Data', color='black')
         else:
             ax.plot(self.x, self.y, '.', label='Data', color='black')
@@ -186,7 +190,8 @@ class FitResult:
         # But Bode is typically log X.
         x_start = min(self.x) if min(self.x) > 0 else (max(self.x) * 1e-3 if max(self.x) > 0 else 1e-1)
         # If x_range provided, use it. But here we just use data range.
-        if x_start <= 0: x_start = 1e-1 # Fallback
+        if x_start <= 0:
+            x_start = 1e-1 # Fallback
             
         x_plot = np.logspace(np.log10(x_start), np.log10(max(self.x)), num_points)
         ym_plot = self.model(x_plot, **self.params)
@@ -195,7 +200,7 @@ class FitResult:
         
         # Data (Second)
         mag_data = np.abs(self.y)
-        if self.dy is not None:
+        if self.has_dy:
                 ax_mag.errorbar(self.x, mag_data, yerr=self.dy, fmt='.', label='Data', color='black')
         else:
                 ax_mag.plot(self.x, mag_data, '.', label='Data', color='black')
@@ -259,12 +264,14 @@ class FitResult:
             # LeastSquares(*args) expects arguments in order
             try:
                 args = [current_params[p] for p in self.minuit.parameters]
-                
-                # Support custom cost functions (like ComplexLeastSquares)
-                # Note: iminuit costs usually take *args
                 chi2 = self.cost_func(*args)
                 return -0.5 * chi2
+            except (ValueError, TypeError, ZeroDivisionError):
+                # Expected numerical errors
+                return -np.inf
             except Exception:
+                # Unexpected errors - ideally log this or re-raise if debugging
+                # warnings.warn(f"MCMC log_prob encountered unexpected error: {e}")
                 return -np.inf
 
         # Initial state: small ball around minuit result
@@ -348,16 +355,57 @@ def fit_series(series, model, x_range=None, sigma=None,
     elif y_label_unit:
         y_label = f"Amplitude {y_label_unit}"
 
-    is_complex = np.iscomplexobj(y)
-    
     # 誤差の処理
+    original_len = len(series)
     if sigma is None:
-        # 重みなし最小二乗 (Error=1.0)
-        dy = np.ones(len(y)) # Real array
+        # 重みなし最小二乗 (Cost function internally uses 1.0)
+        dy = np.ones(len(y))
+        sigma_for_result = None
     else:
-        dy = np.asarray(sigma)
+        # If sigma is a scalar, broadcast it
+        if np.isscalar(sigma):
+            dy = np.full(len(y), float(sigma))
+        else:
+            sigma_arr = np.asarray(sigma)
+            if len(sigma_arr) == original_len and x_range is not None:
+                # Automatically crop sigma if it matches original series length
+                # Using the same slicing as target
+                if hasattr(series, 'crop'):
+                    # We can't easily crop a plain array with series.crop
+                    # Better find indices
+                    if hasattr(target, 'xindex'):
+                        # This matches how x was extracted
+                        # We just need the indices that target uses From series.
+                        # Since Series.crop usually returns a view or sub-array.
+                        # We can find start/end indices.
+                        idx0 = np.searchsorted(series.xindex.value, target.xindex.value[0])
+                        idx1 = idx0 + len(target)
+                        dy = sigma_arr[idx0:idx1]
+                    else:
+                        # Fallback: slice by length if it's a simple prefix/suffix crop?
+                        # This is risky. Let's try to be safer.
+                        # If series is regular, we can use t0/dt.
+                         dy = sigma_arr # placeholder
+                         try:
+                             # Try to match by length if it matches target exactly
+                             if len(sigma_arr) == len(y):
+                                 dy = sigma_arr
+                             else:
+                                 # Try to find overlap if both are Series? 
+                                 # For now, if auto-crop fails, stay with sigma_arr and let length check catch it.
+                                 pass
+                         except: pass
+                else:
+                    dy = sigma_arr
+            else:
+                dy = sigma_arr
+        
+        # Final length check
         if len(dy) != len(y):
-            raise ValueError("Sigma length mismatch")
+            raise ValueError(f"Sigma length mismatch: got {len(dy)}, expected {len(y)}")
+        sigma_for_result = dy
+
+    is_complex = np.iscomplexobj(y)
 
     # 2. Cost Function
     if is_complex:
@@ -366,7 +414,20 @@ def fit_series(series, model, x_range=None, sigma=None,
         cost = RealLeastSquares(x, y, dy, model)
     
     # 3. Minuit 初期化
-    init_params = p0 if p0 else {}
+    # Get parameter names from the cost function (which got them from model)
+    param_names = describe(cost)
+    sig = inspect.signature(model)
+    
+    init_params = {}
+    for name in param_names:
+        if p0 and name in p0:
+            init_params[name] = p0[name]
+        elif name in sig.parameters and sig.parameters[name].default is not inspect.Parameter.empty:
+            init_params[name] = sig.parameters[name].default
+        else:
+            # Fallback for parameters without p0 or default
+            init_params[name] = 1.0
+            
     m = Minuit(cost, **init_params)
     
     # 4. Limit / Fix の適用
@@ -382,4 +443,4 @@ def fit_series(series, model, x_range=None, sigma=None,
     m.migrad()
     m.hesse()
     
-    return FitResult(m, model, x, y, dy, cost, x_label=x_label, y_label=y_label)
+    return FitResult(m, model, x, y, sigma_for_result, cost, x_label=x_label, y_label=y_label)

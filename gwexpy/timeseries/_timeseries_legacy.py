@@ -19,11 +19,6 @@ This file now only contains:
 
 from __future__ import annotations
 
-import inspect
-from enum import Enum
-import numpy as np
-from astropy import units as u
-from typing import Optional, Union, Any, List, Iterable
 
 try:
     import scipy.signal
@@ -31,24 +26,9 @@ except ImportError:
     pass
 
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
-from gwpy.timeseries import TimeSeriesDict as BaseTimeSeriesDict
-from gwpy.timeseries import TimeSeriesList as BaseTimeSeriesList
 
-from gwexpy.types.seriesmatrix import SeriesMatrix
-from gwexpy.types.metadata import MetaData, MetaDataMatrix
 
 # --- Imports for delegation ---
-from .preprocess import (
-    impute_timeseries, standardize_timeseries, align_timeseries_collection, 
-    standardize_matrix, whiten_matrix
-)
-from .arima import fit_arima
-from .hurst import hurst, local_hurst
-from .decomposition import (
-    pca_fit, pca_transform, pca_inverse_transform, 
-    ica_fit, ica_transform, ica_inverse_transform
-)
-from .spectral import csd_matrix_from_collection, coherence_matrix_from_collection
 
 from .utils import *
 
