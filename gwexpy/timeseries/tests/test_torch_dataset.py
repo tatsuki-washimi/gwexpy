@@ -9,7 +9,7 @@ from gwexpy.interop import torch_dataset
 
 @pytest.mark.skipif(importlib.util.find_spec("torch") is None, reason="torch not installed")
 def test_torch_window_dataset_shapes():
-    torch = importlib.import_module("torch")
+    importlib.import_module("torch")
     ts = TimeSeries(np.arange(10, dtype=float), dt=0.1)
     labels = TimeSeries(np.arange(10, dtype=float) * 2, dt=0.1)
 

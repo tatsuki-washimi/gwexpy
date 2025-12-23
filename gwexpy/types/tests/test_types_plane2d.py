@@ -1,5 +1,4 @@
 
-import pytest
 import numpy as np
 from astropy import units as u
 from gwexpy.types.plane2d import Plane2D

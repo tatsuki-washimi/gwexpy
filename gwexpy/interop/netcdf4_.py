@@ -7,7 +7,7 @@ def to_netcdf4(ts, ds, var_name, dim_time="time", time_units=None, overwrite=Fal
     
     ds: netCDF4.Dataset (writable)
     """
-    netCDF4 = require_optional("netCDF4")
+    require_optional("netCDF4")
     
     if var_name in ds.variables:
         if not overwrite:

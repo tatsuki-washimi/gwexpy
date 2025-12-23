@@ -7,7 +7,7 @@ This module supports a minimal XML parser and will use an external
 
 from __future__ import annotations
 
-from typing import Iterable, Optional, Union, Any, List
+from typing import Iterable, Optional
 
 import numpy as np
 from gwpy.io import registry as io_registry

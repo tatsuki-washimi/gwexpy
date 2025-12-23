@@ -1,16 +1,12 @@
 
 import numpy as np
 import warnings
-import scipy.linalg
 from astropy import units as u
 
 # Import low-level algorithms from signal.preprocessing
 from gwexpy.signal.preprocessing import (
     WhiteningModel,
     StandardizationModel,
-    whiten as _whiten_array,
-    standardize as _standardize_array,
-    impute as _impute_array,
 )
 from .utils import _coerce_t0_gps
 
@@ -537,14 +533,12 @@ def standardize_timeseries(ts, *, method="zscore", ddof=0, robust=None):
         if scale == 0:
             warnings.warn("MAD is zero, setting scale to 1.0 to avoid division by zero.")
             scale = 1.0
-        method_used = "robust"
     elif method == "zscore":
         med = np.nanmean(val)
         scale = np.nanstd(val, ddof=ddof)
         if scale == 0:
             warnings.warn("Standard deviation is zero, setting scale to 1.0 to avoid division by zero.")
             scale = 1.0
-        method_used = "zscore"
     else:
         raise ValueError(f"Unknown standardization method '{method}'. "
                          f"Supported methods are 'zscore', 'robust'.")

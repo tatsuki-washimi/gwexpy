@@ -279,7 +279,7 @@ def read_win_file(source, channels_file=None, verbose=False, **kwargs):
             # Size includes the 4 bytes of the size field itself?
             # Standard WIN: First 4 bytes = Total Size (Big Endian)
             
-            chunk_start = f.tell()
+            f.tell()
             head_bytes = f.read(4)
             if len(head_bytes) < 4:
                 break
@@ -387,8 +387,10 @@ def read_win_file(source, channels_file=None, verbose=False, **kwargs):
             
             year = bcd_to_int(y_byte)
             # Year 2-digit fix:
-            if year < 70: year += 2000
-            else: year += 1900
+            if year < 70:
+                year += 2000
+            else:
+                year += 1900
             
             month = bcd_to_int(m_byte)
             day = bcd_to_int(d_byte)
@@ -419,7 +421,8 @@ def read_win_file(source, channels_file=None, verbose=False, **kwargs):
             # How many samples?
             # SR derived from header `sr_info`.
             sr = sr_info # usually correct Hz
-            if sr == 0: sr = 1 # fallback
+            if sr == 0:
+                sr = 1 # fallback
             
             # Data Offset inside block_data? 
             # Standard Header size is 12 bytes (Excluding Size).
@@ -536,7 +539,8 @@ def read_win_file(source, channels_file=None, verbose=False, **kwargs):
                 
                 if nyb == -8: 
                     # Escape code 0x8 (1000bin, interpreted as -8)
-                    if idx >= n_nibbles: break
+                    if idx >= n_nibbles:
+                        break
                     
                     type_flag = nibbles[idx] # Read flags (needs to be unsigned 0..? Wait, we sign extended everything)
                     # We need the RAW nibble for the flag.
@@ -554,15 +558,20 @@ def read_win_file(source, channels_file=None, verbose=False, **kwargs):
                     # Usually "Next 2 nibbles form 1 byte", "Next 4 nibbles form 2 bytes".
                     
                     n_nyb_needed = 0
-                    if flag_raw == 0: n_nyb_needed = 2
-                    elif flag_raw == 1: n_nyb_needed = 4
-                    elif flag_raw == 2: n_nyb_needed = 6
-                    elif flag_raw == 3: n_nyb_needed = 8
+                    if flag_raw == 0:
+                        n_nyb_needed = 2
+                    elif flag_raw == 1:
+                        n_nyb_needed = 4
+                    elif flag_raw == 2:
+                        n_nyb_needed = 6
+                    elif flag_raw == 3:
+                        n_nyb_needed = 8
                     else:
                          # Unknown?
                          continue
                          
-                    if idx + n_nyb_needed > n_nibbles: break
+                    if idx + n_nyb_needed > n_nibbles:
+                        break
                     
                     # Reconstruct value from nibbles (Big Endian)
                     # val = (n0 << 4*(N-1)) | ...

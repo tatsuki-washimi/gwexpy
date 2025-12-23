@@ -47,7 +47,6 @@ def test_xarray_duration_no_double_units():
     print("=" * 60)
     
     # Create SeriesMatrix with frequency xindex (already as Quantity)
-    from gwpy.types.index import Index
     
     # Create frequency index [0, 1, 2, ..., 9] Hz
     xindex = u.Quantity(np.linspace(0, 9, 10), 'Hz')

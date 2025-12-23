@@ -1,6 +1,5 @@
 
 import numpy as np
-import pytest
 from astropy import units as u
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
 from gwexpy.frequencyseries import FrequencySeriesMatrix

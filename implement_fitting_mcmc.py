@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from gwexpy.timeseries import TimeSeries
-from gwexpy.fitting import fit_series
 
 # 1. Generate Synthetic Data
 np.random.seed(42)

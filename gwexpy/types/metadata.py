@@ -8,9 +8,9 @@ except ImportError:
     pd = None
 from html import escape
 from collections import OrderedDict
-from typing import Optional, Union, Mapping, Any, Iterable, List, Iterable, List
+from typing import Optional, Union
 from astropy import units as u
-from astropy.units import Unit, UnitBase, UnitConversionError
+from astropy.units import Unit, UnitConversionError
 from gwpy.detector import Channel
 from gwpy.types.array import Array
 from gwpy.types.series import Series

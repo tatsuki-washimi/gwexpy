@@ -1,4 +1,4 @@
-Method/Property,Spectrogram (gwpy),SpectrogramList (gwexpy),SpectrogramDict (gwexpy),SpectrogramMatrix (gwexpy),備考
+Method/Property,Spectrogram (gwpy拡張),SpectrogramList (gwexpy),SpectrogramDict (gwexpy),SpectrogramMatrix (gwexpy),備考
 __init__,〇,〇,〇,〇,
 read,〇,〇,〇,×,List/DictはHDF5/ROOT対応
 write,〇,〇,〇,×,List/DictはHDF5/ROOT対応
@@ -7,9 +7,12 @@ crop,〇,〇,〇,×,Matrixは正規スライスで対応
 crop_frequencies,〇,〇,〇,×,
 rebin,〇,〇,〇,×,
 interpolate,〇,〇,〇,×,
+bootstrap_asd,〇,×,×,×,ブートストラップ方式によるASD推定
 to_matrix,-,〇,〇,〇,List/DictからMatrixへ変換
 to_torch,×,〇,〇,〇,PyTorch Tensorへ変換 (各要素または全データ)
 to_cupy,×,〇,〇,〇,CuPy Arrayへ変換 (各要素または全データ)
+to_pandas,×,〇,〇,×,Pandas DataFrameへ変換
+to_polars,×,〇,〇,×,Polars DataFrameへ変換
 mean,〇,-,-,〇,Matrixは任意軸の平均計算可
 shape,〇,-,-,〇,
 __len__,〇,〇,〇,〇,Spectrograms数(List/Dict等)

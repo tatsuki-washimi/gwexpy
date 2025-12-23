@@ -2,8 +2,7 @@
 import warnings
 import numpy as np
 from dataclasses import dataclass
-from typing import Optional, Union, Dict, Any
-from astropy import units as u
+from typing import Dict
 
 try:
     import statsmodels.api as sm
@@ -68,29 +67,28 @@ class ArimaResult:
         
         pred = self.res.predict(start=start, end=end, dynamic=dynamic)
         
-        # Construct TimeSeries
-        # Need to determine time axis for predicted result
-        # If start/end integers:
-        start_idx = start if start is not None else 0
-        if isinstance(start_idx, str): # '2022...'
-             pass # Not supported yet
-             
-        # create TimeSeries wrapper
-        # Not implementing full time reconstruction logic here without TimeSeries class access
-        # but returning array wrapped in TS class
-        # We need the TimeSeries class.
-        
+        # Handle start/end as time or int indices
         from .timeseries import TimeSeries
         
         # Calculate t0 for the prediction
-        # new_t0 = self.t0 + start_idx * self.dt
-        # This assumes start is integer offset.
+        # If start is None, it defaults to the first observation (idx=0)
+        # If start is int, it's the offset from self.t0
+        if start is None:
+            start_idx = 0
+        elif isinstance(start, (int, np.integer)):
+            start_idx = int(start)
+        else:
+            # For datetime or other types, we'd need more complex logic.
+            # statsmodels might have already converted it if the index was set.
+            # Here we assume integer indexing if t0/dt are provided.
+            warnings.warn("Non-integer start in predict may result in incorrect t0 assignment if not supported by statsmodels internal index.")
+            start_idx = 0 # fallback
+            
+        new_t0 = self.t0 + start_idx * self.dt
         
-        # return TimeSeries(pred, t0=..., dt=self.dt, ...)
-        
-        # Placeholder returning array for now or try best effort
         return TimeSeries(
             pred,
+            t0=new_t0,
             dt=self.dt,
             unit=self.unit,
             name=f"{self.name}_pred"

@@ -48,18 +48,23 @@ class Array2D(AxisApiMixin, GwpyArray2D):
 
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj)
-        if obj is None: return
+        if obj is None:
+            return
         
         current_a0 = getattr(self, "_axis0_name", None)
         current_a1 = getattr(self, "_axis1_name", None)
         parent_a0 = getattr(obj, "_axis0_name", None)
         parent_a1 = getattr(obj, "_axis1_name", None)
         
-        if parent_a0 is not None: self._axis0_name = parent_a0
-        elif current_a0 is None: self._axis0_name = "axis0"
+        if parent_a0 is not None:
+            self._axis0_name = parent_a0
+        elif current_a0 is None:
+            self._axis0_name = "axis0"
             
-        if parent_a1 is not None: self._axis1_name = parent_a1
-        elif current_a1 is None: self._axis1_name = "axis1"
+        if parent_a1 is not None:
+            self._axis1_name = parent_a1
+        elif current_a1 is None:
+            self._axis1_name = "axis1"
              
     @property
     def axes(self):
@@ -69,15 +74,19 @@ class Array2D(AxisApiMixin, GwpyArray2D):
         )
 
     def _set_axis_name(self, index, name):
-        if index == 0: self._axis0_name = name
-        elif index == 1: self._axis1_name = name
-        else: raise IndexError(index)
+        if index == 0:
+            self._axis0_name = name
+        elif index == 1:
+            self._axis1_name = name
+        else:
+            raise IndexError(index)
 
     def _isel_tuple(self, item_tuple):
         return self.__getitem__(item_tuple)
 
     def _swapaxes_int(self, a, b):
-        if {a, b} != {0, 1}: raise ValueError(f"Invalid axis indices: {a}, {b}")
+        if {a, b} != {0, 1}:
+            raise ValueError(f"Invalid axis indices: {a}, {b}")
         
         # Access old indices before swap
         try:

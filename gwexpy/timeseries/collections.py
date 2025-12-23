@@ -1,8 +1,5 @@
-import inspect
-from enum import Enum
-import numpy as np
 from astropy import units as u
-from typing import Optional, Union, Any, List, Iterable
+from typing import Optional, Any
 try:
     import scipy.signal
 except ImportError:
@@ -13,28 +10,15 @@ from gwpy.timeseries import TimeSeries as BaseTimeSeries
 from gwpy.timeseries import TimeSeriesDict as BaseTimeSeriesDict
 from gwpy.timeseries import TimeSeriesList as BaseTimeSeriesList
 
-from gwexpy.types.seriesmatrix import SeriesMatrix
-from gwexpy.types.metadata import MetaData, MetaDataMatrix
 
 # --- Monkey Patch TimeSeriesDict ---
 
 
 # New Imports
-from .preprocess import (
-    impute_timeseries, standardize_timeseries, align_timeseries_collection, 
-    standardize_matrix, whiten_matrix
-)
-from .arima import fit_arima
-from .hurst import hurst, local_hurst
-from .decomposition import (
-    pca_fit, pca_transform, pca_inverse_transform, 
-    ica_fit, ica_transform, ica_inverse_transform
-)
 from .spectral import csd_matrix_from_collection, coherence_matrix_from_collection
 
 
 from .utils import *
-from .timeseries import TimeSeries
 class TimeSeriesDict(BaseTimeSeriesDict):
     """Dictionary of TimeSeries objects."""
 
@@ -701,12 +685,10 @@ class TimeSeriesDict(BaseTimeSeriesDict):
 
     def pca(self, *args, **kwargs):
         """Perform PCA decomposition across channels."""
-        from .matrix import TimeSeriesMatrix
         return self.to_matrix().pca(*args, **kwargs)
 
     def ica(self, *args, **kwargs):
         """Perform ICA decomposition across channels."""
-        from .matrix import TimeSeriesMatrix
         return self.to_matrix().ica(*args, **kwargs)
 
 
@@ -1238,11 +1220,9 @@ class TimeSeriesList(BaseTimeSeriesList):
 
     def pca(self, *args, **kwargs):
         """Perform PCA decomposition across channels."""
-        from .matrix import TimeSeriesMatrix
         return self.to_matrix().pca(*args, **kwargs)
 
     def ica(self, *args, **kwargs):
         """Perform ICA decomposition across channels."""
-        from .matrix import TimeSeriesMatrix
         return self.to_matrix().ica(*args, **kwargs)
 

@@ -4,7 +4,7 @@ import numpy as np
 from astropy import units as u
 from gwexpy.timeseries import TimeSeries
 from gwexpy.types.time_plane_transform import TimePlaneTransform
-from gwexpy.interop.mt_ import to_mth5, from_mth5
+from gwexpy.interop.mt_ import to_mth5
 
 # --- P1-1: TimePlaneTransform at_time interpolation ---
 

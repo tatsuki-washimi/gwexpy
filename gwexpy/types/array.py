@@ -24,7 +24,8 @@ class Array(AxisApiMixin, GwpyArray):
 
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj)
-        if obj is None: return
+        if obj is None:
+            return
         
         parent_names = getattr(obj, "_axis_names", None)
         if parent_names is None or len(parent_names) != self.ndim:

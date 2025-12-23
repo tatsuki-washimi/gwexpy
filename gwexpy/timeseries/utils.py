@@ -45,8 +45,8 @@ def _coerce_t0_gps(t0):
 
     try:
         gps = to_gps(t0)
-    except Exception:
-        return t0
+    except Exception as e:
+        raise ValueError(f"Could not convert {t0} to GPS: {e}")
 
     if isinstance(gps, (np.ndarray, list)):
         gps_val = float(np.asarray(gps).flat[0])

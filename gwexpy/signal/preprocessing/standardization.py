@@ -5,7 +5,6 @@ gwexpy.signal.preprocessing.standardization
 Standardization algorithms for signal processing.
 """
 
-import warnings
 import numpy as np
 
 

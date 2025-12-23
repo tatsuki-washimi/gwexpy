@@ -1,7 +1,6 @@
 
 from datetime import datetime, timezone
-import math
-from gwpy.time import LIGOTimeGPS, to_gps
+from gwpy.time import LIGOTimeGPS
 from astropy.time import Time
 
 class LeapSecondConversionError(ValueError):

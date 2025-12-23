@@ -1,6 +1,5 @@
 
 from ._optional import require_optional
-from ._time import datetime_utc_to_gps
 import numpy as np
 
 def to_polars_series(ts, name=None):
@@ -61,7 +60,7 @@ def from_polars_dataframe(cls, df, time_column="time", unit=None):
     Create TimeSeries from polars.DataFrame.
     Attempts to infer t0 and dt from the time_column.
     """
-    pl = require_optional("polars")
+    require_optional("polars")
     
     # Extract data column (everything except time_column)
     cols = [c for c in df.columns if c != time_column]

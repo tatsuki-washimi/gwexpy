@@ -10,7 +10,6 @@ This module contains the base TimeSeries class with essential functionality:
 from __future__ import annotations
 
 import numpy as np
-from astropy import units as u
 from typing import Optional, Any
 
 from gwpy.timeseries import TimeSeries as BaseTimeSeries

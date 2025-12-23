@@ -12,7 +12,7 @@ def make_fs():
 
 
 def test_frequencyseries_pandas_roundtrip():
-    pd = pytest.importorskip("pandas")
+    pytest.importorskip("pandas")
     fs = make_fs()
     s = fs.to_pandas()
     fs2 = FrequencySeries.from_pandas(s, unit="1")

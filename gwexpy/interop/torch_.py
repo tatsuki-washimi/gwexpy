@@ -6,7 +6,6 @@ Interoperability with PyTorch tensors.
 """
 
 from ._optional import require_optional
-import numpy as np
 
 __all__ = ["to_torch", "from_torch"]
 

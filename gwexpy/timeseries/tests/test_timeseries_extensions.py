@@ -1,6 +1,5 @@
 import pytest
 import numpy as np
-from astropy import units as u
 from gwexpy.timeseries import TimeSeries
 
 class TestTimeSeriesExtensions:

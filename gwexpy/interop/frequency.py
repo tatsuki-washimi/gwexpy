@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
 
 import numpy as np
 
@@ -60,7 +59,7 @@ def from_xarray_frequencyseries(cls, da, *, unit=None, freq_coord="frequency", e
 
 
 def to_hdf5_frequencyseries(fs, group, path, overwrite=False, compression=None, compression_opts=None):
-    h5py = require_optional("h5py")
+    require_optional("h5py")
     if path in group:
         if overwrite:
             del group[path]
@@ -95,7 +94,7 @@ def to_hdf5_frequencyseries(fs, group, path, overwrite=False, compression=None, 
 
 
 def from_hdf5_frequencyseries(cls, group, path):
-    h5py = require_optional("h5py")
+    require_optional("h5py")
     dset = group[path]
     data = dset[()]
     attrs = dset.attrs

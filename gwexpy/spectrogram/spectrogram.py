@@ -1,4 +1,3 @@
-import warnings
 from collections import UserList
 try:
     from collections import UserDict
@@ -6,7 +5,7 @@ except ImportError:
     from collections import MutableMapping as UserDict
 
 import numpy as np
-import h5py
+# h5py is imported lazily where needed
 from astropy import units as u
 
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
@@ -24,7 +23,6 @@ except ImportError:
     cupy = None
 
 # We can reuse SeriesMatrix if we want, but SpectrogramMatrix has different dimensions (Time, Freq)
-from gwexpy.types.seriesmatrix import SeriesMatrix
 
 class Spectrogram(BaseSpectrogram):
     """
@@ -140,7 +138,8 @@ class SpectrogramMatrix(np.ndarray):
         return obj
 
     def __array_finalize__(self, obj):
-        if obj is None: return
+        if obj is None:
+            return
         self.times = getattr(obj, 'times', None)
         self.frequencies = getattr(obj, 'frequencies', None)
         self.unit = getattr(obj, 'unit', None)
@@ -343,15 +342,13 @@ class SpectrogramMatrix(np.ndarray):
              
         return Plot()
 
-    def to_torch(self, device=None, dtype=None):
-        if torch is None:
-            raise ImportError("torch not installed")
-        return torch.as_tensor(self, device=device, dtype=dtype)
+    def to_torch(self, device=None, dtype=None, requires_grad=False, copy=False):
+        from gwexpy.interop.torch_ import to_torch
+        return to_torch(self, device=device, dtype=dtype, requires_grad=requires_grad, copy=copy)
 
     def to_cupy(self, dtype=None):
-        if cupy is None:
-            raise ImportError("cupy not installed")
-        return cupy.asarray(self, dtype=dtype)
+        from gwexpy.interop.cupy_ import to_cupy
+        return to_cupy(self, dtype=dtype)
 
 
 class SpectrogramList(UserList):
@@ -369,18 +366,28 @@ class SpectrogramList(UserList):
              self._validate_items(self.data)
 
     def _validate_items(self, items):
-        for item in items:
+        for i, item in enumerate(items):
             if not isinstance(item, Spectrogram):
-                raise TypeError(f"Items must be of type Spectrogram, not {type(item)}")
+                if isinstance(item, BaseSpectrogram):
+                    # Auto-convert to gwexpy Spectrogram
+                    items[i] = item.view(Spectrogram)
+                else:
+                    raise TypeError(f"Items must be of type Spectrogram, not {type(item)}")
 
     def __setitem__(self, index, item):
         if not isinstance(item, Spectrogram):
-            raise TypeError("Value must be a Spectrogram")
+            if isinstance(item, BaseSpectrogram):
+                item = item.view(Spectrogram)
+            else:
+                raise TypeError("Value must be a Spectrogram")
         self.data[index] = item
 
     def append(self, item):
         if not isinstance(item, Spectrogram):
-            raise TypeError("Can only append Spectrogram objects")
+            if isinstance(item, BaseSpectrogram):
+                item = item.view(Spectrogram)
+            else:
+                raise TypeError("Can only append Spectrogram objects")
         super().append(item)
 
     def extend(self, other):
@@ -392,6 +399,7 @@ class SpectrogramList(UserList):
         format = kwargs.get("format", "hdf5")
         new_list = self.__class__()
         if format == "hdf5":
+             import h5py
              with h5py.File(source, "r") as f:
                   keys = sorted(f.keys(), key=lambda x: int(x) if x.isdigit() else x)
                   for k in keys:
@@ -412,6 +420,7 @@ class SpectrogramList(UserList):
              from gwexpy.interop import write_root_file
              return write_root_file(self, target, **kwargs)
         if format == "hdf5":
+             import h5py
              with h5py.File(target, mode) as f:
                   for i, s in enumerate(self):
                        grp = f.create_group(str(i))
@@ -447,8 +456,10 @@ class SpectrogramList(UserList):
              if hasattr(s, 'crop_frequencies'):
                   res = s.crop_frequencies(f0, f1)
              else:
-                  if isinstance(f0, u.Quantity): f0 = f0.to(s.yunit).value
-                  if isinstance(f1, u.Quantity): f1 = f1.to(s.yunit).value
+                  if isinstance(f0, u.Quantity):
+                      f0 = f0.to(s.yunit).value
+                  if isinstance(f1, u.Quantity):
+                      f1 = f1.to(s.yunit).value
                   res = s.crop_frequencies(f0, f1)
              
              if inplace:
@@ -558,12 +569,12 @@ class SpectrogramDict(UserDict):
         if kwargs:
              self.update(kwargs)
 
-    def _validate_item(self, item):
-        if not isinstance(item, Spectrogram):
-             raise TypeError("Value must be a Spectrogram")
-
     def __setitem__(self, key, item):
-        self._validate_item(item)
+        if not isinstance(item, Spectrogram):
+            if isinstance(item, BaseSpectrogram):
+                item = item.view(Spectrogram)
+            else:
+                raise TypeError("Value must be a Spectrogram")
         self.data[key] = item
     
     def update(self, other=None, **kwargs):
@@ -584,6 +595,7 @@ class SpectrogramDict(UserDict):
         """Read dictionary from HDF5 file keys -> dict keys."""
         format = kwargs.get("format", "hdf5")
         if format == "hdf5":
+             import h5py
              with h5py.File(source, "r") as f:
                   for k in f.keys():
                        try:
@@ -603,6 +615,7 @@ class SpectrogramDict(UserDict):
              from gwexpy.interop import write_root_file
              return write_root_file(self, target, **kwargs)
         if format == "hdf5":
+             import h5py
              with h5py.File(target, mode) as f:
                   for k, s in self.items():
                        grp = f.create_group(str(k))
@@ -634,8 +647,10 @@ class SpectrogramDict(UserDict):
             if hasattr(v, 'crop_frequencies'):
                 res = v.crop_frequencies(f0, f1)
             else:
-                 if isinstance(f0, u.Quantity): f0 = f0.to(v.yunit).value
-                 if isinstance(f1, u.Quantity): f1 = f1.to(v.yunit).value
+                 if isinstance(f0, u.Quantity):
+                     f0 = f0.to(v.yunit).value
+                 if isinstance(f1, u.Quantity):
+                     f1 = f1.to(v.yunit).value
                  res = v.crop_frequencies(f0, f1)
             
             if inplace:

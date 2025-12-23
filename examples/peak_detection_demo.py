@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from gwexpy.frequencyseries import FrequencySeries
-import astropy.units as u
 
 # 1. データの準備
 # 複数のピークを持つ擬似的なスペクトルデータを作成します

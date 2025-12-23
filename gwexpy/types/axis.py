@@ -1,9 +1,8 @@
 
-from typing import Optional, Union
+from typing import Optional
 import numpy as np
 from dataclasses import dataclass
-from astropy.units import Quantity, Unit
-from gwpy.types.index import Index
+from astropy.units import Quantity
 
 __all__ = ["AxisDescriptor", "coerce_1d_quantity"]
 

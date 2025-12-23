@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from enum import Enum
-from typing import Any, Optional, Union, List, Iterable, TypeVar
+from typing import Any, Optional, Iterable, TypeVar
 
 import numpy as np
 from astropy import units as u
@@ -505,7 +505,7 @@ class FrequencySeries(BaseFrequencySeries):
         """
         if method == 'complex':
             # Convolve/filter real and imag separately
-            w = np.ones(width) / width
+            np.ones(width) / width
             # Use 'same' to keep size, but handle boundary effects
             # scipy.ndimage.uniform_filter1d or regular convolution
             # Let's use simple convolution for MVP
@@ -721,7 +721,6 @@ class FrequencySeries(BaseFrequencySeries):
         -------
         `FrequencySeries`
         """
-        from gwexpy.interop.torch_ import from_torch
         # Wrapper to adapt signature (from_torch calls cls(data, t0, dt) for TimeSeries)
         # We need a custom implementation for FrequencySeries or adapt from_torch logic.
         # Since from_torch in interop is tailored for TimeSeries (takes t0, dt),

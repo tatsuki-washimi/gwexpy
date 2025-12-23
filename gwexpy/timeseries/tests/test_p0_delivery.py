@@ -2,7 +2,6 @@
 import pytest
 import numpy as np
 from astropy import units as u
-from datetime import datetime, timezone
 from gwexpy.timeseries import TimeSeries
 from gwexpy.interop._time import gps_to_datetime_utc, LeapSecondConversionError
 from gwexpy.interop.errors import IoNotImplementedError

@@ -284,8 +284,8 @@ class TimeSeriesResamplingMixin:
         
         else:
             idx_right = np.searchsorted(old_times_val, new_times_val, side='left')
-            idx_prev = np.clip(idx_right - 1, 0, len(old_times_val) - 1)
-            idx_next = np.clip(idx_right, 0, len(old_times_val) - 1)
+            np.clip(idx_right - 1, 0, len(old_times_val) - 1)
+            np.clip(idx_right, 0, len(old_times_val) - 1)
             
             if method == 'ffill' or method == 'pad':
                  idx_side_right = np.searchsorted(old_times_val, new_times_val, side='right')
@@ -562,7 +562,8 @@ class TimeSeriesResamplingMixin:
                  elif agg == 'std':
                       func = np.std
                  else:
-                      func = lambda x: np.nan
+                      def func(x):
+                          return np.nan
                       
                  for i in range(n_bins):
                       in_bin = valid_values[valid_indices == i]

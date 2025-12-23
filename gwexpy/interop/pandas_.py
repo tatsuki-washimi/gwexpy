@@ -1,6 +1,6 @@
 
 from ._optional import require_optional
-from ._time import gps_to_datetime_utc, datetime_utc_to_gps, gps_to_unix, unix_to_gps
+from ._time import datetime_utc_to_gps
 from gwpy.time import LIGOTimeGPS
 import numpy as np
 
@@ -112,7 +112,7 @@ def to_pandas_dataframe(tsd, index="datetime", copy=False):
     if not keys:
         return pd.DataFrame()
         
-    s0 = tsd[keys[0]]
+    tsd[keys[0]]
     # Check consistency
     # (Simplified)
     

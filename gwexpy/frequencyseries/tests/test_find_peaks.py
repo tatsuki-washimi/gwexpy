@@ -1,5 +1,4 @@
 
-import pytest
 import numpy as np
 from gwexpy.frequencyseries import FrequencySeries
 import astropy.units as u

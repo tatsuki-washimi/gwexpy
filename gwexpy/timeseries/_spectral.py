@@ -17,7 +17,7 @@ from astropy import units as u
 from typing import Optional, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ._core import TimeSeriesCore
+    pass
 
 
 class TimeSeriesSpectralMixin:

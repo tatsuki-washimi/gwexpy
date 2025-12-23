@@ -3,7 +3,6 @@ Spectral matrix calculation helpers for TimeSeries collections.
 """
 
 import numpy as np
-from typing import Optional, Union, Any, List, Iterable
 from astropy import units as u
 from gwexpy.frequencyseries.frequencyseries import FrequencySeriesMatrix
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
@@ -81,7 +80,8 @@ def csd_matrix_from_collection(
                   if i < n_cols and j < n_rows: # Bound check (always true if symmetric input)
                       val_conj = val.conjugate()
                       # Ensure name is updated? GWpy csd name is usually "CSD".
-                      if val_conj.name: val_conj.name = val.name 
+                      if val_conj.name:
+                          val_conj.name = val.name 
                       matrix_data[j][i] = val_conj
 
     if ref_freqs is None:

@@ -2,7 +2,6 @@
 import numpy as np
 import pytest
 from gwexpy.timeseries import TimeSeries
-from gwexpy.interop import require_optional
 
 try:
     import dask.array as da

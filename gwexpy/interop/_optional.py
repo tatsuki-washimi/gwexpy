@@ -26,6 +26,8 @@ _OPTIONAL_DEPENDENCIES = {
     "mtpy": "mtpy",
     "mne": "mne",
     "neo": "neo",
+    "dttxml": "dttxml",
+    "gwinc": "gwinc",
 }
 
 def require_optional(name: str) -> Any:
@@ -53,10 +55,44 @@ def require_optional(name: str) -> Any:
     else:
         pkg_name = _OPTIONAL_DEPENDENCIES[name]
         
+    # Map package name to help message for installation
+    _EXTRA_MAP = {
+        "torch": "torch",
+        "torchaudio": "audio",
+        "tensorflow": "tensorflow",
+        "jax": "jax",
+        "dask": "dask",
+        "zarr": "zarr",
+        "polars": "polars",
+        "xarray": "data",
+        "h5py": "data",
+        "netCDF4": "data",
+        "librosa": "audio",
+        "pydub": "audio",
+        "obspy": "geophysics",
+        "mth5": "geophysics",
+        "mne": "bio",
+        "neo": "bio",
+        "control": "control",
+        "iminuit": "stats",
+        "statsmodels": "stats",
+        "PyEMD": "analysis",
+        "hurst": "analysis",
+        "pywt": "analysis",
+        "dttxml": "gw",
+        "gwinc": "gw",
+    }
+    
     try:
         return importlib.import_module(pkg_name)
     except ImportError as e:
+        extra = _EXTRA_MAP.get(name) or _EXTRA_MAP.get(pkg_name)
+        if extra:
+            install_cmd = f"pip install 'gwexpy[{extra}]'"
+        else:
+            install_cmd = f"pip install {pkg_name}"
+            
         raise ImportError(
             f"The '{name}' package is required for this feature but is not installed. "
-            f"Please install it via 'pip install {pkg_name}' or 'conda install {pkg_name}'."
+            f"You can install it via '{install_cmd}' or 'pip install \"gwexpy[all]\"'."
         ) from e

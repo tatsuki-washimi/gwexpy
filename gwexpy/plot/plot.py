@@ -1,13 +1,9 @@
 
 from typing import TYPE_CHECKING
-import numpy as np
-import math
 from gwpy.plot import Plot as BasePlot
 
 if TYPE_CHECKING:
-    from gwexpy.types.seriesmatrix import SeriesMatrix
-    from gwexpy.frequencyseries import FrequencySeriesMatrix
-    from gwpy.types.series import Series
+    pass
 
 __all__ = ["Plot"]
 

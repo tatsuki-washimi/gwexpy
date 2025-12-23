@@ -1,4 +1,4 @@
-from .core import to_gps, from_gps, tconvert
+from .core import to_gps as to_gps, from_gps as from_gps, tconvert as tconvert
 # Dynamic import from gwpy (PEP 562)
 import gwpy.time
 

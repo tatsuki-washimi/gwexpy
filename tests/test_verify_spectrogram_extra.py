@@ -30,7 +30,8 @@ def test_spectrogram_extra_features():
     
     # 2. IO
     filename = 'test_spec_io.h5'
-    if os.path.exists(filename): os.remove(filename)
+    if os.path.exists(filename):
+        os.remove(filename)
     
     try:
         import h5py
@@ -48,11 +49,12 @@ def test_spectrogram_extra_features():
     except ImportError:
         pass
     finally:
-        if os.path.exists(filename): os.remove(filename)
+        if os.path.exists(filename):
+            os.remove(filename)
     
     # 3. Inplace
     sl = SpectrogramList([s1, s2])
-    old_item_id = id(sl[0])
+    id(sl[0])
     sl.crop(2, 8, inplace=True)
     # Check updated content
     assert sl[0].shape[0] < 10

@@ -5,7 +5,7 @@ import numpy as np
 from ._optional import require_optional
 
 if TYPE_CHECKING:  # pragma: no cover - type hints only
-    from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix, TimeSeriesDict, TimeSeriesList
+    from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 
 
 class TimeSeriesWindowDataset:

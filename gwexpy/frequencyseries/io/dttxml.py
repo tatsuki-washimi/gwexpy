@@ -117,7 +117,6 @@ def read_frequencyseriesmatrix_dttxml(
     # Determine frequency axis from first entry
     freq_axis = None
     df = None
-    data_shape = None
     for info in payload.values():
         freqs = np.asarray(info.get("frequencies") or [])
         if freqs.size:

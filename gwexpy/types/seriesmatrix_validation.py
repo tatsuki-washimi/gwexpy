@@ -1,24 +1,14 @@
-import warnings
-import itertools
 import numpy as np
 try:
     import pandas as pd
 except ImportError:
     pd = None
-import matplotlib.pyplot as plt
-from html import escape
-import json
 from collections import OrderedDict
-from collections.abc import Sequence
-from typing import Optional, Union, Mapping, Any, Iterable, List
-from copy import deepcopy
-from datetime import datetime
+from typing import Optional
 from astropy import units as u
-from gwpy.time import LIGOTimeGPS, to_gps
 from gwpy.types.array import Array
 from gwpy.types.index import Index
 from gwpy.types.series import Series
-from gwexpy.interop._optional import require_optional
 
 from .metadata import MetaData, MetaDataDict, MetaDataMatrix
 
@@ -574,7 +564,7 @@ def _check_attribute_consistency(
                             return False
                     mask = np.vectorize(_ch_equal)(data_arr, meta_arr)
                 else:
-                    mask = (data_arr == meta_arr) | (meta_arr == None) | (data_arr == None)
+                    mask = (data_arr == meta_arr) | (meta_arr is None) | (data_arr is None)
                 if not np.all(mask):
                     idxs = np.argwhere(~mask)
                     raise ValueError(f"Inconsistent {attr}: mismatch at indices {idxs}")

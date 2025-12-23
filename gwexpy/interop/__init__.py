@@ -32,7 +32,7 @@ from .zarr_ import to_zarr, from_zarr
 from .netcdf4_ import to_netcdf4, from_netcdf4
 from .control_ import to_control_frd, from_control_frd
 from .jax_ import to_jax, from_jax
-from .cupy_ import to_cupy, from_cupy
+from .cupy_ import to_cupy, from_cupy, is_cupy_available
 
 # P2
 from .pydub_ import to_librosa, to_pydub, from_pydub

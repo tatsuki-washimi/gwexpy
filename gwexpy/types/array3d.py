@@ -29,17 +29,24 @@ class Array3D(Array):
             obj._axis1_name = "axis1"
             obj._axis2_name = "axis2"
         else:
-            if len(axis_names) != 3: raise ValueError("axis_names must be length 3")
+            if len(axis_names) != 3:
+                raise ValueError("axis_names must be length 3")
             obj._axis0_name, obj._axis1_name, obj._axis2_name = [str(x) for x in axis_names]
 
-        if axis0 is None: obj._axis0_index = np.arange(obj.shape[0]) * dimensionless_unscaled
-        else: obj._axis0_index = coerce_1d_quantity(axis0)
+        if axis0 is None:
+            obj._axis0_index = np.arange(obj.shape[0]) * dimensionless_unscaled
+        else:
+            obj._axis0_index = coerce_1d_quantity(axis0)
 
-        if axis1 is None: obj._axis1_index = np.arange(obj.shape[1]) * dimensionless_unscaled
-        else: obj._axis1_index = coerce_1d_quantity(axis1)
+        if axis1 is None:
+            obj._axis1_index = np.arange(obj.shape[1]) * dimensionless_unscaled
+        else:
+            obj._axis1_index = coerce_1d_quantity(axis1)
 
-        if axis2 is None: obj._axis2_index = np.arange(obj.shape[2]) * dimensionless_unscaled
-        else: obj._axis2_index = coerce_1d_quantity(axis2)
+        if axis2 is None:
+            obj._axis2_index = np.arange(obj.shape[2]) * dimensionless_unscaled
+        else:
+            obj._axis2_index = coerce_1d_quantity(axis2)
 
         if getattr(obj, "_axis_names", None) is not None:
             obj._axis_names = [obj._axis0_name, obj._axis1_name, obj._axis2_name]
@@ -48,13 +55,16 @@ class Array3D(Array):
 
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj)
-        if obj is None: return
+        if obj is None:
+            return
         
         def copy_attr(name, default):
             if getattr(self, name, None) is None:
                 val = getattr(obj, name, None)
-                if val is not None: setattr(self, name, val)
-                else: setattr(self, name, default)
+                if val is not None:
+                    setattr(self, name, val)
+                else:
+                    setattr(self, name, default)
 
         copy_attr("_axis0_name", "axis0")
         copy_attr("_axis1_name", "axis1")
@@ -94,10 +104,14 @@ class Array3D(Array):
         )
 
     def _set_axis_name(self, index, name):
-        if index == 0: self._axis0_name = name
-        elif index == 1: self._axis1_name = name
-        elif index == 2: self._axis2_name = name
-        else: raise IndexError(index)
+        if index == 0:
+            self._axis0_name = name
+        elif index == 1:
+            self._axis1_name = name
+        elif index == 2:
+            self._axis2_name = name
+        else:
+            raise IndexError(index)
         if getattr(self, "_axis_names", None) is not None and len(self._axis_names) == 3:
             self._axis_names = [self._axis0_name, self._axis1_name, self._axis2_name]
 

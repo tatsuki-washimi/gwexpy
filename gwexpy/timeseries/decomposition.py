@@ -1,7 +1,6 @@
 
-import warnings
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Any, Union
+from typing import List, Dict, Any
 
 import numpy as np
 
@@ -12,10 +11,7 @@ except ImportError:
     SKLEARN_AVAILABLE = False
 
 from .preprocess import (
-    impute_timeseries, 
-    standardize_matrix, 
-    whiten_matrix,
-    WhiteningModel
+    whiten_matrix
 )
 
 @dataclass
@@ -73,7 +69,7 @@ def _handle_nan_policy(matrix, policy, impute_kwargs=None):
             val = mat_copy.value
             
             method = impute_kwargs.get("method", "interpolate")
-            limit = impute_kwargs.get("limit", None)
+            impute_kwargs.get("limit", None)
             
             for i in range(val.shape[1]):
                 col = val[:, i]
@@ -109,18 +105,21 @@ def _fit_scaler(matrix, method, ddof=0):
 
 def _apply_scaler(matrix, preprocessing):
     scaler = preprocessing.get("scaler_stats")
-    if not scaler: return matrix
+    if not scaler:
+        return matrix
     
     val = matrix.value.copy()
     val = (val - scaler["mean"]) / scaler["scale"]
     
     new_mat = matrix.__class__(val, t0=matrix.t0, dt=matrix.dt)
-    if hasattr(new_mat, 'channel_names'): new_mat.channel_names = getattr(matrix, 'channel_names', None)
+    if hasattr(new_mat, 'channel_names'):
+        new_mat.channel_names = getattr(matrix, 'channel_names', None)
     return new_mat
 
 def _inverse_scaler(val, preprocessing):
     scaler = preprocessing.get("scaler_stats")
-    if not scaler: return val
+    if not scaler:
+        return val
     
     return val * scaler["scale"] + scaler["mean"]
 
@@ -462,7 +461,8 @@ def ica_transform(ica_res, matrix):
     sources_new = sources.T[:, None, :]
     
     new_mat = matrix.__class__(sources_new, t0=matrix.t0, dt=matrix.dt)
-    if hasattr(new_mat, 'channel_names'): new_mat.channel_names = labels
+    if hasattr(new_mat, 'channel_names'):
+        new_mat.channel_names = labels
     return new_mat
 
 def ica_inverse_transform(ica_res, sources):
