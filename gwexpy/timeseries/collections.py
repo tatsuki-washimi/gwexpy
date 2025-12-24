@@ -175,6 +175,28 @@ class TimeSeriesDict(BaseTimeSeriesDict):
              return new_dict
 
     def csd_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs):
+        """Compute Cross-Spectral Density matrix for all pairs.
+
+        Parameters
+        ----------
+        other : TimeSeriesDict or TimeSeriesList, optional
+            Another collection for cross-CSD. If None, compute self-CSD matrix.
+        fftlength : float, optional
+            FFT length in seconds.
+        overlap : float, optional
+            Overlap between segments in seconds.
+        window : str, optional
+            Window function name (default 'hann').
+        hermitian : bool, optional
+            If True, exploit Hermitian symmetry (default True).
+        include_diagonal : bool, optional
+            Whether to include diagonal elements (default True).
+
+        Returns
+        -------
+        FrequencySeriesMatrix
+            The CSD matrix.
+        """
         return csd_matrix_from_collection(
             self, other,
             fftlength=fftlength, overlap=overlap, window=window,
@@ -183,6 +205,30 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         )
 
     def coherence_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs):
+        """Compute coherence matrix for all pairs.
+
+        Parameters
+        ----------
+        other : TimeSeriesDict or TimeSeriesList, optional
+            Another collection for cross-coherence.
+        fftlength : float, optional
+            FFT length in seconds.
+        overlap : float, optional
+            Overlap between segments in seconds.
+        window : str, optional
+            Window function name (default 'hann').
+        symmetric : bool, optional
+            If True, exploit symmetry (default True).
+        include_diagonal : bool, optional
+            Whether to include diagonal elements (default True).
+        diagonal_value : float, optional
+            Value for diagonal elements (default 1.0).
+
+        Returns
+        -------
+        FrequencySeriesMatrix
+            The coherence matrix.
+        """
         return coherence_matrix_from_collection(
             self, other,
             fftlength=fftlength, overlap=overlap, window=window,
@@ -277,6 +323,20 @@ class TimeSeriesDict(BaseTimeSeriesDict):
 
 
     def asd(self, fftlength=4, overlap=2):
+        """Compute Amplitude Spectral Density for each TimeSeries.
+
+        Parameters
+        ----------
+        fftlength : float, optional
+            FFT length in seconds (default 4).
+        overlap : float, optional
+            Overlap between segments in seconds (default 2).
+
+        Returns
+        -------
+        FrequencySeriesDict
+            Dictionary of ASD results.
+        """
         from gwexpy.frequencyseries import FrequencySeries
 
         dict_cls = getattr(FrequencySeries, "DictClass", None)
@@ -655,24 +715,31 @@ class TimeSeriesDict(BaseTimeSeriesDict):
             return pd.Series(results)
 
     def rms(self, *args, **kwargs):
+        """Compute RMS for each TimeSeries. Returns pandas.Series of scalars."""
         return self._apply_scalar_or_map("rms", *args, **kwargs)
 
     def min(self, *args, **kwargs):
+        """Compute minimum for each TimeSeries. Returns pandas.Series of scalars."""
         return self._apply_scalar_or_map("min", *args, **kwargs)
 
     def max(self, *args, **kwargs):
+        """Compute maximum for each TimeSeries. Returns pandas.Series of scalars."""
         return self._apply_scalar_or_map("max", *args, **kwargs)
 
     def mean(self, *args, **kwargs):
+        """Compute mean for each TimeSeries. Returns pandas.Series of scalars."""
         return self._apply_scalar_or_map("mean", *args, **kwargs)
 
     def std(self, *args, **kwargs):
+        """Compute standard deviation for each TimeSeries. Returns pandas.Series of scalars."""
         return self._apply_scalar_or_map("std", *args, **kwargs)
 
     def value_at(self, *args, **kwargs):
+        """Get value at a specific time for each TimeSeries."""
         return self._apply_scalar_or_map("value_at", *args, **kwargs)
 
     def is_contiguous(self, *args, **kwargs):
+        """Check contiguity with another object for each TimeSeries."""
         return self._apply_scalar_or_map("is_contiguous", *args, **kwargs)
 
     # --- State Analysis ---
@@ -835,10 +902,29 @@ class TimeSeriesList(BaseTimeSeriesList):
         )
 
     def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
-         new_list = self.__class__()
-         for ts in self:
-             list.append(new_list, ts.impute(method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs))
-         return new_list
+        """Impute missing data (NaNs) in each TimeSeries.
+
+        Parameters
+        ----------
+        method : str, optional
+            Imputation method ('interpolate', 'fill', etc.).
+        limit : int, optional
+            Maximum number of consecutive NaNs to fill.
+        axis : str, optional
+            Axis to impute along.
+        max_gap : float, optional
+            Maximum gap size to fill (in seconds).
+        **kwargs
+            Passed to TimeSeries.impute().
+
+        Returns
+        -------
+        TimeSeriesList
+        """
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.impute(method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs))
+        return new_list
 
     def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
         """Apply rolling mean to each element."""
@@ -866,6 +952,20 @@ class TimeSeriesList(BaseTimeSeriesList):
         return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
 
     def to_matrix(self, *, align="intersection", **kwargs):
+        """Convert list to TimeSeriesMatrix with alignment.
+
+        Parameters
+        ----------
+        align : str, optional
+            Alignment strategy ('intersection', 'union', etc.). Default 'intersection'.
+        **kwargs
+            Additional arguments passed to alignment function.
+
+        Returns
+        -------
+        TimeSeriesMatrix
+            Matrix with all series aligned to common time axis.
+        """
         from gwexpy.timeseries.preprocess import align_timeseries_collection
         vals, times, meta = align_timeseries_collection(list(self), how=align, **kwargs)
         # Use names from metadata (from TS objects)
@@ -1157,29 +1257,37 @@ class TimeSeriesList(BaseTimeSeriesList):
         return results
 
     def rms(self, *args, **kwargs):
+        """Compute RMS for each TimeSeries. Returns list of scalars."""
         return self._apply_scalar_or_map("rms", *args, **kwargs)
 
     def min(self, *args, **kwargs):
+        """Compute minimum for each TimeSeries. Returns list of scalars."""
         return self._apply_scalar_or_map("min", *args, **kwargs)
 
     def max(self, *args, **kwargs):
+        """Compute maximum for each TimeSeries. Returns list of scalars."""
         return self._apply_scalar_or_map("max", *args, **kwargs)
 
     def mean(self, *args, **kwargs):
+        """Compute mean for each TimeSeries. Returns list of scalars."""
         return self._apply_scalar_or_map("mean", *args, **kwargs)
 
     def std(self, *args, **kwargs):
+        """Compute standard deviation for each TimeSeries. Returns list of scalars."""
         return self._apply_scalar_or_map("std", *args, **kwargs)
 
     def value_at(self, *args, **kwargs):
+        """Get value at a specific time for each TimeSeries."""
         return self._apply_scalar_or_map("value_at", *args, **kwargs)
 
     def is_contiguous(self, *args, **kwargs):
+        """Check contiguity with another object for each TimeSeries."""
         return self._apply_scalar_or_map("is_contiguous", *args, **kwargs)
 
     # --- State Analysis ---
 
     def state_segments(self, *args, **kwargs):
+        """Run state_segments on each element (returns list of SegmentLists)."""
         return self._apply_scalar_or_map("state_segments", *args, **kwargs)
 
     # --- Multivariate ---
@@ -1211,6 +1319,7 @@ class TimeSeriesList(BaseTimeSeriesList):
         return to_tmultigraph(self, name=name)
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
+        """Write TimeSeriesList to file (HDF5, ROOT, etc.)."""
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
              from gwexpy.interop.root_ import write_root_file

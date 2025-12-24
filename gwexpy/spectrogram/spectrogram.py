@@ -69,6 +69,14 @@ class Spectrogram(BaseSpectrogram):
         from gwexpy.interop import from_root
         return from_root(cls, obj, return_error=return_error)
 
+    def imshow(self, **kwargs):
+        """Plot using imshow. Inherited from gwpy."""
+        return super().imshow(**kwargs)
+
+    def pcolormesh(self, **kwargs):
+        """Plot using pcolormesh. Inherited from gwpy."""
+        return super().pcolormesh(**kwargs)
+
 class SpectrogramMatrix(np.ndarray):
     """
     Matrix of Spectrogram data.
@@ -155,9 +163,11 @@ class SpectrogramMatrix(np.ndarray):
         return res
 
     def row_keys(self):
+        """Return list of row metadata keys."""
         return list(self.rows.keys()) if self.rows else []
 
     def col_keys(self):
+        """Return list of column metadata keys."""
         return list(self.cols.keys()) if self.cols else []
 
     def plot(self, **kwargs):
@@ -343,10 +353,12 @@ class SpectrogramMatrix(np.ndarray):
         return Plot()
 
     def to_torch(self, device=None, dtype=None, requires_grad=False, copy=False):
+        """Convert to PyTorch tensor."""
         from gwexpy.interop.torch_ import to_torch
         return to_torch(self, device=device, dtype=dtype, requires_grad=requires_grad, copy=copy)
 
     def to_cupy(self, dtype=None):
+        """Convert to CuPy array."""
         from gwexpy.interop.cupy_ import to_cupy
         return to_cupy(self, dtype=dtype)
 
@@ -545,11 +557,13 @@ class SpectrogramList(UserList):
         )
 
     def to_torch(self, device=None, dtype=None):
+        """Convert each spectrogram to PyTorch tensor. Returns a list."""
         if torch is None:
              raise ImportError("torch not installed")
         return [torch.tensor(s.value, device=device, dtype=dtype) for s in self]
 
     def to_cupy(self, dtype=None):
+        """Convert each spectrogram to CuPy array. Returns a list."""
         if cupy is None:
              raise ImportError("cupy not installed")
         return [cupy.array(s.value, dtype=dtype) for s in self]
@@ -624,6 +638,19 @@ class SpectrogramDict(UserDict):
              raise NotImplementedError(f"Format {format} not supported")
 
     def crop(self, t0, t1, inplace=False):
+        """Crop each spectrogram in time.
+
+        Parameters
+        ----------
+        t0, t1 : float
+            Start and end times.
+        inplace : bool, optional
+            If True, modify in place.
+
+        Returns
+        -------
+        SpectrogramDict
+        """
         if inplace:
              target = self
         else:
@@ -639,6 +666,19 @@ class SpectrogramDict(UserDict):
         return target
 
     def crop_frequencies(self, f0, f1, inplace=False):
+        """Crop each spectrogram in frequency.
+
+        Parameters
+        ----------
+        f0, f1 : float or Quantity
+            Start and end frequencies.
+        inplace : bool, optional
+            If True, modify in place.
+
+        Returns
+        -------
+        SpectrogramDict
+        """
         if inplace:
              target = self
         else:
@@ -662,6 +702,21 @@ class SpectrogramDict(UserDict):
         return target
 
     def rebin(self, dt, df, inplace=False):
+        """Rebin each spectrogram to new time/frequency resolution.
+
+        Parameters
+        ----------
+        dt : float
+            New time bin size.
+        df : float
+            New frequency bin size.
+        inplace : bool, optional
+            If True, modify in place.
+
+        Returns
+        -------
+        SpectrogramDict
+        """
         if inplace:
              target = self
         else:
@@ -680,6 +735,21 @@ class SpectrogramDict(UserDict):
         return target
 
     def interpolate(self, dt, df, inplace=False):
+        """Interpolate each spectrogram to new resolution.
+
+        Parameters
+        ----------
+        dt : float
+            New time resolution.
+        df : float
+            New frequency resolution.
+        inplace : bool, optional
+            If True, modify in place.
+
+        Returns
+        -------
+        SpectrogramDict
+        """
         if inplace:
              target = self
         else:
@@ -712,6 +782,13 @@ class SpectrogramDict(UserDict):
         return Plot(*self.values(), **kwargs)
 
     def to_matrix(self):
+        """Convert to SpectrogramMatrix.
+
+        Returns
+        -------
+        SpectrogramMatrix
+            3D array of (N, Time, Freq).
+        """
         vals = list(self.values())
         if not vals:
              return SpectrogramMatrix(np.empty((0,0,0)))
@@ -733,11 +810,13 @@ class SpectrogramDict(UserDict):
         return matrix
 
     def to_torch(self, device=None, dtype=None):
+        """Convert to dict of PyTorch tensors."""
         if torch is None:
              raise ImportError("torch")
         return {k: torch.tensor(v.value, device=device, dtype=dtype) for k, v in self.items()}
 
     def to_cupy(self, dtype=None):
+        """Convert to dict of CuPy arrays."""
         if cupy is None:
              raise ImportError("cupy")
         return {k: cupy.array(v.value, dtype=dtype) for k, v in self.items()}

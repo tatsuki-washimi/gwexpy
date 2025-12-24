@@ -249,18 +249,54 @@ class SeriesMatrixOps:
 
     @property
     def shape3D(self):
+        """Shape of the matrix as a 3-tuple (n_rows, n_cols, n_samples).
+
+        Returns
+        -------
+        tuple
+            A 3-tuple of integers representing (rows, columns, samples).
+        """
         return self._value.shape[0], self._value.shape[1], self.N_samples
 
     @property
     def value(self):
+        """Underlying numpy array of data values.
+
+        Returns
+        -------
+        numpy.ndarray
+            3D array of shape (n_rows, n_cols, n_samples) containing the data.
+        """
         return self._value
 
     @value.setter
     def value(self, new_value):
+        """Set the underlying data values.
+
+        Parameters
+        ----------
+        new_value : array_like
+            New data values to copy into the matrix.
+        """
         np.copyto(self._value, new_value)
 
     @property
     def loc(self):
+        """Label-based indexer for direct value access.
+
+        Provides pandas-like `.loc` accessor for getting/setting values
+        directly in the underlying data array using index notation.
+
+        Returns
+        -------
+        _LocAccessor
+            An accessor object supporting ``[]`` indexing.
+
+        Examples
+        --------
+        >>> matrix.loc[0, 1, :] = new_values  # Set all samples at row 0, col 1
+        >>> vals = matrix.loc[0, 1, :]  # Get all samples at row 0, col 1
+        """
         class _LocAccessor:
             def __init__(self, parent):
                 self._parent = parent
@@ -274,6 +310,20 @@ class SeriesMatrixOps:
         return _LocAccessor(self)
 
     def submatrix(self, row_keys, col_keys):
+        """Extract a submatrix by selecting specific rows and columns.
+
+        Parameters
+        ----------
+        row_keys : list
+            List of row keys to include in the submatrix.
+        col_keys : list
+            List of column keys to include in the submatrix.
+
+        Returns
+        -------
+        SeriesMatrix
+            A new matrix containing only the selected rows and columns.
+        """
         row_indices = [self.row_index(k) for k in row_keys]
         col_indices = [self.col_index(k) for k in col_keys]
         new_data = self.value[np.ix_(row_indices, col_indices)]
@@ -287,13 +337,41 @@ class SeriesMatrixOps:
                             meta=new_meta, attrs=self.attrs)
 
     def to_series_2Dlist(self):
+        """Convert matrix to a 2D nested list of Series objects.
+
+        Returns
+        -------
+        list of list
+            A 2D list where ``result[i][j]`` is the Series at row i, column j.
+        """
         return [[self[row,col] for col in self.col_keys()] for row in self.row_keys()]
 
     def to_series_1Dlist(self):
+        """Convert matrix to a flat 1D list of Series objects.
+
+        Returns
+        -------
+        list
+            A flat list of Series, ordered by columns then rows.
+        """
         return [self[row,col] for col in self.col_keys() for row in self.row_keys()]
 
     ##### Mathematics #####
     def astype(self, dtype, copy=True):
+        """Cast matrix data to a specified type.
+
+        Parameters
+        ----------
+        dtype : str or numpy.dtype
+            Target data type.
+        copy : bool, optional
+            If True (default), return a copy even if dtype is unchanged.
+
+        Returns
+        -------
+        SeriesMatrix
+            A new matrix with the specified data type.
+        """
         new_value = np.array(self.value, dtype=dtype, copy=copy)
         return self.__class__(new_value,
                               meta=self.meta.copy(),
@@ -305,19 +383,62 @@ class SeriesMatrixOps:
 
     @property
     def real(self):
+        """Real part of the matrix.
+
+        For complex matrices, returns only the real component.
+        For real matrices, returns a copy.
+
+        Returns
+        -------
+        SeriesMatrix
+            Matrix with real-valued elements.
+        """
         new = (self + self.conj()) / 2
         return new.astype(float)
 
     @property
     def imag(self):
+        """Imaginary part of the matrix.
+
+        For complex matrices, returns only the imaginary component.
+        For real matrices, returns zeros.
+
+        Returns
+        -------
+        SeriesMatrix
+            Matrix with imaginary components as real values.
+        """
         new = (self - self.conj()) / (2j)
         return new.astype(float)
 
     def abs(self):
+        """Compute element-wise absolute value.
+
+        For complex-valued matrices, this returns the magnitude.
+
+        Returns
+        -------
+        SeriesMatrix
+            A new matrix with real-valued absolute values.
+        """
         new = abs(self)
         return new.astype(float)
 
     def angle(self, deg: bool = False):
+        """Compute element-wise phase angle.
+
+        For complex-valued matrices, this returns the phase angle (argument).
+
+        Parameters
+        ----------
+        deg : bool, optional
+            If True, return angle in degrees; otherwise radians (default).
+
+        Returns
+        -------
+        SeriesMatrix
+            A new matrix with phase angles, unit set to degrees or radians.
+        """
         new = self.copy()
         new.meta = deepcopy(self.meta)
         new.value = np.angle(self.value, deg=deg)
@@ -346,9 +467,33 @@ class SeriesMatrixOps:
 
     @property
     def dagger(self):
+        """Conjugate transpose (Hermitian adjoint) of the matrix.
+
+        Returns the complex conjugate of the transposed matrix,
+        often denoted as A† in matrix notation.
+
+        Returns
+        -------
+        SeriesMatrix
+            The Hermitian adjoint of this matrix.
+        """
         return self.conj().T
 
     def trace(self):
+        """Compute the trace of the matrix (sum of diagonal elements).
+
+        Returns
+        -------
+        Series
+            A Series containing the trace values at each sample point.
+
+        Raises
+        ------
+        ValueError
+            If the matrix is not square.
+        UnitConversionError
+            If diagonal elements have incompatible units.
+        """
         nrow, ncol, _ = self._value.shape
         if nrow != ncol:
             raise ValueError("trace requires a square matrix")
@@ -368,6 +513,21 @@ class SeriesMatrixOps:
         return Series(summed, xindex=xi, unit=ref_unit, name=name)
 
     def diagonal(self, output: str = "list"):
+        """Extract diagonal elements from the matrix.
+
+        Parameters
+        ----------
+        output : {'list', 'vector', 'matrix'}, optional
+            Output format:
+            - 'list': Return a list of Series (default)
+            - 'vector': Return as column vector (n x 1 matrix)
+            - 'matrix': Return full matrix with off-diagonal zeroed
+
+        Returns
+        -------
+        list, SeriesMatrix
+            Diagonal elements in the requested format.
+        """
         nrow, ncol, nsamp = self._value.shape
         n = min(nrow, ncol)
         diag_series = []
@@ -427,6 +587,20 @@ class SeriesMatrixOps:
         raise ValueError("output must be one of {'list', 'vector', 'matrix'}")
 
     def det(self):
+        """Compute the determinant of the matrix at each sample point.
+
+        Returns
+        -------
+        Series
+            A Series containing the determinant values.
+
+        Raises
+        ------
+        ValueError
+            If the matrix is not square.
+        UnitConversionError
+            If element units are not equivalent.
+        """
         nrow, ncol, nsamp = self._value.shape
         if nrow != ncol:
             raise ValueError("det requires a square matrix")
@@ -445,6 +619,25 @@ class SeriesMatrixOps:
         return Series(det_vals, xindex=xi, unit=result_unit, name=name)
 
     def inv(self, swap_rowcol: bool = True):
+        """Compute the matrix inverse at each sample point.
+
+        Parameters
+        ----------
+        swap_rowcol : bool, optional
+            If True (default), swap row/col labels in the result.
+
+        Returns
+        -------
+        SeriesMatrix
+            The inverse matrix with unit^-1.
+
+        Raises
+        ------
+        ValueError
+            If the matrix is not square.
+        UnitConversionError
+            If element units are not equivalent.
+        """
         nrow, ncol, nsamp = self._value.shape
         if nrow != ncol:
             raise ValueError("inv requires a square matrix")
@@ -484,6 +677,34 @@ class SeriesMatrixOps:
         )
 
     def schur(self, keep_rows, keep_cols=None, eliminate_rows=None, eliminate_cols=None):
+        """Compute the Schur complement of a block matrix.
+
+        The Schur complement is computed as: A - B @ D^(-1) @ C
+        where the matrix is partitioned into blocks [[A, B], [C, D]].
+
+        Parameters
+        ----------
+        keep_rows : list
+            Row keys/indices to keep (block A rows).
+        keep_cols : list, optional
+            Column keys/indices to keep. If None, same as keep_rows.
+        eliminate_rows : list, optional
+            Row keys/indices to eliminate (block D rows). If None, auto-inferred.
+        eliminate_cols : list, optional
+            Column keys/indices to eliminate. If None, auto-inferred.
+
+        Returns
+        -------
+        SeriesMatrix
+            The Schur complement matrix.
+
+        Raises
+        ------
+        ValueError
+            If eliminate sets have different sizes or keep sets are empty.
+        UnitConversionError
+            If element units are not equivalent.
+        """
         nrow, ncol, nsamp = self._value.shape
         if keep_cols is None:
             keep_cols = keep_rows
@@ -563,6 +784,22 @@ class SeriesMatrixOps:
 
     ##### Edit forrwing the Sampling axis   #####
     def crop(self, start=None, end=None, copy=False):
+        """Crop the matrix to a specified range along the sample axis.
+
+        Parameters
+        ----------
+        start : float, Quantity, or None
+            Start value for cropping. If None, starts from beginning.
+        end : float, Quantity, or None
+            End value for cropping. If None, extends to end.
+        copy : bool, optional
+            If True, return a copy of the data; otherwise return a view.
+
+        Returns
+        -------
+        SeriesMatrix
+            A new matrix containing only the cropped range.
+        """
         xindex = self.xindex
         xunit = getattr(xindex, "unit", None)
         xvalues = getattr(xindex, "value", np.asarray(xindex))
@@ -595,6 +832,33 @@ class SeriesMatrixOps:
         )
 
     def append(self, other, inplace=True, pad=None, gap=None, resize=True):
+        """Append another matrix along the sample axis.
+
+        Parameters
+        ----------
+        other : SeriesMatrix
+            Matrix to append. Must have compatible row/column structure.
+        inplace : bool, optional
+            If True (default), modify this matrix in place.
+        pad : float or None, optional
+            Value to use for padding gaps. If None, gaps raise an error.
+        gap : str, float, or None, optional
+            Gap handling: 'raise' (error on gap), 'pad' (fill with pad value),
+            'ignore' (simple concatenation), or a numeric tolerance.
+        resize : bool, optional
+            If True (default), allow the matrix to grow. If False, keep
+            the original length by trimming from the start.
+
+        Returns
+        -------
+        SeriesMatrix
+            The concatenated matrix (self if inplace=True).
+
+        Raises
+        ------
+        ValueError
+            If matrices overlap or have incompatible gaps.
+        """
         if gap is None:
             gap = 'raise' if pad is None else 'pad'
         if pad is None and gap == 'pad':
@@ -698,6 +962,34 @@ class SeriesMatrixOps:
             return out_full
 
     def append_exact(self, other, inplace=False, pad=None, gap=None, tol=1/2.**18):
+        """Append another matrix with strict contiguity checking.
+
+        This method performs exact sample-by-sample appending with tolerance
+        checking for gaps between the matrices.
+
+        Parameters
+        ----------
+        other : SeriesMatrix
+            Matrix to append.
+        inplace : bool, optional
+            If True, modify this matrix in place. Default is False.
+        pad : float or None, optional
+            Value to use for padding gaps.
+        gap : float or None, optional
+            Maximum allowed gap size for padding.
+        tol : float, optional
+            Tolerance for contiguity check (default: 1/2^18 ≈ 3.8e-6).
+
+        Returns
+        -------
+        SeriesMatrix
+            The concatenated matrix.
+
+        Raises
+        ------
+        ValueError
+            If shapes don't match or gap exceeds tolerance.
+        """
         if self._value.shape[:2] != other._value.shape[:2]:
             raise ValueError(f"shape[:2] does not match: {self._value.shape[:2]} vs {other._value.shape[:2]}")
         if self._value.ndim != other._value.ndim:
@@ -768,6 +1060,26 @@ class SeriesMatrixOps:
         return result
 
     def prepend(self, other, inplace=True, pad=None, gap=None, resize=True):
+        """Prepend another matrix at the beginning along the sample axis.
+
+        Parameters
+        ----------
+        other : SeriesMatrix
+            Matrix to prepend.
+        inplace : bool, optional
+            If True (default), modify this matrix in place.
+        pad : float or None, optional
+            Value to use for padding gaps.
+        gap : str, float, or None, optional
+            Gap handling strategy (see :meth:`append`).
+        resize : bool, optional
+            If True (default), allow the matrix to grow.
+
+        Returns
+        -------
+        SeriesMatrix
+            The concatenated matrix.
+        """
         out = other.append(self, inplace=False, pad=pad, gap=gap, resize=resize)
         if not inplace:
             return out
@@ -787,12 +1099,50 @@ class SeriesMatrixOps:
             return out
 
     def prepend_exact(self, other, inplace=False, pad=None, gap=None, tol=1/2.**18):
+        """Prepend another matrix with strict contiguity checking.
+
+        See :meth:`append_exact` for parameter details.
+        """
         return other.append_exact(self, inplace=inplace, pad=pad, gap=gap, tol=tol)
 
     def update(self, other, inplace=True, pad=None, gap=None):
+        """Update matrix by appending without resizing (rolling buffer style).
+
+        Appends `other` and trims from the start to maintain original length.
+
+        Parameters
+        ----------
+        other : SeriesMatrix
+            Matrix to append.
+        inplace : bool, optional
+            If True (default), modify this matrix in place.
+        pad : float or None, optional
+            Value to use for padding gaps.
+        gap : str, float, or None, optional
+            Gap handling strategy.
+
+        Returns
+        -------
+        SeriesMatrix
+            The updated matrix with same length as original.
+        """
         return self.append(other, inplace=inplace, pad=pad, gap=gap, resize=False)
 
     def diff(self, n=1, axis=2):
+        """Calculate the n-th discrete difference along the sample axis.
+
+        Parameters
+        ----------
+        n : int, optional
+            Number of times to difference. Default is 1.
+        axis : int, optional
+            Must be 2 (sample axis). Other values raise ValueError.
+
+        Returns
+        -------
+        SeriesMatrix
+            Differenced matrix with length reduced by n.
+        """
         if axis != 2:
             raise ValueError("SeriesMatrix.diff supports only axis=2 (sample axis)")
         if n < 0:
@@ -818,6 +1168,23 @@ class SeriesMatrixOps:
         )
 
     def value_at(self, x):
+        """Get the matrix values at a specific x-axis location.
+
+        Parameters
+        ----------
+        x : float or Quantity
+            The x-axis value to look up.
+
+        Returns
+        -------
+        numpy.ndarray
+            2D array of shape (n_rows, n_cols) with values at that x.
+
+        Raises
+        ------
+        ValueError
+            If x is not in xindex.
+        """
         xidx = self.xindex
         base_unit = getattr(xidx, "unit", None)
         if base_unit is not None:
@@ -833,6 +1200,21 @@ class SeriesMatrixOps:
         return self.value[:, :, idx]
 
     def pad(self, pad_width, **kwargs):
+        """Pad the matrix along the sample axis.
+
+        Parameters
+        ----------
+        pad_width : int or tuple of (int, int)
+            Number of samples to pad. If int, pads equally on both sides.
+            If tuple, specifies (before, after) padding.
+        **kwargs
+            Additional arguments passed to numpy.pad. Default mode is 'constant'.
+
+        Returns
+        -------
+        SeriesMatrix
+            Padded matrix with extended sample axis.
+        """
         kwargs.setdefault("mode", "constant")
         if isinstance(pad_width, int):
             before = after = pad_width
@@ -862,6 +1244,18 @@ class SeriesMatrixOps:
         return result
 
     def shift(self, delta):
+        """Shift the sample axis by a constant offset.
+
+        Parameters
+        ----------
+        delta : float or Quantity
+            Amount to shift the x-axis. Positive values shift forward.
+
+        Returns
+        -------
+        self
+            Returns self for method chaining (modifies in place).
+        """
         xidx = self.xindex
         xunit = getattr(xidx, "unit", None)
         if xunit is not None:
@@ -878,6 +1272,18 @@ class SeriesMatrixOps:
         return self
 
     def copy(self, order='C'):
+        """Create a deep copy of this matrix.
+
+        Parameters
+        ----------
+        order : {'C', 'F', 'A', 'K'}, optional
+            Memory layout of the copy. Default is 'C' (row-major).
+
+        Returns
+        -------
+        SeriesMatrix
+            A new matrix with copied data and metadata.
+        """
         new_values = np.array(self._value, copy=True, order=order)
         try:
             xindex_copy = self.xindex.copy()
@@ -912,11 +1318,39 @@ class SeriesMatrixOps:
         )
 
     def step(self, where="post", **kwargs):
+        """Plot the matrix as a step function.
+
+        Parameters
+        ----------
+        where : {'pre', 'post', 'mid'}, optional
+            Where to place the step. Default is 'post'.
+        **kwargs
+            Additional arguments passed to plot().
+
+        Returns
+        -------
+        Plot
+            The matplotlib figure.
+        """
         kwargs.setdefault("drawstyle", f"steps-{where}")
         return self.plot(method="plot", **kwargs)
 
     # -- I/O (HDF5) -------------------------------------------------
     def to_pandas(self, format="wide"):
+        """Convert matrix to a pandas DataFrame.
+
+        Parameters
+        ----------
+        format : {'wide', 'long'}, optional
+            Output format. 'wide' creates columns for each row-col combination.
+            'long' creates a tidy format with row, col, value columns.
+            Default is 'wide'.
+
+        Returns
+        -------
+        pandas.DataFrame
+            The data as a DataFrame.
+        """
         pd = require_optional("pandas")
         if format == "wide":
             N, M, K = self._value.shape
@@ -963,6 +1397,28 @@ class SeriesMatrixOps:
             raise ValueError(f"Unknown format: {format}")
 
     def write(self, target, format=None, **kwargs):
+        """Write matrix to file.
+
+        Parameters
+        ----------
+        target : str or path-like
+            Output file path.
+        format : {'hdf5', 'csv', 'parquet'} or None, optional
+            Output format. If None, inferred from file extension.
+        **kwargs
+            Additional arguments passed to the writer.
+
+        Returns
+        -------
+        None or result from underlying writer.
+
+        Notes
+        -----
+        Supported extensions:
+        - .h5, .hdf5, .hdf → HDF5 format
+        - .csv → CSV format (wide layout)
+        - .parquet, .pq → Parquet format (wide layout)
+        """
         from pathlib import Path
         if format is None:
             ext = Path(target).suffix.lower()
@@ -986,6 +1442,23 @@ class SeriesMatrixOps:
             raise ValueError(f"Unsupported format: {format}")
 
     def to_hdf5(self, filepath, **kwargs):
+        """Write matrix to HDF5 file.
+
+        Parameters
+        ----------
+        filepath : str or path-like
+            Output file path.
+        **kwargs
+            Additional arguments passed to h5py.File.
+
+        Notes
+        -----
+        The HDF5 file structure includes:
+        - /data: 3D array of values
+        - /xindex: Sample axis information
+        - /meta: Per-element metadata (units, names, channels)
+        - /rows, /cols: Row and column metadata
+        """
         import h5py
         with h5py.File(filepath, "w", **kwargs) as f:
             f.attrs["name"] = str(getattr(self, "name", ""))
@@ -1058,8 +1531,24 @@ class SeriesMatrixOps:
         return html
 
     def is_contiguous(self, other, tol=1/2.**18):
-        """
-        Check contiguity using xspan endpoints (gwpy-like semantics).
+        """Check if this matrix is contiguous with another (gwpy-like semantics).
+
+        Two matrices are contiguous if the end of one aligns with the start
+        of the other within the specified tolerance.
+
+        Parameters
+        ----------
+        other : SeriesMatrix
+            The other matrix to check contiguity with.
+        tol : float, optional
+            Tolerance for the contiguity check (default: 1/2^18 ≈ 3.8e-6).
+
+        Returns
+        -------
+        int
+            1 if self ends where other starts,
+            -1 if other ends where self starts,
+            0 if not contiguous.
         """
         if not isinstance(other, type(self).__mro__[1]):  # SeriesMatrix base
             raise TypeError("is_contiguous expects SeriesMatrix")
@@ -1088,8 +1577,28 @@ class SeriesMatrixOps:
             return 0
 
     def is_contiguous_exact(self, other, tol=1/2.**18):
-        """
-        Strict contiguity check (requires identical shape and matching endpoints).
+        """Check contiguity with strict shape matching.
+
+        Unlike :meth:`is_contiguous`, this method requires identical shapes.
+
+        Parameters
+        ----------
+        other : SeriesMatrix
+            The other matrix to check contiguity with.
+        tol : float, optional
+            Tolerance for the contiguity check (default: 1/2^18 ≈ 3.8e-6).
+
+        Returns
+        -------
+        int
+            1 if self ends where other starts,
+            -1 if other ends where self starts,
+            0 if not contiguous.
+
+        Raises
+        ------
+        ValueError
+            If shapes do not match.
         """
         if self._value.shape != other._value.shape:
             raise ValueError(f"shape does not match: {self._value.shape} vs {other._value.shape}")
@@ -1119,8 +1628,25 @@ class SeriesMatrixOps:
             return 0
 
     def is_compatible_exact(self, other):
-        """
-        Strict compatibility: requires identical shape, xindex, and metadata units.
+        """Check strict compatibility with another matrix.
+
+        Requires identical shape, xindex values, row/col keys,
+        and element units.
+
+        Parameters
+        ----------
+        other : SeriesMatrix
+            The other matrix to check compatibility with.
+
+        Returns
+        -------
+        bool
+            True if compatible.
+
+        Raises
+        ------
+        ValueError
+            If any compatibility check fails.
         """
         base_unit = getattr(self.xindex, "unit", None)
         lhs = self.xindex

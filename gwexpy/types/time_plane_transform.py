@@ -70,26 +70,32 @@ class TimePlaneTransform:
 
     @property
     def kind(self):
+        """String describing the type of transform (e.g., 'stlt', 'bispectrum')."""
         return self._kind
 
     @property
     def meta(self):
+        """Additional metadata dictionary."""
         return self._meta
 
     @property
     def value(self):
+        """The underlying data values as numpy array."""
         return self._data.value
 
     @property
     def shape(self):
+        """Shape of the 3D data array (time, axis1, axis2)."""
         return self._data.shape
 
     @property
     def ndim(self):
+        """Number of dimensions (always 3)."""
         return self._data.ndim
 
     @property
     def unit(self):
+        """Physical unit of the data values."""
         return self._data.unit
 
     @property

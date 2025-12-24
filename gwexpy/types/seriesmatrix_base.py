@@ -336,6 +336,17 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
     ##### xindex Information #####
     @property
     def xindex(self) -> Any:
+        """Sample axis index array.
+
+        This is the array of x-axis values (e.g., time or frequency) corresponding
+        to each sample in the matrix. For time series, this represents timestamps;
+        for frequency series, this represents frequency bins.
+
+        Returns
+        -------
+        xindex : `~gwpy.types.Index`, `~astropy.units.Quantity`, or `numpy.ndarray`
+            The sample axis values with appropriate units.
+        """
         return getattr(self, "_xindex", None)
 
     @xindex.setter
@@ -363,6 +374,13 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
 
     @property
     def x0(self) -> Any:
+        """Starting value of the sample axis.
+
+        Returns
+        -------
+        x0 : `~astropy.units.Quantity`
+            The first value of xindex, representing the start time/frequency.
+        """
         try:
             return self._x0
         except AttributeError:
@@ -374,6 +392,21 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
 
     @property
     def dx(self) -> Any:
+        """Step size between samples on the x-axis.
+
+        For regularly-sampled data, this is the constant spacing between
+        consecutive samples. For time series, this equals ``1/sample_rate``.
+
+        Returns
+        -------
+        dx : `~astropy.units.Quantity`
+            The sample spacing with appropriate units.
+
+        Raises
+        ------
+        AttributeError
+            If xindex is not set or if the series has irregular sampling.
+        """
         try:
             return self._dx
         except AttributeError:
@@ -390,6 +423,16 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
 
     @property
     def xspan(self) -> Any:
+        """Full extent of the sample axis as a tuple (start, end).
+
+        The end value is calculated as the last sample plus one step (dx),
+        representing the exclusive upper bound of the data range.
+
+        Returns
+        -------
+        xspan : tuple
+            A 2-tuple of (start, end) values with appropriate units.
+        """
         xindex = self.xindex
         try:
             if hasattr(xindex, "regular") and xindex.regular:
@@ -403,6 +446,13 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
 
     @property
     def xunit(self) -> Any:
+        """Physical unit of the sample axis.
+
+        Returns
+        -------
+        xunit : `~astropy.units.Unit`
+            The unit of the x-axis (e.g., seconds for time series, Hz for frequency series).
+        """
         try:
             return self._dx.unit
         except AttributeError:
@@ -413,6 +463,13 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
 
     @property
     def N_samples(self) -> int:
+        """Number of samples along the x-axis.
+
+        Returns
+        -------
+        int
+            The length of the sample axis (third dimension of the matrix).
+        """
         return len(self.xindex) if self.xindex is not None else 0
 
     @property
@@ -477,42 +534,139 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
 
     ##### rows/cols Information #####
     def row_keys(self) -> list[Any]:
+        """Get the keys (labels) for all rows.
+
+        Returns
+        -------
+        tuple
+            A tuple of row keys in order.
+        """
         return tuple(self.rows.keys())
 
     def col_keys(self) -> list[Any]:
+        """Get the keys (labels) for all columns.
+
+        Returns
+        -------
+        tuple
+            A tuple of column keys in order.
+        """
         return tuple(self.cols.keys())
 
     def keys(self) -> list[tuple[Any, Any]]:
+        """Get both row and column keys.
+
+        Returns
+        -------
+        tuple
+            A 2-tuple of (row_keys, col_keys).
+        """
         return (self.row_keys(), self.col_keys())
 
     def row_index(self, key: Any) -> int:
+        """Get the integer index for a row key.
+
+        Parameters
+        ----------
+        key : Any
+            The row key to look up.
+
+        Returns
+        -------
+        int
+            The zero-based index of the row.
+
+        Raises
+        ------
+        KeyError
+            If the key is not found.
+        """
         try:
             return list(self.row_keys()).index(key)
         except ValueError:
             raise KeyError(f"Invalid row key: {key}")
 
     def col_index(self, key: Any) -> int:
+        """Get the integer index for a column key.
+
+        Parameters
+        ----------
+        key : Any
+            The column key to look up.
+
+        Returns
+        -------
+        int
+            The zero-based index of the column.
+
+        Raises
+        ------
+        KeyError
+            If the key is not found.
+        """
         try:
             return list(self.col_keys()).index(key)
         except ValueError:
             raise KeyError(f"Invalid column key: {key}")
 
     def get_index(self, key_row: Any, key_col: Any) -> tuple[int, int]:
+        """Get the (row, col) integer indices for given keys.
+
+        Parameters
+        ----------
+        key_row : Any
+            The row key.
+        key_col : Any
+            The column key.
+
+        Returns
+        -------
+        tuple of int
+            A 2-tuple of (row_index, col_index).
+        """
         return self.row_index(key_row), self.col_index(key_col)
 
     ##### Elements Metadata #####
     @property
     def MetaDataMatrix(self) -> "MetaDataMatrix":
+        """Metadata matrix containing per-element metadata.
+
+        Returns
+        -------
+        MetaDataMatrix
+            A 2D matrix of MetaData objects, one for each (row, col) element.
+        """
         return self.meta
 
     @property
     def units(self) -> np.ndarray:
+        """2D array of units for each matrix element.
+
+        Returns
+        -------
+        numpy.ndarray
+            A 2D object array of `astropy.units.Unit` instances.
+        """
         return self.meta.units
 
     @property
     def names(self) -> np.ndarray:
+        """2D array of names for each matrix element.
+
+        Returns
+        -------
+        numpy.ndarray
+            A 2D object array of string names.
+        """
         return self.meta.names
 
     @property
     def channels(self) -> np.ndarray:
+        """2D array of channel identifiers for each matrix element.
+
+        Returns
+        -------
+        numpy.ndarray
+            A 2D object array of channel names or Channel objects.
+        """
         return self.meta.channels
