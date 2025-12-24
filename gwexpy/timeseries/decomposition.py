@@ -29,7 +29,7 @@ class PCAResult:
     def components_(self):
         """Alias to match scikit-learn API."""
         return self.sklearn_model.components_
-        
+
     @property
     def explained_variance_ratio(self):
         return self.sklearn_model.explained_variance_ratio_
@@ -60,17 +60,17 @@ def _check_sklearn(name="scikit-learn"):
 def _handle_nan_policy(matrix, policy, impute_kwargs=None):
     if impute_kwargs is None:
         impute_kwargs = {}
-        
+
     if np.any(np.isnan(matrix.value)):
         if policy == "raise":
             raise ValueError("Input contains NaNs and nan_policy is 'raise'.")
         elif policy == "impute":
             mat_copy = matrix.copy()
             val = mat_copy.value
-            
+
             method = impute_kwargs.get("method", "interpolate")
             impute_kwargs.get("limit", None)
-            
+
             for i in range(val.shape[1]):
                 col = val[:, i]
                 nans = np.isnan(col)
@@ -82,9 +82,9 @@ def _handle_nan_policy(matrix, policy, impute_kwargs=None):
                     elif method == "mean":
                         col[nans] = np.nanmean(col)
                     # For simplicity, minimal implementation of others
-                        
+
             matrix = mat_copy
-            
+
     return matrix
 
 def _fit_scaler(matrix, method, ddof=0):
@@ -107,10 +107,10 @@ def _apply_scaler(matrix, preprocessing):
     scaler = preprocessing.get("scaler_stats")
     if not scaler:
         return matrix
-    
+
     val = matrix.value.copy()
     val = (val - scaler["mean"]) / scaler["scale"]
-    
+
     new_mat = matrix.__class__(val, t0=matrix.t0, dt=matrix.dt)
     if hasattr(new_mat, 'channel_names'):
         new_mat.channel_names = getattr(matrix, 'channel_names', None)
@@ -120,7 +120,7 @@ def _inverse_scaler(val, preprocessing):
     scaler = preprocessing.get("scaler_stats")
     if not scaler:
         return val
-    
+
     return val * scaler["scale"] + scaler["mean"]
 
 
@@ -168,18 +168,18 @@ def pca_fit(
         Object containing the fitted PCA model and metadata.
     """
     _check_sklearn()
-    
+
     matrix = _handle_nan_policy(matrix, nan_policy, impute_kwargs)
-    
+
     preprocessing = {"center": center, "scale": scale, "whiten_param": whiten}
-    
+
     X_proc = matrix
-    
+
     if scale in ["zscore", "robust"]:
         scaler_stats = _fit_scaler(matrix, scale)
         preprocessing["scaler_stats"] = scaler_stats
         X_proc = _apply_scaler(matrix, preprocessing)
-    
+
     # PCA
     # Input to sklearn PCA: (n_samples, n_features)
     # Our data: (channels, cols, time) -> 3D.
@@ -187,16 +187,16 @@ def pca_fit(
     # Then Transpose: (time, features).
     X_features = X_proc.value.reshape(-1, X_proc.shape[-1])
     X_sklearn = X_features.T
-    
+
     pca = PCA(
         n_components=n_components,
         svd_solver=svd_solver,
         whiten=whiten,
         random_state=random_state
     )
-    
+
     pca.fit(X_sklearn)
-    
+
     return PCAResult(
         sklearn_model=pca,
         channel_labels=getattr(matrix, "channel_names", []),
@@ -223,26 +223,26 @@ def pca_transform(pca_res, matrix, n_components=None):
         Transformed matrix (components, 1, time).
     """
     _check_sklearn()
-    
+
     # Preprocessing
     matrix = _apply_scaler(matrix, pca_res.preprocessing)
-    
+
     X_features = matrix.value.reshape(-1, matrix.shape[-1])
     X_sklearn = X_features.T
-         
+
     scores = pca_res.sklearn_model.transform(X_sklearn)
-    
+
     if n_components is not None:
         scores = scores[:, :n_components]
-        
+
     n_pcs = scores.shape[1]
     labels = [f"PC{i+1}" for i in range(n_pcs)]
-    
+
     # Output: (samples, components).
     # We want TimeSeriesMatrix (components, 1, samples).
     # components becomes channels.
     scores_new = scores.T[:, None, :] # (components, 1, samples)
-    
+
     new_mat = matrix.__class__(
         scores_new,
         t0=matrix.t0,
@@ -250,7 +250,7 @@ def pca_transform(pca_res, matrix, n_components=None):
     )
     if hasattr(new_mat, 'channel_names'):
         new_mat.channel_names = labels
-        
+
     return new_mat
 
 def pca_inverse_transform(pca_res, scores_matrix):
@@ -270,12 +270,12 @@ def pca_inverse_transform(pca_res, scores_matrix):
         Reconstructed matrix in original space (channels, cols, time).
     """
     _check_sklearn()
-    
+
     if hasattr(scores_matrix, 'value'):
         val = scores_matrix.value
     else:
         val = scores_matrix
-        
+
     # Input scores: (components, 1, samples) -> (samples, components)
     # Assuming standard shape from our transform.
     # Flatten if needed?
@@ -283,12 +283,12 @@ def pca_inverse_transform(pca_res, scores_matrix):
     # reshape to (components, samples).T -> (samples, components)
     scores_features = val.reshape(-1, val.shape[-1])
     scores_sklearn = scores_features.T
-        
+
     X_rec_val = pca_res.sklearn_model.inverse_transform(scores_sklearn)
-    
+
     # X_rec_val is (samples, features) -> (features, samples)
     X_rec_val = X_rec_val.T
-    
+
     # Reshape back to original 3D structure?
     # We don't know original structure explicitly unless we stored shape in preprocessing?
     # But usually we return flattened channels if structure unknown, or try to infer.
@@ -299,13 +299,13 @@ def pca_inverse_transform(pca_res, scores_matrix):
     # 'pca' inverse: features count matches original.
     # If we knew original shape, we could reshape.
     # Let's assume (features, 1, samples) for now.
-    
+
     X_rec_3d = X_rec_val[:, None, :]
-    
+
     # Undo scaler (scaler handles 3D if generic axis logic used in inverse)
     # _inverse_scaler simply mult/add.
     X_rec_3d = _inverse_scaler(X_rec_3d, pca_res.preprocessing)
-    
+
     # We reconstruct original channels
     # We assume we can get original t0/dt from input stats or scores matrix
     new_mat = scores_matrix.__class__(
@@ -316,7 +316,7 @@ def pca_inverse_transform(pca_res, scores_matrix):
     if pca_res.channel_labels:
          if hasattr(new_mat, 'channel_names'):
              new_mat.channel_names = pca_res.channel_labels
-             
+
     return new_mat
 
 def ica_fit(
@@ -373,18 +373,18 @@ def ica_fit(
         Fitted ICA result object.
     """
     _check_sklearn()
-    
+
     matrix = _handle_nan_policy(matrix, nan_policy, impute_kwargs)
-    
+
     preprocessing = {"center": center, "scale": scale, "prewhiten": prewhiten}
-    
+
     X_proc = matrix
-    
+
     if scale in ["zscore", "robust"]:
         scaler_stats = _fit_scaler(matrix, scale)
         preprocessing["scaler_stats"] = scaler_stats
         X_proc = _apply_scaler(matrix, preprocessing)
-        
+
     white_model = None
     if prewhiten:
         # Use our whitening
@@ -403,12 +403,12 @@ def ica_fit(
         tol=tol,
         random_state=random_state
     )
-    
+
     # Input to sklearn: (samples, features)
     X_features = X_proc.value.reshape(-1, X_proc.shape[-1])
     start_val = X_features.T
     ica.fit(start_val)
-    
+
     return ICAResult(
         sklearn_model=ica,
         channel_labels=getattr(matrix, "channel_names", []),
@@ -433,9 +433,9 @@ def ica_transform(ica_res, matrix):
         Recovered sources (components, 1, time).
     """
     _check_sklearn()
-    
+
     X_proc = _apply_scaler(matrix, ica_res.preprocessing)
-    
+
     if ica_res.preprocessing.get("prewhiten"):
          wm = ica_res.preprocessing["whitening_model"]
          # wm model applied in 'whiten_matrix'
@@ -446,20 +446,20 @@ def ica_transform(ica_res, matrix):
          val = X_proc.value.reshape(-1, X_proc.shape[-1]) #(features, time)
          val_centered = (val.T) - wm.mean #(time, features)
          val_w = val_centered @ wm.W.T #(time, components)
-         
+
          X_input = val_w # (samples, features)
     else:
          X_input = X_proc.value.reshape(-1, X_proc.shape[-1]).T # (samples, channels)
 
     sources = ica_res.sklearn_model.transform(X_input)
     # sources: (samples, components)
-    
+
     n_ics = sources.shape[1]
     labels = [f"IC{i+1}" for i in range(n_ics)]
-    
+
     # Output (components, 1, samples)
     sources_new = sources.T[:, None, :]
-    
+
     new_mat = matrix.__class__(sources_new, t0=matrix.t0, dt=matrix.dt)
     if hasattr(new_mat, 'channel_names'):
         new_mat.channel_names = labels
@@ -482,23 +482,23 @@ def ica_inverse_transform(ica_res, sources):
         Reconstructed matrix in mixed space.
     """
     _check_sklearn()
-    
+
     # sources: (components, 1, samples)
     if hasattr(sources, 'value'):
         val = sources.value
     else:
         val = sources
-    
+
     # Reshape to (samples, components) for sklearn
     val_flat = val.reshape(-1, val.shape[-1]).T # (components, time).T -> (time, components)
-    
+
     rec = ica_res.sklearn_model.inverse_transform(val_flat)
-    
+
     # rec is (samples, features) if not prewhitened, or (samples, whitened_components) if prewhitened?
     # inverse_transform returns to the input space of fit().
     # fit() input was X_proc (whitened if prewhiten=True).
     # So rec is in X_proc space.
-    
+
     # Undo prewhiten
     if ica_res.preprocessing.get("prewhiten"):
          wm = ica_res.preprocessing["whitening_model"]
@@ -507,20 +507,20 @@ def ica_inverse_transform(ica_res, sources):
          # Or it might need to match whitening logic.
          # Our whitening maps (time, features) -> (time, components).
          # So rec is (time, components).
-         rec = wm.inverse_transform(rec) 
+         rec = wm.inverse_transform(rec)
          # Now rec is (time, features) i.e. (samples, channels)
-         
+
     # Undo scaler
     # _inverse_scaler expects (channels, ..., time) or generic broadcasting?
     # rec is (samples, channels).
     # transpose back to (channels, 1, samples)
     rec_3d = rec.T[:, None, :]
-    
+
     rec_final = _inverse_scaler(rec_3d, ica_res.preprocessing)
-    
+
     new_mat = sources.__class__(rec_final, t0=sources.t0, dt=sources.dt)
     if ica_res.channel_labels:
          if hasattr(new_mat, 'channel_names'):
              new_mat.channel_names = ica_res.channel_labels
-             
+
     return new_mat

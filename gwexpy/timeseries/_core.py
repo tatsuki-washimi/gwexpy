@@ -18,7 +18,7 @@ from gwpy.timeseries import TimeSeries as BaseTimeSeries
 class TimeSeriesCore(BaseTimeSeries):
     """
     Core Ti meSeries class with basic operations.
-    
+
     This is the base class that other mixins will extend.
     Inherits from gwpy.timeseries.TimeSeries for compatibility.
     """
@@ -38,7 +38,7 @@ class TimeSeriesCore(BaseTimeSeries):
                 return True
             if hasattr(idx, "regular"):
                  return idx.regular
-            
+
             # Manual check
             times_val = np.asarray(idx)
             if len(times_val) < 2:
@@ -87,7 +87,7 @@ class TimeSeriesCore(BaseTimeSeries):
              if isinstance(end, (np.ndarray, list)) and np.ndim(end) > 0:
                  end = end[0]
              end = float(end)
-            
+
         return super().crop(start=start, end=end, copy=copy)
 
     def append(
@@ -127,9 +127,9 @@ class TimeSeriesCore(BaseTimeSeries):
     ) -> tuple["TimeSeriesCore", dict[str, Any]]:
         """
         Find peaks in the TimeSeries.
-        
+
         Wraps `scipy.signal.find_peaks`.
-        
+
         Returns
         -------
         peaks : TimeSeries
@@ -138,33 +138,33 @@ class TimeSeriesCore(BaseTimeSeries):
              Properties returned by scipy.signal.find_peaks.
         """
         from scipy.signal import find_peaks
-        
+
         # Handle unit quantities
         val = self.value
-        
+
         def _to_val(x, unit=None):
              if hasattr(x, "value"):
                   if unit and hasattr(x, "to"):
                       return x.to(unit).value
                   return x.value
              return x
-             
+
         # Height/Threshold: relative to data units
         h = _to_val(height, self.unit)
         t = _to_val(threshold, self.unit)
         p = _to_val(prominence, self.unit)  # Prominence same unit as data
-        
+
         # Distance/Width: time or samples
         # Scipy uses samples.
         dist = distance
         wid = width
-        
+
         if self.dt is not None:
              fs = self.sample_rate.to("Hz").value
              # If distance is time quantity
              if hasattr(dist, "to"):
                   dist = int(dist.to("s").value * fs)
-             
+
              # If width is quantity (or tuple of quantities)
              if np.iterable(wid):
                   new_wid = []
@@ -176,7 +176,7 @@ class TimeSeriesCore(BaseTimeSeries):
                   wid = tuple(new_wid) if isinstance(wid, tuple) else new_wid
              elif hasattr(wid, "to"):
                   wid = wid.to("s").value * fs
-                  
+
         # Call scipy
         peaks_indices, props = find_peaks(
              val,
@@ -189,14 +189,14 @@ class TimeSeriesCore(BaseTimeSeries):
              rel_height=rel_height,
              plateau_size=plateau_size
         )
-        
+
         if len(peaks_indices) == 0:
              # Return empty
              return self.__class__([], times=[], unit=self.unit, name=self.name, channel=self.channel), props
-             
+
         peak_times = self.times[peaks_indices]
         peak_vals = val[peaks_indices]
-        
+
         out = self.__class__(
              peak_vals,
              times=peak_times,

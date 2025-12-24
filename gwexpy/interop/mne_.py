@@ -135,7 +135,7 @@ def to_mne_rawarray(tsd, info=None, picks=None):
         raise ValueError(f"info expects nchan={len(ch_names)}, got {info['nchan']}")
 
     return mne.io.RawArray(data, info)
-    
+
 def from_mne_raw(cls, raw, unit_map=None):
     """
     raw: mne.io.Raw
@@ -143,11 +143,11 @@ def from_mne_raw(cls, raw, unit_map=None):
     data, times = raw.get_data(return_times=True)
     # data: (n_ch, n_times)
     # times: (n_times,) relative to first sample usually 0
-    
+
     ch_names = raw.ch_names
     sfreq = raw.info['sfreq']
     dt = 1.0 / sfreq
-    
+
     # meas_date check for t0?
     t0 = 0
     if raw.info['meas_date']:
@@ -155,9 +155,9 @@ def from_mne_raw(cls, raw, unit_map=None):
         from ._time import datetime_utc_to_gps
         # meas_date is datetime (aware UTC usually)
         t0 = datetime_utc_to_gps(raw.info['meas_date'])
-        
+
     tsd = cls()
     for i, name in enumerate(ch_names):
         tsd[name] = tsd.EntryClass(data[i], t0=t0, dt=dt, name=name)
-        
+
     return tsd

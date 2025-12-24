@@ -20,7 +20,7 @@ from .seriesmatrix_validation import (
 from .seriesmatrix_ops import SeriesMatrixOps
 
 class SeriesMatrix(SeriesMatrixOps, np.ndarray):
-    def __new__(cls, 
+    def __new__(cls,
                 data: Any = None,
                 *,
                 meta: Optional[Union["MetaDataMatrix", np.ndarray, list]] = None,
@@ -107,7 +107,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
                         xunit=xunit,
                         length=value_array.shape[2]
                     )
-        
+
         _check_shape_consistency(
             value_array=value_array,
             meta_matrix=meta_matrix,
@@ -134,7 +134,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
         return obj
 
     def __array_finalize__(self, obj: Any) -> None:
-        if obj is None: 
+        if obj is None:
             return
         self._value = self.view(np.ndarray)
         self._suppress_xindex_check = True
@@ -155,7 +155,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
                 return np.ndarray.__array_ufunc__(self.view(np.ndarray), ufunc, method, *base_inputs, **kwargs)
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
                 return NotImplemented
-    
+
         casted_inputs = []
         xindex = self.xindex
         shape  = self._value.shape
@@ -164,7 +164,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
         epoch  = getattr(self, "epoch", 0.0)
         name   = getattr(self, "name", "")
         attrs  = getattr(self, "attrs", {})
-    
+
         for inp in inputs:
             if isinstance(inp, SeriesMatrix):
                 casted_inputs.append(inp)
@@ -232,18 +232,18 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
                 casted_inputs.append(SeriesMatrix(arr, xindex=xindex, shape=self._value.shape))
             else:
                 return NotImplemented
-    
+
         check_shape_xindex_compatibility(*casted_inputs)
-    
+
         if ufunc in [np.add, np.subtract, np.less, np.less_equal, np.equal, np.not_equal, np.greater, np.greater_equal]:
             check_add_sub_compatibility(*casted_inputs)
-    
+
         value_arrays = [inp.view(np.ndarray) for inp in casted_inputs]
-    
+
         meta_matrices = [inp.meta for inp in casted_inputs]
-    
+
         ufunc_kwargs = {k: v for k, v in kwargs.items() if k not in ('out', 'where')}
-        
+
         N, M = self._value.shape[:2]
         logical_ufuncs = {
             np.logical_and, np.logical_or, np.logical_xor, np.logical_not,
@@ -269,7 +269,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
                 result_dtype = np.asarray(probe_result).dtype
         except (IndexError, KeyError, TypeError, ValueError, AttributeError):
             result_dtype = self._value.dtype
-        
+
         # Vectorized value calculation
         try:
             result_values = ufunc(*value_arrays, **ufunc_kwargs)
@@ -318,7 +318,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
                             result_meta[i, j] = ufunc(*meta_args, **ufunc_kwargs)
                     except Exception as e:
                         raise type(e)(f"MetaData ufunc error at ({i},{j}): {e}")
-    
+
         result_meta_matrix = MetaDataMatrix(result_meta)
         result_units = result_meta_matrix.units
         return self.__class__(
@@ -371,7 +371,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
             except (AttributeError, IndexError):
                 self._x0 = u.Quantity(0, self.xunit)
             return self._x0
-        
+
     @property
     def dx(self) -> Any:
         try:
@@ -400,7 +400,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
             return (xindex[0], xindex[0])
         except (IndexError, KeyError, TypeError, ValueError, AttributeError):
             return (xindex[0], xindex[-1])
-    
+
     @property
     def xunit(self) -> Any:
         try:
@@ -410,7 +410,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
                 return self._x0.unit
             except AttributeError:
                 return u.dimensionless_unscaled
-    
+
     @property
     def N_samples(self) -> int:
         return len(self.xindex) if self.xindex is not None else 0
@@ -481,7 +481,7 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
 
     def col_keys(self) -> list[Any]:
         return tuple(self.cols.keys())
-        
+
     def keys(self) -> list[tuple[Any, Any]]:
         return (self.row_keys(), self.col_keys())
 
@@ -500,15 +500,15 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
     def get_index(self, key_row: Any, key_col: Any) -> tuple[int, int]:
         return self.row_index(key_row), self.col_index(key_col)
 
-    ##### Elements Metadata #####    
+    ##### Elements Metadata #####
     @property
     def MetaDataMatrix(self) -> "MetaDataMatrix":
         return self.meta
-        
+
     @property
     def units(self) -> np.ndarray:
         return self.meta.units
-    
+
     @property
     def names(self) -> np.ndarray:
         return self.meta.names

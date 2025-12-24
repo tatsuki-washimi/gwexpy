@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class HurstResult:
     """
     Result of a Hurst exponent calculation.
-    
+
     Attributes
     ----------
     H : float
@@ -28,7 +28,7 @@ class HurstResult:
     method: str
     backend: str
     details: Dict[str, Any]
-    
+
     def summary_dict(self):
         """Return a dictionary summary of the result."""
         d = {"H": self.H, "method": self.method, "backend": self.backend}
@@ -41,7 +41,7 @@ def _get_hurst_rs(x, kind, simplified):
         from hurst import compute_Hc
     except ImportError:
         raise ImportError("hurst package required for method='rs'. pip install hurst")
-    
+
     H, c, data = compute_Hc(x, kind=kind, simplified=simplified)
     return H, "rs", "hurst", {"c": c, "data": data}
 
@@ -50,14 +50,14 @@ def _get_hurst_exponent(x, method):
         import hurst_exponent
     except ImportError:
         raise ImportError("hurst-exponent package required. pip install hurst-exponent")
-    
+
     if method == "standard":
-        # standard_hurst returns (H, c, data) or (H, fit)? 
+        # standard_hurst returns (H, c, data) or (H, fit)?
         # Check library signature assumption or documentation.
         # User prompt: "return (H, fit) or (H, fit_dict)"
         res = hurst_exponent.standard_hurst(x)
         # Assuming return (H, c, data) tuple structure based on context?
-        # Or (H, fit_val). 
+        # Or (H, fit_val).
         # Let's handle return type gracefully.
         if isinstance(res, tuple):
              H = res[0]
@@ -66,7 +66,7 @@ def _get_hurst_exponent(x, method):
              H = res
              details = {}
         return H, "standard", "hurst-exponent", details
-        
+
     elif method == "generalized":
         res = hurst_exponent.generalized_hurst(x)
         if isinstance(res, tuple):
@@ -83,7 +83,7 @@ def _get_exp_hurst(x):
     except ImportError:
         # Fallback check?
         raise ImportError("exp-hurst package required. pip install exp-hurst")
-    
+
     H = exp_hurst_fn(x)
     return H, "exp", "exp-hurst", {}
 
@@ -123,9 +123,9 @@ def hurst(
     float or HurstResult
         Estimated Hurst exponent or detailed result object.
     """
-    
+
     x = timeseries.value
-    
+
     # NaN Handling
     if np.any(np.isnan(x)):
         if nan_policy == "raise":
@@ -136,12 +136,12 @@ def hurst(
             ts_imp = impute_timeseries(timeseries, **ikw)
             x = ts_imp.value
         # else: pass? (let backend fail or handle)
-        
+
     x = x.astype(float)
-    
+
     # Backend dispatch
     res = None
-    
+
     if method == "auto":
         # Order: rs -> standard -> exp
         try:
@@ -154,7 +154,7 @@ def hurst(
                     res = _get_exp_hurst(x)
                 except ImportError:
                      raise ImportError("No Hurst backend found. Install hurst, hurst-exponent, or exp-hurst.")
-                     
+
     elif method == "rs":
         res = _get_hurst_rs(x, kind, simplified)
     elif method in ["standard", "generalized"]:
@@ -163,9 +163,9 @@ def hurst(
         res = _get_exp_hurst(x)
     else:
         raise ValueError(f"Unknown method '{method}'")
-        
+
     H, meth, backend, det = res
-    
+
     if return_details:
         return HurstResult(H, meth, backend, det)
     else:
@@ -208,7 +208,7 @@ def local_hurst(
         A new TimeSeries containing the local Hurst exponents.
     """
     from .timeseries import TimeSeries
-    
+
     x = timeseries.value
     N = len(x)
     dt = timeseries.dt
@@ -217,7 +217,7 @@ def local_hurst(
         dt_val = dt.to_value(u_time)
     else:
         dt_val = dt.value if isinstance(dt, u.Quantity) else float(dt)
-    
+
     # window can be samples (int) or quantity
     if isinstance(window, u.Quantity):
         w_samples = int(np.round((window / (dt if isinstance(dt, u.Quantity) else dt_val * u.s)).decompose().value))
@@ -230,7 +230,7 @@ def local_hurst(
             w_samples = int(np.round(window))
     else:
          w_samples = int(window) # fallback
-         
+
     if step is None:
         step_samples = w_samples // 2
     else:
@@ -245,21 +245,21 @@ def local_hurst(
                 step_samples = int(np.round(step))
         else:
             step_samples = int(step)
-            
+
     if step_samples < 1:
         step_samples = 1
-    
+
     # Slide
     # Output times
     # If center: t = center of window
     # Else: t = start of window
-    
+
     starts = np.arange(0, N - w_samples + 1, step_samples)
     n_wins = len(starts)
-    
+
     H_vals = np.full(n_wins, np.nan)
     t_vals = np.zeros(n_wins)
-    
+
     # Pre-impute full series if requested to avoid repeated impute cost?
     # Spec says nan_policy applies to windows?
     # "If a window has insufficient non-NaN points, set output to NaN ... unless nan_policy='raise'"
@@ -271,11 +271,11 @@ def local_hurst(
          x_full = ts_imp.value
     else:
          x_full = x
-         
+
     for i, s in enumerate(starts):
         e = s + w_samples
         segment_val = x_full[s:e]
-        
+
         # Determine time
         t0_val = float(timeseries.t0.value if hasattr(timeseries.t0, "value") else timeseries.t0)
         if center:
@@ -284,7 +284,7 @@ def local_hurst(
             t_vals[i] = t0_val + mid * dt_val
         else:
             t_vals[i] = t0_val + s * dt_val
-            
+
         # Check NaNs in segment
         if np.any(np.isnan(segment_val)):
             if nan_policy == "raise":
@@ -292,18 +292,18 @@ def local_hurst(
             else:
                 H_vals[i] = np.nan
                 continue
-                
+
         # Compute H
         try:
              # Make a temporary TimeSeries-like wrapper or just pass value to underlying helper?
              # But our hurst() fn takes 'timeseries' object usually?
-             # Wait, hurst() definition takes `timeseries` and accesses .value. 
+             # Wait, hurst() definition takes `timeseries` and accesses .value.
              # I should define `hurst_val` helper or wrap segment.
-             
+
              # Let's wrap segment in simple object with .value
              class MockTS:
                  def __init__(self, v): self.value = v
-                 
+
              # Recurse to one-shot hurst
              # We rely on 'hurst' function below.
              # We pass nan_policy='raise' because we handled 'impute' globally or 'drop' locally.
@@ -312,7 +312,7 @@ def local_hurst(
              H_vals[i] = h
         except (ValueError, ImportError):
              H_vals[i] = np.nan
-             
+
     return TimeSeries(
         H_vals,
         times=t_vals * u_time, # Explicit times array since step might be irregular implies fixed grid?

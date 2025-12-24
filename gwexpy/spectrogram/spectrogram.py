@@ -60,7 +60,7 @@ class Spectrogram(BaseSpectrogram):
         """
         from gwexpy.interop import to_th2d
         return to_th2d(self, error=error)
-        
+
     @classmethod
     def from_root(cls, obj, return_error=False):
         """
@@ -71,10 +71,10 @@ class Spectrogram(BaseSpectrogram):
 
 class SpectrogramMatrix(np.ndarray):
     """
-    Matrix of Spectrogram data. 
+    Matrix of Spectrogram data.
     Shape is typically (N, Time, Frequencies) for a list of Spectrograms,
     or (N, M, Time, Frequencies) for a matrix of Spectrograms.
-    
+
     Attributes
     ----------
     times : array-like
@@ -82,17 +82,17 @@ class SpectrogramMatrix(np.ndarray):
     unit : Unit
     name : str
     """
-    def __new__(cls, input_array, times=None, frequencies=None, unit=None, name=None, 
+    def __new__(cls, input_array, times=None, frequencies=None, unit=None, name=None,
                 rows=None, cols=None, meta=None):
         obj = np.asarray(input_array).view(cls)
         obj.times = times
         obj.frequencies = frequencies
         obj.unit = unit
         obj.name = name
-        
+
         # Metadata for indexing rows/cols if applicable
         from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
-        
+
         def _entries_len(entries):
             if entries is None:
                 return None
@@ -163,12 +163,12 @@ class SpectrogramMatrix(np.ndarray):
     def plot(self, **kwargs):
         """
         Plot the matrix data.
-        
+
         If it is 3D (Batch, Time, Freq), plots a vertical list of spectrograms.
         If it is 4D (Row, Col, Time, Freq), plots a grid of spectrograms.
         If row/col metadata implies a grid for 3D, that grid is used instead
         of a single column.
-        
+
         Optional Kwargs:
             monitor: int or (row, col) to plot a single element
             method: 'pcolormesh' (default)
@@ -215,7 +215,7 @@ class SpectrogramMatrix(np.ndarray):
                 except (TypeError, ValueError, AttributeError):
                     pass
             return plot_obj
-        
+
         monitor = kwargs.pop("monitor", None)
 
         if self.ndim == 3:
@@ -282,7 +282,7 @@ class SpectrogramMatrix(np.ndarray):
                   kwargs.setdefault("geometry", (nrow, ncol))
                   plot = Plot(*specs, **kwargs)
                   return _apply_grid_labels(plot, nrow, ncol, row_names, col_names)
-        
+
         elif self.ndim == 4:
              nrow, ncol = self.shape[:2]
              r_names = _normalize_names(
@@ -339,7 +339,7 @@ class SpectrogramMatrix(np.ndarray):
              kwargs.setdefault("geometry", (nrow, ncol))
              plot = Plot(*specs, **kwargs)
              return _apply_grid_labels(plot, nrow, ncol, r_names, c_names)
-             
+
         return Plot()
 
     def to_torch(self, device=None, dtype=None, requires_grad=False, copy=False):
@@ -357,7 +357,7 @@ class SpectrogramList(UserList):
     Reference: similar to TimeSeriesList but for 2D Spectrograms.
 
     .. note::
-       Spectrogram objects can be very large in memory. 
+       Spectrogram objects can be very large in memory.
        Use `inplace=True` where possible to avoid deep copies.
     """
     def __init__(self, initlist=None):
@@ -434,7 +434,7 @@ class SpectrogramList(UserList):
              target = self
         else:
              target = self.__class__()
-        
+
         for i, s in enumerate(self):
              res = s.crop(t0, t1)
              if inplace:
@@ -461,7 +461,7 @@ class SpectrogramList(UserList):
                   if isinstance(f1, u.Quantity):
                       f1 = f1.to(s.yunit).value
                   res = s.crop_frequencies(f0, f1)
-             
+
              if inplace:
                   self[i] = res
              else:
@@ -476,7 +476,7 @@ class SpectrogramList(UserList):
              target = self
         else:
              target = self.__class__()
-             
+
         for i, s in enumerate(self):
              if hasattr(s, 'rebin'):
                   res = s.rebin(dt, df)
@@ -516,26 +516,26 @@ class SpectrogramList(UserList):
         kwargs.setdefault("xscale", "linear")
         if not self:
              return Plot()
-        
+
         # Default to vertical stacking
         kwargs.setdefault("separate", True)
         kwargs.setdefault("geometry", (len(self), 1))
-        
+
         return Plot(*self, **kwargs)
 
     def to_matrix(self):
         """Convert to SpectrogramMatrix (N, Time, Freq)."""
         if not self:
              return SpectrogramMatrix(np.empty((0,0,0)))
-        
+
         shape0 = self[0].shape
         for s in self[1:]:
              if s.shape != shape0:
                  raise ValueError("Shape mismatch in SpectrogramList elements")
-        
+
         arr = np.stack([s.value for s in self])
         s0 = self[0]
-        
+
         return SpectrogramMatrix(
              arr,
              times=s0.times,
@@ -557,7 +557,7 @@ class SpectrogramList(UserList):
 class SpectrogramDict(UserDict):
     """
     Dictionary of Spectrogram objects.
-    
+
     .. note::
        Spectrogram objects can be very large in memory.
        Use `inplace=True` where possible to update container in-place.
@@ -576,7 +576,7 @@ class SpectrogramDict(UserDict):
             else:
                 raise TypeError("Value must be a Spectrogram")
         self.data[key] = item
-    
+
     def update(self, other=None, **kwargs):
         if other is not None:
              if isinstance(other, dict):
@@ -606,7 +606,7 @@ class SpectrogramDict(UserDict):
         else:
              raise NotImplementedError(f"Format {format} not supported")
         return self
-        
+
     def write(self, target, *args, **kwargs):
         """Write dictionary to file."""
         format = kwargs.get("format", "hdf5")
@@ -652,7 +652,7 @@ class SpectrogramDict(UserDict):
                  if isinstance(f1, u.Quantity):
                      f1 = f1.to(v.yunit).value
                  res = v.crop_frequencies(f0, f1)
-            
+
             if inplace:
                  self[k] = res
             else:
@@ -704,23 +704,23 @@ class SpectrogramDict(UserDict):
         kwargs.setdefault("xscale", "linear")
         if not self:
              return Plot()
-        
+
         # Default to vertical stacking
         kwargs.setdefault("separate", True)
         kwargs.setdefault("geometry", (len(self), 1))
-        
+
         return Plot(*self.values(), **kwargs)
 
     def to_matrix(self):
         vals = list(self.values())
         if not vals:
              return SpectrogramMatrix(np.empty((0,0,0)))
-        
+
         shape0 = vals[0].shape
         for s in vals[1:]:
              if s.shape != shape0:
                  raise ValueError("Mismatch shape")
-        
+
         arr = np.stack([s.value for s in vals])
         s0 = vals[0]
         matrix = SpectrogramMatrix(

@@ -67,7 +67,7 @@ def align_timeseries_collection(
         else:
              # Fallback for BaseTimeSeries or other objects
              is_regular = getattr(ts, 'regular', True)
-        
+
         if not is_regular:
              # For irregular series, we can't use .dt safely.
              # We estimate an average dt for alignment purposes.
@@ -83,12 +83,12 @@ def align_timeseries_collection(
                   raise ValueError("align_timeseries_collection requires dt for all series")
              # Ensure dt is a Quantity
              dt_q = ts.dt if isinstance(ts.dt, u.Quantity) else u.Quantity(ts.dt, u.dimensionless_unscaled)
-        
+
         dt_vals = np.asanyarray(dt_q.value)
         if np.any(dt_vals <= 0):
             raise ValueError("align_timeseries_collection requires dt > 0")
         dts.append(dt_q)
-        
+
         # Check physical type safely
         dt_unit = getattr(dt_q, "unit", None)
         if dt_unit is not None and getattr(dt_unit, "physical_type", None) == "time":
@@ -133,13 +133,13 @@ def align_timeseries_collection(
             t_unit = getattr(ts.times, "unit", None)
             if t_unit is not None and getattr(t_unit, "physical_type", None) == 'time':
                 time_units.add(t_unit)
-        
+
         common_time_unit = u.s
         if time_units and (len(time_units) > 1 or list(time_units)[0] != u.s):
             warnings.warn(
                 f"Converting time units {time_units} to GPS seconds for alignment."
             )
-            
+
         dt_candidates = []
         for dt_q in dts:
             # Safer access to physical_type
@@ -167,7 +167,7 @@ def align_timeseries_collection(
                 if t_unit is not None and t_unit != u.dimensionless_unscaled:
                     common_time_unit = t_unit
                     break
-        
+
         # Convert all to common_time_unit, treating dimensionless specifically
         dt_candidates = []
         for dt_q in dts:
@@ -181,7 +181,7 @@ def align_timeseries_collection(
                          f"Incompatible dt unit in collection: {dt_q.unit} vs {common_time_unit}"
                      ) from exc
         target_dt = max(dt_candidates)
-    
+
     # Helper to get start/end in common unit
     def get_span_val(ts):
         ts_u = ts.times.unit if ts.times.unit is not None else u.dimensionless_unscaled
@@ -200,7 +200,7 @@ def align_timeseries_collection(
                  raise ValueError(f"Incompatible time units in collection: {ts_u} vs {common_time_unit}")
         else:
              t0 = ts.t0.value
-             
+
         # End conversion
         end_q = ts.span[1]
 
@@ -223,11 +223,11 @@ def align_timeseries_collection(
                  end = end_q.to(common_time_unit).value
              except u.UnitConversionError:
                  # Backup: if unit mismatch but one is None? already checked.
-                 raise ValueError(f"Incompatible span unit: {end_q.unit} vs {common_time_unit}")    
+                 raise ValueError(f"Incompatible span unit: {end_q.unit} vs {common_time_unit}")
         else:
              # float or similar
              end = end_q
-             
+
         return t0, end
 
     starts = []
@@ -236,7 +236,7 @@ def align_timeseries_collection(
         s, e = get_span_val(ts)
         starts.append(s)
         ends.append(e)
-    
+
     def float_min(x): return min(x)
     def float_max(x): return max(x)
 
@@ -255,21 +255,21 @@ def align_timeseries_collection(
     # 3. Create common time axis
     # Use common_time_unit for output
     out_unit = common_time_unit
-    
+
     duration = common_end - common_t0
     target_dt_s = target_dt.to(common_time_unit).value
-    
+
     if duration <= 0:
          n_samples = 0
     else:
          # Use ceil to ensure we cover the full range, matching asfreq behavior
          n_samples = int(np.ceil(duration / target_dt_s))
-    
+
     # Create common times in Seconds
     common_times_s = common_t0 + np.arange(n_samples) * target_dt_s
     # Convert to output unit
     common_times = (common_times_s * common_time_unit).to(out_unit)
-    
+
     if n_samples <= 0 and how == "intersection":
          # Fallback for empty
          pass
@@ -280,21 +280,21 @@ def align_timeseries_collection(
     # For now assume float or complex
     is_complex = any(ts.dtype.kind == 'c' for ts in series_list)
     dtype = np.complex128 if is_complex else np.float64
-    
+
     if fill_value is None:
         fill_value = np.nan
-        
+
     values = np.full((n_samples, n_channels), fill_value, dtype=dtype)
-    
+
     for i, ts in enumerate(series_list):
         # Align using asfreq
         # We specify the target grid by using origin=common_t0.
         # This ensures grid points match common_times exactly phase-wise.
-        
+
         # Origin must be compatible with ts.times unit or convertible
         # If is_time_based=True, asfreq will coerce dimensionless ts to seconds.
         # So we should pass origin in seconds (common_time_unit).
-        
+
         if is_time_based:
              # Regardless of ts.unit, we pass origin as Quantity(common_time_unit)
              origin_val = u.Quantity(common_t0, common_time_unit)
@@ -302,10 +302,10 @@ def align_timeseries_collection(
              origin_val = u.Quantity(common_t0, u.dimensionless_unscaled)
         else:
              origin_val = u.Quantity(common_t0, common_time_unit).to(ts.times.unit)
-        
+
         # We process the whole series onto the grid defined by common_t0
         # asfreq returns the coverage of the original series but on the new grid.
-        
+
         ts_aligned = ts.asfreq(
             target_dt,
             method=method,
@@ -314,40 +314,40 @@ def align_timeseries_collection(
             tolerance=tolerance,
             align='floor'
         )
-        
+
         # Calculate offset of ts_aligned.t0 relative to common_t0
         # Both are on the grid defined by common_t0 and target_dt.
         if hasattr(ts_aligned.t0, "to"):
              t0_aligned_s = ts_aligned.t0.to(common_time_unit).value
         else:
              t0_aligned_s = float(ts_aligned.t0)
-        
+
         # Index offset
         # Since we aligned to the grid, the difference should be integer multiple of dt
         # We use floor(x + 0.5) to snap to nearest integer safely.
         offset = int(np.floor((t0_aligned_s - common_t0) / target_dt_s + 0.5))
-        
+
         # Copy valid overlap into values buffer
         # Buffer range: [0, n_samples)
         # TS range: [offset, offset + len)
-        
+
         # Overlap in buffer coordinates
         buf_start = max(0, offset)
         buf_end = min(n_samples, offset + len(ts_aligned))
-        
+
         # Overlap in TS coordinates
         ts_start = max(0, -offset)
         ts_end = ts_start + (buf_end - buf_start)
-        
+
         if buf_end > buf_start:
              values[buf_start:buf_end, i] = ts_aligned.value[ts_start:ts_end]
-             
+
     meta = {
         "t0": u.Quantity(common_t0, common_time_unit).to(out_unit),
         "dt": target_dt,
         "channel_names": [ts.name for ts in series_list],
     }
-    
+
     return values, common_times, meta
 
 
@@ -355,18 +355,18 @@ def _impute_1d(val_1d, x, method, has_gap_constraint, gap_threshold):
     """Internal 1D imputation core."""
     import pandas as pd
     from scipy.interpolate import interp1d
-    
+
     nans_1d = np.isnan(val_1d)
     if not np.any(nans_1d):
         return val_1d
-    
+
     valid_1d = ~nans_1d
     if not np.any(valid_1d):
         return val_1d # All NaNs
 
     x_valid = x[valid_1d]
     y_valid = val_1d[valid_1d]
-    
+
     # Boundary handling
     if has_gap_constraint:
         fill_value = (np.nan, np.nan)
@@ -389,7 +389,7 @@ def _impute_1d(val_1d, x, method, has_gap_constraint, gap_threshold):
         val_1d[nans_1d] = np.nanmean(val_1d)
     elif method == "median":
         val_1d[nans_1d] = np.nanmedian(val_1d)
-        
+
     if has_gap_constraint and gap_threshold is not None:
         valid_indices = np.where(valid_1d)[0]
         if len(valid_indices) > 1:
@@ -400,7 +400,7 @@ def _impute_1d(val_1d, x, method, has_gap_constraint, gap_threshold):
                 t_end = x[valid_indices[idx+1]]
                 mask = (x > t_start) & (x < t_end)
                 val_1d[mask] = np.nan
-                
+
     return val_1d
 
 def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None, **kwargs):
@@ -408,21 +408,21 @@ def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None,
     Impute missing values in a TimeSeries or array. Supports multi-dimensional data.
     """
     from scipy.interpolate import interp1d
-    
+
     if hasattr(ts, 'value'):
         val = ts.value.copy()
         is_ts = True
     else:
         val = np.asarray(ts).copy()
         is_ts = False
-        
+
     if method == "interpolate":
         method = "linear"
-        
+
     if axis == "time":
         axis = -1
     axis = axis % val.ndim
-    
+
     times_val = None
     time_unit = None
     if is_ts:
@@ -434,7 +434,7 @@ def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None,
 
     if times_val is None:
         times_val = np.arange(val.shape[axis])
-        
+
     has_gap_constraint = max_gap is not None
     gap_threshold = None
     if has_gap_constraint:
@@ -448,7 +448,7 @@ def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None,
     nans = np.isnan(val)
     if not np.any(nans):
         return ts.copy() if is_ts else val
-        
+
     other_axes = [i for i in range(val.ndim) if i != axis]
     if other_axes:
         nans_reduced = np.any(nans, axis=tuple(other_axes))
@@ -465,12 +465,12 @@ def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None,
         valid_mask = ~nans_reduced
         if not np.any(valid_mask):
              return ts.copy() if is_ts else val
-             
+
         x_valid = times_val[valid_mask]
         slices = [slice(None)] * val.ndim
         slices[axis] = valid_mask
         y_valid = val[tuple(slices)]
-        
+
         if has_gap_constraint:
             fill_value = (np.nan, np.nan)
         else:
@@ -490,7 +490,7 @@ def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None,
                 nan_slices = [slice(None)] * val.ndim
                 nan_slices[axis] = nan_mask_idx
                 val[tuple(nan_slices)] = f(times_val[nan_mask_idx])
-             
+
         if has_gap_constraint:
             diffs = np.diff(x_valid)
             big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
@@ -524,7 +524,7 @@ def standardize_timeseries(ts, *, method="zscore", ddof=0, robust=None):
     """
     if robust is True:
         method = "robust"
-    
+
     val = ts.value
     if robust or method == "robust":
         med = np.nanmedian(val)
@@ -552,15 +552,15 @@ def standardize_timeseries(ts, *, method="zscore", ddof=0, robust=None):
          val_float = ts.value.astype("float64")
          # We construct new_ts manually to preserve metadata
          new_ts = ts.__class__(
-             val_float, 
-             t0=ts.t0, 
-             dt=ts.dt, 
+             val_float,
+             t0=ts.t0,
+             dt=ts.dt,
              name=ts.name,
              unit=ts.unit, # Inherit unit or make dimensionless? Standardization makes it dimensionless usually.
              channel=getattr(ts, 'channel', None)
          )
-         # If standardized, unit becomes dimensionless technically (sigma units). 
-         # Unless we keep original unit? 
+         # If standardized, unit becomes dimensionless technically (sigma units).
+         # Unless we keep original unit?
          # Gwpy might complain if unit mismatch?
          # Standard score is dimensionless.
          new_ts.unit = u.dimensionless_unscaled
@@ -574,9 +574,9 @@ def standardize_timeseries(ts, *, method="zscore", ddof=0, robust=None):
                  new_ts.unit = u.dimensionless_unscaled
              except AttributeError:
                  pass
-         
+
     new_ts.value[:] = (val - med) / scale
-    
+
     model = StandardizationModel(mean=np.array([med]), scale=np.array([scale]), axis="time")
     return new_ts, model
 
@@ -591,9 +591,9 @@ def standardize_matrix(matrix, *, axis="time", method="zscore", ddof=0, robust=N
     # Time is always the last axis (-1).
     # "time" axis -> operating along time axis (normalize each channel).
     # "channel" axis -> operating along channel axis (normalize each sample).
-    
+
     np_axis = -1 if axis == "time" else (0, 1) # Standardize across all dimensions
-    
+
     if method == "robust":
         med = np.nanmedian(val, axis=np_axis, keepdims=True)
         mad = np.nanmedian(np.abs(val - med), axis=np_axis, keepdims=True)
@@ -601,9 +601,9 @@ def standardize_matrix(matrix, *, axis="time", method="zscore", ddof=0, robust=N
     else:
         med = np.nanmean(val, axis=np_axis, keepdims=True)
         scale = np.nanstd(val, axis=np_axis, ddof=ddof, keepdims=True)
-        
+
     scale[scale == 0] = 1.0
-    
+
     # We return a new matrix with same metadata.
     if np.issubdtype(matrix.value.dtype, np.integer):
          val_float = matrix.value.astype("float64")
@@ -618,15 +618,15 @@ def standardize_matrix(matrix, *, axis="time", method="zscore", ddof=0, robust=N
               new_mat.channel_names = getattr(matrix, 'channel_names', None)
     else:
          new_mat = matrix.copy()
-         
+
     # Update values
     new_mat.value[:] = (val - med) / scale
-    
+
     # Standardize result is dimensionless?
     # Usually yes. But SeriesMatrix doesn't handle units uniformly yet,
     # so we simply return the standardized matrix.
     return new_mat
-    
+
 def whiten_matrix(matrix, *, method="pca", eps=1e-12, n_components=None):
     """
     Whiten a TimeSeriesMatrix.
@@ -635,40 +635,40 @@ def whiten_matrix(matrix, *, method="pca", eps=1e-12, n_components=None):
     # Reshape to (features, time) -> (time, features)
     X_features = matrix.value.reshape(-1, matrix.shape[-1])
     X_T = X_features.T # (time, features)
-    
+
     mean = np.mean(X_T, axis=0)
     X_centered = X_T - mean
-    
+
     cov = np.cov(X_centered, rowvar=False)
     # ... SVD logic ...
     U, S, Vt = np.linalg.svd(cov)
-    
+
     S_inv_sqrt = np.diag(1.0 / np.sqrt(S + eps))
-    
+
     if method == "pca":
         W = S_inv_sqrt @ U.T
     elif method == "zca":
         W = U @ S_inv_sqrt @ U.T
     else:
         raise ValueError("method must be 'pca' or 'zca'")
-        
+
     if n_components is not None:
         if method == "zca":
              warnings.warn("n_components ignores channel mapping for ZCA if reduced.")
         W = W[:n_components, :]
-        
+
     X_whitened = X_centered @ W.T
-    
+
     # result X_whitened is (time, components)
     # create new matrix with (components, 1, time)
-    
+
     cls = matrix.__class__
-    
+
     try:
         if X_whitened.shape[1] != X_features.shape[0]: # Check against original features count
             # Dimension reduced
             new_data = X_whitened.T[:, None, :] # (components, 1, time)
-            
+
             new_mat = cls(
                 new_data,
                 t0=matrix.t0,
@@ -678,7 +678,7 @@ def whiten_matrix(matrix, *, method="pca", eps=1e-12, n_components=None):
              # Dimension preserved - reshape back to original shape if possible
              # But whitening mixes features, so (rows, cols) structure is lost/scrambled?
              # PCA/ZCA usually destroys spatial structure unless ZCA implicitly preserves it.
-             # If ZCA: map back to (rows, cols)? 
+             # If ZCA: map back to (rows, cols)?
              # For safety, we flatten to (features, 1, time) or reuse shape if ZCA.
              if method == "zca":
                  new_val = X_whitened.T.reshape(matrix.shape)
@@ -692,10 +692,10 @@ def whiten_matrix(matrix, *, method="pca", eps=1e-12, n_components=None):
                  # Actually, better return flattened structure if whitening mixed them.
                  new_data = X_whitened.T[:, None, :]
                  new_mat = cls(new_data, t0=matrix.t0, dt=matrix.dt)
-                 
+
     except (IndexError, ValueError):
          new_data = X_whitened.T[:, None, :]
          new_mat = cls(new_data, t0=matrix.t0, dt=matrix.dt)
-        
+
     model = WhiteningModel(mean, W)
     return new_mat, model

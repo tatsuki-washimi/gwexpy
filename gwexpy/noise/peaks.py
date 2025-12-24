@@ -35,7 +35,7 @@ def lorentzian_line(
     """
     Generate a Lorentzian peak (ASD).
     Formula: ASD(f) = A * gamma / sqrt( (f-f0)^2 + gamma^2 )
-    
+
     This profile peaks at 'amplitude' when f = f0.
 
     Parameters
@@ -75,13 +75,13 @@ def lorentzian_line(
     with np.errstate(divide='ignore', invalid='ignore'):
         shape = gamma_val / denom
         # Handle cases where peak might be undefined or calculation unstable (though standard form is fine)
-    
+
     data = amp_val * shape
 
     # If kwargs contains generation params that FrequencySeries doesn't need if we pass data/frequencies
     # we filter them out or let FrequencySeries ignore? FrequencySeries works with data+frequencies.
     # Note: If frequencies was None, we generated f_vals. We must pass this generated array.
-    
+
     # Remove 'unit' from kwargs if present to avoid multiple values error
     kwargs.pop("unit", None)
 
@@ -105,7 +105,7 @@ def gaussian_line(
     Formula: ASD(f) = A * exp( - (f-f0)^2 / (2*sigma^2) )
     """
     f_vals = _get_freqs(frequencies, kwargs)
-    
+
     target_unit = kwargs.get("unit", None)
     if isinstance(amplitude, u.Quantity):
         amp_val = amplitude.value
@@ -138,7 +138,7 @@ def voigt_line(
     Normalized to have peak value = 'amplitude'.
     """
     f_vals = _get_freqs(frequencies, kwargs)
-    
+
     target_unit = kwargs.get("unit", None)
     if isinstance(amplitude, u.Quantity):
         amp_val = amplitude.value
@@ -150,13 +150,13 @@ def voigt_line(
     # Calculate Voigt profile
     z = ((f_vals - f0) + 1j * gamma) / (sigma * np.sqrt(2))
     v = wofz(z).real
-    
+
     # We need to normalize so peak is 'amp_val'.
     # Peak of unnormalized wofz for centered Voigt is roughly wofz(1j * gamma / (sigma*sqrt(2))).real
     # Let's calculate the value at f0 explicitly to normalize
     z0 = (1j * gamma) / (sigma * np.sqrt(2))
     peak_factor = wofz(z0).real
-    
+
     data = amp_val * (v / peak_factor)
 
     kwargs.pop("unit", None)

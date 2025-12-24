@@ -2,6 +2,8 @@
 
 **gwexpy** is an (unofficial) extension library for **GWpy**, designed to facilitate advanced time-series analysis, matrix operations, and signal processing for experimental physics and gravitational wave data analysis. It builds upon GWpy's core data objects (`TimeSeries`, `FrequencySeries`) and introduces high-level containers and methods for multivariate analysis, vectorized time conversion, auto Series creation, and interoperability with the broader Python scientific ecosystem.
 
+> ⚠️ **Note on GUI Module**: The `gwexpy.gui` module (pyaggui) is **experimental and under active development**. It is **not stable** and may change significantly. See `gwexpy/gui/README.md` for details.
+
 ## Key Features
 
 ### 1. Advanced Containers
@@ -55,7 +57,7 @@ pip install .
 pip install ".[all]"
 
 # Install specific features
-pip install ".[interop]"     # All interoperability features (torch, jax, etc.)
+pip install ".[interop]"     # All interoperability features (data + ML frameworks)
 pip install ".[geophysics]"  # Obspy, MTh5, wintools, etc.
 pip install ".[analysis]"    # EMD, Wavelet, Hurst, etc.
 pip install ".[gw]"          # pygwinc, dttxml
@@ -89,7 +91,7 @@ Required only for specific submodules or interpolation features.
 | `[audio]` | `librosa`, `pydub`, `torchaudio` | Audio format export/import (mp3, wav) |
 | `[data]` | `xarray`, `h5py`, `netCDF4` | HDF5, netCDF and XArray data structures |
 | `[control]` | `control` | Control system analysis (`to_control_frd`) |
-| `[interop]` | `torch`, `jax`, `dask`, `polars`, etc. | Bulk install of all interoperability extras |
+| `[interop]` | `torch`, `tensorflow`, `jax`, `dask`, `zarr`, `polars`, `xarray`, `h5py`, `netCDF4`, `obspy`, `mne`, `neo`, `control`, `cupy`, `librosa`, `pydub`, `torchaudio` | Bulk install of interoperability extras |
 | `[polars]` | `polars` | Fast DataFrames support (`to_polars`) |
 | `[dask]` | `dask` | Parallel array processing |
 | `[zarr]` | `zarr` | Chunked, compressed, binary storage |

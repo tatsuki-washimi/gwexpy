@@ -20,7 +20,7 @@ def to_polars_dataframe(ts, time_column="time", time_unit="datetime"):
     from .base import to_plain_array
     data = to_plain_array(ts)
     times_gps = to_plain_array(ts.times)
-    
+
     if time_unit == "datetime":
         from astropy.time import Time
         t_vals = Time(times_gps, format="gps").utc.to_datetime()
@@ -48,8 +48,8 @@ def to_polars_frequencyseries(fs, index_column="frequency", index_unit="Hz"):
     from .base import to_plain_array
     data = to_plain_array(fs)
     freqs = to_plain_array(fs.frequencies)
-    
-    # Normally frequencies are in Hz. 
+
+    # Normally frequencies are in Hz.
     return pl.DataFrame({
         index_column: freqs,
         fs.name or "value": data
@@ -61,20 +61,20 @@ def from_polars_dataframe(cls, df, time_column="time", unit=None):
     Attempts to infer t0 and dt from the time_column.
     """
     require_optional("polars")
-    
+
     # Extract data column (everything except time_column)
     cols = [c for c in df.columns if c != time_column]
     if not cols:
          raise ValueError("DataFrame must have at least one data column")
-    
+
     # polars -> numpy
     data = df[cols[0]].to_numpy()
     times = df[time_column]
-    
+
     # Infer t0, dt
     t0 = 0
     dt = 1
-    
+
     if len(times) > 0:
         t0_val = times[0]
         # Handle datetime
@@ -87,7 +87,7 @@ def from_polars_dataframe(cls, df, time_column="time", unit=None):
              t0 = datetime_utc_to_gps(t0_val)
         else:
              t0 = float(t0_val)
-             
+
         if len(times) > 1:
              t1_val = times[1]
              if isinstance(t1_val, (np.datetime64,)):
@@ -107,7 +107,7 @@ def from_polars_dataframe(cls, df, time_column="time", unit=None):
     times_gps_arr = np.asarray(to_gps(times.to_list()))
     diffs = np.diff(times_gps_arr)
     is_regular = len(diffs) < 1 or np.allclose(diffs, diffs[0])
-    
+
     if is_regular:
          return cls(data, x0=float(t0), dx=float(dt), unit=unit, name=cols[0])
     else:
@@ -121,14 +121,14 @@ def to_polars_dict(tsd, time_column="time", time_unit="datetime"):
     """TimeSeriesDict -> polars.DataFrame"""
     pl = require_optional("polars")
     from .base import to_plain_array
-    
+
     keys = list(tsd.keys())
     if not keys:
         return pl.DataFrame()
-        
+
     s0 = tsd[keys[0]]
     times_gps = to_plain_array(s0.times)
-    
+
     if time_unit == "datetime":
         from astropy.time import Time
         t_vals = Time(times_gps, format="gps").to_datetime()
@@ -143,7 +143,7 @@ def to_polars_dict(tsd, time_column="time", time_unit="datetime"):
     data_dict = {time_column: t_vals}
     for k in keys:
         data_dict[k] = to_plain_array(tsd[k])
-        
+
     return pl.DataFrame(data_dict)
 
 def from_polars_dict(cls, df, time_column="time", unit_map=None):
@@ -152,10 +152,10 @@ def from_polars_dict(cls, df, time_column="time", unit_map=None):
     # Logic similar to from_pandas_dataframe but for polars
     # We create one TimeSeries for each column (except time_column)
     # the time_column defines GPS start and dt.
-    
-    # We can use from_polars_dataframe for each column for simplicity 
+
+    # We can use from_polars_dataframe for each column for simplicity
     # but it's more efficient to calculate t0/dt once.
-    
+
     times = df[time_column]
     t0 = 0
     dt = 1
@@ -169,7 +169,7 @@ def from_polars_dict(cls, df, time_column="time", unit_map=None):
              t0 = datetime_utc_to_gps(t0_val)
         else:
              t0 = float(t0_val)
-             
+
         if len(times) > 1:
              t1_val = times[1]
              if isinstance(t1_val, (np.datetime64,)):
@@ -189,5 +189,5 @@ def from_polars_dict(cls, df, time_column="time", unit_map=None):
         unit = unit_map.get(col) if unit_map else None
         data = df[col].to_numpy()
         tsd[str(col)] = tsd.EntryClass(data, x0=float(t0), dx=float(dt), unit=unit, name=str(col))
-        
+
     return tsd

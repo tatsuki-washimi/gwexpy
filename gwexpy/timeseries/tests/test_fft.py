@@ -40,15 +40,15 @@ def test_fft_linear_nfft_selection():
     # linear convolution with equal length requires N >= 2*L - 1
     # By default nfft_mode might be None, so exact length?
     # Let's verify defaults or specify nfft_mode if implied by previous tests.
-    
+
     fs = ts.fft(mode="transient", other_length=ts.size)
-    
+
     n_required = 2 * ts.size - 1
-    
+
     # Calculate inferred nfft from df
     nfft = int(np.round(ts.sample_rate.value / fs.df.value))
     assert nfft >= n_required
-    
+
     expected_df = ts.sample_rate.value / nfft
     assert np.isclose(fs.df.value, expected_df)
 
@@ -56,7 +56,7 @@ def test_fft_linear_nfft_selection():
 
 # def test_fft_linear_too_short_raises():
 #    """
-#    If nfft provided is shorter than linear convolution requirement, 
+#    If nfft provided is shorter than linear convolution requirement,
 #    implementation allows it (aliasing occurs).
 #    So we skip this test or update it to check for warning if implemented.
 #    """

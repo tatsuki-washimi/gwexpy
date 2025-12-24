@@ -9,7 +9,7 @@ class TimePlaneTransform:
     """
     A container for 3D data with a preferred (time, axis1, axis2) structure,
     commonly produced by time-frequency or similar transforms.
-    
+
     This class wraps an Array3D to enforce semantic structure:
     - Axis 0 is "time"
     - Axis 1 and 2 are symmetric spatial/frequency dimensions.
@@ -48,7 +48,7 @@ class TimePlaneTransform:
                 extra_meta = {}
             else:
                  raise ValueError("Tuple data3d must be length 4 or 5: (value, time, ax1, ax2, [unit/meta])")
-            
+
             # Construct names from provided axes objects if possible, else defaults.
             # But the tuple typically provides coordinates (Quantity/array), not AxisDescriptor.
             # We assign default names "time", "axis1", "axis2" unless user provided descriptors (unlikely/simple case).
@@ -63,31 +63,31 @@ class TimePlaneTransform:
             )
         else:
             raise TypeError("data3d must be an Array3D or a tuple.")
-        
+
         # Validation
         if self._data.ndim != 3:
             raise ValueError(f"TimePlaneTransform requires 3D data, got {self._data.ndim}D")
-        
+
     @property
     def kind(self):
         return self._kind
-    
+
     @property
     def meta(self):
         return self._meta
-    
+
     @property
     def value(self):
         return self._data.value
-    
+
     @property
     def shape(self):
         return self._data.shape
-    
+
     @property
     def ndim(self):
         return self._data.ndim
-    
+
     @property
     def unit(self):
         return self._data.unit
@@ -98,12 +98,12 @@ class TimePlaneTransform:
         Return the 3 AxisDescriptors: (time, axis1, axis2).
         """
         return self._data.axes
-    
+
     @property
     def times(self):
         """Coordinate array of the time axis (axis 0)."""
         return self.axes[0].index
-    
+
     @property
     def axis1(self):
         """AxisDescriptor for the first symmetric axis (axis 1)."""
@@ -124,7 +124,7 @@ class TimePlaneTransform:
             if not (0 <= key <= 2):
                 raise ValueError(f"Axis index {key} out of range (0-2)")
             return key
-        
+
         if isinstance(key, str):
             # Check names
             for i, ax in enumerate(self.axes):
@@ -135,7 +135,7 @@ class TimePlaneTransform:
             # But "TimePlaneTransform is user-facing", so 'time' alias for axis 0 is reasonable if not conflicting?
             # User instruction: "if str: match against axes[i].name; else raise KeyError"
             raise KeyError(f"No axis named '{key}' found. Axes are: {[ax.name for ax in self.axes]}")
-        
+
         raise TypeError(f"Invalid axis key type: {type(key)}")
 
     def plane(self, drop_axis, drop_index, *, axis1=None, axis2=None):
@@ -152,7 +152,7 @@ class TimePlaneTransform:
             The generic axis 1 for the resulting Plane2D.
         axis2 : str or int, optional
             The generic axis 2 for the resulting Plane2D.
-        
+
         Returns
         -------
         Plane2D
@@ -164,12 +164,12 @@ class TimePlaneTransform:
         # But Array3D.plane() signature is `plane(drop_axis, drop_index, *, axis1=None, axis2=None)`
         # If we pass strings to Array3D.plane, it uses its own valid names.
         # If we use `_axis_id` here, we get an int, which is safe to pass to Array3D.plane.
-        
-        idx = self._axis_id(drop_axis)    
-        
+
+        idx = self._axis_id(drop_axis)
+
         # If axis1/axis2 args are provided, they might be strings referring to names in THIS object.
         # Array3D.plane expects names or ints.
-        
+
         # We delegate.
         # Note: Array3D.plane expects drop_index to be int/slice? Spec says "drop_index: int (isel-style)".
         return self._data.plane(idx, drop_index, axis1=axis1, axis2=axis2)
@@ -177,14 +177,14 @@ class TimePlaneTransform:
     def at_time(self, t, *, method="nearest"):
         """
         Extract a Plane2D at the specific time `t`.
-        
+
         Parameters
         ----------
         t : Quantity or float
             Time value. If float, assumed to be in the unit of the time axis.
         method : str, optional
             "nearest" (default). Future versions may support interpolation.
-            
+
         Returns
         -------
         Plane2D
@@ -192,8 +192,8 @@ class TimePlaneTransform:
         # 1. Resolve time index
         time_ax = self.axes[0]
         # Access index quantity directly locally to perform interpolation logic
-        times = time_ax.index 
-        
+        times = time_ax.index
+
         # Ensure t is comparable (value check)
         if hasattr(t, 'unit') and hasattr(times, 'unit') and times.unit is not None:
              t_val = t.to(times.unit).value
@@ -204,52 +204,52 @@ class TimePlaneTransform:
         else:
              t_val = t
              times_val = times.value if hasattr(times, 'value') else times
-             
+
         if method == "nearest":
             # idx = time_ax.iloc_nearest(t)
             # Use direct numpy for consistency with linear logic if desired, but reuse existing if reliable.
             # Assuming axis class works, but let's be robust:
             idx = np.abs(times_val - t_val).argmin()
             return self.plane(0, idx)
-            
+
         elif method == "linear":
             # Find insertion point
             i = np.searchsorted(times_val, t_val, side='right')
-            
+
             # Clamp to boundaries
             if i <= 0:
                 return self.plane(0, 0)
             if i >= len(times_val):
                 return self.plane(0, len(times_val) - 1)
-                
+
             idx_prev = i - 1
             idx_next = i
-            
+
             t_prev = times_val[idx_prev]
             t_next = times_val[idx_next]
-            
+
             # Check for zero duration interval (duplicates)
             denom = t_next - t_prev
             if denom == 0:
                  return self.plane(0, idx_prev)
-                 
+
             alpha = (t_val - t_prev) / denom
-            
+
             p_prev = self.plane(0, idx_prev)
             p_next = self.plane(0, idx_next)
-            
+
             # Interpolate values
             # Plane2D should expose .value? Checked file_view earlier, doesn't explicitly show Plane2D def but usage implies it.
             # TimePlaneTransform.value uses self._data.value.
             # We assume p_prev.value is accessible (standard gwexpy object).
-            
+
             val_interp = (1.0 - alpha) * p_prev.value + alpha * p_next.value
-            
+
             # Construct new Plane2D
             # Plane2D(data, axis1_name=..., axis2_name=..., yindex=..., xindex=...)
             # Plane2D axis1 -> Array2D axis0 (yindex)
             # Plane2D axis2 -> Array2D axis1 (xindex)
-            
+
             return p_prev.__class__(
                 val_interp,
                 unit=p_prev.unit,
@@ -258,10 +258,10 @@ class TimePlaneTransform:
                 yindex=p_prev.axis1.index,
                 xindex=p_prev.axis2.index
             )
-            
+
         else:
             raise NotImplementedError(f"Method '{method}' not implemented. Supported: 'nearest', 'linear'.")
-        
+
         # 2. Slice (nearest case handled above)
         # return self.plane(0, idx)
 

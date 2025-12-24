@@ -49,7 +49,7 @@ class FrequencySeries(BaseFrequencySeries):
                 return True
             if hasattr(idx, "regular"):
                 return idx.regular
-            
+
             freqs = np.asarray(idx)
             if len(freqs) < 2:
                 return True
@@ -69,13 +69,13 @@ class FrequencySeries(BaseFrequencySeries):
     def phase(self, unwrap: bool = False) -> "FrequencySeries":
         """
         Calculate the phase of this FrequencySeries.
-        
+
         Parameters
         ----------
         unwrap : `bool`, optional
             If `True`, unwrap the phase to remove discontinuities.
             Default is `False`.
-            
+
         Returns
         -------
         `FrequencySeries`
@@ -84,9 +84,9 @@ class FrequencySeries(BaseFrequencySeries):
         val = np.angle(self.value)
         if unwrap:
             val = np.unwrap(val)
-        
+
         name = self.name + "_phase" if self.name else "phase"
-        
+
         return self.__class__(
             val,
             frequencies=self.frequencies,
@@ -99,16 +99,16 @@ class FrequencySeries(BaseFrequencySeries):
     def angle(self, unwrap: bool = False) -> "FrequencySeries":
         """Alias for `phase(unwrap=unwrap)`."""
         return self.phase(unwrap=unwrap)
-    
+
     def degree(self, unwrap: bool = False) -> "FrequencySeries":
         """
         Calculate the phase of this FrequencySeries in degrees.
-        
+
         Parameters
         ----------
         unwrap : `bool`, optional
             If `True`, unwrap the phase before converting to degrees.
-            
+
         Returns
         -------
         `FrequencySeries`
@@ -116,9 +116,9 @@ class FrequencySeries(BaseFrequencySeries):
         """
         p = self.phase(unwrap=unwrap)
         val = np.rad2deg(p.value)
-        
+
         name = self.name + "_phase_deg" if self.name else "phase_deg"
-        
+
         return self.__class__(
             val,
             frequencies=self.frequencies,
@@ -133,7 +133,7 @@ class FrequencySeries(BaseFrequencySeries):
     def to_db(self, ref: Any = 1.0, amplitude: bool = True) -> "FrequencySeries":
         """
         Convert this series to decibels.
-        
+
         Parameters
         ----------
         ref : `float` or `Quantity`, optional
@@ -141,7 +141,7 @@ class FrequencySeries(BaseFrequencySeries):
         amplitude : `bool`, optional
             If `True` (default), treat data as amplitude (20 * log10).
             If `False`, treat data as power (10 * log10).
-            
+
         Returns
         -------
         `FrequencySeries`
@@ -150,20 +150,20 @@ class FrequencySeries(BaseFrequencySeries):
         val = self.value
         if isinstance(ref, u.Quantity):
             ref = ref.value
-        
+
         # Handle magnitude
         mag = np.abs(val)
-        
+
         # Avoid log(0)
         # We could use a small epsilon or let numpy handle -inf
         with np.errstate(divide='ignore'):
             log_val = np.log10(mag / ref)
-            
+
         factor = 20.0 if amplitude else 10.0
         db_val = factor * log_val
-        
+
         name = self.name + "_db" if self.name else "db"
-        
+
         return self.__class__(
             db_val,
             frequencies=self.frequencies,
@@ -346,7 +346,7 @@ class FrequencySeries(BaseFrequencySeries):
     def idct(self, type: int = 2, norm: str = "ortho", *, n: Optional[int] = None) -> Any:
         """
         Compute the Inverse Discrete Cosine Transform (IDCT).
-        
+
         Parameters
         ----------
         type : `int`, optional
@@ -366,16 +366,16 @@ class FrequencySeries(BaseFrequencySeries):
              import scipy.fft
         except ImportError:
              raise ImportError("scipy is required for idct")
-             
+
         # Check metadata if available
         meta_n = getattr(self, "original_n", None)
         meta_dt = getattr(self, "dt", None)
-        
+
         target_n = n if n is not None else meta_n
-        
+
         # IDCT
         out_data = scipy.fft.idct(self.value, type=type, norm=norm, n=target_n)
-        
+
         # Determine dt
         if meta_dt is not None:
              dt = meta_dt
@@ -386,7 +386,7 @@ class FrequencySeries(BaseFrequencySeries):
                   df_val = self.df.to("Hz").value
              else:
                   df_val = self.df
-             
+
              with np.errstate(divide='ignore'):
                   if df_val > 0:
                        dt_val = 1.0 / (2 * N_out * df_val)
@@ -395,42 +395,42 @@ class FrequencySeries(BaseFrequencySeries):
                        dt = 1.0 * u.s # Fallback
         else:
              dt = 1.0 * u.s
-             
+
         from gwexpy.timeseries import TimeSeries
-        
+
         return TimeSeries(
             out_data,
             t0=self.epoch,
             dt=dt,
             unit=self.unit,
             name=self.name + "_idct" if self.name else "idct",
-            channel=self.channel 
+            channel=self.channel
         )
 
     def differentiate_time(self) -> Any:
         """
         Apply time differentiation in frequency domain.
-        
+
         Multiplies by (2 * pi * i * f).
         Converting Displacement -> Velocity -> Acceleration.
-        
+
         Returns
         -------
         `FrequencySeries`
         """
         f = self.frequencies.to("Hz").value
         omega = 2 * np.pi * f
-        
+
         # Apply factor (j * omega)
         factor = 1j * omega
-        
+
         new_val = self.value * factor
-        
+
         # Update unit: multiply by Hz (1/s)
         new_unit = self.unit * u.Hz if self.unit else u.Hz
-        
+
         name = f"d({self.name})/dt" if self.name else "differentiation"
-        
+
         return self.__class__(
             new_val,
             frequencies=self.frequencies,
@@ -443,34 +443,34 @@ class FrequencySeries(BaseFrequencySeries):
     def integrate_time(self) -> Any:
         """
         Apply time integration in frequency domain.
-        
+
         Divides by (2 * pi * i * f).
         Converting Acceleration -> Velocity -> Displacement.
-        
+
         Returns
         -------
         `FrequencySeries`
         """
         f = self.frequencies.to("Hz").value
         omega = 2 * np.pi * f
-        
+
         # Avoid division by zero at DC
         with np.errstate(divide='ignore', invalid='ignore'):
             factor = 1.0 / (1j * omega)
-        
+
         # Handle DC (0 Hz) -> set to 0 or leave as inf/nan?
         # Standard practice is often to set DC to 0 for integration results or keep it if known.
         # Here we let numpy handle it (likely inf), but the user might want to mask it.
         if f[0] == 0:
             factor[0] = 0  # Set DC term to 0 explicitly to avoid NaN propagation
-            
+
         new_val = self.value * factor
-        
+
         # Update unit: divide by Hz (multiply by s)
         new_unit = self.unit * u.s if self.unit else u.s
-        
+
         name = f"int({self.name})dt" if self.name else "integration"
-        
+
         return self.__class__(
             new_val,
             frequencies=self.frequencies,
@@ -485,20 +485,20 @@ class FrequencySeries(BaseFrequencySeries):
     def smooth(self, width: Any, method: str = "amplitude") -> Any:
         """
         Smooth the frequency series.
-        
+
         Parameters
         ----------
         width : `int`
             Number of samples for the smoothing winow (e.g. rolling mean size).
         method : `str`, optional
             Smoothing target:
-            - 'amplitude': Smooth absolute value |X|, keep phase 'original' (or 0?). 
-                           Actually, strictly smoothing magnitude destroys phase coherence. 
+            - 'amplitude': Smooth absolute value |X|, keep phase 'original' (or 0?).
+                           Actually, strictly smoothing magnitude destroys phase coherence.
                            Returns REAL series (magnitude only).
             - 'power': Smooth power |X|^2. Returns REAL series.
             - 'complex': Smooth real and imaginary parts separately. Preserves complex.
             - 'db': Smooth dB values. Returns REAL series (in dB).
-            
+
         Returns
         -------
         `FrequencySeries`
@@ -509,40 +509,40 @@ class FrequencySeries(BaseFrequencySeries):
             # Use 'same' to keep size, but handle boundary effects
             # scipy.ndimage.uniform_filter1d or regular convolution
             # Let's use simple convolution for MVP
-            
+
             # Boundary handling: 'valid' shrinks, 'same' has edge effects.
             # GWpy generally prefers exact preservation or careful handling.
             # We will use 'same' mode convolution.
             from scipy.ndimage import uniform_filter1d
-            
+
             re = uniform_filter1d(self.value.real, size=width)
             im = uniform_filter1d(self.value.imag, size=width)
             val = re + 1j * im
             unit = self.unit
-            
+
         elif method == 'amplitude':
             mag = np.abs(self.value)
             from scipy.ndimage import uniform_filter1d
             val = uniform_filter1d(mag, size=width)
             unit = self.unit
-            
+
         elif method == 'power':
             pwr = np.abs(self.value)**2
             from scipy.ndimage import uniform_filter1d
             val = uniform_filter1d(pwr, size=width)
             unit = self.unit**2
-            
+
         elif method == 'db':
             # To dB
             mag = np.abs(self.value)
             with np.errstate(divide='ignore'):
                  db = 20 * np.log10(mag)
             from scipy.ndimage import uniform_filter1d
-            # Handle -inf in dB (0 magnitude) by masking? 
+            # Handle -inf in dB (0 magnitude) by masking?
             # For now just smooth what we have
             val = uniform_filter1d(db, size=width)
             unit = u.Unit('dB')
-            
+
         else:
             raise ValueError(f"Unknown smoothing method: {method}")
 
@@ -558,9 +558,9 @@ class FrequencySeries(BaseFrequencySeries):
     def find_peaks(self, threshold: Optional[float] = None, method: str = "amplitude", **kwargs: Any) -> Any:
         """
         Find peaks in the series.
-        
+
         Wraps `scipy.signal.find_peaks`.
-        
+
         Parameters
         ----------
         threshold : `float` or `str`
@@ -569,7 +569,7 @@ class FrequencySeries(BaseFrequencySeries):
             'amplitude', 'power', 'db'. Defines what metric to search on.
         **kwargs
             Passed to `scipy.signal.find_peaks` (e.g. distance, prominence).
-            
+
         Returns
         -------
         `tuple`
@@ -584,7 +584,7 @@ class FrequencySeries(BaseFrequencySeries):
             target = 20 * np.log10(np.abs(self.value))
         else:
             raise ValueError(f"Unknown method {method}")
-            
+
         if threshold is not None:
             if hasattr(threshold, 'unit'):  # astropy.units.Quantity
                 if method == 'amplitude':
@@ -596,20 +596,20 @@ class FrequencySeries(BaseFrequencySeries):
                     # Usually users pass plain float for dB.
                     threshold = threshold.value
             kwargs['height'] = threshold
-             
+
         return scipy.signal.find_peaks(target, **kwargs)
 
     def quadrature_sum(self, other: Any) -> Any:
         """
         Compute sqrt(self^2 + other^2) assuming checking independence.
-        
+
         Operates on magnitude. Phase information is lost (returns real).
-        
+
         Parameters
         ----------
         other : `FrequencySeries`
             The other series to add.
-            
+
         Returns
         -------
         `FrequencySeries`
@@ -617,11 +617,11 @@ class FrequencySeries(BaseFrequencySeries):
         """
         mag_self = np.abs(self.value)
         mag_other = np.abs(other.value)
-        
+
         # Check compatibility?
-        
+
         val = np.sqrt(mag_self**2 + mag_other**2)
-        
+
         return self.__class__(
             val,
             frequencies=self.frequencies,
@@ -645,14 +645,14 @@ class FrequencySeries(BaseFrequencySeries):
         # Gradient of unwrapped phase w.r.t frequency
         orig_phase = self.phase(unwrap=True).value
         freqs = self.frequencies.value
-        
+
         # d(phi)/dw = d(phi) / (2pi * df)
         # derivative w.r.t. frequency in Hz
         d_phi_d_f = np.gradient(orig_phase, freqs)
-        
+
         # group delay = - d(phi)/dw = - (1/2pi) * d(phi)/df
         gd = -1 / (2 * np.pi) * d_phi_d_f
-        
+
         return self.__class__(
             gd,
             frequencies=self.frequencies,
@@ -661,12 +661,12 @@ class FrequencySeries(BaseFrequencySeries):
             channel=self.channel,
             epoch=self.epoch
         )
-        
+
     def to_control_frd(self, frequency_unit: str = "Hz") -> Any:
         """Convert to control.FRD."""
         from gwexpy.interop import to_control_frd
         return to_control_frd(self, frequency_unit=frequency_unit)
-        
+
     @classmethod
     def from_control_frd(cls: type["FrequencySeries"], frd: Any, *, frequency_unit: str = "Hz") -> Any:
         """Create from control.FRD."""
@@ -684,7 +684,7 @@ class FrequencySeries(BaseFrequencySeries):
     ) -> Any:
         """
         Convert to torch.Tensor.
-        
+
         Parameters
         ----------
         device : `str` or `torch.device`, optional
@@ -695,7 +695,7 @@ class FrequencySeries(BaseFrequencySeries):
             If `True`, enable gradient tracking.
         copy : `bool`, optional
             If `True`, force a copy of the data.
-            
+
         Returns
         -------
         `torch.Tensor`
@@ -707,7 +707,7 @@ class FrequencySeries(BaseFrequencySeries):
     def from_torch(cls: type["FrequencySeries"], tensor: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
         """
         Create FrequencySeries from torch.Tensor.
-        
+
         Parameters
         ----------
         tensor : `torch.Tensor`
@@ -716,7 +716,7 @@ class FrequencySeries(BaseFrequencySeries):
             Frequency array matching the tensor size.
         unit : `Unit` or `str`, optional
             Data unit.
-            
+
         Returns
         -------
         `FrequencySeries`
@@ -725,21 +725,21 @@ class FrequencySeries(BaseFrequencySeries):
         # We need a custom implementation for FrequencySeries or adapt from_torch logic.
         # Since from_torch in interop is tailored for TimeSeries (takes t0, dt),
         # we pull the data extraction logic specifically.
-        
+
         data = tensor.detach().cpu().resolve_conj().resolve_neg().numpy()
         return cls(data, frequencies=frequencies, unit=unit)
 
     def to_tf(self, dtype: Any = None) -> Any:
         """
         Convert to tensorflow.Tensor.
-        
+
         Returns
         -------
         `tensorflow.Tensor`
         """
         from gwexpy.interop.tensorflow_ import to_tf
         return to_tf(self, dtype=dtype)
-        
+
     @classmethod
     def from_tf(cls: type["FrequencySeries"], tensor: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
         """Create FrequencySeries from tensorflow.Tensor."""
@@ -749,32 +749,32 @@ class FrequencySeries(BaseFrequencySeries):
     def to_jax(self, dtype: Any = None) -> Any:
         """
         Convert to JAX array.
-        
+
         Returns
         -------
         `jax.Array`
         """
         from gwexpy.interop.jax_ import to_jax
         return to_jax(self, dtype=dtype)
-        
+
     @classmethod
     def from_jax(cls: type["FrequencySeries"], array: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
         """Create FrequencySeries from JAX array."""
         import numpy as np
         data = np.array(array)
         return cls(data, frequencies=frequencies, unit=unit)
-        
+
     def to_cupy(self, dtype: Any = None) -> Any:
         """
         Convert to CuPy array.
-        
+
         Returns
         -------
         `cupy.ndarray`
         """
         from gwexpy.interop.cupy_ import to_cupy
         return to_cupy(self, dtype=dtype)
-        
+
     @classmethod
     def from_cupy(cls: type["FrequencySeries"], array: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
         """Create FrequencySeries from CuPy array."""
@@ -788,12 +788,12 @@ class FrequencySeries(BaseFrequencySeries):
     def to_mne_spectrum(self) -> Any:
         """
         Convert to MNE Spectrum object.
-        
+
         Raises
         ------
         NotImplementedError
-            MNE Spectrum objects are typically derived from Raw/Epochs/Evoked data. 
-            Direct creation from frequency domain data is not standard in MNE API 
+            MNE Spectrum objects are typically derived from Raw/Epochs/Evoked data.
+            Direct creation from frequency domain data is not standard in MNE API
             without wrapping in a time-domain container first.
         """
         raise NotImplementedError(
@@ -804,12 +804,12 @@ class FrequencySeries(BaseFrequencySeries):
     def to_obspy_spectrum(self) -> Any:
         """
         Convert to ObsPy spectrum representation.
-        
+
         Raises
         ------
         NotImplementedError
-            ObsPy primarily manages time-domain Traces and Streams. 
-            There is no standard standalone Spectrum container in ObsPy 
+            ObsPy primarily manages time-domain Traces and Streams.
+            There is no standard standalone Spectrum container in ObsPy
             comparable to FrequencySeries.
         """
         raise NotImplementedError(
@@ -1206,7 +1206,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             else:
                 s = pd.Series(fs.value, index=fs.frequencies.value)
             data[key] = s
-            
+
         return pd.DataFrame(data)
 
     def to_xarray(self):
@@ -1552,7 +1552,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
             else:
                 s = pd.Series(fs.value, index=fs.frequencies.value)
             data[name] = s
-            
+
         return pd.DataFrame(data)
 
     def to_xarray(self):
@@ -1563,14 +1563,14 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
         import xarray as xr
         # Requires common coords usually, but concat handles it
         das = [fs.to_xarray() for fs in self]
-        
+
         # We need a new dimension for channel.
         # If das have names, we can use them as coordinates?
         # But DataArrays are concatenated.
-        
+
         # Check if we should assign channel names
         names = [getattr(fs, 'name', f'ch{i}') for i, fs in enumerate(self)]
-        
+
         # Concat
         return xr.concat(das, dim=xr.DataArray(names, dims="channel", name="channel"))
 
@@ -1616,7 +1616,7 @@ class FrequencySeriesMatrix(SeriesMatrix):
         elif frequencies is None and df is not None and 'x0' not in kwargs:
             # Default f0 to 0 if not specified but df is provided (requiring explicit axis)
             kwargs['x0'] = 0
-        
+
         # Set default xunit to Hz if not specified
         if 'xunit' not in kwargs:
             kwargs['xunit'] = cls.default_xunit
@@ -1642,7 +1642,7 @@ class FrequencySeriesMatrix(SeriesMatrix):
                 return True
             if hasattr(idx, "regular"):
                 return idx.regular
-            
+
             freqs = np.asarray(idx)
             if len(freqs) < 2:
                 return True
@@ -1713,7 +1713,7 @@ class FrequencySeriesMatrix(SeriesMatrix):
     def ifft(self):
         """
         Compute the inverse FFT of this frequency-domain matrix.
-        
+
         Matches GWpy FrequencySeries.ifft normalization.
 
         Returns
@@ -1755,7 +1755,7 @@ class FrequencySeriesMatrix(SeriesMatrix):
     def filter(self, *filt, **kwargs):
         """
         Apply a filter to the FrequencySeriesMatrix.
-        
+
         Matches GWpy FrequencySeries.filter behavior (magnitude-only response)
         by delegating to gwpy.frequencyseries._fdcommon.fdfilter.
         Use apply_response() for complex response application.
@@ -1780,9 +1780,9 @@ class FrequencySeriesMatrix(SeriesMatrix):
     def apply_response(self, response, inplace=False):
         """
         Apply a complex frequency response to the matrix.
-        
+
         Extension method (not in GWpy) to support complex filtering/calibration.
-        
+
         Parameters
         ----------
         response : array-like or Quantity
@@ -1797,7 +1797,7 @@ class FrequencySeriesMatrix(SeriesMatrix):
             h = response
         else:
             h = u.Quantity(np.asarray(response), u.dimensionless_unscaled)
-            
+
         if inplace:
             self *= h
             return self
@@ -1808,7 +1808,7 @@ class FrequencySeriesMatrix(SeriesMatrix):
         """
         Smooth the frequency series matrix along the frequency axis.
         Vectorized implementation using uniform_filter1d.
-        
+
         Parameters
         ----------
         width : int
@@ -1819,9 +1819,9 @@ class FrequencySeriesMatrix(SeriesMatrix):
         """
         from scipy.ndimage import uniform_filter1d
         from astropy import units as u
-        
+
         val = self.value
-        # FrequencySeriesMatrix elements can have different units. 
+        # FrequencySeriesMatrix elements can have different units.
         # We take the first one as representative for calculation, or handle carefully.
         unit = self.meta[0, 0].unit
         axis = -1 # Frequency axis is always last
@@ -1852,5 +1852,5 @@ class FrequencySeriesMatrix(SeriesMatrix):
              for r in range(new_mat.shape[0]):
                  for c in range(new_mat.shape[1]):
                       new_mat.meta[r, c].unit = unit
-                      
+
         return new_mat

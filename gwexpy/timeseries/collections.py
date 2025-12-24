@@ -31,12 +31,12 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         for key, ts in self.items():
             new_dict[key] = ts.asfreq(rule, **kwargs)
         return new_dict
-        
+
     def resample(self, rate, **kwargs):
         """
-        Resample items in the TimeSeriesDict. 
+        Resample items in the TimeSeriesDict.
         In-place operation (updates the dict contents).
-        
+
         If rate is time-like, performs time-bin resampling.
         Otherwise performs signal processing resampling (gwpy's native behavior).
         """
@@ -45,11 +45,11 @@ class TimeSeriesDict(BaseTimeSeriesDict):
             is_time_bin = True
         elif isinstance(rate, u.Quantity) and rate.unit.physical_type == 'time':
             is_time_bin = True
-            
+
         if is_time_bin:
             # Time-bin logic: replace items in-place
-            # We can't strictly modify the objects in-place easily 
-            # (asfreq/resample return new objects usually), 
+            # We can't strictly modify the objects in-place easily
+            # (asfreq/resample return new objects usually),
             # so we replace the values in the dict.
             for key in list(self.keys()):
                  self[key] = self[key].resample(rate, **kwargs)
@@ -58,34 +58,34 @@ class TimeSeriesDict(BaseTimeSeriesDict):
             # Native gwpy resample (signal processing)
             # gwpy's TimeSeriesDict.resample is in-place
             return super().resample(rate, **kwargs)
-            
+
     def analytic_signal(self, *args, **kwargs):
         """Apply analytic_signal to each item."""
         new_dict = self.__class__()
         for key, ts in self.items():
             new_dict[key] = ts.analytic_signal(*args, **kwargs)
         return new_dict
-        
+
     def hilbert(self, *args, **kwargs):
         """Alias for analytic_signal."""
         return self.analytic_signal(*args, **kwargs)
-        
+
     def envelope(self, *args, **kwargs):
         """Apply envelope to each item."""
         new_dict = self.__class__()
         for key, ts in self.items():
             new_dict[key] = ts.envelope(*args, **kwargs)
         return new_dict
-        
+
     def instantaneous_phase(self, *args, **kwargs):
         """Apply instantaneous_phase to each item."""
         new_dict = self.__class__()
         for key, ts in self.items():
             new_dict[key] = ts.instantaneous_phase(*args, **kwargs)
         return new_dict
-        
+
         return new_dict
-        
+
     def hht(self, *args, **kwargs):
         """
         Apply hht (Hilbert-Huang Transform) to each item.
@@ -99,7 +99,7 @@ class TimeSeriesDict(BaseTimeSeriesDict):
     # ===============================
     # P2 Methods (Domain Specific)
     # ===============================
-    
+
     def to_mne_rawarray(self, info=None, picks=None):
         """Convert to mne.io.RawArray."""
         from gwexpy.interop import to_mne_rawarray
@@ -108,20 +108,20 @@ class TimeSeriesDict(BaseTimeSeriesDict):
     def to_mne_raw(self, info=None, picks=None):
         """Alias for :meth:`to_mne_rawarray`."""
         return self.to_mne_rawarray(info=info, picks=picks)
-        
+
     @classmethod
     def from_mne_raw(cls, raw, *, unit_map=None):
         """Create from mne.io.Raw."""
         from gwexpy.interop import from_mne_raw
         return from_mne_raw(cls, raw, unit_map=unit_map)
-        
+
     def unwrap_phase(self, *args, **kwargs):
         """Apply unwrap_phase to each item."""
         new_dict = self.__class__()
         for key, ts in self.items():
             new_dict[key] = ts.unwrap_phase(*args, **kwargs)
         return new_dict
-        
+
     def instantaneous_frequency(self, *args, **kwargs):
         """Apply instantaneous_frequency to each item."""
         new_dict = self.__class__()
@@ -135,14 +135,14 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         for key, ts in self.items():
             new_dict[key] = ts.mix_down(*args, **kwargs)
         return new_dict
-        
+
     def baseband(self, *args, **kwargs):
         """Apply baseband to each item."""
         new_dict = self.__class__()
         for key, ts in self.items():
              new_dict[key] = ts.baseband(*args, **kwargs)
         return new_dict
-        
+
     def lock_in(self, *args, **kwargs):
         """
         Apply lock_in to each item.
@@ -152,15 +152,15 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         # Peek first item
         if not self:
              return self.__class__()
-             
+
         keys = list(self.keys())
         first_res = self[keys[0]].lock_in(*args, **kwargs)
-        
+
         if isinstance(first_res, tuple):
              # Tuple return (e.g. mag, phase or i, q)
              # Assume logic dictates uniform return type
              dict_tuple = tuple(self.__class__() for _ in first_res)
-             
+
              for key, ts in self.items():
                   res = ts.lock_in(*args, **kwargs)
                   for i, val in enumerate(res):
@@ -176,9 +176,9 @@ class TimeSeriesDict(BaseTimeSeriesDict):
 
     def csd_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs):
         return csd_matrix_from_collection(
-            self, other, 
-            fftlength=fftlength, overlap=overlap, window=window, 
-            hermitian=hermitian, include_diagonal=include_diagonal, 
+            self, other,
+            fftlength=fftlength, overlap=overlap, window=window,
+            hermitian=hermitian, include_diagonal=include_diagonal,
             **kwargs
         )
 
@@ -323,33 +323,33 @@ class TimeSeriesDict(BaseTimeSeriesDict):
             new_dict[key] = ts.q_transform(*args, **kwargs)
         return new_dict
 
-    
+
     # ===============================
     # Interoperability Methods (P0)
     # ===============================
-    
+
     def to_pandas(self, index="datetime", *, copy=False):
         """Convert to pandas.DataFrame."""
         from gwexpy.interop import to_pandas_dataframe
         return to_pandas_dataframe(self, index=index, copy=copy)
-        
+
     @classmethod
     def from_pandas(cls, df, *, unit_map=None, t0=None, dt=None):
         """Create TimeSeriesDict from pandas.DataFrame."""
         from gwexpy.interop import from_pandas_dataframe
         return from_pandas_dataframe(cls, df, unit_map=unit_map, t0=t0, dt=dt)
-    
+
     def to_polars(self, time_column="time", time_unit="datetime"):
         """Convert to polars.DataFrame."""
         from gwexpy.interop import to_polars_dict
         return to_polars_dict(self, time_column=time_column, time_unit=time_unit)
-        
+
     @classmethod
     def from_polars(cls, df, *, time_column="time", unit_map=None):
         """Create TimeSeriesDict from polars.DataFrame."""
         from gwexpy.interop import from_polars_dict
         return from_polars_dict(cls, df, time_column=time_column, unit_map=unit_map)
-    
+
     def to_tmultigraph(self, name: Optional[str] = None) -> Any:
         """Convert to ROOT TMultiGraph."""
         from gwexpy.interop import to_tmultigraph
@@ -404,14 +404,14 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         # Dicts are ordered in modern python but keys() usually safe
         keys = list(self.keys())
         series_list = [self[k] for k in keys]
-        
+
         vals, times, meta = align_timeseries_collection(series_list, how=align, **kwargs)
-        
+
         # SeriesMatrix expects 3D usually (rows, cols, time) or checks last axis
         # vals: (samples, channels).
         # We create (channels, 1, samples).
         data = vals.T[:, None, :]
-        
+
         from .matrix import TimeSeriesMatrix
         matrix = TimeSeriesMatrix(
             data,
@@ -419,7 +419,7 @@ class TimeSeriesDict(BaseTimeSeriesDict):
             # meta might contain channel_names from original list (names of TS objects)
             # But converting dict to matrix usually implies keys become channel names?
             # User requirement: "preserve labels"
-            # TimeSeries from dict usually inherit name from key if created via read? 
+            # TimeSeries from dict usually inherit name from key if created via read?
             # Not always. We should force keys as names?
             # "Must preserve channel ordering from input."
         )
@@ -446,7 +446,7 @@ class TimeSeriesDict(BaseTimeSeriesDict):
             start = float(to_gps(start))
         if end is not None:
             end = float(to_gps(end))
-            
+
         new_dict = self.__class__()
         for key, ts in self.items():
             new_dict[key] = ts.crop(start=start, end=end, copy=copy)
@@ -464,7 +464,7 @@ class TimeSeriesDict(BaseTimeSeriesDict):
 
     def prepend(self, *args, **kwargs) -> "TimeSeriesDict":
         """
-        Prepend to each TimeSeries in the dict (in-place). 
+        Prepend to each TimeSeries in the dict (in-place).
         Returns self.
         """
         for ts in self.values():
@@ -473,7 +473,7 @@ class TimeSeriesDict(BaseTimeSeriesDict):
 
     # def update(self, *args, **kwargs) -> "TimeSeriesDict":
     #     """
-    #     Update each TimeSeries in the dict (in-place). 
+    #     Update each TimeSeries in the dict (in-place).
     #     Returns self.
     #     """
     #     for ts in self.values():
@@ -629,26 +629,26 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         results = {}
         is_ts = False
         first = True
-        
+
         for key, ts in self.items():
             method = getattr(ts, method_name)
             res = method(*args, **kwargs)
-            
+
             if first:
                 first = False
                 # Check for TimeSeries-like structure
                 if hasattr(res, "value") and hasattr(res, "dt"):
                     is_ts = True
                     results = self.__class__()
-            
+
             if is_ts:
                 # Ensure consistency
                 if not (hasattr(res, "value") and hasattr(res, "dt")):
                      # Mixed types not supported cleanly here, defaulting to dict of objects
                      pass
-            
+
             results[key] = res
-            
+
         if is_ts:
             return results
         else:
@@ -694,11 +694,11 @@ class TimeSeriesDict(BaseTimeSeriesDict):
 
 class TimeSeriesList(BaseTimeSeriesList):
     """List of TimeSeries objects."""
-    
+
     def csd_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs):
         """
         Compute Cross Spectral Density Matrix.
-        
+
         Parameters
         ----------
         other : TimeSeriesDict or TimeSeriesList, optional
@@ -709,22 +709,22 @@ class TimeSeriesList(BaseTimeSeriesList):
             If True and other is None, compute only upper triangle and conjugate fill lower.
         include_diagonal : bool, default=True
             Whether to compute diagonal elements.
-            
+
         Returns
         -------
         FrequencySeriesMatrix
         """
         return csd_matrix_from_collection(
-            self, other, 
-            fftlength=fftlength, overlap=overlap, window=window, 
-            hermitian=hermitian, include_diagonal=include_diagonal, 
+            self, other,
+            fftlength=fftlength, overlap=overlap, window=window,
+            hermitian=hermitian, include_diagonal=include_diagonal,
             **kwargs
         )
 
     def coherence_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs):
         """
         Compute Coherence Matrix.
-        
+
         Parameters
         ----------
         other : TimeSeriesDict or TimeSeriesList, optional
@@ -737,7 +737,7 @@ class TimeSeriesList(BaseTimeSeriesList):
             Include diagonal.
         diagonal_value : float or None, default=1.0
             Value to fill diagonal if include_diagonal is True. If None, compute diagonal coherence.
-            
+
         Returns
         -------
         FrequencySeriesMatrix
@@ -833,7 +833,7 @@ class TimeSeriesList(BaseTimeSeriesList):
         raise TypeError(
             "other must be TimeSeries, TimeSeriesList/Dict, or None/'self'"
         )
-    
+
     def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
          new_list = self.__class__()
          for ts in self:
@@ -870,9 +870,9 @@ class TimeSeriesList(BaseTimeSeriesList):
         vals, times, meta = align_timeseries_collection(list(self), how=align, **kwargs)
         # Use names from metadata (from TS objects)
         names = meta.get("channel_names")
-        
+
         data = vals.T[:, None, :]
-        
+
         matrix = TimeSeriesMatrix(
             data,
             times=times,
@@ -899,7 +899,7 @@ class TimeSeriesList(BaseTimeSeriesList):
             start = float(to_gps(start))
         if end is not None:
             end = float(to_gps(end))
-            
+
         new_list = self.__class__()
         for ts in self:
             list.append(new_list, ts.crop(start=start, end=end, copy=copy))
@@ -907,7 +907,7 @@ class TimeSeriesList(BaseTimeSeriesList):
 
     # def append(self, *args, **kwargs) -> "TimeSeriesList":
     #     """
-    #     Append to each TimeSeries in the list (in-place). 
+    #     Append to each TimeSeries in the list (in-place).
     #     Returns self.
     #     """
     #     for ts in self:
@@ -916,7 +916,7 @@ class TimeSeriesList(BaseTimeSeriesList):
 
     # def prepend(self, *args, **kwargs) -> "TimeSeriesList":
     #     """
-    #     Prepend to each TimeSeries in the list (in-place). 
+    #     Prepend to each TimeSeries in the list (in-place).
     #     Returns self.
     #     """
     #     for ts in self:
@@ -925,7 +925,7 @@ class TimeSeriesList(BaseTimeSeriesList):
 
     # def update(self, *args, **kwargs) -> "TimeSeriesList":
     #     """
-    #     Update each TimeSeries in the list (in-place). 
+    #     Update each TimeSeries in the list (in-place).
     #     Returns self.
     #     """
     #     for ts in self:
@@ -1043,7 +1043,7 @@ class TimeSeriesList(BaseTimeSeriesList):
         for ts in self:
             list.append(new_list, ts.taper(*args, **kwargs))
         return new_list
-    
+
     # --- Spectral Conversion ---
 
     def fft(self, *args, **kwargs):
@@ -1134,26 +1134,26 @@ class TimeSeriesList(BaseTimeSeriesList):
         results = []
         is_ts = False
         first = True
-        
+
         for ts in self:
             method = getattr(ts, method_name)
             res = method(*args, **kwargs)
-            
+
             if first:
                 first = False
                 if hasattr(res, "value") and hasattr(res, "dt"):
                     is_ts = True
                     results = self.__class__()
-            
+
             if is_ts:
                 # Type check?
                 pass
-                
+
             if isinstance(results, self.__class__):
                 list.append(results, res)
             else:
                 list.append(results, res)
-            
+
         return results
 
     def rms(self, *args, **kwargs):
@@ -1170,15 +1170,15 @@ class TimeSeriesList(BaseTimeSeriesList):
 
     def std(self, *args, **kwargs):
         return self._apply_scalar_or_map("std", *args, **kwargs)
-        
+
     def value_at(self, *args, **kwargs):
         return self._apply_scalar_or_map("value_at", *args, **kwargs)
-    
+
     def is_contiguous(self, *args, **kwargs):
         return self._apply_scalar_or_map("is_contiguous", *args, **kwargs)
 
     # --- State Analysis ---
-    
+
     def state_segments(self, *args, **kwargs):
         return self._apply_scalar_or_map("state_segments", *args, **kwargs)
 
@@ -1191,7 +1191,7 @@ class TimeSeriesList(BaseTimeSeriesList):
         ASSUMES common time axis.
         """
         import pandas as pd
-        
+
         data = {}
         for i, ts in enumerate(self):
             name = ts.name or f"series_{i}"
@@ -1199,9 +1199,9 @@ class TimeSeriesList(BaseTimeSeriesList):
                  s = ts.to_pandas()
             else:
                  s = pd.Series(ts.value, index=ts.times.value)
-            
+
             data[name] = s
-            
+
         return pd.DataFrame(data)
 
 

@@ -17,16 +17,16 @@ class Array2D(AxisApiMixin, GwpyArray2D):
     def __new__(cls, data, axis_names=None, **kwargs):
         # We enforce y->axis0, x->axis1 convention if defaults missing
         # This keeps properties consistent across Array2D wrappers
-        
+
         # Check shape to generate defaults
         # data might be list, create array-like to check shape?
         # Gwpy handles data parsing. We can't easily check shape before super.
-        # But we can try relying on Gwpy. 
+        # But we can try relying on Gwpy.
         # Actually, best to let Gwpy create object, then fix indices if default?
-        
+
         # But Gwpy constructor will set them.
         # If we pass explicit defaults in kwargs, Gwpy uses them.
-        
+
         # Resolve data shape
         shape = np.shape(data)
         if len(shape) == 2:
@@ -34,7 +34,7 @@ class Array2D(AxisApiMixin, GwpyArray2D):
                  kwargs["yindex"] = np.arange(shape[0]) * dimensionless_unscaled
              if "xindex" not in kwargs:
                  kwargs["xindex"] = np.arange(shape[1]) * dimensionless_unscaled
-                 
+
         obj = super().__new__(cls, data, **kwargs)
         if axis_names is None:
             name0, name1 = "axis0", "axis1"
@@ -50,22 +50,22 @@ class Array2D(AxisApiMixin, GwpyArray2D):
         super().__array_finalize__(obj)
         if obj is None:
             return
-        
+
         current_a0 = getattr(self, "_axis0_name", None)
         current_a1 = getattr(self, "_axis1_name", None)
         parent_a0 = getattr(obj, "_axis0_name", None)
         parent_a1 = getattr(obj, "_axis1_name", None)
-        
+
         if parent_a0 is not None:
             self._axis0_name = parent_a0
         elif current_a0 is None:
             self._axis0_name = "axis0"
-            
+
         if parent_a1 is not None:
             self._axis1_name = parent_a1
         elif current_a1 is None:
             self._axis1_name = "axis1"
-             
+
     @property
     def axes(self):
         return (
@@ -87,7 +87,7 @@ class Array2D(AxisApiMixin, GwpyArray2D):
     def _swapaxes_int(self, a, b):
         if {a, b} != {0, 1}:
             raise ValueError(f"Invalid axis indices: {a}, {b}")
-        
+
         # Access old indices before swap
         try:
              old_x = self.xindex
@@ -97,9 +97,9 @@ class Array2D(AxisApiMixin, GwpyArray2D):
              old_y = self.yindex
         except AttributeError:
              old_y = None
-             
-        new_data = GwpyArray2D.swapaxes(self, a, b) 
-        
+
+        new_data = GwpyArray2D.swapaxes(self, a, b)
+
         # Create fresh instance to ensure metadata correctness
         # Passing xindex/yindex explicitly swaps them
         return self.__class__(

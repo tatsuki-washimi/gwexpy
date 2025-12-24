@@ -44,7 +44,7 @@ def _trace_to_timeseries(trace, *, unit, timezone, epoch_override):
         if start_dt.tzinfo is None:
             start_dt = start_dt.replace(tzinfo=default_tz)
         gps_start = datetime_to_gps(start_dt)
-    
+
     ts = TimeSeries(
         trace.data.astype(float),
         t0=gps_start,
@@ -67,7 +67,7 @@ def _read_obspy_stream(format_name, source, *, pad=np.nan, gap="pad", **kwargs):
     gaps = stream.get_gaps()
     if gaps and gap == "raise":
         raise ValueError(f"Gaps detected in {format_name} data: {gaps}")
-    
+
     # Merge traces if necessary (handle gaps/overlaps)
     stream.merge(method=1, fill_value=pad)
     return stream
@@ -83,7 +83,7 @@ def _build_dict(stream, *, channels, unit, timezone, epoch):
             if tr.id in wanted or tr.stats.channel in wanted:
                 selected.append(tr)
         traces = selected
-    
+
     tsd = TimeSeriesDict()
     for tr in traces:
         ts = _trace_to_timeseries(tr, unit=unit, timezone=timezone, epoch_override=epoch)
@@ -95,7 +95,7 @@ def _build_dict(stream, *, channels, unit, timezone, epoch):
 def _read_timeseriesdict(format_name, source, *, channels=None, unit=None, epoch=None, timezone=None, pad=np.nan, gap="pad", **kwargs):
     stream = _read_obspy_stream(format_name, source, pad=pad, gap=gap, **kwargs)
     tsd = _build_dict(stream, channels=channels, unit=unit, timezone=timezone, epoch=epoch)
-    
+
     set_provenance(
         tsd,
         {
@@ -142,12 +142,12 @@ def _write_obspy(tsd, target, format_name, **kwargs):
     """Write TimeSeriesDict to file using ObsPy"""
     from ..interop.obspy_ import to_obspy_trace
     obspy = _import_obspy()
-    
+
     stream = obspy.Stream()
     for key, ts in tsd.items():
         tr = to_obspy_trace(ts)
         stream.append(tr)
-    
+
     stream.write(target, format=format_name, **kwargs)
 
 def write_miniseed(tsd, target, **kwargs):

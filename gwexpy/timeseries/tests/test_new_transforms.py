@@ -32,7 +32,7 @@ class TestTransforms:
         assert getattr(fs, "dct_norm", "") == "ortho"
         assert getattr(fs, "original_n", 0) == len(ts)
         assert fs.dt == ts.dt
-        
+
         # IDCT
         rec = fs.idct(type=2, norm="ortho")
         assert isinstance(rec, TimeSeries)
@@ -45,7 +45,7 @@ class TestTransforms:
         fs = ts.dct(window="hann")
         assert len(fs) == len(ts)
         # Cannot invert directly to original because of window
-        
+
     def test_dct_nondetrend(self, sine_wave):
         ts = sine_wave + 10 * sine_wave.unit # Offset
         fs = ts.dct(detrend=True)
@@ -62,18 +62,18 @@ class TestTransforms:
         assert getattr(ceps, "axis_type", "") == "quefrency"
         assert ceps.frequencies.unit == u.s
         assert len(ceps) == len(ts)
-        
+
     def test_cepstrum_complex(self, sine_wave):
         ceps = sine_wave.cepstrum(kind="complex")
         assert len(ceps) == len(sine_wave)
-        
+
     def test_cwt_ndarray(self, sine_wave):
         try:
              import pywt
         except ImportError:
              pytest.skip("pywt (PyWavelets) not found")
 
-        # Use scales expected by pywt. 
+        # Use scales expected by pywt.
         # For 'cmor1.5-1.0', central freq is approx 1?
         # Let's just run with some scales
         scales = np.arange(1, 31)
@@ -93,13 +93,13 @@ class TestTransforms:
         from gwpy.spectrogram import Spectrogram
         assert isinstance(spec, Spectrogram)
         assert spec.shape == (len(sine_wave), len(frequencies))
-        
+
         # Check signal presence around 50Hz
         # Spectrogram values are complex CWT coefs.
         # Check magnitude
         mag = np.abs(spec.value)
         # Average over time (axis 0 is time for Spectrogram)
-        mean_spec = mag.mean(axis=0) 
+        mean_spec = mag.mean(axis=0)
         peak_idx = np.argmax(mean_spec)
         peak_freq = spec.frequencies[peak_idx].value
         assert 45 < peak_freq < 55

@@ -12,7 +12,7 @@ from .imputation import impute
 __all__ = [
     "WhiteningModel",
     "whiten",
-    "StandardizationModel", 
+    "StandardizationModel",
     "standardize",
     "impute",
 ]

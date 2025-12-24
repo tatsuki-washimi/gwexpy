@@ -21,19 +21,19 @@ class Plot(BasePlot):
         from gwexpy.frequencyseries import FrequencySeriesMatrix
         from gwexpy.spectrogram import Spectrogram, SpectrogramMatrix
         from astropy import units as u
-        
+
         # 1. Inspect args to find SeriesMatrix objects
         matrices = [arg for arg in args if isinstance(arg, (SeriesMatrix, SpectrogramMatrix))]
         use_smart_layout = False
-        
+
         # subplots argument support (as alias/expansion of separate)
         subplots = kwargs.pop('subplots', None)
         separate = kwargs.pop('separate', None)
-        
+
         # Priority: explicit 'separate' then 'subplots'
         if separate is None:
             separate = subplots
-        
+
         subplots_orig = separate
 
         if separate == 'row':
@@ -70,39 +70,39 @@ class Plot(BasePlot):
             from gwexpy.timeseries import TimeSeriesMatrix
             has_time = any(isinstance(m, TimeSeriesMatrix) for m in matrices)
             has_freq = any(isinstance(m, FrequencySeriesMatrix) for m in matrices)
-            
+
             units_consistent = True
             for m in matrices:
                 consistent, _ = m._all_element_units_equivalent()
                 if not consistent:
                     units_consistent = False
                     break
-            
+
             if (has_time and has_freq) or not units_consistent:
                  kwargs.setdefault('sharex', False)
                  kwargs.setdefault('sharey', False)
             else:
                  kwargs.setdefault('sharex', True)
                  kwargs.setdefault('sharey', True)
-        
+
         # Detect if we are plotting Spectrograms
         is_spectrogram = any(isinstance(arg, Spectrogram) for arg in args)
         if is_spectrogram:
              kwargs.setdefault('yscale', 'log')
              kwargs.setdefault('xscale', 'linear')
-             # For spectrograms, sharing axes is often tricky with colorbars, 
+             # For spectrograms, sharing axes is often tricky with colorbars,
              # but we can try to enable it if requested or by default.
              kwargs.setdefault('sharex', True)
              # sharey=True is good for spectrograms to keep frequency axes aligned
              kwargs.setdefault('sharey', True)
-             
+
              # Adjust figsize for 2D plots which need more space for colorbars
              if 'geometry' in kwargs and 'figsize' not in kwargs:
                   nrow, ncol = kwargs['geometry']
                   fig_width = min(24, 8 * ncol)
                   fig_height = min(24, 5 * nrow)
                   kwargs['figsize'] = (fig_width, fig_height)
-        
+
         # Set default figsize if geometry is present (for matrices)
         if use_smart_layout and matrices:
             if 'figsize' not in kwargs and 'geometry' in kwargs:
@@ -111,9 +111,9 @@ class Plot(BasePlot):
                  # 6 inches width per col, 4 inches height per row is a good robust default
                  # But we clamp it to avoid massive figures that crash notebooks
                  fig_width = min(24, 6 * ncol)
-                 fig_height = min(24, 4 * nrow) 
+                 fig_height = min(24, 4 * nrow)
                  kwargs['figsize'] = (fig_width, fig_height)
-            
+
             # Use constrained_layout for better automatic spacing preventing overlap
             kwargs.setdefault('constrained_layout', True)
 
@@ -123,7 +123,7 @@ class Plot(BasePlot):
             # Default log scales for FrequencySeries
             if isinstance(matrices[0], FrequencySeriesMatrix):
                  ref = matrices[0]
-                 
+
                  # Y Scale Logic: Default to log unless unit is Phase/Angle/dB/GroupDelay
                  if 'yscale' not in kwargs:
                      try:
@@ -138,9 +138,9 @@ class Plot(BasePlot):
                                  r0 = ref.row_keys()[0]
                                  c0 = ref.col_keys()[0]
                                  unit = ref[r0, c0].unit
-                             
+
                              is_linear = False
-                             
+
                              # Check strict matches
                              if unit == u.deg or unit == u.rad or unit == u.dB:
                                  is_linear = True
@@ -149,15 +149,15 @@ class Plot(BasePlot):
                                  u_str = str(unit)
                                  if 'deg' in u_str or 'rad' in u_str or 'dB' in u_str:
                                      is_linear = True
-                             
+
                              # Check name for keywords
                              name_str = str(getattr(ref, 'name', '')).lower()
                              if 'delay' in name_str or 'phase' in name_str or 'angle' in name_str:
                                  is_linear = True
-                             
+
                              if not is_linear:
                                  kwargs['yscale'] = 'log'
-                     
+
                      except (TypeError, ValueError, AttributeError):
                          # If checking fails, default to log for FrequencySeries is standard behavior
                          kwargs['yscale'] = 'log'
@@ -174,16 +174,16 @@ class Plot(BasePlot):
         # 2. Expand args
         matrix_args = [arg for arg in args if isinstance(arg, (SeriesMatrix, SpectrogramMatrix))]
         other_args = [arg for arg in args if not isinstance(arg, (SeriesMatrix, SpectrogramMatrix))]
-        
+
         new_args = []
         use_overlay = False
-        
+
         if use_smart_layout and matrix_args:
              # Matrix Grid Expansion
              base_m = matrix_args[0]
              r_keys = base_m.row_keys()
              c_keys = base_m.col_keys()
-             
+
              # subplots_orig stores the original row/col hint if provided
              if subplots_orig == 'row':
                   # One axes per row, overlay columns
@@ -216,7 +216,7 @@ class Plot(BasePlot):
                                val.name = f"{r} / {c}"
                           new_args.append(val)
                   use_overlay = True
-             
+
              # Any additional matrices or single series will be overlayed manually
              extra_matrix_args = matrix_args[1:]
         else:
@@ -231,24 +231,24 @@ class Plot(BasePlot):
         # Separate figure-level and gwpy-specific args from artist args
         # because GWpy often passes kwargs to line plotting calls.
         layout_kwargs = {}
-        for k in ['separate', 'geometry', 'sharex', 'sharey', 'xscale', 'yscale', 
+        for k in ['separate', 'geometry', 'sharex', 'sharey', 'xscale', 'yscale',
                   'xlim', 'ylim', 'xlabel', 'ylabel', 'title', 'legend']:
             if k in kwargs:
                 layout_kwargs[k] = kwargs.pop(k)
-        
+
         # Figure constructor args
         fig_params = {}
-        for k in ['figsize', 'dpi', 'facecolor', 'edgecolor', 'linewidth', 
+        for k in ['figsize', 'dpi', 'facecolor', 'edgecolor', 'linewidth',
                   'frameon', 'subplotpars']:
             if k in kwargs:
                 fig_params[k] = kwargs.pop(k)
-        
+
         # Layout engines (often cause issues if passed to super when super passes them to plot())
         use_cl = kwargs.pop('constrained_layout', False)
         use_tl = kwargs.pop('tight_layout', False)
-        
+
         super().__init__(*new_args, **layout_kwargs, **fig_params, **kwargs)
-        
+
         # Apply layout engines manually to the figure
         if use_cl:
              try:
@@ -260,7 +260,7 @@ class Plot(BasePlot):
                  self.tight_layout()
              except (TypeError, ValueError, AttributeError):
                  pass
-        
+
         # Overlay additional matrices and other_args on separate grid if applicable
         if use_overlay:
              axes = self.axes
@@ -268,7 +268,7 @@ class Plot(BasePlot):
              r_keys = list(ref_matrix.row_keys())
              c_keys = list(ref_matrix.col_keys())
              ncol = len(c_keys)
-             
+
              # Helper to plot on axis
              def _plot_on_ax(ax, other):
                  if hasattr(other, 'times'):
@@ -286,11 +286,11 @@ class Plot(BasePlot):
                             ax_idx = j
                        else:
                             ax_idx = i * ncol + j
-                            
+
                        if ax_idx >= len(axes):
                             break
                        ax = axes[ax_idx]
-                       
+
                        # 1. Overlay extra matrices
                        for m in extra_matrix_args:
                             try:
@@ -298,22 +298,22 @@ class Plot(BasePlot):
                                  _plot_on_ax(ax, val)
                             except (TypeError, ValueError, AttributeError):
                                  pass
-                                 
+
                        # 2. Overlay single series (only once per axis)
                        if (subplots_orig == 'row' and j == 0) or \
                           (subplots_orig == 'col' and i == 0) or \
                           (subplots_orig not in ('row', 'col')):
                             for other in other_args:
                                  _plot_on_ax(ax, other)
-        
+
         # 4. Apply Metadata (Labels/Titles) for Matrix Layout
         if use_smart_layout and matrices:
              axes = self.axes
              ref_matrix = matrices[0]
-             
+
              row_names = ref_matrix.rows.names
              col_names = ref_matrix.cols.names
-             
+
              if 'geometry' in kwargs:
                  nrow, ncol = kwargs['geometry']
              else:
@@ -325,15 +325,15 @@ class Plot(BasePlot):
                  if idx < len(axes):
                      if name:
                          axes[idx].set_ylabel(str(name))
-            
+
              # Apply Col Labels (Title of first row)
              for j, name in enumerate(col_names):
                  idx = j
                  if idx < len(axes):
                      if name:
                          axes[idx].set_title(str(name))
-                         
-             # Extra polish: If constrained_layout is NOT used (e.g. user set it False), 
+
+             # Extra polish: If constrained_layout is NOT used (e.g. user set it False),
              # try tight_layout. But we defaulted it to True above.
              # self.tight_layout() # Not needed if constrained_layout=True
 
@@ -354,13 +354,13 @@ class Plot(BasePlot):
                   # Usually they are QuadMesh objects from pcolormesh
                   from matplotlib.collections import QuadMesh
                   from matplotlib.image import AxesImage
-                  
+
                   mappable = None
                   for child in ax.get_children():
                        if isinstance(child, (QuadMesh, AxesImage)):
                             mappable = child
                             break
-                  
+
                   if mappable:
                        try:
                             # We use self.add_colorbar which is a gwpy method

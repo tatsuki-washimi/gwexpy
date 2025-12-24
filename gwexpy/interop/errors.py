@@ -19,7 +19,7 @@ def raise_unimplemented_io(format_name, hint=None, refs=None, plugin_help=None):
         Instructions on how to add a plugin.
     """
     msg = [f"The reader for format '{format_name}' is currently unimplemented in gwexpy."]
-    
+
     if hint:
         msg.append(f"Hint: {hint}")
     if refs:
@@ -28,5 +28,5 @@ def raise_unimplemented_io(format_name, hint=None, refs=None, plugin_help=None):
         msg.append(f"To implement this, please check {plugin_help}")
     else:
         msg.append("Contributions to implement this format are welcome.")
-        
+
     raise IoNotImplementedError("\n".join(msg))

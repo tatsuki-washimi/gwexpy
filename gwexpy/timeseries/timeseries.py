@@ -43,14 +43,14 @@ class TimeSeries(
 
     """
     Extended TimeSeries with all gwexpy functionality.
-    
+
     This class combines functionality from multiple modules:
     - Core operations: is_regular, _check_regular, tail, crop, append, find_peaks
     - Spectral transforms: fft, psd, cwt, laplace, etc.
     - Signal processing: analytic_signal, mix_down, xcorr, etc.
     - Analysis: impute, standardize, rolling_*, etc.
     - Interoperability: to_pandas, to_torch, to_xarray, etc.
-    
+
     Inherits from gwpy.timeseries.TimeSeries for full compatibility.
     """
 
@@ -77,12 +77,12 @@ class TimeSeries(
             if "epoch" in kwargs and kwargs["epoch"] is not None:
                 kwargs["epoch"] = _coerce_t0_gps(kwargs["epoch"])
         return super().__new__(cls, data, *args, **kwargs)
-    
+
     # ===============================
-    # Override methods from _core.py 
+    # Override methods from _core.py
     # (These take precedence over _LegacyTimeSeries versions)
     # ===============================
-    
+
     @property
     def is_regular(self) -> bool:
         """Return True if this TimeSeries has a regular sample rate."""
@@ -92,7 +92,7 @@ class TimeSeries(
                 return True
             if hasattr(idx, "regular"):
                  return idx.regular
-            
+
             times_val = np.asarray(idx)
             if len(times_val) < 2:
                 return True
@@ -135,7 +135,7 @@ class TimeSeries(
              if isinstance(end, (np.ndarray, list)) and np.ndim(end) > 0:
                  end = end[0]
              end = float(end)
-            
+
         from gwpy.timeseries import TimeSeries as BaseTimeSeries
         return BaseTimeSeries.crop(self, start=start, end=end, copy=copy)
 
@@ -177,32 +177,32 @@ class TimeSeries(
     ) -> tuple["TimeSeries", dict[str, Any]]:
         """
         Find peaks in the TimeSeries.
-        
+
         Wraps `scipy.signal.find_peaks`.
         """
         from scipy.signal import find_peaks
-        
+
         val = self.value
-        
+
         def _to_val(x, unit=None):
              if hasattr(x, "value"):
                   if unit and hasattr(x, "to"):
                       return x.to(unit).value
                   return x.value
              return x
-             
+
         h = _to_val(height, self.unit)
         t = _to_val(threshold, self.unit)
         p = _to_val(prominence, self.unit)
-        
+
         dist = distance
         wid = width
-        
+
         if self.dt is not None:
              fs = self.sample_rate.to("Hz").value
              if hasattr(dist, "to"):
                   dist = int(dist.to("s").value * fs)
-             
+
              if np.iterable(wid):
                   new_wid = []
                   for w in wid:
@@ -213,7 +213,7 @@ class TimeSeries(
                   wid = tuple(new_wid) if isinstance(wid, tuple) else new_wid
              elif hasattr(wid, "to"):
                   wid = wid.to("s").value * fs
-                  
+
         peaks_indices, props = find_peaks(
              val,
              height=h,
@@ -225,13 +225,13 @@ class TimeSeries(
              rel_height=rel_height,
              plateau_size=plateau_size
         )
-        
+
         if len(peaks_indices) == 0:
              return self.__class__([], times=[], unit=self.unit, name=self.name, channel=self.channel), props
-             
+
         peak_times = self.times[peaks_indices]
         peak_vals = val[peaks_indices]
-        
+
         out = self.__class__(
              peak_vals,
              times=peak_times,

@@ -35,7 +35,7 @@ from .utils import *
 
 def _extract_axis_info(ts):
     """Extract axis information from a TimeSeries.
-    
+
     Returns a dict with:
     - 'dt': sample interval (Quantity or None)
     - 'regular': whether the series has regular sampling
@@ -52,11 +52,11 @@ def _extract_axis_info(ts):
 class TimeSeries(BaseTimeSeries):
     """
     Minimal TimeSeries base class.
-    
+
     This class provides the basic GWpy TimeSeries functionality.
     All extended gwexpy functionality is provided by Mixin classes
     that are combined in gwexpy.timeseries.timeseries.TimeSeries.
-    
+
     Note: This class should not be used directly. Use
     `from gwexpy.timeseries import TimeSeries` instead.
     """

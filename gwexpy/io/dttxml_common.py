@@ -4,129 +4,113 @@ Shared utilities for parsing dttxml (Diag GUI XML) files.
 
 from __future__ import annotations
 
-import os
-import json
-import xml.etree.ElementTree as ET
-from pathlib import Path
-from typing import Dict, Optional
-import warnings
-
 import numpy as np
+import warnings
+from gwexpy.timeseries import TimeSeries
+from gwexpy.frequencyseries import FrequencySeries
+
+try:
+    import dttxml
+    HAS_DTTXML = True
+except ImportError:
+    dttxml = None
+    HAS_DTTXML = False
 
 SUPPORTED_TS = {"TS"}
 SUPPORTED_FREQ = {"PSD", "ASD", "FFT"}
 SUPPORTED_MATRIX = {"TF", "STF", "CSD", "COH"}
 
-
-def _load_external_parser() -> Optional[object]:
-    # Security: This mechanism is primarily for internal legacy interop.
-    # It is disabled by default and requires explicit environment opt-in.
-    if os.environ.get("GWEXPY_ALLOW_DTTXML_EXEC", "0") != "1":
-        return None
-
-    # Limit search path to a fixed location relative to the package
-    project_root = Path(__file__).resolve().parents[2]
-    candidate = project_root / "dttxml_source.txt"
-    
-    if candidate.exists():
-        warnings.warn(
-            f"Loading external parser from {candidate} via exec(). "
-            "Only use this with trusted source files.",
-            UserWarning
-        )
-        try:
-            ns: Dict[str, object] = {}
-            # Use a more restricted compile if possible, but here we just need exec
-            code = candidate.read_text()
-            exec(compile(code, str(candidate), "exec"), ns, ns)
-            return ns.get("dtt_read")
-        except Exception as e:
-            warnings.warn(f"Failed to load external parser: {e}")
-            return None
-    return None
-
-
-def _normalize_entry(val):
-    if isinstance(val, dict):
-        data = np.asarray(val.get("data") or val.get("y") or val.get("value") or [])
-        dt = val.get("dt") or val.get("delta_t")
-        df = val.get("df") or val.get("delta_f")
-        freqs = np.asarray(val.get("frequencies") or val.get("freq") or [])
-        epoch = val.get("epoch") or val.get("t0") or val.get("start")
-        unit = val.get("unit")
-        return {"data": data, "dt": dt, "df": df, "frequencies": freqs, "epoch": epoch, "unit": unit}
-    if isinstance(val, (list, tuple, np.ndarray)):
-        return {
-            "data": np.asarray(val),
-            "dt": None,
-            "df": None,
-            "frequencies": np.array([]),
-            "epoch": None,
-            "unit": None,
-        }
-    return {"data": np.asarray([]), "dt": None, "df": None, "frequencies": np.array([]), "epoch": None, "unit": None}
-
-
 def load_dttxml_products(source):
     """
-    Load products from a dttxml file into a normalized mapping.
+    Load products from a dttxml file into a normalized mapping using dttxml library.
     """
-    parser = _load_external_parser()
-    if parser:
-        try:
-            parsed = parser(source)
-            if isinstance(parsed, dict) and "results" in parsed:
-                parsed = parsed["results"]
-            normalized: Dict[str, dict] = {}
-            if isinstance(parsed, dict):
-                for prod, entries in parsed.items():
-                    payload = {}
-                    if isinstance(entries, dict):
-                        for key, val in entries.items():
-                            payload[key] = _normalize_entry(val)
-                    normalized[str(prod).upper()] = payload
-            if normalized:
-                return normalized
-        except (json.JSONDecodeError, KeyError, TypeError, ValueError):
-            pass
+    if dttxml is None:
+        raise ImportError("dttxml package is required to read DTT XML files.")
 
-    tree = ET.parse(source)
-    root = tree.getroot()
-    normalized: Dict[str, dict] = {}
-    for result in root.findall(".//result"):
-        prod = (result.get("type") or result.get("name") or "").upper()
-        payload = {}
-        for ch in result.findall("channel"):
-            name = ch.get("name") or ch.get("id") or f"ch{len(payload)}"
-            unit = ch.get("unit")
-            dt = ch.get("dt") or ch.get("sample") or ch.get("delta_t")
-            epoch = ch.get("epoch")
-            data = np.fromstring((ch.findtext("data") or ""), sep=",")
-            payload[name] = {
+    try:
+        results = dttxml.DiagAccess(source).results
+    except Exception as e:
+        warnings.warn(f"Failed to parse dttxml file: {e}")
+        return {}
+
+    normalized = {}
+
+    # Helper to safe get
+    def get_attr(obj, name, default=None):
+        return getattr(obj, name, default)
+
+    # Helper to create GWEXPY object
+    def create_series(data, x_axis=None, dt=None, t0=0, unit=None, name=None, type='time'):
+        try:
+            if type == 'time':
+                if dt is None and x_axis is not None and len(x_axis) > 1:
+                     dt = x_axis[1] - x_axis[0]
+                return TimeSeries(data, dt=dt, t0=t0, name=name, unit=unit)
+            elif type == 'freq':
+                # FrequencySeries expects df and f0.
+                if x_axis is not None and len(x_axis) > 1:
+                    df = x_axis[1] - x_axis[0]
+                    f0 = x_axis[0]
+                    # Check uniformity? For now assume yes or accepted approx
+                    return FrequencySeries(data, df=df, f0=f0, name=name, unit=unit)
+                return FrequencySeries(data, df=1, f0=0, name=name, unit=unit) # Fallback
+        except Exception as e:
+            warnings.warn(f"Failed to create gwexpy object for {name}: {e}")
+            return {
                 "data": data,
-                "dt": float(dt) if dt else None,
-                "df": None,
-                "frequencies": np.array([]),
-                "epoch": epoch,
-                "unit": unit,
+                "x_axis": x_axis if x_axis is not None else (np.arange(len(data))*dt if dt else None),
+                "dt": dt,
+                "t0": t0,
+                "unit": unit
             }
-        for pair in result.findall("pair"):
-            row = pair.get("row") or pair.get("from")
-            col = pair.get("col") or pair.get("to")
-            unit = pair.get("unit")
-            df = pair.get("df")
-            epoch = pair.get("epoch")
-            freqs = np.fromstring((pair.findtext("frequencies") or ""), sep=",")
-            data = np.fromstring((pair.findtext("data") or ""), sep=",")
-            payload[(row, col)] = {
-                "data": data,
-                "df": float(df) if df else None,
-                "frequencies": freqs,
-                "dt": None,
-                "epoch": epoch,
-                "unit": unit,
-            }
-        if payload:
-            normalized[prod] = payload
+
+    # 1. Time Series (TS)
+    if hasattr(results, 'TS'):
+        ts_dict = {}
+        for ch, info in results.TS.items():
+            ts_dict[ch] = create_series(info.timeseries, dt=info.dt, t0=info.gps_second, name=ch, type='time')
+        normalized['TS'] = ts_dict
+
+    # 2. PSD (actually ASD)
+    if hasattr(results, 'PSD'):
+        asd_dict = {}
+        for ch, info in results.PSD.items():
+            unit = get_attr(info, 'BUnit', None)
+            asd_dict[ch] = create_series(info.PSD[0], x_axis=info.FHz, t0=info.gps_second, name=ch, unit=unit, type='freq')
+        normalized['ASD'] = asd_dict
+        normalized['PSD'] = asd_dict
+
+    # 3. Coherence (COH)
+    if hasattr(results, 'COH'):
+        coh_dict = {}
+        for chA, info in results.COH.items():
+            for i, chB in enumerate(info.channelB):
+                key = (chB, chA)
+                # Coherence is dimensionless
+                coh_dict[key] = create_series(info.coherence[i], x_axis=info.FHz, t0=info.gps_second, name=str(key), unit='dimensionless', type='freq')
+        normalized['COH'] = coh_dict
+
+    # 4. Transfer Function (TF)
+    tf_source = getattr(results, 'TF', None)
+    if tf_source is None and hasattr(results, '_mydict') and 'TF' in results._mydict:
+         tf_source = results._mydict['TF']
+    if tf_source:
+        tf_dict = {}
+        for chA, info in tf_source.items():
+            for i, chB in enumerate(info.channelB):
+                key = (chB, chA)
+                tf_dict[key] = create_series(info.xfer[i], x_axis=info.FHz, t0=info.gps_second, name=str(key), type='freq')
+        normalized['TF'] = tf_dict
+
+    # 5. CSD
+    if hasattr(results, 'CSD'):
+        csd_dict = {}
+        for chA, info in results.CSD.items():
+            for i, chB in enumerate(info.channelB):
+                key = (chB, chA)
+                csd_dict[key] = create_series(info.CSD[i], x_axis=info.FHz, t0=info.gps_second, name=str(key), type='freq')
+        normalized['CSD'] = csd_dict
+
     return normalized
+
 

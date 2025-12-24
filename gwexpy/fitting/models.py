@@ -43,24 +43,24 @@ def make_pol_func(n):
     f(x) = p0 + p1*x + ... + pn*x^n
     """
     param_names = [f'p{i}' for i in range(n + 1)]
-    
+
     def pol_func(x, *args, **kwargs):
         # Handle both positional and keyword arguments
         if kwargs:
             p_vals = [kwargs[name] for name in param_names]
         else:
             p_vals = args
-            
+
         res = 0
         for i, p in enumerate(p_vals):
             res += p * x**i
         return res
-    
+
     # Construct the function signature manually so iminuit can detect parameter names
     parameters = [Parameter('x', Parameter.POSITIONAL_OR_KEYWORD)]
     for name in param_names:
         parameters.append(Parameter(name, Parameter.POSITIONAL_OR_KEYWORD))
-    
+
     pol_func.__signature__ = signature(lambda: None).replace(parameters=parameters)
     pol_func.__doc__ = f"Polynomial of degree {n}: p0 + p1*x + ... + p{n}*x^{n}"
     return pol_func
@@ -87,14 +87,14 @@ def get_model(name):
     """
     if not isinstance(name, str):
         return None
-    
+
     key = name.lower()
     if key in MODELS:
         return MODELS[key]
-    
+
     # Handle polN for N >= 10 if needed, though usually not recommended
     if key.startswith('pol') and key[3:].isdigit():
         n = int(key[3:])
         return make_pol_func(n)
-        
+
     raise ValueError(f"Unknown model name: {name}. Available: {list(MODELS.keys())}")

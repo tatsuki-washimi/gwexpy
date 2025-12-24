@@ -19,6 +19,12 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest", "pytest-cov", "ruff", "mypy"]
+interop = [
+  "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "polars",
+  "xarray", "h5py", "netCDF4", "obspy", "mne", "neo",
+  "control", "cupy",
+  "librosa", "pydub", "torchaudio"
+]
 torch = ["torch"]
 tensorflow = ["tensorflow"]
 jax = ["jax", "jaxlib"]
@@ -40,10 +46,6 @@ analysis = [
     "obspy"           # ノイズスペクトル解析
 ]
 stats = ["statsmodels", "scikit-learn", "bottleneck"]
-interop = [
-    "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "polars",
-    "xarray", "h5py", "netCDF4", "obspy", "mne", "neo"
-]
 
 all = [
     "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "polars",

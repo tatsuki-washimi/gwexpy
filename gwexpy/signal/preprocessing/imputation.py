@@ -8,11 +8,11 @@ Missing value imputation algorithms for signal processing.
 import numpy as np
 
 
-def impute(values, *, method="interpolate", limit=None, times=None, 
+def impute(values, *, method="interpolate", limit=None, times=None,
            max_gap=None, fill_value=np.nan):
     """
     Impute missing values in an array.
-    
+
     Parameters
     ----------
     values : ndarray
@@ -29,7 +29,7 @@ def impute(values, *, method="interpolate", limit=None, times=None,
         Maximum gap duration to fill. If a gap is larger than this, it is left as NaN.
     fill_value : float, optional
         Value to use for fill operations that don't have a source value.
-        
+
     Returns
     -------
     imputed : ndarray
@@ -37,7 +37,7 @@ def impute(values, *, method="interpolate", limit=None, times=None,
     """
     val = np.asarray(values).copy()
     nans = np.isnan(val)
-    
+
     if not np.any(nans):
         return val
 
@@ -46,7 +46,7 @@ def impute(values, *, method="interpolate", limit=None, times=None,
         x = np.asarray(times)
     else:
         x = np.arange(len(val))
-        
+
     valid = ~nans
     gap_threshold = max_gap if max_gap is not None else None
     has_gap_constraint = gap_threshold is not None
@@ -56,31 +56,31 @@ def impute(values, *, method="interpolate", limit=None, times=None,
         right_val = np.nan if has_gap_constraint else None
 
         if np.iscomplexobj(val):
-            real_part = np.interp(x[nans], x[valid], val[valid].real, 
+            real_part = np.interp(x[nans], x[valid], val[valid].real,
                                   left=left_val, right=right_val)
-            imag_part = np.interp(x[nans], x[valid], val[valid].imag, 
+            imag_part = np.interp(x[nans], x[valid], val[valid].imag,
                                   left=left_val, right=right_val)
             val[nans] = real_part + 1j * imag_part
         else:
-            val[nans] = np.interp(x[nans], x[valid], val[valid], 
+            val[nans] = np.interp(x[nans], x[valid], val[valid],
                                   left=left_val, right=right_val)
-             
+
     elif method == "ffill":
         from pandas import Series
         s = Series(val)
         val = s.ffill(limit=limit).values
-        
+
     elif method == "bfill":
         from pandas import Series
         s = Series(val)
         val = s.bfill(limit=limit).values
-        
+
     elif method == "mean":
         val[nans] = np.nanmean(val)
-        
+
     elif method == "median":
         val[nans] = np.nanmedian(val)
-        
+
     else:
         raise ValueError(f"Unknown impute method '{method}'")
 
@@ -91,7 +91,7 @@ def impute(values, *, method="interpolate", limit=None, times=None,
             valid_times = x[valid_indices]
             diffs = np.diff(valid_times)
             big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
-            
+
             for idx in big_gaps:
                 t_start = valid_times[idx]
                 t_end = valid_times[idx + 1]

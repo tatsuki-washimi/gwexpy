@@ -23,7 +23,7 @@ from .preprocess import (
     impute_timeseries, standardize_matrix, whiten_matrix
 )
 from .decomposition import (
-    pca_fit, pca_transform, pca_inverse_transform, 
+    pca_fit, pca_transform, pca_inverse_transform,
     ica_fit, ica_transform, ica_inverse_transform
 )
 
@@ -214,7 +214,7 @@ class TimeSeriesMatrix(SeriesMatrix):
             start = u.Quantity(0, self.xunit or new_dt.unit or u.s)
 
         self.xindex = Index.define(start, new_dt, length)
-        
+
     @property
     def is_regular(self) -> bool:
         """Return True if this TimeSeriesMatrix has a regular sample rate."""
@@ -237,13 +237,13 @@ class TimeSeriesMatrix(SeriesMatrix):
                 f"{method} requires a regular sample rate (constant dt). "
                 "Consider using .asfreq() or .interpolate() to regularized the matrix first."
             )
-        
+
     # --- Preprocessing & Decomposition ---
 
     def resample(self, rate: Any, *args: Any, **kwargs: Any) -> "TimeSeriesMatrix":
         """
         Resample the TimeSeriesMatrix.
-        
+
         If 'rate' is a time-string (e.g. '1s') or time Quantity, performs time-bin aggregation.
         Otherwise, performs signal processing resampling.
         """
@@ -253,14 +253,14 @@ class TimeSeriesMatrix(SeriesMatrix):
         elif isinstance(rate, u.Quantity):
             if rate.unit.physical_type == 'time':
                 is_time_bin = True
-        
+
         if is_time_bin:
             # We need to apply _resample_time_bin (which is currently logic-only in TimeSeries)
             # Actually, TimeSeries._resample_time_bin is implemented using bincount which works on arrays.
             # However, it expects a 1D 'self'.
             # We can either genericize _resample_time_bin or loop.
             # For matrices, looping is safe but genericizing to work with any ndarray (axis=-1) is better.
-            
+
             # For now, let's use the robust mapping behavior of _apply_timeseries_method
             # but handle the rate logic.
             return self._apply_timeseries_method("resample", rate, *args, **kwargs)
@@ -268,7 +268,7 @@ class TimeSeriesMatrix(SeriesMatrix):
             # Signal processing resampling (GWpy)
             self._check_regular("Signal processing resample")
             return super().resample(rate, *args, **kwargs)
-    
+
     def impute(
         self,
         *,
@@ -283,7 +283,7 @@ class TimeSeriesMatrix(SeriesMatrix):
         # TimeSeriesMatrix.value is (channels, 1, time) or (rows, cols, time)
         # We operate along 'time' (axis=-1) or specific axis.
         new_val = impute_timeseries(self.value, method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs)
-        
+
         new_mat = self.copy()
         new_mat.value[:] = new_val
         return new_mat
@@ -379,7 +379,7 @@ class TimeSeriesMatrix(SeriesMatrix):
         """Rolling maximum along the time axis."""
         from gwexpy.timeseries.rolling import rolling_max
         return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
-        
+
     def crop(self, start: Any = None, end: Any = None, copy: bool = False) -> "TimeSeriesMatrix":
         """
         Crop this matrix to the given GPS start and end times.
@@ -406,27 +406,27 @@ class TimeSeriesMatrix(SeriesMatrix):
         names = getattr(self, "channel_names", None)
         if names is None:
              names = [str(i) for i in range(self.shape[0])]
-             
+
         # Create dict
         # Assuming we can extract columns as TimeSeries
         d = TimeSeriesDict()
-        
+
         # Flatten structure? Or iterate only rows?
         # If shape is (channels, 1, time), iterating axis 0 covers channels.
         # If shape is (1, channels, time), need logic.
         # We assume flat list of channels for dict.
         # Flatten non-time dimensions.
         flat_val = self.value.reshape(-1, self.shape[-1])
-        
+
         # Use channel_names if length matches
         names = getattr(self, "channel_names", None)
         if names is None or len(names) != flat_val.shape[0]:
              names = [str(i) for i in range(flat_val.shape[0])]
-        
+
         for i, name in enumerate(names):
              # Extract time series
              ts_data = flat_val[i]
-             
+
              ts = self.series_class(ts_data, t0=self.t0, dt=self.dt, name=name)
              d[name] = ts
         return d
@@ -444,7 +444,7 @@ class TimeSeriesMatrix(SeriesMatrix):
     def pca_transform(self, pca_res: Any, **kwargs: Any) -> Any:
         """Transform using PCA."""
         return pca_transform(pca_res, self, **kwargs)
-        
+
     def pca_inverse_transform(self, pca_res: Any, scores: Any) -> Any:
         """Inverse transform PCA scores."""
         return pca_inverse_transform(pca_res, scores)
@@ -483,7 +483,7 @@ class TimeSeriesMatrix(SeriesMatrix):
     def ica_inverse_transform(self, ica_res: Any, sources: Any) -> Any:
         """Inverse transform ICA sources."""
         return ica_inverse_transform(ica_res, sources)
-        
+
     def ica(self, return_model: bool = False, **kwargs: Any) -> Any:
         """Fit and transform ICA."""
         res = self.ica_fit(**kwargs)
@@ -670,7 +670,7 @@ class TimeSeriesMatrix(SeriesMatrix):
             # Minimal meta update in-place?
             # Rebuilding metadata matrix is complex in-place.
             return self
-        
+
         # New Matrix
         # Reconstruct correct class
         new_mat = self.__class__(
@@ -687,13 +687,13 @@ class TimeSeriesMatrix(SeriesMatrix):
         """Convert to neo.AnalogSignal."""
         from gwexpy.interop import to_neo_analogsignal
         return to_neo_analogsignal(self, units=units)
-        
+
     @classmethod
     def from_neo_analogsignal(cls: type["TimeSeriesMatrix"], sig: Any) -> Any:
         """Create from neo.AnalogSignal."""
         from gwexpy.interop import from_neo_analogsignal
         return from_neo_analogsignal(cls, sig)
-        
+
     def to_mne_rawarray(self, info: Any = None) -> Any:
         """Convert to mne.io.RawArray."""
         from gwexpy.interop import to_mne_rawarray
@@ -705,7 +705,7 @@ class TimeSeriesMatrix(SeriesMatrix):
         # Maybe to_mne is better on Dict. Matrix can use to_dict().
         # Implementing direct method for convenience.
         tsd = self.to_dict()
-        return to_mne_rawarray(tsd, info=info) 
+        return to_mne_rawarray(tsd, info=info)
 
     def to_mne_raw(self, info: Any = None) -> Any:
         """Alias for :meth:`to_mne_rawarray`."""
@@ -1034,7 +1034,7 @@ class TimeSeriesMatrix(SeriesMatrix):
     def lock_in(self, **kwargs: Any) -> Any:
         """
         Apply lock-in amplification element-wise.
-        
+
         Returns
         -------
         TimeSeriesMatrix or tuple of TimeSeriesMatrix
@@ -1043,7 +1043,7 @@ class TimeSeriesMatrix(SeriesMatrix):
         """
         output = kwargs.get("output", "amp_phase")
         expect_tuple = output in ["amp_phase", "iq"]
-        
+
         N, M, _ = self.shape
         if N == 0 or M == 0:
              if expect_tuple:
@@ -1052,10 +1052,10 @@ class TimeSeriesMatrix(SeriesMatrix):
 
         vals1 = [[None for _ in range(M)] for _ in range(N)]
         vals2 = [[None for _ in range(M)] for _ in range(N)] if expect_tuple else None
-        
+
         meta1 = np.empty((N, M), dtype=object)
         meta2 = np.empty((N, M), dtype=object) if expect_tuple else None
-        
+
         ax_infos = []
         method_name = "lock_in"
         dtype1 = None
@@ -1065,17 +1065,17 @@ class TimeSeriesMatrix(SeriesMatrix):
             for j in range(M):
                 ts = self[i, j]
                 res = ts.lock_in(**kwargs)
-                
+
                 if expect_tuple:
                     r1, r2 = res
                     vals1[i][j] = np.asarray(r1.value)
                     meta1[i, j] = MetaData(unit=str(r1.unit), name=r1.name, channel=r1.channel)
                     dtype1 = np.result_type(dtype1, r1.value.dtype) if dtype1 else r1.value.dtype
-                    
+
                     vals2[i][j] = np.asarray(r2.value)
                     meta2[i, j] = MetaData(unit=str(r2.unit), name=r2.name, channel=r2.channel)
                     dtype2 = np.result_type(dtype2, r2.value.dtype) if dtype2 else r2.value.dtype
-                    
+
                     ax_infos.append(_extract_axis_info(r1))
                 else:
                     # Single return
@@ -1087,7 +1087,7 @@ class TimeSeriesMatrix(SeriesMatrix):
 
         # Validate common axis
         common_axis, axis_len = _validate_common_axis(ax_infos, method_name)
-        
+
         def _build(v, d, m):
             out_shape = (N, M, axis_len)
             out = np.empty(out_shape, dtype=d)
@@ -1101,7 +1101,7 @@ class TimeSeriesMatrix(SeriesMatrix):
             )
             new_mat.meta = MetaDataMatrix(m)
             return new_mat
-            
+
         m1 = _build(vals1, dtype1, meta1)
         if expect_tuple:
             m2 = _build(vals2, dtype2, meta2)

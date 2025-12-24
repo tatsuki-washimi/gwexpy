@@ -12,7 +12,7 @@ def coerce_1d_quantity(index, unit=None) -> Quantity:
         index = Quantity(index, unit=unit)
     elif unit is not None:
         index = index.to(unit)
-    
+
     if index.ndim != 1:
         if index.ndim == 0:
             index = index.reshape(1)
@@ -37,8 +37,8 @@ class AxisDescriptor:
         if not isinstance(other, AxisDescriptor):
             return NotImplemented
         try:
-            return (self.name == other.name and 
-                    self.index.shape == other.index.shape and 
+            return (self.name == other.name and
+                    self.index.shape == other.index.shape and
                     np.all(self.index == other.index))
         except (AttributeError, TypeError, ValueError):
             return False
@@ -76,7 +76,7 @@ class AxisDescriptor:
         # If not regular, we can still use abs diffargmin.
         idx = np.abs(self.index.value - val).argmin()
         return idx
-    
+
     def iloc_slice(self, s: slice):
         """Convert a coordinate slice (start, stop, step) to an integer slice."""
         start_idx = None
@@ -89,16 +89,16 @@ class AxisDescriptor:
             # searchsorted works if sorted
             # If we assume sorted (ascending):
             start_idx = np.searchsorted(self.index.value, val, side='left')
-        
+
         # Handling stop
         if s.stop is not None:
             val = self.to_value(s.stop)
-            stop_idx = np.searchsorted(self.index.value, val, side='left') # 'right' might be more 'python slice' style? 
+            stop_idx = np.searchsorted(self.index.value, val, side='left') # 'right' might be more 'python slice' style?
             # Typically python slice includes start, excludes stop.
             # searchsorted('left') gives index i such that a[i-1] < v <= a[i].
             # If we want to exclude the value itself if it equals, left is good?
             # Actually, for `sel`, users expect range [start, stop).
-        
+
         # Handling step (coordinate step -> integer step?)
         # This is tricky for non-regular. If regular, we can compute it.
         if s.step is not None:

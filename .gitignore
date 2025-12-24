@@ -46,3 +46,17 @@ typings/
 .env
 env/
 venv/
+
+# Large test data files
+*.xml
+!**/schemas/*.xml
+!**/config/*.xml
+
+# Notebook backups
+*.ipynb.bak
+
+# ruff cache
+.ruff_cache/
+
+# GUI reference
+gwexpy/gui/dtt/
