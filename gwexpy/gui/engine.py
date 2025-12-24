@@ -83,6 +83,13 @@ class Engine:
                 results.append(None)
                 continue
 
+            # Apply Gain (Calibration)
+            gain = trace.get('gain', 1.0)
+            if gain != 1.0:
+                ts_a = ts_a * gain
+                if ts_b is not None:
+                    ts_b = ts_b * gain
+
             try:
                 # Calculation logic
                 # NOTE: DTT's "Power Spectrum" is actually ASD.

@@ -173,8 +173,8 @@ def read_frequencyseriesmatrix_dttxml(
 
 
 # -- registration
-io_registry.register_reader("dttxml", FrequencySeriesDict, read_frequencyseriesdict_dttxml)
-io_registry.register_reader("dttxml", FrequencySeriesMatrix, read_frequencyseriesmatrix_dttxml)
+io_registry.register_reader("dttxml", FrequencySeriesDict, read_frequencyseriesdict_dttxml, force=True)
+io_registry.register_reader("dttxml", FrequencySeriesMatrix, read_frequencyseriesmatrix_dttxml, force=True)
 
 
 def _adapt_frequencyseries(*args, **kwargs):
@@ -184,4 +184,7 @@ def _adapt_frequencyseries(*args, **kwargs):
     return fsd[next(iter(fsd.keys()))]
 
 
-io_registry.register_reader("dttxml", FrequencySeries, _adapt_frequencyseries)
+io_registry.register_reader("dttxml", FrequencySeries, _adapt_frequencyseries, force=True)
+
+io_registry.register_identifier("dttxml", FrequencySeries, lambda *args, **kwargs: str(args[1]).endswith(".xml"))
+io_registry.register_identifier("dttxml", FrequencySeriesDict, lambda *args, **kwargs: str(args[1]).endswith(".xml"))

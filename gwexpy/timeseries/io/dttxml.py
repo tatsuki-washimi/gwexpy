@@ -98,6 +98,9 @@ def read_timeseriesmatrix_dttxml(*args, **kwargs) -> TimeSeriesMatrix:
 
 
 # -- registration
-io_registry.register_reader("dttxml", TimeSeriesDict, read_timeseriesdict_dttxml)
-io_registry.register_reader("dttxml", TimeSeries, read_timeseries_dttxml)
-io_registry.register_reader("dttxml", TimeSeriesMatrix, read_timeseriesmatrix_dttxml)
+io_registry.register_reader("dttxml", TimeSeriesDict, read_timeseriesdict_dttxml, force=True)
+io_registry.register_reader("dttxml", TimeSeries, read_timeseries_dttxml, force=True)
+io_registry.register_reader("dttxml", TimeSeriesMatrix, read_timeseriesmatrix_dttxml, force=True)
+
+io_registry.register_identifier("dttxml", TimeSeries, lambda *args, **kwargs: str(args[1]).endswith(".xml"))
+io_registry.register_identifier("dttxml", TimeSeriesDict, lambda *args, **kwargs: str(args[1]).endswith(".xml"))

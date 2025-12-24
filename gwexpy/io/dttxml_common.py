@@ -114,43 +114,7 @@ def load_dttxml_products(source):
     return normalized
 
 
-# =============================
-# I/O Registry Registration
-# =============================
-try:
-    from gwpy.io import registry
-    from gwexpy.timeseries import TimeSeries
-    from gwexpy.frequencyseries import FrequencySeries
-
-    def _read_dttxml_timeseries(source, *args, **kwargs):
-        products = load_dttxml_products(source)
-        if 'TS' in products:
-            ts_dict = products['TS']
-            if len(ts_dict) == 1:
-                return list(ts_dict.values())[0]
-            from gwexpy.timeseries.collections import TimeSeriesDict
-            return TimeSeriesDict(ts_dict)
-        raise ValueError("No TimeSeries products found in DTT XML file.")
-
-    def _read_dttxml_frequencyseries(source, *args, **kwargs):
-        products = load_dttxml_products(source)
-        # Prioritize ASD/PSD, then TF, COH, CSD
-        for key in ['ASD', 'PSD', 'TF', 'COH', 'CSD']:
-            if key in products:
-                prod_dict = products[key]
-                if len(prod_dict) == 1:
-                    return list(prod_dict.values())[0]
-                # Returning a dict for FrequencySeries might be tricky as gwpy expects one FS
-                # But we can return list or dict if the caller handles it.
-                return prod_dict
-        raise ValueError("No compatible FrequencySeries products found in DTT XML file.")
-
-    registry.register_reader('dttxml', TimeSeries, _read_dttxml_timeseries)
-    registry.register_reader('dttxml', FrequencySeries, _read_dttxml_frequencyseries)
-    registry.register_identifier('dttxml', TimeSeries, lambda *args, **kwargs: args[1].endswith('.xml'))
-    registry.register_identifier('dttxml', FrequencySeries, lambda *args, **kwargs: args[1].endswith('.xml'))
-
-except ImportError:
-    pass
+# Handle I/O registration in specialized modules (timeseries.io and frequencyseries.io)
+# to avoid duplicate registration errors.
 
 
