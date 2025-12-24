@@ -174,11 +174,19 @@ class FrequencySeries(BaseFrequencySeries):
         )
 
     # --- Interop helpers ---
+    def filterba(self, *args, **kwargs):
+        """Apply a [b, a] filter to this FrequencySeries.
+        Inherited from gwpy.
+        """
+        return super().filterba(*args, **kwargs)
+
     def to_pandas(self, index: str = "frequency", *, name: Optional[str] = None, copy: bool = False) -> Any:
+        """Convert to pandas.Series."""
         return to_pandas_frequencyseries(self, index=index, name=name, copy=copy)
 
     @classmethod
     def from_pandas(cls: type["FrequencySeries"], series: Any, **kwargs: Any) -> Any:
+        """Create FrequencySeries from pandas.Series."""
         return from_pandas_frequencyseries(cls, series, **kwargs)
 
     def to_polars(self, name: Optional[str] = None, as_dataframe: bool = True, index_column: str = "frequency") -> Any:
@@ -229,10 +237,12 @@ class FrequencySeries(BaseFrequencySeries):
         return from_root(cls, obj, return_error=return_error, **kwargs)
 
     def to_xarray(self, freq_coord: str = "Hz") -> Any:
+        """Convert to xarray.DataArray."""
         return to_xarray_frequencyseries(self, freq_coord=freq_coord)
 
     @classmethod
     def from_xarray(cls: type["FrequencySeries"], da: Any, **kwargs: Any) -> Any:
+        """Create FrequencySeries from xarray.DataArray."""
         return from_xarray_frequencyseries(cls, da, **kwargs)
 
     def to_hdf5_dataset(
@@ -244,6 +254,7 @@ class FrequencySeries(BaseFrequencySeries):
         compression: Optional[str] = None,
         compression_opts: Any = None,
     ) -> Any:
+        """Write to HDF5 dataset within a group."""
         return to_hdf5_frequencyseries(
             self,
             group,
@@ -255,6 +266,7 @@ class FrequencySeries(BaseFrequencySeries):
 
     @classmethod
     def from_hdf5_dataset(cls: type["FrequencySeries"], group: Any, path: str) -> Any:
+        """Read FrequencySeries from HDF5 dataset."""
         return from_hdf5_frequencyseries(cls, group, path)
 
     # --- Time Calculus ---
@@ -914,6 +926,23 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
         figsize: Optional[Any] = None,
         **kwargs: Any,
     ):
+        """Plot all series in the dict.
+
+        Parameters
+        ----------
+        label : str, optional
+            'key' (default) to use dict keys as labels, 'name' to use series names.
+        method : str, optional
+            'plot' (default) or 'scatter'.
+        figsize : tuple, optional
+            Figure size.
+        **kwargs
+            Passed to gwpy.plot.Plot.
+
+        Returns
+        -------
+        plot : gwpy.plot.Plot
+        """
         from gwpy.plot import Plot
 
         kwargs = dict(kwargs)
@@ -947,6 +976,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
         return plot
 
     def plot_all(self, *args: Any, **kwargs: Any):
+        """Alias for plot(). Plots all series in the dict."""
         return self.plot(*args, **kwargs)
 
 
@@ -1066,6 +1096,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
         return new_dict
 
     def angle(self, *args, **kwargs) -> "FrequencySeriesDict":
+        """Alias for phase(). Returns a new FrequencySeriesDict."""
         return self.phase(*args, **kwargs)
 
     def degree(self, *args, **kwargs) -> "FrequencySeriesDict":
@@ -1226,6 +1257,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
         from gwexpy.interop import to_tmultigraph
         return to_tmultigraph(self, name=name)
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
+        """Write dict to file (HDF5, ROOT, etc.)."""
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
              from gwexpy.interop.root_ import write_root_file
@@ -1289,11 +1321,13 @@ class FrequencySeriesBaseList(list[_FS]):
         return self.__class__(*(item.copy() for item in self))
 
     def plot(self, **kwargs: Any):
+        """Plot all series. Delegates to gwpy.plot.Plot."""
         from gwpy.plot import Plot
 
         return Plot(self, **kwargs)
 
     def plot_all(self, *args: Any, **kwargs: Any):
+        """Alias for plot(). Plots all series."""
         return self.plot(*args, **kwargs)
 
 
@@ -1414,6 +1448,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
         return new_list
 
     def angle(self, *args, **kwargs) -> "FrequencySeriesList":
+        """Alias for phase(). Returns a new FrequencySeriesList."""
         return self.phase(*args, **kwargs)
 
     def degree(self, *args, **kwargs) -> "FrequencySeriesList":
@@ -1579,6 +1614,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
         from gwexpy.interop import to_tmultigraph
         return to_tmultigraph(self, name=name)
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
+        """Write list to file (HDF5, ROOT, etc.)."""
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
              from gwexpy.interop.root_ import write_root_file

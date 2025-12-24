@@ -52,16 +52,20 @@ class Transform:
     supports_inverse = False
 
     def fit(self, x):
+        """Fit the transform to the data. Returns self."""
         return self
 
     def transform(self, x):
+        """Apply the transform to data. Must be implemented by subclasses."""
         raise NotImplementedError
 
     def fit_transform(self, x):
+        """Fit and transform in one step."""
         self.fit(x)
         return self.transform(x)
 
     def inverse_transform(self, y):
+        """Reverse the transform. Not all transforms support this."""
         raise NotImplementedError("inverse_transform is not implemented for this transform")
 
 
@@ -71,6 +75,13 @@ class Pipeline:
     """
 
     def __init__(self, steps: Sequence[Tuple[str, Transform]]):
+        """Initialize pipeline with named transform steps.
+
+        Parameters
+        ----------
+        steps : list of (name, Transform) tuples
+            Sequence of transforms to apply.
+        """
         self.steps: List[Tuple[str, Transform]] = []
         for name, step in steps:
             if not isinstance(step, Transform):
@@ -79,6 +90,7 @@ class Pipeline:
         self._is_fitted = False
 
     def fit(self, x):
+        """Fit all transforms in sequence."""
         data = x
         for _, step in self.steps:
             data = step.fit_transform(data)
@@ -86,16 +98,27 @@ class Pipeline:
         return self
 
     def transform(self, x):
+        """Apply all transforms in sequence."""
         data = x
         for _, step in self.steps:
             data = step.transform(data)
         return data
 
     def fit_transform(self, x):
+        """Fit and transform in one step."""
         self.fit(x)
         return self.transform(x)
 
     def inverse_transform(self, y, *, strict: bool = True):
+        """Apply inverse transforms in reverse order.
+
+        Parameters
+        ----------
+        y : data
+            Transformed data.
+        strict : bool, optional
+            If True, raise error if any step doesn't support inverse.
+        """
         data = y
         for name, step in reversed(self.steps):
             if getattr(step, "supports_inverse", False):

@@ -117,3 +117,15 @@ class Array2D(AxisApiMixin, GwpyArray2D):
              return self._swapaxes_int(0, 1)
         else:
              raise ValueError(f"Invalid transpose axes for 2D: {axes}")
+
+    def imshow(self, **kwargs):
+        """Plot this array using matplotlib.axes.Axes.imshow.
+        Inherited from gwpy.
+        """
+        return super().imshow(**kwargs)
+
+    def pcolormesh(self, **kwargs):
+        """Plot this array using matplotlib.axes.Axes.pcolormesh.
+        Inherited from gwpy.
+        """
+        return super().pcolormesh(**kwargs)

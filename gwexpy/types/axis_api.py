@@ -11,13 +11,46 @@ class AxisApiMixin(ABC):
     @property
     @abstractmethod
     def axes(self) -> Tuple[AxisDescriptor, ...]:
+        """Tuple of AxisDescriptor objects for each dimension.
+
+        Returns
+        -------
+        tuple of AxisDescriptor
+            Each descriptor contains the axis name and index values.
+        """
         pass
 
     @property
     def axis_names(self) -> Tuple[str, ...]:
+        """Names of all axes as a tuple of strings.
+
+        Returns
+        -------
+        tuple of str
+            The name of each axis in order.
+        """
         return tuple(ax.name for ax in self.axes)
 
     def axis(self, key: Union[int, str]) -> AxisDescriptor:
+        """Get an axis descriptor by index or name.
+
+        Parameters
+        ----------
+        key : int or str
+            Axis index (0-based) or name.
+
+        Returns
+        -------
+        AxisDescriptor
+            The requested axis descriptor.
+
+        Raises
+        ------
+        KeyError
+            If axis name not found.
+        TypeError
+            If key is not int or str.
+        """
         if isinstance(key, int):
             return self.axes[key]
         elif isinstance(key, str):
@@ -44,6 +77,19 @@ class AxisApiMixin(ABC):
             raise TypeError(f"Axis key must be int or str, got {type(key)}")
 
     def rename_axes(self, mapping: Dict[str, str], *, inplace=False):
+        """Rename axes using a mapping of old names to new names.
+
+        Parameters
+        ----------
+        mapping : dict
+            Mapping from old axis names to new names.
+        inplace : bool, optional
+            If True, modify in place. Otherwise return a copy.
+
+        Returns
+        -------
+        self or copy
+        """
         if not inplace:
             new_obj = self.copy()
             new_obj.rename_axes(mapping, inplace=True)
@@ -71,6 +117,20 @@ class AxisApiMixin(ABC):
         pass
 
     def isel(self, indexers=None, **kwargs):
+        """Select by integer indices along specified axes.
+
+        Parameters
+        ----------
+        indexers : dict, optional
+            Mapping of axis name/index to integer index or slice.
+        **kwargs
+            Additional indexers as keyword arguments.
+
+        Returns
+        -------
+        subset
+            Sliced array.
+        """
         if indexers is None:
             indexers = {}
         indexers = {**indexers, **kwargs}
@@ -85,6 +145,22 @@ class AxisApiMixin(ABC):
         return self._isel_tuple(tuple(slices))
 
     def sel(self, indexers=None, *, method="nearest", **kwargs):
+        """Select by coordinate values along specified axes.
+
+        Parameters
+        ----------
+        indexers : dict, optional
+            Mapping of axis name to coordinate value or slice.
+        method : str, optional
+            Selection method: 'nearest' (default).
+        **kwargs
+            Additional indexers as keyword arguments.
+
+        Returns
+        -------
+        subset
+            Sliced array at nearest coordinate values.
+        """
         if indexers is None:
             indexers = {}
         indexers = {**indexers, **kwargs}
