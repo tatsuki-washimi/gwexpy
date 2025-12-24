@@ -17,6 +17,7 @@ import scipy.signal
 
 from gwpy.frequencyseries import FrequencySeries as BaseFrequencySeries
 from gwexpy.types.seriesmatrix import SeriesMatrix
+from gwexpy.interop._optional import require_optional
 from gwexpy.interop import (
     to_pandas_frequencyseries,
     from_pandas_frequencyseries,
@@ -25,6 +26,7 @@ from gwexpy.interop import (
     to_hdf5_frequencyseries,
     from_hdf5_frequencyseries,
 )
+from gwexpy.fitting.mixin import FittingMixin
 
 try:
     from gwpy.types.index import SeriesType  # pragma: no cover - optional in gwpy
@@ -37,7 +39,7 @@ except ImportError:
 # FrequencySeries
 # =============================
 
-class FrequencySeries(BaseFrequencySeries):
+class FrequencySeries(FittingMixin, BaseFrequencySeries):
     """Light wrapper of gwpy's FrequencySeries for compatibility and future extension."""
 
     @property
@@ -190,9 +192,8 @@ class FrequencySeries(BaseFrequencySeries):
         return from_pandas_frequencyseries(cls, series, **kwargs)
 
     def to_polars(self, name: Optional[str] = None, as_dataframe: bool = True, index_column: str = "frequency") -> Any:
-        """
-        Convert FrequencySeries to polars object.
-        """
+        # Polars check is inside the called functions usually, but we can check here
+        require_optional("polars")
         if as_dataframe:
              from gwexpy.interop import to_polars_frequencyseries
              return to_polars_frequencyseries(self, index_column=index_column)
@@ -205,7 +206,7 @@ class FrequencySeries(BaseFrequencySeries):
         """
         Create FrequencySeries from polars object.
         """
-        import polars as pl
+        pl = require_optional("polars")
         if isinstance(data, pl.DataFrame):
              # We reuse from_polars_dataframe but might need specific frequency logic
              from gwexpy.interop import from_polars_dataframe
@@ -356,28 +357,9 @@ class FrequencySeries(BaseFrequencySeries):
         )
 
     def idct(self, type: int = 2, norm: str = "ortho", *, n: Optional[int] = None) -> Any:
-        """
-        Compute the Inverse Discrete Cosine Transform (IDCT).
-
-        Parameters
-        ----------
-        type : `int`, optional
-            DCT type (1-4).
-        norm : `str`, optional
-            Normalization mode.
-        n : `int`, optional
-            Length of the output time series. If not specified, tries to use metadata `original_n`.
-
-        Returns
-        -------
-        out : `TimeSeries`
-            The TimeSeries.
-        """
+        # ... (docstring) ...
         self._check_regular("idct")
-        try:
-             import scipy.fft
-        except ImportError:
-             raise ImportError("scipy is required for idct")
+        scipy_fft = require_optional("scipy.fft")
 
         # Check metadata if available
         meta_n = getattr(self, "original_n", None)
@@ -386,7 +368,7 @@ class FrequencySeries(BaseFrequencySeries):
         target_n = n if n is not None else meta_n
 
         # IDCT
-        out_data = scipy.fft.idct(self.value, type=type, norm=norm, n=target_n)
+        out_data = scipy_fft.idct(self.value, type=type, norm=norm, n=target_n)
 
         # Determine dt
         if meta_dt is not None:
@@ -790,7 +772,6 @@ class FrequencySeries(BaseFrequencySeries):
     @classmethod
     def from_cupy(cls: type["FrequencySeries"], array: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
         """Create FrequencySeries from CuPy array."""
-        from gwexpy.interop.cupy_ import require_optional
         cp = require_optional("cupy")
         data = cp.asnumpy(array)
         return cls(data, frequencies=frequencies, unit=unit)

@@ -19,6 +19,10 @@ from .seriesmatrix_validation import (
 
 from .seriesmatrix_ops import SeriesMatrixOps
 
+class PerformanceWarning(RuntimeWarning):
+    """Warning raised when an operation falls back to a slower implementation."""
+    pass
+
 class SeriesMatrix(SeriesMatrixOps, np.ndarray):
     def __new__(cls,
                 data: Any = None,
@@ -307,17 +311,24 @@ class SeriesMatrix(SeriesMatrixOps, np.ndarray):
                 all_uniform = False
 
         if not all_uniform:
-            result_meta = np.empty((N, M), dtype=object)
-            for i in range(N):
-                for j in range(M):
-                    meta_args = [m[i, j] for m in meta_matrices]
-                    try:
-                        if bool_result or meta_passthrough:
-                            result_meta[i, j] = meta_args[0]
-                        else:
-                            result_meta[i, j] = ufunc(*meta_args, **ufunc_kwargs)
-                    except Exception as e:
-                        raise type(e)(f"MetaData ufunc error at ({i},{j}): {e}")
+            try:
+                if bool_result or meta_passthrough:
+                    # In these cases, we typically take the first operand's metadata
+                    result_meta = meta_matrices[0].copy()
+                else:
+                    # Leverage MetaDataMatrix's vectorized ufunc support
+                    result_meta = ufunc(*meta_matrices, **ufunc_kwargs)
+            except Exception as e:
+                 # Fallback to loop if vectorized meta-ufunc fails
+                 warnings.warn(f"MetaData vectorized ufunc failed; falling back to loop. Error: {e}", PerformanceWarning)
+                 result_meta = np.empty((N, M), dtype=object)
+                 for i in range(N):
+                     for j in range(M):
+                         meta_args = [m[i, j] for m in meta_matrices]
+                         if bool_result or meta_passthrough:
+                             result_meta[i, j] = meta_args[0]
+                         else:
+                             result_meta[i, j] = ufunc(*meta_args, **ufunc_kwargs)
 
         result_meta_matrix = MetaDataMatrix(result_meta)
         result_units = result_meta_matrix.units

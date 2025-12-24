@@ -1,6 +1,9 @@
 
 import numpy as np
 from gwpy.timeseries import TimeSeries
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Engine:
     def __init__(self):
@@ -133,7 +136,7 @@ class Engine:
 
                         stride = length
                         if ovlap > 0:
-                            print(f"Warning: Spectrogram overlap disabled (stride force set to fftlength={length}s) to avoid potential error.")
+                            logger.warning(f"Spectrogram overlap disabled (stride force set to fftlength={length}s) to avoid potential error.")
 
                         spec = ts_a.spectrogram(stride, **fft_kwargs)
 
@@ -150,7 +153,7 @@ class Engine:
                                 mask = (freqs >= start_f) & (freqs <= stop_f)
                                 spec = spec[:, mask]
                         except Exception as e:
-                            print(f"Spectrogram crop failed: {e}")
+                            logger.error(f"Spectrogram crop failed: {e}")
                             # Fallback: return full
 
                         # Return results
@@ -165,7 +168,7 @@ class Engine:
                     results.append(None)
 
             except Exception as e:
-                print(f"Calculation Error Trace {i}: {e}")
+                logger.error(f"Calculation Error Trace {i}: {e}")
                 results.append(None)
 
         return results

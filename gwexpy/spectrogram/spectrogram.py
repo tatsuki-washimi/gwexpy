@@ -11,16 +11,9 @@ from astropy import units as u
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 from gwexpy.plot import Plot
 
-# Optional dependencies
-try:
-    import torch
-except ImportError:
-    torch = None
+from gwexpy.interop._optional import require_optional
 
-try:
-    import cupy
-except ImportError:
-    cupy = None
+# Optional dependencies handled lazily
 
 # We can reuse SeriesMatrix if we want, but SpectrogramMatrix has different dimensions (Time, Freq)
 
@@ -411,7 +404,7 @@ class SpectrogramList(UserList):
         format = kwargs.get("format", "hdf5")
         new_list = self.__class__()
         if format == "hdf5":
-             import h5py
+             h5py = require_optional("h5py")
              with h5py.File(source, "r") as f:
                   keys = sorted(f.keys(), key=lambda x: int(x) if x.isdigit() else x)
                   for k in keys:
@@ -558,14 +551,12 @@ class SpectrogramList(UserList):
 
     def to_torch(self, device=None, dtype=None):
         """Convert each spectrogram to PyTorch tensor. Returns a list."""
-        if torch is None:
-             raise ImportError("torch not installed")
+        torch = require_optional("torch")
         return [torch.tensor(s.value, device=device, dtype=dtype) for s in self]
 
     def to_cupy(self, dtype=None):
         """Convert each spectrogram to CuPy array. Returns a list."""
-        if cupy is None:
-             raise ImportError("cupy not installed")
+        cupy = require_optional("cupy")
         return [cupy.array(s.value, dtype=dtype) for s in self]
 
 class SpectrogramDict(UserDict):
@@ -609,7 +600,7 @@ class SpectrogramDict(UserDict):
         """Read dictionary from HDF5 file keys -> dict keys."""
         format = kwargs.get("format", "hdf5")
         if format == "hdf5":
-             import h5py
+             h5py = require_optional("h5py")
              with h5py.File(source, "r") as f:
                   for k in f.keys():
                        try:
@@ -629,7 +620,7 @@ class SpectrogramDict(UserDict):
              from gwexpy.interop import write_root_file
              return write_root_file(self, target, **kwargs)
         if format == "hdf5":
-             import h5py
+             h5py = require_optional("h5py")
              with h5py.File(target, mode) as f:
                   for k, s in self.items():
                        grp = f.create_group(str(k))
