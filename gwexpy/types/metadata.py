@@ -33,7 +33,7 @@ class MetaData(dict):
             self["channel"] = Channel(self.get("channel"))
         except (ValueError, TypeError):
             self["channel"] = Channel("")
-        
+
         raw_unit = kwargs.get("unit", u.dimensionless_unscaled)
         try:
             if isinstance(raw_unit, u.UnitBase):
@@ -68,7 +68,7 @@ class MetaData(dict):
         if isinstance(obj, MetaData):
             return obj
         return MetaData(name=self.name, channel=self.channel, unit=get_unit(obj))
-            
+
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
         if method != '__call__':
             return NotImplemented
@@ -154,7 +154,7 @@ class MetaData(dict):
     def __truediv__(self, other):    return np.divide(self, other)
     def __rtruediv__(self, other):   return np.divide(other, self)
     def __pow__(self, exponent):     return np.power(self, exponent)
-            
+
     def __repr__(self):
         keys = ['name', 'unit', 'channel']
         summary = ", ".join(f"{k}={self.get(k, '')}" for k in keys)
@@ -275,7 +275,7 @@ class MetaDataDict(OrderedDict):
             raise ImportError("pandas is required for read()")
         df = pd.read_csv(path, index_col=0, **kwargs)
         return cls(df)
-        
+
     @classmethod
     def from_series(cls, collection):
         if isinstance(collection, (list, tuple)):
@@ -298,7 +298,7 @@ class MetaDataDict(OrderedDict):
             for key in self:
                 result[key] = op(self[key], other)
             return result
-    
+
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
         if method != '__call__':
             return NotImplemented
@@ -329,7 +329,7 @@ class MetaDataDict(OrderedDict):
     def __rtruediv__(self, other): return self.__truediv__(other)
 
 
-    
+
     def __str__(self):
         return self.to_dataframe().to_string()
 
@@ -399,7 +399,7 @@ class MetaDataMatrix(np.ndarray):
         self.row_keys = list(row_keys) if row_keys is not None else [f"row{i}" for i in range(N)]
         self.col_keys = list(col_keys) if col_keys is not None else [f"col{j}" for j in range(M)]
 
-    
+
     def fill(self, value):
         """
         Fill the matrix with a single MetaData value.
@@ -423,12 +423,12 @@ class MetaDataMatrix(np.ndarray):
     def names(self):
         flat = [m.name for m in self.flat]
         return np.asarray(flat, dtype=object).reshape(self.shape)
-        
+
     @property
     def units(self):
         flat = [m.unit for m in self.flat]
         return np.asarray(flat, dtype=object).reshape(self.shape)
-        
+
     @property
     def channels(self):
         flat = [m.channel for m in self.flat]
@@ -480,7 +480,7 @@ class MetaDataMatrix(np.ndarray):
 
         def _to_array(inp):
             if isinstance(inp, MetaDataMatrix):
-                return np.asarray(inp)            
+                return np.asarray(inp)
             if isinstance(inp, (MetaData, u.Quantity, u.UnitBase, int, float, complex)):
                 arr = np.empty(shape, dtype=object)
                 arr.flat[:] = [inp] * arr.size
@@ -492,11 +492,11 @@ class MetaDataMatrix(np.ndarray):
             raise ValueError(f"Shape mismatch among operands: {[a.shape for a in arr_inputs]}")
 
         ufunc_kwargs = {k: v for k, v in kwargs.items() if k not in ('out', 'where')}
-        
+
         apply_elem = np.vectorize(lambda *args: ufunc(*args, **ufunc_kwargs), otypes=[object])
         result = apply_elem(*arr_inputs)  # shape (N, M)
         return MetaDataMatrix(result)
-    
+
     def __mul__(self, other):      return np.multiply(self, other)
     def __rmul__(self, other):     return np.multiply(other, self)
     def __add__(self, other):      return np.add(self, other)
@@ -522,7 +522,7 @@ class MetaDataMatrix(np.ndarray):
 
 def get_unit(obj):
     if isinstance(obj, (int, float, complex, np.number)):
-        return u.dimensionless_unscaled   
+        return u.dimensionless_unscaled
     elif isinstance(obj, u.UnitBase):
         return obj
     elif isinstance(obj, (u.Quantity, Array, Series, TimeSeries, FrequencySeries, MetaData) ):

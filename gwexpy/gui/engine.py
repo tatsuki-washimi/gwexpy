@@ -1,0 +1,171 @@
+
+import numpy as np
+from gwpy.timeseries import TimeSeries
+
+class Engine:
+    def __init__(self):
+        self.params = {}
+        # Stores accumulation buffers or state if needed
+        self.state = {}
+
+    def configure(self, params):
+        """
+        Update local parameters from the GUI.
+        params expected keys:
+          - 'start_freq'
+          - 'stop_freq'
+          - 'bw' (Resolution Bandwidth)
+          - 'averages'
+          - 'window'
+          - 'overlap'
+          - 'avg_type'
+        """
+        self.params = params
+
+    def _get_fft_kwargs(self, sample_rate):
+        """
+        Calculate gwpy-compatible FFT arguments from DTT parameters.
+        DTT defines Resolution BW = fs / N_fft (roughly, window dependent).
+        gwpy .asd() takes 'fftlength' in seconds.
+        fftlength = 1 / bw
+        """
+        bw = self.params.get('bw', 1.0)
+        window = self.params.get('window', 'hanning')
+        overlap = self.params.get('overlap', 0.5) # Fractional
+
+        if window == 'uniform': window = 'boxcar'
+        if window == 'hanning': window = 'hann'
+
+        if bw <= 0: bw = 1.0
+        fftlength = 1.0 / bw
+
+        return {
+            'fftlength': fftlength,
+            'overlap': overlap * fftlength, # gwpy takes overlap in seconds
+            'window': window
+        }
+
+    def compute(self, data_map, graph_type, active_traces):
+        """
+        Perform spectral calculations.
+
+        data_map: { channel_name: TimeSeries }
+        graph_type: str (e.g., "Amplitude Spectral Density", "Coherence")
+        active_traces: list of dicts [{'active': bool, 'ch_a': str, 'ch_b': str}, ...]
+        """
+        results = []
+
+        if not data_map:
+            return results
+
+        # Assuming all TimeSeries have same sample_rate for now
+        sample_rate = list(data_map.values())[0].sample_rate.value
+        fft_kwargs = self._get_fft_kwargs(sample_rate)
+
+        start_f = self.params.get('start_freq', 0)
+        stop_f = self.params.get('stop_freq', 1000)
+
+        for i, trace in enumerate(active_traces):
+            if not trace['active']:
+                results.append(None)
+                continue
+
+            ch_a = trace['ch_a']
+            ch_b = trace['ch_b']
+
+            ts_a = data_map.get(ch_a)
+            ts_b = data_map.get(ch_b)
+
+            if ts_a is None:
+                results.append(None)
+                continue
+
+            try:
+                # Calculation logic
+                # NOTE: DTT's "Power Spectrum" is actually ASD.
+                if graph_type == "Amplitude Spectral Density" or graph_type == "Power Spectral Density":
+                    # We compute ASD regardless of the label, as requested.
+                    spec = ts_a.asd(**fft_kwargs)
+
+                elif graph_type == "Coherence":
+                    if ts_b is None: spec = None
+                    else: spec = ts_a.coherence(ts_b, **fft_kwargs)
+
+                elif graph_type == "Squared Coherence":
+                     if ts_b is None: spec = None
+                     else:
+                        coh = ts_a.coherence(ts_b, **fft_kwargs)
+                        spec = coh ** 2
+
+                elif graph_type == "Transfer Function":
+                    if ts_b is None: spec = None
+                    else: spec = ts_b.transfer_function(ts_a, **fft_kwargs) # TF from A to B usually
+
+                elif graph_type == "Cross Spectral Density":
+                    if ts_b is None: spec = None
+                    else: spec = ts_a.csd(ts_b, **fft_kwargs)
+
+                # Time Series
+                elif graph_type == "Time Series":
+                    # Just return time vs amplitude
+                    results.append((ts_a.times.value, ts_a.value))
+                    continue
+
+                elif graph_type == "Spectrogram":
+                    if ts_a is None:
+                        spec = None
+                    else:
+                        # stride: segment length in seconds.
+                        # Use fftlength for segment length, and overlap for overlapping.
+                        # stride in gwpy.spectrogram is strict separation between start of consecutive FFTs?
+                        # gwpy spectrogram(stride, fftlength=..., overlap=...)
+                        # If overlap is given, stride is calculated? No...
+                        # "stride" argument: "step size between FFTs in seconds".
+                        # If we want overlap: step = length - overlap_sec
+
+                        length = fft_kwargs['fftlength']
+                        ovlap = fft_kwargs.pop('overlap', 0) # Remove overlap from kwargs to avoid conflict/confusion
+
+                        # Calculate stride (step size)
+                        # The error "fftlength cannot be greater than stride" suggests that overlapping spectrograms
+                        # might not be supported easily or arguments are mismatched in this version.
+                        # For now, to ensure it works, we enforce stride >= fftlength (i.e., no overlap).
+
+                        stride = length
+                        if ovlap > 0:
+                            print(f"Warning: Spectrogram overlap disabled (stride force set to fftlength={length}s) to avoid potential error.")
+
+                        spec = ts_a.spectrogram(stride, **fft_kwargs)
+
+                        # Crop Frequency (Y-axis)
+                        # Spectrogram.crop() acts on Time (X-axis).
+                        # To crop Frequency, we interpret it as array slicing.
+                        try:
+                            # Try crop_frequencies if available (some versions)
+                            if hasattr(spec, 'crop_frequencies'):
+                                spec = spec.crop_frequencies(start_f, stop_f)
+                            else:
+                                # Manual slicing
+                                freqs = spec.frequencies.value
+                                mask = (freqs >= start_f) & (freqs <= stop_f)
+                                spec = spec[:, mask]
+                        except Exception as e:
+                            print(f"Spectrogram crop failed: {e}")
+                            # Fallback: return full
+
+                        # Return results
+                        results.append({'type': 'spectrogram', 'times': spec.times.value, 'freqs': spec.frequencies.value, 'value': spec.value})
+                    continue
+
+                # Crop Frequency
+                if spec is not None:
+                    spec = spec.crop(start_f, stop_f)
+                    results.append((spec.frequencies.value, spec.value))
+                else:
+                    results.append(None)
+
+            except Exception as e:
+                print(f"Calculation Error Trace {i}: {e}")
+                results.append(None)
+
+        return results

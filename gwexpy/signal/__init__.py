@@ -20,7 +20,7 @@ def __getattr__(name):
 def __dir__():
     local_names = {
         "preprocessing",
-        "WhiteningModel", 
+        "WhiteningModel",
         "whiten",
         "StandardizationModel",
         "standardize",

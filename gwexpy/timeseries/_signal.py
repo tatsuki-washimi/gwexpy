@@ -37,7 +37,7 @@ def _extract_axis_info(ts):
 class TimeSeriesSignalMixin:
     """
     Mixin class providing signal processing methods for TimeSeries.
-    
+
     This mixin is designed to be combined with TimeSeriesCore to create
     the full TimeSeries class.
     """
@@ -56,24 +56,24 @@ class TimeSeriesSignalMixin:
     ) -> "TimeSeriesSignalMixin":
         """
         Compute the analytic signal (Hilbert transform) of the TimeSeries.
-        
+
         If input is real, returns complex analytic signal z(t) = x(t) + i H[x(t)].
         If input is complex, returns a copy (casting to complex if needed).
         """
         # 1. Complex check
         if np.iscomplexobj(self.value):
             return self.astype(complex, copy=copy)
-            
+
         # 2. Check regular
         info = _extract_axis_info(self)
         if not info['regular']:
              raise ValueError("analytic_signal requires regular sampling (dt). Use asfreq/resample first.")
-        
+
         # 3. Handle NaN
         if nan_policy == 'raise':
             if not np.isfinite(self.value).all():
                 raise ValueError("Input contains NaNs or infinite values.")
-        
+
         # 4. Padding
         data = self.value
         n_pad = 0
@@ -82,21 +82,21 @@ class TimeSeriesSignalMixin:
                   n_pad = int(round(pad.to(self.times.unit).value / self.dt.to(self.times.unit).value))
              else:
                   n_pad = int(pad)
-                  
+
              if n_pad > 0:
                   if pad_mode == 'constant':
                        kwargs = {'constant_values': pad_value}
                   else:
                        kwargs = {}
                   data = np.pad(data, n_pad, mode=pad_mode, **kwargs)
-                  
+
         # 5. Hilbert
         analytic = scipy.signal.hilbert(data)
-        
+
         # 6. Crop if padded
         if n_pad > 0:
              analytic = analytic[n_pad:-n_pad]
-             
+
         # 7. Wrap
         return self.__class__(
              analytic,
@@ -106,11 +106,11 @@ class TimeSeriesSignalMixin:
              channel=self.channel,
              name=self.name
         )
-        
+
     def hilbert(self, *args: Any, **kwargs: Any) -> "TimeSeriesSignalMixin":
         """Alias for analytic_signal."""
         return self.analytic_signal(*args, **kwargs)
-        
+
     def envelope(self, *args: Any, **kwargs: Any) -> "TimeSeriesSignalMixin":
         """Compute the envelope of the TimeSeries."""
         analytic = self.analytic_signal(*args, **kwargs)
@@ -119,18 +119,18 @@ class TimeSeriesSignalMixin:
     # ===============================
     # Phase and Frequency Methods
     # ===============================
-        
+
     def instantaneous_phase(self, deg: bool = False, unwrap: bool = False, **kwargs: Any) -> "TimeSeriesSignalMixin":
         """
         Compute the instantaneous phase of the TimeSeries.
         """
         analytic = self.analytic_signal(**kwargs)
         phi = np.angle(analytic.value, deg=deg)
-        
+
         if unwrap:
              period = 360.0 if deg else 2 * np.pi
              phi = np.unwrap(phi, period=period)
-             
+
         out = self.__class__(
              phi,
              t0=self.t0,
@@ -138,15 +138,15 @@ class TimeSeriesSignalMixin:
              channel=self.channel,
              name=self.name
         )
-        
+
         # Override unit
         out.override_unit('deg' if deg else 'rad')
         return out
-        
+
     def unwrap_phase(self, deg: bool = False, **kwargs: Any) -> "TimeSeriesSignalMixin":
         """Alias for instantaneous_phase(unwrap=True)."""
         return self.instantaneous_phase(deg=deg, unwrap=True, **kwargs)
-        
+
     def instantaneous_frequency(self, unwrap: bool = True, smooth: Any = None, **kwargs: Any) -> "TimeSeriesSignalMixin":
         """
         Compute the instantaneous frequency of the TimeSeries.
@@ -155,35 +155,35 @@ class TimeSeriesSignalMixin:
         # Force radians for calculation
         phi_ts = self.instantaneous_phase(deg=False, unwrap=unwrap, **kwargs)
         phi = phi_ts.value
-        
+
         dt_s = self.dt.to('s').value
-        
+
         # gradient
         dphi_dt = np.gradient(phi, dt_s)
-        
+
         # f = (dphi/dt) / 2pi
         f_inst = dphi_dt / (2 * np.pi)
-        
+
         # Smoothing
         if smooth is not None:
              if isinstance(smooth, str):
                   smooth = u.Quantity(smooth)
-                  
+
              if isinstance(smooth, u.Quantity):
                   w_s = smooth.to('s').value
                   w_samples = int(round(w_s / dt_s))
              else:
                   w_samples = int(smooth)
-             
+
              if w_samples > 1:
                   window = np.ones(w_samples) / w_samples
                   f_pad = np.pad(f_inst, w_samples//2, mode='edge')
                   f_smooth = np.convolve(f_pad, window, mode='valid')
-                  
+
                   if len(f_smooth) > len(f_inst):
                        f_smooth = f_smooth[:len(f_inst)]
                   f_inst = f_smooth
-        
+
         out = self.__class__(
              f_inst,
              t0=self.t0,
@@ -212,28 +212,28 @@ class TimeSeriesSignalMixin:
         """Internal helper to build phase series in radians."""
         if (f0 is None and phase is None) or (f0 is not None and phase is not None):
              raise ValueError("Exactly one of 'f0' or 'phase' must be provided.")
-             
+
         if phase is not None:
              if len(phase) != self.size:
                   raise ValueError(f"Length of phase ({len(phase)}) does not match TimeSeries ({self.size})")
              return np.asarray(phase, dtype=float) + phase0
-             
+
         # Build from model
         if isinstance(f0, u.Quantity):
              f0 = f0.to('Hz').value
         else:
              f0 = float(f0)
-             
+
         if isinstance(fdot, u.Quantity):
              fdot = fdot.to('Hz/s').value
         else:
              fdot = float(fdot)
-             
+
         if isinstance(fddot, u.Quantity):
              fddot = float(fddot.to('Hz/s^2').value)
         else:
              fddot = float(fddot)
-             
+
         # Determine t_rel
         has_dt = False
         dt_val = None
@@ -256,19 +256,19 @@ class TimeSeriesSignalMixin:
                   raise ValueError("TimeSeries requires times or dt to build phase model.")
              times_val = self.times.value if hasattr(self.times, 'value') else self.times
              times_val = np.asarray(times_val, dtype=float)
-             
+
              if phase_epoch is None:
                   t_rel = times_val - times_val[0]
              else:
                   t_rel = times_val - float(phase_epoch)
-                  
+
         # Calculate phase
         cycles = f0 * t_rel
         if fdot != 0.0:
              cycles += 0.5 * fdot * t_rel**2
         if fddot != 0.0:
              cycles += (1.0/6.0) * fddot * t_rel**3
-             
+
         return 2 * np.pi * cycles + phase0
 
     def mix_down(
@@ -295,20 +295,20 @@ class TimeSeriesSignalMixin:
             phase0=phase0,
             prefer_dt=True
         )
-                  
+
         # Mix
         y = self.value * np.exp(-1j * phase_series)
-        
+
         if singlesided:
              y *= 2.0
-             
+
         # Prepare constructor args
         kwargs = {
              'unit': self.unit,
              'channel': self.channel,
              'name': self.name
         }
-        
+
         # Check regularity for constructor
         try:
              if self.dt is not None:
@@ -319,7 +319,7 @@ class TimeSeriesSignalMixin:
                   kwargs['sample_rate'] = self.sample_rate
         except (AttributeError, ValueError):
              kwargs['times'] = self.times
-             
+
         out = self.__class__(y, **kwargs)
         return out
 
@@ -349,16 +349,16 @@ class TimeSeriesSignalMixin:
             phase0=phase0,
             singlesided=singlesided
         )
-        
+
         if lowpass is not None:
              if z.sample_rate is None:
                   raise ValueError("lowpass requires defined sample rate.")
              lp_kwargs = lowpass_kwargs or {}
              z = z.lowpass(lowpass, **lp_kwargs)
-             
+
         if output_rate is not None:
              z = z.resample(output_rate)
-             
+
         return z
 
     def lock_in(
@@ -379,7 +379,7 @@ class TimeSeriesSignalMixin:
         Perform lock-in amplification (demodulation + averaging).
         """
         self._check_regular("lock_in")
-             
+
         phase_series = self._build_phase_series(
             phase=phase,
             f0=f0,
@@ -389,9 +389,9 @@ class TimeSeriesSignalMixin:
             phase0=phase0,
             prefer_dt=True
         )
-        
+
         outc = self.heterodyne(phase_series, stride=stride, singlesided=singlesided)
-              
+
         if output == 'complex':
              return outc
         elif output == 'amp_phase':

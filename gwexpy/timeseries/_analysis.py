@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class TimeSeriesAnalysisMixin:
     """
     Mixin class providing statistical analysis methods for TimeSeries.
-    
+
     This mixin is designed to be combined with TimeSeriesCore to create
     the full TimeSeries class.
     """
@@ -39,7 +39,7 @@ class TimeSeriesAnalysisMixin:
     ) -> Any:
         """
         Impute missing values.
-        
+
         Parameters
         ----------
         method : str
@@ -52,12 +52,12 @@ class TimeSeriesAnalysisMixin:
             Maximum gap (in time units) to interpolate across.
         **kwargs
             Additional arguments passed to the imputation function.
-            
+
         Returns
         -------
         TimeSeries
             Imputed series.
-        
+
         See Also
         --------
         gwexpy.timeseries.preprocess.impute_timeseries
@@ -68,7 +68,7 @@ class TimeSeriesAnalysisMixin:
     def standardize(self, *, method: str = "zscore", ddof: int = 0, robust: bool = False) -> Any:
         """
         Standardize the series.
-        
+
         Parameters
         ----------
         method : str
@@ -77,12 +77,12 @@ class TimeSeriesAnalysisMixin:
             Delta degrees of freedom for std calculation.
         robust : bool
             If True, use median/IQR instead of mean/std.
-            
+
         Returns
         -------
         TimeSeries
             Standardized series.
-        
+
         See Also
         --------
         gwexpy.timeseries.preprocess.standardize_timeseries
@@ -97,19 +97,19 @@ class TimeSeriesAnalysisMixin:
     def fit_arima(self, order: tuple = (1, 0, 0), **kwargs: Any) -> Any:
         """
         Fit ARIMA model to the series.
-        
+
         Parameters
         ----------
         order : tuple
             (p, d, q) order of the ARIMA model.
         **kwargs
             Additional arguments passed to the ARIMA fitting function.
-            
+
         Returns
         -------
         ARIMAResult
             Fitted model result.
-        
+
         See Also
         --------
         gwexpy.timeseries.arima.fit_arima
@@ -120,17 +120,17 @@ class TimeSeriesAnalysisMixin:
     def hurst(self, **kwargs: Any) -> Any:
         """
         Compute Hurst exponent.
-        
+
         The Hurst exponent is a measure of long-term memory of a time series.
         H < 0.5: anti-persistent (mean-reverting)
         H = 0.5: random walk
         H > 0.5: persistent (trending)
-        
+
         Returns
         -------
         float
             Hurst exponent.
-        
+
         See Also
         --------
         gwexpy.timeseries.hurst.hurst
@@ -141,19 +141,19 @@ class TimeSeriesAnalysisMixin:
     def local_hurst(self, window: Any, **kwargs: Any) -> Any:
         """
         Compute local Hurst exponent over a sliding window.
-        
+
         Parameters
         ----------
         window : str, float, or Quantity
             Window size for local computation.
         **kwargs
             Additional arguments.
-            
+
         Returns
         -------
         TimeSeries
             Local Hurst exponent series.
-        
+
         See Also
         --------
         gwexpy.timeseries.hurst.local_hurst
@@ -176,7 +176,7 @@ class TimeSeriesAnalysisMixin:
     ) -> Any:
         """
         Rolling mean over time.
-        
+
         Parameters
         ----------
         window : str, float, or Quantity
@@ -189,7 +189,7 @@ class TimeSeriesAnalysisMixin:
             How to handle NaN values.
         backend : str
             Computation backend.
-            
+
         Returns
         -------
         TimeSeries
@@ -210,7 +210,7 @@ class TimeSeriesAnalysisMixin:
     ) -> Any:
         """
         Rolling standard deviation over time.
-        
+
         Parameters
         ----------
         window : str, float, or Quantity
@@ -225,7 +225,7 @@ class TimeSeriesAnalysisMixin:
             Computation backend.
         ddof : int
             Delta degrees of freedom.
-            
+
         Returns
         -------
         TimeSeries
@@ -245,7 +245,7 @@ class TimeSeriesAnalysisMixin:
     ) -> Any:
         """
         Rolling median over time.
-        
+
         Parameters
         ----------
         window : str, float, or Quantity
@@ -258,7 +258,7 @@ class TimeSeriesAnalysisMixin:
             How to handle NaN values.
         backend : str
             Computation backend.
-            
+
         Returns
         -------
         TimeSeries
@@ -278,7 +278,7 @@ class TimeSeriesAnalysisMixin:
     ) -> Any:
         """
         Rolling minimum over time.
-        
+
         Parameters
         ----------
         window : str, float, or Quantity
@@ -291,7 +291,7 @@ class TimeSeriesAnalysisMixin:
             How to handle NaN values.
         backend : str
             Computation backend.
-            
+
         Returns
         -------
         TimeSeries
@@ -311,7 +311,7 @@ class TimeSeriesAnalysisMixin:
     ) -> Any:
         """
         Rolling maximum over time.
-        
+
         Parameters
         ----------
         window : str, float, or Quantity
@@ -324,7 +324,7 @@ class TimeSeriesAnalysisMixin:
             How to handle NaN values.
         backend : str
             Computation backend.
-            
+
         Returns
         -------
         TimeSeries

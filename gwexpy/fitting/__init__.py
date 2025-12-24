@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING, Any
 
 from gwpy.types import Series
@@ -7,7 +8,7 @@ from gwpy.types import Series
 if TYPE_CHECKING:
     from .core import FitResult, fit_series
 
-__all__ = ["fit_series", "FitResult"]
+__all__ = ["fit_series", "FitResult", "enable_series_fit", "enable_fitting_monkeypatch"]
 
 
 def _lazy_series_fit(self: Series, *args: Any, **kwargs: Any) -> Any:
@@ -16,12 +17,23 @@ def _lazy_series_fit(self: Series, *args: Any, **kwargs: Any) -> Any:
     return fit_series(self, *args, **kwargs)
 
 
-def enable_fitting_monkeypatch() -> None:
+def enable_series_fit() -> None:
     """
-    Opt-in function to add .fit() method to gwpy.types.Series.
+    Opt-in monkeypatch for gwpy.types.Series.fit.
+
+    This keeps import side effects minimal while providing the convenience API
+    when explicitly requested.
     """
     if not hasattr(Series, "fit"):
         Series.fit = _lazy_series_fit
+
+
+if os.environ.get("GWEXPY_ENABLE_SERIES_FIT") == "1":
+    enable_series_fit()
+
+
+# Backward compatibility alias (used in README.md)
+enable_fitting_monkeypatch = enable_series_fit
 
 
 def __getattr__(name: str) -> Any:

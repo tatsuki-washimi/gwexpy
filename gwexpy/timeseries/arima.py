@@ -36,7 +36,7 @@ class ArimaResult:
         self.unit = unit
         self.name = name
         self.channel = channel
-        
+
     def predict(self, start=None, end=None, *, dynamic=False) -> "TimeSeries":
         """
         In-sample prediction or out-of-sample forecast.
@@ -57,19 +57,19 @@ class ArimaResult:
         """
         # Handle start/end as time or int indices
         # statsmodels predict uses integer steps relative to start of series
-        
+
         # NOTE: logic to convert time to int index needed if start/end are times
         # For simplicity, assume user passes behavior compatible (steps or times)?
         # statsmodels handles datetime/string indices if index was provided.
         # But we passed numpy array. So index is integer.
         # User must pass integer steps.
         # Result is values.
-        
+
         pred = self.res.predict(start=start, end=end, dynamic=dynamic)
-        
+
         # Handle start/end as time or int indices
         from .timeseries import TimeSeries
-        
+
         # Calculate t0 for the prediction
         # If start is None, it defaults to the first observation (idx=0)
         # If start is int, it's the offset from self.t0
@@ -83,9 +83,9 @@ class ArimaResult:
             # Here we assume integer indexing if t0/dt are provided.
             warnings.warn("Non-integer start in predict may result in incorrect t0 assignment if not supported by statsmodels internal index.")
             start_idx = 0 # fallback
-            
+
         new_t0 = self.t0 + start_idx * self.dt
-        
+
         return TimeSeries(
             pred,
             t0=new_t0,
@@ -113,23 +113,23 @@ class ArimaResult:
             Dictionary containing 'lower' and 'upper' confidence interval TimeSeries.
         """
         from .timeseries import TimeSeries
-        
+
         # get_forecast return PredictionResultsWrapper
         pred_res = self.res.get_forecast(steps=steps)
         point = pred_res.predicted_mean
         conf = pred_res.conf_int(alpha=alpha)
-        
+
         # Time axis starts after the last sample of fitted data
         # Fitted data length?
         # self.res.nobs (approx)
-        
+
         # For Arima, end of training is known.
         # We need the time of the end of the series.
         # self.t0 + nobs * dt
-        
+
         n_obs = int(self.res.nobs) if hasattr(self.res, 'nobs') else len(self.res.fittedvalues)
         forecast_t0 = self.t0 + n_obs * self.dt
-        
+
         forecast_ts = TimeSeries(
             point,
             t0=forecast_t0,
@@ -137,7 +137,7 @@ class ArimaResult:
             unit=self.unit,
             name=f"{self.name}_forecast"
         )
-        
+
         lower = TimeSeries(
             conf[:, 0],
             t0=forecast_t0,
@@ -152,7 +152,7 @@ class ArimaResult:
             unit=self.unit,
             name="upper"
         )
-        
+
         return forecast_ts, {"lower": lower, "upper": upper}
 
     def residuals(self):
@@ -236,22 +236,22 @@ def fit_arima(
     """
     if not STATSMODELS_AVAILABLE:
         raise ImportError("statsmodels is required. pip install statsmodels")
-        
+
     # Check regular sampling
     # We assume timeseries.dt is valid (not None) as enforced by TimeSeries usually.
     if timeseries.dt is None:
         raise ValueError("TimeSeries must have a regular sample rate (dt).")
 
     # Handle NaNs
-    # "drop": drop NaNs? 
+    # "drop": drop NaNs?
     # If we drop, time alignment breaks.
-    # statsmodels ARIMA handles missing data? 
+    # statsmodels ARIMA handles missing data?
     # "If missing='drop' is passed to fit..." maybe.
     # User said: nan_policy "drop": drop NaNs and adjust time mapping.
-    
+
     y = timeseries.value
     t0 = timeseries.t0
-    
+
     if nan_policy == "raise":
         if np.any(np.isnan(y)):
             raise ValueError("NaNs in data and nan_policy='raise'")
@@ -259,10 +259,10 @@ def fit_arima(
         if np.any(np.isnan(y)):
             mask = ~np.isnan(y)
             y = y[mask]
-            # Time axis changed. t0 remains? 
-            # "adjust time mapping" could mean we treat it as contiguous now? 
+            # Time axis changed. t0 remains?
+            # "adjust time mapping" could mean we treat it as contiguous now?
             # Or pass irregular times? statsmodels ARIMA expects regular or times.
-            # Usually dropping nans in ARIMA means 'treat as adjacent' or 'missing value handling supported by model'? 
+            # Usually dropping nans in ARIMA means 'treat as adjacent' or 'missing value handling supported by model'?
             # statsmodels supports missing='drop'.
             # We'll stick to passing numpy array.
             warnings.warn("nan_policy='drop' removes NaNs; time axis interpretation may degrade.")
@@ -271,13 +271,13 @@ def fit_arima(
         kwargs = impute_kwargs or {}
         ts_imputed = impute_timeseries(timeseries, **kwargs)
         y = ts_imputed.value
-        
+
     y = y.astype(float)
-    
+
     fit_kwargs = method_kwargs or {}
     if method:
         fit_kwargs["method"] = method
-        
+
     if seasonal_order is None:
         model = ARIMA(
             y,
@@ -288,7 +288,7 @@ def fit_arima(
         )
     else:
         if SARIMAX is None:
-             # Fallback to ARIMA if SARIMAX not importable? 
+             # Fallback to ARIMA if SARIMAX not importable?
              # Or raise.
              raise ImportError("SARIMAX requires statsmodels")
         model = SARIMAX(
@@ -299,9 +299,9 @@ def fit_arima(
             enforce_stationarity=enforce_stationarity,
             enforce_invertibility=enforce_invertibility
         )
-        
+
     res = model.fit(**fit_kwargs)
-    
+
     return ArimaResult(
         res,
         t0=t0,

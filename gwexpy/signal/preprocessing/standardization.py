@@ -10,7 +10,7 @@ import numpy as np
 
 class StandardizationModel:
     """Model resulting from standardization transformation.
-    
+
     Parameters
     ----------
     mean : ndarray
@@ -24,16 +24,16 @@ class StandardizationModel:
         self.mean = mean
         self.scale = scale
         self.axis = axis
-        
+
     def inverse_transform(self, X_std):
         """
         Undo standardization: X = X_std * scale + mean
-        
+
         Parameters
         ----------
         X_std : ndarray or array-like
             Standardized data.
-            
+
         Returns
         -------
         X : ndarray
@@ -43,14 +43,14 @@ class StandardizationModel:
             val = X_std.value
         else:
             val = X_std
-             
+
         return val * self.scale + self.mean
 
 
 def standardize(X, *, method="zscore", ddof=0, axis=-1, return_model=True):
     """
     Standardize an array using z-score or robust standardization.
-    
+
     Parameters
     ----------
     X : ndarray
@@ -63,7 +63,7 @@ def standardize(X, *, method="zscore", ddof=0, axis=-1, return_model=True):
         Axis along which to standardize. Default is -1.
     return_model : bool, optional
         If True, return (X_standardized, model). If False, return only X_standardized.
-        
+
     Returns
     -------
     X_standardized : ndarray
@@ -83,13 +83,13 @@ def standardize(X, *, method="zscore", ddof=0, axis=-1, return_model=True):
     else:
         raise ValueError(f"Unknown standardization method '{method}'. "
                          f"Supported methods are 'zscore', 'robust'.")
-    
+
     X_standardized = (X - center) / scale
-    
+
     if return_model:
         model = StandardizationModel(
-            mean=np.squeeze(center), 
-            scale=np.squeeze(scale), 
+            mean=np.squeeze(center),
+            scale=np.squeeze(scale),
             axis=axis
         )
         return X_standardized, model

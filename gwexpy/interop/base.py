@@ -7,10 +7,10 @@ def to_plain_array(data, copy=False):
     """
     if hasattr(data, "value"):
         data = data.value
-    
+
     if isinstance(data, Quantity):
         data = data.value
-        
+
     return np.array(data, copy=copy)
 
 def from_plain_array(cls, array, t0, dt, unit=None, **kwargs):
@@ -22,5 +22,5 @@ def from_plain_array(cls, array, t0, dt, unit=None, **kwargs):
          array = array.numpy()
     elif hasattr(array, "get"): # cupy
          array = array.get()
-         
+
     return cls(array, t0=t0, dt=dt, unit=unit, **kwargs)

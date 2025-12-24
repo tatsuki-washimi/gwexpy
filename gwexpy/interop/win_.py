@@ -6,7 +6,7 @@ def read_win(cls, paths, backend="wintools", **kwargs):
     Read WIN format files into TimeSeriesDict.
     """
     if backend == "wintools":
-        # wt = require_optional("wintools") 
+        # wt = require_optional("wintools")
         # Not fully implemented.
         # wt.read(paths, ...) -> ?
         raise_unimplemented_io("WIN", hint="Try converting to SAC using win2sac first.", refs="http://eoc.eri.u-tokyo.ac.jp/WIN/")

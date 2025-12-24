@@ -36,7 +36,7 @@ def schumann_resonance(
          frequencies = kwargs.pop("frequencies", None)
          if frequencies is None:
               raise ValueError("frequencies argument is required for schumann_resonance.")
-    
+
     if modes is None:
         # Default Schumann modes: f0 (Hz), Q, Amplitude (pT/rtHz)
         modes = [
@@ -52,17 +52,17 @@ def schumann_resonance(
     # Handle unit
     if "unit" not in kwargs:
         kwargs["unit"] = u.Unit("pT / Hz^(1/2)")
-    
+
     # We'll work with the raw values of the target unit
     # But lorentzian_line handles units.
     # To sum in PSD space: Total PSD = SUM( (ASD_i)^2 )
-    
+
     # Check frequencies type
     if isinstance(frequencies, u.Quantity):
         f_arr = frequencies.to("Hz").value
     else:
         f_arr = np.asarray(frequencies)
-        
+
     total_psd = np.zeros_like(f_arr, dtype=float)
 
     for f0, Q, A in modes:
@@ -70,24 +70,24 @@ def schumann_resonance(
         # We pass frequencies explicitly.
         # Amplitude is scaled.
         # We use the correct unit in kwargs so lorentzian_line returns correct Quantities if unit present
-        
+
         # NOTE: logic requires adding SQUARES of values.
         # If lorentzian_line returns Quantity, we get value.
-        
+
         peak_asd_series = lorentzian_line(
-            f0, 
-            A * amplitude_scale, 
-            Q=Q, 
-            frequencies=f_arr, 
+            f0,
+            A * amplitude_scale,
+            Q=Q,
+            frequencies=f_arr,
             unit=kwargs["unit"]
         )
-        
+
         # Add to total PSD (incoherently)
         total_psd += peak_asd_series.value ** 2
 
     # Final ASD
     total_asd = np.sqrt(total_psd)
-    
+
     return FrequencySeries(
         total_asd,
         frequencies=f_arr,
@@ -104,7 +104,7 @@ def geomagnetic_background(
     """
     Generate 1/f^alpha magnetic background noise.
     Wrapper for colored.power_law.
-    
+
     Parameters
     ----------
     amplitude_1hz : float
@@ -112,20 +112,20 @@ def geomagnetic_background(
         Note: The user provided example says 10e-12 (10pT), assumed unit of result.
         However, if user passes unit='pT...', amplitude should be consistent.
     """
-    
+
     if "unit" not in kwargs:
         # Default to pT/rtHz if not specified, assuming input implies T?
         # Actually usually inputs are in same unit base.
-        # If user passes 10e-12, it implies Tesla. 
+        # If user passes 10e-12, it implies Tesla.
         # If output is pT, 10e-12 T = 10 pT.
         # Let's default to a safe unit or respect input.
         kwargs["unit"] = u.Unit("pT / Hz^(1/2)")
-        
-        # If amplitude is float 10e-12 (which is 10pT in Tesla), 
+
+        # If amplitude is float 10e-12 (which is 10pT in Tesla),
         # and we want pT/rtHz output...
         # If we pass 10e-12 directly to power_law with unit=pT, we get 1e-11 pT... very small.
         # Let's allow user to specify. If defaults:
-        
+
         if amplitude_1hz < 1e-9: # Likely Tesla
              # Convert to pT for the default unit
              amplitude_1hz *= 1e12

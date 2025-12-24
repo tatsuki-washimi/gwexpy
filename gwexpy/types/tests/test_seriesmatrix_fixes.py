@@ -16,143 +16,103 @@ from gwpy.detector import Channel
 
 def test_value_internal_storage():
     """Test that _value is internal storage for shape references."""
-    print("=" * 60)
-    print("Test 1: _value internal storage")
-    print("=" * 60)
-    
+
     # Create a simple SeriesMatrix
     data = np.random.randn(2, 3, 10)
     xindex = np.linspace(0, 10, 10)
-    
+
     sm = SeriesMatrix(data, xindex=xindex)
-    
+
     # Check _value exists and has correct shape
     assert hasattr(sm, '_value'), "SeriesMatrix should have _value attribute"
     assert sm._value.shape == (2, 3, 10), f"_value shape incorrect: {sm._value.shape}"
-    
+
     # Check that shape3D uses N_samples correctly
     assert sm.shape3D == (2, 3, 10), f"shape3D incorrect: {sm.shape3D}"
     assert sm.N_samples == 10, f"N_samples should be 10, got {sm.N_samples}"
-    
-    print(f"PASS: _value shape: {sm._value.shape}")
-    print(f"PASS: shape3D: {sm.shape3D}")
-    print(f"PASS: N_samples: {sm.N_samples}")
-    print("PASS\n")
+
 
 
 def test_xarray_duration_no_double_units():
     """Test that xarray and duration don't double-apply units."""
-    print("=" * 60)
-    print("Test 2: xarray/duration no double-unit multiplication")
-    print("=" * 60)
-    
+
     # Create SeriesMatrix with frequency xindex (already as Quantity)
-    
+
     # Create frequency index [0, 1, 2, ..., 9] Hz
     xindex = u.Quantity(np.linspace(0, 9, 10), 'Hz')
     data = np.random.randn(2, 2, 10)
-    
+
     sm = SeriesMatrix(data, xindex=xindex)
-    
+
     # xarray should return xindex directly (not multiply by xunit again)
     xarray = sm.xarray
-    print(f"xindex: {sm.xindex}")
-    print(f"xarray: {xarray}")
-    print(f"xarray unit: {xarray.unit if hasattr(xarray, 'unit') else 'N/A'}")
-    
+
     # Check units
     assert hasattr(xarray, 'unit'), "xarray should be a Quantity"
     assert xarray.unit == u.Hz, f"xarray unit should be Hz, got {xarray.unit}"
-    
+
     # Duration should be last - first, not last*xunit - first*xunit
     duration = sm.duration
-    print(f"duration: {duration}")
-    print(f"duration value: {duration.value}")
-    print(f"duration unit: {duration.unit if hasattr(duration, 'unit') else 'N/A'}")
-    
+
     assert hasattr(duration, 'unit'), "duration should be a Quantity"
     assert duration.unit == u.Hz, f"duration unit should be Hz, got {duration.unit}"
     # duration should be 9 Hz (last - first in frequency space)
     assert np.isclose(duration.value, 9.0), f"duration value should be ~9, got {duration.value}"
-    
-    print("PASS: xarray has correct unit (Hz, not Hz^2)")
-    print("PASS: duration has correct unit (Hz, not Hz^2)")
-    print("PASS: duration value is correct (9 Hz)")
-    print("PASS\n")
+
 
 
 def test_quantity_input_unit_defaults():
     """Test that Quantity input unit becomes default per-element unit."""
-    print("=" * 60)
-    print("Test 3: Quantity input unit defaults per-element")
-    print("=" * 60)
-    
+
     # Create data as Quantity with power units
     data_values = np.random.randn(2, 3, 10)
     data_quantity = u.Quantity(data_values, 'W')  # Watts
-    
+
     # Create SeriesMatrix without explicit units argument
     # Should use data.unit as default for all cells
     xindex = np.linspace(0, 10, 10)
     sm = SeriesMatrix(data_quantity, xindex=xindex)
-    
+
     # Check that all element units are set to Watts
     for i in range(2):
         for j in range(3):
             unit = sm.meta[i, j].unit
-            print(f"Cell ({i},{j}) unit: {unit}")
             assert unit == u.W, f"Cell ({i},{j}) should have unit W, got {unit}"
-    
-    print("PASS: All cells have Watts unit from input Quantity")
-    print("PASS\n")
+
 
 
 def test_xindex_quantity_preserves_unit():
     """Test that passing xindex as Quantity preserves it."""
-    print("=" * 60)
-    print("Test 4: xindex Quantity unit preservation")
-    print("=" * 60)
-    
+
     # Create xindex as Quantity (e.g., time or frequency)
     xindex_quantity = u.Quantity([0, 1, 2, 3, 4], 's')  # seconds
     data = np.random.randn(2, 2, 5)
-    
+
     sm = SeriesMatrix(data, xindex=xindex_quantity)
-    
+
     # xindex should preserve the Quantity
-    print(f"Input xindex: {xindex_quantity}")
-    print(f"SeriesMatrix.xindex: {sm.xindex}")
-    
+
     assert hasattr(sm.xindex, 'unit'), "xindex should be a Quantity"
     assert sm.xindex.unit == u.s, f"xindex unit should be s, got {sm.xindex.unit}"
-    
+
     # xarray should also have seconds unit (not seconds^2)
     xarray = sm.xarray
     assert xarray.unit == u.s, f"xarray unit should be s, got {xarray.unit}"
-    
-    print("PASS: xindex preserves Quantity unit (seconds)")
-    print("PASS: xarray has correct unit (seconds, not seconds^2)")
-    print("PASS\n")
+
 
 
 def test_basic_import_and_instantiation():
     """Basic smoke test: ensure SeriesMatrix still instantiates."""
-    print("=" * 60)
-    print("Test 0: Basic instantiation")
-    print("=" * 60)
-    
+
     data = np.random.randn(3, 4, 20)
     xindex = np.arange(20, dtype=float)
-    
+
     sm = SeriesMatrix(data, xindex=xindex, name="test_matrix")
-    
+
     assert sm.shape == (3, 4, 20), f"Shape incorrect: {sm.shape}"
     assert sm.N_samples == 20, f"N_samples incorrect: {sm.N_samples}"
     assert sm.name == "test_matrix", f"Name incorrect: {sm.name}"
-    
-    print(f"PASS: Created SeriesMatrix with shape {sm.shape}")
-    print(f"PASS: N_samples = {sm.N_samples}")
-    print("PASS\n")
+
 
 
 def test_array_ufunc_comparison_returns_bool():
@@ -523,12 +483,8 @@ if __name__ == "__main__":
         test_quantity_input_unit_defaults()
         test_xindex_quantity_preserves_unit()
         test_xarray_duration_no_double_units()
-        
-        print("\n" + "=" * 60)
-        print("ALL TESTS PASSED [PASS]")
-        print("=" * 60)
-    except Exception as e:
-        print(f"\n[FAIL] TEST FAILED: {e}")
+
+    except Exception:
         import traceback
         traceback.print_exc()
         exit(1)

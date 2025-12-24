@@ -11,7 +11,7 @@ def test_basic_construction():
     times = [0, 1, 2] * u.s
     ax1 = [10, 20] * u.m
     ax2 = [1, 2, 3, 4] * u.Hz
-    
+
     # Construct using underlying Array3D
     data3d = Array3D(
         val,
@@ -28,10 +28,10 @@ def test_basic_construction():
     assert tpt.times.shape == (3,)
     # Verify times content
     assert np.allclose(tpt.times.value, times.value)
-    
+
     assert tpt.axis1.name == "distance"
     assert tpt.axis2.name == "frequency"
-    
+
     assert tpt.kind == "test_kind"
     assert tpt.meta == {"a": 1}
     assert tpt.unit == u.m
@@ -48,7 +48,7 @@ def test_plane_default_ordering():
         for i in range(2):
             for j in range(4):
                 val[t, i, j] = t*100 + i*10 + j
-    
+
     times = [0, 1, 2] * u.s
     ax1 = [10, 20] * u.m
     ax2 = [1, 2, 3, 4] * u.Hz
@@ -60,12 +60,12 @@ def test_plane_default_ordering():
     # Remaining axes indices in Array3D are 1 (ax1) and 2 (ax2).
     # Default order should be ascending index: ax1, ax2
     p = tpt.plane(drop_axis=0, drop_index=1)
-    
+
     assert isinstance(p, Plane2D)
     assert p.shape == (2, 4)
     assert p.axis1.name == "ax1"
     assert p.axis2.name == "ax2"
-    
+
     # Check values: at t=1, val = 100 + i*10 + j
     expected = val[1, :, :]
     np.testing.assert_array_equal(p.value, expected)
@@ -81,11 +81,11 @@ def test_plane_user_ordering():
     # Request axis1="ax2", axis2="ax1"
     # Result shape should be (4, 2)
     p = tpt.plane(drop_axis="time", drop_index=0, axis1="ax2", axis2="ax1")
-    
+
     assert p.shape == (4, 2)
     assert p.axis1.name == "ax2"
     assert p.axis2.name == "ax1"
-    
+
     # Check values: transpose of (2, 4) -> (4, 2)
     expected = val[0, :, :].T
     np.testing.assert_array_equal(p.value, expected)
@@ -96,17 +96,17 @@ def test_at_time_nearest():
     """
     val = np.arange(3 * 2 * 2).reshape(3, 2, 2)
     times = [0.0, 1.0, 2.0] * u.s # Regular
-    
+
     data3d = Array3D(val, axis_names=["time", "a", "b"], axis0=times)
     tpt = TimePlaneTransform(data3d)
-    
+
     # t = 1.1s -> nearest is 1.0s (index 1)
     p = tpt.at_time(1.1 * u.s)
-    
+
     assert p.shape == (2, 2)
     expected = val[1, :, :]
     np.testing.assert_array_equal(p.value, expected)
-    
+
     # t = 0.1 -> nearest 0.0 (index 0)
     p0 = tpt.at_time(0.1 * u.s)
     np.testing.assert_array_equal(p0.value, val[0])
@@ -117,7 +117,7 @@ def test_tuple_construction():
     t = [0, 1] * u.s
     a1 = [1, 2] * u.m
     a2 = [3, 4] * u.Hz
-    
+
     tpt = TimePlaneTransform((val, t, a1, a2))
     assert tpt.shape == (2, 2, 2)
     assert tpt.axis1.unit == u.m

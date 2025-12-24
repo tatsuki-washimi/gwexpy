@@ -11,12 +11,12 @@ def to_dask(ts, chunks="auto"):
 def from_dask(cls, array, t0, dt, unit=None, compute=True):
     """
     Create TimeSeries from dask array.
-    
+
     Parameters
     ----------
     compute : bool
         If True, compute the array to numpy immediately.
-        If False, TimeSeries will hold the dask array (if underlying class supports it, 
+        If False, TimeSeries will hold the dask array (if underlying class supports it,
         gwpy TimeSeries usually expects numpy, so caution).
         Default True for safety.
     """
@@ -24,5 +24,5 @@ def from_dask(cls, array, t0, dt, unit=None, compute=True):
         data = array.compute()
     else:
         data = array
-        
+
     return cls(data, t0=t0, dt=dt, unit=unit)

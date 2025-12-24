@@ -57,7 +57,7 @@ class Array3D(Array):
         super().__array_finalize__(obj)
         if obj is None:
             return
-        
+
         def copy_attr(name, default):
             if getattr(self, name, None) is None:
                 val = getattr(obj, name, None)
@@ -69,10 +69,10 @@ class Array3D(Array):
         copy_attr("_axis0_name", "axis0")
         copy_attr("_axis1_name", "axis1")
         copy_attr("_axis2_name", "axis2")
-        
+
         # Safe initialization of indices respecting ndim
         # If ndim < 1, assume scalar or broken
-        
+
         if self.ndim >= 1 and getattr(self, "_axis0_index", None) is None:
              # Try copy if shape matches
              if getattr(obj, "ndim", 0) >= 1 and obj.shape[0] == self.shape[0]:

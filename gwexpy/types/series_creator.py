@@ -99,7 +99,7 @@ def as_series(axis, unit=None, *, name=None):
                  axis_q = _to_quantity_1d(u.Quantity(np.asarray(axis_gps), u.s))
             else:
                  # If it was already numeric and reached here, it means it had no .unit.
-                 # We still try to wrap it in case to_gps did something useful, 
+                 # We still try to wrap it in case to_gps did something useful,
                  # but this is where the "unclear error" usually happened.
                  axis_q = _to_quantity_1d(u.Quantity(np.asarray(axis_gps), u.s))
         except (ValueError, TypeError, AttributeError) as e:

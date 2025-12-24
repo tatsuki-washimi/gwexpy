@@ -10,7 +10,7 @@ class LeapSecondConversionError(ValueError):
 def gps_to_datetime_utc(gps, *, leap='raise') -> datetime:
     """
     Convert GPS time to UTC datetime.
-    
+
     Parameters
     ----------
     gps : LIGOTimeGPS, float
@@ -20,7 +20,7 @@ def gps_to_datetime_utc(gps, *, leap='raise') -> datetime:
         - 'raise' (default): Raise LeapSecondConversionError.
         - 'floor': Clamp to 59.999999s of the previous second.
         - 'ceil': Round up to 00.000000s of the next minute.
-        
+
     Returns
     -------
     datetime
@@ -29,12 +29,12 @@ def gps_to_datetime_utc(gps, *, leap='raise') -> datetime:
     # Use astropy for robust conversion including leap seconds
     # verify input is LIGOTimeGPS compatible
     t_gps = Time(gps, format='gps').utc
-    
+
     # Check if this time is actually a leap second?
     # Astropy handles leap seconds by representing them (e.g. :60) depending on format.
     # Python datetime cannot represent :60.
     # We trap this via checking if conversion fails or if astropy indicates it's leap.
-    
+
     try:
         dt = t_gps.to_datetime(timezone=timezone.utc)
     except ValueError as e:
@@ -45,9 +45,9 @@ def gps_to_datetime_utc(gps, *, leap='raise') -> datetime:
                  # Clamp to end of previous second (59.999999)
                  vals = t_gps.ymdhms
                  dt = datetime(
-                     vals.year, vals.month, vals.day, 
-                     vals.hour, vals.minute, 
-                     59, 999999, 
+                     vals.year, vals.month, vals.day,
+                     vals.hour, vals.minute,
+                     59, 999999,
                      tzinfo=timezone.utc
                  )
              elif leap == 'ceil':
@@ -65,31 +65,31 @@ def gps_to_datetime_utc(gps, *, leap='raise') -> datetime:
                  raise NotImplementedError(f"Leap policy {leap} not implemented")
         else:
             raise e
-        
+
     return dt
 
 def datetime_utc_to_gps(dt: datetime) -> LIGOTimeGPS:
     """
     Convert UTC datetime to LIGOTimeGPS.
-    
+
     Assumes explicit UTC timezone if aware, or UTC if naive (per specification).
     """
     if dt.tzinfo is None:
         # per spec: treat naive as UTC
         dt = dt.replace(tzinfo=timezone.utc)
-        
+
     t_gps = Time(dt, format='datetime', scale='utc').gps
     return LIGOTimeGPS(t_gps)
 
 def gps_to_unix(gps, *, leap='raise') -> float:
     """
     Convert GPS to UNIX timestamp (POSIX seconds).
-    
+
     Parameters
     ----------
     gps : LIGOTimeGPS or float
     leap : str
-    
+
     Returns
     -------
     float
@@ -99,7 +99,7 @@ def gps_to_unix(gps, *, leap='raise') -> float:
     # If it is a leap second, unix timestamp definition is ambiguous/implementation defined.
     # Usually strictly POSIX time "repeats" or "stalls".
     # Astropy unix conversion typically handles it smoothly in linear timeline but POSIX is step.
-    
+
     # GWpy suggests explicit handling. Time(gps).unix is valid float.
     return t.unix
 

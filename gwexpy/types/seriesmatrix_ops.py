@@ -12,7 +12,7 @@ from .seriesmatrix_validation import _expand_key, _slice_metadata_dict
 
 class SeriesMatrixOps:
     """Mixin class for SeriesMatrix operations."""
-    
+
     ##### Elements (Series object) acess #####
     def __getitem__(self, key):
         if isinstance(key, tuple) and len(key) == 2:
@@ -21,7 +21,7 @@ class SeriesMatrixOps:
                 i = self.row_index(row_key) if not isinstance(row_key, int) else row_key
                 j = self.col_index(col_key) if not isinstance(col_key, int) else col_key
                 meta = self.meta[i, j]
-                values = np.ndarray.__getitem__(self._value, (i, j)) 
+                values = np.ndarray.__getitem__(self._value, (i, j))
                 return Series(values, xindex=self.xindex.copy(),
                               unit=meta.unit, name=meta.name, channel=meta.channel)
 
@@ -94,11 +94,11 @@ class SeriesMatrixOps:
             if hasattr(result, "_value"):
                 result._value = result.view(np.ndarray)
         return result
-    
+
     def __setitem__(self, key, value):
         if not (isinstance(key, tuple) and len(key) == 2):
             return np.ndarray.__setitem__(self, key, value)
-        
+
         row_key, col_key = key
         if not (isinstance(row_key, (int, str)) and isinstance(col_key, (int, str))):
             return np.ndarray.__setitem__(self, key, value)
@@ -179,7 +179,7 @@ class SeriesMatrixOps:
                 raise ValueError("Assigned Series has incompatible xindex")
         self._value[i, j] = value.value
         self.meta[i, j] = MetaData(unit=value.unit, name=value.name, channel=value.channel)
-       
+
     def plot(self, **kwargs):
         """
         Plot this SeriesMatrix using gwexpy.plot.Plot.
@@ -250,7 +250,7 @@ class SeriesMatrixOps:
     @property
     def shape3D(self):
         return self._value.shape[0], self._value.shape[1], self.N_samples
-        
+
     @property
     def value(self):
         return self._value
@@ -278,10 +278,10 @@ class SeriesMatrixOps:
         col_indices = [self.col_index(k) for k in col_keys]
         new_data = self.value[np.ix_(row_indices, col_indices)]
         new_meta = MetaDataMatrix(self.meta[np.ix_(row_indices, col_indices)])
-    
+
         new_rows = OrderedDict((k, self.rows[k]) for k in row_keys)
         new_cols = OrderedDict((k, self.cols[k]) for k in col_keys)
-    
+
         return type(self)(new_data, xindex=self.xindex, name=self.name,
                             epoch=self.epoch, rows=new_rows, cols=new_cols,
                             meta=new_meta, attrs=self.attrs)
@@ -302,12 +302,12 @@ class SeriesMatrixOps:
                               epoch=self.epoch,
                               attrs=self.attrs,
                              )
-    
+
     @property
     def real(self):
         new = (self + self.conj()) / 2
         return new.astype(float)
-    
+
     @property
     def imag(self):
         new = (self - self.conj()) / (2j)
@@ -316,7 +316,7 @@ class SeriesMatrixOps:
     def abs(self):
         new = abs(self)
         return new.astype(float)
-        
+
     def angle(self, deg: bool = False):
         new = self.copy()
         new.meta = deepcopy(self.meta)
@@ -561,7 +561,7 @@ class SeriesMatrixOps:
             attrs=getattr(self, "attrs", {}),
         )
 
-    ##### Edit forrwing the Sampling axis   ##### 
+    ##### Edit forrwing the Sampling axis   #####
     def crop(self, start=None, end=None, copy=False):
         xindex = self.xindex
         xunit = getattr(xindex, "unit", None)
@@ -1025,7 +1025,7 @@ class SeriesMatrixOps:
             col_grp.create_dataset("channels", data=np.array([str(v.channel) for v in self.cols.values()], dtype="S"))
 
     ##### Visualizations #####
-    def __repr__(self): 
+    def __repr__(self):
         try:
             return f"<SeriesMatrix shape={self.shape3D} rows={self.row_keys()} cols={self.col_keys()}>"
         except (IndexError, KeyError, TypeError, ValueError, AttributeError):
@@ -1045,7 +1045,7 @@ class SeriesMatrixOps:
         if hasattr(self, 'meta'):
             info += "\n\n[ Elements metadata ]\n" + str(self.meta)
         return info
-    
+
     def _repr_html_(self):
         html = f"<h3>SeriesMatrix: shape={self._value.shape}, name='{json.dumps(str(self.name))[1:-1]}'</h3>"
         html += f"<ul><li><b>epoch:</b> {self.epoch}</li><li><b>x0:</b> {self.x0}, <b>dx:</b> {self.dx}, <b>N_samples:</b> {self.N_samples}</li><li><b>xunit:</b> {self.xunit}</li></ul>"
@@ -1158,7 +1158,7 @@ class SeriesMatrixOps:
     def read(cls, source, format=None, **kwargs):
         """
         Read a SeriesMatrix from file.
-        
+
         Parameters
         ----------
         source : str or path-like
@@ -1167,7 +1167,7 @@ class SeriesMatrixOps:
             File format. If None, inferred from extension.
         **kwargs
             Additional arguments passed to the reader.
-            
+
         Returns
         -------
         SeriesMatrix
@@ -1175,20 +1175,20 @@ class SeriesMatrixOps:
         """
         import h5py
         from pathlib import Path
-        
+
         if format is None:
             ext = Path(source).suffix.lower()
             if ext in [".h5", ".hdf5", ".hdf"]:
                 format = "hdf5"
             else:
                 format = "hdf5"
-                
+
         if format != "hdf5":
             raise NotImplementedError(f"Format {format} is not supported for read")
-            
+
         with h5py.File(source, "r") as f:
             data = f["data"][:]
-            
+
             grp_x = f["xindex"]
             xindex_vals = grp_x["value"][:]
             xunit_str = grp_x.attrs.get("unit", None)
@@ -1196,13 +1196,13 @@ class SeriesMatrixOps:
                 xindex = u.Quantity(xindex_vals, xunit_str)
             else:
                 xindex = xindex_vals
-                
+
             name = f.attrs.get("name", "")
             try:
                 epoch = f.attrs.get("epoch", 0.0)
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
                 epoch = 0.0
-                
+
             attrs_json = f.attrs.get("attrs_json", None)
             if attrs_json:
                 try:
@@ -1211,12 +1211,12 @@ class SeriesMatrixOps:
                     attrs = {}
             else:
                 attrs = {}
-                
+
             meta_grp = f["meta"]
             units_raw = meta_grp["units"][:].astype(str)
             names_raw = meta_grp["names"][:].astype(str)
             channels_raw = meta_grp["channels"][:].astype(str)
-            
+
             N, M = units_raw.shape
             meta_arr = np.empty((N, M), dtype=object)
             for i in range(N):
@@ -1229,7 +1229,7 @@ class SeriesMatrixOps:
                         channel=channels_raw[i, j] if channels_raw[i, j] else None
                     )
             meta_matrix = MetaDataMatrix(meta_arr)
-            
+
             row_grp = f["rows"]
             row_keys = [k.decode() if isinstance(k, bytes) else k for k in row_grp["keys"][:]]
             row_names = [n.decode() if isinstance(n, bytes) else n for n in row_grp["names"][:]]
@@ -1243,7 +1243,7 @@ class SeriesMatrixOps:
                     channel=c if c else None
                 )
             rows = MetaDataDict(rows, expected_size=len(row_keys), key_prefix="row")
-            
+
             col_grp = f["cols"]
             col_keys = [k.decode() if isinstance(k, bytes) else k for k in col_grp["keys"][:]]
             col_names = [n.decode() if isinstance(n, bytes) else n for n in col_grp["names"][:]]
@@ -1257,7 +1257,7 @@ class SeriesMatrixOps:
                     channel=c if c else None
                 )
             cols = MetaDataDict(cols, expected_size=len(col_keys), key_prefix="col")
-            
+
         return cls(
             data,
             xindex=xindex,

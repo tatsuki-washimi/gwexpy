@@ -218,9 +218,9 @@ def _normalize_input(
         (value_array, attr_dict, detected_xindex)
         where attr_dict contains per-cell unit/name/channel arrays.
     """
-    from .seriesmatrix import SeriesMatrix # Local import to avoid circularity if needed, 
+    from .seriesmatrix import SeriesMatrix # Local import to avoid circularity if needed,
     # but initially we move this to its own file.
-    
+
     # 0. None -> empty matrix
     if data is None:
         arr = np.empty((0, 0, 0))
@@ -354,7 +354,7 @@ def _normalize_input(
         row_names = list(data.keys())
         N = len(row_names)
         M = len(data_list[0]) if data_list else 0
-        
+
         inferred_len = None
         if data_list and data_list[0]:
             first_elem = data_list[0][0]
@@ -372,13 +372,13 @@ def _normalize_input(
             all_xindex = [s.xindex for s in all_series]
             if all(np.array_equal(ix, all_xindex[0]) for ix in all_xindex):
                 detected_xindex = all_xindex[0]
-        
+
         series_list = []
         unit_arr = np.empty((N, M), dtype=object)
         name_arr = np.empty((N, M), dtype=object)
         channel_arr = np.empty((N, M), dtype=object)
         explicit_unit = np.zeros((N, M), dtype=bool)
-        
+
         for i, row in enumerate(data_list):
             row_series = []
             for j, v in enumerate(row):
@@ -388,14 +388,14 @@ def _normalize_input(
                 else:
                     series_xindex = xindex if xindex is not None else detected_xindex
                     s = to_series(v, xindex=series_xindex, name=f"elem_{i}_{j}")
-                
+
                 row_series.append(s.value)
                 unit_arr[i, j] = s.unit if hasattr(s, 'unit') else u.dimensionless_unscaled
                 name_arr[i, j] = s.name if hasattr(s, 'name') else None
                 channel_arr[i, j] = s.channel if hasattr(s, 'channel') else None
-            
+
             series_list.append(row_series)
-        
+
         if N == 0 or M == 0:
             arr = np.empty((N, M, 0))
         else:
@@ -437,7 +437,7 @@ def _normalize_input(
         for r in data:
             if len(r) != M:
                 raise ValueError("Ragged 2D list is not supported for SeriesMatrix")
-        
+
         if xindex is None:
             xindex = infer_xindex_from_items([v for row in data for v in row])
 
@@ -482,14 +482,14 @@ def _normalize_input(
                 s = to_series(v, xindex=series_xindex, name=f"elem_{i}_{j}")
                 series_row.append(s)
             series_list.append(series_row)
-        
+
         all_series = [s for row in series_list for s in row]
         detected_xindex = None
         if all_series:
             all_xindex = [s.xindex for s in all_series if s.xindex is not None]
             if all_xindex and all(np.array_equal(ix, all_xindex[0]) for ix in all_xindex):
                 detected_xindex = all_xindex[0]
-        
+
         value_list = [s.value for row in series_list for s in row]
         if N == 0 or M == 0:
             arr = np.empty((N, M, 0))
@@ -498,11 +498,11 @@ def _normalize_input(
             channel_arr = _broadcast_attr(channels, (N, M), "channels") if channels is not None else np.empty((N, M), dtype=object)
             return arr, {"unit": unit_arr, "name": name_arr, "channel": channel_arr}, detected_xindex
         arr = np.stack(value_list).reshape(N, M, -1)
-        
+
         unit_arr = np.empty((N, M), dtype=object)
         name_arr = np.full((N, M), None, dtype=object)
         channel_arr = np.full((N, M), None, dtype=object)
-        
+
         for i, row in enumerate(series_list):
             for j, s in enumerate(row):
                 unit_arr[i, j] = s.unit if hasattr(s, "unit") else u.dimensionless_unscaled

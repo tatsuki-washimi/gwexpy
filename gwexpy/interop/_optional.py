@@ -11,6 +11,7 @@ _OPTIONAL_DEPENDENCIES = {
     "torchaudio": "torchaudio",
     "tensorflow": "tensorflow",
     "dask": "dask",
+    "dask.array": "dask.array",
     "zarr": "zarr",
     "netCDF4": "netCDF4",
     "control": "control",
@@ -33,17 +34,17 @@ _OPTIONAL_DEPENDENCIES = {
 def require_optional(name: str) -> Any:
     """
     Import an optional dependency or raise an informative ImportError.
-    
+
     Parameters
     ----------
     name : str
         Key name of the dependency (e.g., 'pandas').
-        
+
     Returns
     -------
     module
         The imported module.
-        
+
     Raises
     ------
     ImportError
@@ -54,7 +55,7 @@ def require_optional(name: str) -> Any:
         pkg_name = name
     else:
         pkg_name = _OPTIONAL_DEPENDENCIES[name]
-        
+
     # Map package name to help message for installation
     _EXTRA_MAP = {
         "torch": "torch",
@@ -82,7 +83,7 @@ def require_optional(name: str) -> Any:
         "dttxml": "gw",
         "gwinc": "gw",
     }
-    
+
     try:
         return importlib.import_module(pkg_name)
     except ImportError as e:
@@ -91,7 +92,7 @@ def require_optional(name: str) -> Any:
             install_cmd = f"pip install 'gwexpy[{extra}]'"
         else:
             install_cmd = f"pip install {pkg_name}"
-            
+
         raise ImportError(
             f"The '{name}' package is required for this feature but is not installed. "
             f"You can install it via '{install_cmd}' or 'pip install \"gwexpy[all]\"'."

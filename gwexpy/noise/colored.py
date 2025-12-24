@@ -30,13 +30,13 @@ def power_law(
             raise ValueError(
                 "The 'frequencies' argument is required to evaluate the power law."
             )
-    
+
     if isinstance(frequencies, u.Quantity):
         f_vals = frequencies.to("Hz").value
         f_unit = u.Hz
     else:
         f_vals = np.asarray(frequencies)
-        f_unit = u.Hz 
+        f_unit = u.Hz
 
     if isinstance(f_ref, u.Quantity):
         f_ref_val = f_ref.to(f_unit).value
@@ -57,14 +57,14 @@ def power_law(
 
     if f_vals[0] == 0:
         if exponent > 0:
-            data[0] = np.inf 
+            data[0] = np.inf
         elif exponent < 0:
             data[0] = 0.0
         # exponent=0 -> const, data[0] is fine
 
     # Remove 'unit' from kwargs to avoid double passing
     kwargs.pop("unit", None)
-    
+
     return FrequencySeries(
         data,
         frequencies=frequencies,

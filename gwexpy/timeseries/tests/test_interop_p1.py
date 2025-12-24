@@ -7,7 +7,7 @@ try:
     import dask.array as da
 except ImportError:
     da = None
-    
+
 try:
     import zarr
 except ImportError:
@@ -28,17 +28,17 @@ except ImportError:
 def test_torch_interop():
     data = np.arange(10, dtype=np.float32)
     ts = TimeSeries(data, dt=0.01)
-    
+
     # 1. to_torch
     tensor = ts.to_torch()
     assert torch.is_tensor(tensor)
     assert tensor.dtype == torch.float32
     assert np.allclose(tensor.numpy(), data)
-    
+
     # Check copy=False (sharing memory if possible)
     # Numpy->Torch sharing works if array is writable and aligned.
     # We test functionality.
-    
+
     # 2. from_torch
     ts2 = TimeSeries.from_torch(tensor, t0=0, dt=0.01)
     assert np.allclose(ts2.value, data)
@@ -47,12 +47,12 @@ def test_torch_interop():
 def test_tf_interop():
     data = np.arange(10, dtype=np.float32)
     ts = TimeSeries(data, dt=0.01)
-    
+
     # 1. to_tf
     tensor = ts.to_tf()
     assert tf.is_tensor(tensor)
     assert np.allclose(tensor.numpy(), data)
-    
+
     # 2. from_tf
     ts2 = TimeSeries.from_tf(tensor, t0=0, dt=0.01)
     assert np.allclose(ts2.value, data)
@@ -61,12 +61,12 @@ def test_tf_interop():
 def test_dask_interop():
     data = np.arange(100, dtype=float)
     ts = TimeSeries(data, dt=0.1)
-    
+
     # 1. to_dask
     darr = ts.to_dask(chunks=10)
     assert isinstance(darr, da.Array)
     assert darr.chunks == ((10,)*10,)
-    
+
     # 2. from_dask (compute=True)
     ts2 = TimeSeries.from_dask(darr, t0=0, dt=0.1, compute=True)
     assert isinstance(ts2.value, np.ndarray)
@@ -76,12 +76,12 @@ def test_dask_interop():
 def test_zarr_interop(tmp_path):
     data = np.arange(100, dtype=float)
     ts = TimeSeries(data, dt=0.1, name="zts")
-    
+
     store_path = str(tmp_path / "test.zarr")
-    
+
     # 1. to_zarr
     ts.to_zarr(store_path, "my_array", overwrite=True)
-    
+
     # 2. from_zarr
     ts2 = TimeSeries.from_zarr(store_path, "my_array")
     assert np.allclose(ts2.value, data)

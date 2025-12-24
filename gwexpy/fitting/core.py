@@ -25,20 +25,20 @@ class ComplexLeastSquares:
         self.y = y  # Complex data
         self.dy = dy # Error (assumed isotropic for real/imag unless specified otherwise)
         self.model = model
-        
+
         # Determine parameters from model (skipping 'x')
         # describe returns a list of parameter names
-        params = describe(model)[1:] 
+        params = describe(model)[1:]
         self.func_code = make_func_code(params)
-        
+
     def __call__(self, *args):
         # Calculate model prediction
         ym = self.model(self.x, *args)
-        
+
         # Calculate residuals for Real and Imag parts
         res_real = (self.y.real - ym.real) / self.dy
         res_imag = (self.y.imag - ym.imag) / self.dy
-        
+
         # Sum of squared residuals
         chi2 = np.sum(res_real**2 + res_imag**2)
         return chi2
@@ -94,23 +94,23 @@ class FitResult:
         self.has_dy = dy is not None
         if self.dy is None:
             self.dy = np.ones_like(y)
-        
+
     @property
     def params(self):
         """Best fit parameters (dict)."""
         return {name: self.minuit.values[name] for name in self.minuit.parameters}
-        
+
     @property
     def errors(self):
         """Parameter errors (dict)."""
         return {name: self.minuit.errors[name] for name in self.minuit.parameters}
-        
+
     @property
     def chi2(self):
         """Chi-square value (valid only for LeastSquares-like costs)."""
         # Both LeastSquares and ComplexLeastSquares return chi2 as fval
         return self.minuit.fval
-        
+
     @property
     def ndof(self):
         """Number of degrees of freedom."""
@@ -129,25 +129,25 @@ class FitResult:
     def __str__(self):
         """Delegate to Minuit's pretty printer."""
         return str(self.minuit)
-        
+
     def _repr_html_(self):
         """Jupyter notebook integration."""
         return self.minuit._repr_html_()
 
     def plot(self, ax=None, num_points=1000, **kwargs):
         """
-        Plot data and best-fit curve. 
+        Plot data and best-fit curve.
         For complex data, delegates to bode_plot().
         """
         is_complex = np.iscomplexobj(self.y)
-        
+
         if is_complex:
             return self.bode_plot(ax=ax, num_points=num_points, **kwargs)
 
         # Real Plot
         if ax is None:
             fig, ax = plt.subplots()
-        
+
         # Plot Model (First)
         kwargs.setdefault('color', 'red')
         kwargs.setdefault('zorder', 5)
@@ -160,12 +160,12 @@ class FitResult:
             ax.errorbar(self.x, self.y, yerr=self.dy, fmt='.', label='Data', color='black')
         else:
             ax.plot(self.x, self.y, '.', label='Data', color='black')
-            
+
         if self.x_label:
             ax.set_xlabel(self.x_label)
         if self.y_label:
             ax.set_ylabel(self.y_label)
-            
+
         ax.legend()
         return ax
 
@@ -179,7 +179,7 @@ class FitResult:
             ax_mag, ax_phase = ax
         else:
             raise ValueError("For bode_plot, 'ax' must be a list/tuple of 2 axes (mag, phase), or None.")
-        
+
         kwargs.setdefault('color', 'red')
         kwargs.setdefault('zorder', 5)
 
@@ -192,12 +192,12 @@ class FitResult:
         # If x_range provided, use it. But here we just use data range.
         if x_start <= 0:
             x_start = 1e-1 # Fallback
-            
+
         x_plot = np.logspace(np.log10(x_start), np.log10(max(self.x)), num_points)
         ym_plot = self.model(x_plot, **self.params)
-        
+
         ax_mag.plot(x_plot, np.abs(ym_plot), label='Fit', **kwargs)
-        
+
         # Data (Second)
         mag_data = np.abs(self.y)
         if self.has_dy:
@@ -210,24 +210,24 @@ class FitResult:
         ax_mag.grid(True, which='both', alpha=0.3)
         ax_mag.set_xscale('log')
         ax_mag.set_yscale('log')
-        
+
         # --- Phase ---
         # Model (First)
         ax_phase.plot(x_plot, np.angle(ym_plot, deg=True), label='Fit', **kwargs)
-        
+
         # Data (Second)
         phase_data = np.angle(self.y, deg=True) # Degrees
         ax_phase.plot(self.x, phase_data, '.', label='Data', color='black')
-        
+
         ax_phase.set_ylabel('Phase [deg]')
         if self.x_label:
             ax_phase.set_xlabel(self.x_label)
         else:
             ax_phase.set_xlabel('Frequency / Time')
-            
+
         ax_phase.grid(True, which='both', alpha=0.3)
         ax_phase.set_xscale('log')
-        
+
         return (ax_mag, ax_phase)
 
     def run_mcmc(self, n_walkers=32, n_steps=3000, burn_in=500, progress=True):
@@ -241,19 +241,19 @@ class FitResult:
         # Filter out fixed parameters for MCMC
         float_params = [p for p in self.minuit.parameters if not self.minuit.fixed[p]]
         ndim = len(float_params)
-        
+
         # Dictionary of fixed parameters
         fixed_params = {p: self.minuit.values[p] for p in self.minuit.parameters if self.minuit.fixed[p]}
 
         # Log Probability Function
         def log_prob(theta):
             # theta: array of float values for float_params
-            
+
             # Construct full parameter dictionary
             current_params = fixed_params.copy()
             for name, val in zip(float_params, theta):
                 current_params[name] = val
-                
+
                 # Check limits defined in minuit
                 if name in self.minuit.limits:
                     vmin, vmax = self.minuit.limits[name]
@@ -279,35 +279,35 @@ class FitResult:
         # Use hessian errors for initialization spread, or small value if fixed/zero
         stds = np.array([self.minuit.errors[p] if self.minuit.errors[p] > 0 else 1e-4 * abs(v) + 1e-8
                          for p, v in zip(float_params, p0_float)])
-        
+
         pos = p0_float + stds * 1e-1 * np.random.randn(n_walkers, ndim)
-        
+
         # Run emcee
         self.sampler = emcee.EnsembleSampler(n_walkers, ndim, log_prob)
         self.sampler.run_mcmc(pos, n_steps, progress=progress)
-        
+
         # Save flattened samples (discarding burn-in)
         self.samples = self.sampler.get_chain(discard=burn_in, flat=True)
         self.mcmc_labels = float_params
-        
+
         return self.sampler
 
     def plot_corner(self, **kwargs):
         """Plot corner plot of MCMC samples."""
-        if corner is None: 
+        if corner is None:
             raise ImportError("Please install 'corner' to use plot_corner.")
-        if self.samples is None: 
+        if self.samples is None:
             raise RuntimeError("Run .run_mcmc() first.")
-        
+
         # Show BestFit truth lines
         if self.mcmc_labels:
             truths = [self.minuit.values[p] for p in self.mcmc_labels]
             kwargs.setdefault('truths', truths)
             kwargs.setdefault('labels', self.mcmc_labels)
-        
+
         return corner.corner(self.samples, **kwargs)
 
-def fit_series(series, model, x_range=None, sigma=None, 
+def fit_series(series, model, x_range=None, sigma=None,
                p0=None, limits=None, fixed=None, **kwargs):
     """
     Fit a Series object using iminuit.
@@ -317,14 +317,14 @@ def fit_series(series, model, x_range=None, sigma=None,
     if isinstance(model, str):
         model_name = model
         model = get_model(model_name)
-        
+
     # 1. データの準備 (Crop & Unit Stripping)
     target = series.crop(*x_range) if x_range else series
-    
+
     # x軸の取得
     x_label = 'x'
     y_label = 'y'
-    
+
     if hasattr(target, 'frequencies'):
         x = target.frequencies.value
         x_label = 'Frequency'
@@ -339,9 +339,9 @@ def fit_series(series, model, x_range=None, sigma=None,
         x = target.xindex.value
         if hasattr(target, 'xunit') and str(target.xunit) != 'dimensionless':
              x_label += f" [{target.xunit}]"
-        
+
     y = target.value
-    
+
     # Determine y-label
     if hasattr(target, 'unit') and str(target.unit) != 'dimensionless':
         y_label_unit = f"[{target.unit}]"
@@ -391,15 +391,16 @@ def fit_series(series, model, x_range=None, sigma=None,
                              if len(sigma_arr) == len(y):
                                  dy = sigma_arr
                              else:
-                                 # Try to find overlap if both are Series? 
+                                 # Try to find overlap if both are Series?
                                  # For now, if auto-crop fails, stay with sigma_arr and let length check catch it.
                                  pass
-                         except: pass
+                         except TypeError:
+                             pass
                 else:
                     dy = sigma_arr
             else:
                 dy = sigma_arr
-        
+
         # Final length check
         if len(dy) != len(y):
             raise ValueError(f"Sigma length mismatch: got {len(dy)}, expected {len(y)}")
@@ -412,12 +413,12 @@ def fit_series(series, model, x_range=None, sigma=None,
         cost = ComplexLeastSquares(x, y, dy, model)
     else:
         cost = RealLeastSquares(x, y, dy, model)
-    
+
     # 3. Minuit 初期化
     # Get parameter names from the cost function (which got them from model)
     param_names = describe(cost)
     sig = inspect.signature(model)
-    
+
     init_params = {}
     for name in param_names:
         if p0 and name in p0:
@@ -427,20 +428,20 @@ def fit_series(series, model, x_range=None, sigma=None,
         else:
             # Fallback for parameters without p0 or default
             init_params[name] = 1.0
-            
+
     m = Minuit(cost, **init_params)
-    
+
     # 4. Limit / Fix の適用
     if limits:
         for name, (vmin, vmax) in limits.items():
             m.limits[name] = (vmin, vmax)
-            
+
     if fixed:
         for name in fixed:
             m.fixed[name] = True
-            
+
     # 5. 実行
     m.migrad()
     m.hesse()
-    
+
     return FitResult(m, model, x, y, sigma_for_result, cost, x_label=x_label, y_label=y_label)

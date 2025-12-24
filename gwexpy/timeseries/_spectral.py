@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 class TimeSeriesSpectralMixin:
     """
     Mixin class providing spectral transform methods for TimeSeries.
-    
+
     This mixin is designed to be combined with TimeSeriesCore to create
     the full TimeSeries class. It provides frequency-domain transformations
     and time-frequency analysis methods.
@@ -105,7 +105,7 @@ class TimeSeriesSpectralMixin:
             The DFT of the TimeSeries.
         """
         self._check_regular("fft")
-        
+
         # 1. GWpy compatible mode (default)
         if mode == "gwpy":
             if (
@@ -297,23 +297,23 @@ class TimeSeriesSpectralMixin:
             )
 
         data = self._prepare_data_for_transform(window=window, detrend=detrend)
-        
+
         # DCT
         out_dct = scipy.fft.dct(data, type=type, norm=norm)
-        
+
         # Frequencies
         N = len(data)
         if self.dt is None:
              raise ValueError("TimeSeries must have a valid dt for DCT frequency calculation")
-             
+
         dt = self.dt.to("s").value
         k = np.arange(N)
         freqs_val = k / (2 * N * dt)
-        
+
         frequencies = u.Quantity(freqs_val, "Hz")
-        
+
         from gwexpy.frequencyseries import FrequencySeries
-        
+
         fs = FrequencySeries(
             out_dct,
             frequencies=frequencies,
@@ -322,7 +322,7 @@ class TimeSeriesSpectralMixin:
             channel=self.channel,
             epoch=self.epoch
         )
-        
+
         # Metadata
         fs.transform = "dct"
         fs.dct_type = type
@@ -363,7 +363,7 @@ class TimeSeriesSpectralMixin:
         sigma : `float` or `astropy.units.Quantity`, optional
             Real part of the Laplace variable s (1/s). Default 0.0.
         frequencies : `numpy.ndarray` or `astropy.units.Quantity`, optional
-            Frequencies for the imaginary part of s (Hz). 
+            Frequencies for the imaginary part of s (Hz).
             If None, defaults to `np.fft.rfftfreq(n, d=dt)`.
         t_start : `float` or `astropy.units.Quantity`, optional
             Start time relative to the beginning of the TimeSeries (seconds).
@@ -388,14 +388,14 @@ class TimeSeriesSpectralMixin:
             The Laplace transform result (complex).
         """
         self._check_regular("laplace")
-        
+
         n_total = len(self)
         if self.dt is None:
              raise ValueError("TimeSeries must have a valid dt for Laplace transform")
-        
+
         dt_val = self.dt.to("s").value
         fs_rate = 1.0 / dt_val
-        
+
         def resolve_time_arg(arg, default_idx):
              if arg is None:
                   return default_idx
@@ -408,17 +408,17 @@ class TimeSeriesSpectralMixin:
 
         idx_start = resolve_time_arg(t_start, 0)
         idx_stop = resolve_time_arg(t_stop, n_total)
-        
+
         if idx_stop <= idx_start:
              raise ValueError(f"Invalid time range: t_start index {idx_start} >= t_stop index {idx_stop}")
-             
+
         # Extract data segment
         data = self.value[idx_start:idx_stop]
-        
+
         # Preprocessing
         data = self._prepare_data_for_transform(data=data, window=window, detrend=detrend)
         n = len(data)
-             
+
         # Frequency Axis
         if frequencies is None:
              freqs_val = np.fft.rfftfreq(n, d=dt_val)
@@ -430,25 +430,25 @@ class TimeSeriesSpectralMixin:
              else:
                   freqs_val = np.asarray(frequencies)
                   freqs_quant = u.Quantity(freqs_val, "Hz")
-                  
+
         # Sigma
         if isinstance(sigma, u.Quantity):
              sigma_val = sigma.to("1/s").value
         else:
              sigma_val = float(sigma)
-             
+
         # Computation
         tau = np.arange(n) * dt_val
-        
+
         # Determine output dtype
         if dtype is None:
              out_dtype = np.result_type(data.dtype, np.complex128)
         else:
              out_dtype = dtype
-             
+
         n_freqs = len(freqs_val)
         out_data = np.zeros(n_freqs, dtype=out_dtype)
-        
+
         # Factor for normalization
         if normalize == "integral":
              norm_factor = dt_val
@@ -456,7 +456,7 @@ class TimeSeriesSpectralMixin:
              norm_factor = 1.0 / n
         else:
              raise ValueError(f"Unknown normalize mode: {normalize}")
-             
+
         if chunk_size is None:
              # Heuristic: limit the size of intermediate complex matrices
              max_elements = 10_000_000
@@ -473,21 +473,21 @@ class TimeSeriesSpectralMixin:
         for i in range(0, n_freqs, chunk_size):
              end = min(i + chunk_size, n_freqs)
              f_chunk = freqs_val[i:end]
-             
+
              phase_chunk = 2 * np.pi * f_chunk[:, None] * tau[None, :]
              complex_exp_chunk = np.exp(-1j * phase_chunk)
-             
+
              out_data[i:end] = np.dot(complex_exp_chunk, data_weighted) * norm_factor
 
         # Create Output
         from gwexpy.frequencyseries import FrequencySeries
-        
+
         # Propagate units
         if normalize == "integral":
              out_unit = self.unit * u.s
         else:
              out_unit = self.unit
-             
+
         fs = FrequencySeries(
             out_data,
             epoch=self.epoch,
@@ -496,10 +496,10 @@ class TimeSeriesSpectralMixin:
             channel=self.channel,
             **kwargs,
         )
-        
+
         fs.frequencies = freqs_quant
         fs.laplace_sigma = sigma_val
-        
+
         return fs
 
     # ===============================
@@ -545,7 +545,7 @@ class TimeSeriesSpectralMixin:
             )
 
         data = self._prepare_data_for_transform(window=window, detrend=detrend)
-        
+
         if kind == "complex":
              spec = scipy.fft.rfft(data)
              if eps is not None:
@@ -553,7 +553,7 @@ class TimeSeriesSpectralMixin:
              with np.errstate(divide='ignore', invalid='ignore'):
                   log_spec = np.log(spec)
              ceps = scipy.fft.irfft(log_spec, n=len(data))
-             
+
         elif kind == "real":
              spec = scipy.fft.rfft(data)
              mag = np.abs(spec)
@@ -562,7 +562,7 @@ class TimeSeriesSpectralMixin:
              with np.errstate(divide='ignore'):
                   log_mag = np.log(mag)
              ceps = scipy.fft.irfft(log_mag, n=len(data))
-             
+
         elif kind == "power":
              spec = scipy.fft.rfft(data)
              pwr = np.abs(spec)**2
@@ -571,7 +571,7 @@ class TimeSeriesSpectralMixin:
              with np.errstate(divide='ignore'):
                   log_pwr = np.log(pwr)
              ceps = scipy.fft.irfft(log_pwr, n=len(data))
-             
+
         else:
              raise ValueError(f"Unknown cepstrum kind: {kind}")
 
@@ -580,28 +580,28 @@ class TimeSeriesSpectralMixin:
              dt = 1.0
         else:
              dt = self.dt.to("s").value
-             
+
         n = len(ceps)
         quefrencies = np.arange(n) * dt
         quefrencies = u.Quantity(quefrencies, "s")
-        
+
         from gwexpy.frequencyseries import FrequencySeries
-        
+
         fs = FrequencySeries(
             ceps,
-            frequencies=quefrencies, 
+            frequencies=quefrencies,
             unit=u.dimensionless_unscaled,
             name=self.name + "_cepstrum" if self.name else "cepstrum",
             channel=self.channel,
             epoch=self.epoch
         )
-        
+
         fs.axis_type = "quefrency"
         fs.transform = "cepstrum"
         fs.cepstrum_kind = kind
         fs.original_n = len(data)
         fs.dt = self.dt
-        
+
         return fs
 
     # ===============================
@@ -647,7 +647,7 @@ class TimeSeriesSpectralMixin:
         out : `gwpy.spectrogram.Spectrogram` or `(ndarray, freqs)`
         """
         self._check_regular("cwt")
-        
+
         try:
              import pywt
              import scipy.signal
@@ -658,22 +658,22 @@ class TimeSeriesSpectralMixin:
              )
 
         data = self._prepare_data_for_transform(window=window, detrend=detrend)
-             
+
         # Resolve widths(scales)/frequencies
         dt = self.dt.to("s").value
-        
+
         if frequencies is not None:
              if widths is not None:
                   raise ValueError("Cannot specify both widths(scales) and frequencies")
-             
+
              freqs_quant = u.Quantity(frequencies, "Hz")
              freqs_arr = freqs_quant.value
-             
+
              center_freq = pywt.scale2frequency(wavelet, 1)
-             
+
              with np.errstate(divide='ignore'):
                  scales = center_freq / (freqs_arr * dt)
-             
+
         elif widths is None:
              raise ValueError("Must specify either widths(scales) or frequencies")
         else:
@@ -696,28 +696,28 @@ class TimeSeriesSpectralMixin:
              c_scales = scales[i : i + chunk_size]
              c_coefs, _ = pywt.cwt(data, c_scales, wavelet, sampling_period=dt, **kwargs)
              coefs_list.append(c_coefs)
-             
+
         coefs = np.vstack(coefs_list) if len(coefs_list) > 1 else coefs_list[0]
-        
+
         freqs_quant = u.Quantity(freqs_arr, "Hz")
 
         if output == "ndarray":
              return coefs, freqs_quant
-        
+
         elif output == "spectrogram":
              try:
                   from gwpy.spectrogram import Spectrogram
              except ImportError:
                   return coefs, freqs_quant
-             
+
              # Transpose to (time, freq) for GWpy Spectrogram
              out_spec = coefs.T
-             
+
              # Sort frequencies
              idx_sorted = np.argsort(freqs_arr)
              freqs_sorted = freqs_arr[idx_sorted]
              out_spec_sorted = out_spec[:, idx_sorted]
-             
+
              return Spectrogram(
                  out_spec_sorted,
                  times=self.times,
@@ -787,7 +787,7 @@ class TimeSeriesSpectralMixin:
                   np.random.seed(random_state)
 
         data = self.value
-        
+
         # Initialize EMD/EEMD
         if method.lower() == "eemd":
              decomposer = PyEMD.EEMD(trials=eemd_trials, noise_width=eemd_noise_std)
@@ -811,7 +811,7 @@ class TimeSeriesSpectralMixin:
                       T=None,
                       max_imf=max_imf if max_imf is not None else -1,
                   )
-             
+
         elif method.lower() == "emd":
              decomposer = PyEMD.EMD()
              imfs_array = decomposer.emd(data, T=None, max_imf=max_imf if max_imf is not None else -1)
@@ -819,12 +819,12 @@ class TimeSeriesSpectralMixin:
              raise ValueError(f"Unknown EMD method: {method}")
 
         n_rows = imfs_array.shape[0]
-        
+
         from .collections import TimeSeriesDict
         out_dict = TimeSeriesDict()
-        
+
         n_imfs = n_rows - 1
-        
+
         for i in range(n_imfs):
              key = f"IMF{i+1}"
              out_dict[key] = self.__class__(
@@ -833,9 +833,9 @@ class TimeSeriesSpectralMixin:
                   dt=self.dt,
                   unit=self.unit,
                   name=f"{self.name}_{key}" if self.name else key,
-                  channel=self.channel 
+                  channel=self.channel
              )
-             
+
         if return_residual:
              key = "residual"
              out_dict[key] = self.__class__(
@@ -846,7 +846,7 @@ class TimeSeriesSpectralMixin:
                   name=f"{self.name}_{key}" if self.name else key,
                   channel=self.channel
              )
-             
+
         return out_dict
 
     # ===============================
@@ -869,7 +869,7 @@ class TimeSeriesSpectralMixin:
         """
         # 1. Analytic Signal
         analytic = self.analytic_signal()
-        
+
         # 2. Amplitude
         amp = np.abs(analytic.value)
         amplitude = self.__class__(
@@ -880,12 +880,12 @@ class TimeSeriesSpectralMixin:
              name=f"{self.name}_IA" if self.name else "IA",
              channel=self.channel,
         )
-        
+
         # 3. Phase
         pha = np.angle(analytic.value)
         if unwrap_phase:
              pha = np.unwrap(pha)
-             
+
         phase = self.__class__(
              pha,
              t0=self.t0,
@@ -894,15 +894,15 @@ class TimeSeriesSpectralMixin:
              name=f"{self.name}_Phase" if self.name else "Phase",
              channel=self.channel
         )
-        
+
         # 4. Instantaneous Frequency
         if self.dt is None:
              raise ValueError("dt is required for Instantaneous Frequency")
         dt_val = self.dt.to("s").value
-        
+
         dphi = np.gradient(pha, dt_val)
         freq_val = dphi / (2 * np.pi)
-        
+
         frequency = self.__class__(
              freq_val,
              t0=self.t0,
@@ -911,10 +911,10 @@ class TimeSeriesSpectralMixin:
              name=f"{self.name}_IF" if self.name else "IF",
              channel=self.channel
         )
-        
+
         if frequency_unit != "Hz":
              frequency = frequency.to(frequency_unit)
-             
+
         return {
              "analytic": analytic,
              "amplitude": amplitude,
@@ -956,24 +956,24 @@ class TimeSeriesSpectralMixin:
              emd_kwargs = {}
         if hilbert_kwargs is None:
              hilbert_kwargs = {}
-             
+
         # 1. EMD
         imfs = self.emd(method=emd_method, **emd_kwargs)
-        
+
         # 2. HSA for each IMF
         from .collections import TimeSeriesDict
         ia_dict = TimeSeriesDict()
         if_dict = TimeSeriesDict()
-        
+
         residual = None
         if "residual" in imfs:
              residual = imfs.pop("residual")
-             
+
         for key, imf in imfs.items():
              res = imf.hilbert_analysis(**hilbert_kwargs)
              ia_dict[key] = res["amplitude"]
              if_dict[key] = res["frequency"]
-             
+
         if output == "dict":
              return {
                   "imfs": imfs,
@@ -981,45 +981,45 @@ class TimeSeriesSpectralMixin:
                   "if": if_dict,
                   "residual": residual
              }
-             
+
         elif output == "spectrogram":
              # 3. Construct Hilbert Spectrum (Spectrogram)
              fs_rate = self.sample_rate.to("Hz").value
              nyquist = fs_rate / 2.0
-             
+
              n_bins = 100
              freq_bins = np.linspace(0, nyquist, n_bins + 1)
-             
+
              n_time = len(self)
-             
+
              keys = list(imfs.keys())
              if not keys:
                   return None
-                  
+
              if_stack = np.stack([if_dict[k].value for k in keys])
              ia_stack = np.stack([ia_dict[k].value for k in keys])
-             
+
              # Digitize frequencies
              inds = np.digitize(if_stack, freq_bins) - 1
-             
+
              # Valid indices
              mask = (inds >= 0) & (inds < n_bins)
-             
+
              # Target grid: (N_Time, N_Bins)
              grid = np.zeros((n_time, n_bins))
-             
+
              for k in range(len(keys)):
                   valid = mask[k]
                   t_inds = np.arange(n_time)[valid]
                   f_inds = inds[k][valid]
                   energies = ia_stack[k][valid] ** 2
-                  
+
                   np.add.at(grid, (t_inds, f_inds), energies)
-                  
+
              from gwpy.spectrogram import Spectrogram
-             
+
              freq_centers = (freq_bins[:-1] + freq_bins[1:]) / 2.0
-             
+
              return Spectrogram(
                   grid,
                   times=self.times,

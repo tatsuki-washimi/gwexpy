@@ -14,7 +14,7 @@ def _get_label(obj, unit, default_name="x"):
 def _extract_error_array(series, error):
     """Internal helper to extract a matching error array from various types."""
     from astropy import units as u
-    
+
     # If it's a gwpy/gwexpy Series
     if hasattr(error, "value") and hasattr(error, "xindex"):
         if len(error) != len(series):
@@ -22,7 +22,7 @@ def _extract_error_array(series, error):
         # Check xindex matching (optional check, maybe too strict if slightly shifted?)
         # For now, just extract value
         return to_plain_array(error.value)
-    
+
     # If it's an astropy Quantity
     if isinstance(error, u.Quantity):
         if error.shape != series.shape:
@@ -32,8 +32,8 @@ def _extract_error_array(series, error):
             try:
                 return error.to(series.unit).value
             except u.UnitConversionError:
-                # If not convertible, just use raw value but warn? 
-                # User might be passing relative error or something. 
+                # If not convertible, just use raw value but warn?
+                # User might be passing relative error or something.
                 # But requirement says "same unit".
                 pass
         return error.value
@@ -49,29 +49,29 @@ def to_tgraph(series, error=None):
     Convert 1D Series to ROOT TGraph or TGraphErrors.
     """
     ROOT = require_optional("ROOT")
-    
+
     x = to_plain_array(series.xindex).astype(float)
     y = to_plain_array(series.value).astype(float)
     n = len(x)
-    
+
     if error is not None:
         ey = _extract_error_array(series, error).astype(float)
         ex = np.zeros(n)
         graph = ROOT.TGraphErrors(n, x, y, ex, ey)
     else:
         graph = ROOT.TGraph(n, x, y)
-        
+
     name = str(series.name or "graph")
     graph.SetName(name)
     graph.SetTitle(name)
-    
+
     # Axis labels
     str(series.xunit) if hasattr(series, "xunit") else ""
     str(series.unit) if hasattr(series, "unit") else ""
-    
+
     graph.GetXaxis().SetTitle(_get_label(series.xindex, series.xunit, default_name="x"))
     graph.GetYaxis().SetTitle(_get_label(series, series.unit, default_name="y"))
-    
+
     return graph
 
 def to_th1d(series, error=None):
@@ -79,24 +79,24 @@ def to_th1d(series, error=None):
     Convert 1D Series to ROOT TH1D.
     """
     ROOT = require_optional("ROOT")
-    
+
     x = to_plain_array(series.xindex).astype(float)
     y = to_plain_array(series.value).astype(float)
     n = len(x)
-    
+
     if n < 2:
         raise ValueError("Series must have at least 2 points for TH1D")
 
     # Determine binning
     # TH1D requires bin edges. Series usually represents bin centers or samples.
     # We assume regular if possible, or use variable bins.
-    
+
     dx_vals = np.diff(x)
     is_regular = np.allclose(dx_vals, dx_vals[0])
-    
+
     name = str(series.name or "hist")
     title = name
-    
+
     if is_regular:
         dx = dx_vals[0]
         xlow = x[0] - dx/2.0
@@ -111,26 +111,26 @@ def to_th1d(series, error=None):
         edges[0] = x[0] - (edges[1] - x[0])
         edges[-1] = x[-1] + (x[-1] - edges[-2])
         hist = ROOT.TH1D(name, title, n, edges)
-        
+
     # Fill bins (vectorized)
     # TH1 has n+2 bins (0=underflow, n+1=overflow)
     content = np.zeros(n + 2, dtype=np.float64)
     content[1:-1] = y
     hist.SetContent(content)
-        
+
     if error is not None:
         ey = _extract_error_array(series, error).astype(float)
         # Check if SetError is available (usually is for TH1)
         err_content = np.zeros(n + 2, dtype=np.float64)
         err_content[1:-1] = ey
         hist.SetError(err_content)
-            
+
     # Labels
     str(series.xunit) if hasattr(series, "xunit") else ""
     str(series.unit) if hasattr(series, "unit") else ""
     hist.GetXaxis().SetTitle(_get_label(series.xindex, series.xunit, default_name="x"))
     hist.GetYaxis().SetTitle(_get_label(series, series.unit, default_name="y"))
-    
+
     return hist
 
 def to_th2d(spec, error=None):
@@ -138,14 +138,14 @@ def to_th2d(spec, error=None):
     Convert Spectrogram to ROOT TH2D.
     """
     ROOT = require_optional("ROOT")
-    
+
     times = to_plain_array(spec.times).astype(float)
     freqs = to_plain_array(spec.frequencies).astype(float)
     data = to_plain_array(spec.value).astype(float)
-    
+
     nt = len(times)
     nf = len(freqs)
-    
+
     # helper for edges
     def _get_edges(arr):
         if len(arr) < 2:
@@ -163,22 +163,22 @@ def to_th2d(spec, error=None):
 
     t_edges = _get_edges(times)
     f_edges = _get_edges(freqs)
-    
+
     name = str(spec.name or "spectrogram")
     hist = ROOT.TH2D(name, name, nt, t_edges, nf, f_edges)
-    
+
     # Fill (vectorized)
     # ROOT stores data as linearized array with index = x + (nx+2)*y
     # This corresponds to a C-style flattened array of shape (ny+2, nx+2)
     # where y is major (slow) and x is minor (fast).
     # We construct the 2D array in (ny+2, nx+2) shape, then flatten.
-    
+
     full_content = np.zeros((nf + 2, nt + 2), dtype=np.float64)
     # Assign data. data is (nt, nf) -> tranpose to (nf, nt) to match [y, x]
     full_content[1:-1, 1:-1] = data.T
-    
+
     hist.SetContent(full_content.flatten())
-            
+
     if error is not None:
         err_arr = np.asarray(error).astype(float)
         if err_arr.shape != data.shape:
@@ -186,12 +186,12 @@ def to_th2d(spec, error=None):
         full_error = np.zeros((nf + 2, nt + 2), dtype=np.float64)
         full_error[1:-1, 1:-1] = err_arr.T
         hist.SetError(full_error.flatten())
-                
+
     # Labels
     hist.GetXaxis().SetTitle(_get_label(spec.times, spec.times.unit, default_name="time"))
     hist.GetYaxis().SetTitle(_get_label(spec.frequencies, spec.frequencies.unit, default_name="frequency"))
     hist.GetZaxis().SetTitle(_get_label(spec, spec.unit, default_name="value"))
-    
+
     return hist
 
 def from_root(cls, obj, return_error=False):
@@ -199,15 +199,15 @@ def from_root(cls, obj, return_error=False):
     Create Series (TimeSeries or FrequencySeries) from ROOT TGraph or TH1.
     """
     ROOT = require_optional("ROOT")
-    
+
     # Check type
     is_hist = isinstance(obj, ROOT.TH1)
     is_hist2d = isinstance(obj, ROOT.TH2)
     is_graph = isinstance(obj, ROOT.TGraph)
-    
+
     if not is_hist and not is_graph and not is_hist2d:
         raise TypeError(f"Object {obj} is neither TH1, TH2 nor TGraph")
-        
+
     if is_hist2d:
         nx = obj.GetNbinsX()
         ny = obj.GetNbinsY()
@@ -215,20 +215,20 @@ def from_root(cls, obj, return_error=False):
         y = np.array([obj.GetYaxis().GetBinCenter(j+1) for j in range(ny)])
         z = np.zeros((nx, ny))
         ez = np.zeros((nx, ny)) if return_error else None
-        
+
         # Optimize reading using GetArray (returns pointer to linearized array)
         # Array size is (nx+2)*(ny+2)
         total_size = (nx + 2) * (ny + 2)
         buff_ptr = obj.GetArray()
         # Copy to numpy
         arr_flat = np.frombuffer(buff_ptr, dtype=np.float64, count=total_size)
-        
+
         # Reshape to (ny+2, nx+2) to match ROOT layout [y][x]
         arr_2d = arr_flat.reshape((ny + 2, nx + 2))
-        
+
         # Extract central part and transpose to getting (nx, ny) -> (Time, Freq)
         z = arr_2d[1:-1, 1:-1].T.copy()
-        
+
         if return_error:
             # GetSumw2() usually stores errors squared? No GetBinError uses fSumw2 if present.
             # But direct access to errors might be tricky if fSumw2 is not just an array.
@@ -245,7 +245,7 @@ def from_root(cls, obj, return_error=False):
             else:
                 # Default Poisson errors
                 ez = np.sqrt(z)
-        
+
         # In GWpy Spectrogram, typically shape is (Time, Freq)
         name = obj.GetName()
         unit = None
@@ -256,7 +256,7 @@ def from_root(cls, obj, return_error=False):
              match = re.search(r"\[(.*?)\]", z_title)
              if match:
                  unit = match.group(1)
-             
+
         res = cls(z, times=x, frequencies=y, unit=unit, name=name)
         if return_error:
              err_res = cls(ez, times=x, frequencies=y, unit=unit, name=f"{name}_error")
@@ -267,11 +267,11 @@ def from_root(cls, obj, return_error=False):
         # TH1
         n = obj.GetNbinsX()
         x = np.array([obj.GetBinCenter(i+1) for i in range(n)])
-        
+
         buff_ptr = obj.GetArray()
         # buffer size n+2
         y = np.frombuffer(buff_ptr, dtype=np.float64, count=n+2)[1:-1].copy()
-        
+
         if return_error:
              if obj.GetSumw2N() > 0:
                  err_ptr = obj.GetSumw2().GetArray()
@@ -293,7 +293,7 @@ def from_root(cls, obj, return_error=False):
                  ey = np.zeros(n)
         else:
              ey = None
-             
+
     # Try to extract name and unit
     name = obj.GetName()
     title = obj.GetYaxis().GetTitle()
@@ -304,7 +304,7 @@ def from_root(cls, obj, return_error=False):
         match = re.search(r"\[(.*?)\]", title)
         if match:
             unit = match.group(1)
-            
+
     # Regularity check
     if n > 1:
         dx_vals = np.diff(x)
@@ -317,7 +317,7 @@ def from_root(cls, obj, return_error=False):
                 res = cls(y, times=x, unit=unit, name=name)
     else:
         res = cls(y, x0=float(x[0]) if n==1 else 0, unit=unit, name=name)
-        
+
     if return_error:
         # Create a matching series for error
         if "Frequency" in cls.__name__:
@@ -325,7 +325,7 @@ def from_root(cls, obj, return_error=False):
         else:
             err_res = cls(ey, times=x, unit=unit, name=f"{name}_error")
         return res, err_res
-        
+
     return res
 
 def to_tmultigraph(collection, name: Optional[str] = None) -> Any:
@@ -337,32 +337,32 @@ def to_tmultigraph(collection, name: Optional[str] = None) -> Any:
     title = name or getattr(collection, "name", "multigraph")
     mg.SetName(str(title))
     mg.SetTitle(str(title))
-    
+
     # Handle dict or list
     if hasattr(collection, "items"):
         items = collection.items()
     else:
         items = enumerate(collection)
-        
+
     for i, (key, series) in enumerate(items):
         if hasattr(series, "to_tgraph"):
             g = series.to_tgraph()
         else:
             g = to_tgraph(series)
-             
+
         # Set default colors (ROOT color cycle: 1=Black, 2=Red, 3=Green, 4=Blue, ...)
         # Skip 0 (White) and handle large i
         color = (i % 9) + 1
         g.SetLineColor(color)
         g.SetMarkerColor(color)
-        
+
         # Ensure it has a meaningful name in the legend
         if g.GetName() in ["graph", ""]:
              g.SetName(str(key))
              g.SetTitle(str(key))
-             
+
         mg.Add(g)
-        
+
     return mg
 
 def write_root_file(collection, filename: str, **kwargs: Any) -> None:
@@ -371,19 +371,19 @@ def write_root_file(collection, filename: str, **kwargs: Any) -> None:
     """
     ROOT = require_optional("ROOT")
     mode = kwargs.get("mode", "recreate")
-    
+
     # Save current directory to restore later
     old_dir = ROOT.gDirectory.GetDirectory("")
-    
+
     f = ROOT.TFile.Open(filename, mode)
     if not f or f.IsZombie():
         raise IOError(f"Failed to open {filename} for writing")
-        
+
     if hasattr(collection, "items"):
         items = collection.items()
     else:
         items = enumerate(collection)
-        
+
     for key, series in items:
         if hasattr(series, "to_th2d"):
              obj = series.to_th2d()
@@ -391,16 +391,16 @@ def write_root_file(collection, filename: str, **kwargs: Any) -> None:
              obj = series.to_tgraph()
         else:
              obj = to_tgraph(series)
-        
+
         # Determine a good name for the object in the ROOT file
         obj_name = str(key)
         if isinstance(key, int):
              # For lists, try to use the object's own name if it has one
              obj_name = getattr(series, "name", None) or str(key)
-             
+
         obj.SetName(str(obj_name))
         obj.Write()
-        
+
     f.Close()
     if old_dir:
         old_dir.cd()

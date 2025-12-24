@@ -54,7 +54,7 @@ def from_obspy(
 
     model_upper = model.upper()
     if model_upper in ["NHNM", "NLNM"]:
-        periods, psd_db = (spectral_estimation.get_nhnm() if model_upper == "NHNM" 
+        periods, psd_db = (spectral_estimation.get_nhnm() if model_upper == "NHNM"
                            else spectral_estimation.get_nlnm())
         base_unit = u.Unit("m / s^2 / Hz^(1/2)")
         is_seismic = True
@@ -80,7 +80,7 @@ def from_obspy(
         mask_new = frequencies > 0
         log_f_orig = np.log10(f_orig[mask_orig])
         log_asd_orig = np.log10(asd_orig[mask_orig])
-        
+
         asd = np.zeros_like(frequencies)
         if np.any(mask_new):
             log_f_new = np.log10(frequencies[mask_new])

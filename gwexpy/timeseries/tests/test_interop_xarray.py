@@ -16,14 +16,14 @@ def test_xarray_interop():
     dt = 0.5 * u.s
     data = np.random.randn(20)
     ts = TimeSeries(data, t0=t0, dt=dt, name="xr_test", unit="m")
-    
+
     # 1. to_xarray
     da = ts.to_xarray()
     assert isinstance(da, xr.DataArray)
     assert da.name == "xr_test"
     assert da.attrs["unit"] == "m"
     assert da.coords["time"].shape == (20,)
-    
+
     # 2. from_xarray
     ts_restored = TimeSeries.from_xarray(da)
     assert ts_restored.name == "xr_test"
