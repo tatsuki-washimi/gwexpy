@@ -162,8 +162,8 @@ class GraphPanel(QtWidgets.QFrame):
             active_chk = QtWidgets.QCheckBox("Active"); active_chk.setChecked(i==0)
             pl.addWidget(active_chk)
             gc = QtWidgets.QGroupBox("Channels"); gl = QtWidgets.QGridLayout(gc); gl.setContentsMargins(4,4,4,4)
-            gl.addWidget(QtWidgets.QLabel("A:"), 0, 0); ca = QtWidgets.QComboBox(); ca.addItems(channel_names); gl.addWidget(ca, 0, 1)
-            gl.addWidget(QtWidgets.QLabel("B:"), 1, 0); cb = QtWidgets.QComboBox(); cb.addItems(channel_names); gl.addWidget(cb, 1, 1)
+            gl.addWidget(QtWidgets.QLabel("A:"), 0, 0); ca = QtWidgets.QComboBox(); ca.setEditable(True); ca.addItems(channel_names); gl.addWidget(ca, 0, 1)
+            gl.addWidget(QtWidgets.QLabel("B:"), 1, 0); cb = QtWidgets.QComboBox(); cb.setEditable(True); cb.addItems(channel_names); gl.addWidget(cb, 1, 1)
             pl.addWidget(gc)
             gs = QtWidgets.QGroupBox("Style"); gls = QtWidgets.QGridLayout(gs); gls.setContentsMargins(4,4,4,4)
             lchk = QtWidgets.QCheckBox("Line"); lchk.setChecked(True); gls.addWidget(lchk, 0, 0)
@@ -243,9 +243,11 @@ class GraphPanel(QtWidgets.QFrame):
             if txt == "Time Series":
                 xaxis_title_edit.setText("Time"); yaxis_title_edit.setText("Amplitude")
                 rb_x_log.setChecked(False); rb_y_log.setChecked(False)
+                self.display_y_combo.setCurrentText("None")
             elif txt == "Spectrogram":
                 xaxis_title_edit.setText("Time"); yaxis_title_edit.setText("Frequency")
                 rb_x_log.setChecked(False); rb_y_log.setChecked(False)
+                self.display_y_combo.setCurrentText("Magnitude")
             elif "Coherence" in txt:
                 xaxis_title_edit.setText("Frequency"); yaxis_title_edit.setText("|Coherence|" if "Squared" not in txt else "Coherence^2")
                 rb_x_log.setChecked(True); rb_y_log.setChecked(False)
@@ -264,7 +266,7 @@ class GraphPanel(QtWidgets.QFrame):
         ugl.addWidget(QtWidgets.QLabel("Y:"), 1, 0); uya = QtWidgets.QComboBox(); uya.addItems(["-", "m", "V", "pk/rtHz"]); ugl.addWidget(uya, 1, 1)
         ul.addWidget(ug)
         dg = QtWidgets.QGroupBox("Display"); dgl = QtWidgets.QGridLayout(dg)
-        dgl.addWidget(QtWidgets.QLabel("Y:"), 1, 0); self.display_y_combo = QtWidgets.QComboBox(); self.display_y_combo.addItems(["Magnitude", "Phase", "dB"]); dgl.addWidget(self.display_y_combo, 1, 1)
+        dgl.addWidget(QtWidgets.QLabel("Y:"), 1, 0); self.display_y_combo = QtWidgets.QComboBox(); self.display_y_combo.addItems(["None", "Magnitude", "Phase", "dB"]); dgl.addWidget(self.display_y_combo, 1, 1)
         ul.addWidget(dg)
 
         # --- Cursor Tab ---

@@ -10,6 +10,7 @@ import products
 from normalize import normalize_series
 from engine import Engine
 from tabs import create_input_tab, create_measurement_tab, create_excitation_tab, create_result_tab
+from nds.cache import NDSDataCache
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -25,7 +26,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 menu.addAction("Exit").triggered.connect(self.close)
 
         self.tabs = QtWidgets.QTabWidget()
-        self.tabs.addTab(create_input_tab(), "Input")
+        input_tab, self.input_controls = create_input_tab()
+        self.tabs.addTab(input_tab, "Input")
         meas_tab, self.meas_controls = create_measurement_tab()
         self.tabs.addTab(meas_tab, "Measurement")
         self.tabs.addTab(create_excitation_tab(), "Excitation"); self.tabs.setTabEnabled(2, False)
@@ -35,6 +37,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.engine = Engine()
         self.loaded_products = {}; self.is_file_mode = False; self.is_loading_file = False
+        
+        # NDS Integration
+        self.nds_cache = NDSDataCache()
+        self.nds_cache.signal_data.connect(self.on_nds_data)
+        self.nds_latest_raw = None # Stores latest DataBufferDict
+        self.data_source = 'SIM' # SIM, FILE, NDS
+        
+        self.input_controls['ds_combo'].currentTextChanged.connect(self.on_source_changed)
 
         def connect_trace_combos(graph_info):
             for ctrl in graph_info['traces']:
@@ -57,18 +67,59 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.timer = QtCore.QTimer(); self.timer.timeout.connect(self.update_graphs); self.time_counter = 0.0
 
+    def on_source_changed(self, text):
+        self.data_source = text
+        if text == "NDS":
+             self.nds_latest_raw = None
+
+    def on_nds_data(self, buffers):
+        self.nds_latest_raw = buffers
+
     def start_animation(self):
         self.tabs.setCurrentIndex(3); self.btn_start.setEnabled(False); self.btn_pause.setEnabled(True); self.btn_resume.setEnabled(False); self.btn_abort.setEnabled(True)
-        self.is_file_mode = False; self.timer.start(50)
+        self.is_file_mode = False 
+        
+        # Read Data Source directly from UI to avoid signal issues
+        self.data_source = self.input_controls['ds_combo'].currentText()
+        print(f"DEBUG: start_animation called. DataSource: {self.data_source}")
+        
+        if self.data_source == 'NDS':
+            # Collect channels
+            channels = []
+            for info in [self.graph_info1, self.graph_info2]:
+                for ctrl in info['traces']:
+                    if ctrl['active'].isChecked():
+                         # Force current text update if needed
+                         ca = ctrl['chan_a'].currentText().strip()
+                         cb = ctrl['chan_b'].currentText().strip()
+                         print(f"DEBUG: Found channel input A: '{ca}', B: '{cb}'")
+                         
+                         # Filter out default SIM channels to avoid NDS errors
+                         sim_channels = ["HF_sine", "LF_sine", "beating_sine", "white_noise", "sine_plus_noise", "square_wave", "sawtooth_wave", "random_walk"]
+                         if ca and ca not in sim_channels: channels.append(ca)
+                         if cb and cb not in sim_channels: channels.append(cb)
+            
+            # Start NDS
+            print(f"DEBUG: Collected channels: {channels}")
+            self.nds_cache.set_channels(channels)
+            win_sec = self.input_controls['nds_win'].value()
+            self.nds_cache.online_start(lookback=win_sec)
+        
+        self.timer.start(50)
 
     def pause_animation(self):
         self.timer.stop(); self.btn_start.setEnabled(False); self.btn_pause.setEnabled(False); self.btn_resume.setEnabled(True); self.btn_abort.setEnabled(True)
+        if self.data_source == 'NDS': self.nds_cache.online_stop()
 
     def resume_animation(self):
         self.timer.start(50); self.btn_start.setEnabled(False); self.btn_pause.setEnabled(True); self.btn_resume.setEnabled(False); self.btn_abort.setEnabled(True)
+        if self.data_source == 'NDS': 
+             win = self.input_controls['nds_win'].value()
+             self.nds_cache.online_start(lookback=win)
 
     def stop_animation(self):
         self.timer.stop(); self.btn_start.setEnabled(True); self.btn_pause.setEnabled(False); self.btn_resume.setEnabled(False); self.btn_abort.setEnabled(True)
+        if self.data_source == 'NDS': self.nds_cache.reset(); self.nds_latest_raw = None
         for t_list in [self.traces1, self.traces2]:
             for t in t_list: t['curve'].setData([], []); t['bar'].setOpts(x=[0], height=[0]); t['img'].clear()
         self.time_counter = 0.0
@@ -81,12 +132,36 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def update_graphs(self):
         if self.is_file_mode: return
-        self.time_counter += 0.05; params = self.get_ui_params(); self.engine.configure(params)
-        duration = max(10.0, 2.0/params.get('bw', 1.0)); fs = 16384; t0 = self.time_counter; n = int(fs * duration); times = np.linspace(t0, t0 + duration, n, endpoint=False)
-        data_arrays = [np.sin(2*np.pi*500*times), np.sin(2*np.pi*50*times), np.sin(2*np.pi*100*times)+0.5*np.sin(2*np.pi*105*times), np.random.normal(0,1,n), np.sin(2*np.pi*200*times)+np.random.normal(0,0.5,n), np.sign(np.sin(2*np.pi*20*times)), 2*(times*5%1)-1, np.cumsum(np.random.normal(0,0.1,n))]
-        channel_names = ["HF_sine", "LF_sine", "beating_sine", "white_noise", "sine_plus_noise", "square_wave", "sawtooth_wave", "random_walk"]
-        data_map = {name: TimeSeries(arr, t0=t0, sample_rate=fs, name=name) for name, arr in zip(channel_names, data_arrays)}
+        
+        data_map = {}
+        
+        # NDS Mode Logic: Build data_map from buffers
+        if self.data_source == 'NDS':
+             if not self.nds_latest_raw: return
+             
+             for ch_name, buf in self.nds_latest_raw.items():
+                 y_vals = buf.data_map.get('raw')
+                 if y_vals is not None and len(y_vals) > 0 and len(buf.tarray) == len(y_vals):
+                     # Construct gwpy TimeSeries
+                     # Use buffer's gps_start and step
+                     ts = TimeSeries(y_vals, t0=buf.tarray[0], dt=buf.step, name=ch_name)
+                     data_map[ch_name] = ts
+             
+             if not data_map: return # No valid data yet
 
+        # SIM Logic: Generate fake data
+        else:
+            self.time_counter += 0.05; params = self.get_ui_params(); self.engine.configure(params)
+            duration = max(10.0, 2.0/params.get('bw', 1.0))
+            fs = 16384
+            t0 = self.time_counter
+            n = int(fs * duration)
+            times = np.linspace(t0, t0 + duration, n, endpoint=False)
+            
+            data_arrays = [np.sin(2*np.pi*500*times), np.sin(2*np.pi*50*times), np.sin(2*np.pi*100*times)+0.5*np.sin(2*np.pi*105*times), np.random.normal(0,1,n), np.sin(2*np.pi*200*times)+np.random.normal(0,0.5,n), np.sign(np.sin(2*np.pi*20*times)), 2*(times*5%1)-1, np.cumsum(np.random.normal(0,0.1,n))]
+            channel_names = ["HF_sine", "LF_sine", "beating_sine", "white_noise", "sine_plus_noise", "square_wave", "sawtooth_wave", "random_walk"]
+            data_map = {name: TimeSeries(arr, t0=t0, sample_rate=fs, name=name) for name, arr in zip(channel_names, data_arrays)}
+ 
         for plot_idx, info_root in enumerate([self.graph_info1, self.graph_info2]):
             try:
                 traces_items = [self.traces1, self.traces2][plot_idx]; g_type = info_root['graph_combo'].currentText()
@@ -109,6 +184,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         if disp == "dB": y_vals = (10 if "Power" in g_type or "Squared" in g_type else 20) * np.log10(np.abs(y_vals)+1e-20)
                         elif disp == "Phase": y_vals = np.angle(y_vals, deg=True) if np.iscomplexobj(y_vals) else np.zeros_like(y_vals)
                         elif disp == "Magnitude": y_vals = np.abs(y_vals)
+                        # "None" case does nothing, keeping y_vals as is
                         curve.setData(x_vals, y_vals)
                         if bar.isVisible(): bar.setOpts(x=x_vals, height=y_vals, width=(x_vals[1]-x_vals[0] if len(x_vals)>1 else 1))
                     except Exception as e:
@@ -138,7 +214,12 @@ class MainWindow(QtWidgets.QMainWindow):
                         ch_a, ch_b = ctrl['chan_a'].currentText(), ctrl['chan_b'].currentText()
                         key = ch_a if p_name in ["TS", "ASD", "PSD"] else (ch_b, ch_a)
                         val = items.get(key); res = normalize_series(val) if val is not None else None
-                        if res: x, d = res; traces[t_idx]['curve'].setData(x, d); traces[t_idx]['curve'].setVisible(True)
+                        if res:
+                            x, d = res; disp = info.get('units', {}).get('display_y').currentText()
+                            if disp == "dB": d = (10 if "Power" in g_type or "Squared" in g_type else 20) * np.log10(np.abs(d)+1e-20)
+                            elif disp == "Phase": d = np.angle(d, deg=True) if np.iscomplexobj(d) else np.zeros_like(d)
+                            elif disp == "Magnitude": d = np.abs(d)
+                            traces[t_idx]['curve'].setData(x, d); traces[t_idx]['curve'].setVisible(True)
                         else: traces[t_idx]['curve'].setVisible(False)
                     except Exception as e:
                         print(f"Error updating File Plot Graph {graph_idx+1} Trace {t_idx}: {e}")
