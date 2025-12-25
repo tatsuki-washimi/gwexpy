@@ -50,6 +50,9 @@ class MainWindow(QtWidgets.QMainWindow):
             for ctrl in graph_info['traces']:
                 if 'chan_a' in ctrl: ctrl['chan_a'].currentTextChanged.connect(self.on_trace_channel_changed)
                 if 'chan_b' in ctrl: ctrl['chan_b'].currentTextChanged.connect(self.on_trace_channel_changed)
+            # Also connect graph type combo
+            if 'graph_combo' in graph_info:
+                 graph_info['graph_combo'].currentTextChanged.connect(self.on_trace_channel_changed)
 
         connect_trace_combos(self.graph_info1); connect_trace_combos(self.graph_info2)
 
@@ -66,6 +69,40 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btn_resume.clicked.connect(self.resume_animation); self.btn_abort.clicked.connect(self.stop_animation)
 
         self.timer = QtCore.QTimer(); self.timer.timeout.connect(self.update_graphs); self.time_counter = 0.0
+        
+        # Connect Measurement Channel Updates
+        self.meas_controls['set_change_callback'](self.on_measurement_channel_changed)
+        # Initial sync
+        self.on_measurement_channel_changed()
+
+    def on_measurement_channel_changed(self):
+        # Update Result tab comboboxes based on active Measurement channels
+        active_channels = []
+        states = self.meas_controls['channel_states']
+        for s in states:
+            if s['active'] and s['name']:
+                active_channels.append(s['name'])
+        
+        # Update comboboxes in Result tab
+        # Note: We should preserve current selection if it is still valid
+        for info in [self.graph_info1, self.graph_info2]:
+            for ctrl in info['traces']:
+                for c_key in ['chan_a', 'chan_b']:
+                    if c_key in ctrl:
+                        combo = ctrl[c_key]
+                        current = combo.currentText()
+                        combo.blockSignals(True)
+                        combo.clear()
+                        combo.addItems(active_channels)
+                        
+                        # Restore previous selection if possible, otherwise default or empty
+                        idx = combo.findText(current)
+                        if idx != -1:
+                            combo.setCurrentIndex(idx)
+                        elif active_channels:
+                            combo.setCurrentIndex(0)
+                        
+                        combo.blockSignals(False)
 
     def on_source_changed(self, text):
         self.data_source = text
@@ -86,18 +123,14 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.data_source == 'NDS':
             # Collect channels
             channels = []
-            for info in [self.graph_info1, self.graph_info2]:
-                for ctrl in info['traces']:
-                    if ctrl['active'].isChecked():
-                         # Force current text update if needed
-                         ca = ctrl['chan_a'].currentText().strip()
-                         cb = ctrl['chan_b'].currentText().strip()
-                         print(f"DEBUG: Found channel input A: '{ca}', B: '{cb}'")
-                         
-                         # Filter out default SIM channels to avoid NDS errors
-                         sim_channels = ["HF_sine", "LF_sine", "beating_sine", "white_noise", "sine_plus_noise", "square_wave", "sawtooth_wave", "random_walk"]
-                         if ca and ca not in sim_channels: channels.append(ca)
-                         if cb and cb not in sim_channels: channels.append(cb)
+            # Use active channels from Measurement tab
+            states = self.meas_controls['channel_states']
+            for s in states:
+                if s['active'] and s['name']:
+                    # Filter out default SIM channels to avoid NDS errors if accidentally left
+                    sim_channels = ["HF_sine", "LF_sine", "beating_sine", "white_noise", "sine_plus_noise", "square_wave", "sawtooth_wave", "random_walk"]
+                    if s['name'] not in sim_channels:
+                        channels.append(s['name'])
             
             # Start NDS
             print(f"DEBUG: Collected channels: {channels}")
@@ -158,9 +191,24 @@ class MainWindow(QtWidgets.QMainWindow):
             n = int(fs * duration)
             times = np.linspace(t0, t0 + duration, n, endpoint=False)
             
-            data_arrays = [np.sin(2*np.pi*500*times), np.sin(2*np.pi*50*times), np.sin(2*np.pi*100*times)+0.5*np.sin(2*np.pi*105*times), np.random.normal(0,1,n), np.sin(2*np.pi*200*times)+np.random.normal(0,0.5,n), np.sign(np.sin(2*np.pi*20*times)), 2*(times*5%1)-1, np.cumsum(np.random.normal(0,0.1,n))]
-            channel_names = ["HF_sine", "LF_sine", "beating_sine", "white_noise", "sine_plus_noise", "square_wave", "sawtooth_wave", "random_walk"]
-            data_map = {name: TimeSeries(arr, t0=t0, sample_rate=fs, name=name) for name, arr in zip(channel_names, data_arrays)}
+            # Map of known simulation generators
+            sim_generators = {
+                "HF_sine": lambda ft: np.sin(2*np.pi*500*ft),
+                "LF_sine": lambda ft: np.sin(2*np.pi*50*ft),
+                "beating_sine": lambda ft: np.sin(2*np.pi*100*ft)+0.5*np.sin(2*np.pi*105*ft),
+                "white_noise": lambda ft: np.random.normal(0,1,len(ft)),
+                "sine_plus_noise": lambda ft: np.sin(2*np.pi*200*ft)+np.random.normal(0,0.5,len(ft)),
+                "square_wave": lambda ft: np.sign(np.sin(2*np.pi*20*ft)),
+                "sawtooth_wave": lambda ft: 2*(ft*5%1)-1,
+                "random_walk": lambda ft: np.cumsum(np.random.normal(0,0.1,len(ft)))
+            }
+            
+            # only generate for ACTIVE measurement channels
+            states = self.meas_controls['channel_states']
+            for s in states:
+                if s['active'] and s['name'] in sim_generators:
+                     arr = sim_generators[s['name']](times)
+                     data_map[s['name']] = TimeSeries(arr, t0=t0, sample_rate=fs, name=s['name'])
  
         for plot_idx, info_root in enumerate([self.graph_info1, self.graph_info2]):
             try:
@@ -235,9 +283,37 @@ class MainWindow(QtWidgets.QMainWindow):
             self.is_loading_file = True; products_dict = loaders.load_products(filename)
             if not products_dict: QtWidgets.QMessageBox.warning(self, "Error", "No products loaded"); self.is_loading_file = False; return
             self.loaded_products = products_dict; self.is_file_mode = True; self.timer.stop()
+            self.loaded_products = products_dict; self.is_file_mode = True; self.timer.stop()
             for tr_list in [self.traces1, self.traces2]:
                 for tr in tr_list: tr['curve'].setData([], []); tr['bar'].setOpts(height=[]); tr['img'].clear()
+            
+            # Extract common channels
             cols = products.extract_channels(products_dict)
+            
+            # --- XML Handling Logic ---
+            if filename.lower().endswith('.xml'):
+                # Use local XML parser to get Active states
+                xml_channels = loaders.extract_xml_channels(filename)
+                
+                # If XML parser returns nothing (e.g. non-DTT XML or parsing fail), fallback to cols
+                if not xml_channels:
+                     new_states = [{'name': c, 'active': True} for c in cols]
+                else:
+                     new_states = xml_channels
+                     
+                self.meas_controls['set_all_channels'](new_states)
+                
+                # We do NOT force-populate traces here for XML.
+                # Instead, we rely on user selection from the now-populated Measurement tab.
+                # However, to be friendly, we might want to auto-select something if nothing is selected?
+                # But DTT philosophy says: start fresh or restore exactly as saved.
+                # If the file had Saved Plot Settings, they would be handled separately.
+                # Here we just restore Measurement definitions.
+                
+                pass 
+                
+            # --- End XML Handling ---
+            
             for g_idx in [0,1]:
                 info = self.graph_info1 if g_idx==0 else self.graph_info2; p_name = list(products_dict.keys())[min(g_idx, len(products_dict)-1)]
                 ctype = "Time Series"
@@ -246,14 +322,34 @@ class MainWindow(QtWidgets.QMainWindow):
                 elif p_name == "COH": ctype = "Coherence"
                 elif p_name in ["TF", "STF"]: ctype = "Transfer Function"
                 info['graph_combo'].blockSignals(True); info['graph_combo'].setCurrentText(ctype); info['graph_combo'].blockSignals(False)
-                for t_idx, item_key in enumerate(list(products_dict[p_name].keys())[:8]):
+                
+                # For XML, we rely on the combo boxes being already populated by on_measurement_channel_changed.
+                # For non-XML (File mode legacy), we populate them directly here.
+                is_xml = filename.lower().endswith('.xml')
+                
+                # Auto-assign the first few channels to traces for visualization
+                available_keys = list(products_dict[p_name].keys())[:8]
+                for t_idx, item_key in enumerate(available_keys):
                     ctrl = info['traces'][t_idx]
-                    for c in ['chan_a', 'chan_b']:
-                        if c in ctrl: ctrl[c].clear(); ctrl[c].addItems(cols)
+                    
+                    if not is_xml:
+                        # Legacy behavior for non-XML: Populate combos directly
+                        for c in ['chan_a', 'chan_b']:
+                            if c in ctrl: ctrl[c].clear(); ctrl[c].addItems(cols)
+                    
+                    # Set selection
                     ca, cb = (str(item_key), "") if not isinstance(item_key, tuple) else (str(item_key[1]), str(item_key[0]))
-                    if 'chan_a' in ctrl: ctrl['chan_a'].setCurrentText(ca)
-                    if 'chan_b' in ctrl: ctrl['chan_b'].setCurrentText(cb)
+                    
+                    # For XML, check if these items exist in the combo (they should if populated from Meas tab)
+                    if 'chan_a' in ctrl: 
+                        if ctrl['chan_a'].findText(ca) == -1: ctrl['chan_a'].addItem(ca) # Fallback
+                        ctrl['chan_a'].setCurrentText(ca)
+                    if 'chan_b' in ctrl: 
+                        if ctrl['chan_b'].findText(cb) == -1: ctrl['chan_b'].addItem(cb) # Fallback
+                        ctrl['chan_b'].setCurrentText(cb)
+                        
                     ctrl['active'].setChecked(True)
+                        
             self.is_loading_file = False; self.update_file_plot()
         except Exception as e:
             self.is_loading_file = False; import traceback; traceback.print_exc(); QtWidgets.QMessageBox.critical(self, "Error", f"Failed: {e}")
