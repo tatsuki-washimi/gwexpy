@@ -104,6 +104,8 @@ def create_measurement_tab():
     outer = QtWidgets.QVBoxLayout(tab)
     outer.setContentsMargins(10, 10, 10, 10)
     outer.setSpacing(10)
+    
+    controls = {}
 
     # Group: Measurement
     gb_meas, vb = _create_group("Measurement", 'v')
@@ -132,38 +134,186 @@ def create_measurement_tab():
     hbox_banks.addStretch(1)
     v_chan.addLayout(hbox_banks)
     
+    # Channel State Management (96 channels)
+    # Default SIM channels for first 8
+    default_sim = ["HF_sine", "LF_sine", "beating_sine", "white_noise", "sine_plus_noise", "square_wave", "sawtooth_wave", "random_walk"]
+    channel_states = [{'active': False, 'name': ''} for _ in range(96)]
+    for i, name in enumerate(default_sim):
+        channel_states[i]['name'] = name
+
+    # Callback for external updates (Main Window)
+    meas_callback = None
+    
+    def on_widget_change():
+        # Save current state immediately to model
+        # Find which bank is active
+        active_bank = 0
+        for i, rb in enumerate(rb_list):
+            if rb.isChecked(): active_bank = i; break
+        
+        save_current_bank(active_bank)
+        
+        if meas_callback: meas_callback()
+
+    def save_current_bank(bank_idx):
+        start_ch = bank_idx * 16
+        for i in range(16): # 0-15 in grid
+            ch_idx = start_ch + i
+            # Grid logic: i=0..7 is col 1,2; i=8..15 is col 4,5
+            # We stored them in flat list chan_grid_refs
+            lbl, chk, cmb = chan_grid_refs[i]
+            channel_states[ch_idx]['active'] = chk.isChecked()
+            channel_states[ch_idx]['name'] = cmb.currentText()
+
+    def load_bank(bank_idx):
+        start_ch = bank_idx * 16
+        # Block signals to prevent recursion during load
+        for ref in chan_grid_refs:
+            ref[1].blockSignals(True); ref[2].blockSignals(True)
+
+        for i in range(16):
+            ch_idx = start_ch + i
+            state = channel_states[ch_idx]
+            lbl, chk, cmb = chan_grid_refs[i]
+            
+            lbl.setText(str(ch_idx))
+            chk.setChecked(state['active'])
+            
+            
+            # Ensure item exists in combo
+            txt = state['name']
+            if cmb.findText(txt) == -1: cmb.addItem(txt)
+            cmb.setCurrentText(txt)
+            
+        for ref in chan_grid_refs:
+            ref[1].blockSignals(False); ref[2].blockSignals(False)
+
+    def set_all_channels(new_channels):
+        """
+        External method to bulk update channel states.
+        new_channels: list of dict {'name': str, 'active': bool}
+        """
+        nonlocal channel_states
+        
+        # Reset all to defaults first
+        for s in channel_states:
+            s['name'] = ""
+            s['active'] = False
+            
+        # Update with provided info, up to 96
+        count = min(len(new_channels), 96)
+        for i in range(count):
+            item = new_channels[i]
+            channel_states[i]['name'] = item.get('name', '')
+            channel_states[i]['active'] = item.get('active', True)
+            
+        # Refresh current view
+        # We need to know current bank idx.
+        # But we don't have easy access to 'active_bank' var here outside on_widget_change.
+        # So we iterate radio buttons to find checked common one
+        curr_bank = 0
+        for i, rb in enumerate(rb_list):
+            if rb.isChecked():
+                curr_bank = i
+                break
+        load_bank(curr_bank)
+        
+        # Trigger external update if any
+        if meas_callback: meas_callback()
+
     # Grid of channels
     c_grid = QtWidgets.QGridLayout()
     c_grid.setContentsMargins(0,0,0,0)
     c_grid.setHorizontalSpacing(15)
     
     chan_grid_refs = []
+    # Pre-populate defaults for the combo boxes so they aren't empty
+    sim_channels = ["HF_sine", "LF_sine", "beating_sine", "white_noise", "sine_plus_noise", "square_wave", "sawtooth_wave", "random_walk"]
+    
     for i in range(8):
         # Left column (0-7)
         l_lbl = QtWidgets.QLabel(str(i)); c_grid.addWidget(l_lbl, i, 0)
-        c_grid.addWidget(QtWidgets.QCheckBox(), i, 1)
-        combo = QtWidgets.QComboBox(); combo.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        c_grid.addWidget(combo, i, 2)
+        l_chk = QtWidgets.QCheckBox(); c_grid.addWidget(l_chk, i, 1)
+        l_cmb = QtWidgets.QComboBox(); l_cmb.setEditable(True); l_cmb.addItems(sim_channels); l_cmb.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        c_grid.addWidget(l_cmb, i, 2)
         
-        # Right column (8-15)
+        # Right column (8-15) - offset by 8 in the loop logic for index, but visually same row
         r_lbl = QtWidgets.QLabel(str(i+8)); c_grid.addWidget(r_lbl, i, 3)
-        c_grid.addWidget(QtWidgets.QCheckBox(), i, 4)
-        combo2 = QtWidgets.QComboBox(); combo2.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        c_grid.addWidget(combo2, i, 5)
-        chan_grid_refs.append((l_lbl, r_lbl))
+        r_chk = QtWidgets.QCheckBox(); c_grid.addWidget(r_chk, i, 4)
+        r_cmb = QtWidgets.QComboBox(); r_cmb.setEditable(True); r_cmb.addItems(sim_channels); r_cmb.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        c_grid.addWidget(r_cmb, i, 5)
         
+        # Store refs: (label, checkbox, combobox)
+        # Note: We append 2 sets of refs per row loop
+        chan_grid_refs.append((l_lbl, l_chk, l_cmb)) # Index 0-7
+    
+    # Need to handle the second column refs correctly in the flat list
+    # The above loop adds 0-7. We need 8-15. 
+    # Let's refactor the loop slightly to be safer or just append correct objects.
+    # Actually, let's fix the loop to be cleaner and matching the flat 16 items expectation
+    
+    # RE-DOING GRID LOOP specifically to ensure chan_grid_refs has 16 items in order 0-15
+    # The previous loop structure was interlacing creation. 
+    # Let's clear and rebuild the grid layout logic correctly.
+    
+    # Clear any previous widgets (conceptually, though this is first run)
+    chan_grid_refs = []
+    
+    # Create 16 sets of widgets first
+    for i in range(16):
+        lbl = QtWidgets.QLabel(str(i))
+        chk = QtWidgets.QCheckBox()
+        cmb = QtWidgets.QComboBox(); cmb.setEditable(True); cmb.addItems(sim_channels); cmb.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        chk.toggled.connect(on_widget_change)
+        cmb.currentTextChanged.connect(on_widget_change)
+        chan_grid_refs.append((lbl, chk, cmb))
+        
+    # Add to layout
+    for i in range(8):
+        # Left: 0-7
+        l_widgets = chan_grid_refs[i]
+        c_grid.addWidget(l_widgets[0], i, 0)
+        c_grid.addWidget(l_widgets[1], i, 1)
+        c_grid.addWidget(l_widgets[2], i, 2)
+        
+        # Right: 8-15
+        r_widgets = chan_grid_refs[i+8]
+        c_grid.addWidget(r_widgets[0], i, 3)
+        c_grid.addWidget(r_widgets[1], i, 4)
+        c_grid.addWidget(r_widgets[2], i, 5)
+
     v_chan.addLayout(c_grid)
     outer.addWidget(gb_chan)
     
     def update_chan_bank(idx):
-        for i in range(8):
-            chan_grid_refs[i][0].setText(str(idx*16+i))
-            chan_grid_refs[i][1].setText(str(idx*16+i+8))
+        # Save previous bank (Note: checking which radio is checked is tricky if we are in the middle of a switch)
+        # Better: Since we only support 1 bank visible, we can just save the *current usage* before loading new.
+        # But `load_bank` overwrites widgets.
+        # The radio button `toggled` emits for the one turning OFF and the one turning ON.
+        # We only want to handle the one turning ON.
+        load_bank(idx)
+        
+    # Initial load
+    load_bank(0)
+
+    # We need to hook up radio buttons to save/load.
+    # When button X is clicked:
+    # 1. We should have already saved the previous state.
+    #    Issue: `toggled` happens. We don't easily know "previous".
+    #    Solution: The `on_widget_change` handles saving real-time. So the model `channel_states` is ALWAYS up to date for the *visible* bank.
+    #    So we only need `load_bank` when switching.
+    
     [rb.toggled.connect(lambda checked, idx=i: update_chan_bank(idx) if checked else None) for i, rb in enumerate(rb_list)]
+    
+    controls['channel_states'] = channel_states
+    def set_callback(cb):
+        nonlocal meas_callback
+        meas_callback = cb
+    controls['set_change_callback'] = set_callback
+    controls['set_all_channels'] = set_all_channels
 
     # Group: Fourier Tools
     gb_fft, g_fft = _create_group("Fourier Tools", 'grid')
-    controls = {}
     
     def _add_param(row, col, label, spin_widget, unit=None, key=None):
         g_fft.addWidget(QtWidgets.QLabel(label), row, col)
