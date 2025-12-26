@@ -333,7 +333,9 @@ def create_measurement_tab():
     c = _add_param(0, c, "Start:", _small_spin_dbl(width=80), "Hz", 'start_freq')
     c = _add_param(0, c, "Stop:", _small_spin_dbl(width=80, max_val=1e5), "Hz", 'stop_freq'); controls['stop_freq'].setValue(1000)
     c = _add_param(0, c, "BW:", _small_spin_dbl(width=80), "Hz", 'bw'); controls['bw'].setValue(1)
-    c = _add_param(0, c, "TimeSpan:", _small_spin_dbl(width=80), "s")
+    ts_spin = _small_spin_dbl(width=80) 
+    c = _add_param(0, c, "TimeSpan:", ts_spin, "s")
+    controls['time_span'] = ts_spin
     c = _add_param(0, c, "Settling Time:", _small_spin_dbl(width=80), "%")
     c = _add_param(0, c, "Ramp Down:", _small_spin_dbl(width=80), "Sec")
     c = _add_param(0, c, "Ramp Up:", _small_spin_dbl(width=80), "")
@@ -376,10 +378,51 @@ def create_measurement_tab():
     gb_time, g_time = _create_group("Start Time", 'grid')
     rb_now = QtWidgets.QRadioButton("Now", checked=True); g_time.addWidget(rb_now, 0, 0)
     rb_gps = QtWidgets.QRadioButton("GPS:"); g_time.addWidget(rb_gps, 1, 0)
-    g_time.addWidget(_small_spin_int(width=100, min_val=0), 1, 1); g_time.addWidget(QtWidgets.QLabel("sec"), 1, 2)
+    controls['rb_gps'] = rb_gps
+    
+    gps_spin = _small_spin_int(width=100, min_val=0, max_val=2000000000)
+    controls['start_gps'] = gps_spin
+    g_time.addWidget(gps_spin, 1, 1); g_time.addWidget(QtWidgets.QLabel("sec"), 1, 2)
     g_time.addWidget(_small_spin_int(width=80, min_val=0), 1, 3); g_time.addWidget(QtWidgets.QLabel("nsec"), 1, 4)
     rb_dt = QtWidgets.QRadioButton("Date/time:"); g_time.addWidget(rb_dt, 2, 0)
-    g_time.addWidget(QtWidgets.QDateEdit(QtCore.QDate.currentDate()), 2, 1); g_time.addWidget(QtWidgets.QTimeEdit(QtCore.QTime.currentTime()), 2, 2); g_time.addWidget(QtWidgets.QLabel("UTC"), 2, 3)
+    
+    date_edit = QtWidgets.QDateEdit(QtCore.QDate.currentDate())
+    time_edit = QtWidgets.QTimeEdit(QtCore.QTime.currentTime())
+    controls['start_date'] = date_edit; controls['start_time'] = time_edit
+    
+    # Sync Logic
+    def sync_gps_to_dt():
+        val = gps_spin.value()
+        try:
+            from astropy.time import Time
+            t = Time(val, format='gps', scale='utc').datetime
+            date_edit.blockSignals(True); time_edit.blockSignals(True)
+            date_edit.setDate(t.date()); time_edit.setTime(t.time())
+            date_edit.blockSignals(False); time_edit.blockSignals(False)
+        except Exception: pass
+
+    def sync_dt_to_gps():
+        d = date_edit.date().toPyDate(); t = time_edit.time().toPyTime()
+        import datetime
+        dt = datetime.datetime.combine(d, t)
+        try:
+            from astropy.time import Time
+            gps = int(Time(dt, format='datetime', scale='utc').gps)
+            gps_spin.blockSignals(True)
+            gps_spin.setValue(gps)
+            gps_spin.blockSignals(False)
+        except Exception: pass
+            
+    gps_spin.valueChanged.connect(sync_gps_to_dt)
+    date_edit.dateChanged.connect(sync_dt_to_gps)
+    time_edit.timeChanged.connect(sync_dt_to_gps)
+    
+    # Initial Sync (GPS to DT, assuming GPS 0 or default is not helpful, so maybe DT to GPS?)
+    # Actually, GPS spin defaults to 0. DT defaults to Now. 
+    # Let's sync DT -> GPS initially so GPS shows Now.
+    sync_dt_to_gps()
+
+    g_time.addWidget(date_edit, 2, 1); g_time.addWidget(time_edit, 2, 2); g_time.addWidget(QtWidgets.QLabel("UTC"), 2, 3)
     g_time.addWidget(QtWidgets.QRadioButton("In the future:"), 0, 6); g_time.addWidget(QtWidgets.QTimeEdit(), 0, 7); g_time.addWidget(QtWidgets.QLabel("hh:mm:ss"), 0, 8)
     g_time.addWidget(QtWidgets.QRadioButton("In the past:"), 1, 6); g_time.addWidget(QtWidgets.QTimeEdit(), 1, 7); g_time.addWidget(QtWidgets.QLabel("hh:mm:ss"), 1, 8)
     g_time.addWidget(QtWidgets.QPushButton("Time now"), 2, 6); g_time.addWidget(QtWidgets.QPushButton("Lookup..."), 2, 7)
@@ -389,7 +432,9 @@ def create_measurement_tab():
     # Group: Measurement Information
     gb_info, g_info = _create_group("Measurement Information", 'grid')
     g_info.addWidget(QtWidgets.QLabel("Measurement Time:"), 0, 0)
-    g_info.addWidget(QtWidgets.QLineEdit("06/01/1980 00:00:00 UTC"), 0, 1)
+    meas_time_edit = QtWidgets.QLineEdit("06/01/1980 00:00:00 UTC")
+    controls['meas_time_str'] = meas_time_edit
+    g_info.addWidget(meas_time_edit, 0, 1)
     g_info.addWidget(QtWidgets.QLabel("Comment / Description:"), 0, 2)
     outer.addWidget(gb_info)
     txt_comment = QtWidgets.QLineEdit(); txt_comment.setMinimumHeight(30)

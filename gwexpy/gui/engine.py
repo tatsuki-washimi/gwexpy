@@ -9,7 +9,11 @@ class Engine:
     def __init__(self):
         self.params = {}
         # Stores accumulation buffers or state if needed
+    def reset(self):
+        """Reset the engine state and parameters."""
+        self.params = {}
         self.state = {}
+        logger.info("Engine state reset.")
 
     def configure(self, params):
         """

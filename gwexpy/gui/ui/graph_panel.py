@@ -217,8 +217,12 @@ class GraphPanel(QtWidgets.QFrame):
 
         gy = QtWidgets.QGroupBox("Y axis"); gly = QtWidgets.QGridLayout(gy)
         gly.addWidget(QtWidgets.QLabel("Scale:"), 0, 0); rb_y_lin = QtWidgets.QRadioButton("linear"); rb_y_log = QtWidgets.QRadioButton("log"); rb_y_lin.setChecked(True)
+        self.rb_y_lin = rb_y_lin; self.rb_y_log = rb_y_log
+        bg_y_scale = QtWidgets.QButtonGroup(self); bg_y_scale.addButton(rb_y_lin); bg_y_scale.addButton(rb_y_log)
         hly1 = QtWidgets.QHBoxLayout(); hly1.addWidget(rb_y_lin); hly1.addWidget(rb_y_log); gly.addLayout(hly1, 0, 1)
         gly.addWidget(QtWidgets.QLabel("Range:"), 1, 0); rb_y_auto = QtWidgets.QRadioButton("automatic"); rb_y_man = QtWidgets.QRadioButton("manual"); rb_y_auto.setChecked(True)
+        self.rb_y_auto = rb_y_auto
+        bg_y_range = QtWidgets.QButtonGroup(self); bg_y_range.addButton(rb_y_auto); bg_y_range.addButton(rb_y_man)
         hly2 = QtWidgets.QHBoxLayout(); hly2.addWidget(rb_y_auto); hly2.addWidget(rb_y_man); gly.addLayout(hly2, 1, 1)
         gly.addWidget(QtWidgets.QLabel("From"), 2, 0); sb_y_from = _small_spin_dbl(2, 60); gly.addWidget(sb_y_from, 2, 1)
         gly.addWidget(QtWidgets.QLabel("To"), 2, 2); sb_y_to = _small_spin_dbl(2, 60, max_val=1e12); sb_y_to.setValue(1.1); gly.addWidget(sb_y_to, 2, 3)
@@ -226,8 +230,12 @@ class GraphPanel(QtWidgets.QFrame):
 
         gx = QtWidgets.QGroupBox("X axis"); glx = QtWidgets.QGridLayout(gx)
         glx.addWidget(QtWidgets.QLabel("Scale:"), 0, 0); rb_x_lin = QtWidgets.QRadioButton("linear"); rb_x_log = QtWidgets.QRadioButton("log"); rb_x_lin.setChecked(True)
+        self.rb_x_lin = rb_x_lin; self.rb_x_log = rb_x_log
+        bg_x_scale = QtWidgets.QButtonGroup(self); bg_x_scale.addButton(rb_x_lin); bg_x_scale.addButton(rb_x_log)
         hlx1 = QtWidgets.QHBoxLayout(); hlx1.addWidget(rb_x_lin); hlx1.addWidget(rb_x_log); glx.addLayout(hlx1, 0, 1)
         glx.addWidget(QtWidgets.QLabel("Range:"), 1, 0); rb_x_auto = QtWidgets.QRadioButton("automatic"); rb_x_man = QtWidgets.QRadioButton("manual"); rb_x_auto.setChecked(True)
+        self.rb_x_auto = rb_x_auto
+        bg_x_range = QtWidgets.QButtonGroup(self); bg_x_range.addButton(rb_x_auto); bg_x_range.addButton(rb_x_man)
         hlx2 = QtWidgets.QHBoxLayout(); hlx2.addWidget(rb_x_auto); hlx2.addWidget(rb_x_man); glx.addLayout(hlx2, 1, 1)
         glx.addWidget(QtWidgets.QLabel("From"), 2, 0); sb_x_from = _small_spin_dbl(2, 60); glx.addWidget(sb_x_from, 2, 1)
         glx.addWidget(QtWidgets.QLabel("To"), 2, 2); sb_x_to = _small_spin_dbl(2, 60, max_val=1e12); sb_x_to.setValue(10); glx.addWidget(sb_x_to, 2, 3)
@@ -242,19 +250,19 @@ class GraphPanel(QtWidgets.QFrame):
             style_title_edit.setText(txt)
             if txt == "Time Series":
                 xaxis_title_edit.setText("Time"); yaxis_title_edit.setText("Amplitude")
-                rb_x_log.setChecked(False); rb_y_log.setChecked(False)
+                rb_x_lin.setChecked(True); rb_y_lin.setChecked(True)
                 self.display_y_combo.setCurrentText("None")
             elif txt == "Spectrogram":
                 xaxis_title_edit.setText("Time"); yaxis_title_edit.setText("Frequency")
-                rb_x_log.setChecked(False); rb_y_log.setChecked(False)
+                rb_x_lin.setChecked(True); rb_y_log.setChecked(True)  # Y-axis log for Spectrogram
                 self.display_y_combo.setCurrentText("Magnitude")
             elif "Coherence" in txt:
                 xaxis_title_edit.setText("Frequency"); yaxis_title_edit.setText("|Coherence|" if "Squared" not in txt else "Coherence^2")
-                rb_x_log.setChecked(True); rb_y_log.setChecked(False)
+                rb_x_log.setChecked(True); rb_y_lin.setChecked(True)  # X-axis log only for Coherence
                 sb_y_from.setValue(0); sb_y_to.setValue(1); rb_y_man.setChecked(True)
-            else:
+            else:  # ASD, CSD, TF, etc.
                 xaxis_title_edit.setText("Frequency"); yaxis_title_edit.setText(txt)
-                rb_x_log.setChecked(True); rb_y_log.setChecked(True)
+                rb_x_log.setChecked(True); rb_y_log.setChecked(True)  # log-log for ASD, CSD, TF
             for i in range(8): update_style(i)
             update_range_logic()
         self.graph_combo.currentIndexChanged.connect(update_axis_labels)
@@ -342,6 +350,40 @@ class GraphPanel(QtWidgets.QFrame):
 
         self.tab_row2.setCurrentIndex(0)
         update_axis_labels()
+
+    def reset(self):
+        """Reset plot settings, axes, and clear data."""
+        self.graph_combo.blockSignals(True)
+        self.graph_combo.setCurrentIndex(0) # Time Series
+        self.graph_combo.blockSignals(False)
+        
+        # Reset trace selections
+        for ctrl in self.trace_controls:
+            ctrl['active'].setChecked(False)
+            if 'chan_a' in ctrl: ctrl['chan_a'].clear()
+            if 'chan_b' in ctrl: ctrl['chan_b'].clear()
+        
+        # Reset axis scale radio buttons to linear
+        self.rb_y_lin.setChecked(True)
+        self.rb_x_lin.setChecked(True)
+        self.rb_y_auto.setChecked(True)
+        self.rb_x_auto.setChecked(True)
+            
+        # Reset axis to linear and auto
+        self.target_plot.setLogMode(x=False, y=False)
+        self.target_plot.enableAutoRange()
+        self.target_plot.setLabel('bottom', "Time")
+        self.target_plot.setLabel('left', "Signal")
+        self.target_plot.setTitle(None)
+        
+        # Clear curves
+        for item in self.traces_items:
+            item['curve'].setData([], [])
+            item['bar'].setOpts(height=[])
+            item['img'].clear()
+        
+        # Sync UI labels
+        self.update_range_logic()
 
     def to_graph_info(self):
         return {
