@@ -79,7 +79,22 @@ class RealLeastSquares:
 
 
 class FitResult:
-    def __init__(self, minuit_obj, model, x, y, dy=None, cost_func=None, x_label=None, y_label=None):
+    def __init__(
+        self,
+        minuit_obj,
+        model,
+        x,
+        y,
+        dy=None,
+        cost_func=None,
+        x_label=None,
+        y_label=None,
+        x_kind=None,
+        x_data=None,
+        y_data=None,
+        dy_data=None,
+        x_fit_range=None,
+    ):
         self.minuit = minuit_obj
         self.model = model
         self.x = x
@@ -88,6 +103,11 @@ class FitResult:
         self.cost_func = cost_func
         self.x_label = x_label
         self.y_label = y_label
+        self.x_kind = x_kind
+        self.x_data = x_data if x_data is not None else x
+        self.y_data = y_data if y_data is not None else y
+        self.dy_data = dy_data
+        self.x_fit_range = x_fit_range
         self.sampler = None
         self.samples = None
         self.mcmc_labels = None
@@ -144,24 +164,124 @@ class FitResult:
         if is_complex:
             return self.bode_plot(ax=ax, num_points=num_points, **kwargs)
 
+        show_errorbar = kwargs.pop("show_errorbar", None)
+        if show_errorbar is None:
+            show_errorbar = kwargs.pop("show_errorbars", self.has_dy)
+
+        xscale = kwargs.pop("xscale", None)
+        x_range = kwargs.pop("x_range", None)
+
         # Real Plot
         if ax is None:
             fig, ax = plt.subplots()
 
-        # Plot Model (First)
+        # Prefer GWpy's time scaling for TimeSeries fits (GPS-aware)
+        if xscale is None and self.x_kind == "time" and ax.get_xscale() == "linear":
+            try:
+                import gwpy.plot.gps  # noqa: F401  (registers GPS scales)
+                ax.set_xscale("auto-gps")
+            except Exception:
+                pass
+        elif xscale is not None:
+            ax.set_xscale(xscale)
+
+        fit_zorder = kwargs.setdefault('zorder', 5)
+        data_zorder = max(0, fit_zorder - 1)
+        err_zorder = max(0, data_zorder - 1)
+
+        # Plot Data
+        x_data = np.asarray(self.x_data)
+        y_data = np.asarray(self.y_data)
+
+        if ax.get_yscale() == "log":
+            mask = y_data > 0
+            x_data = x_data[mask]
+            y_data = y_data[mask]
+
+        # Error bars: if we have full dy, use it; otherwise, fall back to fit-range dy only
+        if show_errorbar:
+            dy_full = self.dy_data
+            if dy_full is not None:
+                dy = np.asarray(dy_full)
+                if np.isscalar(dy) or dy.shape == ():
+                    dy = np.full_like(y_data, float(dy), dtype=float)
+                else:
+                    dy = dy.astype(float, copy=False)
+                    dy = dy[mask] if ax.get_yscale() == "log" else dy
+
+                yerr = dy
+                if ax.get_yscale() == "log":
+                    lower = np.minimum(dy, y_data * (1 - 1e-12))
+                    yerr = np.vstack([lower, dy])
+
+                ax.errorbar(
+                    x_data,
+                    y_data,
+                    yerr=yerr,
+                    fmt="none",
+                    ecolor="black",
+                    label="_nolegend_",
+                    zorder=err_zorder,
+                )
+            else:
+                x_fit = np.asarray(self.x)
+                y_fit = np.asarray(self.y)
+                dy_fit = np.asarray(self.dy)
+                if ax.get_yscale() == "log":
+                    fit_mask = y_fit > 0
+                    x_fit = x_fit[fit_mask]
+                    y_fit = y_fit[fit_mask]
+                    dy_fit = dy_fit[fit_mask] if not np.isscalar(dy_fit) else dy_fit
+
+                if np.isscalar(dy_fit) or dy_fit.shape == ():
+                    dy_fit = np.full_like(y_fit, float(dy_fit), dtype=float)
+
+                yerr = dy_fit
+                if ax.get_yscale() == "log":
+                    lower = np.minimum(dy_fit, y_fit * (1 - 1e-12))
+                    yerr = np.vstack([lower, dy_fit])
+
+                ax.errorbar(
+                    x_fit,
+                    y_fit,
+                    yerr=yerr,
+                    fmt="none",
+                    ecolor="black",
+                    label="_nolegend_",
+                    zorder=err_zorder,
+                )
+
+        ax.plot(
+            x_data,
+            y_data,
+            ".",
+            label="Data",
+            color="black",
+            zorder=data_zorder,
+        )
+
+        # Plot Model (Fit) in front of points
         kwargs.setdefault('color', 'red')
-        kwargs.setdefault('zorder', 5)
-        x_plot = np.linspace(min(self.x), max(self.x), num_points)
+        if x_range is None:
+            x_range = self.x_fit_range
+        if x_range is not None:
+            x0, x1 = x_range
+            x_plot = np.linspace(min(x0, x1), max(x0, x1), num_points)
+        else:
+            x_plot = np.linspace(min(self.x), max(self.x), num_points)
         y_plot = self.model(x_plot, **self.params)
         ax.plot(x_plot, y_plot, label='Fit', **kwargs)
 
-        # Plot Data (Second)
-        if self.has_dy:
-            ax.errorbar(self.x, self.y, yerr=self.dy, fmt='.', label='Data', color='black')
-        else:
-            ax.plot(self.x, self.y, '.', label='Data', color='black')
+        # If we're using a GWpy GPS scale, let GWpy format the X label
+        # during draw() (it uses the epoch + unit). Do not override here.
+        uses_gps_x = False
+        try:
+            from gwpy.plot.gps import GPS_SCALES
+            uses_gps_x = ax.get_xscale() in GPS_SCALES
+        except Exception:
+            uses_gps_x = False
 
-        if self.x_label:
+        if self.x_label and not uses_gps_x:
             ax.set_xlabel(self.x_label)
         if self.y_label:
             ax.set_ylabel(self.y_label)
@@ -173,6 +293,11 @@ class FitResult:
         """
         Create a Bode plot (Magnitude and Phase) for the fit result.
         """
+        show_errorbar = kwargs.pop("show_errorbar", None)
+        if show_errorbar is None:
+            show_errorbar = kwargs.pop("show_errorbars", self.has_dy)
+        x_range = kwargs.pop("x_range", None)
+
         if ax is None:
             fig, (ax_mag, ax_phase) = plt.subplots(2, 1, sharex=True, figsize=(8, 8))
         elif isinstance(ax, (list, tuple, np.ndarray)) and len(ax) == 2:
@@ -181,43 +306,145 @@ class FitResult:
             raise ValueError("For bode_plot, 'ax' must be a list/tuple of 2 axes (mag, phase), or None.")
 
         kwargs.setdefault('color', 'red')
-        kwargs.setdefault('zorder', 5)
+        fit_zorder = kwargs.setdefault('zorder', 5)
+        data_zorder = max(0, fit_zorder - 1)
+        err_zorder = max(0, data_zorder - 1)
 
         # --- Magnitude ---
-        # Model (First)
-        # Note: log scale requires positive values for x usually, check if min(x) > 0?
-        # Assuming typical frequency, min(x) > 0. If linear x includes 0, log scale breaks.
-        # But Bode is typically log X.
-        x_start = min(self.x) if min(self.x) > 0 else (max(self.x) * 1e-3 if max(self.x) > 0 else 1e-1)
-        # If x_range provided, use it. But here we just use data range.
-        if x_start <= 0:
-            x_start = 1e-1 # Fallback
+        ax_mag.set_xscale("log")
+        ax_mag.set_yscale("log")
 
-        x_plot = np.logspace(np.log10(x_start), np.log10(max(self.x)), num_points)
+        # Data: use only positive x for log scale, and set natural x-range
+        x_all = np.asarray(self.x_data)
+        pos = x_all > 0
+        if np.any(pos):
+            x_min = float(np.min(x_all[pos]))
+            x_max = float(np.max(x_all[pos]))
+        else:
+            x_min, x_max = 1e-1, 1.0
+
+        if x_min == x_max:
+            x_min = x_min / 10 if x_min > 0 else 1e-1
+            x_max = x_max * 10 if x_max > 0 else 1.0
+
+        if x_range is None:
+            x_range = self.x_fit_range
+        if x_range is not None:
+            x0, x1 = x_range
+            x0, x1 = float(min(x0, x1)), float(max(x0, x1))
+            x0 = max(x0, x_min)
+            x1 = min(x1, x_max)
+            if x0 <= 0:
+                x0 = x_min
+            x_plot = np.logspace(np.log10(x0), np.log10(x1), num_points)
+        else:
+            x_fit = np.asarray(self.x)
+            pos_fit = x_fit > 0
+            if np.any(pos_fit):
+                xf0 = float(np.min(x_fit[pos_fit]))
+                xf1 = float(np.max(x_fit[pos_fit]))
+            else:
+                xf0, xf1 = x_min, x_max
+            x_plot = np.logspace(np.log10(xf0), np.log10(xf1), num_points)
+
         ym_plot = self.model(x_plot, **self.params)
 
-        ax_mag.plot(x_plot, np.abs(ym_plot), label='Fit', **kwargs)
+        ax_mag.set_xscale('log')
+        ax_mag.set_yscale('log')
 
         # Data (Second)
-        mag_data = np.abs(self.y)
-        if self.has_dy:
-                ax_mag.errorbar(self.x, mag_data, yerr=self.dy, fmt='.', label='Data', color='black')
-        else:
-                ax_mag.plot(self.x, mag_data, '.', label='Data', color='black')
+        mag_data = np.abs(self.y_data)
+        x_data = x_all
+        mag_data = np.asarray(mag_data)
+
+        if ax_mag.get_yscale() == "log":
+            mask = (mag_data > 0) & (x_data > 0)
+            x_data = x_data[mask]
+            mag_data = mag_data[mask]
+
+        # Error bars behind points/fit (and log-safe)
+        if show_errorbar:
+            dy_full = self.dy_data
+            if dy_full is not None:
+                dy = np.asarray(dy_full)
+                if np.isscalar(dy) or dy.shape == ():
+                    dy = np.full_like(mag_data, float(dy), dtype=float)
+                else:
+                    dy = dy.astype(float, copy=False)
+                    dy = dy[mask] if ax_mag.get_yscale() == "log" else dy
+
+                yerr = dy
+                if ax_mag.get_yscale() == "log":
+                    lower = np.minimum(dy, mag_data * (1 - 1e-12))
+                    yerr = np.vstack([lower, dy])
+
+                ax_mag.errorbar(
+                    x_data,
+                    mag_data,
+                    yerr=yerr,
+                    fmt="none",
+                    ecolor="black",
+                    label="_nolegend_",
+                    zorder=err_zorder,
+                )
+            else:
+                # Fit-range errorbars only
+                x_fit = np.asarray(self.x)
+                mag_fit = np.abs(np.asarray(self.y))
+                dy_fit = np.asarray(self.dy)
+                if ax_mag.get_yscale() == "log":
+                    fit_mask = (mag_fit > 0) & (x_fit > 0)
+                    x_fit = x_fit[fit_mask]
+                    mag_fit = mag_fit[fit_mask]
+                    dy_fit = dy_fit[fit_mask] if not np.isscalar(dy_fit) else dy_fit
+
+                if np.isscalar(dy_fit) or dy_fit.shape == ():
+                    dy_fit = np.full_like(mag_fit, float(dy_fit), dtype=float)
+
+                yerr = dy_fit
+                if ax_mag.get_yscale() == "log":
+                    lower = np.minimum(dy_fit, mag_fit * (1 - 1e-12))
+                    yerr = np.vstack([lower, dy_fit])
+
+                ax_mag.errorbar(
+                    x_fit,
+                    mag_fit,
+                    yerr=yerr,
+                    fmt="none",
+                    ecolor="black",
+                    label="_nolegend_",
+                    zorder=err_zorder,
+                )
+
+        ax_mag.plot(
+            x_data,
+            mag_data,
+            ".",
+            label="Data",
+            color="black",
+            zorder=data_zorder,
+        )
+
+        # Fit curve in front of points
+        ax_mag.plot(x_plot, np.abs(ym_plot), label="Fit", **kwargs)
+
+        ax_mag.set_xlim(x_min, x_max)
 
         ax_mag.set_ylabel('Magnitude')
         ax_mag.legend()
         ax_mag.grid(True, which='both', alpha=0.3)
-        ax_mag.set_xscale('log')
-        ax_mag.set_yscale('log')
 
         # --- Phase ---
         # Model (First)
+        ax_phase.set_xscale("log")
         ax_phase.plot(x_plot, np.angle(ym_plot, deg=True), label='Fit', **kwargs)
 
         # Data (Second)
-        phase_data = np.angle(self.y, deg=True) # Degrees
-        ax_phase.plot(self.x, phase_data, '.', label='Data', color='black')
+        phase_data = np.angle(self.y_data, deg=True) # Degrees
+        x_phase = x_all[pos] if np.any(pos) else x_all
+        phase_data = np.asarray(phase_data)
+        phase_data = phase_data[pos] if np.any(pos) else phase_data
+        ax_phase.plot(x_phase, phase_data, '.', label='Data', color='black', zorder=data_zorder)
 
         ax_phase.set_ylabel('Phase [deg]')
         if self.x_label:
@@ -226,7 +453,7 @@ class FitResult:
             ax_phase.set_xlabel('Frequency / Time')
 
         ax_phase.grid(True, which='both', alpha=0.3)
-        ax_phase.set_xscale('log')
+        ax_phase.set_xlim(x_min, x_max)
 
         return (ax_mag, ax_phase)
 
@@ -325,20 +552,32 @@ def fit_series(series, model, x_range=None, sigma=None,
     x_label = 'x'
     y_label = 'y'
 
+    # full-range data for plotting
+    if hasattr(series, 'frequencies'):
+        x_full = series.frequencies.value
+    elif hasattr(series, 'times'):
+        x_full = series.times.value
+    else:
+        x_full = series.xindex.value
+    y_full = series.value
+
     if hasattr(target, 'frequencies'):
         x = target.frequencies.value
         x_label = 'Frequency'
+        x_kind = "frequency"
         if hasattr(target, 'xunit') and str(target.xunit) != 'dimensionless':
              x_label += f" [{target.xunit}]"
     elif hasattr(target, 'times'):
         x = target.times.value
         x_label = 'Time'
+        x_kind = "time"
         if hasattr(target, 'xunit') and str(target.xunit) != 'dimensionless':
              x_label += f" [{target.xunit}]"
     else:
         x = target.xindex.value
         if hasattr(target, 'xunit') and str(target.xunit) != 'dimensionless':
              x_label += f" [{target.xunit}]"
+        x_kind = "index"
 
     y = target.value
 
@@ -361,43 +600,22 @@ def fit_series(series, model, x_range=None, sigma=None,
         # 重みなし最小二乗 (Cost function internally uses 1.0)
         dy = np.ones(len(y))
         sigma_for_result = None
+        sigma_full_for_plot = None
     else:
         # If sigma is a scalar, broadcast it
         if np.isscalar(sigma):
             dy = np.full(len(y), float(sigma))
+            sigma_full_for_plot = float(sigma)
         else:
             sigma_arr = np.asarray(sigma)
+            sigma_full_for_plot = sigma_arr if len(sigma_arr) == original_len else None
             if len(sigma_arr) == original_len and x_range is not None:
-                # Automatically crop sigma if it matches original series length
-                # Using the same slicing as target
-                if hasattr(series, 'crop'):
-                    # We can't easily crop a plain array with series.crop
-                    # Better find indices
-                    if hasattr(target, 'xindex'):
-                        # This matches how x was extracted
-                        # We just need the indices that target uses From series.
-                        # Since Series.crop usually returns a view or sub-array.
-                        # We can find start/end indices.
-                        idx0 = np.searchsorted(series.xindex.value, target.xindex.value[0])
-                        idx1 = idx0 + len(target)
-                        dy = sigma_arr[idx0:idx1]
-                    else:
-                        # Fallback: slice by length if it's a simple prefix/suffix crop?
-                        # This is risky. Let's try to be safer.
-                        # If series is regular, we can use t0/dt.
-                         dy = sigma_arr # placeholder
-                         try:
-                             # Try to match by length if it matches target exactly
-                             if len(sigma_arr) == len(y):
-                                 dy = sigma_arr
-                             else:
-                                 # Try to find overlap if both are Series?
-                                 # For now, if auto-crop fails, stay with sigma_arr and let length check catch it.
-                                 pass
-                         except TypeError:
-                             pass
-                else:
-                    dy = sigma_arr
+                # Crop sigma by x range using the full x array
+                x0, x1 = x_range
+                lo, hi = (x0, x1) if x0 <= x1 else (x1, x0)
+                idx0 = int(np.searchsorted(x_full, lo, side="left"))
+                idx1 = int(np.searchsorted(x_full, hi, side="right"))
+                dy = sigma_arr[idx0:idx1]
             else:
                 dy = sigma_arr
 
@@ -444,4 +662,18 @@ def fit_series(series, model, x_range=None, sigma=None,
     m.migrad()
     m.hesse()
 
-    return FitResult(m, model, x, y, sigma_for_result, cost, x_label=x_label, y_label=y_label)
+    return FitResult(
+        m,
+        model,
+        x,
+        y,
+        sigma_for_result,
+        cost,
+        x_label=x_label,
+        y_label=y_label,
+        x_kind=x_kind,
+        x_data=x_full,
+        y_data=y_full,
+        dy_data=sigma_full_for_plot,
+        x_fit_range=x_range,
+    )

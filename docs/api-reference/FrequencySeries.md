@@ -406,6 +406,32 @@ Returns
     (peaks_indices, peaks_properties)
 
 
+### `fit`
+
+```python
+fit(self, model: 'str', p0: 'Optional[dict[str, float]]' = None, method: 'str' = 'leastsq', **kwargs: 'Any') -> 'Any'
+```
+
+
+Fit the FrequencySeries to a model function.
+
+Parameters
+----------
+model : `str` or `callable`
+    Name of built-in model (e.g., 'gaussian', 'power_law') or a callable function.
+p0 : `dict`, optional
+    Initial guess for parameters.
+method : `str`, optional
+    Fitting method: 'leastsq' (default) or 'mcmc' (requires `emcee`).
+**kwargs
+    Additional arguments passed to the fitter.
+
+Returns
+-------
+`FitResult`
+    Object containing fit results, parameters, and plotting methods.
+
+
 ### `flatten`
 
 ```python

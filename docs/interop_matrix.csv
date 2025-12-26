@@ -1,0 +1,22 @@
+Package/Framework,TimeSeries (to/from),FrequencySeries (to/from),Spectrogram (to/from),Remarks
+NumPy,〇/〇,〇/〇,〇/〇,Standard (via .value / constructor)
+Pandas,〇/〇,〇/〇,△/-,DataFrame/Series supported
+Polars,〇/〇,〇/〇,-/-,High-performance DataFrame
+Xarray,〇/〇,〇/〇,-/-,DataArray conversion
+PyTorch,〇/〇,〇/〇,-/-,Tensor conversion (GPU supported)
+TensorFlow,〇/〇,〇/〇,-/-,Tensor conversion
+JAX,〇/〇,〇/〇,-/-,Array conversion
+CuPy,〇/〇,〇/〇,-/-,GPU Array conversion
+Dask,〇/〇,-/-,-/-,Lazy evaluation arrays
+Zarr,〇/〇,-/-,-/-,Chunked, compressed arrays
+ObsPy,〇/〇,-/-,-/-,Seismic Trace conversion
+MNE,〇/〇,-/-,-/-,Raw/Epochs/Evoked conversion
+Neo,〇/〇,-/-,-/-,AnalogSignal conversion
+PyCBC,〇/〇,〇/〇,-/-,LIGO analysis library
+LAL,〇/〇,〇/〇,-/-,LIGO Algorithm Library
+Control,〇/〇,〇/〇,-/-,Python-Control (FRD/TimeResponse)
+Audio (pydub/librosa),〇/〇,-/-,-/-,AudioSegment / numpy array
+ROOT,〇/〇,〇/〇,〇/-,TGraph, TH1, TH2 (Vectorized)
+JSON,〇/〇,〇/〇,-/-,via gwpy I/O
+SQLite,〇/〇,-/-,-/-,Database storage
+NetCDF4,〇/〇,-/-,-/-,Scientific data format
