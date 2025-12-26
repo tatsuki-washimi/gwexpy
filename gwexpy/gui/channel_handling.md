@@ -41,10 +41,14 @@
 *   現状は、ファイルに含まれる全チャンネルが直接 Results タブの候補になる、あるいは Measurement タブを経由しない挙動となる場合があります。
 *   将来的には、これらの形式も Measurement タブをマスターとする仕様へ統一することが望まれます。
 
-### D. シミュレーション (SIM)
-1.  **Measurement タブ** でチャンネル（例: `white_noise`）を Active にします。
-2.  **Results タブ** の選択肢が連動して更新されます。
-3.  「Start」ボタンを押すと、内部の `Engine` クラスが、Measurement タブで Active になっているチャンネルのデータのみを生成します。
+### D. Excitation (Simulation)
+**NDS (Online)** モードにおいて、**Excitation (Simulation) タブ** を使用して擬似信号を生成・表示することができます（NDS接続がなくても動作します）。
+
+1.  **Excitation (Simulation) タブ** でパネルを有効 (`Active`) にし、波形パラメータを設定します。
+2.  ターゲットチャンネル名（デフォルトは `Excitation-0` 等）が自動的に生成・登録されます。
+3.  **Result タブ** のコンボボックスに、Active になった Excitation チャンネルが自動的に追加されます。
+4.  「Start」ボタンを押すと、NDSからのデータ取得（あれば）に加え、ローカルで生成された波形が描画されます。
+    *   Measurement タブでの設定は不要です（Excitationチャンネルは別扱いとなります）。
 
 ## 4. DTT (diaggui) との整合性
 2025/12/25 の改修により、`pyaggui` のチャンネルハンドリングは `diaggui` の設計思想（Measurement = Master / Results = View）に整合するようになりました。

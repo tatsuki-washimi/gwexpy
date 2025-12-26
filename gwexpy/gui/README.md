@@ -17,9 +17,36 @@
 ## 主な機能 / Features
 
 ### 1. データソース (Data Sources)
-- **NDS (Online)**: KAGRA NDSサーバー等からリアルタイムでデータを取得・表示します（**※現在、接続動作およびチャンネルリスト取得機能は未検証・未実装です**）。
-- **SIM (Simulation)**: 内部で生成されたダミーデータ（サイン波、ノイズ等）を使用して動作確認が可能です。
+- **NDS (Online)**: KAGRA NDSサーバー等からリアルタイムでデータを取得・表示します。（**※現在、接続動作およびチャンネルリスト取得機能は未検証・未実装です**）。
+    - NDS接続がない場合でも、**Excitation (Simulation)** タブで信号生成を有効にすることで、擬似信号を用いた動作確認（シミュレーション）が可能です。
 - **FILE (File Load)**: ローカルファイル（DTT XML, GWF, HDF5 等）を読み込んでデータを表示します。
+
+## 既存ツールとの比較 / Comparison with Existing Tools
+
+* **ndscope** (LIGO開発, KAGRA利用):
+    * 時系列波形（もしくはトレンド）のみ対応で、スペクトル等の描画機能はありません。
+* **diaggui** (LIGO DTT, KAGRA利用):
+    * 時系列波形、スペクトル(ASD, CSD, coherence, TF)描画機能がありますが、スペクトログラムは非対応です。
+    * ARM系CPUのコンピュータ（Apple Silicon Mac等）は非対応です。
+* **Virgo dataDisplay**:
+    * リアルタイムスペクトログラムにも対応していますが、導入障壁が高いです（RedHat系Linux限定、cmake必須、サポート終了した外部ツール依存など）。
+
+## 本ツールと LIGO DTT (diaggui) との互換性 (目標) / Compatibility Goals
+
+### UIの再現性
+`diaggui` のXMLファイルのI/Oだけでなく、特に**UI部分を忠実に再現すること**を目的としています。
+これは、LIGO, KAGRAの現場コミッショナーがスムーズに利用できるようにするためです。
+（現状、見た目は似ていますが、未実装の機能も残されています。）
+
+### Excitation（加振）機能の扱い
+`gwexpy` はあくまでデータ表示・分析ツールであり、装置への操作は目的外です（安全面も理由の一つ）。
+そのため、**Excitation (Simulation) タブ** は以下のようなローカルシミュレーション機能として実装されています：
+
+1.  **読み取り専用 (Read-Only)**: 装置へは信号を送りません。
+2.  **高性能信号生成器**:
+    - Sine, Square, Ramp, Triangle, Impulse, Noise (Gauss/Uniform), Arbitrary, Sweep (Linear/Log) などの多様な波形を生成可能です。
+    - Band-limited Noise (フィルタリング) や 周波数スイープ機能も実装されており、`diaggui` と同等のパラメータ設定でシミュレーションを行えます。
+    - 生成された信号は、"Excitation-0" などのチャンネル名で Result タブから選択・表示可能です。
 
 ### 2. チャンネルハンドリング (Channel Handling)
 `diaggui` の設計思想に基づき、計測対象と表示対象を分離して管理します。
