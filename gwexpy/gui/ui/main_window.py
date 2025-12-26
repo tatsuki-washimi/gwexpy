@@ -11,6 +11,9 @@ from normalize import normalize_series
 from engine import Engine
 from tabs import create_input_tab, create_measurement_tab, create_excitation_tab, create_result_tab
 from nds.cache import NDSDataCache
+# Excitation Module Imports
+from excitation.generator import SignalGenerator
+from excitation.params import GeneratorParams
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -30,7 +33,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tabs.addTab(input_tab, "Input")
         meas_tab, self.meas_controls = create_measurement_tab()
         self.tabs.addTab(meas_tab, "Measurement")
-        self.tabs.addTab(create_excitation_tab(), "Excitation"); self.tabs.setTabEnabled(2, False)
+        
+        # Create Excitation Tab and capture controls
+        exc_tab, self.exc_controls = create_excitation_tab()
+        self.tabs.addTab(exc_tab, "Excitation (Simulation)") 
+        # Enable it now that we have implementation
+        self.tabs.setTabEnabled(2, True)
 
         res_tab, self.graph_info1, self.graph_info2, self.traces1, self.traces2 = create_result_tab(on_import=self.open_file_dialog)
         self.tabs.addTab(res_tab, "Result")
@@ -43,6 +51,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.nds_cache.signal_data.connect(self.on_nds_data)
         self.nds_latest_raw = None # Stores latest DataBufferDict
         self.data_source = 'SIM' # SIM, FILE, NDS
+        
+        # Signal Generator
+        self.sig_gen = SignalGenerator()
         
         self.input_controls['ds_combo'].currentTextChanged.connect(self.on_source_changed)
 
@@ -72,6 +83,15 @@ class MainWindow(QtWidgets.QMainWindow):
         
         # Connect Measurement Channel Updates
         self.meas_controls['set_change_callback'](self.on_measurement_channel_changed)
+        
+        # Connect Excitation Channel Updates to trigger channel list refresh
+        if self.exc_controls and 'panels' in self.exc_controls:
+            for p in self.exc_controls['panels']:
+                # When Active toggled or Channel name changed
+                p['active'].toggled.connect(self.on_measurement_channel_changed)
+                p['ex_chan'].editTextChanged.connect(self.on_measurement_channel_changed)
+                p['ex_chan'].currentIndexChanged.connect(self.on_measurement_channel_changed)
+
         # Initial sync
         self.on_measurement_channel_changed()
 
@@ -83,6 +103,59 @@ class MainWindow(QtWidgets.QMainWindow):
             if s['active'] and s['name']:
                 active_channels.append(s['name'])
         
+        # Add generated channels if known? 
+        # Or should they always be available?
+        # Let's add standard "Excitation" if enabled?
+        # Better: Do it dynamically or just rely on them being added when active.
+        # Ideally, user should see "Excitation" in the list even if stopped?
+        # For now, let's keep it simple: Measurement channels define the majority.
+        # We can append "Exictation" and "Sum:..." implicitly if we want persistent selection.
+        # But if we clear the combo, we lose the selection if it's not in the list.
+        # Let's add 'Excitation' to the list if the module is theoretically available.
+        # if "Excitation" not in active_channels:
+        #      active_channels.append("Excitation")
+             
+        # Feature: Add channels defined in Excitation Tab (active ones) to the list
+        if hasattr(self, 'exc_controls') and 'panels' in self.exc_controls:
+            for p in self.exc_controls['panels']:
+                if p['active'].isChecked():
+                     # Channel used as injection TARGET
+                     tgt = p['ex_chan'].currentText()
+                     if tgt and tgt not in active_channels:
+                         active_channels.append(tgt)
+                     # Also Add Sum:{tgt} if it's injection? 
+                     # For now, let's blindly add the Target name.
+                     # If user typed a NEW name (not in measurement), it's a pure sim channel.
+                     # If it's existing, it's already in active_channels (measurement).
+
+             
+        # Also, update the Target Channel list in Excitation Tab (New Multi-panel support)
+        if hasattr(self, 'exc_controls') and 'target_combos' in self.exc_controls:
+             for cb_target in self.exc_controls['target_combos']:
+                 curr = cb_target.currentText()
+                 cb_target.blockSignals(True)
+                 cb_target.clear()
+                 cb_target.addItems(active_channels) 
+                 # Restore
+                 idx = cb_target.findText(curr)
+                 if idx != -1: 
+                     cb_target.setCurrentIndex(idx)
+                 else:
+                     # If custom name (e.g. default Excitation-0) is not in list, preserve it visually
+                     cb_target.setEditText(curr)
+                     
+                 cb_target.blockSignals(False)
+        # Fallback for old key if mixed versions (optional, can remove)
+        elif hasattr(self, 'exc_controls') and 'ex_target' in self.exc_controls:
+             cb_target = self.exc_controls['ex_target']
+             curr = cb_target.currentText()
+             cb_target.blockSignals(True)
+             cb_target.clear()
+             cb_target.addItems(active_channels)
+             idx = cb_target.findText(curr)
+             if idx != -1: cb_target.setCurrentIndex(idx)
+             cb_target.blockSignals(False)
+
         # Update comboboxes in Result tab
         # Note: We should preserve current selection if it is still valid
         for info in [self.graph_info1, self.graph_info2]:
@@ -113,12 +186,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.nds_latest_raw = buffers
 
     def start_animation(self):
-        self.tabs.setCurrentIndex(3); self.btn_start.setEnabled(False); self.btn_pause.setEnabled(True); self.btn_resume.setEnabled(False); self.btn_abort.setEnabled(True)
+        # Validate Excitation Channels (uniqueness)
+        if self.exc_controls and 'panels' in self.exc_controls:
+            active_names = []
+            for i, p in enumerate(self.exc_controls['panels']):
+                if p['active'].isChecked():
+                    name = p['ex_chan'].currentText()
+                    if name in active_names:
+                        QtWidgets.QMessageBox.critical(self, "Configuration Error", f"Duplicate Excitation Channel name detected: '{name}'.\nPlease assign unique names for active excitation channels.")
+                        return
+                    active_names.append(name)
+    
+        self.tabs.setCurrentIndex(3)
         self.is_file_mode = False 
         
         # Read Data Source directly from UI to avoid signal issues
         self.data_source = self.input_controls['ds_combo'].currentText()
         print(f"DEBUG: start_animation called. DataSource: {self.data_source}")
+        
+        self.btn_start.setEnabled(False); self.btn_pause.setEnabled(True); self.btn_resume.setEnabled(False); self.btn_abort.setEnabled(True)
+        self.tabs.setTabEnabled(0, False) # Disable input tab changes
+        
+        # Reset simple Timebase
+        self.time_counter = 0.0
         
         if self.data_source == 'NDS':
             # Collect channels
@@ -169,47 +259,118 @@ class MainWindow(QtWidgets.QMainWindow):
         data_map = {}
         
         # NDS Mode Logic: Build data_map from buffers
-        if self.data_source == 'NDS':
-             if not self.nds_latest_raw: return
-             
-             for ch_name, buf in self.nds_latest_raw.items():
-                 y_vals = buf.data_map.get('raw')
-                 if y_vals is not None and len(y_vals) > 0 and len(buf.tarray) == len(y_vals):
-                     # Construct gwpy TimeSeries
-                     # Use buffer's gps_start and step
-                     ts = TimeSeries(y_vals, t0=buf.tarray[0], dt=buf.step, name=ch_name)
-                     data_map[ch_name] = ts
-             
-             if not data_map: return # No valid data yet
+        current_times = None
+        current_fs = 16384 # Fallback
+        
+        # NDS Mode Logic: Build data_map from buffers
+        current_times = None
+        current_fs = 16384 # Fallback
+        
+        # Check if we have Active Excitation to decide if we need a fallback timebase
+        has_active_excitation = False
+        if self.exc_controls and 'panels' in self.exc_controls:
+            for p in self.exc_controls['panels']:
+                if p['active'].isChecked():
+                    has_active_excitation = True; break
 
-        # SIM Logic: Generate fake data
-        else:
+        if self.data_source == 'NDS':
+             # Try to get data
+             if self.nds_latest_raw:
+                 for ch_name, buf in self.nds_latest_raw.items():
+                     y_vals = buf.data_map.get('raw')
+                     if y_vals is not None and len(y_vals) > 0 and len(buf.tarray) == len(y_vals):
+                         ts = TimeSeries(y_vals, t0=buf.tarray[0], dt=buf.step, name=ch_name)
+                         data_map[ch_name] = ts
+                         if current_times is None:
+                             current_times = buf.tarray
+                             current_fs = 1.0/buf.step
+             
+             # Fallback if no NDS data but we want to see Excitation
+             if not data_map and has_active_excitation:
+                 self.time_counter += 0.05
+                 params = self.get_ui_params()
+                 duration = max(10.0, 2.0/params.get('bw', 1.0))
+                 fs = 16384
+                 current_fs = fs
+                 t0 = self.time_counter
+                 n = int(fs * duration)
+                 current_times = np.linspace(t0, t0 + duration, n, endpoint=False)
+             
+             if not data_map and current_times is None: return # No data and no fallback
+
+        # SIM Logic (Legacy/Fallback, though UI removed)
+        elif self.data_source == 'SIM':
             self.time_counter += 0.05; params = self.get_ui_params(); self.engine.configure(params)
             duration = max(10.0, 2.0/params.get('bw', 1.0))
             fs = 16384
+            current_fs = fs
             t0 = self.time_counter
             n = int(fs * duration)
-            times = np.linspace(t0, t0 + duration, n, endpoint=False)
+            current_times = np.linspace(t0, t0 + duration, n, endpoint=False)
             
-            # Map of known simulation generators
-            sim_generators = {
-                "HF_sine": lambda ft: np.sin(2*np.pi*500*ft),
-                "LF_sine": lambda ft: np.sin(2*np.pi*50*ft),
-                "beating_sine": lambda ft: np.sin(2*np.pi*100*ft)+0.5*np.sin(2*np.pi*105*ft),
-                "white_noise": lambda ft: np.random.normal(0,1,len(ft)),
-                "sine_plus_noise": lambda ft: np.sin(2*np.pi*200*ft)+np.random.normal(0,0.5,len(ft)),
-                "square_wave": lambda ft: np.sign(np.sin(2*np.pi*20*ft)),
-                "sawtooth_wave": lambda ft: 2*(ft*5%1)-1,
-                "random_walk": lambda ft: np.cumsum(np.random.normal(0,0.1,len(ft)))
-            }
-            
-            # only generate for ACTIVE measurement channels
-            states = self.meas_controls['channel_states']
-            for s in states:
-                if s['active'] and s['name'] in sim_generators:
-                     arr = sim_generators[s['name']](times)
-                     data_map[s['name']] = TimeSeries(arr, t0=t0, sample_rate=fs, name=s['name'])
- 
+            # ... (Sim generators removed from here as per request) ...
+                     
+        # --- EXCITATION / SIGNAL GENERATION ---
+        # Initialize global Excitation readback
+        # This represents the sum of all generated signals, useful for TF calculation
+        total_excitation = np.zeros(len(current_times)) if current_times is not None else None
+        
+        if self.exc_controls and 'panels' in self.exc_controls and current_times is not None:
+             panels = self.exc_controls['panels']
+             
+             for p in panels:
+                 # Check if panel is active
+                 if not p['active'].isChecked(): continue
+                 
+                 # Waveform Parameters
+                 gen_params = GeneratorParams(
+                    enabled=True,
+                    waveform_type=p['waveform'].currentText(),
+                    amplitude=p['amp'].value(),
+                    frequency=p['freq'].value(),
+                    offset=p['offset'].value(),
+                    phase=p['phase'].value(),
+                    start_freq=p['freq'].value(), # 'Frequency' box = Start
+                    stop_freq=p['fstart'].value(), # 'Freq. Range' box = Stop
+                    output_mode="Sum", # Always Sum/Inject behavior
+                    target_channel=p['ex_chan'].currentText() # User input
+                )
+                 
+                 # Generate
+                 sig = self.sig_gen.generate(current_times, gen_params)
+                 
+                 # Accumulate to global readback
+                 if total_excitation is not None:
+                     total_excitation += sig
+                     
+                 # Injection / Assignment
+                 tgt = gen_params.target_channel
+                 if not tgt: tgt = "Excitation" # Default if empty
+                 
+                 # If target exists in data (Measurement Channel), INJECT (Sum)
+                 if tgt in data_map:
+                     try:
+                         # In-place addition to simulate injection
+                         data_map[tgt] = data_map[tgt] + sig
+                     except Exception as e:
+                         print(f"Injection Error for {tgt}: {e}")
+                 else:
+                     # If target does NOT exist (e.g. Pure Simulation or 'Excitation' placeholder),
+                     # Create it.
+                     # Note: If user typed 'MySig', it creates 'MySig'.
+                     # But user can't select 'MySig' in Result tab unless it's in the list.
+                     # So usually they should use 'Excitation' or an existing channel.
+                     ts_sig = TimeSeries(sig, t0=current_times[0], sample_rate=current_fs, name=tgt)
+                     data_map[tgt] = ts_sig
+
+        # Always publish the global 'Excitation' channel if we have any signal
+        if total_excitation is not None and np.any(total_excitation):
+            data_map['Excitation'] = TimeSeries(total_excitation, t0=current_times[0], sample_rate=current_fs, name='Excitation')
+        elif 'Excitation' not in data_map and current_times is not None:
+             # Ensure zero-signal Excitation exists if enabled, or just leave it?
+             # Better to have it if we want to allow selecting it without crash.
+             pass
+
         for plot_idx, info_root in enumerate([self.graph_info1, self.graph_info2]):
             try:
                 traces_items = [self.traces1, self.traces2][plot_idx]; g_type = info_root['graph_combo'].currentText()
@@ -353,3 +514,4 @@ class MainWindow(QtWidgets.QMainWindow):
             self.is_loading_file = False; self.update_file_plot()
         except Exception as e:
             self.is_loading_file = False; import traceback; traceback.print_exc(); QtWidgets.QMessageBox.critical(self, "Error", f"Failed: {e}")
+
