@@ -60,5 +60,9 @@ all = [
 [tool.setuptools.package-data]
 gwexpy = ["py.typed"]
 
+[tool.setuptools.packages.find]
+include = ["gwexpy*"]
+exclude = ["typings*", "tests*", "docs*", "examples*"]
+
 [project.scripts]
 gwexpy = "gwexpy.cli:main"
