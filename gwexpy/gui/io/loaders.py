@@ -1,82 +1,10 @@
 from pathlib import Path
-import xml.etree.ElementTree as ET
 from gwexpy.timeseries import TimeSeriesDict, TimeSeries
+from gwexpy.io.dttxml_common import extract_xml_channels
 
-def extract_xml_channels(filename: str) -> list:
-    """
-    Parse DTT XML to extract channel names and their Active status.
-    Returns: list of dict {'name': str, 'active': bool}
-    """
-    channels = []
-    try:
-        tree = ET.parse(filename)
-        root = tree.getroot()
-        
-        # DTT XML typically stores parameters in <Param Name="MeasChn[i]" ...> and <Param Name="MeasActive[i]" ...>
-        # or similar structure within <LIGO_LW Name="TestParameters">
-        
-        # We need to find the definition of channels. 
-        # Structure is usually flattened arrays in Params or Columns in Table.
-        # But DTT 'restore' logic reads Params.
-        
-        # Let's search for flattened params first.
-        # In DTT XML, keys are like "MeasChn[0]", "MeasActive[0]" etc.
-        
-        params = {}
-        for param in root.findall(".//Param"):
-            name_attr = param.get('Name')
-            if name_attr:
-                # Value is text content, or sometimes Type attribute + content
-                # DTT XML params usually have text content for value.
-                val = param.text
-                if val: val = val.strip()
-                params[name_attr] = val
-                
-        # Now reconstruct the list
-        # We look for MeasChn[i]
-        i = 0
-        while True:
-            key_name = f"MeasChn[{i}]"
-            # Note: Sometimes DTT uses specific formatting or nested params.
-            # But mostly it follows simple object serialization.
-            # Let's check simply.
-            
-            # Alternative: in LIGO_LW, it might be separate.
-            # Let's try to match keys.
-            
-            if key_name not in params:
-                 # Check if we exhausted sequential
-                 # But maybe there are gaps? Usually not for arrays.
-                 # Let's try up to 96 (max channels)
-                 if i > 96: break
-                 i += 1
-                 continue
-                 
-            name = params[key_name]
-            # Clean generic formatting if needed (sometimes "H1:..." sometimes just name)
-            
-            # Active status
-            key_active = f"MeasActive[{i}]"
-            active = True # Default
-            if key_active in params:
-                v = params[key_active]
-                # XML boolean might be 'true', '1', 'false', '0'
-                if v.lower() in ['false', '0']: active = False
-            
-            if name: # Only add if name is not empty
-                channels.append({'name': name, 'active': active})
-            
-            i += 1
-            
-        # If the loop yields nothing, maybe the format is different (e.g. Table based)
-        # But for 'TestParameters' restore, it is Param based.
-            
-    except Exception as e:
-        print(f"XML Parsing Error: {e}")
-        # Return empty list or minimal fallback
-        pass
-        
-    return channels
+from gwexpy.frequencyseries import FrequencySeriesDict, FrequencySeries
+from gwexpy.spectrogram import Spectrogram
+from gwexpy.io.dttxml_common import load_dttxml_products
 
 def load_products(filename: str) -> dict:
     """
@@ -89,29 +17,147 @@ def load_products(filename: str) -> dict:
     products = {}
     ext = Path(filename).suffix.lower()
 
+    # DTT XML Specific Handling
     if ext == '.xml':
-        from gwexpy.io.dttxml_common import load_dttxml_products
-        products = load_dttxml_products(filename)
-    elif ext in ['.gwf', '.h5', '.hdf5', '.ffl']:
         try:
-            ts_dict = TimeSeriesDict.read(filename)
-            products['TS'] = {str(k): v for k, v in ts_dict.items()}
-        except Exception as e_dict:
-             try:
-                 ts = TimeSeries.read(filename)
-                 products['TS'] = {ts.name or 'Channel0': ts}
-             except Exception as e_single:
-                 raise RuntimeError(f"Could not read as dict: {e_dict}\nCould not read as single: {e_single}")
-    else:
-         try:
-            ts_dict = TimeSeriesDict.read(filename)
-            products['TS'] = {str(k): v for k, v in ts_dict.items()}
-         except Exception as e_dict:
-            try:
-                ts = TimeSeries.read(filename)
-                name = ts.name if ts.name else "Channel0"
-                products['TS'] = {name: ts}
-            except Exception as e_single:
-                raise RuntimeError(f"Unsupported file format or read error.\nDict Read: {e_dict}\nSingle Read: {e_single}")
+            # Try DTT XML loader first
+            products = load_dttxml_products(filename)
+            if products: return products
+        except Exception:
+            # Fallback to generic loaders if not a valid DTT XML
+            pass
 
-    return products
+    # Format Mapping for explicit fallback
+    # Extension -> gwpy format string
+    ext_map = {
+        '.gwf': 'gwf',
+        '.h5': 'hdf5',
+        '.hdf5': 'hdf5',
+        '.xml': 'ligolw', # Only used if DTT XML fails
+        '.csv': 'csv',
+        '.txt': 'txt',
+        '.dat': 'txt',
+        '.wav': 'wav',
+        '.mseed': 'miniseed',
+        '.miniseed': 'miniseed',
+        '.sac': 'sac',
+        '.win': 'win',
+        '.win32': 'win32',
+        '.npy': 'npy',
+        '.mat': 'mat',
+        '.fits': 'fits',
+        '.pkl': 'pickle'
+    }
+    
+    fmt = ext_map.get(ext)
+
+    # Generic Loader Chain
+    # 1. Try TimeSeries Dict
+    try:
+        ts_dict = TimeSeriesDict.read(filename)
+        products['TS'] = {str(k): v for k, v in ts_dict.items()}
+        return products
+    except Exception:
+        # Retry with explicit format if available
+        if fmt:
+            try:
+                # Special handling for GWF: need channels and correct backend
+                if fmt == 'gwf':
+                    # 1. Get channels using lalframe (most robust for discovery)
+                    channels = None
+                    try:
+                        from lalframe.utils.frtools import get_channels
+                        channels = get_channels(filename)
+                    except Exception:
+                        pass # proceed without channels or try other methods?
+
+                    # 2. Try various GWF backends with discovered channels (or without if failed)
+                    # Priority: generic 'gwf' -> 'gwf.lalframe' -> 'gwf.framecpp' -> 'gwf.framel'
+                    gwf_formats = ['gwf', 'gwf.lalframe', 'gwf.framecpp', 'gwf.framel']
+                    
+                    for gw_fmt in gwf_formats:
+                        try:
+                            # If channels known, use them
+                            if channels:
+                                ts_dict = TimeSeriesDict.read(filename, channels=channels, format=gw_fmt)
+                            else:
+                                # Hope that explicit format works without channels (unlikely usually, but worth trying)
+                                ts_dict = TimeSeriesDict.read(filename, format=gw_fmt)
+                            
+                            products['TS'] = {str(k): v for k, v in ts_dict.items()}
+                            return products
+                        except Exception:
+                            continue # Try next format
+
+                    # If all failed, let outer loop handle or bubble up
+                
+                # Standard explicit read for other formats
+                ts_dict = TimeSeriesDict.read(filename, format=fmt)
+                products['TS'] = {str(k): v for k, v in ts_dict.items()}
+                return products
+            except Exception:
+                pass
+
+    # 2. Try Single TimeSeries
+    try:
+        ts = TimeSeries.read(filename)
+        products['TS'] = {ts.name or 'Channel0': ts}
+        return products
+    except Exception:
+        # Retry with explicit format
+        if fmt:
+            try:
+                # For MiniSEED, we prefer reading as a stream (Dict) first because it often contains multiple traces
+                # even if user requested single. But TimeSeries.read might fail. 
+                # If we are here, TimeSeriesDict might have failed too above.
+                # However, let's try strict single read again with format.
+                ts = TimeSeries.read(filename, format=fmt)
+                products['TS'] = {ts.name or 'Channel0': ts}
+                return products
+            except Exception:
+                pass
+
+    # 3. Try FrequencySeries Dict
+    try:
+        fs_dict = FrequencySeriesDict.read(filename)
+        products['ASD'] = {str(k): v for k, v in fs_dict.items()}
+        return products
+    except Exception:
+        if fmt:
+            try:
+                fs_dict = FrequencySeriesDict.read(filename, format=fmt)
+                products['ASD'] = {str(k): v for k, v in fs_dict.items()}
+                return products
+            except Exception:
+                pass
+
+    # 4. Try Single FrequencySeries
+    try:
+        fs = FrequencySeries.read(filename)
+        products['ASD'] = {fs.name or 'Spectrum0': fs}
+        return products
+    except Exception:
+        if fmt:
+            try:
+                fs = FrequencySeries.read(filename, format=fmt)
+                products['ASD'] = {fs.name or 'Spectrum0': fs}
+                return products
+            except Exception:
+                pass
+        
+    # 5. Try Spectrogram
+    try:
+        spec = Spectrogram.read(filename)
+        products['Spectrogram'] = {spec.name or 'Spectrogram0': spec}
+        return products
+    except Exception:
+        if fmt:
+            try:
+                spec = Spectrogram.read(filename, format=fmt)
+                products['Spectrogram'] = {spec.name or 'Spectrogram0': spec}
+                return products
+            except Exception:
+                pass
+
+    raise RuntimeError(f"Unsupported file format or failed to read file: {filename}")
+

@@ -10,6 +10,7 @@ import products
 from normalize import normalize_series
 from engine import Engine
 from tabs import create_input_tab, create_measurement_tab, create_excitation_tab, create_result_tab
+from graph_panel import GraphPanel
 from nds.cache import NDSDataCache
 # Excitation Module Imports
 from excitation.generator import SignalGenerator
@@ -415,65 +416,187 @@ class MainWindow(QtWidgets.QMainWindow):
                 elif g_type == "Cross Spectral Density": p_name = "CSD"
                 elif g_type == "Coherence": p_name = "COH"
                 elif g_type == "Transfer Function": p_name = "TF"
-                items = self.loaded_products.get(p_name) or (self.loaded_products.get("PSD") if p_name=="ASD" else None)
+                elif g_type == "Spectrogram": p_name = "Spectrogram"
+                
+                items = self.loaded_products.get(p_name) or (self.loaded_products.get("PSD") if p_name=="ASD" else None) or (self.loaded_products.get("Spectrogram") if p_name=="Spectrogram" else None)
                 if not items: continue
+                
                 for t_idx, ctrl in enumerate(info['traces']):
                     try:
-                        if not ctrl['active'].isChecked(): traces[t_idx]['curve'].setData([], []); traces[t_idx]['curve'].setVisible(False); continue
+                        tr = traces[t_idx]; curve, bar, img = tr['curve'], tr['bar'], tr['img']
+                        
+                        if not ctrl['active'].isChecked(): 
+                             curve.setData([], []); curve.setVisible(False); img.clear(); img.setVisible(False); continue
+                        
                         ch_a, ch_b = ctrl['chan_a'].currentText(), ctrl['chan_b'].currentText()
-                        key = ch_a if p_name in ["TS", "ASD", "PSD"] else (ch_b, ch_a)
-                        val = items.get(key); res = normalize_series(val) if val is not None else None
+                        key = ch_a if p_name in ["TS", "ASD", "PSD", "Spectrogram"] else (ch_b, ch_a)
+                        val = items.get(key)
+                        
+                        # Handle Spectrogram (2D)
+                        is_spectrogram = (hasattr(val, 'ndim') and val.ndim == 2 and hasattr(val, 'value') and hasattr(val, 'times') and hasattr(val, 'frequencies'))
+                        
+                        if is_spectrogram:
+                            data = val.value
+                            times = val.times.value
+                            freqs = val.frequencies.value
+                            disp = info.get('units', {}).get('display_y').currentText()
+                            
+                            if disp == "dB": data = 10 * np.log10(np.abs(data)+1e-20)
+                            elif disp == "Phase": data = np.angle(data, deg=True) if np.iscomplexobj(data) else np.zeros_like(data)
+                            elif disp == "Magnitude": data = np.abs(data)
+                            
+                            img.setImage(data, autoLevels=False)
+                            img.setLevels([np.min(data), np.max(data)])
+                            
+                            if len(times)>1 and len(freqs)>1:
+                                dt = times[1]-times[0]
+                                df = freqs[1]-freqs[0]
+                                img.setRect(QtCore.QRectF(times[0], freqs[0], dt*len(times), df*len(freqs)))
+                                img.setVisible(True)
+                                curve.setVisible(False)
+                            else: 
+                                img.clear()
+                            continue
+                        
+                        # Handle 1D Series
+                        res = normalize_series(val) if val is not None else None
                         if res:
                             x, d = res; disp = info.get('units', {}).get('display_y').currentText()
                             if disp == "dB": d = (10 if "Power" in g_type or "Squared" in g_type else 20) * np.log10(np.abs(d)+1e-20)
                             elif disp == "Phase": d = np.angle(d, deg=True) if np.iscomplexobj(d) else np.zeros_like(d)
                             elif disp == "Magnitude": d = np.abs(d)
-                            traces[t_idx]['curve'].setData(x, d); traces[t_idx]['curve'].setVisible(True)
-                        else: traces[t_idx]['curve'].setVisible(False)
+                            elif disp == "Deg Unwrapped": d = np.degrees(np.unwrap(np.angle(d))) if np.iscomplexobj(d) else np.zeros_like(d)
+                            
+                            curve.setData(x, d); curve.setVisible(True)
+                            img.setVisible(False)
+                        else: 
+                            curve.setVisible(False)
+                            img.setVisible(False)
                     except Exception as e:
                         print(f"Error updating File Plot Graph {graph_idx+1} Trace {t_idx}: {e}")
             except Exception as e:
                 print(f"Error in update_file_plot for Graph {graph_idx+1}: {e}")
 
     def open_file_dialog(self):
-        f, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Data File", "", "Data Files (*.xml *.gwf *.h5 *.hdf5 *.csv *.txt *.dat *.mseed *.wav);;All Files (*)")
+        filters = [
+            "Data Files (*.xml *.gwf *.h5 *.hdf5 *.csv *.txt)",
+            "All Files (*)"
+        ]
+        f, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Data File", "", ";;".join(filters))
         if f: self.open_file(f)
+
+    def reset_state(self):
+        """Reset the entire GUI and engine state to defaults."""
+        self.is_loading_file = True
+        
+        # 1. Reset Engine
+        self.engine.reset()
+        self.loaded_products = {}
+        self.is_file_mode = False
+        self.time_counter = 0.0
+        
+        # 2. Reset Graphs
+        # We need to find the GraphPanel instances. 
+        # In create_result_tab, they were not explicitly stored in self but are children of result_tab.
+        # However, we can find them or use the info objects if they have refs.
+        # Let's find them from the tab widget if possible, or assume they are accessible.
+        # Actually, in MainWindow.__init__, we have self.graph_info1/2 which are from create_result_tab.
+        # We should probably store the GraphPanel instances themselves.
+        # For now, let's look for them in the Result tab.
+        res_tab = self.tabs.widget(3) # Result tab is index 3
+        if res_tab:
+            panels = res_tab.findChildren(GraphPanel)
+            for p in panels:
+                p.reset()
+        
+        # 3. Reset Measurement Tab
+        self.meas_controls['set_all_channels']([])
+        
+        # 4. Clear NDS status
+        self.nds_latest_raw = None
+        
+        self.is_loading_file = False
 
     def open_file(self, filename):
         try:
-            self.is_loading_file = True; products_dict = loaders.load_products(filename)
-            if not products_dict: QtWidgets.QMessageBox.warning(self, "Error", "No products loaded"); self.is_loading_file = False; return
-            self.loaded_products = products_dict; self.is_file_mode = True; self.timer.stop()
-            self.loaded_products = products_dict; self.is_file_mode = True; self.timer.stop()
-            for tr_list in [self.traces1, self.traces2]:
-                for tr in tr_list: tr['curve'].setData([], []); tr['bar'].setOpts(height=[]); tr['img'].clear()
+            # Prepare fresh state
+            self.reset_state()
+            self.is_loading_file = True
             
+            products_dict = loaders.load_products(filename)
+            if not products_dict: 
+                QtWidgets.QMessageBox.warning(self, "Error", "No products loaded")
+                self.is_loading_file = False
+                return
+            
+            self.loaded_products = products_dict
+            self.is_file_mode = True
+            self.timer.stop()
             # Extract common channels
             cols = products.extract_channels(products_dict)
             
-            # --- XML Handling Logic ---
+            # --- Channel Population Logic ---
+            new_states = []
             if filename.lower().endswith('.xml'):
-                # Use local XML parser to get Active states
+                # Use local XML parser to get Active states (preserves DTT enabled/disabled state)
                 xml_channels = loaders.extract_xml_channels(filename)
-                
-                # If XML parser returns nothing (e.g. non-DTT XML or parsing fail), fallback to cols
-                if not xml_channels:
-                     new_states = [{'name': c, 'active': True} for c in cols]
-                else:
+                if xml_channels:
                      new_states = xml_channels
+            
+            # Fallback / Non-XML: Use all loaded columns as active channels
+            if not new_states:
+                 new_states = [{'name': c, 'active': True} for c in cols]
+                 
+            self.meas_controls['set_all_channels'](new_states)
+            # --- End Channel Population ---
+            
+            # --- Update Time / Duration Info ---
+            try:
+                # Find the first available product to get time info
+                first_prod_dict = next(iter(products_dict.values()))
+                first_series = next(iter(first_prod_dict.values()))
+                
+                t0 = None
+                duration = None
+                
+                # Check for TimeSeries
+                if hasattr(first_series, 't0'):
+                    t0 = first_series.t0.value if hasattr(first_series.t0, 'value') else first_series.t0
+                    if hasattr(first_series, 'duration'):
+                        duration = first_series.duration.value if hasattr(first_series.duration, 'value') else first_series.duration
+                    elif hasattr(first_series, 'dt') and hasattr(first_series, 'size'):
+                        dt = first_series.dt.value if hasattr(first_series.dt, 'value') else first_series.dt
+                        duration = dt * first_series.size
+                
+                # Check for FrequencySeries (epoch)
+                elif hasattr(first_series, 'epoch'):
+                     t0 = first_series.epoch.value if hasattr(first_series.epoch, 'value') else first_series.epoch
+                     # Duration for ASD? Maybe unavailable.
                      
-                self.meas_controls['set_all_channels'](new_states)
-                
-                # We do NOT force-populate traces here for XML.
-                # Instead, we rely on user selection from the now-populated Measurement tab.
-                # However, to be friendly, we might want to auto-select something if nothing is selected?
-                # But DTT philosophy says: start fresh or restore exactly as saved.
-                # If the file had Saved Plot Settings, they would be handled separately.
-                # Here we just restore Measurement definitions.
-                
-                pass 
-                
-            # --- End XML Handling ---
+                if t0 is not None:
+                     # Update Start Time GPS
+                     if 'start_gps' in self.meas_controls:
+                         self.meas_controls['start_gps'].setValue(int(t0))
+                     if 'rb_gps' in self.meas_controls:
+                         self.meas_controls['rb_gps'].setChecked(True)
+                     
+                     # Update Measurement Time String
+                     # Format: MM/DD/YYYY HH:MM:SS UTC
+                     import astropy.time
+                     t_obj = astropy.time.Time(t0, format='gps', scale='utc')
+                     # DTT format example: 06/01/1980 00:00:00 UTC
+                     # strftime format: %m/%d/%Y %H:%M:%S UTC
+                     t_str = t_obj.strftime('%m/%d/%Y %H:%M:%S UTC')
+                     if 'meas_time_str' in self.meas_controls:
+                         self.meas_controls['meas_time_str'].setText(t_str)
+                         
+                if duration is not None:
+                     if 'time_span' in self.meas_controls:
+                         self.meas_controls['time_span'].setValue(float(duration))
+                         
+            except Exception as e:
+                print(f"Time info extraction failed: {e}")
+            # --- End Time Info Update ---
             
             for g_idx in [0,1]:
                 info = self.graph_info1 if g_idx==0 else self.graph_info2; p_name = list(products_dict.keys())[min(g_idx, len(products_dict)-1)]
@@ -482,6 +605,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 elif p_name == "CSD": ctype = "Cross Spectral Density"
                 elif p_name == "COH": ctype = "Coherence"
                 elif p_name in ["TF", "STF"]: ctype = "Transfer Function"
+                elif p_name == "Spectrogram": ctype = "Spectrogram"
                 info['graph_combo'].blockSignals(True); info['graph_combo'].setCurrentText(ctype); info['graph_combo'].blockSignals(False)
                 
                 # For XML, we rely on the combo boxes being already populated by on_measurement_channel_changed.
@@ -510,6 +634,17 @@ class MainWindow(QtWidgets.QMainWindow):
                         ctrl['chan_b'].setCurrentText(cb)
                         
                     ctrl['active'].setChecked(True)
+                
+                # Trigger axis scale update based on graph type (since blockSignals was used)
+                if 'range_updater' in info:
+                    # Set appropriate axis scales based on graph type
+                    res_tab = self.tabs.widget(3)
+                    if res_tab:
+                        from graph_panel import GraphPanel
+                        panels = res_tab.findChildren(GraphPanel)
+                        for p in panels:
+                            # Trigger the graph type change handler to set correct axis scales
+                            p.graph_combo.currentIndexChanged.emit(p.graph_combo.currentIndex())
                         
             self.is_loading_file = False; self.update_file_plot()
         except Exception as e:
