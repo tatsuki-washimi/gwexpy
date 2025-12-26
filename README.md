@@ -58,6 +58,7 @@ pip install ".[all]"
 
 # Install specific features
 pip install ".[interop]"     # All interoperability features (data + ML frameworks)
+pip install ".[fitting]"     # Fitting & MCMC (iminuit, emcee, corner)
 pip install ".[geophysics]"  # Obspy, MTh5, wintools, etc.
 pip install ".[analysis]"    # EMD, Wavelet, Hurst, etc.
 pip install ".[gw]"          # pygwinc, dttxml
@@ -87,6 +88,7 @@ Required only for specific submodules or interpolation features.
 | `[gw]` | `gwinc`, `dttxml` | `gwexpy.noise`, GW noise budgets & `dttxml` reading |
 | `[geophysics]` | `obspy`, `mth5`, `mt_metadata`, `mtpy`, `wintools`, `win2ndarray` | Seismic/EM data I/O, noise models |
 | `[bio]` | `mne`, `neo` | EEG/MEG & Electrophysiology data I/O |
+| `[fitting]` | `iminuit`, `emcee`, `corner` | Advanced fitting (Least squares, MCMC) & Corner plots |
 | `[gpu]` | `cupy`, `torch`, `tensorflow`, `jax` | GPU‑accelerated array support & Deep Learning |
 | `[audio]` | `librosa`, `pydub`, `torchaudio` | Audio format export/import (mp3, wav) |
 | `[data]` | `xarray`, `h5py`, `netCDF4` | HDF5, netCDF and XArray data structures |
@@ -147,6 +149,7 @@ trace = to_obspy_trace(ts)
 
 # CERN ROOT Interoperability
 # Converts to ROOT TGraph/TMultiGraph/TH2D and saves to .root files
+# Now highly optimized with vectorization for fast conversion of large arrays
 tsd.write("data.root")  # Automatic .root detection for Dictionary/List
 mg = tsd.to_tmultigraph(name="comparison")
 ```
@@ -209,6 +212,11 @@ enable_fitting_monkeypatch()
 # result = ts.fit('damped_oscillation', p0={'A': 1, 'tau': 0.1, 'f': 50})
 # print(result.params)
 # result.plot()
+
+# MCMC Analysis (requires emcee & corner)
+# result_mcmc = ts.fit('gaussian', method='mcmc', nwalkers=32, nsteps=1000)
+# result_mcmc.plot_corner()
+
 ```
 
 ### 7. Torch Dataset Helper

@@ -129,6 +129,19 @@ find_peaks(self, threshold: 'Optional[float]' = None, method: 'str' = 'amplitude
 
 シリーズ内のピークを検索します。`scipy.signal.find_peaks` のラッパーです。
 
+### `fit`
+
+```python
+fit(self, model: 'str', p0: 'Optional[dict[str, float]]' = None, method: 'str' = 'leastsq', **kwargs: 'Any') -> 'Any'
+```
+
+シリーズをモデル関数にフィットさせます。
+
+**パラメータ:**
+- **model**: モデル名 ('gaussian', 'power_law' 等) または関数。
+- **p0**: パラメータ初期値の辞書。
+- **method**: 'leastsq' (デフォルト) または 'mcmc'。
+
 ### `from_cupy`
 
 ```python

@@ -27,6 +27,7 @@ GWExPy exposes optional extras for interoperability:
 - ``.[interop]`` for high-level interoperability (torch, jax, dask, etc.)
 - ``.[control]`` for python-control integration
 - ``.[audio]`` for librosa/pydub helpers
+- ``.[fitting]`` for advanced fitting (iminuit, emcee, corner)
 
 Combine extras as needed, for example:
 

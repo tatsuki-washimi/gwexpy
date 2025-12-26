@@ -1293,6 +1293,32 @@ Find peaks in the TimeSeries.
 Wraps `scipy.signal.find_peaks`.
 
 
+### `fit`
+
+```python
+fit(self, model: 'str', p0: 'Optional[dict[str, float]]' = None, method: 'str' = 'leastsq', **kwargs: 'Any') -> 'Any'
+```
+
+
+Fit the TimeSeries to a model function.
+
+Parameters
+----------
+model : `str` or `callable`
+    Name of built-in model (e.g., 'gaussian', 'exponential', 'damped_oscillation') or a callable function.
+p0 : `dict`, optional
+    Initial guess for parameters.
+method : `str`, optional
+    Fitting method: 'leastsq' (default) or 'mcmc' (requires `emcee`).
+**kwargs
+    Additional arguments passed to the fitter (e.g., `nwalkers`, `nsteps` for MCMC).
+
+Returns
+-------
+`FitResult`
+    Object containing fit results, parameters, and plotting methods.
+
+
 ### `fit_arima`
 
 ```python
