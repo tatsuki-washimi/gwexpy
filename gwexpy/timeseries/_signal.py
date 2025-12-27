@@ -323,6 +323,36 @@ class TimeSeriesSignalMixin:
         out = self.__class__(y, **kwargs)
         return out
 
+    def heterodyne(self, phase: Any, stride: Any = 1.0, singlesided: bool = True) -> "TimeSeriesSignalMixin":
+        """
+        Mix with phase and average over strides.
+
+        Parameters
+        ----------
+        phase : `array_like` or `Series`
+            Phase to mix with (radians).
+        stride : `float` or `Quantity`, optional
+            Time step for averaging (default 1.0s).
+        singlesided : `bool`, optional
+            If True, double the amplitude (useful for real signals).
+
+        Returns
+        -------
+        TimeSeries
+            Average (complex) demodulated signal.
+        """
+        # 1. Mix down
+        z = self.mix_down(phase=phase, singlesided=singlesided)
+        
+        # 2. Resample (average) to stride-based rate
+        if isinstance(stride, (float, int)):
+             stride_dt = stride * u.s
+        else:
+             stride_dt = u.Quantity(stride)
+        
+        # Use our bin-based resample to get the average
+        return z.resample(stride_dt, agg='mean')
+
     def baseband(
         self,
         *,

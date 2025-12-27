@@ -1,0 +1,7 @@
+api,one_line,category,is_dynamic,note
+"Plot(*args, **kwargs)",SeriesMatrixやSpectrogramの自動レイアウト・自動スケール・自動カラーバー対応のコンストラクタ,コンストラクタ,False,gwpy/plot/plot.py を拡張
+"Plot(..., subplots=True)",separate=True のエイリアスとしてサブプロットを自動作成,レイアウト,False,
+"Plot(..., separate='row'/'col')",行列データの行または列ごとにサブプロットを作成し要素を重ね描き,レイアウト,False,
+add_colorbar(ax=None, mappable=None, ...),スペクトログラム等の mappable に対してカラーバーを追加,装飾,False,gwpy/plot/plot.py:L366
+set_constrained_layout(bool),Constrained Layout の有効・無効を切り替え,レイアウト,False,
+legend(),各サブプロットのラベルに基づいてレジェンドを自動表示,装飾,False,行列プロット時に自動適用

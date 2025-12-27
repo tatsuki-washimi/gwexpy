@@ -201,19 +201,41 @@ class TimeSeriesSpectralFourierMixin:
 
     def psd(self, *args: Any, **kwargs: Any) -> Any:
         self._check_regular("psd")
-        return super().psd(*args, **kwargs)
+        from gwexpy.frequencyseries import FrequencySeries
+        res = super().psd(*args, **kwargs)
+        return res.view(FrequencySeries)
 
     def asd(self, *args: Any, **kwargs: Any) -> Any:
         self._check_regular("asd")
-        return super().asd(*args, **kwargs)
+        from gwexpy.frequencyseries import FrequencySeries
+        res = super().asd(*args, **kwargs)
+        return res.view(FrequencySeries)
 
-    def csd(self, *args: Any, **kwargs: Any) -> Any:
+    def csd(self, other: Any, *args: Any, **kwargs: Any) -> Any:
         self._check_regular("csd")
-        return super().csd(*args, **kwargs)
+        from gwexpy.frequencyseries import FrequencySeries
+        res = super().csd(other, *args, **kwargs)
+        # GWpy's csd sometimes returns incorrect units when inputs have different units
+        target_unit = self.unit * getattr(other, "unit", u.dimensionless_unscaled) / u.Hz
+        res_fs = res.view(FrequencySeries)
+        if res_fs.unit != target_unit:
+             res_fs.override_unit(target_unit)
+        return res_fs
 
     def coherence(self, *args: Any, **kwargs: Any) -> Any:
         self._check_regular("coherence")
-        return super().coherence(*args, **kwargs)
+        from gwexpy.frequencyseries import FrequencySeries
+        res = super().coherence(*args, **kwargs)
+        return res.view(FrequencySeries)
+
+    def spectrogram2(self, *args: Any, **kwargs: Any) -> Any:
+        """
+        Compute an alternative spectrogram (spectrogram2).
+        Returns Spectrogram.
+        """
+        from gwexpy.spectrogram import Spectrogram
+        res = self.spectrogram(*args, **kwargs)
+        return res.view(Spectrogram)
 
     def dct(
         self, type: int = 2, norm: str = "ortho", *, window: Any = None, detrend: bool = False

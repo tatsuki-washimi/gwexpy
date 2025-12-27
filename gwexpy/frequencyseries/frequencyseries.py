@@ -586,12 +586,48 @@ class FrequencySeries(FittingMixin, BaseFrequencySeries):
                 elif method == 'power':
                     threshold = threshold.to(self.unit**2).value
                 elif method == 'db':
-                    # dB is logically dimensionless but let's just use .value if it's already dB-like?
-                    # Usually users pass plain float for dB.
                     threshold = threshold.value
             kwargs['height'] = threshold
 
-        return scipy.signal.find_peaks(target, **kwargs)
+        # Unit support for distance and width
+        df = self.df.to("Hz").value if hasattr(self.df, "to") else self.df
+        
+        # Distance (Hz -> samples)
+        dist = kwargs.get('distance', None)
+        if dist is not None and hasattr(dist, "to"):
+            kwargs['distance'] = int(dist.to("Hz").value / df)
+
+        # Width (Hz -> samples)
+        wid = kwargs.get('width', None)
+        if wid is not None:
+             if np.iterable(wid):
+                  new_wid = []
+                  for w in wid:
+                       if hasattr(w, "to"):
+                            new_wid.append(w.to("Hz").value / df)
+                       else:
+                            new_wid.append(w)
+                  kwargs['width'] = tuple(new_wid) if isinstance(wid, tuple) else new_wid
+             elif hasattr(wid, "to"):
+                  kwargs['width'] = wid.to("Hz").value / df
+
+        peaks_indices, props = scipy.signal.find_peaks(target, **kwargs)
+
+        if len(peaks_indices) == 0:
+             return self.__class__([], frequencies=[], unit=self.unit, name=self.name, channel=self.channel), props
+
+        peak_freqs = self.frequencies[peaks_indices]
+        peak_vals = self.value[peaks_indices]
+
+        out = self.__class__(
+             peak_vals,
+             frequencies=peak_freqs,
+             unit=self.unit,
+             name=f"{self.name}_peaks" if self.name else "peaks",
+             channel=self.channel,
+             epoch=self.epoch
+        )
+        return out, props
 
     def quadrature_sum(self, other: Any) -> Any:
         """
@@ -1232,6 +1268,36 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
              # FrequencySeries.to_xarray returns DataArray
              ds[key] = fs.to_xarray()
         return ds
+
+    def to_matrix(self):
+        """Convert this FrequencySeriesDict to a FrequencySeriesMatrix (Nx1)."""
+        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        from gwexpy.types.metadata import MetaData, MetaDataMatrix
+        keys = list(self.keys())
+        if not keys:
+             return FrequencySeriesMatrix(np.empty((0, 0, 0)))
+
+        first = self[keys[0]]
+        n_row = len(keys)
+        n_samp = len(first)
+        data = np.empty((n_row, 1, n_samp), dtype=first.value.dtype)
+
+        meta_arr = np.empty((n_row, 1), dtype=object)
+        for i, key in enumerate(keys):
+            fs = self[key]
+            if len(fs) != n_samp:
+                 raise ValueError(f"FrequencySeriesDict items must have same length to convert to matrix. '{key}' has {len(fs)}, expected {n_samp}")
+            data[i, 0] = fs.value
+            meta_arr[i, 0] = MetaData(unit=fs.unit, name=fs.name, channel=fs.channel)
+
+        return FrequencySeriesMatrix(
+            data,
+            frequencies=first.frequencies,
+            rows=keys,
+            cols=["value"],
+            meta=MetaDataMatrix(meta_arr),
+            epoch=first.epoch.gps if hasattr(first.epoch, "gps") else first.epoch
+        )
 
     def to_tmultigraph(self, name: Optional[str] = None) -> Any:
         """Convert to ROOT TMultiGraph."""

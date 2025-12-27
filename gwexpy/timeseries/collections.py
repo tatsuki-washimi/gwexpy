@@ -143,6 +143,13 @@ class TimeSeriesDict(BaseTimeSeriesDict):
              new_dict[key] = ts.baseband(*args, **kwargs)
         return new_dict
 
+    def heterodyne(self, *args, **kwargs):
+        """Apply heterodyne to each item."""
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.heterodyne(*args, **kwargs)
+        return new_dict
+
     def lock_in(self, *args, **kwargs):
         """
         Apply lock_in to each item.
@@ -173,6 +180,13 @@ class TimeSeriesDict(BaseTimeSeriesDict):
              for key in keys[1:]:
                   new_dict[key] = self[key].lock_in(*args, **kwargs)
              return new_dict
+
+    def stlt(self, *args, **kwargs):
+        """Apply stlt to each item. Returns a dict of TimePlaneTransforms."""
+        results = {}
+        for key, ts in self.items():
+            results[key] = ts.stlt(*args, **kwargs)
+        return results
 
     def csd_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs):
         """Compute Cross-Spectral Density matrix for all pairs.
@@ -322,33 +336,25 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         )
 
 
-    def asd(self, fftlength=4, overlap=2):
-        """Compute Amplitude Spectral Density for each TimeSeries.
-
-        Parameters
-        ----------
-        fftlength : float, optional
-            FFT length in seconds (default 4).
-        overlap : float, optional
-            Overlap between segments in seconds (default 2).
-
-        Returns
-        -------
-        FrequencySeriesDict
-            Dictionary of ASD results.
+    def psd(self, *args, **kwargs):
+        """Compute Power Spectral Density for each TimeSeries in the dict.
+        Returns a FrequencySeriesDict.
         """
-        from gwexpy.frequencyseries import FrequencySeries
+        from gwexpy.frequencyseries import FrequencySeriesDict
+        new_dict = FrequencySeriesDict()
+        for key, ts in self.items():
+            new_dict[key] = ts.psd(*args, **kwargs)
+        return new_dict
 
-        dict_cls = getattr(FrequencySeries, "DictClass", None)
-        if dict_cls is None:
-            from gwexpy.frequencyseries import FrequencySeriesDict as dict_cls  # pragma: no cover
-
-        return dict_cls(
-            {
-                key: ts.asd(fftlength=fftlength, overlap=overlap).view(FrequencySeries)
-                for key, ts in self.items()
-            }
-        )
+    def asd(self, *args, **kwargs):
+        """Compute Amplitude Spectral Density for each TimeSeries in the dict.
+        Returns a FrequencySeriesDict.
+        """
+        from gwexpy.frequencyseries import FrequencySeriesDict
+        new_dict = FrequencySeriesDict()
+        for key, ts in self.items():
+            new_dict[key] = ts.asd(*args, **kwargs)
+        return new_dict
 
     def spectrogram(self, *args, **kwargs):
         """
@@ -666,16 +672,6 @@ class TimeSeriesDict(BaseTimeSeriesDict):
             new_dict[key] = ts.average_fft(*args, **kwargs)
         return new_dict
 
-    def psd(self, *args, **kwargs):
-        """
-        Compute PSD for each TimeSeries in the dict.
-        Returns a FrequencySeriesDict.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesDict
-        new_dict = FrequencySeriesDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.psd(*args, **kwargs)
-        return new_dict
 
     # --- Statistics & Measurements ---
 
@@ -1143,6 +1139,93 @@ class TimeSeriesList(BaseTimeSeriesList):
         for ts in self:
             list.append(new_list, ts.taper(*args, **kwargs))
         return new_list
+
+    def stlt(self, *args, **kwargs):
+        """Apply stlt to each item. Returns a list of TimePlaneTransforms."""
+        new_list = []
+        for ts in self:
+            new_list.append(ts.stlt(*args, **kwargs))
+        return new_list
+
+    def analytic_signal(self, *args, **kwargs):
+        """Apply analytic_signal to each item."""
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.analytic_signal(*args, **kwargs))
+        return new_list
+
+    def hilbert(self, *args, **kwargs):
+        """Alias for analytic_signal."""
+        return self.analytic_signal(*args, **kwargs)
+
+    def envelope(self, *args, **kwargs):
+        """Apply envelope to each item."""
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.envelope(*args, **kwargs))
+        return new_list
+
+    def instantaneous_phase(self, *args, **kwargs):
+        """Apply instantaneous_phase to each item."""
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.instantaneous_phase(*args, **kwargs))
+        return new_list
+
+    def unwrap_phase(self, *args, **kwargs):
+        """Apply unwrap_phase to each item."""
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.unwrap_phase(*args, **kwargs))
+        return new_list
+
+    def instantaneous_frequency(self, *args, **kwargs):
+        """Apply instantaneous_frequency to each item."""
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.instantaneous_frequency(*args, **kwargs))
+        return new_list
+
+    def mix_down(self, *args, **kwargs):
+        """Apply mix_down to each item."""
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.mix_down(*args, **kwargs))
+        return new_list
+
+    def baseband(self, *args, **kwargs):
+        """Apply baseband to each item."""
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.baseband(*args, **kwargs))
+        return new_list
+
+    def heterodyne(self, *args, **kwargs):
+        """Apply heterodyne to each item."""
+        new_list = self.__class__()
+        for ts in self:
+            list.append(new_list, ts.heterodyne(*args, **kwargs))
+        return new_list
+
+    def lock_in(self, *args, **kwargs):
+        """Apply lock_in to each item."""
+        if not self:
+            return self.__class__()
+        
+        # Peek first
+        first_res = self[0].lock_in(*args, **kwargs)
+        if isinstance(first_res, tuple):
+            res_lists = tuple(self.__class__() for _ in first_res)
+            for ts in self:
+                res = ts.lock_in(*args, **kwargs)
+                for i, val in enumerate(res):
+                    list.append(res_lists[i], val)
+            return res_lists
+        else:
+            new_list = self.__class__()
+            for ts in self:
+                list.append(new_list, ts.lock_in(*args, **kwargs))
+            return new_list
 
     # --- Spectral Conversion ---
 

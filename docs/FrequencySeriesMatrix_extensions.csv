@@ -1,0 +1,8 @@
+api,one_line,category,is_dynamic,note
+ifft(),逆FFTを実行し TimeSeriesMatrix を返す,変換,False,
+filter(*filt, **kwargs),行列全体にデジタルフィルタ（fdfilter）を適用,信号処理,False,
+apply_response(response, ...),行列全体に複素周波数応答を適用,信号処理,False,
+smooth(width, method='amplitude'),行列全体を指定軸に沿って平滑化,信号処理,False,
+to_torch(...),PyTorch Tensor へ変換,相互運用,False,
+to_cupy(...),CuPy Array へ変換,相互運用,False,
+row_keys() / col_keys(),行/列のメタデータ（チャンネル名等）のキー一覧を取得,メタデータ,False,

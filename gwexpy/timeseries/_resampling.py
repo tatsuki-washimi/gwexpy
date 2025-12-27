@@ -5,7 +5,7 @@ This module provides resampling functionality as a mixin class:
 - asfreq: Reindex to a new fixed-interval grid
 - resample: Time-bin aggregation or signal processing resampling
 - _resample_time_bin: Internal time-bin aggregation
-- stlt: Short-Time Local Transform
+- stlt: Short-Time Laplace Transform
 """
 
 from __future__ import annotations
@@ -601,12 +601,17 @@ class TimeSeriesResamplingMixin:
         )
 
     # ===============================
-    # stlt - Short-Time Local Transform
+    # stlt - Short-Time Laplace Transform
     # ===============================
 
     def stlt(self, stride: Any, window: Any, **kwargs: Any) -> Any:
         """
-        Compute Short-Time Local Transform (STLT).
+        Compute Short-Time Laplace Transform (STLT).
+
+        .. note::
+           FIXME: The current implementation computes the magnitude outer product of STFT.
+           It does not yet support the real part of the complex frequency (sigma) 
+           characteristic of the Laplace transform. This is a pending item for future refinement.
 
         Produces a 3D time-frequency-frequency representation wrapped in
         a TimePlaneTransform container.
