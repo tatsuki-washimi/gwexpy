@@ -479,6 +479,67 @@ class SeriesMatrixOps:
         """
         return self.conj().T
 
+    def __matmul__(self, other):
+        """Frequency-wise (sample-wise) matrix multiplication.
+
+        If self has shape (N, I, K) and other has shape (I, M, K),
+        the result has shape (N, M, K).
+
+        Parameters
+        ----------
+        other : SeriesMatrix
+            The matrix to multiply with.
+
+        Returns
+        -------
+        SeriesMatrix
+            The result of the multiplication.
+        """
+        if not isinstance(other, SeriesMatrixOps):
+             # Fallback to numpy if other is not a SeriesMatrix
+             return np.matmul(self, other)
+
+        if self._value.shape[2] != other._value.shape[2]:
+             raise ValueError("Sample axis length mismatch in matrix multiplication")
+        if self._value.shape[1] != other._value.shape[0]:
+             raise ValueError(f"Matrix dimension mismatch: ({self._value.shape[0]}, {self._value.shape[1]}) @ ({other._value.shape[0]}, {other._value.shape[1]})")
+
+        # Move sample axis to front for np.matmul broadcasting
+        a = np.moveaxis(self._value, 2, 0)
+        b = np.moveaxis(other._value, 2, 0)
+        res_stack = np.matmul(a, b)
+        res_vals = np.moveaxis(res_stack, 0, 2)
+
+        N = self._value.shape[0]
+        M = other._value.shape[1]
+        I = self._value.shape[1]
+
+        # Compute metadata (units)
+        # Result unit at (i, j) is sum_k (self[i, k].unit * other[k, j].unit)
+        # We assume for each (i, j), the units for all k are equivalent.
+        res_meta = np.empty((N, M), dtype=object)
+        for i in range(N):
+            for j in range(M):
+                # Calculate the unit of the first term k=0
+                u0 = self.meta[i, 0].unit * other.meta[0, j].unit
+                # Check consistency and assign
+                for k in range(1, I):
+                     uk = self.meta[i, k].unit * other.meta[k, j].unit
+                     if not uk.is_equivalent(u0):
+                          raise u.UnitConversionError(f"Inconsistent units in matrix multiplication at result ({i},{j}): term 0 has {u0}, term {k} has {uk}")
+                res_meta[i, j] = MetaData(unit=u0)
+
+        return type(self)(
+             res_vals,
+             xindex=self.xindex,
+             rows=self.rows,
+             cols=other.cols,
+             meta=MetaDataMatrix(res_meta),
+             name=f"({getattr(self, 'name', '')} @ {getattr(other, 'name', '')})",
+             epoch=getattr(self, 'epoch', 0.0),
+             attrs=getattr(self, 'attrs', {})
+        )
+
     def trace(self):
         """Compute the trace of the matrix (sum of diagonal elements).
 
@@ -1270,6 +1331,60 @@ class SeriesMatrixOps:
         except (IndexError, KeyError, TypeError, ValueError, AttributeError):
             pass
         return self
+
+    def interpolate(self, xindex, **kwargs):
+        """Interpolate the matrix to a new sample axis.
+
+        Parameters
+        ----------
+        xindex : array-like
+            The new x-axis values to interpolate to.
+        **kwargs
+            Additional arguments passed to scipy.interpolate.interp1d
+            or numpy.interp.
+
+        Returns
+        -------
+        SeriesMatrix
+            A new matrix interpolated to the new x-axis.
+        """
+        if isinstance(xindex, u.Quantity):
+             new_x = xindex
+             new_x_val = xindex.value
+        else:
+             new_x = np.asarray(xindex)
+             new_x_val = new_x
+
+        old_x = self.xindex
+        if isinstance(old_x, u.Quantity):
+             old_x_val = old_x.to_value(getattr(new_x, "unit", old_x.unit))
+        else:
+             old_x_val = np.asarray(old_x)
+
+        N, M, K = self._value.shape
+        new_K = len(new_x_val)
+        new_data = np.empty((N, M, new_K), dtype=self._value.dtype)
+
+        from scipy.interpolate import interp1d
+        
+        # Determine kind (default linear)
+        kind = kwargs.pop("kind", "linear")
+
+        for i in range(N):
+            for j in range(M):
+                f = interp1d(old_x_val, self._value[i, j], kind=kind, bounds_error=False, fill_value="extrapolate", **kwargs)
+                new_data[i, j] = f(new_x_val)
+
+        return self.__class__(
+            new_data,
+            xindex=new_x,
+            meta=MetaDataMatrix(self.meta.copy()),
+            rows=self.rows,
+            cols=self.cols,
+            name=self.name,
+            epoch=self.epoch,
+            attrs=self.attrs
+        )
 
     def copy(self, order='C'):
         """Create a deep copy of this matrix.

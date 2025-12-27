@@ -3551,7 +3551,7 @@ stlt(self, stride: 'Any', window: 'Any', **kwargs: 'Any') -> 'Any'
 ```
 
 
-Compute Short-Time Local Transform (STLT).
+Compute Short-Time Laplace Transform (STLT).
 
 Produces a 3D time-frequency-frequency representation wrapped in
 a TimePlaneTransform container.

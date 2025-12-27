@@ -1,0 +1,9 @@
+api,one_line,category,is_dynamic,note
+axes,全次元の軸名（_axis_names）とインデックス（xindex等）を AxisDescriptor として返す,メタデータ,False,
+_set_axis_name(index, name),指定した次元に名前を付与,メタデータ,False,
+_isel_tuple(item_tuple),スライス等によるインデックス選択（内部API）,操作,False,
+_swapaxes_int(a, b),指定した軸を入れ替え（軸名とインデックスも同期）,操作,False,
+_transpose_int(axes),多次元配列の転置（軸名とインデックスも同期）,操作,False,
+plane(drop_axis, drop_index, ...),3次元配列から特定の面（2次元）を抽出（Array3Dのみ）,操作,False,gwexpy/types/array3d.py
+imshow(**kwargs),2次元データのイメージ表示（Gwpy継承＋Axis対応）,プロット,False,
+pcolormesh(**kwargs),2次元データのメッシュプロット（Gwpy継承＋Axis対応）,プロット,False,

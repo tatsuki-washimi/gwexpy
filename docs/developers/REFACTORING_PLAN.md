@@ -51,7 +51,8 @@ gwexpy/timeseries/
 - `asfreq(rule, method, fill_value, ...)`
 - `resample(rate, *args, **kwargs)`
 - `_resample_time_bin(...)` (内部ヘルパー)
-- `stlt(stride, window, ...)` (Short-Time Local Transform)
+- `stlt(stride, window, ...)` (Short-Time Laplace Transform)
+  - **現状の注意**: 現在の実装は STFT の振幅外積（3D表示）のみを行っており、数学的なラプラス変換（$\sigma$ による複素周波数）は未実装。将来的な課題として保留。
 
 **依存**: `_core.TimeSeries`, pandas-like time rules
 

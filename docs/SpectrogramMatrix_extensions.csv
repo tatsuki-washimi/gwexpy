@@ -1,0 +1,6 @@
+api,one_line,category,is_dynamic,note
+plot(**kwargs),行列データをグリッドまたはスタック形式でプロット,プロット,False,
+to_torch(...),PyTorch Tensor へ変換,相互運用,False,
+to_cupy(...),CuPy Array へ変換,相互運用,False,
+row_keys() / col_keys(),行/列のメタデータ（チャンネル名等）のキー一覧を取得,メタデータ,False,
+mean(axis=None, ...),指定した軸（時間/周波数/Ch）に沿って平均を計算,統計,False,

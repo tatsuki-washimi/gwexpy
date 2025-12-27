@@ -1,0 +1,4 @@
+api,one_line,category,is_dynamic,note
+to_gps(t, ...),様々な時間形式（pandas, obspy等）をGPS時間に変換。ベクトル入力（list, numpy, series）に対応,変換,False,
+from_gps(gps, ...),GPS時間をdatetime形式等に変換。ベクトル入力に対応,変換,False,
+tconvert(t='now', ...),時間をGPSとカレンダー形式の間で相互変換（自動判定）。ベクトル入力に対応,変換,False,
