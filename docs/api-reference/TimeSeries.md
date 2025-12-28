@@ -3690,7 +3690,7 @@ overlap : `Quantity` or `str`, optional
 sigmas : `float`, `array-like` or `Quantity`, optional
     Real part of Laplace frequency s = sigma + j*omega. Default 0.
 frequencies : `array-like`, optional
-    Output frequencies.
+    Output frequencies. Currently ignored (always uses FFT grid).
 scaling : `str`, optional
     'dt' (multiply by dt, discrete integral), 'none' (raw FFT).
     Default 'dt'.

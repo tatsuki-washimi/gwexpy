@@ -77,6 +77,9 @@ class Bruco:
                           'mean_coherence', and 'freq_at_max'.
         """
         end = start + duration
+        if fftlength > duration:
+            raise ValueError(f"fftlength ({fftlength}) cannot be longer than duration ({duration}).")
+
         logger.info(f"Starting Bruco scan at {start} for {duration}s. Batch size: {batch_size}")
 
         # 1. ターゲットチャンネルのデータ取得 (これは一度だけ)

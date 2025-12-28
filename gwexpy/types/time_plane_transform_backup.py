@@ -345,44 +345,4 @@ class LaplaceGram(TimePlaneTransform):
         """The frequency axis index."""
         return self.axis2.index
 
-    def normalize_per_sigma(self, eps=1e-30):
-        """
-        Normalize the magnitude of the transform along the frequency axis (last axis).
-        Each (time, sigma) slice is normalized such that the sum over frequency bins is 1.
-        This helps in identifying poles by equalizing the energy contribution across different damping values.
-
-        Parameters
-        ----------
-        eps : float, optional
-            Small value to avoid division by zero. Default is 1e-30.
-
-        Returns
-        -------
-        LaplaceGram
-            A new LaplaceGram instance containing the normalized magnitude.
-        """
-        # Calculate magnitude
-        mag = np.abs(self.value)
-        
-        # Sum over frequency axis (axis 2 / -1)
-        denom = np.sum(mag, axis=-1, keepdims=True)
-        denom = np.maximum(denom, eps)
-        
-        # Normalize
-        norm_data = mag / denom
-        
-        # Create new Array3D for the result
-        # Normalized data is effectively a probability distribution or shape profile, so dimensionless
-        new_data = Array3D(
-            norm_data,
-            unit=dimensionless_unscaled,
-            axis_names=[self.axes[0].name, self.axis1.name, self.axis2.name],
-            axis0=self.times,
-            axis1=self.axis1.index,
-            axis2=self.axis2.index
-        )
-        
-        # Return wrapped in LaplaceGram
-        return LaplaceGram(new_data, kind=self.kind, meta=self.meta.copy())
-
 
