@@ -363,10 +363,19 @@ class TimeSeriesResamplingMixin:
                 new_data[valid_out] = self.value[src_idx]
 
         # Construct new TimeSeries
+        # Construct new TimeSeries
+        # Convert dt back to original time unit to avoid plotting unit mismatch
+        final_dt = target_dt
+        if time_unit is not None and not is_dimless:
+             try:
+                 final_dt = target_dt.to(time_unit)
+             except (ValueError, u.UnitConversionError):
+                 pass
+
         return self.__class__(
             new_data,
             t0=u.Quantity(new_times_val[0], time_unit),
-            dt=target_dt,
+            dt=final_dt,
             unit=self.unit,
             name=self.name,
             channel=self.channel
@@ -516,7 +525,12 @@ class TimeSeriesResamplingMixin:
 
         # Bincount for aggregation
         if agg == 'mean':
-             sums = np.bincount(valid_indices, weights=valid_values, minlength=n_bins)
+             if np.iscomplexobj(valid_values):
+                  sums = np.bincount(valid_indices, weights=valid_values.real, minlength=n_bins) + \
+                         1j * np.bincount(valid_indices, weights=valid_values.imag, minlength=n_bins)
+             else:
+                  sums = np.bincount(valid_indices, weights=valid_values, minlength=n_bins)
+
              counts = np.bincount(valid_indices, minlength=n_bins)
              with np.errstate(invalid='ignore', divide='ignore'):
                   means = sums / counts
@@ -525,7 +539,12 @@ class TimeSeriesResamplingMixin:
              out_data = means
 
         elif agg == 'sum':
-             sums = np.bincount(valid_indices, weights=valid_values, minlength=n_bins)
+             if np.iscomplexobj(valid_values):
+                  sums = np.bincount(valid_indices, weights=valid_values.real, minlength=n_bins) + \
+                         1j * np.bincount(valid_indices, weights=valid_values.imag, minlength=n_bins)
+             else:
+                  sums = np.bincount(valid_indices, weights=valid_values, minlength=n_bins)
+
              counts = np.bincount(valid_indices, minlength=n_bins)
              if min_count > 0:
                   sums[counts < min_count] = np.nan
@@ -591,10 +610,18 @@ class TimeSeriesResamplingMixin:
         if agg == 'count':
              out_unit = u.dimensionless_unscaled
 
+        # Convert dt back to original time unit to avoid plotting unit mismatch
+        final_dt = bin_dt
+        if time_unit is not None and not is_dimensionless:
+             try:
+                 final_dt = bin_dt.to(time_unit)
+             except (ValueError, u.UnitConversionError):
+                 pass
+
         return self.__class__(
             out_data,
             t0=final_t0,
-            dt=bin_dt,
+            dt=final_dt,
             unit=out_unit,
             name=self.name,
             channel=self.channel

@@ -114,8 +114,9 @@ class Plot(BasePlot):
                  fig_height = min(24, 4 * nrow)
                  kwargs['figsize'] = (fig_width, fig_height)
 
-            # Use constrained_layout for better automatic spacing preventing overlap
-            kwargs.setdefault('constrained_layout', True)
+            # Use tight_layout instead of constrained_layout to avoid GridSpec warnings/crashes
+            kwargs.setdefault('constrained_layout', False)
+            kwargs.setdefault('tight_layout', True)
 
             # Enforce sharex for matrix grids to reduce clutter
             kwargs.setdefault('sharex', True)
@@ -374,8 +375,4 @@ class Plot(BasePlot):
                                  pass
 
         # Final layout polish
-        if kwargs.get('constrained_layout', True):
-             try:
-                 self.set_constrained_layout(True)
-             except (TypeError, ValueError, AttributeError):
-                 pass
+

@@ -129,6 +129,10 @@ find_peaks(self, threshold: 'Optional[float]' = None, method: 'str' = 'amplitude
 
 シリーズ内のピークを検索します。`scipy.signal.find_peaks` のラッパーです。
 
+**戻り値:**
+- `peaks`: ピーク値と周波数を含む新しい `FrequencySeries` オブジェクト。
+- `props`: プロパティの辞書。
+
 ### `fit`
 
 ```python
