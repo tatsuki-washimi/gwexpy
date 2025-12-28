@@ -290,4 +290,62 @@ class TimeSeries(
         from gwexpy.interop import from_simpeg
         return from_simpeg(cls, data_obj, **kwargs)
 
+    # =========================================================================
+    # ARIMA / Modeling Methods
+    # =========================================================================
+
+    def arima(
+        self,
+        order: tuple = (1, 0, 0),
+        *,
+        seasonal_order: Optional[tuple] = None,
+        auto: bool = False,
+        **kwargs
+    ):
+        """
+        Fit an ARIMA or SARIMAX model to this TimeSeries.
+
+        This method wraps `statsmodels.tsa.arima.model.ARIMA` (or SARIMAX).
+        If `auto=True`, it uses `pmdarima` to automatically find the best parameters.
+
+        Parameters
+        ----------
+        order : tuple, default=(1, 0, 0)
+            The (p,d,q) order of the model.
+        seasonal_order : tuple, optional
+            The (P,D,Q,s) seasonal order.
+        auto : bool, default=False
+            If True, perform Auto-ARIMA search (requires pmdarima).
+        **kwargs
+            Additional arguments passed to `fit_arima`.
+
+        Returns
+        -------
+        ArimaResult
+            Object containing the fitted model, with methods .predict(), .forecast(), .plot().
+        """
+        from .arima import fit_arima
+        return fit_arima(self, order=order, seasonal_order=seasonal_order, auto=auto, **kwargs)
+
+    def ar(self, p: int = 1, **kwargs):
+        """
+        Fit an AutoRegressive AR(p) model.
+        Shortcut for .arima(order=(p, 0, 0)).
+        """
+        return self.arima(order=(p, 0, 0), **kwargs)
+
+    def ma(self, q: int = 1, **kwargs):
+        """
+        Fit a Moving Average MA(q) model.
+        Shortcut for .arima(order=(0, 0, q)).
+        """
+        return self.arima(order=(0, 0, q), **kwargs)
+
+    def arma(self, p: int = 1, q: int = 1, **kwargs):
+        """
+        Fit an ARMA(p, q) model.
+        Shortcut for .arima(order=(p, 0, q)).
+        """
+        return self.arima(order=(p, 0, q), **kwargs)
+
 __all__ = ["TimeSeries"]
