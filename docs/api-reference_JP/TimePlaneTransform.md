@@ -1,4 +1,4 @@
-# TimePlaneTransform
+# TimePlaneTransform / LaplaceGram
 
 **継承元:** object
 
@@ -7,6 +7,9 @@
 このクラスは Array3D をラップし、以下のセマンティック構造を強制します：
 - 軸 0 : "time" (時間)
 - 軸 1, 2 : 対称的な空間または周波数の次元
+
+**LaplaceGram** は STLT (短時間ラプラス変換) 用の特殊な TimePlaneTransform であり、
+軸 1 は "sigma" (実部 s)、軸 2 は "frequency" (周波数) となります。
 
 ## メソッド
 
@@ -26,6 +29,22 @@ TimePlaneTransform を初期化します。
     変換の種類を示す文字列（例: "stlt", "bispectrum"）。デフォルトは "custom"。
 - **meta** : dict, オプション
     追加のメタデータディクショナリ。デフォルトは None（空の辞書として保存）。
+
+### `at_sigma`
+
+```python
+at_sigma(self, sigma)
+```
+
+特定の sigma インデックスまたは値における 2D 平面 (スペクトログラム風) を抽出します。
+(軸1が "sigma" である場合、例えば `LaplaceGram` で利用可能)。
+
+**パラメータ:**
+- **sigma** : float または int
+    Sigma の値またはインデックス。
+
+**戻り値:**
+- **Plane2D** (スペクトログラム風)
 
 ### `at_time`
 

@@ -3668,26 +3668,49 @@ Create a step plot of this series
 ### `stlt`
 
 ```python
-stlt(self, stride: 'Any', window: 'Any', **kwargs: 'Any') -> 'Any'
+stlt(self, stride=None, window=None, fftlength=None, overlap=None, *, sigmas=0.0, frequencies=None, scaling='dt', time_ref='start', onesided=None, legacy=False, **kwargs)
 ```
-
 
 Compute Short-Time Laplace Transform (STLT).
 
-Produces a 3D time-frequency-frequency representation wrapped in
-a TimePlaneTransform container.
+Chunk the time series, apply window $w[n] \cdot e^{-\sigma t_{rel}[n]}$, and compute FFT.
 
 Parameters
 ----------
-stride : str or Quantity
-    Time step duration (e.g. '1s').
-window : str or Quantity
-    Analysis window duration (e.g. '2s').
+stride : `Quantity` or `str`, optional
+    Step size in seconds between chunks.
+window : `Quantity`, `str`, or `array-like`, optional
+    If Quantity/str with units: window duration (legacy style or alias for fftlength).
+    If str (no units) or array: window function (passed to scipy.signal.get_window).
+    Default 'hann'.
+fftlength : `Quantity` or `str`, optional
+    Window duration. Preferred over 'window' for specifying duration.
+overlap : `Quantity` or `str`, optional
+    Overlap duration.
+sigmas : `float`, `array-like` or `Quantity`, optional
+    Real part of Laplace frequency s = sigma + j*omega. Default 0.
+frequencies : `array-like`, optional
+    Output frequencies.
+scaling : `str`, optional
+    'dt' (multiply by dt, discrete integral), 'none' (raw FFT).
+    Default 'dt'.
+time_ref : `str`, optional
+    Time reference for the exponential term within each window.
+    'start': t_rel in [0, T_win].
+    'center': t_rel in [-T_win/2, T_win/2]. Recommended for large sigmas to avoid overflow.
+    Default 'start'.
+onesided : `bool`, optional
+    If True, return one-sided FFT (real input only).
+    If False, return two-sided FFT.
+    If None, defaults to True for real data, False for complex data.
+legacy : `bool`, optional
+    If True, use the old magnitude-outer-product implementation (deprecated).
 
 Returns
 -------
-TimePlaneTransform
-    3D transform result with shape (time, axis1, axis2).
+LaplaceGram
+    3D transform result with shape (time, sigma, frequency).
+
 
 
 ### `t0`
