@@ -26,18 +26,22 @@ smooth,〇,〇,〇,×,gwexpy独自 (平滑化)
 find_peaks,〇,×,×,×,gwexpy独自 (ピーク検出)
 fit,〇,×,×,×,一般的関数適合 (gwexpy拡張、要オプトイン、iminuit/MCMC対応)
 quadrature_sum,〇,×,×,×,gwexpy独自
-to_mne_spectrum,〇,×,×,×,MNE-Python連携
-to_obspy_spectrum,〇,×,×,×,ObsPy連携
+MNE,to_mne / from_mne,mne.time_frequency.SpectrumArray (MNE)
+Obspy,to_obspy / from_obspy,obspy.Trace (Obspy)
+SimPEG,to_simpeg / from_simpeg,simpeg.data.Data (SimPEG FDEM)
+Specutils,to_specutils / from_specutils,specutils.Spectrum1D (Astropy)
+Pyspeckit,to_pyspeckit / from_pyspeckit,pyspeckit.Spectrum (pyspeckit)
 to_lal / from_lal,〇,×,×,×,LAL連携
 to_pycbc / from_pycbc,〇,×,×,×,PyCBC連携
 to_pandas / from_pandas,〇,〇,〇,〇,
 to_xarray / from_xarray,〇,〇,〇,〇,
 to_hdf5_dataset / from_hdf5,〇,×,×,〇,
 to_torch / from_torch,〇,〇,〇,〇,PyTorch連携
-to_tf / from_tf,〇,〇,〇,×,TensorFlow連携
+to_tensorflow / from_tensorflow,〇,〇,〇,×,TensorFlow連携
 to_jax / from_jax,〇,〇,〇,×,JAX連携
 to_cupy / from_cupy,〇,〇,〇,〇,CuPy連携
 to_control_frd / from_frd,〇,〇,〇,×,Controlライブラリ連携
 span / segments,×,〇,〇,-,周波数範囲の取得
 to_tgraph,〇,×,×,×,CERN ROOT TGraph変換
 to_tmultigraph,×,〇,〇,×,CERN ROOT TMultiGraph変換
+to_quantities / from_quantities,〇,×,×,×,Elephant/Neo連携

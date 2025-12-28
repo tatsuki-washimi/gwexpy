@@ -1,4 +1,5 @@
 from collections import UserList
+from typing import Any, Optional
 try:
     from collections import UserDict
 except ImportError:
@@ -54,6 +55,30 @@ class Spectrogram(BaseSpectrogram):
         from gwexpy.interop import to_th2d
         return to_th2d(self, error=error)
 
+    def to_quantities(self, units=None):
+        """
+        Convert to quantities.Quantity (Elephant/Neo compatible).
+        """
+        from gwexpy.interop import to_quantity
+        return to_quantity(self, units=units)
+
+    @classmethod
+    def from_quantities(cls, q, times, frequencies):
+        """
+        Create Spectrogram from quantities.Quantity.
+        
+        Parameters
+        ----------
+        q : quantities.Quantity
+            Input data (Time x Frequency matrix).
+        times : array-like
+            Time axis.
+        frequencies : array-like
+            Frequency axis.
+        """
+        from gwexpy.interop import from_quantity
+        return from_quantity(cls, q, times=times, frequencies=frequencies)
+
     @classmethod
     def from_root(cls, obj, return_error=False):
         """
@@ -61,6 +86,71 @@ class Spectrogram(BaseSpectrogram):
         """
         from gwexpy.interop import from_root
         return from_root(cls, obj, return_error=return_error)
+
+    def to_mne(self, info: Optional[Any] = None) -> Any:
+        """
+        Convert to MNE-Python object.
+
+        Parameters
+        ----------
+        info : mne.Info, optional
+            MNE Info object.
+
+        Returns
+        -------
+        mne.time_frequency.EpochsTFRArray
+        """
+        from gwexpy.interop import to_mne
+        return to_mne(self, info=info)
+
+    @classmethod
+    def from_mne(cls, tfr: Any, **kwargs: Any) -> Any:
+        """
+        Create Spectrogram from MNE-Python TFR object.
+
+        Parameters
+        ----------
+        tfr : mne.time_frequency.EpochsTFR or AverageTFR
+            Input TFR data.
+        **kwargs
+            Additional arguments passed to constructor.
+
+        Returns
+        -------
+        Spectrogram or SpectrogramDict
+        """
+        from gwexpy.interop import from_mne
+        return from_mne(cls, tfr, **kwargs)
+
+    def to_obspy(self, **kwargs: Any) -> Any:
+        """
+        Convert to Obspy Stream.
+        
+        Returns
+        -------
+        obspy.Stream
+        """
+        from gwexpy.interop import to_obspy
+        return to_obspy(self, **kwargs)
+        
+    @classmethod
+    def from_obspy(cls, stream: Any, **kwargs: Any) -> Any:
+        """
+        Create Spectrogram from Obspy Stream.
+        
+        Parameters
+        ----------
+        stream : obspy.Stream
+            Input stream.
+        **kwargs
+            Additional arguments.
+            
+        Returns
+        -------
+        Spectrogram
+        """
+        from gwexpy.interop import from_obspy
+        return from_obspy(cls, stream, **kwargs)
 
     def imshow(self, **kwargs):
         """Plot using imshow. Inherited from gwpy."""

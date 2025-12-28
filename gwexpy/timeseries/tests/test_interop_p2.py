@@ -42,36 +42,37 @@ def test_mne_interop():
     tsd['ch2'] = TimeSeries(np.arange(100)*2, dt=0.01)
 
     # 1. to_mne (multi-channel)
-    raw = tsd.to_mne_raw()
+    raw = tsd.to_mne()
     assert isinstance(raw, mne.io.RawArray)
     assert raw.info['nchan'] == 2
     assert raw.info['sfreq'] == 100.0
 
-    raw_picked = tsd.to_mne_raw(picks=["ch2"])
+    raw_picked = tsd.to_mne(picks=["ch2"])
     assert isinstance(raw_picked, mne.io.RawArray)
     assert raw_picked.info["nchan"] == 1
     assert raw_picked.ch_names == ["ch2"]
 
     # 2. from_mne
-    tsd2 = TimeSeriesDict.from_mne_raw(raw)
+    tsd2 = TimeSeriesDict.from_mne(raw)
     assert 'ch1' in tsd2
     assert 'ch2' in tsd2
     assert np.allclose(tsd2['ch1'].value, tsd['ch1'].value)
 
     # 3. single-channel convenience
     ts = TimeSeries(np.arange(100), dt=0.01, name="ch1")
-    raw_single = ts.to_mne_raw()
+    raw_single = ts.to_mne()
     assert isinstance(raw_single, mne.io.RawArray)
     assert raw_single.info["nchan"] == 1
     assert raw_single.info["sfreq"] == 100.0
 
+    # 4. TimeSeries from_mne (explicit channel)
+    ts_restored = TimeSeries.from_mne(raw, channel="ch1")
+    assert np.allclose(ts_restored.value, tsd['ch1'].value)
+    assert ts_restored.dt == tsd['ch1'].dt
+
 @pytest.mark.skipif(neo is None, reason="neo not installed")
 def test_neo_interop():
     # Neo usually deals with multiple channels in 2D
-    # Using TimeSeriesMatrix path if available, or just testing low-level?
-    # TimeSeries has no to_neo? Only Matrix/Dict?
-    # Spec implied TimeSeriesMatrix. But we put to_neo_analogsignal on SeriesMatrix.
-
     from gwexpy.timeseries import TimeSeriesMatrix
 
     data = np.random.randn(2, 1, 100) # 2 channels, 100 samples
@@ -79,13 +80,13 @@ def test_neo_interop():
     tsm.channel_names = ['C1', 'C2']
 
     # 1. to_neo
-    sig = tsm.to_neo_analogsignal()
+    sig = tsm.to_neo()
     # Check shape: neo is (time, channels)
     assert sig.shape == (100, 2)
     assert sig.sampling_rate.magnitude == 100.0
 
     # 2. from_neo
-    tsm2 = TimeSeriesMatrix.from_neo_analogsignal(sig)
+    tsm2 = TimeSeriesMatrix.from_neo(sig)
     # Check shape restoration (channels, 1, time)
     assert tsm2.shape == (2, 1, 100)
     assert np.allclose(tsm2.value, data)

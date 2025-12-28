@@ -96,14 +96,14 @@ NaN などの欠損値を補完します。
 ### `standardize`
 データを標準化（z-score など）します。
 
-### `to_torch`, `to_tf`, `to_jax`, `to_cupy`
+### `to_torch`, `to_tensorflow`, `to_jax`, `to_cupy`
 各種ディープラーニング・数値計算フレームワークのテンソル/配列に変換します。
 
 ### `to_pandas`, `to_xarray`, `to_polars`
 データ分析ライブラリの DataFrame や DataArray に変換します。
 
-### `to_mne_raw`, `to_obspy_trace`, `to_neo_analogsignal`
-脳磁計/脳波計 (MNE) や地震学 (ObsPy) などの専門分野のデータ型に変換します。
+### `to_mne`, `to_obspy`, `to_neo`, `to_simpeg`
+脳磁計/脳波計 (MNE)、地震学 (ObsPy)、地球物理学 (SimPEG) などの専門分野のデータ型に変換します。
 
 ### `whiten`
 信号をホワイトニング（白色化）します。

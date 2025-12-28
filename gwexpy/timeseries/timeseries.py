@@ -251,4 +251,41 @@ class TimeSeries(
         return out, props
 
 
+    def to_simpeg(self, location=None, rx_type="PointElectricField", orientation='x', **kwargs) -> Any:
+        """
+        Convert to SimPEG Data object.
+        
+        Parameters
+        ----------
+        location : array_like, optional
+            Rx location (x, y, z). Default is [0, 0, 0].
+        rx_type : str, optional
+            Receiver class name. Default "PointElectricField".
+        orientation : str, optional
+            Receiver orientation ('x', 'y', 'z'). Default 'x'.
+            
+        Returns
+        -------
+        simpeg.data.Data
+        """
+        from gwexpy.interop import to_simpeg
+        return to_simpeg(self, location=location, rx_type=rx_type, orientation=orientation, **kwargs)
+
+    @classmethod
+    def from_simpeg(cls, data_obj: Any, **kwargs: Any) -> Any:
+        """
+        Create TimeSeries from SimPEG Data object.
+        
+        Parameters
+        ----------
+        data_obj : simpeg.data.Data
+            Input SimPEG Data.
+            
+        Returns
+        -------
+        TimeSeries
+        """
+        from gwexpy.interop import from_simpeg
+        return from_simpeg(cls, data_obj, **kwargs)
+
 __all__ = ["TimeSeries"]

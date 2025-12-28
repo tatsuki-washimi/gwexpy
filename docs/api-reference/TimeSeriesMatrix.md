@@ -438,10 +438,10 @@ filter(self, *args, **kwargs)
 
 Element-wise delegate to `TimeSeries.filter`.
 
-### `from_neo_analogsignal`
+### `from_neo`
 
 ```python
-from_neo_analogsignal(sig: 'Any') -> 'Any'
+from_neo(sig: 'Any') -> 'Any'
 ```
 
 Create from neo.AnalogSignal.
@@ -1216,26 +1216,26 @@ to_list(self) -> "'TimeSeriesList'"
 
 Convert to TimeSeriesList.
 
-### `to_mne_raw`
+### `to_mne`
 
 ```python
-to_mne_raw(self, info: 'Any' = None) -> 'Any'
+to_mne(self, info: 'Any' = None) -> 'Any'
 ```
 
-Alias for :meth:`to_mne_rawarray`.
+Alias for :meth:`to_mne`.
 
-### `to_mne_rawarray`
+### `to_mne`
 
 ```python
-to_mne_rawarray(self, info: 'Any' = None) -> 'Any'
+to_mne(self, info: 'Any' = None) -> 'Any'
 ```
 
 Convert to mne.io.RawArray.
 
-### `to_neo_analogsignal`
+### `to_neo`
 
 ```python
-to_neo_analogsignal(self, units: 'Optional[str]' = None) -> 'Any'
+to_neo(self, units: 'Optional[str]' = None) -> 'Any'
 ```
 
 Convert to neo.AnalogSignal.

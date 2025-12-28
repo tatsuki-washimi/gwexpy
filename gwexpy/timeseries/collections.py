@@ -100,17 +100,13 @@ class TimeSeriesDict(BaseTimeSeriesDict):
     # P2 Methods (Domain Specific)
     # ===============================
 
-    def to_mne_rawarray(self, info=None, picks=None):
+    def to_mne(self, info=None, picks=None):
         """Convert to mne.io.RawArray."""
         from gwexpy.interop import to_mne_rawarray
         return to_mne_rawarray(self, info=info, picks=picks)
 
-    def to_mne_raw(self, info=None, picks=None):
-        """Alias for :meth:`to_mne_rawarray`."""
-        return self.to_mne_rawarray(info=info, picks=picks)
-
     @classmethod
-    def from_mne_raw(cls, raw, *, unit_map=None):
+    def from_mne(cls, raw, *, unit_map=None):
         """Create from mne.io.Raw."""
         from gwexpy.interop import from_mne_raw
         return from_mne_raw(cls, raw, unit_map=unit_map)

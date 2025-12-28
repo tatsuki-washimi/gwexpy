@@ -1,43 +1,77 @@
 
 from ._optional import require_optional
+import numpy as np
 
-def to_neo_analogsignal(mat, units=None):
+def to_neo(obj, units=None):
     """
-    mat: TimeSeriesMatrix (n_ch, 1, n_time) or TimeSeries?
-    neo AnalogSignal expects (time, channel) 2D usually.
+    Convert TimeSeries or TimeSeriesMatrix to neo.AnalogSignal.
     """
     neo = require_optional("neo")
     import quantities as pq # neo uses quantities
 
-    # mat shape: (ch, 1, time)
-    # neo wants (time, ch)
-    data = mat.value.squeeze(axis=1).T # (time, ch)
+    from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
-    fs = mat.sample_rate.value * pq.Hz
-    t_start = mat.t0.value * pq.s
+    if isinstance(obj, BaseTimeSeries):
+        # TimeSeries -> (time, 1)
+        data = obj.value[:, None]
+        ch_names = [str(obj.name or "ch0")]
+        sample_rate = obj.sample_rate
+        t0 = obj.t0
+        unit = obj.unit
+        name = obj.name
+    else:
+        # TimeSeriesMatrix shape: (ch, 1, time) or (ch, time)??
+        # SeriesMatrix base is 3D: (rows, cols, time)
+        # TimeSeriesMatrix is usually (ch, 1, time)
+        val = obj.value
+        if val.ndim == 3:
+            # (n_ch, 1, time) -> (time, n_ch)
+            data = val.squeeze(axis=1).T
+            # channels is 2D (n_ch, 1) extract first column
+            if hasattr(obj, "channels"):
+                ch_names = [str(x) for x in obj.channels[:, 0]]
+            else:
+                ch_names = [str(i) for i in range(data.shape[1])]
+        else:
+            # Handle other cases if needed
+            data = val.T
+            ch_names = [str(i) for i in range(data.shape[1])]
+            
+        sample_rate = obj.sample_rate
+        t0 = obj.t0
+        # TimeSeriesMatrix has .units (2D array), not .unit
+        if hasattr(obj, "unit"):
+            unit = obj.unit
+        elif hasattr(obj, "units"):
+            # Get unit from first element
+            unit = obj.units[0, 0] if obj.units.size > 0 else None
+        else:
+            unit = None
+        name = getattr(obj, "name", None)
 
-    # unit mapping astropy -> quantities?
-    # Simple strings usually work
-    u_str = str(mat.unit) if units is None else units
+    fs = float(sample_rate.value) * pq.Hz
+    t_start = float(t0.value if hasattr(t0, "value") else t0) * pq.s
+
+    # unit mapping astropy -> quantities
+    u_str = str(unit) if units is None else units
 
     sig = neo.AnalogSignal(
         data * pq.Quantity(1, u_str),
         sampling_rate=fs,
         t_start=t_start,
-        name=mat.name
+        name=name
     )
-    # channel names?
-    sig.array_annotations = {"channel_names": mat.channels}
+    sig.array_annotations = {"channel_names": ch_names}
 
     return sig
 
-def from_neo_analogsignal(cls, sig):
+def from_neo(cls, sig):
     """
-    sig: neo.AnalogSignal (time, ch)
+    Create TimeSeriesMatrix from neo.AnalogSignal.
     """
-    # to (ch, 1, time)
-    data = sig.magnitude.T
-    data = data[:, None, :]
+    # sig shape: (time, ch)
+    data = sig.magnitude.T # (ch, time)
+    data = data[:, None, :] # (ch, 1, time)
 
     # meta
     sfreq = sig.sampling_rate.rescale('Hz').magnitude

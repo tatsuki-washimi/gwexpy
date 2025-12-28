@@ -429,10 +429,10 @@ RuntimeError
     fails.
 
 
-### `from_mne_raw`
+### `from_mne`
 
 ```python
-from_mne_raw(raw, *, unit_map=None)
+from_mne(raw, *, unit_map=None)
 ```
 
 Create from mne.io.Raw.
@@ -978,18 +978,18 @@ to_matrix(self, *, align='intersection', **kwargs)
 Convert dictionary to TimeSeriesMatrix with alignment.
 
 
-### `to_mne_raw`
+### `to_mne`
 
 ```python
-to_mne_raw(self, info=None, picks=None)
+to_mne(self, info=None, picks=None)
 ```
 
-Alias for :meth:`to_mne_rawarray`.
+Alias for :meth:`to_mne`.
 
-### `to_mne_rawarray`
+### `to_mne`
 
 ```python
-to_mne_rawarray(self, info=None, picks=None)
+to_mne(self, info=None, picks=None)
 ```
 
 Convert to mne.io.RawArray.

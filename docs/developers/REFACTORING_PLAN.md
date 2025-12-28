@@ -123,10 +123,10 @@ gwexpy/timeseries/
 - pandas: `to_pandas()`, `from_pandas()`
 - xarray: `to_xarray()`, `from_xarray()`
 - HDF5: `to_hdf5_dataset()`, `from_hdf5_dataset()`
-- ObsPy: `to_obspy_trace()`, `from_obspy_trace()`
+- ObsPy: `to_obspy()`, `from_obspy()`
 - SQLite: `to_sqlite()`, `from_sqlite()`
 - PyTorch: `to_torch()`, `from_torch()`
-- TensorFlow: `to_tf()`, `from_tf()`
+- TensorFlow: `to_tensorflow()`, `from_tensorflow()`
 - Dask: `to_dask()`, `from_dask()`
 - Zarr: `to_zarr()`, `from_zarr()`
 - NetCDF4: `to_netcdf4()`, `from_netcdf4()`
@@ -135,7 +135,7 @@ gwexpy/timeseries/
 - librosa: `to_librosa()`
 - pydub: `to_pydub()`, `from_pydub()`
 - astropy: `to_astropy_timeseries()`, `from_astropy_timeseries()`
-- MNE: `to_mne_rawarray()`, `to_mne_raw()`
+- MNE: `to_mne()`, `to_mne()`
 
 **依存**: `_core.TimeSeries`, 各外部ライブラリ (optional)
 

@@ -285,7 +285,7 @@ class TimeSeriesInteropMixin:
     # obspy
     # ===============================
 
-    def to_obspy_trace(self, *, stats_extra: Optional[dict[str, Any]] = None, dtype: Any = None) -> Any:
+    def to_obspy(self, *, stats_extra: Optional[dict[str, Any]] = None, dtype: Any = None) -> Any:
         """
         Convert to obspy.Trace.
 
@@ -304,7 +304,7 @@ class TimeSeriesInteropMixin:
         return to_obspy_trace(self, stats_extra=stats_extra, dtype=dtype)
 
     @classmethod
-    def from_obspy_trace(
+    def from_obspy(
         cls,
         tr: Any,
         *,
@@ -442,7 +442,7 @@ class TimeSeriesInteropMixin:
     # TensorFlow
     # ===============================
 
-    def to_tf(self, dtype: Any = None) -> Any:
+    def to_tensorflow(self, dtype: Any = None) -> Any:
         """
         Convert to tensorflow.Tensor.
 
@@ -459,7 +459,7 @@ class TimeSeriesInteropMixin:
         return to_tf(self, dtype=dtype)
 
     @classmethod
-    def from_tf(
+    def from_tensorflow(
         cls,
         tensor: Any,
         *,
@@ -844,7 +844,7 @@ class TimeSeriesInteropMixin:
     # MNE
     # ===============================
 
-    def to_mne_rawarray(self, info: Any = None) -> Any:
+    def to_mne(self, info: Any = None) -> Any:
         """
         Convert to ``mne.io.RawArray`` (single-channel).
 
@@ -860,6 +860,124 @@ class TimeSeriesInteropMixin:
         from gwexpy.interop import to_mne_rawarray
         return to_mne_rawarray(self, info=info)
 
-    def to_mne_raw(self, info: Any = None) -> Any:
-        """Alias for :meth:`to_mne_rawarray`."""
-        return self.to_mne_rawarray(info=info)
+    @classmethod
+    def from_mne(cls, raw: Any, channel: str, *, unit: Optional[Any] = None) -> Any:
+        """
+        Create TimeSeries from mne.io.Raw.
+
+        Parameters
+        ----------
+        raw : mne.io.Raw
+            Input MNE data.
+        channel : str
+            Channel name to extract. REQUIRED.
+        unit : Unit, optional
+            Physical unit.
+
+        Returns
+        -------
+        TimeSeries
+        """
+        # We implement extraction here to support single-channel requirement
+        # without relying on TimeSeriesDict logic in interop
+        try:
+            data, times = raw.get_data(picks=[channel], return_times=True)
+        except (ValueError, IndexError) as e:
+            # MNE raises ValueError or IndexError if channel not found depending on version/context
+            raise ValueError(f"Channel '{channel}' not found or invalid: {e}")
+
+        if data.shape[0] == 0:
+             raise ValueError(f"Channel '{channel}' not found in MNE object")
+
+        value = data[0]
+        sfreq = raw.info['sfreq']
+        dt = 1.0 / sfreq
+
+        t0 = 0
+        if raw.info['meas_date']:
+             from gwexpy.time import to_gps
+             t0 = to_gps(raw.info['meas_date'])
+
+        return cls(value, t0=t0, dt=dt, unit=unit, name=channel)
+
+    # ===============================
+    # JSON / Dict
+    # ===============================
+
+    def to_json(self) -> str:
+        """
+        Convert TimeSeries to a JSON string.
+
+        Returns
+        -------
+        str
+        """
+        from gwexpy.interop import to_json
+        return to_json(self)
+
+    @classmethod
+    def from_json(cls, json_str: str) -> Any:
+        """
+        Create TimeSeries from a JSON string.
+
+        Parameters
+        ----------
+        json_str : str
+            JSON representation.
+
+        Returns
+        -------
+        TimeSeries
+        """
+        from gwexpy.interop import from_json
+        return from_json(cls, json_str)
+
+    def to_dict(self) -> dict:
+        """
+        Convert TimeSeries to a dictionary.
+
+        Returns
+        -------
+        dict
+        """
+        # Note: TimeSeriesMatrix also has to_dict which returns TimeSeriesDict.
+        # This one returns a plain python dict of metadata and values.
+        from gwexpy.interop import to_dict
+        return to_dict(self)
+
+    @classmethod
+    def from_dict(cls, data_dict: dict) -> Any:
+        """
+        Create TimeSeries from a dictionary.
+
+        Parameters
+        ----------
+        data_dict : dict
+            Dictionary representation.
+
+        Returns
+        -------
+        TimeSeries
+        """
+        from gwexpy.interop import from_dict
+        return from_dict(cls, data_dict)
+
+    # ===============================
+    # Neo
+    # ===============================
+
+    def to_neo(self, units: Optional[Any] = None) -> Any:
+        """
+        Convert to neo.AnalogSignal.
+
+        Parameters
+        ----------
+        units : str or Unit, optional
+            Units for the signal.
+
+        Returns
+        -------
+        neo.core.AnalogSignal
+        """
+        from gwexpy.interop import to_neo
+        return to_neo(self, units=units)

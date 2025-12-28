@@ -1,8 +1,9 @@
-
 from .pandas_ import to_pandas_series, from_pandas_series, to_pandas_dataframe, from_pandas_dataframe
 from .xarray_ import to_xarray, from_xarray
 from .hdf5_ import to_hdf5, from_hdf5
-from .obspy_ import to_obspy_trace, from_obspy_trace
+from .obspy_ import to_obspy_trace, from_obspy_trace, to_obspy, from_obspy
+from .specutils_ import to_specutils, from_specutils
+from .pyspeckit_ import to_pyspeckit, from_pyspeckit
 from .polars_ import (
     to_polars_series,
     to_polars_dataframe,
@@ -37,6 +38,9 @@ from .cupy_ import to_cupy, from_cupy, is_cupy_available
 # P2
 from .pydub_ import to_librosa, to_pydub, from_pydub
 from .astropy_ import to_astropy_timeseries, from_astropy_timeseries
-from .mne_ import to_mne_rawarray, from_mne_raw
-from .neo_ import to_neo_analogsignal, from_neo_analogsignal
+from .mne_ import to_mne_rawarray, from_mne_raw, to_mne, from_mne
+from .simpeg_ import to_simpeg, from_simpeg
+from .neo_ import to_neo, from_neo
+from .quantities_ import to_quantity, from_quantity
+from .json_ import to_json, from_json, to_dict, from_dict
 from .torch_dataset import TimeSeriesWindowDataset, to_torch_dataset, to_torch_dataloader
