@@ -1,12 +1,11 @@
-
 import warnings
 import numpy as np
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, Optional, Union, Tuple, List
 
+# --- Optional Dependencies ---
 try:
     import statsmodels.api as sm
-    # Only import classes if available to avoid runtime errors
     from statsmodels.tsa.arima.model import ARIMA
     try:
         from statsmodels.tsa.statespace.sarimax import SARIMAX
@@ -15,6 +14,14 @@ try:
     STATSMODELS_AVAILABLE = True
 except ImportError:
     STATSMODELS_AVAILABLE = False
+    ARIMA = None
+    SARIMAX = None
+
+try:
+    import pmdarima as pm
+    PMDARIMA_AVAILABLE = True
+except ImportError:
+    PMDARIMA_AVAILABLE = False
 
 try:
     from typing import TYPE_CHECKING
@@ -23,68 +30,69 @@ try:
 except ImportError:
     pass
 
+
 @dataclass
 class ArimaForecastResult:
     forecast_ts: "TimeSeries"
     intervals: Dict[str, "TimeSeries"]
 
+
 class ArimaResult:
-    def __init__(self, res, t0, dt, unit, name=None, channel=None):
+    """
+    Result object for ARIMA/SARIMAX modeling on TimeSeries.
+    Wraps statsmodels results and provides TimeSeries-aware methods.
+    """
+    def __init__(self, res, t0, dt, unit, name=None, channel=None, original_data=None):
         self.res = res
         self.t0 = t0
         self.dt = dt
         self.unit = unit
         self.name = name
         self.channel = channel
+        self.original_data = original_data  # Keep reference for plotting
+
+    def _time_to_index(self, t, default=0):
+        """Helper to convert GPS time to relative integer index."""
+        if t is None:
+            return default
+        if isinstance(t, (int, np.integer)):
+            return int(t)
+        if isinstance(t, float):
+            # GPS time provided
+            return int(round((t - self.t0) / self.dt))
+        return default
 
     def predict(self, start=None, end=None, *, dynamic=False) -> "TimeSeries":
         """
-        In-sample prediction or out-of-sample forecast.
+        In-sample prediction using GPS times or steps.
 
         Parameters
         ----------
-        start : int, str, or datetime, optional
-            Zero-indexed observation number at which to start forecasting.
-        end : int, str, or datetime, optional
-            Zero-indexed observation number at which to end forecasting.
+        start : float (GPS) or int, optional
+            Start time or index. Defaults to beginning of data.
+        end : float (GPS) or int, optional
+            End time or index. Defaults to end of data.
         dynamic : bool, default=False
-            Where to become dynamic.
+            Use dynamic prediction (recursive).
 
         Returns
         -------
         TimeSeries
             Predicted values.
         """
-        # Handle start/end as time or int indices
-        # statsmodels predict uses integer steps relative to start of series
-
-        # NOTE: logic to convert time to int index needed if start/end are times
-        # For simplicity, assume user passes behavior compatible (steps or times)?
-        # statsmodels handles datetime/string indices if index was provided.
-        # But we passed numpy array. So index is integer.
-        # User must pass integer steps.
-        # Result is values.
-
-        pred = self.res.predict(start=start, end=end, dynamic=dynamic)
-
-        # Handle start/end as time or int indices
         from .timeseries import TimeSeries
 
-        # Calculate t0 for the prediction
-        # If start is None, it defaults to the first observation (idx=0)
-        # If start is int, it's the offset from self.t0
-        if start is None:
-            start_idx = 0
-        elif isinstance(start, (int, np.integer)):
-            start_idx = int(start)
-        else:
-            # For datetime or other types, we'd need more complex logic.
-            # statsmodels might have already converted it if the index was set.
-            # Here we assume integer indexing if t0/dt are provided.
-            warnings.warn("Non-integer start in predict may result in incorrect t0 assignment if not supported by statsmodels internal index.")
-            start_idx = 0 # fallback
+        start_idx = self._time_to_index(start, default=0)
+        end_idx = self._time_to_index(end, default=None)
+
+        # statsmodels predict uses 0-based indexing
+        pred = self.res.predict(start=start_idx, end=end_idx, dynamic=dynamic)
 
         new_t0 = self.t0 + start_idx * self.dt
+        
+        # Handle case where predict returns a single value
+        if np.ndim(pred) == 0:
+             pred = [pred]
 
         return TimeSeries(
             pred,
@@ -94,39 +102,32 @@ class ArimaResult:
             name=f"{self.name}_pred"
         )
 
-    def forecast(self, steps, *, alpha=0.05):
+    def forecast(self, steps: int, *, alpha: float = 0.05) -> Tuple["TimeSeries", Dict[str, "TimeSeries"]]:
         """
         Out-of-sample forecasts.
 
         Parameters
         ----------
         steps : int
-            Number of steps to forecast.
+            Number of steps to forecast into the future.
         alpha : float, default=0.05
-            Significance level for confidence intervals (default 95%).
+            Significance level (default 0.05 means 95% confidence intervals).
 
         Returns
         -------
-        forecast_ts : TimeSeries
-            Point forecast.
+        forecast : TimeSeries
+            The mean forecast.
         intervals : dict
-            Dictionary containing 'lower' and 'upper' confidence interval TimeSeries.
+            Dict with 'lower' and 'upper' TimeSeries for confidence intervals.
         """
         from .timeseries import TimeSeries
 
-        # get_forecast return PredictionResultsWrapper
+        # statsmodels get_forecast handles out-of-sample
         pred_res = self.res.get_forecast(steps=steps)
         point = pred_res.predicted_mean
         conf = pred_res.conf_int(alpha=alpha)
 
-        # Time axis starts after the last sample of fitted data
-        # Fitted data length?
-        # self.res.nobs (approx)
-
-        # For Arima, end of training is known.
-        # We need the time of the end of the series.
-        # self.t0 + nobs * dt
-
+        # Determine start time of forecast (immediately after training data)
         n_obs = int(self.res.nobs) if hasattr(self.res, 'nobs') else len(self.res.fittedvalues)
         forecast_t0 = self.t0 + n_obs * self.dt
 
@@ -143,27 +144,20 @@ class ArimaResult:
             t0=forecast_t0,
             dt=self.dt,
             unit=self.unit,
-            name="lower"
+            name="lower_ci"
         )
         upper = TimeSeries(
             conf[:, 1],
             t0=forecast_t0,
             dt=self.dt,
             unit=self.unit,
-            name="upper"
+            name="upper_ci"
         )
 
         return forecast_ts, {"lower": lower, "upper": upper}
 
-    def residuals(self):
-        """
-        Return residuals of the fitted model.
-
-        Returns
-        -------
-        TimeSeries
-            Residuals.
-        """
+    def residuals(self) -> "TimeSeries":
+        """Return the model residuals as a TimeSeries."""
         from .timeseries import TimeSeries
         return TimeSeries(
             self.res.resid,
@@ -173,132 +167,181 @@ class ArimaResult:
             name=f"{self.name}_resid"
         )
 
-    def params_dict(self):
-        """
-        Return model parameters as a dictionary.
+    def summary(self):
+        """Return the statsmodels summary object."""
+        return self.res.summary()
 
-        Returns
-        -------
-        dict
-            Dictionary containing AIC, BIC, Log-Likelihood, and parameters.
+    def plot(self, forecast_steps=None, alpha=0.05, ax=None, **kwargs):
         """
-        return {
-            "aic": self.res.aic,
-            "bic": self.res.bic,
-            "llf": self.res.llf,
-            "params": self.res.params.tolist() if hasattr(self.res.params, "tolist") else self.res.params
-        }
+        Plot original data, in-sample fit, and (optional) out-of-sample forecast.
+
+        Parameters
+        ----------
+        forecast_steps : int, optional
+            If provided, plot forecast for this many steps into the future.
+        alpha : float, default=0.05
+            Significance level for confidence intervals.
+        ax : matplotlib.axes.Axes, optional
+            Axes to plot on.
+        **kwargs
+            Passed to plot methods.
+        """
+        from matplotlib import pyplot as plt
+
+        if ax is None:
+            fig, ax = plt.subplots()
+
+        # 1. Original Data
+        if self.original_data is not None:
+            ax.plot(self.original_data.times.value, self.original_data.value, 
+                    label="Original", color="gray", alpha=0.6, linewidth=1.5)
+
+        # 2. In-sample Prediction (Fit)
+        # Note: ARIMA fits usually have bad predictions for the very first few samples (diffs)
+        pred = self.predict(start=0, dynamic=False)
+        # Shift slightly for visibility if needed, but usually exact overlay is best
+        ax.plot(pred.times.value, pred.value, label="Model Fit", color="tab:blue", linestyle="--", alpha=0.8)
+
+        # 3. Forecast
+        if forecast_steps is not None and forecast_steps > 0:
+            fc, conf = self.forecast(steps=forecast_steps, alpha=alpha)
+            ax.plot(fc.times.value, fc.value, label="Forecast", color="tab:orange", linewidth=2)
+            ax.fill_between(
+                fc.times.value,
+                conf['lower'].value,
+                conf['upper'].value,
+                color='tab:orange',
+                alpha=0.2,
+                label=f"{int((1-alpha)*100)}% CI"
+            )
+
+        ax.set_xlabel("GPS Time [s]")
+        ax.set_ylabel(f"Amplitude [{self.unit}]")
+        ax.legend(loc="best")
+        ax.grid(True, linestyle=":", alpha=0.6)
+        ax.set_title(f"ARIMA Model Results: {self.name or 'TimeSeries'}")
+
+        return ax
+
 
 def fit_arima(
-    timeseries,
-    order=(1, 0, 0),
+    timeseries: "TimeSeries",
+    order: Tuple[int, int, int] = (1, 0, 0),
     *,
-    seasonal_order=None,
-    trend="c",
-    enforce_stationarity=True,
-    enforce_invertibility=True,
-    method=None,
-    method_kwargs=None,
-    nan_policy="raise",
-    impute_kwargs=None,
-):
+    seasonal_order: Optional[Tuple[int, int, int, int]] = None,
+    trend: Optional[str] = "c",
+    auto: bool = False,
+    auto_kwargs: Optional[Dict] = None,
+    method: Optional[str] = None,
+    method_kwargs: Optional[Dict] = None,
+    nan_policy: str = "raise",
+    impute_kwargs: Optional[Dict] = None,
+    **kwargs,
+) -> ArimaResult:
     """
-    Fit an ARIMA/SARIMAX model to a TimeSeries.
+    Fit an ARIMA or SARIMAX model to a TimeSeries.
 
     Parameters
     ----------
     timeseries : TimeSeries
-        Input time series data.
+        The input data.
     order : tuple, default=(1, 0, 0)
-        The (p,d,q) order of the model for the number of AR parameters,
-        differences, and MA parameters.
+        The (p,d,q) order of the model. Ignored if auto=True.
     seasonal_order : tuple, optional
-        The (P,D,Q,s) order of the seasonal component of the model.
-    trend : str, default='c'
-        Parameter controlling the deterministic trend polynomial.
-    enforce_stationarity : bool, default=True
-        Whether or not to transform the AR parameters to enforce stationarity.
-    enforce_invertibility : bool, default=True
-        Whether or not to transform the MA parameters to enforce invertibility.
-    method : str, optional
-        The method to use for fitting (e.g., 'statespace', 'innovations_mle').
-    method_kwargs : dict, optional
-        Additional keyword arguments passed to the fit method.
-    nan_policy : str, default='raise'
-        'raise', 'drop', or 'impute'.
-    impute_kwargs : dict, optional
-        Arguments for imputation if nan_policy='impute'.
-
-    Returns
-    -------
-    ArimaResult
-        Result object containing the fitted model and providing prediction methods.
+        The (P,D,Q,s) order of the seasonal component.
+    trend : str, optional
+        Trend parameter ('c', 't', 'ct', etc). Default 'c' (constant).
+    auto : bool, default=False
+        If True, use pmdarima (Auto-ARIMA) to find the best order.
+    auto_kwargs : dict, optional
+        Arguments passed to pmdarima.auto_arima (e.g., {'max_p': 5}).
     """
     if not STATSMODELS_AVAILABLE:
-        raise ImportError("statsmodels is required. pip install statsmodels")
+        raise ImportError("statsmodels is required for ARIMA. `pip install statsmodels`")
 
-    # Check regular sampling
-    # We assume timeseries.dt is valid (not None) as enforced by TimeSeries usually.
     if timeseries.dt is None:
-        raise ValueError("TimeSeries must have a regular sample rate (dt).")
-
-    # Handle NaNs
-    # "drop": drop NaNs?
-    # If we drop, time alignment breaks.
-    # statsmodels ARIMA handles missing data?
-    # "If missing='drop' is passed to fit..." maybe.
-    # User said: nan_policy "drop": drop NaNs and adjust time mapping.
+        raise ValueError("TimeSeries must have a regular sample rate (dt) for ARIMA.")
 
     y = timeseries.value
     t0 = timeseries.t0
 
-    if nan_policy == "raise":
+    # --- NaN Handling ---
+    if nan_policy == "impute":
+        # Basic imputation if requested
+        if np.any(np.isnan(y)):
+            # Simple linear interpolation fallback if impute_timeseries isn't available here
+            # Ideally call: from .preprocess import impute_timeseries; ts = impute_timeseries(timeseries)
+            # For now, simplistic fill
+            mask = np.isnan(y)
+            y = y.copy()
+            y[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), y[~mask])
+            
+    elif nan_policy == "raise":
         if np.any(np.isnan(y)):
             raise ValueError("NaNs in data and nan_policy='raise'")
-    elif nan_policy == "drop":
-        if np.any(np.isnan(y)):
-            mask = ~np.isnan(y)
-            y = y[mask]
-            # Time axis changed. t0 remains?
-            # "adjust time mapping" could mean we treat it as contiguous now?
-            # Or pass irregular times? statsmodels ARIMA expects regular or times.
-            # Usually dropping nans in ARIMA means 'treat as adjacent' or 'missing value handling supported by model'?
-            # statsmodels supports missing='drop'.
-            # We'll stick to passing numpy array.
-            warnings.warn("nan_policy='drop' removes NaNs; time axis interpretation may degrade.")
-    elif nan_policy == "impute":
-        from .preprocess import impute_timeseries
-        kwargs = impute_kwargs or {}
-        ts_imputed = impute_timeseries(timeseries, **kwargs)
-        y = ts_imputed.value
 
     y = y.astype(float)
 
-    fit_kwargs = method_kwargs or {}
+    # --- Auto ARIMA (pmdarima) ---
+    if auto:
+        if not PMDARIMA_AVAILABLE:
+            raise ImportError("pmdarima is required for auto=True. `pip install pmdarima`")
+        
+        akwargs = (auto_kwargs or {}).copy()
+        # Merge extra kwargs into akwargs
+        for k, v in kwargs.items():
+            if k not in akwargs:
+                akwargs[k] = v
+        
+        # Ensure seasonal and trend are set without conflict
+        if 'seasonal' not in akwargs:
+            akwargs['seasonal'] = (seasonal_order is not None)
+        if 'trend' not in akwargs:
+            akwargs['trend'] = trend
+
+        # Adjust start values if max values are smaller (pmdarima requirement)
+        # Defaults are start_p=2, start_q=2, start_P=1, start_Q=1
+        for m_key, s_key in [('max_p', 'start_p'), ('max_q', 'start_q'), 
+                             ('max_P', 'start_P'), ('max_Q', 'start_Q')]:
+            if m_key in akwargs:
+                default_start = 2 if s_key in ['start_p', 'start_q'] else 1
+                current_start = akwargs.get(s_key, default_start)
+                if akwargs[m_key] < current_start:
+                    akwargs[s_key] = akwargs[m_key]
+            
+        model_auto = pm.auto_arima(y, **akwargs)
+        
+        # pmdarima wraps a statsmodels result. We extract it to wrap in our ArimaResult
+        res = model_auto.arima_res_
+        
+        return ArimaResult(
+            res,
+            t0=t0,
+            dt=timeseries.dt,
+            unit=timeseries.unit,
+            name=f"{timeseries.name}_auto",
+            channel=getattr(timeseries, 'channel', None),
+            original_data=timeseries
+        )
+
+    # --- Manual ARIMA / SARIMAX ---
+    fit_kwargs = (method_kwargs or {}).copy()
+    # Merge extra kwargs into fit_kwargs
+    for k, v in kwargs.items():
+        if k not in fit_kwargs:
+            fit_kwargs[k] = v
+            
     if method:
         fit_kwargs["method"] = method
 
-    if seasonal_order is None:
-        model = ARIMA(
-            y,
-            order=order,
-            trend=trend,
-            enforce_stationarity=enforce_stationarity,
-            enforce_invertibility=enforce_invertibility
-        )
+    # Use SARIMAX class for everything if available, as it's more robust in statsmodels v0.12+
+    if seasonal_order is None and ARIMA is not None:
+         # Use standard ARIMA if no seasonality needed
+         model = ARIMA(y, order=order, trend=trend)
     else:
-        if SARIMAX is None:
-             # Fallback to ARIMA if SARIMAX not importable?
-             # Or raise.
-             raise ImportError("SARIMAX requires statsmodels")
-        model = SARIMAX(
-            y,
-            order=order,
-            seasonal_order=seasonal_order,
-            trend=trend,
-            enforce_stationarity=enforce_stationarity,
-            enforce_invertibility=enforce_invertibility
-        )
+         if SARIMAX is None:
+              raise ImportError("SARIMAX not available in statsmodels")
+         model = SARIMAX(y, order=order, seasonal_order=seasonal_order, trend=trend)
 
     res = model.fit(**fit_kwargs)
 
@@ -308,5 +351,6 @@ def fit_arima(
         dt=timeseries.dt,
         unit=timeseries.unit,
         name=timeseries.name,
-        channel=getattr(timeseries, 'channel', None)
+        channel=getattr(timeseries, 'channel', None),
+        original_data=timeseries
     )
