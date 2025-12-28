@@ -149,16 +149,37 @@ class StatisticsMixin:
         res = grangercausalitytests(data, maxlag=maxlag, verbose=verbose)
         
         # Extract p-values for the specified test across all lags
-        p_values = [v[0][test][1] for v in res.values()]
+        p_values = []
+        lags = []
         
-        # Return the most significant result (minimum p-value)
-        # This is a heuristic; deeper analysis might require looking at optimal lag (AIC/BIC)
-        return min(p_values)
+        for lag, result in res.items():
+             test_result = result[0][test]
+             p_val = test_result[1]
+             p_values.append(p_val)
+             lags.append(lag)
+        
+        # Find best lag (minimum p-value)
+        min_idx = np.argmin(p_values)
+        min_p = p_values[min_idx]
+        best_lag = lags[min_idx]
+        
+        return {
+            'min_p_value': min_p,
+            'best_lag': best_lag,
+            'p_values': dict(zip(lags, p_values))
+        }
 
     # --- Internal Methods ---
 
     def _prep_stat_data(self, other):
         """Helper to align and strip units from data."""
+        # Check dimensions
+        if self.ndim > 1:
+            raise ValueError(
+                f"Statistical methods are only supported for 1D TimeSeries. "
+                f"Current shape: {self.shape}. Please select a specific channel."
+            )
+
         # Check sample rate match (approximate check)
         if self.sample_rate != other.sample_rate:
             warnings.warn("Sample rates do not match. Resampling 'other' to match 'self'.")

@@ -36,7 +36,7 @@ class TimeSeriesAnalysisMixin:
         axis: str = "time",
         max_gap: Optional[float] = None,
         **kwargs: Any,
-    ) -> Any:
+    ) -> "TimeSeries":
         """
         Impute missing values.
 
@@ -65,7 +65,7 @@ class TimeSeriesAnalysisMixin:
         from gwexpy.timeseries.preprocess import impute_timeseries
         return impute_timeseries(self, method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs)
 
-    def standardize(self, *, method: str = "zscore", ddof: int = 0, robust: bool = False) -> Any:
+    def standardize(self, *, method: str = "zscore", ddof: int = 0, robust: bool = False) -> "TimeSeries":
         """
         Standardize the series.
 
@@ -138,7 +138,7 @@ class TimeSeriesAnalysisMixin:
         from gwexpy.timeseries.hurst import hurst
         return hurst(self, **kwargs)
 
-    def local_hurst(self, window: Any, **kwargs: Any) -> Any:
+    def local_hurst(self, window: Any, **kwargs: Any) -> "TimeSeries":
         """
         Compute local Hurst exponent over a sliding window.
 
@@ -173,7 +173,7 @@ class TimeSeriesAnalysisMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
-    ) -> Any:
+    ) -> "TimeSeries":
         """
         Rolling mean over time.
 
@@ -207,7 +207,7 @@ class TimeSeriesAnalysisMixin:
         nan_policy: str = "omit",
         backend: str = "auto",
         ddof: int = 0,
-    ) -> Any:
+    ) -> "TimeSeries":
         """
         Rolling standard deviation over time.
 
@@ -242,7 +242,7 @@ class TimeSeriesAnalysisMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
-    ) -> Any:
+    ) -> "TimeSeries":
         """
         Rolling median over time.
 
@@ -275,7 +275,7 @@ class TimeSeriesAnalysisMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
-    ) -> Any:
+    ) -> "TimeSeries":
         """
         Rolling minimum over time.
 
@@ -308,7 +308,7 @@ class TimeSeriesAnalysisMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
-    ) -> Any:
+    ) -> "TimeSeries":
         """
         Rolling maximum over time.
 
