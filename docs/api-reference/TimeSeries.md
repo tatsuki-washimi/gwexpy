@@ -560,6 +560,24 @@ normalised so that the SNR measures number of standard deviations from
 the expected mean.
 
 
+### `correlation`
+
+```python
+correlation(self, other, method='pearson', **kwargs)
+```
+
+Calculate correlation coefficient with another TimeSeries.
+
+Args:
+    other (TimeSeries): The series to compare with.
+    method (str): 'pearson', 'kendall', or 'mic'.
+    **kwargs: Additional arguments passed to the underlying function.
+
+Returns:
+    float: The correlation coefficient.
+
+
+
 ### `crop`
 
 ```python
@@ -650,6 +668,73 @@ chunk_size : `int`, optional
 Returns
 -------
 out : `gwpy.spectrogram.Spectrogram` or `(ndarray, freqs)`
+
+
+### `ktau`
+
+```python
+ktau(self, other)
+```
+
+Calculate Kendall's Rank Correlation Coefficient.
+
+Robust against outliers and non-parametric.
+Note: Calculation is O(N log N).
+
+
+### `kurtosis`
+
+```python
+kurtosis(self, fisher=True, nan_policy='propagate')
+```
+
+Compute the kurtosis (Fisher or Pearson) of the time series data.
+
+Kurtosis is a measure of the "tailedness" of the probability distribution 
+of a real-valued random variable.
+
+Parameters
+----------
+fisher : `bool`, optional
+    If True, Fisher's definition is used (normal ==> 0.0). 
+    If False, Pearson's definition is used (normal ==> 3.0).
+nan_policy : `str`, optional
+    'propagate', 'raise', 'omit'.
+
+Returns
+-------
+float
+    The kurtosis.
+
+
+
+### `mic`
+
+```python
+mic(self, other, alpha=0.6, c=15, est="mic_approx")
+```
+
+Calculate Maximal Information Coefficient (MIC) using minepy.
+
+MIC is robust against non-linear relationships.
+Reference: Reshef et al. (2011), Jung et al. (2022).
+
+Args:
+    other (TimeSeries): The series to compare with.
+    alpha (float): Exponent for B = n^alpha. Default 0.6.
+    c (float): Clumping parameter. Default 15.
+    est (str): Estimator name. Default "mic_approx".
+
+
+### `pcc`
+
+```python
+pcc(self, other)
+```
+
+Calculate Pearson Correlation Coefficient.
+
+Linear correlation coefficient.
 
 
 ### `dct`
@@ -801,6 +886,26 @@ See also
 --------
 numpy.diff
     for documentation on the underlying method
+
+
+### `distance_correlation`
+
+```python
+distance_correlation(self, other)
+```
+
+Calculate Distance Correlation (dCor).
+
+Distance correlation is a measure of dependence between two random vectors 
+that is 0 if and only if the random vectors are independent. 
+It can detect non-linear relationships.
+
+Args:
+    other (TimeSeries): The series to compare with.
+
+Returns:
+    float: The distance correlation (0 to 1).
+
 
 
 ### `dt`
@@ -4460,3 +4565,52 @@ To apply a zpk filter with file poles at 100 Hz, and five zeros at
 >>> data2 = data.zpk([100]*5, [1]*5, 1e-10)
 
 
+
+### `granger_causality`
+
+```python
+granger_causality(self, other, maxlag=10, test='ssr_ftest', verbose=False)
+```
+
+Check if 'other' Granger-causes 'self'.
+
+Null Hypothesis: The past values of 'other' do NOT help in predicting 'self'.
+
+Parameters
+----------
+other : `TimeSeries`
+    The potential cause series.
+maxlag : `int`, optional
+    Maximum lag to check.
+test : `str`, optional
+    Statistical test to use ('ssr_ftest', 'ssr_chi2test', etc.).
+verbose : `bool`, optional
+    Whether to print verbose output.
+
+Returns
+-------
+float
+    The minimum p-value across all lags up to maxlag. 
+    A small p-value (e.g., < 0.05) indicates Granger causality.
+
+
+### `skewness`
+
+```python
+skewness(self, nan_policy='propagate')
+```
+
+Compute the skewness of the time series data.
+
+Skewness is a measure of the asymmetry of the probability distribution 
+of a real-valued random variable about its mean.
+
+Parameters
+----------
+nan_policy : `str`, optional
+    'propagate', 'raise', 'omit'.
+
+Returns
+-------
+float
+    The skewness.
