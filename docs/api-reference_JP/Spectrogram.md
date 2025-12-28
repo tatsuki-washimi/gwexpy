@@ -79,6 +79,14 @@ filter(self, *filt, **kwargs)
 
 この `Spectrogram` に指定されたフィルタを適用します。
 
+### `from_quantities`
+
+```python
+from_quantities(q, times, frequencies)
+```
+
+quantities.Quantity から Spectrogram を作成します。
+
 ### `from_root`
 
 ```python
@@ -187,6 +195,14 @@ shift(self, delta)
 ```
 
 x 軸方向に `delta` だけシリーズをシフトします。インプレースで動作します。
+
+### `to_quantities`
+
+```python
+to_quantities(self, units=None)
+```
+
+quantities.Quantity (Elephant/Neo互換) に変換します。
 
 ### `to_th2d`
 

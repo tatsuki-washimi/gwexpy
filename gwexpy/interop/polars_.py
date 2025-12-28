@@ -104,18 +104,20 @@ def from_polars_dataframe(cls, df, time_column="time", unit=None):
     # If it is a regular grid, use x0, dx for efficiency.
     # Otherwise, pass the full index.
     from gwexpy.time import to_gps
-    times_gps_arr = np.asarray(to_gps(times.to_list()))
+    times_gps_arr = np.asarray(to_gps(times.to_list()), dtype=float)
     diffs = np.diff(times_gps_arr)
-    is_regular = len(diffs) < 1 or np.allclose(diffs, diffs[0])
+    is_regular = len(diffs) < 1 or np.allclose(diffs, diffs[0], atol=1e-12, rtol=1e-10)
 
     if is_regular:
-         return cls(data, x0=float(t0), dx=float(dt), unit=unit, name=cols[0])
+         t0_final = times_gps_arr[0] if len(times_gps_arr) > 0 else t0
+         dt_final = diffs[0] if len(diffs) > 0 else dt
+         return cls(data, x0=float(t0_final), dx=float(dt_final), unit=unit, name=cols[0])
     else:
          # Non-regular grid
          if "Frequency" in cls.__name__:
-             return cls(data, frequencies=times.to_numpy(), unit=unit, name=cols[0])
+             return cls(data, frequencies=times_gps_arr, unit=unit, name=cols[0])
          else:
-             return cls(data, times=times.to_numpy(), unit=unit, name=cols[0])
+             return cls(data, times=times_gps_arr, unit=unit, name=cols[0])
 
 def to_polars_dict(tsd, time_column="time", time_unit="datetime"):
     """TimeSeriesDict -> polars.DataFrame"""

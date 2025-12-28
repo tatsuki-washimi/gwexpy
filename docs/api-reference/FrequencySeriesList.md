@@ -279,10 +279,10 @@ Convert to pandas.DataFrame.
 Columns are named by channel name or index.
 
 
-### `to_tf`
+### `to_tensorflow`
 
 ```python
-to_tf(self, *args, **kwargs) -> 'list'
+to_tensorflow(self, *args, **kwargs) -> 'list'
 ```
 
 

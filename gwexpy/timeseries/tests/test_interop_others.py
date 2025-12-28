@@ -80,13 +80,13 @@ def test_obspy_interop():
     ts = TimeSeries(data, t0=t0, dt=dt, name="obs_ts", channel="H1:STRAIN")
 
     # 1. to_obspy
-    tr = ts.to_obspy_trace()
+    tr = ts.to_obspy()
     assert isinstance(tr, obspy.Trace)
     assert tr.stats.sampling_rate == 100.0
     # Obspy starttime is UTCDateTime
 
     # 2. from_obspy
-    ts_restored = TimeSeries.from_obspy_trace(tr)
+    ts_restored = TimeSeries.from_obspy(tr)
     # Precision check
     assert np.isclose(ts_restored.t0.value, float(t0), atol=1e-6)
     np.testing.assert_allclose(ts_restored.dt.value, dt)

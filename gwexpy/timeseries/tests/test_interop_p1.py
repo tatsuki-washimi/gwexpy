@@ -48,13 +48,13 @@ def test_tf_interop():
     data = np.arange(10, dtype=np.float32)
     ts = TimeSeries(data, dt=0.01)
 
-    # 1. to_tf
-    tensor = ts.to_tf()
+    # 1. to_tensorflow
+    tensor = ts.to_tensorflow()
     assert tf.is_tensor(tensor)
     assert np.allclose(tensor.numpy(), data)
 
-    # 2. from_tf
-    ts2 = TimeSeries.from_tf(tensor, t0=0, dt=0.01)
+    # 2. from_tensorflow
+    ts2 = TimeSeries.from_tensorflow(tensor, t0=0, dt=0.01)
     assert np.allclose(ts2.value, data)
 
 @pytest.mark.skipif(da is None, reason="dask not installed")

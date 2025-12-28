@@ -762,7 +762,7 @@ class FrequencySeries(FittingMixin, BaseFrequencySeries):
         data = tensor.detach().cpu().resolve_conj().resolve_neg().numpy()
         return cls(data, frequencies=frequencies, unit=unit)
 
-    def to_tf(self, dtype: Any = None) -> Any:
+    def to_tensorflow(self, dtype: Any = None) -> Any:
         """
         Convert to tensorflow.Tensor.
 
@@ -774,7 +774,7 @@ class FrequencySeries(FittingMixin, BaseFrequencySeries):
         return to_tf(self, dtype=dtype)
 
     @classmethod
-    def from_tf(cls: type["FrequencySeries"], tensor: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
+    def from_tensorflow(cls: type["FrequencySeries"], tensor: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
         """Create FrequencySeries from tensorflow.Tensor."""
         data = tensor.numpy()
         return cls(data, frequencies=frequencies, unit=unit)
@@ -817,7 +817,7 @@ class FrequencySeries(FittingMixin, BaseFrequencySeries):
 
     # --- Domain Specific Interop ---
 
-    def to_mne_spectrum(self) -> Any:
+    def to_mne(self) -> Any:
         """
         Convert to MNE Spectrum object.
 
@@ -833,7 +833,7 @@ class FrequencySeries(FittingMixin, BaseFrequencySeries):
             "Direct creation from frequency domain data is not fully supported."
         )
 
-    def to_obspy_spectrum(self) -> Any:
+    def to_obspy(self) -> Any:
         """
         Convert to ObsPy spectrum representation.
 
@@ -841,13 +841,216 @@ class FrequencySeries(FittingMixin, BaseFrequencySeries):
         ------
         NotImplementedError
             ObsPy primarily manages time-domain Traces and Streams.
-            There is no standard standalone Spectrum container in ObsPy
+            No standard standalone Spectrum container in ObsPy
             comparable to FrequencySeries.
         """
         raise NotImplementedError(
             "ObsPy primarily manages time-domain Traces and Streams. "
             "No standard standalone Spectrum container exists in ObsPy."
         )
+
+    def to_quantities(self, units: Optional[str] = None) -> Any:
+        """
+        Convert to quantities.Quantity (Elephant/Neo compatible).
+
+        Parameters
+        ----------
+        units : str or quantities.UnitQuantity, optional
+            Target units.
+
+        Returns
+        -------
+        quantities.Quantity
+        """
+        from gwexpy.interop import to_quantity
+        return to_quantity(self, units=units)
+
+    @classmethod
+    def from_quantities(cls: type["FrequencySeries"], q: Any, frequencies: Any) -> Any:
+        """
+        Create FrequencySeries from quantities.Quantity.
+
+        Parameters
+        ----------
+        q : quantities.Quantity
+            Input data.
+        frequencies : array-like
+            Frequencies corresponding to the data.
+
+        Returns
+        -------
+        FrequencySeries
+        """
+        from gwexpy.interop import from_quantity
+        return from_quantity(cls, q, frequencies=frequencies)
+
+    def to_mne(self, info: Optional[Any] = None) -> Any:
+        """
+        Convert to MNE-Python object.
+
+        Parameters
+        ----------
+        info : mne.Info, optional
+            MNE Info object.
+
+        Returns
+        -------
+        mne.time_frequency.SpectrumArray
+        """
+        from gwexpy.interop import to_mne
+        return to_mne(self, info=info)
+
+    @classmethod
+    def from_mne(cls: type["FrequencySeries"], spectrum: Any, **kwargs: Any) -> Any:
+        """
+        Create FrequencySeries from MNE-Python Spectrum object.
+
+        Parameters
+        ----------
+        spectrum : mne.time_frequency.Spectrum
+            Input spectrum data.
+        **kwargs
+            Additional arguments passed to constructor.
+
+        Returns
+        -------
+        FrequencySeries or FrequencySeriesDict
+        """
+        from gwexpy.interop import from_mne
+        return from_mne(cls, spectrum, **kwargs)
+
+    def to_obspy(self, **kwargs: Any) -> Any:
+        """
+        Convert to Obspy Trace.
+        
+        Returns
+        -------
+        obspy.Trace
+        """
+        from gwexpy.interop import to_obspy
+        return to_obspy(self, **kwargs)
+
+    @classmethod
+    def from_obspy(cls, trace: Any, **kwargs: Any) -> Any:
+        """
+        Create FrequencySeries from Obspy Trace.
+        
+        Parameters
+        ----------
+        trace : obspy.Trace
+            Input trace.
+        **kwargs
+            Additional arguments.
+            
+        Returns
+        -------
+        FrequencySeries
+        """
+        from gwexpy.interop import from_obspy
+        return from_obspy(cls, trace, **kwargs)
+
+    def to_simpeg(self, location=None, rx_type="PointElectricField", orientation='x', **kwargs) -> Any:
+        """
+        Convert to SimPEG Data object.
+        
+        Parameters
+        ----------
+        location : array_like, optional
+            Rx location (x, y, z). Default is [0, 0, 0].
+        rx_type : str, optional
+            Receiver class name. Default "PointElectricField".
+        orientation : str, optional
+            Receiver orientation ('x', 'y', 'z'). Default 'x'.
+            
+        Returns
+        -------
+        simpeg.data.Data
+        """
+        from gwexpy.interop import to_simpeg
+        return to_simpeg(self, location=location, rx_type=rx_type, orientation=orientation, **kwargs)
+
+    @classmethod
+    def from_simpeg(cls, data_obj: Any, **kwargs: Any) -> Any:
+        """
+        Create FrequencySeries from SimPEG Data object.
+        
+        Parameters
+        ----------
+        data_obj : simpeg.data.Data
+            Input SimPEG Data.
+            
+        Returns
+        -------
+        FrequencySeries
+        """
+        from gwexpy.interop import from_simpeg
+        return from_simpeg(cls, data_obj, **kwargs)
+
+    def to_specutils(self, **kwargs):
+        """
+        Convert to specutils.Spectrum1D.
+        
+        Parameters
+        ----------
+        **kwargs
+            Arguments passed to Spectrum1D constructor.
+            
+        Returns
+        -------
+        specutils.Spectrum1D
+        """
+        from gwexpy.interop import to_specutils
+        return to_specutils(self, **kwargs)
+        
+    @classmethod
+    def from_specutils(cls, spectrum, **kwargs):
+        """
+        Create FrequencySeries from specutils.Spectrum1D.
+        
+        Parameters
+        ----------
+        spectrum : specutils.Spectrum1D
+            Input spectrum.
+            
+        Returns
+        -------
+        FrequencySeries
+        """
+        from gwexpy.interop import from_specutils
+        return from_specutils(cls, spectrum, **kwargs)
+
+    def to_pyspeckit(self, **kwargs):
+        """
+        Convert to pyspeckit.Spectrum.
+        
+        Parameters
+        ----------
+        **kwargs
+            Arguments passed to pyspeckit.Spectrum constructor.
+            
+        Returns
+        -------
+        pyspeckit.Spectrum
+        """
+        from gwexpy.interop import to_pyspeckit
+        return to_pyspeckit(self, **kwargs)
+        
+    @classmethod
+    def from_pyspeckit(cls, spectrum, **kwargs):
+        """
+        Create FrequencySeries from pyspeckit.Spectrum.
+        
+        Parameters
+        ----------
+        spectrum : pyspeckit.Spectrum
+            Input spectrum.
+            
+        Returns
+        -------
+        FrequencySeries
+        """
+        from gwexpy.interop import from_pyspeckit
+        return from_pyspeckit(cls, spectrum, **kwargs)
 
 # =============================
 # Helpers
@@ -1212,12 +1415,12 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
         """
         return {key: fs.to_torch(*args, **kwargs) for key, fs in self.items()}
 
-    def to_tf(self, *args, **kwargs) -> dict:
+    def to_tensorflow(self, *args, **kwargs) -> dict:
         """
         Convert each item to tensorflow.Tensor.
         Returns a dict of Tensors.
         """
-        return {key: fs.to_tf(*args, **kwargs) for key, fs in self.items()}
+        return {key: fs.to_tensorflow(*args, **kwargs) for key, fs in self.items()}
 
     def to_jax(self, *args, **kwargs) -> dict:
         """
@@ -1594,12 +1797,12 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
         """
         return [fs.to_torch(*args, **kwargs) for fs in self]
 
-    def to_tf(self, *args, **kwargs) -> list:
+    def to_tensorflow(self, *args, **kwargs) -> list:
         """
         Convert each item to tensorflow.Tensor.
         Returns a list of Tensors.
         """
-        return [fs.to_tf(*args, **kwargs) for fs in self]
+        return [fs.to_tensorflow(*args, **kwargs) for fs in self]
 
     def to_jax(self, *args, **kwargs) -> list:
         """

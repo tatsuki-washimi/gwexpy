@@ -513,6 +513,47 @@ Generate a new `FrequencySeries` from a LAL `FrequencySeries`
 of any type.
 
 
+
+### `from_mne`
+
+```python
+from_mne(spectrum)
+```
+
+Create FrequencySeries from MNE Spectrum object.
+
+### `from_obspy`
+
+```python
+from_obspy(trace, **kwargs)
+```
+
+Create FrequencySeries from Obspy Trace.
+
+### `from_simpeg`
+
+```python
+from_simpeg(data_obj, **kwargs)
+```
+
+Create FrequencySeries from SimPEG Data object (FDEM).
+
+### `from_specutils`
+
+```python
+from_specutils(spectrum, **kwargs)
+```
+
+Create FrequencySeries from specutils.Spectrum1D.
+
+### `from_pyspeckit`
+
+```python
+from_pyspeckit(spectrum, **kwargs)
+```
+
+Create FrequencySeries from pyspeckit.Spectrum.
+
 ### `from_pandas`
 
 ```python
@@ -565,10 +606,10 @@ from_root(obj: 'Any', return_error: 'bool' = False, **kwargs: 'Any') -> 'Any'
 Create FrequencySeries from ROOT TGraph or TH1.
 
 
-### `from_tf`
+### `from_tensorflow`
 
 ```python
-from_tf(tensor: 'Any', frequencies: 'Any', unit: 'Optional[Any]' = None) -> 'Any'
+from_tensorflow(tensor: 'Any', frequencies: 'Any', unit: 'Optional[Any]' = None) -> 'Any'
 ```
 
 Create FrequencySeries from tensorflow.Tensor.
@@ -745,6 +786,57 @@ See also
 --------
 numpy.interp
     for the underlying 1-D linear interpolation scheme
+
+
+
+### `to_mne`
+
+```python
+to_mne(self, info=None) -> 'mne.time_frequency.SpectrumArray'
+```
+
+Convert to MNE SpectrumArray.
+
+Parameters
+----------
+info : `mne.Info`, optional
+    Measurement info. If None, a default info is created.
+
+Returns
+-------
+`mne.time_frequency.SpectrumArray`
+
+### `to_obspy`
+
+```python
+to_obspy(self, **kwargs) -> 'obspy.Trace'
+```
+
+Convert to Obspy Trace.
+
+### `to_simpeg`
+
+```python
+to_simpeg(self, location=None, rx_type='PointElectricField', orientation='x', **kwargs) -> 'simpeg.data.Data'
+```
+
+Convert to SimPEG Data object.
+
+### `to_specutils`
+
+```python
+to_specutils(self, **kwargs) -> 'specutils.Spectrum1D'
+```
+
+Convert to specutils.Spectrum1D.
+
+### `to_pyspeckit`
+
+```python
+to_pyspeckit(self, **kwargs) -> 'pyspeckit.Spectrum'
+```
+
+Convert to pyspeckit.Spectrum.
 
 
 ### `is_compatible`
@@ -1275,10 +1367,10 @@ Currently, this function is unable to handle unit string
 conversion.
 
 
-### `to_mne_spectrum`
+### `to_mne`
 
 ```python
-to_mne_spectrum(self) -> 'Any'
+to_mne(self) -> 'Any'
 ```
 
 
@@ -1292,10 +1384,10 @@ NotImplementedError
     without wrapping in a time-domain container first.
 
 
-### `to_obspy_spectrum`
+### `to_obspy`
 
 ```python
-to_obspy_spectrum(self) -> 'Any'
+to_obspy(self) -> 'Any'
 ```
 
 
@@ -1323,6 +1415,24 @@ Convert to pandas.Series.
 to_polars(self, name: 'Optional[str]' = None, as_dataframe: 'bool' = True, index_column: 'str' = 'frequency') -> 'Any'
 ```
 
+Create FrequencySeries from polars object.
+
+### `to_quantities`
+
+```python
+to_quantities(self, units: 'Optional[str]' = None) -> 'Any'
+```
+
+Convert to quantities.Quantity (Elephant/Neo compatible).
+
+### `from_quantities`
+
+```python
+from_quantities(q: 'Any', frequencies: 'Any') -> 'Any'
+```
+
+Create FrequencySeries from quantities.Quantity.
+
 
 Convert FrequencySeries to polars object.
 
@@ -1347,10 +1457,10 @@ frequencyseries : `pycbc.types.frequencyseries.FrequencySeries`
     a PyCBC representation of this `FrequencySeries`
 
 
-### `to_tf`
+### `to_tensorflow`
 
 ```python
-to_tf(self, dtype: 'Any' = None) -> 'Any'
+to_tensorflow(self, dtype: 'Any' = None) -> 'Any'
 ```
 
 

@@ -299,10 +299,10 @@ Convert to pandas.DataFrame.
 Keys become columns.
 
 
-### `to_tf`
+### `to_tensorflow`
 
 ```python
-to_tf(self, *args, **kwargs) -> 'dict'
+to_tensorflow(self, *args, **kwargs) -> 'dict'
 ```
 
 

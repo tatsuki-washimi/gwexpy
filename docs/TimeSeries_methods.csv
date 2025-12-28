@@ -62,19 +62,18 @@ is_contiguous,〇,〇,〇,〇,
 state_segments,〇,〇,〇,×,
 mask,〇,〇,〇,×,
 tail,〇,〇,〇,〇,末尾サンプル取得
-to_obspy_trace,〇,×,×,×,ObsPy連携
-from_obspy_trace,〇,×,×,×,
+to_obspy,〇,×,×,×,ObsPy連携
+from_obspy,〇,×,×,×,
 to_astropy_timeseries,〇,×,×,×,Astropy連携
 from_astropy_timeseries,〇,×,×,×,
-to_mne_raw / rawarray,×,〇,〇,〇,MNE-Python連携
-from_mne_raw / rawarray,×,〇,〇,〇,
-to_neo_analogsignal,×,×,×,〇,Neo連携
+to_mne / rawarray,×,〇,〇,〇,MNE-Python連携
+from_mne / rawarray,×,〇,〇,〇,
+to_neo,×,×,×,〇,Neo連携
 to_pandas / from_pandas,〇,〇,〇,〇,
 to_polars / from_polars,〇,×,×,×,Polars連携
-to_xarray / from_xarray,〇,×,×,×,
-to_matrix,×,〇,〇,〇,gwexpy独自の変換メソッド
+to_simpeg / from_simpeg,×,〇,〇,〇,SimPEG連携 (simpeg.data.Data (SimPEG TDEM))
 to_torch / from_torch,〇,×,×,〇,PyTorch連携
-to_tf / from_tf,〇,×,×,×,TensorFlow連携
+to_tensorflow / from_tensorflow,〇,×,×,×,TensorFlow連携
 to_cupy / from_cupy,〇,×,×,×,CuPy連携
 to_jax / from_jax,〇,×,×,×,JAX連携
 to_dask / from_dask,〇,×,×,×,Dask連携

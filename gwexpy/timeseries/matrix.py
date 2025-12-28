@@ -431,6 +431,36 @@ class TimeSeriesMatrix(SeriesMatrix):
              d[name] = ts
         return d
 
+    # === Interoperability ===
+
+    def to_neo(self, units=None) -> Any:
+        """
+        Convert to neo.AnalogSignal.
+        
+        Returns
+        -------
+        neo.core.AnalogSignal
+        """
+        from gwexpy.interop import to_neo
+        return to_neo(self, units=units)
+
+    @classmethod
+    def from_neo(cls, sig: Any) -> "TimeSeriesMatrix":
+        """
+        Create TimeSeriesMatrix from neo.AnalogSignal.
+        
+        Parameters
+        ----------
+        sig : neo.core.AnalogSignal
+            Input signal.
+            
+        Returns
+        -------
+        TimeSeriesMatrix
+        """
+        from gwexpy.interop import from_neo
+        return from_neo(cls, sig)
+
     def to_list(self) -> "TimeSeriesList":
         """Convert to TimeSeriesList."""
         d = self.to_dict()
@@ -683,18 +713,18 @@ class TimeSeriesMatrix(SeriesMatrix):
         return new_mat
 
     # Interoperability Delegation
-    def to_neo_analogsignal(self, units: Optional[str] = None) -> Any:
+    def to_neo(self, units: Optional[str] = None) -> Any:
         """Convert to neo.AnalogSignal."""
-        from gwexpy.interop import to_neo_analogsignal
-        return to_neo_analogsignal(self, units=units)
+        from gwexpy.interop import to_neo
+        return to_neo(self, units=units)
 
     @classmethod
-    def from_neo_analogsignal(cls: type["TimeSeriesMatrix"], sig: Any) -> Any:
+    def from_neo(cls: type["TimeSeriesMatrix"], sig: Any) -> Any:
         """Create from neo.AnalogSignal."""
-        from gwexpy.interop import from_neo_analogsignal
-        return from_neo_analogsignal(cls, sig)
+        from gwexpy.interop import from_neo
+        return from_neo(cls, sig)
 
-    def to_mne_rawarray(self, info: Any = None) -> Any:
+    def to_mne(self, info: Any = None) -> Any:
         """Convert to mne.io.RawArray."""
         from gwexpy.interop import to_mne_rawarray
         # Convert to dict first? or map?
@@ -706,10 +736,6 @@ class TimeSeriesMatrix(SeriesMatrix):
         # Implementing direct method for convenience.
         tsd = self.to_dict()
         return to_mne_rawarray(tsd, info=info)
-
-    def to_mne_raw(self, info: Any = None) -> Any:
-        """Alias for :meth:`to_mne_rawarray`."""
-        return self.to_mne_rawarray(info=info)
 
 
 

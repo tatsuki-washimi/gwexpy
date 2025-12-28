@@ -423,6 +423,33 @@ Examples
 <Quantity [1., 2., 3., 4.] m>
 
 
+
+### `from_mne`
+
+```python
+from_mne(tfr)
+```
+
+Create Spectrogram from MNE EpochsTFR or AverageTFR object.
+
+### `from_obspy`
+
+```python
+from_obspy(stream)
+```
+
+Create Spectrogram from Obspy Stream.
+
+
+### `from_quantities`
+
+```python
+from_quantities(q, times, frequencies)
+```
+
+Create Spectrogram from quantities.Quantity.
+
+
 ### `from_root`
 
 ```python
@@ -550,6 +577,33 @@ Notes
 -----
 if a raw `numpy.ndarray` is passed as other, with no metadata, then
 the contiguity check will always pass
+
+
+
+### `to_mne`
+
+```python
+to_mne(self, info=None) -> 'mne.time_frequency.EpochsTFRArray'
+```
+
+Convert to MNE EpochsTFRArray.
+
+Parameters
+----------
+info : `mne.Info`, optional
+    Measurement info. If None, a default info is created.
+
+Returns
+-------
+`mne.time_frequency.EpochsTFRArray`
+
+### `to_obspy`
+
+```python
+to_obspy(self, **kwargs) -> 'obspy.Stream'
+```
+
+Convert to Obspy Stream.
 
 
 ### `median`
@@ -945,6 +999,14 @@ to_th2d(self, error=None)
 
 
 Convert to ROOT TH2D.
+
+### `to_quantities`
+
+```python
+to_quantities(self, units=None)
+```
+
+Convert to quantities.Quantity (Elephant/Neo compatible).
 
 
 ### `tostring`

@@ -1,0 +1,116 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-7.4.0, pluggy-1.2.0
+rootdir: /home/washimi/work/gwexpy
+plugins: anyio-3.7.1, typeguard-2.13.3, cov-7.0.0
+collected 2 items
+
+gwexpy/interop/tests/test_interop_simpeg.py FF                           [100%]
+
+=================================== FAILURES ===================================
+_________________ TestSimPEGInterop.test_timeseries_to_simpeg __________________
+
+self = <test_interop_simpeg.TestSimPEGInterop object at 0x7b9742897940>
+
+    def test_timeseries_to_simpeg(self):
+        """Test TimeSeries -> SimPEG Data -> TimeSeries cycle."""
+    
+        # 1. Create TimeSeries
+        data = np.random.randn(100)
+        t0 = 0.0
+        dt = 0.01
+        ts = TimeSeries(data, t0=t0, dt=dt, unit="V", name="V_meas")
+    
+        # 2. To SimPEG
+        simpeg_data = ts.to_simpeg(location=[10, 0, 0], rx_type="PointElectricField", orientation='x')
+    
+        assert isinstance(simpeg_data, Data)
+        assert len(simpeg_data.dobs) == 100
+    
+        # Check survey type
+        assert isinstance(simpeg_data.survey, tdem.Survey)
+    
+        # Check Rx properties
+        src = simpeg_data.survey.source_list[0]
+        rx = src.receiver_list[0]
+    
+        # Check locations
+        np.testing.assert_array_equal(rx.locations, [[10., 0., 0.]])
+    
+        # Check orientation
+>       assert rx.orientation == 'x'
+E       ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+
+gwexpy/interop/tests/test_interop_simpeg.py:44: ValueError
+_______________ TestSimPEGInterop.test_frequencyseries_to_simpeg _______________
+
+self = <test_interop_simpeg.TestSimPEGInterop object at 0x7b9742897af0>
+
+    def test_frequencyseries_to_simpeg(self):
+        """Test FrequencySeries -> SimPEG Data -> FrequencySeries cycle."""
+    
+        # 1. Create FrequencySeries
+        data = np.random.randn(10)
+        freqs = np.linspace(1, 10, 10)
+        fs = FrequencySeries(data, frequencies=freqs, unit="V", name="VF_meas")
+    
+        # 2. To SimPEG
+        simpeg_data = fs.to_simpeg(location=[0, 10, 0], rx_type="PointMagneticFluxDensity", orientation='z')
+    
+        assert isinstance(simpeg_data, Data)
+        assert len(simpeg_data.dobs) == 10
+    
+        # Check survey type
+        assert isinstance(simpeg_data.survey, fdem.Survey)
+    
+        # FDEM has 1 source per frequency
+        assert len(simpeg_data.survey.source_list) == 10
+    
+        # Check Rx properties of first source
+        src0 = simpeg_data.survey.source_list[0]
+        rx0 = src0.receiver_list[0]
+    
+        # Check locations
+        np.testing.assert_array_equal(rx0.locations, [[0., 10., 0.]])
+    
+        # Check orientation
+>       assert rx0.orientation == 'z'
+E       ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+
+gwexpy/interop/tests/test_interop_simpeg.py:85: ValueError
+=============================== warnings summary ===============================
+../../mambaforge/lib/python3.10/site-packages/scitokens/utils/keycache.py:9
+  /home/washimi/mambaforge/lib/python3.10/site-packages/scitokens/utils/keycache.py:9: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
+    import pkg_resources  # part of setuptools
+
+../../mambaforge/lib/python3.10/site-packages/pkg_resources/__init__.py:2871
+../../mambaforge/lib/python3.10/site-packages/pkg_resources/__init__.py:2871
+  /home/washimi/mambaforge/lib/python3.10/site-packages/pkg_resources/__init__.py:2871: DeprecationWarning: Deprecated call to `pkg_resources.declare_namespace('mpl_toolkits')`.
+  Implementing implicit namespace packages (as specified in PEP 420) is preferred to `pkg_resources.declare_namespace`. See https://setuptools.pypa.io/en/latest/references/keywords.html#keyword-namespace-packages
+    declare_namespace(pkg)
+
+../../mambaforge/lib/python3.10/site-packages/pkg_resources/__init__.py:2871
+  /home/washimi/mambaforge/lib/python3.10/site-packages/pkg_resources/__init__.py:2871: DeprecationWarning: Deprecated call to `pkg_resources.declare_namespace('mpl_toolkits.basemap_data')`.
+  Implementing implicit namespace packages (as specified in PEP 420) is preferred to `pkg_resources.declare_namespace`. See https://setuptools.pypa.io/en/latest/references/keywords.html#keyword-namespace-packages
+    declare_namespace(pkg)
+
+../../mambaforge/lib/python3.10/site-packages/pkg_resources/__init__.py:2350
+  /home/washimi/mambaforge/lib/python3.10/site-packages/pkg_resources/__init__.py:2350: DeprecationWarning: Deprecated call to `pkg_resources.declare_namespace('mpl_toolkits')`.
+  Implementing implicit namespace packages (as specified in PEP 420) is preferred to `pkg_resources.declare_namespace`. See https://setuptools.pypa.io/en/latest/references/keywords.html#keyword-namespace-packages
+    declare_namespace(parent)
+
+../../mambaforge/lib/python3.10/site-packages/pkg_resources/__init__.py:2871
+../../mambaforge/lib/python3.10/site-packages/pkg_resources/__init__.py:2871
+../../mambaforge/lib/python3.10/site-packages/pkg_resources/__init__.py:2871
+  /home/washimi/mambaforge/lib/python3.10/site-packages/pkg_resources/__init__.py:2871: DeprecationWarning: Deprecated call to `pkg_resources.declare_namespace('ligo')`.
+  Implementing implicit namespace packages (as specified in PEP 420) is preferred to `pkg_resources.declare_namespace`. See https://setuptools.pypa.io/en/latest/references/keywords.html#keyword-namespace-packages
+    declare_namespace(pkg)
+
+../../mambaforge/lib/python3.10/site-packages/declarative/utilities/representations.py:8
+  /home/washimi/mambaforge/lib/python3.10/site-packages/declarative/utilities/representations.py:8: DeprecationWarning: Compatibility support for python2 has been dropped
+    from ..utilities.future_from_2 import repr_compat
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED gwexpy/interop/tests/test_interop_simpeg.py::TestSimPEGInterop::test_timeseries_to_simpeg
+FAILED gwexpy/interop/tests/test_interop_simpeg.py::TestSimPEGInterop::test_frequencyseries_to_simpeg
+======================== 2 failed, 9 warnings in 0.33s =========================

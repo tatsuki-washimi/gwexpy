@@ -1567,10 +1567,10 @@ Returns
 TimeSeries
 
 
-### `from_obspy_trace`
+### `from_obspy`
 
 ```python
-from_obspy_trace(tr: 'Any', *, unit: 'Optional[Any]' = None, name_policy: 'str' = 'id') -> 'Any'
+from_obspy(tr: 'Any', *, unit: 'Optional[Any]' = None, name_policy: 'str' = 'id') -> 'Any'
 ```
 
 
@@ -1597,12 +1597,23 @@ from_pandas(series: 'Any', *, unit: 'Optional[Any]' = None, t0: 'Any' = None, dt
 ```
 
 
-Create TimeSeries from pandas.Series.
+Create TimeSeries from Pandas Series.
+
+### `from_simpeg`
+
+```python
+from_simpeg(cls, data_obj, **kwargs)
+```
+
+
+Create TimeSeries from SimPEG Data object (TDEM).
 
 Parameters
 ----------
-series : pandas.Series
-    Input series.
+cls : type
+    The class itself (for class method).
+data_obj : SimPEG.data.Data
+    Input SimPEG data object.
 unit : Unit, optional
     Physical unit of the data.
 t0 : Quantity or float, optional
@@ -1723,10 +1734,10 @@ Returns
 TimeSeries
 
 
-### `from_tf`
+### `from_tensorflow`
 
 ```python
-from_tf(tensor: 'Any', *, t0: 'Any' = None, dt: 'Any' = None, unit: 'Optional[Any]' = None) -> 'Any'
+from_tensorflow(tensor: 'Any', *, t0: 'Any' = None, dt: 'Any' = None, unit: 'Optional[Any]' = None) -> 'Any'
 ```
 
 
@@ -3792,18 +3803,18 @@ tuple
     (y, sr) where y is the audio signal and sr is sample rate.
 
 
-### `to_mne_raw`
+### `to_mne`
 
 ```python
-to_mne_raw(self, info: 'Any' = None) -> 'Any'
+to_mne(self, info: 'Any' = None) -> 'Any'
 ```
 
-Alias for :meth:`to_mne_rawarray`.
+Alias for :meth:`to_mne`.
 
-### `to_mne_rawarray`
+### `to_mne`
 
 ```python
-to_mne_rawarray(self, info: 'Any' = None) -> 'Any'
+to_mne(self, info: 'Any' = None) -> 'Any'
 ```
 
 
@@ -3838,10 +3849,10 @@ var_name : str
     Additional arguments for createVariable.
 
 
-### `to_obspy_trace`
+### `to_obspy`
 
 ```python
-to_obspy_trace(self, *, stats_extra: 'Optional[dict[str, Any]]' = None, dtype: 'Any' = None) -> 'Any'
+to_obspy(self, *, stats_extra: 'Optional[dict[str, Any]]' = None, dtype: 'Any' = None) -> 'Any'
 ```
 
 
@@ -3880,6 +3891,15 @@ copy : bool, default False
 Returns
 -------
 pandas.Series
+
+
+### `to_simpeg`
+
+```python
+to_simpeg(self, location=None, rx_type='PointElectricField', orientation='x', **kwargs) -> 'simpeg.data.Data'
+```
+
+Convert to SimPEG Data object.
 
 
 ### `to_polars`
@@ -3973,10 +3993,10 @@ str
     The series_id used.
 
 
-### `to_tf`
+### `to_tensorflow`
 
 ```python
-to_tf(self, dtype: 'Any' = None) -> 'Any'
+to_tensorflow(self, dtype: 'Any' = None) -> 'Any'
 ```
 
 

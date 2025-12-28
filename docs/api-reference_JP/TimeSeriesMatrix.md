@@ -111,11 +111,11 @@ standardize(self, *, axis: 'str' = 'time', method: 'str' = 'zscore', ddof: 'int'
 
 TimeSeriesDict または TimeSeriesList への変換。
 
-### `to_mne_raw`, `to_mne_rawarray`
+### `to_mne`, `to_mne`
 
 mne.io.RawArray への変換。
 
-### `to_neo_analogsignal`
+### `to_neo`
 
 neo.AnalogSignal への変換。
 

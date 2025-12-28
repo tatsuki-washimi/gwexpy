@@ -170,6 +170,30 @@ from_jax(array: 'Any', frequencies: 'Any', unit: 'Optional[Any]' = None) -> 'Any
 
 JAX 配列から FrequencySeries を作成します。
 
+### `from_simpeg`
+
+```python
+from_simpeg(data_obj, **kwargs)
+```
+
+SimPEG Data オブジェクト (FDEM) から FrequencySeries を作成します。
+
+### `from_specutils`
+
+```python
+from_specutils(spectrum, **kwargs)
+```
+
+specutils.Spectrum1D から FrequencySeries を作成します。
+
+### `from_pyspeckit`
+
+```python
+from_pyspeckit(spectrum, **kwargs)
+```
+
+pyspeckit.Spectrum から FrequencySeries を作成します。
+
 ### `from_pandas`
 
 ```python
@@ -177,6 +201,14 @@ from_pandas(series: 'Any', **kwargs: 'Any') -> 'Any'
 ```
 
 pandas.Series から FrequencySeries を作成します。
+
+### `from_quantities`
+
+```python
+from_quantities(cls: type["FrequencySeries"], q: 'Any', frequencies: 'Any') -> 'Any'
+```
+
+quantities.Quantity から FrequencySeries を作成します。
 
 ### `from_root`
 
@@ -186,10 +218,10 @@ from_root(obj: 'Any', return_error: 'bool' = False, **kwargs: 'Any') -> 'Any'
 
 ROOT の TGraph または TH1 から FrequencySeries を作成します。
 
-### `from_tf`
+### `from_tensorflow`
 
 ```python
-from_tf(tensor: 'Any', frequencies: 'Any', unit: 'Optional[Any]' = None) -> 'Any'
+from_tensorflow(tensor: 'Any', frequencies: 'Any', unit: 'Optional[Any]' = None) -> 'Any'
 ```
 
 tensorflow.Tensor から FrequencySeries を作成します。
@@ -368,6 +400,30 @@ to_jax(self, dtype: 'Any' = None) -> 'Any'
 
 JAX 配列に変換します。
 
+### `to_simpeg`
+
+```python
+to_simpeg(self, location=None, rx_type='PointElectricField', orientation='x', **kwargs) -> 'simpeg.data.Data'
+```
+
+SimPEG Data オブジェクトに変換します。
+
+### `to_specutils`
+
+```python
+to_specutils(self, **kwargs) -> 'specutils.Spectrum1D'
+```
+
+specutils.Spectrum1D に変換します。
+
+### `to_pyspeckit`
+
+```python
+to_pyspeckit(self, **kwargs) -> 'pyspeckit.Spectrum'
+```
+
+pyspeckit.Spectrum に変換します。
+
 ### `to_pandas`
 
 ```python
@@ -384,10 +440,18 @@ to_polars(self, name: 'Optional[str]' = None, as_dataframe: 'bool' = True, index
 
 polars オブジェクトに変換します。
 
-### `to_tf`
+### `to_quantities`
 
 ```python
-to_tf(self, dtype: 'Any' = None) -> 'Any'
+to_quantities(self, units: 'Optional[str]' = None) -> 'Any'
+```
+
+quantities.Quantity (Elephant/Neo互換) に変換します。
+
+### `to_tensorflow`
+
+```python
+to_tensorflow(self, dtype: 'Any' = None) -> 'Any'
 ```
 
 tensorflow.Tensor に変換します。

@@ -127,12 +127,12 @@ fs = as_series(np.arange(5) * u.Hz, unit="mHz")  # FrequencySeries (values in mH
 gwexpy provides seamless conversion to/from major data science frameworks:
 
 ```python
-from gwexpy.interop import to_torch, to_tf, to_jax, to_cupy, to_dask, to_zarr
+from gwexpy.interop import to_torch, to_tensorflow, to_jax, to_cupy, to_dask, to_zarr
 ts = ... # TimeSeries
 
 # Deep Learning Frameworks
 tensor_pt = to_torch(ts)      # PyTorch Tensor
-tensor_tf = to_tf(ts)         # TensorFlow Tensor
+tensor_tf = to_tensorflow(ts)         # TensorFlow Tensor
 tensor_jax = to_jax(ts)       # JAX Array
 tensor_cupy = to_cupy(ts)     # CuPy Array
 df_pl = ts.to_polars()        # Polars DataFrame
@@ -143,9 +143,9 @@ to_zarr(ts, store="data.zarr", path="my_array", overwrite=True)  # Save to Zarr
 
 # Audio & Other Domains
 # Supports: Librosa (standard numpy), Pydub (AudioSegment), ObsPy (Trace), MNE, Neo, ROOT
-from gwexpy.interop import to_pydub, to_obspy_trace, write_root_file
+from gwexpy.interop import to_pydub, to_obspy, write_root_file
 audio_seg = to_pydub(ts)
-trace = to_obspy_trace(ts)
+trace = to_obspy(ts)
 
 # CERN ROOT Interoperability
 # Converts to ROOT TGraph/TMultiGraph/TH2D and saves to .root files

@@ -4,9 +4,12 @@ import numpy as np
 
 def to_librosa(ts, y_dtype=np.float32):
     """
-    Export to librosa-compatible numpy array.
+    Export to librosa-compatible numpy array and sampling rate.
+    Returns (y, sr).
     """
-    return ts.value.astype(y_dtype)
+    y = ts.value.astype(y_dtype)
+    sr = int(ts.sample_rate.value)
+    return y, sr
 
 def to_pydub(ts, sample_width=2, channels=1):
     """
