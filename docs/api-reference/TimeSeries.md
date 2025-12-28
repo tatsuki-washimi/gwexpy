@@ -1292,6 +1292,11 @@ Find peaks in the TimeSeries.
 
 Wraps `scipy.signal.find_peaks`.
 
+Returns
+-------
+`tuple`
+    (peaks, props) where `peaks` is a new `TimeSeries` containing the peak values and times, and `props` is a dictionary of properties.
+
 
 ### `fit`
 

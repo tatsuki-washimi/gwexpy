@@ -566,8 +566,10 @@ class FrequencySeries(FittingMixin, BaseFrequencySeries):
 
         Returns
         -------
-        `tuple`
-            (peaks_indices, peaks_properties)
+        peaks : `FrequencySeries`
+            A new FrequencySeries containing only the peak values, indexed by their frequencies.
+        props : `dict`
+            Dictionary of peak properties returned by `scipy.signal.find_peaks`.
         """
         # Prepare target array
         if method == 'amplitude':
@@ -612,6 +614,7 @@ class FrequencySeries(FittingMixin, BaseFrequencySeries):
                   kwargs['width'] = wid.to("Hz").value / df
 
         peaks_indices, props = scipy.signal.find_peaks(target, **kwargs)
+
 
         if len(peaks_indices) == 0:
              return self.__class__([], frequencies=[], unit=self.unit, name=self.name, channel=self.channel), props

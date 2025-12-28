@@ -638,8 +638,20 @@ def fit_series(series, model, x_range=None, sigma=None,
     sig = inspect.signature(model)
 
     init_params = {}
+    
+    # Handle list/tuple p0 by mapping positional args to parameter names
+    if p0 is not None and isinstance(p0, (list, tuple, np.ndarray)):
+        # Optionally check lengths
+        for i, val in enumerate(p0):
+            if i < len(param_names):
+                init_params[param_names[i]] = val
+
     for name in param_names:
-        if p0 and name in p0:
+        # If already set by list/tuple, skip
+        if name in init_params:
+            continue
+
+        if p0 and isinstance(p0, dict) and name in p0:
             init_params[name] = p0[name]
         elif name in sig.parameters and sig.parameters[name].default is not inspect.Parameter.empty:
             init_params[name] = sig.parameters[name].default

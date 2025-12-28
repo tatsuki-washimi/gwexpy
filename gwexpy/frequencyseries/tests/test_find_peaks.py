@@ -9,10 +9,11 @@ def test_find_peaks_basic():
     data[50] = 10.0
     spec = FrequencySeries(data, df=1.0)
 
-    indices, props = spec.find_peaks(threshold=3.0)
-    assert len(indices) == 2
-    assert 10 in indices
-    assert 50 in indices
+    peaks, props = spec.find_peaks(threshold=3.0)
+    assert len(peaks) == 2
+    # df=1.0, so index 10 is 10Hz, index 50 is 50Hz
+    assert 10.0 in peaks.frequencies.value
+    assert 50.0 in peaks.frequencies.value
 
 def test_find_peaks_units():
     data = np.zeros(100)
@@ -21,26 +22,26 @@ def test_find_peaks_units():
     spec = FrequencySeries(data, df=1.0, unit='m')
 
     # Test threshold with units
-    indices, props = spec.find_peaks(threshold=6.0 * u.m)
-    assert len(indices) == 1
-    assert indices[0] == 50
+    peaks, props = spec.find_peaks(threshold=6.0 * u.m)
+    assert len(peaks) == 1
+    assert peaks.frequencies[0].value == 50.0
 
     # Test different unit conversion
-    indices, props = spec.find_peaks(threshold=600.0 * u.cm)
-    assert len(indices) == 1
-    assert indices[0] == 50
+    peaks, props = spec.find_peaks(threshold=600.0 * u.cm)
+    assert len(peaks) == 1
+    assert peaks.frequencies[0].value == 50.0
 
 def test_find_peaks_method():
     data = np.array([1.0, 10.0, 1.0])
     spec = FrequencySeries(data, df=1.0)
 
     # Test db method
-    indices, props = spec.find_peaks(method='db', threshold=10) # 20*log10(10)=20 > 10
-    assert len(indices) == 1
+    peaks, props = spec.find_peaks(method='db', threshold=10) # 20*log10(10)=20 > 10
+    assert len(peaks) == 1
 
     # Test power method
-    indices, props = spec.find_peaks(method='power', threshold=50) # 10^2=100 > 50
-    assert len(indices) == 1
+    peaks, props = spec.find_peaks(method='power', threshold=50) # 10^2=100 > 50
+    assert len(peaks) == 1
 
 def test_find_peaks_kwargs():
     data = np.zeros(100)
@@ -49,5 +50,5 @@ def test_find_peaks_kwargs():
     spec = FrequencySeries(data, df=1.0)
 
     # Use distance to exclude close peaks
-    indices, props = spec.find_peaks(threshold=5.0, distance=10)
-    assert len(indices) == 1
+    peaks, props = spec.find_peaks(threshold=5.0, distance=10)
+    assert len(peaks) == 1

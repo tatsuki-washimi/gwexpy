@@ -403,7 +403,7 @@ method : `str`, optional
 Returns
 -------
 `tuple`
-    (peaks_indices, peaks_properties)
+    (peaks, props) where `peaks` is a new `FrequencySeries` containing the peak values and frequencies, and `props` is a dictionary of properties.
 
 
 ### `fit`

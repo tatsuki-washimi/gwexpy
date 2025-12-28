@@ -181,6 +181,13 @@ class TimeSeries(
         Find peaks in the TimeSeries.
 
         Wraps `scipy.signal.find_peaks`.
+
+        Returns
+        -------
+        peaks : `TimeSeries`
+            A new TimeSeries containing only the peak values, indexed by their times.
+        props : `dict`
+            Dictionary of peak properties returned by `scipy.signal.find_peaks`.
         """
         from scipy.signal import find_peaks
 
