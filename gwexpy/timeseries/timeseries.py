@@ -24,6 +24,7 @@ from ._signal import TimeSeriesSignalMixin
 from ._resampling import TimeSeriesResamplingMixin
 from ._analysis import TimeSeriesAnalysisMixin
 from ._interop import TimeSeriesInteropMixin
+from ._statistics import StatisticsMixin
 from gwexpy.fitting.mixin import FittingMixin
 
 # Import legacy for remaining methods
@@ -36,6 +37,7 @@ class TimeSeries(
     TimeSeriesResamplingMixin, # Resampling
     TimeSeriesSignalMixin,     # Signal processing
     TimeSeriesSpectralMixin,   # Spectral transforms
+    StatisticsMixin,           # Statistical analysis & correlation
     FittingMixin,              # Fitting functionality
     _LegacyTimeSeries,         # All legacy methods including BaseTimeSeries
 ):

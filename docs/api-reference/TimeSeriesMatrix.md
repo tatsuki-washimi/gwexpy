@@ -254,6 +254,25 @@ KeyError
     If the key is not found.
 
 
+### `correlation_vector`
+
+```python
+correlation_vector(self, target_timeseries, method='mic', nproc=None)
+```
+
+Calculate correlation between a target TimeSeries and all channels in this Matrix.
+
+Args:
+    target_timeseries (TimeSeries): The target signal (e.g., DARM).
+    method (str): 'pearson', 'kendall', 'mic'.
+    nproc (int, optional): Number of parallel processes. 
+                           If None, uses os.cpu_count() (or 1 if cannot determine).
+
+Returns:
+    pandas.DataFrame: Ranking of channels by correlation score.
+                      Columns: ['row', 'col', 'channel', 'score']
+
+
 ### `col_keys`
 
 ```python

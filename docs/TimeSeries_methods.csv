@@ -25,6 +25,9 @@ taper,〇,〇,〇,〇,MatrixはWrapper
 gate,〇,〇,〇,×,Matrix未実装
 convolve,〇,×,×,×,
 correlate / xcorr,〇,×,×,〇,Matrixは xcorr (相互相関)あり
+pcc / ktau / mic / distance_correlation,〇,×,×,〇,Matrixは correlation_vector (統計的相関)
+skewness / kurtosis,〇,×,×,×,gwexpy独自 (統計的モーメント)
+granger_causality,〇,×,×,×,gwexpy独自 (因果性検定)
 inject,〇,×,×,×,
 analytic_signal / hilbert,〇,〇,〇,×,gwexpy拡張
 envelope,〇,〇,〇,×,gwexpy拡張

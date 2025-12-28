@@ -154,9 +154,24 @@ class TimeSeriesMatrix(SeriesMatrix):
         if "xunit" not in kwargs:
             kwargs["xunit"] = cls.default_xunit
 
-        obj = super().__new__(cls, data, **kwargs)
         if channel_names is not None:
-            obj.channel_names = list(channel_names)
+            # SeriesMatrix uses 'names' to populate metadata.
+            if "names" not in kwargs:
+                # Heuristic: If channel_names is 1D, assume it maps to Rows (N).
+                # Numpy broadcasting defaults 1D array to Row Vector (1, M) behavior for 2D.
+                # But TimeSeriesMatrix channels are usually Rows (N, 1).
+                # So we must reshape to Column Vector (N, 1).
+                cn = np.asarray(channel_names)
+                if cn.ndim == 1:
+                     kwargs["names"] = cn.reshape(-1, 1)
+                else:
+                     kwargs["names"] = cn
+
+        obj = super().__new__(cls, data, **kwargs)
+        
+        # Keep attribute for potential backward compatibility / user access
+        if channel_names is not None:
+             obj.channel_names = list(channel_names)
         return obj
 
     # --- Properties mapping to SeriesMatrix attributes ---
@@ -521,6 +536,86 @@ class TimeSeriesMatrix(SeriesMatrix):
         if return_model:
             return sources, res
         return sources
+
+    # --- Correlation ---
+
+    def correlation_vector(self, target_timeseries, method='mic', nproc=None):
+        """
+        Calculate correlation between a target TimeSeries and all channels in this Matrix.
+        
+        Args:
+            target_timeseries (TimeSeries): The target signal (e.g., DARM).
+            method (str): 'pearson', 'kendall', 'mic'.
+            nproc (int, optional): Number of parallel processes. 
+                                   If None, uses os.cpu_count() (or 1 if cannot determine).
+        
+        Returns:
+            pandas.DataFrame: Ranking of channels by correlation score.
+                              Columns: ['row', 'col', 'channel', 'score']
+        """
+        import pandas as pd
+        import os
+        from concurrent.futures import ProcessPoolExecutor
+
+        if nproc is None:
+            nproc = os.cpu_count() or 1
+            
+        N, M, _ = self.shape
+        results = []
+
+        # Helper function to prevent pickling issues with bound methods if any
+        def _calc_corr(ts_data, ts_opts, target, meth):
+            # Reconstruct TS to avoid pickling large amounts of data unnecessarily? 
+            # Actually we pass the data anyway.
+            # Using the TimeSeries object directly.
+            from gwexpy.timeseries import TimeSeries
+            # ts_opts: dict of t0, dt, name, etc
+            ts = TimeSeries(ts_data, **ts_opts)
+            return ts.correlation(target, method=meth)
+
+        # However, passing 'ts' object directly is easiest if it pickles well.
+        # TimeSeries pickles fine.
+        
+        def _calc_direct(ts, target, meth):
+            try:
+                return ts.correlation(target, method=meth)
+            except Exception:
+                return np.nan
+
+        # Collect tasks
+        # Note: If memory is an issue with large Matrices, we might want to be careful.
+        # But 'target_timeseries' is shared.
+        
+        if nproc == 1:
+            for i in range(N):
+                for j in range(M):
+                    ts = self[i, j]
+                    score = _calc_direct(ts, target_timeseries, method)
+                    results.append({
+                        "row": i, "col": j, "channel": ts.name, "score": score
+                    })
+        else:
+            with ProcessPoolExecutor(max_workers=nproc) as executor:
+                futures = {}
+                for i in range(N):
+                    for j in range(M):
+                        ts = self[i, j]
+                        fut = executor.submit(_calc_direct, ts, target_timeseries, method)
+                        futures[fut] = (i, j, ts.name)
+                
+                for fut in futures:
+                    i, j, name = futures[fut]
+                    try:
+                        score = fut.result()
+                    except Exception:
+                        score = np.nan
+                    results.append({
+                        "row": i, "col": j, "channel": name, "score": score
+                    })
+
+        df = pd.DataFrame(results)
+        df = df.sort_values("score", ascending=False, key=abs).reset_index(drop=True)
+        return df
 
 
         if not isinstance(value, u.Quantity):
