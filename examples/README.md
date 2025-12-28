@@ -30,3 +30,12 @@ These notebooks demonstrate how to combine multiple `gwexpy` features to solve p
 - **[example_lockin-detection.ipynb](example_lockin-detection.ipynb)**: Demodulation and heterodyne analysis of carrier signals.
 - **[example_wiener-filter.ipynb](example_wiener-filter.ipynb)**: Multi-component noise reduction using MIMO Wiener filter matrices.
 - **[example_bootstrap-spectral.ipynb](example_bootstrap-spectral.ipynb)**: Robust spectral estimation using resampling techniques.
+
+## 3. Specialized Analysis & Tutorials (`tutorial_*.ipynb`)
+These notebooks provide in-depth tutorials on specific advanced analysis techniques.
+
+- **[tutorial_HHT_Analysis.ipynb](tutorial_HHT_Analysis.ipynb)**: Hilbert-Huang Transform (EMD + Hilbert Spectral Analysis) for non-stationary signals.
+- **[tutorial_ARIMA_Forecast.ipynb](tutorial_ARIMA_Forecast.ipynb)**: Time-series forecasting and whitening using ARIMA models.
+- **[tutorial_Correlation.ipynb](tutorial_Correlation.ipynb)**: Advanced statistical features including Granger Causality and Distance Correlation.
+- **[tutorial_ShortTimeLaplaceTransformation.ipynb](tutorial_ShortTimeLaplaceTransformation.ipynb)**: Time-frequency analysis using the Short-Time Laplace Transform (STLT).
+- **[tutorial_Bruco.ipynb](tutorial_Bruco.ipynb)**: Brute-force coherence analysis (BruCo) for noise hunting.
