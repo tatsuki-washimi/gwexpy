@@ -1,9 +1,10 @@
 
 import numpy as np
+from astropy.units import Quantity, dimensionless_unscaled
 
 from .array3d import Array3D
 
-__all__ = ["TimePlaneTransform"]
+__all__ = ["TimePlaneTransform", "LaplaceGram"]
 
 class TimePlaneTransform:
     """
@@ -270,7 +271,68 @@ class TimePlaneTransform:
 
         # 2. Slice (nearest case handled above)
         # return self.plane(0, idx)
+    
+    def at_sigma(self, sigma):
+        """
+        Extract a 2D plane (Spectrogram-like) at a specific sigma index (if axis1 is sigma) 
+        or value.
+        
+        This assumes axis 1 is sigma.
+        """
+        # If sigma is an index (int)
+        if hasattr(self, "axis1") and self.axis1.name == "sigma":
+             # We can try to match value if needed, but strict index for now?
+             # User requested `.at_sigma(sigma)` which implies value lookup potentially.
+             # Similar to at_time logic.
+             # Let's assume simplest implementation: nearest lookup or index.
+             
+             sigma_ax = self.axis1.index
+             if isinstance(sigma, int) and (not hasattr(sigma_ax, 'shape') or sigma < len(sigma_ax)):
+                 # It might be an index
+                 # But if sigma is 0.0 (float), it's a value.
+                 pass
+
+             # Implementation of value lookup
+             s_val = sigma
+             if hasattr(sigma, "value"):
+                  s_val = sigma.value
+             
+             ax_val = sigma_ax
+             if hasattr(sigma_ax, "value"):
+                  ax_val = sigma_ax.value
+             
+             if isinstance(s_val, (int, np.integer)) and (s_val >= 0 and s_val < len(ax_val)):
+                  # Ambiguous if values are integers. Assume value first?
+                  # But typically sigma is float.
+                  pass
+             
+             # Nearest neighbor
+             idx = np.abs(ax_val - s_val).argmin()
+             return self.plane(1, idx)
+        else:
+             raise ValueError("This transform does not appear to have 'sigma' as axis 1.")
 
     def to_array3d(self):
         """Return the underlying Array3D object (advanced usage)."""
         return self._data
+
+
+class LaplaceGram(TimePlaneTransform):
+    """
+    3D container for Short-Time Laplace Transform data.
+    Structure: (time, sigma, frequency).
+    """
+    def __init__(self, data3d, **kwargs):
+        # Enforce axis names if Array3D is created here?
+        # User passes constructed Array3D usually.
+        # Just ensure base init works.
+        super().__init__(data3d, **kwargs)
+        if self.axis1.name != "sigma":
+             # Try to rename if generic
+             if self.axis1.name == "axis1":
+                  self._data._set_axis_name(1, "sigma")
+        if self.axis2.name != "frequency":
+             if self.axis2.name == "axis2":
+                  self._data._set_axis_name(2, "frequency")
+
+

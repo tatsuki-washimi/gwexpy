@@ -58,24 +58,92 @@ def test_stlt_basic():
     data = np.sin(2 * np.pi * 10 * t.value)
     ts = TimeSeries(data, dt=dt, t0=0*u.s)
 
-    # Run STLT
+    # Run STLT (New Implementation)
     # Window 0.5s (50 samples), Stride 0.1s (10 samples)
+    # sigma defaults to 0, time_ref='start'
     stlt = ts.stlt(stride='0.1s', window='0.5s')
 
-    assert isinstance(stlt, TimePlaneTransform)
-    assert stlt.kind == "stlt_mag_outer"
-    assert stlt.meta['stride'] == '0.1s'
+    from gwexpy.types.time_plane_transform import LaplaceGram
+    assert isinstance(stlt, LaplaceGram)
+    assert stlt.kind == "stlt"
+    assert stlt.meta['window'] == 0.5
 
     # Check shape
     # n_steps approx (1 - 0.5)/0.1 + 1 = 6 steps
-    # freq bins: 50 samples / 2 + 1 = 26 bins (scipy stft default)
-    # Expected shape: (6, 26, 26) or similar
+    # freq bins: 50 samples / 2 + 1 = 26 bins
+    # sigmas: 1 (default 0)
+    # Expected shape: (6, 1, 26)
     shape = stlt.shape
     assert len(shape) == 3
-    # assert shape[0] >= 5 # Time steps
+    assert shape[1] == 1 # 1 sigma
+    assert shape[2] == 26
 
     # Check values exist
-    assert np.sum(stlt.value) > 0
+    assert np.sum(np.abs(stlt.value)) > 0
+    
+    # Check sigma access
+    spec = stlt.at_sigma(0)
+    assert spec.ndim == 2 # (Time, Freq)
+    # assert spec.shape == (6, 26) # Sliced
+
+def test_stlt_stability():
+    dt = 0.01 * u.s
+    data = np.zeros(100) 
+    ts = TimeSeries(data, dt=dt, t0=0*u.s)
+    
+    # Large negative sigma should explode if time_ref='start' and t > 0
+    # Window 0.5s => t_rel max 0.5
+    # exp(-(-2000) * 0.5) = exp(1000) -> overflow
+    import pytest
+    with pytest.raises(ValueError, match="overflow"):
+         ts.stlt(stride='0.1s', window='0.5s', sigmas=-2000.0, time_ref='start')
+
+    # Should be fine with time_ref='center' (t_rel max 0.25)
+    # exp(2000 * 0.25) = exp(500) -> fine
+    # Actually limits are tight, exp(709). 2000*0.25=500 is safe.
+    try:
+         stlt = ts.stlt(stride='0.1s', window='0.5s', sigmas=-2000.0, time_ref='center')
+         assert stlt.shape[1] == 1
+    except ValueError as e:
+         pytest.fail(f"Center ref should have been stable: {e}")
+
+def test_stlt_onesided():
+    dt = 0.01 * u.s
+    data = np.exp(2j * np.pi * 10 * np.arange(100) * 0.01) # Complex
+    ts = TimeSeries(data, dt=dt, t0=0*u.s)
+    
+    # Default should be two-sided
+    stlt = ts.stlt(stride='0.1s', window='0.5s')
+    assert stlt.shape[2] == 50 # 50 frequency bins (N) not N/2+1
+    
+    # Explicit one-sided on complex -> Error
+    import pytest
+    with pytest.raises(ValueError, match="complex"):
+         ts.stlt(stride='0.1s', window='0.5s', onesided=True)
+
+    # Real data one-sided logic
+    data_real = np.real(data)
+    ts_real = TimeSeries(data_real, dt=dt, t0=0*u.s)
+    stlt_real = ts_real.stlt(stride='0.1s', window='0.5s')
+    assert stlt_real.shape[2] == 26 # 50/2 + 1
+    
+    stlt_twosided = ts_real.stlt(stride='0.1s', window='0.5s', onesided=False)
+    assert stlt_twosided.shape[2] == 50
+
+def test_stlt_legacy():
+    dt = 0.01 * u.s
+    t = np.arange(100) * dt
+    data = np.sin(2 * np.pi * 10 * t.value)
+    ts = TimeSeries(data, dt=dt, t0=0*u.s)
+
+    # Legacy mode
+    stlt = ts.stlt(stride='0.1s', window='0.5s', legacy=True)
+    
+    # Should be TimePlaneTransform (base) or LaplaceGram? 
+    # Legacy returns TimePlaneTransform
+    # Kind should be stlt_mag_outer
+    assert stlt.kind == "stlt_mag_outer"
+    assert stlt.shape[1] == stlt.shape[2] # Symmetric (Freq x Freq)
 
 # --- P1-3: Resample Aggregation ---
 

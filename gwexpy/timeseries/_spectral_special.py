@@ -154,6 +154,350 @@ class TimeSeriesSpectralSpecialMixin:
         fs.laplace_sigma = sigma_val
         return fs
 
+    def stlt(
+        self,
+        stride: Any = None,
+        window: Any = None,
+        fftlength: Any = None,
+        overlap: Any = None,
+        *,
+        sigmas: Any = 0.0,
+        frequencies: Any = None,
+        scaling: str = "dt",
+        time_ref: str = "start",
+        onesided: Optional[bool] = None,
+        legacy: bool = False,
+        **kwargs: Any,
+    ) -> Any:
+        """
+        Compute Short-Time Laplace Transform (STLT).
+        
+        Chunk the time series, apply window w[n] * exp(-sigma * t_rel[n]), and compute FFT.
+        
+        Parameters
+        ----------
+        stride : Quantity or str, optional
+            Step size in seconds between chunks.
+        window : Quantity, str, or array-like, optional
+            If Quantity/str with units: window duration (legacy style or alias for fftlength).
+            If str (no units) or array: window function (passed to scipy.signal.get_window).
+            Default 'hann'.
+        fftlength : Quantity or str, optional
+            Window duration. Preferred over 'window' for specifying duration.
+        overlap : Quantity or str, optional
+            Overlap duration.
+        sigmas : float or array-like or Quantity, optional
+            Real part of Laplace frequency s = sigma + j*omega. Default 0.
+        frequencies : array-like, optional
+            Output frequencies.
+        scaling : str, optional
+            'dt' (multiply by dt, discrete integral), 'none' (raw FFT).
+            Default 'dt'.
+        time_ref : str, optional
+            Time reference for the exponential term within each window.
+            'start': t_rel in [0, T_win].
+            'center': t_rel in [-T_win/2, T_win/2]. Recommended for large sigmas to avoid overflow.
+            Default 'start'.
+        onesided : bool, optional
+            If True, return one-sided FFT (real input only).
+            If False, return two-sided FFT.
+            If None, defaults to True for real data, False for complex data.
+        legacy : bool, optional
+            If True, use the old magnitude-outer-product implementation (deprecated).
+            
+        Returns
+        -------
+        LaplaceGram
+            3D transform result with shape (time, sigma, frequency).
+        """
+        if legacy:
+             return self._stlt_legacy(stride, window, **kwargs)
+
+        try:
+             import scipy.signal
+        except ImportError:
+             raise ImportError("scipy is required for stlt.")
+        
+        # --- 1. Resolve Time Parameters ---
+        if self.dt is None:
+             raise ValueError("TimeSeries must have a valid dt.")
+        dt_s = self.dt.to("s").value
+        fs_val = 1.0 / dt_s
+
+        # Resolve fftlength (duration) / window (function vs duration)
+        window_func = 'hann'
+        win_dur = None
+        
+        if fftlength is not None:
+             win_dur = u.Quantity(fftlength).to("s").value
+             if window is not None and not isinstance(window, (u.Quantity, float, int)):
+                  window_func = window 
+        elif window is not None:
+             is_dur = False
+             if isinstance(window, u.Quantity):
+                  is_dur = True
+             elif isinstance(window, str) and any(c.isdigit() for c in window):
+                  is_dur = True
+             
+             if is_dur:
+                  win_dur = u.Quantity(window).to("s").value
+             else:
+                  window_func = window
+
+        if win_dur is None:
+             raise ValueError("Must specify fftlength (or window duration).")
+
+        nperseg = int(np.round(win_dur / dt_s))
+        if nperseg < 1:
+             raise ValueError("Window duration too short.")
+
+        # Resolve Overlap/Stride
+        if overlap is not None:
+             ov_dur = u.Quantity(overlap).to("s").value
+             noverlap = int(np.round(ov_dur / dt_s))
+             step = nperseg - noverlap
+        elif stride is not None:
+             str_dur = u.Quantity(stride).to("s").value
+             step = int(np.round(str_dur / dt_s))
+             noverlap = nperseg - step
+        else:
+             step = nperseg // 2
+             noverlap = nperseg - step
+
+        if step < 1:
+             raise ValueError("Stride must be positive (overlap < window).")
+
+        # --- 2. Data Chunking & Pre-checks ---
+        from numpy.lib.stride_tricks import sliding_window_view
+        
+        data_arr = self.value
+        if len(data_arr) < nperseg:
+             raise ValueError("Data shorter than window length.")
+
+        chunks = sliding_window_view(data_arr, window_shape=nperseg, axis=0)[::step]
+        n_chunks = chunks.shape[0]
+        
+        t0_val = self.t0.to("s").value
+        t_starts = t0_val + (np.arange(n_chunks) * step * dt_s)
+        t_centers = t_starts + (win_dur / 2.0)
+        times_q = u.Quantity(t_centers, "s") 
+
+        # --- 3. Window & Sigma Prep ---
+        if isinstance(window_func, (str, tuple)):
+             win_base = scipy.signal.get_window(window_func, nperseg)
+        else:
+             win_base = np.asarray(window_func)
+             if len(win_base) != nperseg:
+                  raise ValueError("Window function length mismatch.")
+
+        # Handle Sigmas
+        if np.isscalar(sigmas) or (isinstance(sigmas, u.Quantity) and sigmas.isscalar):
+             sigmas_arr = [sigmas]
+        else:
+             sigmas_arr = sigmas
+        
+        sigmas_vals = []
+        for s in sigmas_arr:
+             if isinstance(s, u.Quantity):
+                  sigmas_vals.append(s.to("1/s").value)
+             else:
+                  sigmas_vals.append(float(s))
+        sigmas_vals = np.array(sigmas_vals)
+
+        # Handle One-sided
+        is_complex_input = np.iscomplexobj(data_arr)
+        if onesided is None:
+             onesided = not is_complex_input
+        
+        if onesided and is_complex_input:
+             raise ValueError("Cannot perform one-sided FFT on complex data.")
+
+        # Precompute t_rel
+        if time_ref == "start":
+             t_rel = np.arange(nperseg) * dt_s
+        elif time_ref == "center":
+             # centered around 0
+             t_rel = (np.arange(nperseg) - (nperseg - 1) / 2.0) * dt_s
+        else:
+             raise ValueError(f"Unknown time_ref: {time_ref}. Use 'start' or 'center'.")
+
+        # Stability Guardrails
+        # Max exponent argument
+        min_sigma = sigmas_vals.min()
+        max_sigma = sigmas_vals.max()
+        max_t = t_rel.max()
+        min_t = t_rel.min() # negative if centered
+        
+        # We care about -sigma * t
+        # Case 1: sigma positive, t negative (if centered) -> -sigma*t positive (growth)
+        # Case 2: sigma negative, t positive -> -sigma*t positive (growth)
+        
+        max_exponent = max(
+             -min_sigma * min_t,
+             -min_sigma * max_t,
+             -max_sigma * min_t,
+             -max_sigma * max_t
+        )
+        
+        if max_exponent > 700: # approx exp(709) is max double
+             raise ValueError(
+                 f"Configuration leads to overflow: max exponent ~{max_exponent:.1f} > 700. "
+                 f"Try reducing sigma magnitude or using time_ref='center'."
+             )
+
+        # Prepare outputs
+        if frequencies is None:
+             if onesided:
+                  freqs_val = np.fft.rfftfreq(nperseg, d=dt_s)
+             else:
+                  freqs_val = np.fft.fftfreq(nperseg, d=dt_s)
+             freqs_q = u.Quantity(freqs_val, "Hz")
+        else:
+             # Just matching axes, we still compute full FFT (optimization for later phase)
+             # If user supplied frequencies, we should warn if they don't match FFT grid?
+             # For Phase 3, let's just stick to FFT grid logic.
+             if onesided:
+                  freqs_val = np.fft.rfftfreq(nperseg, d=dt_s)
+             else:
+                  freqs_val = np.fft.fftfreq(nperseg, d=dt_s)
+             freqs_q = u.Quantity(freqs_val, "Hz")
+
+        n_freqs = len(freqs_val)
+        n_sigmas = len(sigmas_vals)
+        
+        dtype = np.result_type(chunks.dtype, np.complex64)
+        out_cube = np.zeros((n_chunks, n_sigmas, n_freqs), dtype=dtype)
+
+        # --- 4. Computation Loop with Batching ---
+        # Batch over chunks to control memory usage
+        # weighted_chunks for 1 sigma = n_chunks * nperseg * 16 bytes (complex128)
+        # We want to keep weighted_chunks < ~100MB?
+        # 100MB / 16 bytes ~ 6e6 elements.
+        # If nperseg=1000, batch_size=6000 chunks.
+        
+        BATCH_ELEMENTS = 5_000_000
+        chunk_batch_size = max(1, BATCH_ELEMENTS // nperseg)
+        
+        fft_func = np.fft.rfft if onesided else np.fft.fft
+        
+        for i_chunk in range(0, n_chunks, chunk_batch_size):
+             end_chunk = min(i_chunk + chunk_batch_size, n_chunks)
+             # Get batch of chunks: (batch_size, nperseg)
+             batch_chunks = chunks[i_chunk:end_chunk] # View
+             
+             # Loop over sigmas for this batch
+             for i_sig, sigma_val in enumerate(sigmas_vals):
+                  # Compute window for this sigma
+                  # w_sig (nperseg,)
+                  decay = np.exp(-sigma_val * t_rel)
+                  w_sig = win_base * decay
+                  
+                  # Apply window: (batch, nperseg) * (nperseg,) -> broadcast
+                  # Allocates (batch, nperseg) temporary
+                  weighted_batch = batch_chunks * w_sig 
+                  
+                  # FFT
+                  spec = fft_func(weighted_batch, axis=-1)
+                  
+                  # Store
+                  out_cube[i_chunk:end_chunk, i_sig, :] = spec
+
+        # --- 5. Scaling ---
+        if scaling == "dt":
+             out_cube *= dt_s
+        elif scaling == "none":
+             pass
+        else:
+             pass
+
+
+        # --- 6. Container ---
+        from gwexpy.types.time_plane_transform import LaplaceGram
+        from gwexpy.types.array3d import Array3D
+        
+        # Axis 1 is Sigma
+        axis_sigma = u.Quantity(sigmas_vals, "1/s")
+        # Axis 2 is Frequency
+        axis_freq = freqs_q
+        
+        # Unit
+        res_unit = self.unit
+        if scaling == "dt":
+             res_unit = res_unit * u.s
+        
+        # Construct Array3D explicitly
+        arr3d = Array3D(
+            out_cube,
+            unit=res_unit,
+            axis0=times_q,
+            axis1=axis_sigma,
+            axis2=axis_freq,
+            axis_names=["time", "sigma", "frequency"]
+        )
+        
+        return LaplaceGram(
+             arr3d,
+             kind="stlt",
+             meta={
+                 "window": win_dur,
+                 "stride": str_dur if stride is not None else None,
+                 "overlap": ov_dur if overlap is not None else None,
+                 "source": self.name
+             }
+        )
+
+    def _stlt_legacy(self, stride: Any, window: Any, **kwargs: Any) -> Any:
+        # Copied from original implementation
+        from gwexpy.types.time_plane_transform import TimePlaneTransform
+        try:
+            import scipy.signal
+        except ImportError:
+            raise ImportError(
+                "scipy is required for stlt. "
+                "Please install it via `pip install scipy`."
+            )
+
+        # Normalize inputs
+        stride_q = u.Quantity(stride) if isinstance(stride, str) else stride
+        window_q = u.Quantity(window) if isinstance(window, str) else window
+
+        if not stride_q.unit.is_equivalent(u.s):
+            raise ValueError("stride must be a time quantity")
+
+        dt_s = self.dt.to(u.s).value
+        fs_val = 1.0 / dt_s
+
+        nperseg = int(np.round((window_q.to(u.s).value / dt_s)))
+        stride_s = stride_q.to(u.s).value
+        noverlap_samples = int(np.round((window_q.to(u.s).value - stride_s) / dt_s))
+
+        if nperseg <= 0:
+             raise ValueError("Window size too small")
+
+        f, t_segs, Zxx = scipy.signal.stft(
+             self.value,
+             fs=fs_val,
+             window='hann',
+             nperseg=nperseg,
+             noverlap=noverlap_samples,
+             boundary=None,
+             padded=False
+        )
+
+        Z = Zxx.T
+        mag = np.abs(Z)
+        data = mag[:, :, None] * mag[:, None, :]
+
+        t0_val = self.t0.to(u.s).value
+        times_q = (t0_val + t_segs) * u.s
+        axis_f = f * u.Hz
+
+        return TimePlaneTransform(
+            (data, times_q, axis_f, axis_f, self.unit**2),
+            kind="stlt_mag_outer",
+            meta={"stride": stride, "window": window, "source": self.name}
+        )
+
     def cwt(
         self,
         wavelet: str = "cmor1.5-1.0",

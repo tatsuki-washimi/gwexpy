@@ -6,7 +6,7 @@
 GWpy の TimeSeries と完全な互換性を持ちつつ、以下の機能を追加・統合しています。
 
 - **信号処理**: 解析信号 (analytic_signal), 周波数復調 (demodulate), 相互相関 (correlate) など。
-- **スペクトル変換**: FFT, PSD, ASD, CWT (連続ウェーブレット変換), DCT (離散コサイン変換) など。
+- **スペクトル変換**: FFT, PSD, ASD, CWT (連続ウェーブレット変換), STLT (短時間ラプラス変換), DCT (離散コサイン変換) など。
 - **データ分析**: 欠損値補完 (impute), 標準化 (standardize), 移動平均などのローリング統計 (rolling_*) など。
 - **相互運用性**: PyTorch, TensorFlow, JAX, pandas, xarray, MNE, ObsPy などの他ライブラリへの変換。
 
@@ -44,6 +44,10 @@ FIR フィルタとの畳み込み（overlap-save 法）を行います。
 
 ### `cwt`
 連続ウェーブレット変換 (CWT) を計算します。
+
+### `stlt`
+短時間ラプラス変換 (STLT) を計算します。
+(Time, Sigma, Frequency) の3次元データ (`LaplaceGram`) を返します。
 
 ### `dct`
 離散コサイン変換 (DCT) を計算します。

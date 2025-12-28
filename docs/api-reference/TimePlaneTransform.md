@@ -1,4 +1,4 @@
-# TimePlaneTransform
+# TimePlaneTransform / LaplaceGram
 
 **Inherits from:** object
 
@@ -9,6 +9,9 @@ commonly produced by time-frequency or similar transforms.
 This class wraps an Array3D to enforce semantic structure:
 - Axis 0 is "time"
 - Axis 1 and 2 are symmetric spatial/frequency dimensions.
+
+**LaplaceGram** is a specialized TimePlaneTransform for Short-Time Laplace Transforms,
+where Axis 1 is "sigma" (Re[s]) and Axis 2 is "frequency".
 
 
 ## Methods
@@ -32,6 +35,25 @@ kind : str, optional
     A string describing the type of transform (e.g., "stlt", "bispectrum"). Default is "custom".
 meta : dict, optional
     Additional metadata dictionary. Default is None (stored as empty dict).
+
+
+### `at_sigma`
+
+```python
+at_sigma(self, sigma)
+```
+
+Extract a 2D plane (Spectrogram-like) at a specific sigma index or value.
+(Available if axis1 is named "sigma", e.g. in `LaplaceGram`).
+
+Parameters
+----------
+sigma : float or int
+    Sigma value or index.
+
+Returns
+-------
+Plane2D (Spectrogram-like)
 
 
 ### `at_time`
