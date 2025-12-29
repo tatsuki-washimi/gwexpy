@@ -12,7 +12,7 @@ def to_polars_series(ts, name=None):
     data = to_plain_array(ts)
     return pl.Series(name=name or str(ts.name or "series"), values=data)
 
-def to_polars_dataframe(ts, time_column="time", time_unit="datetime"):
+def to_polars_dataframe(ts, index_column="time", time_unit="datetime"):
     """
     Convert TimeSeries to polars.DataFrame with a time column.
     """
@@ -33,7 +33,7 @@ def to_polars_dataframe(ts, time_column="time", time_unit="datetime"):
         raise ValueError(f"Unknown time_unit: {time_unit}")
 
     return pl.DataFrame({
-        time_column: t_vals,
+        index_column: t_vals,
         ts.name or "value": data
     })
 
@@ -55,21 +55,21 @@ def to_polars_frequencyseries(fs, index_column="frequency", index_unit="Hz"):
         fs.name or "value": data
     })
 
-def from_polars_dataframe(cls, df, time_column="time", unit=None):
+def from_polars_dataframe(cls, df, index_column="time", unit=None):
     """
     Create TimeSeries from polars.DataFrame.
     Attempts to infer t0 and dt from the time_column.
     """
     require_optional("polars")
 
-    # Extract data column (everything except time_column)
-    cols = [c for c in df.columns if c != time_column]
+    # Extract data column (everything except index_column)
+    cols = [c for c in df.columns if c != index_column]
     if not cols:
          raise ValueError("DataFrame must have at least one data column")
 
     # polars -> numpy
     data = df[cols[0]].to_numpy()
-    times = df[time_column]
+    times = df[index_column]
 
     # Infer t0, dt
     t0 = 0
@@ -119,7 +119,7 @@ def from_polars_dataframe(cls, df, time_column="time", unit=None):
          else:
              return cls(data, times=times_gps_arr, unit=unit, name=cols[0])
 
-def to_polars_dict(tsd, time_column="time", time_unit="datetime"):
+def to_polars_dict(tsd, index_column="time", time_unit="datetime"):
     """TimeSeriesDict -> polars.DataFrame"""
     pl = require_optional("polars")
     from .base import to_plain_array
@@ -142,13 +142,13 @@ def to_polars_dict(tsd, time_column="time", time_unit="datetime"):
     else:
         raise ValueError(f"Unknown time_unit: {time_unit}")
 
-    data_dict = {time_column: t_vals}
+    data_dict = {index_column: t_vals}
     for k in keys:
         data_dict[k] = to_plain_array(tsd[k])
 
     return pl.DataFrame(data_dict)
 
-def from_polars_dict(cls, df, time_column="time", unit_map=None):
+def from_polars_dict(cls, df, index_column="time", unit_map=None):
     """polars.DataFrame -> TimeSeriesDict"""
     tsd = cls()
     # Logic similar to from_pandas_dataframe but for polars
@@ -158,7 +158,7 @@ def from_polars_dict(cls, df, time_column="time", unit_map=None):
     # We can use from_polars_dataframe for each column for simplicity
     # but it's more efficient to calculate t0/dt once.
 
-    times = df[time_column]
+    times = df[index_column]
     t0 = 0
     dt = 1
     if len(times) > 0:
@@ -186,7 +186,7 @@ def from_polars_dict(cls, df, time_column="time", unit_map=None):
                  dt = float(t1_val) - float(t0)
 
     for col in df.columns:
-        if col == time_column:
+        if col == index_column:
             continue
         unit = unit_map.get(col) if unit_map else None
         data = df[col].to_numpy()

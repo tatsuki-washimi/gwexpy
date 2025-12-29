@@ -230,29 +230,6 @@ class TimeSeriesMatrix(SeriesMatrix):
 
         self.xindex = Index.define(start, new_dt, length)
 
-    @property
-    def is_regular(self) -> bool:
-        """Return True if this TimeSeriesMatrix has a regular sample rate."""
-        if self.times is None:
-            return True
-        if hasattr(self.times, "regular"):
-            return self.times.regular
-        if len(self.times) < 2:
-            return True
-        # np.asarray(self.times) extracts values from Index/ndarray
-        times_val = np.asarray(self.times)
-        diffs = np.diff(times_val)
-        return np.allclose(diffs, diffs[0], atol=1e-12, rtol=1e-10)
-
-    def _check_regular(self, method_name: Optional[str] = None):
-        """Helper to ensure the matrix has a regular sample rate."""
-        if not self.is_regular:
-            method = method_name or "This method"
-            raise ValueError(
-                f"{method} requires a regular sample rate (constant dt). "
-                "Consider using .asfreq() or .interpolate() to regularized the matrix first."
-            )
-
     # --- Preprocessing & Decomposition ---
 
     def resample(self, rate: Any, *args: Any, **kwargs: Any) -> "TimeSeriesMatrix":
