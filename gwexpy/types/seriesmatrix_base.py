@@ -19,12 +19,13 @@ from .seriesmatrix_validation import (
 
 from .seriesmatrix_ops import SeriesMatrixOps
 from ._stats import StatisticalMethodsMixin
+from gwexpy.types.mixin import RegularityMixin
 
 class PerformanceWarning(RuntimeWarning):
     """Warning raised when an operation falls back to a slower implementation."""
     pass
 
-class SeriesMatrix(SeriesMatrixOps, StatisticalMethodsMixin, np.ndarray):
+class SeriesMatrix(RegularityMixin, SeriesMatrixOps, StatisticalMethodsMixin, np.ndarray):
     def __new__(cls,
                 data: Any = None,
                 *,

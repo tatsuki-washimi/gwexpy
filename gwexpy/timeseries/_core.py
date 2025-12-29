@@ -11,11 +11,11 @@ from __future__ import annotations
 
 import numpy as np
 from typing import Optional, Any
-
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
+from gwexpy.types.mixin import RegularityMixin
 
 
-class TimeSeriesCore(BaseTimeSeries):
+class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
     """
     Core Ti meSeries class with basic operations.
 
@@ -27,35 +27,6 @@ class TimeSeriesCore(BaseTimeSeries):
     # Properties
     # ===============================
 
-    @property
-    def is_regular(self) -> bool:
-        """Return True if this TimeSeries has a regular sample rate."""
-        # Use underlying index safely to avoid triggering GWpy AttributeErrors on irregular series
-        try:
-            # Try to get the index without triggering property logic that checks .dt
-            idx = getattr(self, "xindex", None)
-            if idx is None:
-                return True
-            if hasattr(idx, "regular"):
-                 return idx.regular
-
-            # Manual check
-            times_val = np.asarray(idx)
-            if len(times_val) < 2:
-                return True
-            diffs = np.diff(times_val)
-            return np.allclose(diffs, diffs[0], atol=1e-12, rtol=1e-10)
-        except (AttributeError, ValueError, TypeError):
-            return False
-
-    def _check_regular(self, method_name: Optional[str] = None):
-        """Helper to ensure the series is regular before applying certain transforms."""
-        if not self.is_regular:
-            method = method_name or "This method"
-            raise ValueError(
-                f"{method} requires a regular sample rate (constant dt). "
-                "Consider using .asfreq() or .interpolate() to regularized the series first."
-            )
 
     # ===============================
     # Basic Operations

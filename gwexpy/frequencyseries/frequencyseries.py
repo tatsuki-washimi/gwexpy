@@ -27,6 +27,7 @@ from gwexpy.interop import (
     to_hdf5_frequencyseries,
     from_hdf5_frequencyseries,
 )
+from gwexpy.types.mixin import RegularityMixin
 from gwexpy.fitting.mixin import FittingMixin
 
 try:
@@ -40,32 +41,8 @@ except ImportError:
 # FrequencySeries
 # =============================
 
-class FrequencySeries(FittingMixin, StatisticalMethodsMixin, BaseFrequencySeries):
+class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, BaseFrequencySeries):
     """Light wrapper of gwpy's FrequencySeries for compatibility and future extension."""
-
-    @property
-    def is_regular(self) -> bool:
-        """Return True if this FrequencySeries has a regular frequency grid."""
-        try:
-            idx = getattr(self, "xindex", None)
-            if idx is None:
-                return True
-            if hasattr(idx, "regular"):
-                return idx.regular
-
-            freqs = np.asarray(idx)
-            if len(freqs) < 2:
-                return True
-            df = np.diff(freqs)
-            return np.allclose(df, df[0], atol=1e-12, rtol=1e-10)
-        except (AttributeError, ValueError, TypeError):
-             return False
-
-    def _check_regular(self, method_name: Optional[str] = None):
-        """Helper to ensure the series has a regular frequency grid."""
-        if not self.is_regular:
-            method = method_name or "This method"
-            raise ValueError(f"{method} requires a regular frequency grid.")
 
     # --- Phase and Angle ---
 
@@ -192,26 +169,59 @@ class FrequencySeries(FittingMixin, StatisticalMethodsMixin, BaseFrequencySeries
         """Create FrequencySeries from pandas.Series."""
         return from_pandas_frequencyseries(cls, series, **kwargs)
 
-    def to_polars(self, name: Optional[str] = None, as_dataframe: bool = True, index_column: str = "frequency") -> Any:
-        # Polars check is inside the called functions usually, but we can check here
+    # ===============================
+    # 5. External Library Interop
+    # ===============================
+
+    def to_polars(self, name: Optional[str] = None, as_dataframe: bool = True, frequencies: str = "frequency") -> Any:
+        """
+        Convert this series to a polars.DataFrame or polars.Series.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name for the polars Series/Column.
+        as_dataframe : bool, default True
+            If True, returns a DataFrame with a 'frequency' column.
+            If False, returns a raw Series of values.
+        frequencies : str, default "frequency"
+            Name of the frequency column (only if as_dataframe=True).
+
+        Returns
+        -------
+        polars.DataFrame or polars.Series
+        """
         require_optional("polars")
         if as_dataframe:
              from gwexpy.interop import to_polars_frequencyseries
-             return to_polars_frequencyseries(self, index_column=index_column)
+             return to_polars_frequencyseries(self, index_column=frequencies)
         else:
              from gwexpy.interop import to_polars_series
              return to_polars_series(self, name=name)
 
     @classmethod
-    def from_polars(cls: type["FrequencySeries"], data: Any, index_column: Optional[str] = "frequency", **kwargs: Any) -> Any:
+    def from_polars(cls: type["FrequencySeries"], data: Any, frequencies: Optional[str] = "frequency", **kwargs: Any) -> Any:
         """
-        Create FrequencySeries from polars object.
+        Create a FrequencySeries from a polars.DataFrame or polars.Series.
+
+        Parameters
+        ----------
+        data : polars.DataFrame or polars.Series
+            Input data.
+        frequencies : str, optional
+            If data is a DataFrame, name of the column to use as frequency.
+        **kwargs
+            Additional arguments passed to frequency series constructor.
+
+        Returns
+        -------
+        FrequencySeries
         """
         pl = require_optional("polars")
         if isinstance(data, pl.DataFrame):
              # We reuse from_polars_dataframe but might need specific frequency logic
              from gwexpy.interop import from_polars_dataframe
-             return from_polars_dataframe(cls, data, time_column=index_column, **kwargs)
+             return from_polars_dataframe(cls, data, index_column=frequencies, **kwargs)
         else:
              from gwexpy.interop import from_polars_series
              return from_polars_series(cls, data, **kwargs)
@@ -834,37 +844,6 @@ class FrequencySeries(FittingMixin, StatisticalMethodsMixin, BaseFrequencySeries
 
     # --- Domain Specific Interop ---
 
-    def to_mne(self) -> Any:
-        """
-        Convert to MNE Spectrum object.
-
-        Raises
-        ------
-        NotImplementedError
-            MNE Spectrum objects are typically derived from Raw/Epochs/Evoked data.
-            Direct creation from frequency domain data is not standard in MNE API
-            without wrapping in a time-domain container first.
-        """
-        raise NotImplementedError(
-            "MNE Spectrum objects are typically derived from Raw/Epochs/Evoked data. "
-            "Direct creation from frequency domain data is not fully supported."
-        )
-
-    def to_obspy(self) -> Any:
-        """
-        Convert to ObsPy spectrum representation.
-
-        Raises
-        ------
-        NotImplementedError
-            ObsPy primarily manages time-domain Traces and Streams.
-            No standard standalone Spectrum container in ObsPy
-            comparable to FrequencySeries.
-        """
-        raise NotImplementedError(
-            "ObsPy primarily manages time-domain Traces and Streams. "
-            "No standard standalone Spectrum container exists in ObsPy."
-        )
 
     def to_quantities(self, units: Optional[str] = None) -> Any:
         """
@@ -1939,29 +1918,6 @@ class FrequencySeriesMatrix(SeriesMatrix):
         """Frequency spacing (dx)."""
         return self.dx
 
-    @property
-    def is_regular(self) -> bool:
-        """Return True if this FrequencySeriesMatrix has a regular frequency grid."""
-        try:
-            idx = getattr(self, "xindex", None)
-            if idx is None:
-                return True
-            if hasattr(idx, "regular"):
-                return idx.regular
-
-            freqs = np.asarray(idx)
-            if len(freqs) < 2:
-                return True
-            df = np.diff(freqs)
-            return np.allclose(df, df[0], atol=1e-12, rtol=1e-10)
-        except (AttributeError, ValueError, TypeError):
-             return False
-
-    def _check_regular(self, method_name: Optional[str] = None):
-        """Helper to ensure the matrix has a regular frequency grid."""
-        if not self.is_regular:
-            method = method_name or "This method"
-            raise ValueError(f"{method} requires a regular frequency grid.")
 
     @property
     def f0(self) -> Any:

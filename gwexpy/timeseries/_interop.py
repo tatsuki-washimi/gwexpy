@@ -83,7 +83,7 @@ class TimeSeriesInteropMixin:
     # polars
     # ===============================
 
-    def to_polars(self, name: Optional[str] = None, as_dataframe: bool = True, time_column: str = "time", time_unit: str = "datetime") -> Any:
+    def to_polars(self, name: Optional[str] = None, as_dataframe: bool = True, times: str = "time", time_unit: str = "datetime") -> Any:
         """
         Convert TimeSeries to polars object.
 
@@ -94,7 +94,7 @@ class TimeSeriesInteropMixin:
         as_dataframe : bool, default True
             If True, returns a DataFrame with a time column.
             If False, returns a raw Series of values.
-        time_column : str, default "time"
+        times : str, default "time"
             Name of the time column (only if as_dataframe=True).
         time_unit : str, default "datetime"
             Format of the time column: "datetime", "gps", or "unix".
@@ -105,13 +105,13 @@ class TimeSeriesInteropMixin:
         """
         if as_dataframe:
              from gwexpy.interop import to_polars_dataframe
-             return to_polars_dataframe(self, time_column=time_column, time_unit=time_unit)
+             return to_polars_dataframe(self, index_column=times, time_unit=time_unit)
         else:
              from gwexpy.interop import to_polars_series
              return to_polars_series(self, name=name)
 
     @classmethod
-    def from_polars(cls, data: Any, time_column: Optional[str] = "time", unit: Optional[Any] = None) -> Any:
+    def from_polars(cls, data: Any, times: Optional[str] = "time", unit: Optional[Any] = None) -> Any:
         """
         Create TimeSeries from polars.DataFrame or polars.Series.
 
@@ -119,7 +119,7 @@ class TimeSeriesInteropMixin:
         ----------
         data : polars.DataFrame or polars.Series
             Input data.
-        time_column : str, optional
+        times : str, optional
             If data is a DataFrame, name of the column to use as time.
         unit : Unit, optional
             Physical unit.
@@ -131,7 +131,7 @@ class TimeSeriesInteropMixin:
         import polars as pl
         if isinstance(data, pl.DataFrame):
              from gwexpy.interop import from_polars_dataframe
-             return from_polars_dataframe(cls, data, time_column=time_column, unit=unit)
+             return from_polars_dataframe(cls, data, index_column=times, unit=unit)
         else:
              from gwexpy.interop import from_polars_series
              return from_polars_series(cls, data, unit=unit)

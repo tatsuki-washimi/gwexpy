@@ -140,11 +140,12 @@ def bootstrap_spectrogram(
     if avg not in {"median", "mean"}:
         raise ValueError("average must be 'median' or 'mean'.")
 
-    indices = np.random.randint(0, n_time, size=(n_boot, n_time))
     resampled_stats = np.zeros((n_boot, data.shape[1]))
 
     for i in range(n_boot):
-        sample = data[indices[i]]
+        # Generate indices for this iteration only to save memory
+        indices = np.random.randint(0, n_time, size=n_time)
+        sample = data[indices]
         if avg == "median":
             if ignore_nan:
                 resampled_stats[i] = np.nanmedian(sample, axis=0)

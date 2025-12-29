@@ -69,5 +69,12 @@ def from_torch(cls, tensor, t0, dt, unit=None):
     TimeSeries
         The created time series.
     """
-    data = tensor.detach().cpu().resolve_conj().resolve_neg().numpy()
+    # Safe handle for conjugate and negative resolving which might not be present in all versions
+    # or relevant for all tensor types.
+    t = tensor.detach().cpu()
+    if hasattr(t, "resolve_conj"):
+        t = t.resolve_conj()
+    if hasattr(t, "resolve_neg"):
+        t = t.resolve_neg()
+    data = t.numpy()
     return cls(data, t0=t0, dt=dt, unit=unit)
