@@ -78,6 +78,10 @@ read(source, *args, **kwargs)
 
 各ライブラリの DataFrame に変換します。
 
+### `to_tmultigraph`
+
+ROOT の TMultiGraph オブジェクトに変換します。
+
 ### `write`
 
 TimeSeriesDict をファイル（GWF, HDF5 など）に書き出します。

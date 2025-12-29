@@ -70,6 +70,10 @@ join(self, pad=0.0, gap='raise')
 
 リストを TimeSeriesMatrix に変換します。
 
+### `to_tmultigraph`
+
+ROOT の TMultiGraph オブジェクトに変換します。
+
 ### `write`
 
 リストをファイル（HDF5 など）に書き出します。

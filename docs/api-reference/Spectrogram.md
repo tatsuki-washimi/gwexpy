@@ -2,9 +2,7 @@
 
 **Inherits from:** Spectrogram
 
-
 Extends gwpy.spectrogram.Spectrogram with additional interop methods.
-
 
 ## Methods
 
@@ -16,6 +14,7 @@ Same as ``self.transpose()``.
 
 Examples
 --------
+>>>
 >>> a = np.array([[1, 2], [3, 4]])
 >>> a
 array([[1, 2],
@@ -32,6 +31,7 @@ array([1, 2, 3, 4])
 
 See Also
 --------
+
 transpose
 
 *(Inherited from `Series`)*
@@ -50,6 +50,7 @@ Calculate the absolute value element-wise.
 
 Parameters
 ----------
+
 x : array_like
     Input array.
 out : ndarray, None, or tuple of ndarray and None, optional
@@ -70,6 +71,7 @@ where : array_like, optional
 
 Returns
 -------
+
 absolute : ndarray
     An ndarray containing the absolute value of
     each element in `x`.  For complex input, ``a + ib``, the
@@ -78,6 +80,7 @@ absolute : ndarray
 
 Examples
 --------
+>>>
 >>> x = np.array([-1.2, 1.2])
 >>> np.absolute(x)
 array([ 1.2,  1.2])
@@ -115,6 +118,7 @@ Connect another series onto the end of the current one.
 
 Parameters
 ----------
+
 other : `Series`
     another series of the same type to connect to this one
 
@@ -151,9 +155,9 @@ resize : `bool`, optional
 
 Returns
 -------
+
 series : `Series`
     a new series containing joined data sets
-
 
 ### `bootstrap_asd`
 
@@ -161,18 +165,15 @@ series : `Series`
 bootstrap_asd(self, n_boot=1000, average='median', ci=0.68, window='hann', nperseg=None, noverlap=None)
 ```
 
-
 Estimate robust ASD from this spectrogram using bootstrap resampling.
 
 This is a convenience wrapper around `gwexpy.spectral.bootstrap_spectrogram`.
-
 
 ### `channel`
 
 Instrumental channel associated with these data
 
 :type: `~gwpy.detector.Channel`
-
 
 ### `copy`
 
@@ -186,6 +187,7 @@ Return a copy of the array.
 
 Parameters
 ----------
+
 order : {'C', 'F', 'A', 'K'}, optional
     Controls the memory layout of the copy. 'C' means C-order,
     'F' means F-order, 'A' means 'F' if `a` is Fortran contiguous,
@@ -196,17 +198,20 @@ order : {'C', 'F', 'A', 'K'}, optional
 
 See also
 --------
+
 numpy.copy : Similar function with different default behavior
 numpy.copyto
 
 Notes
 -----
+
 This function is the preferred method for creating an array copy.  The
 function :func:`numpy.copy` is similar, but it defaults to using order 'K',
 and will not pass sub-classes through by default.
 
 Examples
 --------
+>>>
 >>> x = np.array([[1,2,3],[4,5,6]], order='F')
 
 >>> y = x.copy()
@@ -234,6 +239,7 @@ Crop this series to the given x-axis extent.
 
 Parameters
 ----------
+
 start : `float`, optional
     Lower limit of x-axis to crop to, defaults to
     :attr:`~Series.x0`.
@@ -247,15 +253,16 @@ copy : `bool`, optional
 
 Returns
 -------
+
 series : `Series`
     A new series with a sub-set of the input data.
 
 Notes
 -----
+
 If either ``start`` or ``end`` are outside of the original
 `Series` span, warnings will be printed and the limits will
 be restricted to the :attr:`~Series.xspan`.
-
 
 ### `crop_frequencies`
 
@@ -267,6 +274,7 @@ Crop this `Spectrogram` to the specified frequencies
 
 Parameters
 ----------
+
 low : `float`
     lower frequency bound for cropped `Spectrogram`
 high : `float`
@@ -277,10 +285,10 @@ copy : `bool`
 
 Returns
 -------
+
 spec : `Spectrogram`
     A new `Spectrogram` with a subset of data from the frequency
     axis
-
 
 ### `diff`
 
@@ -296,6 +304,7 @@ recursively.
 
 Parameters
 ----------
+
 n : int, optional
     The number of times values are differenced.
 axis : int, optional
@@ -304,6 +313,7 @@ axis : int, optional
 
 Returns
 -------
+
 diff : `Series`
     The `n` order differences. The shape of the output is the same
     as the input, except along `axis` where the dimension is
@@ -311,9 +321,9 @@ diff : `Series`
 
 See also
 --------
+
 numpy.diff
     for documentation on the underlying method
-
 
 ### `dumps`
 
@@ -328,6 +338,7 @@ pickle.loads will convert the string back to an array.
 
 Parameters
 ----------
+
 None
 
 ### `dx`
@@ -336,13 +347,11 @@ X-axis sample separation
 
 :type: `~astropy.units.Quantity` scalar
 
-
 ### `dy`
 
 Y-axis sample separation
 
 :type: `~astropy.units.Quantity` scalar
-
 
 ### `filter`
 
@@ -354,6 +363,7 @@ Apply the given filter to this `Spectrogram`.
 
 Parameters
 ----------
+
 *filt : filter arguments
     1, 2, 3, or 4 arguments defining the filter to be applied,
 
@@ -373,6 +383,7 @@ inplace : `bool`, optional
 
 Returns
 -------
+
 result : `Spectrogram`
     the filtered version of the input `Spectrogram`,
     if ``inplace=True`` was given, this is just a reference to
@@ -380,9 +391,9 @@ result : `Spectrogram`
 
 Raises
 ------
+
 ValueError
     if ``filt`` arguments cannot be interpreted properly
-
 
 ### `flatten`
 
@@ -397,6 +408,7 @@ and the result is returned as a `~astropy.units.Quantity` array.
 
 Parameters
 ----------
+
 order : {'C', 'F', 'A', 'K'}, optional
     'C' means to flatten in row-major (C-style) order.
     'F' means to flatten in column-major (Fortran-
@@ -408,21 +420,22 @@ order : {'C', 'F', 'A', 'K'}, optional
 
 Returns
 -------
+
 y : `~astropy.units.Quantity`
     A copy of the input array, flattened to one dimension.
 
 See also
 --------
+
 ravel : Return a flattened array.
 flat : A 1-D flat iterator over the array.
 
 Examples
 --------
+>>>
 >>> a = Array([[1,2], [3,4]], unit='m', name='Test')
 >>> a.flatten()
 <Quantity [1., 2., 3., 4.] m>
-
-
 
 ### `from_mne`
 
@@ -440,7 +453,6 @@ from_obspy(stream)
 
 Create Spectrogram from Obspy Stream.
 
-
 ### `from_quantities`
 
 ```python
@@ -449,16 +461,13 @@ from_quantities(q, times, frequencies)
 
 Create Spectrogram from quantities.Quantity.
 
-
 ### `from_root`
 
 ```python
 from_root(obj, return_error=False)
 ```
 
-
 Create Spectrogram from ROOT TH2D.
-
 
 ### `from_spectra`
 
@@ -470,6 +479,7 @@ Build a new `Spectrogram` from a list of spectra.
 
 Parameters
 ----------
+
 *spectra
     any number of `~gwpy.frequencyseries.FrequencySeries` series
 dt : `float`, `~astropy.units.Quantity`, optional
@@ -477,6 +487,7 @@ dt : `float`, `~astropy.units.Quantity`, optional
 
 Returns
 -------
+
 Spectrogram
     a new `Spectrogram` from a vertical stacking of the spectra
     The new object takes the metadata from the first given
@@ -484,9 +495,9 @@ Spectrogram
 
 Notes
 -----
+
 Each `~gwpy.frequencyseries.FrequencySeries` passed to this
 constructor must be the same length.
-
 
 ### `imshow`
 
@@ -506,21 +517,25 @@ Add two compatible `Series` along their shared x-axis values.
 
 Parameters
 ----------
+
 other : `Series`
     a `Series` whose xindex intersects with `self.xindex`
 
 Returns
 -------
+
 out : `Series`
     the sum of `self` and `other` along their shared x-axis values
 
 Raises
 ------
+
 ValueError
     if `self` and `other` have incompatible units or xindex intervals
 
 Notes
 -----
+
 If `other.xindex` and `self.xindex` do not intersect, this method will
 return a copy of `self`. If the series have uniformly offset indices,
 this method will raise a warning.
@@ -533,7 +548,6 @@ Users who wish to taper or window their `Series` should do so before
 passing it to this method. See :meth:`TimeSeries.taper` and
 :func:`~gwpy.signal.window.planck` for more information.
 
-
 ### `is_compatible`
 
 ```python
@@ -545,7 +559,6 @@ Check whether this series and other have compatible metadata
 This method tests that the `sample size <Series.dx>`, and the
 `~Series.unit` match.
 
-
 ### `is_contiguous`
 
 ```python
@@ -556,6 +569,7 @@ Check whether other is contiguous with self.
 
 Parameters
 ----------
+
 other : `Series`, `numpy.ndarray`
     another series of the same type to test for contiguity
 
@@ -564,6 +578,7 @@ tol : `float`, optional
 
 Returns
 -------
+
 1
     if `other` is contiguous with this series, i.e. would attach
     seamlessly onto the end
@@ -575,10 +590,9 @@ Returns
 
 Notes
 -----
+
 if a raw `numpy.ndarray` is passed as other, with no metadata, then
 the contiguity check will always pass
-
-
 
 ### `to_mne`
 
@@ -590,11 +604,13 @@ Convert to MNE EpochsTFRArray.
 
 Parameters
 ----------
+
 info : `mne.Info`, optional
     Measurement info. If None, a default info is created.
 
 Returns
 -------
+
 `mne.time_frequency.EpochsTFRArray`
 
 ### `to_obspy`
@@ -605,13 +621,11 @@ to_obspy(self, **kwargs) -> 'obspy.Stream'
 
 Convert to Obspy Stream.
 
-
 ### `median`
 
 ```python
 median(self, axis=None, **kwargs)
 ```
-
 
 Compute the median along the specified axis.
 
@@ -619,6 +633,7 @@ Returns the median of the array elements.
 
 Parameters
 ----------
+
 a : array_like
     Input array or object that can be converted to an array.
 axis : {int, sequence of int, None}, optional
@@ -646,6 +661,7 @@ keepdims : bool, optional
 
 Returns
 -------
+
 median : ndarray
     A new array holding the result. If the input contains integers
     or floats smaller than ``float64``, then the output data-type is
@@ -655,10 +671,12 @@ median : ndarray
 
 See Also
 --------
+
 mean, percentile
 
 Notes
 -----
+
 Given a vector ``V`` of length ``N``, the median of ``V`` is the
 middle value of a sorted copy of ``V``, ``V_sorted`` - i
 e., ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the
@@ -666,6 +684,7 @@ two middle values of ``V_sorted`` when ``N`` is even.
 
 Examples
 --------
+>>>
 >>> a = np.array([[10, 7, 4], [3, 2, 1]])
 >>> a
 array([[10,  7,  4],
@@ -691,14 +710,11 @@ array([7.,  2.])
 3.5
 >>> assert not np.all(a==b)
 
-
-
 ### `name`
 
 Name for this data set
 
 :type: `str`
-
 
 ### `override_unit`
 
@@ -715,6 +731,7 @@ array is plain wrong.
 
 Parameters
 ----------
+
 unit : `~astropy.units.Unit`, `str`
     the unit to force onto this array
 parse_strict : `str`, optional
@@ -723,9 +740,9 @@ parse_strict : `str`, optional
 
 Raises
 ------
+
 ValueError
     if a `str` cannot be parsed as a valid unit
-
 
 ### `pad`
 
@@ -737,6 +754,7 @@ Pad this series to a new size
 
 Parameters
 ----------
+
 pad_width : `int`, pair of `ints`
     number of samples by which to pad each end of the array;
     given a single `int` to pad both ends by the same amount,
@@ -747,14 +765,15 @@ pad_width : `int`, pair of `ints`
 
 Returns
 -------
+
 series : `Series`
     the padded version of the input
 
 See also
 --------
+
 numpy.pad
     for details on the underlying functionality
-
 
 ### `pcolormesh`
 
@@ -774,15 +793,16 @@ Calculate a given spectral percentile for this `Spectrogram`.
 
 Parameters
 ----------
+
 percentile : `float`
     percentile (0 - 100) of the bins to compute
 
 Returns
 -------
+
 spectrum : `~gwpy.frequencyseries.FrequencySeries`
     the given percentile `FrequencySeries` calculated from this
     `SpectralVaraicence`
-
 
 ### `plot`
 
@@ -794,6 +814,7 @@ Plot the data for this `Spectrogram`
 
 Parameters
 ----------
+
 method : `str`, optional
     which plotting method to use to render this spectrogram,
     either ``'pcolormesh'`` (default) or ``'imshow'``
@@ -810,11 +831,13 @@ xscale : `str`, optional
 
 Returns
 -------
+
 plot : `~gwpy.plot.Plot`
     the `Plot` containing the data
 
 See also
 --------
+
 matplotlib.pyplot.figure
     for documentation of keyword arguments used to create the
     figure
@@ -826,7 +849,6 @@ gwpy.plot.Axes.pcolormesh
     for documentation of keyword arguments used in rendering the
     `Spectrogram` data
 
-
 ### `prepend`
 
 ```python
@@ -837,6 +859,7 @@ Connect another series onto the start of the current one.
 
 Parameters
 ----------
+
 other : `Series`
     another series of the same type as this one
 
@@ -872,9 +895,9 @@ resize : `bool`, optional
 
 Returns
 -------
+
 series : `TimeSeries`
     time-series containing joined data sets
-
 
 ### `ratio`
 
@@ -886,6 +909,7 @@ Calculate the ratio of this `Spectrogram` against a reference
 
 Parameters
 ----------
+
 operand : `str`, `FrequencySeries`, `Quantity`
     a `~gwpy.frequencyseries.FrequencySeries` or
     `~astropy.units.Quantity` to weight against, or one of
@@ -897,14 +921,15 @@ operand : `str`, `FrequencySeries`, `Quantity`
 
 Returns
 -------
+
 spectrogram : `Spectrogram`
     a new `Spectrogram`
 
 Raises
 ------
+
 ValueError
     if ``operand`` is given as a `str` that isn't supported
-
 
 ### `read`
 
@@ -920,6 +945,7 @@ parameters below are common to most formats.
 
 Parameters
 ----------
+
 source : `str`, `list`
     Source of data, any of the following:
 
@@ -941,10 +967,12 @@ format : `str`, optional
 
 Returns
 -------
+
 specgram : `Spectrogram`
 
 Notes
 -----
+
 The available built-in formats are:
 
 ====== ==== ===== =============
@@ -965,12 +993,14 @@ This modifies the series in-place.
 
 Parameters
 ----------
+
 delta : `float`, `~astropy.units.Quantity`, `str`
     The amount by which to shift (in x-axis units if `float`), give
     a negative value to shift backwards in time
 
 Examples
 --------
+>>>
 >>> from gwpy.types import Series
 >>> a = Series([1, 2, 3, 4, 5], x0=0, dx=1, xunit='m')
 >>> print(a.x0)
@@ -981,7 +1011,6 @@ Examples
 >>> a.shift('-1 km')
 -995.0 m
 
-
 ### `step`
 
 ```python
@@ -989,14 +1018,12 @@ step(self, **kwargs)
 ```
 
 Create a step plot of this series
-        
 
 ### `to_th2d`
 
 ```python
 to_th2d(self, error=None)
 ```
-
 
 Convert to ROOT TH2D.
 
@@ -1007,7 +1034,6 @@ to_quantities(self, units=None)
 ```
 
 Convert to quantities.Quantity (Elephant/Neo compatible).
-
 
 ### `tostring`
 
@@ -1027,6 +1053,7 @@ This behavior is controlled by the ``order`` parameter.
 
 Parameters
 ----------
+
 order : {'C', 'F', 'A'}, optional
     Controls the memory layout of the bytes object. 'C' means C-order,
     'F' means F-order, 'A' (short for *Any*) means 'F' if `a` is
@@ -1034,17 +1061,20 @@ order : {'C', 'F', 'A'}, optional
 
 Returns
 -------
+
 s : bytes
     Python bytes exhibiting a copy of `a`'s raw data.
 
 See also
 --------
+
 frombuffer
     Inverse of this operation, construct a 1-dimensional array from Python
     bytes.
 
 Examples
 --------
+>>>
 >>> x = np.array([[0, 1], [2, 3]], dtype='<u2')
 >>> x.tobytes()
 b'\x00\x00\x01\x00\x02\x00\x03\x00'
@@ -1053,12 +1083,23 @@ True
 >>> x.tobytes('F')
 b'\x00\x00\x02\x00\x01\x00\x03\x00'
 
+### `to_torch`
+
+Convert the spectrogram (or list/dict of spectrograms) to PyTorch tensors.
+
+### `to_cupy`
+
+Convert the spectrogram (or list/dict of spectrograms) to CuPy arrays.
+
+### `to_matrix`
+
+Convert a collection (List/Dict) of spectrograms into a `SpectrogramMatrix`.
+
 ### `unit`
 
 The physical unit of these data
 
 :type: `~astropy.units.UnitBase`
-
 
 ### `update`
 
@@ -1072,7 +1113,6 @@ and dropping the same amount of data off the start.
 This is a convenience method that just calls `~Series.append` with
 `resize=False`.
 
-
 ### `value_at`
 
 ```python
@@ -1083,6 +1123,7 @@ Return the value of this `Series` at the given `(x, y)` coordinates
 
 Parameters
 ----------
+
 x : `float`, `~astropy.units.Quantity`
     the `xindex` value at which to search
 x : `float`, `~astropy.units.Quantity`
@@ -1090,9 +1131,9 @@ x : `float`, `~astropy.units.Quantity`
 
 Returns
 -------
+
 z : `~astropy.units.Quantity`
     the value of this Series at the given coordinates
-
 
 ### `variance`
 
@@ -1104,6 +1145,7 @@ Calculate the `SpectralVariance` of this `Spectrogram`.
 
 Parameters
 ----------
+
 bins : `~numpy.ndarray`, optional, default `None`
     array of histogram bin edges, including the rightmost edge
 low : `float`, optional, default: `None`
@@ -1125,14 +1167,15 @@ density : `bool`, optional, default: `False`
 
 Returns
 -------
+
 specvar : `SpectralVariance`
     2D-array of spectral frequency-amplitude counts
 
 See also
 --------
+
 numpy.histogram
     for details on specifying bins and weights
-
 
 ### `write`
 
@@ -1148,6 +1191,7 @@ parameters below are common to most formats.
 
 Parameters
 ----------
+
 target : `str`
     output filename
 
@@ -1158,6 +1202,7 @@ format : `str`, optional
 
 Notes
 -----
+
 The available built-in formats are:
 
 ====== ==== ===== =============
@@ -1172,13 +1217,11 @@ X-axis coordinate of the first data point
 
 :type: `~astropy.units.Quantity` scalar
 
-
 ### `xindex`
 
 Positions of the data on the x-axis
 
 :type: `~astropy.units.Quantity` array
-
 
 ### `xspan`
 
@@ -1186,13 +1229,11 @@ X-axis [low, high) segment encompassed by these data
 
 :type: `~gwpy.segments.Segment`
 
-
 ### `xunit`
 
 Unit of x-axis index
 
 :type: `~astropy.units.Unit`
-
 
 ### `y0`
 
@@ -1200,13 +1241,11 @@ Y-axis coordinate of the first data point
 
 :type: `~astropy.units.Quantity` scalar
 
-
 ### `yindex`
 
 Positions of the data on the y-axis
 
 :type: `~astropy.units.Quantity` array
-
 
 ### `yspan`
 
@@ -1214,13 +1253,11 @@ Y-axis [low, high) segment encompassed by these data
 
 :type: `~gwpy.segments.Segment`
 
-
 ### `yunit`
 
 Unit of Y-axis index
 
 :type: `~astropy.units.Unit`
-
 
 ### `zip`
 
@@ -1232,12 +1269,14 @@ Zip the `xindex` and `value` arrays of this `Series`
 
 Returns
 -------
+
 stacked : 2-d `numpy.ndarray`
     The array formed by stacking the the `xindex` and `value` of this
     series
 
 Examples
 --------
+>>>
 >>> a = Series([0, 2, 4, 6, 8], xindex=[-5, -4, -3, -2, -1])
 >>> a.zip()
 array([[-5.,  0.],
@@ -1245,8 +1284,6 @@ array([[-5.,  0.],
        [-3.,  4.],
        [-2.,  6.],
        [-1.,  8.]])
-
-
 
 ### `zpk`
 
@@ -1258,6 +1295,7 @@ Filter this `Spectrogram` by applying a zero-pole-gain filter
 
 Parameters
 ----------
+
 zeros : `array-like`
     list of zero frequencies (in Hertz)
 
@@ -1273,19 +1311,20 @@ analog : `bool`, optional
 
 Returns
 -------
+
 specgram : `Spectrogram`
     the frequency-domain filtered version of the input data
 
 See also
 --------
+
 Spectrogram.filter
     for details on how a digital ZPK-format filter is applied
 
 Examples
 --------
+
 To apply a zpk filter with file poles at 100 Hz, and five zeros at
 1 Hz (giving an overall DC gain of 1e-10)::
 
     >>> data2 = data.zpk([100]*5, [1]*5, 1e-10)
-
-

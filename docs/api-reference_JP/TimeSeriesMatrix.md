@@ -55,9 +55,17 @@ crop(self, start: 'Any' = None, end: 'Any' = None, copy: 'bool' = False) -> "'Ti
 
 指定された GPS 開始時刻と終了時刻で行列を切り抜きます。
 
-### `dagger`, `det`, `inv`
+### `StandardScaler` (他 `*Scaler`)
 
-行列演算。
+スケーリング（標準化）を行うための変換器クラスです。
+
+### `pca`
+
+主成分分析 (Principal Component Analysis) を行い、低次元の成分を抽出します。
+
+### `ica`
+
+独立成分分析 (Independent Component Analysis) を行い、信号源を分離します。
 
 ### `diagonal`
 

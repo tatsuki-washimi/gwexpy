@@ -7,7 +7,7 @@ crop,〇,〇,〇,×,Matrixは正規スライスで対応
 crop_frequencies,〇,〇,〇,×,
 rebin,〇,〇,〇,×,
 interpolate,〇,〇,〇,×,
-bootstrap_asd,〇,×,×,×,ブートストラップ方式によるASD推定
+bootstrap_asd,〇,〇,〇,×,ブートストラップ方式によるASD推定
 to_matrix,-,〇,〇,〇,List/DictからMatrixへ変換
 to_torch,×,〇,〇,〇,PyTorch Tensorへ変換 (各要素または全データ)
 to_cupy,×,〇,〇,〇,CuPy Arrayへ変換 (各要素または全データ)
@@ -24,5 +24,5 @@ inplace,-,〇,〇,-,crop/rebin等でinplace=Trueをサポート
 row_keys / col_keys,×,×,×,〇,Matrixのメタデータキー取得
 to_th2d,〇,×,×,×,CERN ROOT TH2D変換 (最適化済み)
 to_quantities / from_quantities,〇,×,×,×,Elephant/Neo連携
-MNE,to_mne / from_mne,mne.time_frequency.EpochsTFRArray (MNE)
+MNE,to_mne / from_mne,〇,〇,×,mne.time_frequency.EpochsTFRArray (MNE) 連携
 Obspy,to_obspy / from_obspy,obspy.Stream (Obspy)
