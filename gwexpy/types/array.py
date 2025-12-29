@@ -4,10 +4,11 @@ from astropy.units import dimensionless_unscaled
 import numpy as np
 from .axis import AxisDescriptor
 from .axis_api import AxisApiMixin
+from ._stats import StatisticalMethodsMixin
 
 __all__ = ["Array"]
 
-class Array(AxisApiMixin, GwpyArray):
+class Array(AxisApiMixin, StatisticalMethodsMixin, GwpyArray):
     """
     N-dimensional array with axis unified API.
     """
@@ -53,3 +54,8 @@ class Array(AxisApiMixin, GwpyArray):
         if hasattr(new_obj, "_axis_names") and len(new_obj._axis_names) == new_obj.ndim:
              new_obj._axis_names[a], new_obj._axis_names[b] = new_obj._axis_names[b], new_obj._axis_names[a]
         return new_obj
+
+    def rms(self, axis=None, keepdims=False, ignore_nan=True):
+        func = np.nanmean if ignore_nan else np.mean
+        val = np.sqrt(func(np.square(self.value), axis=axis, keepdims=keepdims))
+        return val * self.unit

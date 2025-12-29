@@ -102,6 +102,7 @@ def bootstrap_spectrogram(
     window="hann",
     nperseg=None,
     noverlap=None,
+    ignore_nan=True,
 ):
     """
     Estimate robust ASD from a spectrogram using bootstrap resampling.
@@ -112,25 +113,18 @@ def bootstrap_spectrogram(
     Parameters
     ----------
     spectrogram : gwpy.spectrogram.Spectrogram
-        Input spectrogram (Time x Frequency).
     n_boot : int
-        Number of bootstrap iterations.
     average : str
-        "median" (default, robust to outliers) or "mean".
     ci : float
-        Confidence interval probability (e.g., 0.68 for 1-sigma).
     window : str or array, optional
-        Window function used to generate the spectrogram (default: "hann").
     nperseg : int, optional
-        Segment length in samples. If None, inferred from metadata if possible.
     noverlap : int, optional
-        Overlap length in samples. If None, inferred from metadata if possible.
+    ignore_nan : bool, optional
+        If True, ignore NaNs during bootstrap averaging. Default is True.
 
     Returns
     -------
     FrequencySeries
-        Central estimate (median/mean).
-        Attributes `.error_low` and `.error_high` contain FrequencySeries error bars.
     """
     data = spectrogram.value
     n_time = data.shape[0]
@@ -152,18 +146,34 @@ def bootstrap_spectrogram(
     for i in range(n_boot):
         sample = data[indices[i]]
         if avg == "median":
-            resampled_stats[i] = np.median(sample, axis=0)
+            if ignore_nan:
+                resampled_stats[i] = np.nanmedian(sample, axis=0)
+            else:
+                resampled_stats[i] = np.median(sample, axis=0)
         else:
-            resampled_stats[i] = np.mean(sample, axis=0)
+            if ignore_nan:
+                resampled_stats[i] = np.nanmean(sample, axis=0)
+            else:
+                resampled_stats[i] = np.mean(sample, axis=0)
 
     if avg == "median":
-        center = np.median(resampled_stats, axis=0)
+        if ignore_nan:
+            center = np.nanmedian(resampled_stats, axis=0)
+        else:
+            center = np.median(resampled_stats, axis=0)
     else:
-        center = np.mean(resampled_stats, axis=0)
+        if ignore_nan:
+            center = np.nanmean(resampled_stats, axis=0)
+        else:
+            center = np.mean(resampled_stats, axis=0)
 
     alpha = (1 - ci) / 2
-    p_low = np.percentile(resampled_stats, 100 * alpha, axis=0)
-    p_high = np.percentile(resampled_stats, 100 * (1 - alpha), axis=0)
+    if ignore_nan:
+        p_low = np.nanpercentile(resampled_stats, 100 * alpha, axis=0)
+        p_high = np.nanpercentile(resampled_stats, 100 * (1 - alpha), axis=0)
+    else:
+        p_low = np.percentile(resampled_stats, 100 * alpha, axis=0)
+        p_high = np.percentile(resampled_stats, 100 * (1 - alpha), axis=0)
 
     err_low = center - p_low
     err_high = p_high - center

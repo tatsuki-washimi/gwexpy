@@ -432,30 +432,30 @@ class TimeSeriesDict(BaseTimeSeriesDict):
             new_dict[key] = ts.impute(method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs)
         return new_dict
 
-    def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
         """Apply rolling mean to each item."""
         from gwexpy.timeseries.rolling import rolling_mean
-        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
-    def rolling_std(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ddof=0):
+    def rolling_std(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ddof=0, ignore_nan=None):
         """Apply rolling std to each item."""
         from gwexpy.timeseries.rolling import rolling_std
-        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof)
+        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof, ignore_nan=ignore_nan)
 
-    def rolling_median(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_median(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
         """Apply rolling median to each item."""
         from gwexpy.timeseries.rolling import rolling_median
-        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
-    def rolling_min(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_min(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
         """Apply rolling min to each item."""
         from gwexpy.timeseries.rolling import rolling_min
-        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
-    def rolling_max(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_max(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
         """Apply rolling max to each item."""
         from gwexpy.timeseries.rolling import rolling_max
-        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
     def to_matrix(self, *, align="intersection", **kwargs):
         """
@@ -918,30 +918,30 @@ class TimeSeriesList(BaseTimeSeriesList):
             list.append(new_list, ts.impute(method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs))
         return new_list
 
-    def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
         """Apply rolling mean to each element."""
         from gwexpy.timeseries.rolling import rolling_mean
-        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
-    def rolling_std(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ddof=0):
+    def rolling_std(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ddof=0, ignore_nan=None):
         """Apply rolling std to each element."""
         from gwexpy.timeseries.rolling import rolling_std
-        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof)
+        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof, ignore_nan=ignore_nan)
 
-    def rolling_median(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_median(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
         """Apply rolling median to each element."""
         from gwexpy.timeseries.rolling import rolling_median
-        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
-    def rolling_min(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_min(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
         """Apply rolling min to each element."""
         from gwexpy.timeseries.rolling import rolling_min
-        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
-    def rolling_max(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto"):
+    def rolling_max(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
         """Apply rolling max to each element."""
         from gwexpy.timeseries.rolling import rolling_max
-        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
     def to_matrix(self, *, align="intersection", **kwargs):
         """Convert list to TimeSeriesMatrix with alignment.

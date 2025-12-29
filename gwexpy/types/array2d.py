@@ -5,10 +5,11 @@ from astropy.units import dimensionless_unscaled
 from gwpy.types.array2d import Array2D as GwpyArray2D
 from .axis import AxisDescriptor
 from .axis_api import AxisApiMixin
+from ._stats import StatisticalMethodsMixin
 
 __all__ = ["Array2D"]
 
-class Array2D(AxisApiMixin, GwpyArray2D):
+class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
     """
     2D Array with unified axis API.
     """

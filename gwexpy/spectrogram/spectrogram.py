@@ -30,6 +30,7 @@ class Spectrogram(BaseSpectrogram):
         window="hann",
         nperseg=None,
         noverlap=None,
+        ignore_nan=True,
     ):
         """
         Estimate robust ASD from this spectrogram using bootstrap resampling.
@@ -46,6 +47,7 @@ class Spectrogram(BaseSpectrogram):
             window=window,
             nperseg=nperseg,
             noverlap=noverlap,
+            ignore_nan=ignore_nan,
         )
 
     def to_th2d(self, error=None):
@@ -649,6 +651,14 @@ class SpectrogramList(UserList):
         cupy = require_optional("cupy")
         return [cupy.array(s.value, dtype=dtype) for s in self]
 
+    def bootstrap_asd(self, *args, **kwargs):
+        """Estimate robust ASD from each spectrogram in the list (returns FrequencySeriesList)."""
+        from gwexpy.frequencyseries import FrequencySeriesList
+        new_list = FrequencySeriesList()
+        for v in self:
+            new_list.append(v.bootstrap_asd(*args, **kwargs))
+        return new_list
+
 class SpectrogramDict(UserDict):
     """
     Dictionary of Spectrogram objects.
@@ -901,3 +911,10 @@ class SpectrogramDict(UserDict):
         if cupy is None:
              raise ImportError("cupy")
         return {k: cupy.array(v.value, dtype=dtype) for k, v in self.items()}
+    def bootstrap_asd(self, *args, **kwargs):
+        """Estimate robust ASD from each spectrogram in the dict (returns FrequencySeriesDict)."""
+        from gwexpy.frequencyseries import FrequencySeriesDict
+        new_dict = FrequencySeriesDict()
+        for k, v in self.items():
+            new_dict[k] = v.bootstrap_asd(*args, **kwargs)
+        return new_dict

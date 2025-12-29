@@ -385,7 +385,7 @@ class TimeSeriesResamplingMixin:
     # resample - High-level Resample
     # ===============================
 
-    def resample(self, rate: Any, *args: Any, **kwargs: Any) -> "TimeSeriesResamplingMixin":
+    def resample(self, rate: Any, *args: Any, ignore_nan: Optional[bool] = None, **kwargs: Any) -> "TimeSeriesResamplingMixin":
         """
         Resample the TimeSeries.
 
@@ -400,7 +400,7 @@ class TimeSeriesResamplingMixin:
                 is_time_bin = True
 
         if is_time_bin:
-            return self._resample_time_bin(rate, **kwargs)
+            return self._resample_time_bin(rate, ignore_nan=ignore_nan, **kwargs)
         else:
             self._check_regular("Signal processing resample")
             from gwpy.timeseries import TimeSeries as BaseTimeSeries
@@ -422,8 +422,11 @@ class TimeSeriesResamplingMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         inplace: bool = False,
+        ignore_nan: Optional[bool] = None,
     ) -> Any:
         """Internal: Bin-based resampling."""
+        if ignore_nan is not None:
+             nan_policy = "omit" if ignore_nan else "propagate"
         # Default offset
         if offset is None:
             offset = 0 * u.s

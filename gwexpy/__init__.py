@@ -6,6 +6,9 @@ This package extends GWpy with additional functionality for
 gravitational wave and time-series data analysis.
 """
 
+import warnings
+warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
+
 from ._version import __version__
 from typing import TYPE_CHECKING, Any
 

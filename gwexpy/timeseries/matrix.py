@@ -337,10 +337,11 @@ class TimeSeriesMatrix(SeriesMatrix):
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
+        ignore_nan: Optional[bool] = None,
     ) -> Any:
         """Rolling mean along the time axis."""
         from gwexpy.timeseries.rolling import rolling_mean
-        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
     def rolling_std(
         self,
@@ -351,10 +352,11 @@ class TimeSeriesMatrix(SeriesMatrix):
         nan_policy: str = "omit",
         backend: str = "auto",
         ddof: int = 0,
+        ignore_nan: Optional[bool] = None,
     ) -> Any:
         """Rolling standard deviation along the time axis."""
         from gwexpy.timeseries.rolling import rolling_std
-        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof)
+        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof, ignore_nan=ignore_nan)
 
     def rolling_median(
         self,
@@ -364,10 +366,11 @@ class TimeSeriesMatrix(SeriesMatrix):
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
+        ignore_nan: Optional[bool] = None,
     ) -> Any:
         """Rolling median along the time axis."""
         from gwexpy.timeseries.rolling import rolling_median
-        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
     def rolling_min(
         self,
@@ -377,10 +380,11 @@ class TimeSeriesMatrix(SeriesMatrix):
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
+        ignore_nan: Optional[bool] = None,
     ) -> Any:
         """Rolling minimum along the time axis."""
         from gwexpy.timeseries.rolling import rolling_min
-        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
     def rolling_max(
         self,
@@ -390,10 +394,11 @@ class TimeSeriesMatrix(SeriesMatrix):
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
+        ignore_nan: Optional[bool] = None,
     ) -> Any:
         """Rolling maximum along the time axis."""
         from gwexpy.timeseries.rolling import rolling_max
-        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend)
+        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
     def crop(self, start: Any = None, end: Any = None, copy: bool = False) -> "TimeSeriesMatrix":
         """

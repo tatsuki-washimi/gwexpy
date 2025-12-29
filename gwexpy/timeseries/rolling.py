@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import numpy as np
 from astropy import units as u
@@ -117,66 +117,81 @@ def _map_collection(obj, func: Callable[[TimeSeries], TimeSeries]):
     raise TypeError(f"Unsupported collection type: {type(obj)}")
 
 
-def rolling_mean(x, window, *, center: bool = False, min_count: int = 1, nan_policy: str = "omit", backend: str = "auto"):
+def rolling_mean(x, window, *, center: bool = False, min_count: int = 1, nan_policy: str = "omit", backend: str = "auto", ignore_nan: Optional[bool] = None):
     """
     Rolling mean over the time axis.
     """
+    if ignore_nan is not None:
+        nan_policy = "omit" if ignore_nan else "propagate"
+
     if isinstance(x, TimeSeries):
         return _apply_timeseries_op(x, window, "mean", center, min_count, nan_policy, 0, backend)
     if isinstance(x, TimeSeriesMatrix):
         return _apply_matrix_op(x, window, "mean", center, min_count, nan_policy, 0, backend)
     if isinstance(x, (TimeSeriesDict, TimeSeriesList)):
-        return _map_collection(x, lambda ts: rolling_mean(ts, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend))
+        return _map_collection(x, lambda ts: rolling_mean(ts, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan))
     raise TypeError(f"Unsupported type for rolling_mean: {type(x)}")
 
 
-def rolling_std(x, window, *, center: bool = False, min_count: int = 1, nan_policy: str = "omit", backend: str = "auto", ddof: int = 0):
+def rolling_std(x, window, *, center: bool = False, min_count: int = 1, nan_policy: str = "omit", backend: str = "auto", ddof: int = 0, ignore_nan: Optional[bool] = None):
     """
     Rolling standard deviation over the time axis.
     """
+    if ignore_nan is not None:
+        nan_policy = "omit" if ignore_nan else "propagate"
+
     if isinstance(x, TimeSeries):
         return _apply_timeseries_op(x, window, "std", center, min_count, nan_policy, ddof, backend)
     if isinstance(x, TimeSeriesMatrix):
         return _apply_matrix_op(x, window, "std", center, min_count, nan_policy, ddof, backend)
     if isinstance(x, (TimeSeriesDict, TimeSeriesList)):
-        return _map_collection(x, lambda ts: rolling_std(ts, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof))
+        return _map_collection(x, lambda ts: rolling_std(ts, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof, ignore_nan=ignore_nan))
     raise TypeError(f"Unsupported type for rolling_std: {type(x)}")
 
 
-def rolling_median(x, window, *, center: bool = False, min_count: int = 1, nan_policy: str = "omit", backend: str = "auto"):
+def rolling_median(x, window, *, center: bool = False, min_count: int = 1, nan_policy: str = "omit", backend: str = "auto", ignore_nan: Optional[bool] = None):
     """
     Rolling median over the time axis.
     """
+    if ignore_nan is not None:
+        nan_policy = "omit" if ignore_nan else "propagate"
+
     if isinstance(x, TimeSeries):
         return _apply_timeseries_op(x, window, "median", center, min_count, nan_policy, 0, backend)
     if isinstance(x, TimeSeriesMatrix):
         return _apply_matrix_op(x, window, "median", center, min_count, nan_policy, 0, backend)
     if isinstance(x, (TimeSeriesDict, TimeSeriesList)):
-        return _map_collection(x, lambda ts: rolling_median(ts, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend))
+        return _map_collection(x, lambda ts: rolling_median(ts, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan))
     raise TypeError(f"Unsupported type for rolling_median: {type(x)}")
 
 
-def rolling_min(x, window, *, center: bool = False, min_count: int = 1, nan_policy: str = "omit", backend: str = "auto"):
+def rolling_min(x, window, *, center: bool = False, min_count: int = 1, nan_policy: str = "omit", backend: str = "auto", ignore_nan: Optional[bool] = None):
     """
     Rolling minimum over the time axis.
     """
+    if ignore_nan is not None:
+        nan_policy = "omit" if ignore_nan else "propagate"
+
     if isinstance(x, TimeSeries):
         return _apply_timeseries_op(x, window, "min", center, min_count, nan_policy, 0, backend)
     if isinstance(x, TimeSeriesMatrix):
         return _apply_matrix_op(x, window, "min", center, min_count, nan_policy, 0, backend)
     if isinstance(x, (TimeSeriesDict, TimeSeriesList)):
-        return _map_collection(x, lambda ts: rolling_min(ts, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend))
+        return _map_collection(x, lambda ts: rolling_min(ts, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan))
     raise TypeError(f"Unsupported type for rolling_min: {type(x)}")
 
 
-def rolling_max(x, window, *, center: bool = False, min_count: int = 1, nan_policy: str = "omit", backend: str = "auto"):
+def rolling_max(x, window, *, center: bool = False, min_count: int = 1, nan_policy: str = "omit", backend: str = "auto", ignore_nan: Optional[bool] = None):
     """
     Rolling maximum over the time axis.
     """
+    if ignore_nan is not None:
+        nan_policy = "omit" if ignore_nan else "propagate"
+
     if isinstance(x, TimeSeries):
         return _apply_timeseries_op(x, window, "max", center, min_count, nan_policy, 0, backend)
     if isinstance(x, TimeSeriesMatrix):
         return _apply_matrix_op(x, window, "max", center, min_count, nan_policy, 0, backend)
     if isinstance(x, (TimeSeriesDict, TimeSeriesList)):
-        return _map_collection(x, lambda ts: rolling_max(ts, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend))
+        return _map_collection(x, lambda ts: rolling_max(ts, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan))
     raise TypeError(f"Unsupported type for rolling_max: {type(x)}")

@@ -17,6 +17,7 @@ import scipy.signal
 
 from gwpy.frequencyseries import FrequencySeries as BaseFrequencySeries
 from gwexpy.types.seriesmatrix import SeriesMatrix
+from gwexpy.types._stats import StatisticalMethodsMixin
 from gwexpy.interop._optional import require_optional
 from gwexpy.interop import (
     to_pandas_frequencyseries,
@@ -39,7 +40,7 @@ except ImportError:
 # FrequencySeries
 # =============================
 
-class FrequencySeries(FittingMixin, BaseFrequencySeries):
+class FrequencySeries(FittingMixin, StatisticalMethodsMixin, BaseFrequencySeries):
     """Light wrapper of gwpy's FrequencySeries for compatibility and future extension."""
 
     @property
@@ -476,7 +477,7 @@ class FrequencySeries(FittingMixin, BaseFrequencySeries):
 
     # --- Analysis & Smoothing ---
 
-    def smooth(self, width: Any, method: str = "amplitude") -> Any:
+    def smooth(self, width: Any, method: str = "amplitude", ignore_nan: bool = True) -> Any:
         """
         Smooth the frequency series.
 
@@ -492,6 +493,8 @@ class FrequencySeries(FittingMixin, BaseFrequencySeries):
             - 'power': Smooth power |X|^2. Returns REAL series.
             - 'complex': Smooth real and imaginary parts separately. Preserves complex.
             - 'db': Smooth dB values. Returns REAL series (in dB).
+        ignore_nan : `bool`, optional
+            If True, ignore NaNs during smoothing. Default is True.
 
         Returns
         -------
@@ -499,7 +502,6 @@ class FrequencySeries(FittingMixin, BaseFrequencySeries):
         """
         if method == 'complex':
             # Convolve/filter real and imag separately
-            np.ones(width) / width
             # Use 'same' to keep size, but handle boundary effects
             # scipy.ndimage.uniform_filter1d or regular convolution
             # Let's use simple convolution for MVP
@@ -509,32 +511,47 @@ class FrequencySeries(FittingMixin, BaseFrequencySeries):
             # We will use 'same' mode convolution.
             from scipy.ndimage import uniform_filter1d
 
-            re = uniform_filter1d(self.value.real, size=width)
-            im = uniform_filter1d(self.value.imag, size=width)
+            def _smooth(x):
+                if ignore_nan:
+                    import pandas as pd
+                    return pd.Series(x).rolling(window=width, center=True, min_periods=1).mean().values
+                else:
+                    return uniform_filter1d(x, size=width)
+
+            re = _smooth(self.value.real)
+            im = _smooth(self.value.imag)
             val = re + 1j * im
             unit = self.unit
 
         elif method == 'amplitude':
             mag = np.abs(self.value)
-            from scipy.ndimage import uniform_filter1d
-            val = uniform_filter1d(mag, size=width)
+            if ignore_nan:
+                import pandas as pd
+                val = pd.Series(mag).rolling(window=width, center=True, min_periods=1).mean().values
+            else:
+                from scipy.ndimage import uniform_filter1d
+                val = uniform_filter1d(mag, size=width)
             unit = self.unit
-
         elif method == 'power':
             pwr = np.abs(self.value)**2
-            from scipy.ndimage import uniform_filter1d
-            val = uniform_filter1d(pwr, size=width)
+            if ignore_nan:
+                import pandas as pd
+                val = pd.Series(pwr).rolling(window=width, center=True, min_periods=1).mean().values
+            else:
+                from scipy.ndimage import uniform_filter1d
+                val = uniform_filter1d(pwr, size=width)
             unit = self.unit**2
-
         elif method == 'db':
             # To dB
             mag = np.abs(self.value)
             with np.errstate(divide='ignore'):
                  db = 20 * np.log10(mag)
-            from scipy.ndimage import uniform_filter1d
-            # Handle -inf in dB (0 magnitude) by masking?
-            # For now just smooth what we have
-            val = uniform_filter1d(db, size=width)
+            if ignore_nan:
+                import pandas as pd
+                val = pd.Series(db).rolling(window=width, center=True, min_periods=1).mean().values
+            else:
+                from scipy.ndimage import uniform_filter1d
+                val = uniform_filter1d(db, size=width)
             unit = u.Unit('dB')
 
         else:
@@ -2093,10 +2110,9 @@ class FrequencySeriesMatrix(SeriesMatrix):
         else:
             return self * h
 
-    def smooth(self, width: int, method: str = "amplitude") -> "FrequencySeriesMatrix":
+    def smooth(self, width: int, method: str = "amplitude", ignore_nan: bool = True) -> "FrequencySeriesMatrix":
         """
         Smooth the frequency series matrix along the frequency axis.
-        Vectorized implementation using uniform_filter1d.
 
         Parameters
         ----------
@@ -2105,6 +2121,8 @@ class FrequencySeriesMatrix(SeriesMatrix):
         method : str, optional
             Smoothing method: 'amplitude', 'power', 'complex', 'db'.
             Default is 'amplitude'.
+        ignore_nan : bool, optional
+            If True, ignore NaNs during smoothing. Default is True.
         """
         from scipy.ndimage import uniform_filter1d
         from astropy import units as u
@@ -2115,21 +2133,33 @@ class FrequencySeriesMatrix(SeriesMatrix):
         unit = self.meta[0, 0].unit
         axis = -1 # Frequency axis is always last
 
+        def _smooth_axis(x):
+            if ignore_nan:
+                import pandas as pd
+                # Handle n-dimensional array by reshaping to 2D (batch, time), smoothing, and reshaping back.
+                orig_shape = x.shape
+                flat_x = x.reshape(-1, orig_shape[-1])
+                # pandas rolling mean on DataFrame (axis=1)
+                res = pd.DataFrame(flat_x).T.rolling(window=width, center=True, min_periods=1).mean().T.values
+                return res.reshape(orig_shape)
+            else:
+                return uniform_filter1d(x, size=width, axis=axis)
+
         if method == 'complex':
             # Complex data: smooth real and imag parts separately
-            re = uniform_filter1d(val.real, size=width, axis=axis)
-            im = uniform_filter1d(val.imag, size=width, axis=axis)
+            re = _smooth_axis(val.real)
+            im = _smooth_axis(val.imag)
             new_val = re + 1j * im
         elif method == 'amplitude':
-            new_val = uniform_filter1d(np.abs(val), size=width, axis=axis)
+            new_val = _smooth_axis(np.abs(val))
         elif method == 'power':
-            new_val = uniform_filter1d(np.abs(val)**2, size=width, axis=axis)
+            new_val = _smooth_axis(np.abs(val)**2)
             unit = unit**2
         elif method == 'db':
             # Convert to dB first
             with np.errstate(divide='ignore'):
                  db = 20 * np.log10(np.abs(val))
-            new_val = uniform_filter1d(db, size=width, axis=axis)
+            new_val = _smooth_axis(db)
             unit = u.Unit('dB')
         else:
             raise ValueError(f"Unknown smoothing method: {method}")
