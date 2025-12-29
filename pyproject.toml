@@ -23,7 +23,8 @@ interop = [
   "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "polars",
   "xarray", "h5py", "netCDF4", "obspy", "mne", "neo",
   "control", "cupy",
-  "librosa", "pydub", "torchaudio"
+  "librosa", "pydub", "torchaudio",
+  "specutils", "pyspeckit"
 ]
 torch = ["torch"]
 tensorflow = ["tensorflow"]
@@ -38,15 +39,18 @@ control = ["control"]
 gpu = ["cupy", "torch", "tensorflow", "jax", "jaxlib"]
 gw = ["gwinc", "dttxml"]
 geophysics = ["obspy", "mth5", "mt_metadata", "mtpy", "wintools", "win2ndarray"]
+gui = ["PyQt5"]
 analysis = [
     "PyEMD",          # emd, hht
     "hurst",          # hurst指数
+    "hurst-exponent", # hurst指数 (alternative)
+    "exp-hurst",      # hurst指数 (differential)
     "pywt",           # wavelet変換 (cwt)
     "librosa",        # audio‑signal 前処理
     "obspy"           # ノイズスペクトル解析
 ]
 fitting = ["iminuit", "emcee", "corner"]
-stats = ["statsmodels", "scikit-learn", "bottleneck", "minepy", "dcor"]
+stats = ["statsmodels", "scikit-learn", "bottleneck", "minepy", "dcor", "pmdarima"]
 
 all = [
     "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "polars",
@@ -54,9 +58,10 @@ all = [
     "xarray", "h5py", "netCDF4", "obspy", "mne", "neo", "gwinc", "dttxml",
     "control", "cupy",
     "wintools", "win2ndarray", "mth5", "mt_metadata", "mtpy",
-    "PyEMD", "hurst", "pywt",
+    "PyEMD", "hurst", "hurst-exponent", "exp-hurst", "pywt",
     "iminuit", "emcee", "corner",
-    "statsmodels", "scikit-learn", "bottleneck"
+    "statsmodels", "scikit-learn", "bottleneck", "minepy", "dcor", "pmdarima",
+    "specutils", "pyspeckit", "PyQt5"
 ]
 
 [tool.setuptools.package-data]

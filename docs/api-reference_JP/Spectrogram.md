@@ -212,6 +212,18 @@ to_th2d(self, error=None)
 
 ROOT の TH2D に変換します。
 
+### `to_torch`
+
+スペクトログラム（または SpectrogramList/Dict の各要素）を PyTorch テンソルに変換します。
+
+### `to_cupy`
+
+スペクトログラム（または SpectrogramList/Dict の各要素）を CuPy 配列に変換します。
+
+### `to_matrix`
+
+SpectrogramList または SpectrogramDict を `SpectrogramMatrix` に変換します。
+
 ### `unit`
 
 データの物理単位。

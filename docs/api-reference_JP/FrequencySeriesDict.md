@@ -142,6 +142,10 @@ write(self, target: str, *args, **kwargs) -> 'Any'
 
 辞書をファイル（HDF5, ROOT等）に書き出します。
 
+### `to_tmultigraph`
+
+ROOT の TMultiGraph オブジェクトに変換します。
+
 ### `zpk`
 
 ```python
