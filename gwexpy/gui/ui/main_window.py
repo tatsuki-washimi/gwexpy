@@ -373,6 +373,16 @@ class MainWindow(QtWidgets.QMainWindow):
              pass
 
         for plot_idx, info_root in enumerate([self.graph_info1, self.graph_info2]):
+            # Update meta info in Param tab (Start, Avgs, BW)
+            ui_p = self.get_ui_params()
+            if data_map:
+                first_ts = next(iter(data_map.values()))
+                if hasattr(first_ts, 't0'):
+                    info_root['panel'].meta_info['start_time'] = first_ts.t0.value
+                    info_root['panel'].meta_info['avgs'] = ui_p.get('averages', 1)
+                    info_root['panel'].meta_info['bw'] = ui_p.get('bw', 0)
+                    info_root['panel'].update_params_display()
+
             try:
                 traces_items = [self.traces1, self.traces2][plot_idx]; g_type = info_root['graph_combo'].currentText()
                 results = self.engine.compute(data_map, g_type, [{'active': c['active'].isChecked(), 'ch_a': c['chan_a'].currentText(), 'ch_b': c['chan_b'].currentText()} for c in info_root['traces']])
@@ -409,8 +419,17 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_file_plot(self):
         if not self.loaded_products: return
         for graph_idx in [0, 1]:
+            info, traces = (self.graph_info1, self.traces1) if graph_idx==0 else (self.graph_info2, self.traces2)
+            # Update t0 from loaded products
+            for p_type in ["TS", "ASD", "PSD", "CSD", "Spectrogram"]:
+                items = self.loaded_products.get(p_type)
+                if items:
+                    first_val = next(iter(items.values()))
+                    if hasattr(first_val, 't0'):
+                        info['panel'].meta_info['start_time'] = first_val.t0.value
+                        info['panel'].update_params_display()
+                        break
             try:
-                info, traces = (self.graph_info1, self.traces1) if graph_idx==0 else (self.graph_info2, self.traces2)
                 g_type = info['graph_combo'].currentText(); p_name = "TS"
                 if g_type == "Amplitude Spectral Density": p_name = "ASD"
                 elif g_type == "Cross Spectral Density": p_name = "CSD"
