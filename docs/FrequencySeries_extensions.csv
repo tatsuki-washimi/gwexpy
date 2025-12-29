@@ -1,32 +1,32 @@
-api,one_line,category,is_dynamic,note
-phase(unwrap=False),複素データの位相（radians）を計算,変換,False,
-angle(unwrap=False),phase() のエイリアス,変換,False,
-degree(unwrap=False),複素データの位相（degrees）を計算,変換,False,
-to_db(ref=1.0, amplitude=True),デシベル（dB）表記に変換,変換,False,
-ifft(mode='auto', ...),逆FFTを実行（transient モードで元の振幅を復元可能）,変換,False,gwexpy独自拡張
-idct(type=2, norm='ortho'),逆離散コサイン変換（IDCT）を実行,変換,False,
-differentiate_time(),周波数領域での時間微分（jωを乗算）,信号処理,False,
-integrate_time(),周波数領域での時間積分（1/jωを乗算）,信号処理,False,
-smooth(width, method='amplitude'),全領域での平滑化（振幅・パワー・複素・dB選択可）,信号処理,False,
-find_peaks(threshold=None, ...),ピーク検出を行い、ピーク位置の FrequencySeries を返す,統計・抽出,False,
-quadrature_sum(other),2つの系列の振幅を二乗和の平方根で合成,統計・抽出,False,
-group_delay(),群遅延（-dφ/dω）を計算,解析,False,
-fit(model, ...),周波数データに対する関数適合を実行（iminuit/MCMC対応）,解析,False,gwexpy/fitting/mixin.py
-to_pandas(...),pandas.Series または DataFrame へ変換,入出力・連携,False,
-to_polars(...),polars.Dataset または Series へ変換,入出力・連携,False,
-to_tgraph(...),CERN ROOT の TGraph(Errors) へ変換,入出力・連携,False,
-to_th1d(...),CERN ROOT の TH1D へ変換,入出力・連携,False,
-from_root(obj, ...),CERN ROOT オブジェクトから FrequencySeries を生成,入出力・連携,False,
-to_xarray(...),xarray.DataArray へ変換,入出力・連携,False,
-to_hdf5_dataset(...),HDF5 データセットとして書き出し,入出力・連携,False,
-to_control_frd(...),python-control の FRD オブジェクトへ変換,入出力・連携,False,
-to_torch(...),PyTorch Tensor へ変換,入出力・連携,False,
-to_tensorflow(...),TensorFlow Tensor へ変換,入出力・連携,False,
-to_jax(...),JAX Array へ変換,入出力・連携,False,
-to_cupy(...),CuPy Array へ変換,入出力・連携,False,
-to_simpeg(...),simpeg.data.Data (FDEM) へ変換,入出力・連携,False,
-from_simpeg(data_obj, ...),SimPEG Data オブジェクトから復元,入出力・連携,False,
-to_specutils(...),specutils.Spectrum1D へ変換,入出力・連携,False,
-from_specutils(spectrum, ...),Spectrum1D から復元,入出力・連携,False,
-to_pyspeckit(...),pyspeckit.Spectrum へ変換,入出力・連携,False,
-from_pyspeckit(spectrum, ...),pyspeckit.Spectrum から復元,入出力・連携,False,
+api,one_line,category
+phase(unwrap=False),複素データの位相（radians）を計算,変換
+angle(unwrap=False),phase() のエイリアス,変換
+degree(unwrap=False),複素データの位相（degrees）を計算,変換
+to_db(ref=1.0, amplitude=True),デシベル（dB）表記に変換
+ifft(mode='auto', ...),逆FFTを実行（transient モードで元の振幅を復元可能）
+idct(type=2, norm='ortho'),逆離散コサイン変換（IDCT）を実行
+differentiate_time(),周波数領域での時間微分（jωを乗算）,信号処理
+integrate_time(),周波数領域での時間積分（1/jωを乗算）,信号処理
+smooth(width, method='amplitude'),全領域での平滑化（振幅・パワー・複素・dB選択可）
+find_peaks(threshold=None, ...),ピーク検出を行い、ピーク位置の FrequencySeries を返す
+quadrature_sum(other),2つの系列の振幅を二乗和の平方根で合成,統計・抽出
+group_delay(),群遅延（-dφ/dω）を計算,解析
+fit(model, ...),周波数データに対する関数適合を実行（iminuit/MCMC対応）
+to_pandas(...),pandas.Series または DataFrame へ変換,入出力・連携
+to_polars(...),polars.Dataset または Series へ変換,入出力・連携
+to_tgraph(...),CERN ROOT の TGraph(Errors) へ変換,入出力・連携
+to_th1d(...),CERN ROOT の TH1D へ変換,入出力・連携
+from_root(obj, ...),CERN ROOT オブジェクトから FrequencySeries を生成
+to_xarray(...),xarray.DataArray へ変換,入出力・連携
+to_hdf5_dataset(...),HDF5 データセットとして書き出し,入出力・連携
+to_control_frd(...),python-control の FRD オブジェクトへ変換,入出力・連携
+to_torch(...),PyTorch Tensor へ変換,入出力・連携
+to_tensorflow(...),TensorFlow Tensor へ変換,入出力・連携
+to_jax(...),JAX Array へ変換,入出力・連携
+to_cupy(...),CuPy Array へ変換,入出力・連携
+to_simpeg(...),simpeg.data.Data (FDEM) へ変換,入出力・連携
+from_simpeg(data_obj, ...),SimPEG Data オブジェクトから復元
+to_specutils(...),specutils.Spectrum1D へ変換,入出力・連携
+from_specutils(spectrum, ...),Spectrum1D から復元
+to_pyspeckit(...),pyspeckit.Spectrum へ変換,入出力・連携
+from_pyspeckit(spectrum, ...),pyspeckit.Spectrum から復元

@@ -1,55 +1,55 @@
-﻿api,one_line,category,is_dynamic,note
-"csd_matrix(other=None, ...)",各要素間の相互スペクトル密度（CSD）行列を計算,スペクトル変換,False,
-"coherence_matrix(other=None, ...)",各要素間のコヒーレンス行列を計算,スペクトル変換,False,
-"csd(other=None, ...)",各要素のCSDを計算（他オブジェクト指定時はクロスCSD）,スペクトル変換,False,
-"coherence(other=None, ...)",各要素のコヒーレンスを計算（他オブジェクト指定時はクロスコヒーレンス）,スペクトル変換,False,
-fft(...),各要素のFFTを計算し、FrequencySeriesListを返す,スペクトル変換,False,
-average_fft(...),各要素の平均FFTを計算し、FrequencySeriesListを返す,スペクトル変換,False,
-psd(...),各要素のPSD（パワースペクトル密度）を計算し、FrequencySeriesListを返す,スペクトル変換,False,
-asd(...),各要素のASD（振幅スペクトル密度）を計算し、FrequencySeriesListを返す,スペクトル変換,False,
-spectrogram(...),各要素のスペクトログラムを計算し、SpectrogramListを返す,スペクトル変換,False,
-spectrogram2(...),各要素のスペクトログラム（平均化処理あり）を計算し、SpectrogramListを返す,スペクトル変換,False,
-q_transform(...),各要素のQ変換を実行し、SpectrogramListを返す,スペクトル変換,False,
-stlt(...),短時間ラプラス変換を実行し。TimePlaneTransformのリストを返す,スペクトル変換,False,※注：数学的なラプラス変換は将来の課題
-analytic_signal(...),各要素の解析信号（複素 TimeSeries）を計算,信号処理,False,
-hilbert(),analytic_signal() のエイリアス,信号処理,False,
-envelope(),各要素の包絡線 TimeSeries を計算,信号処理,False,
-instantaneous_phase(),各要素の瞬時位相を計算,信号処理,False,
-unwrap_phase(),各要素の位相のアンラップを適用,信号処理,False,
-instantaneous_frequency(),各要素の瞬時周波数を計算,信号処理,False,
-mix_down(...),各要素を指定周波数でミックスダウン,信号処理,False,
-baseband(...),各要素をベースバンド化,信号処理,False,
-heterodyne(...),各要素を指定位相でミックス後に平均化,信号処理,False,
-lock_in(...),各要素にロックイン復調を適用,信号処理,False,
-"resample(rate_or_dt, method='FFT')",各要素を指定レート/間隔へリサンプリング（gwexpyで強化）,信号処理,False,
-decimate(...),各要素をデシメーション（間引き）でダウンサンプリング,信号処理,False,
-filter(...),各要素にデジタルフィルタを適用,信号処理,False,
-whiten(...),各要素のデータをホワイトニング（白色化）,信号処理,False,
-notch(...),各要素にノッチフィルタを適用（特定周波数成分を除去）,信号処理,False,
-zpk(...),各要素にZPK（零点-極-ゲイン）フィルタを適用,信号処理,False,
-detrend(...),各要素の線形トレンドを除去,信号処理,False,
-taper(...),各要素の端部に窓関数（テーパー）を適用,信号処理,False,
-"crop(start, end)",各要素を指定した時間範囲で切り抜く（トリミング）,前処理・統計,False,
-shift(dt),各要素の時系列をdtだけシフト（時間移動）,前処理・統計,False,
-gate(...),各要素のデータに対してピークゲート処理を適用（大振幅のスパイクを除去）,前処理・統計,False,
-mask(...),各要素の指定区間データをマスク（NaN埋め）,前処理・統計,False,
-"impute(method='linear', ...)",各要素の欠損値（NaN）を指定手法で補完,前処理・統計,False,
-"rolling_mean(window, ...)",各要素のローリング平均（移動平均）を計算,前処理・統計,False,
-"rolling_std(window, ...)",各要素のローリング標準偏差（移動標準偏差）を計算,前処理・統計,False,
-"rolling_median(window, ...)",各要素のローリング中央値（移動中央値）を計算,前処理・統計,False,
-"rolling_min(window, ...)",各要素のローリング最小値（移動最小値）を計算,前処理・統計,False,
-"rolling_max(window, ...)",各要素のローリング最大値（移動最大値）を計算,前処理・統計,False,
-rms(...),各要素のRMS値を計算し、スカラー値リストを返す,前処理・統計,False,
-min(...),各要素の最小値を計算し、値のリストを返す,前処理・統計,False,
-max(...),各要素の最大値を計算し、値のリストを返す,前処理・統計,False,
-mean(...),各要素の平均値を計算し、値のリストを返す,前処理・統計,False,
-std(...),各要素の標準偏差を計算し、値のリストを返す,前処理・統計,False,
-value_at(time),各要素から指定時刻の値を取得し、そのリストを返す,前処理・統計,False,
-to_matrix(...),リスト内の時系列を共通時間軸に揃え、TimeSeriesMatrixに変換,変換・入出力,False,
-to_pandas(),TimeSeriesListをpandas.DataFrameに変換（各要素を1列に格納）,変換・入出力,False,
-to_tmultigraph(name=None),ROOTのTMultiGraphに変換（各要素を系列としてプロット可能）,変換・入出力,False,
-"write(target, ...)",TimeSeriesListをファイル（HDF5やROOTなど）に書き出す,変換・入出力,False,
-is_contiguous(other),各要素が他オブジェクトと時間連続かを判定（ブール値リストを返す）,その他,False,
-state_segments(...),各要素に対してstate_segmentsを実行し、SegmentListのリストを返す,その他,False,
-pca(...),リスト内の全TimeSeriesに対し主成分分析（PCA）を実行,その他,False,
-ica(...),リスト内の全TimeSeriesに対し独立成分分析（ICA）を実行,その他,False,
+api,one_line,category
+"csd_matrix(other=None, ...)",各要素間の相互スペクトル密度（CSD）行列を計算,スペクトル変換
+"coherence_matrix(other=None, ...)",各要素間のコヒーレンス行列を計算,スペクトル変換
+"csd(other=None, ...)",各要素のCSDを計算（他オブジェクト指定時はクロスCSD）,スペクトル変換
+"coherence(other=None, ...)",各要素のコヒーレンスを計算（他オブジェクト指定時はクロスコヒーレンス）,スペクトル変換
+fft(...),各要素のFFTを計算し、FrequencySeriesListを返す,スペクトル変換
+average_fft(...),各要素の平均FFTを計算し、FrequencySeriesListを返す,スペクトル変換
+psd(...),各要素のPSD（パワースペクトル密度）を計算し、FrequencySeriesListを返す,スペクトル変換
+asd(...),各要素のASD（振幅スペクトル密度）を計算し、FrequencySeriesListを返す,スペクトル変換
+spectrogram(...),各要素のスペクトログラムを計算し、SpectrogramListを返す,スペクトル変換
+spectrogram2(...),各要素のスペクトログラム（平均化処理あり）を計算し、SpectrogramListを返す,スペクトル変換
+q_transform(...),各要素のQ変換を実行し、SpectrogramListを返す,スペクトル変換
+stlt(...),短時間ラプラス変換を実行し。TimePlaneTransformのリストを返す,スペクトル変換
+analytic_signal(...),各要素の解析信号（複素 TimeSeries）を計算,信号処理
+hilbert(),analytic_signal() のエイリアス,信号処理
+envelope(),各要素の包絡線 TimeSeries を計算,信号処理
+instantaneous_phase(),各要素の瞬時位相を計算,信号処理
+unwrap_phase(),各要素の位相のアンラップを適用,信号処理
+instantaneous_frequency(),各要素の瞬時周波数を計算,信号処理
+mix_down(...),各要素を指定周波数でミックスダウン,信号処理
+baseband(...),各要素をベースバンド化,信号処理
+heterodyne(...),各要素を指定位相でミックス後に平均化,信号処理
+lock_in(...),各要素にロックイン復調を適用,信号処理
+"resample(rate_or_dt, method='FFT')",各要素を指定レート/間隔へリサンプリング（gwexpyで強化）,信号処理
+decimate(...),各要素をデシメーション（間引き）でダウンサンプリング,信号処理
+filter(...),各要素にデジタルフィルタを適用,信号処理
+whiten(...),各要素のデータをホワイトニング（白色化）,信号処理
+notch(...),各要素にノッチフィルタを適用（特定周波数成分を除去）,信号処理
+zpk(...),各要素にZPK（零点-極-ゲイン）フィルタを適用,信号処理
+detrend(...),各要素の線形トレンドを除去,信号処理
+taper(...),各要素の端部に窓関数（テーパー）を適用,信号処理
+"crop(start, end)",各要素を指定した時間範囲で切り抜く（トリミング）,前処理・統計
+shift(dt),各要素の時系列をdtだけシフト（時間移動）,前処理・統計
+gate(...),各要素のデータに対してピークゲート処理を適用（大振幅のスパイクを除去）,前処理・統計
+mask(...),各要素の指定区間データをマスク（NaN埋め）,前処理・統計
+"impute(method='linear', ...)",各要素の欠損値（NaN）を指定手法で補完,前処理・統計
+"rolling_mean(window, ...)",各要素のローリング平均（移動平均）を計算,前処理・統計
+"rolling_std(window, ...)",各要素のローリング標準偏差（移動標準偏差）を計算,前処理・統計
+"rolling_median(window, ...)",各要素のローリング中央値（移動中央値）を計算,前処理・統計
+"rolling_min(window, ...)",各要素のローリング最小値（移動最小値）を計算,前処理・統計
+"rolling_max(window, ...)",各要素のローリング最大値（移動最大値）を計算,前処理・統計
+rms(...),各要素のRMS値を計算し、スカラー値リストを返す,前処理・統計
+min(...),各要素の最小値を計算し、値のリストを返す,前処理・統計
+max(...),各要素の最大値を計算し、値のリストを返す,前処理・統計
+mean(...),各要素の平均値を計算し、値のリストを返す,前処理・統計
+std(...),各要素の標準偏差を計算し、値のリストを返す,前処理・統計
+value_at(time),各要素から指定時刻の値を取得し、そのリストを返す,前処理・統計
+to_matrix(...),リスト内の時系列を共通時間軸に揃え、TimeSeriesMatrixに変換,変換・入出力
+to_pandas(),TimeSeriesListをpandas.DataFrameに変換（各要素を1列に格納）,変換・入出力
+to_tmultigraph(name=None),ROOTのTMultiGraphに変換（各要素を系列としてプロット可能）,変換・入出力
+"write(target, ...)",TimeSeriesListをファイル（HDF5やROOTなど）に書き出す,変換・入出力
+is_contiguous(other),各要素が他オブジェクトと時間連続かを判定（ブール値リストを返す）,その他
+state_segments(...),各要素に対してstate_segmentsを実行し、SegmentListのリストを返す,その他
+pca(...),リスト内の全TimeSeriesに対し主成分分析（PCA）を実行,その他
+ica(...),リスト内の全TimeSeriesに対し独立成分分析（ICA）を実行,その他

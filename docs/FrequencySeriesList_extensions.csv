@@ -1,25 +1,25 @@
-api,one_line,category,is_dynamic,note
-crop(start, end),各要素を指定周波数範囲で切り詰め,編集,False,
-pad(...),各要素にパディングを適用,編集,False,
-interpolate(...),各要素の周波数軸を補間・再サンプリング,編集,False,
-zpk(...),各要素にZPKフィルタを適用,信号処理,False,
-filter(...),各要素にフィルタを適用,信号処理,False,
-apply_response(...),各要素に複素周波数応答を適用,信号処理,False,
-phase(...),各要素の位相（radians）を計算,変換,False,
-angle(...),phase() のエイリアス,変換,False,
-degree(...),各要素の位相（degrees）を計算,変換,False,
-to_db(...),各要素を dB 表記に変換,変換,False,
-differentiate_time(),各要素に時間微分を適用,信号処理,False,
-integrate_time(),各要素に時間積分を適用,信号処理,False,
-group_delay(),各要素の群遅延を計算,解析,False,
-smooth(width, ...),各要素を平滑化,信号処理,False,
-ifft(...),各要素の逆FFTを実行し TimeSeriesList を返す,変換,False,
-to_control_frd(),各要素を control.FRD に変換したリストを返す,相互運用,False,
-to_torch(),各要素を PyTorch Tensor に変換したリストを返す,相互運用,False,
-to_tensorflow(),各要素を TensorFlow Tensor に変換したリストを返す,相互運用,False,
-to_jax(),各要素を JAX Array に変換したリストを返す,相互運用,False,
-to_cupy(),各要素を CuPy Array に変換したリストを返す,相互運用,False,
-to_pandas(),pandas.DataFrame（名前またはインデックスが列名）へ変換,相互運用,False,
-to_xarray(),xarray.DataArray（channel次元で結合）へ変換,相互運用,False,
-to_tmultigraph(),CERN ROOT の TMultiGraph へ変換,相互運用,False,
-write(target, ...),HDF5 や ROOT ファイル等へ書き出し,入出力,False,
+api,one_line,category
+crop(start, end),各要素を指定周波数範囲で切り詰め
+pad(...),各要素にパディングを適用,編集
+interpolate(...),各要素の周波数軸を補間・再サンプリング,編集
+zpk(...),各要素にZPKフィルタを適用,信号処理
+filter(...),各要素にフィルタを適用,信号処理
+apply_response(...),各要素に複素周波数応答を適用,信号処理
+phase(...),各要素の位相（radians）を計算,変換
+angle(...),phase() のエイリアス,変換
+degree(...),各要素の位相（degrees）を計算,変換
+to_db(...),各要素を dB 表記に変換,変換
+differentiate_time(),各要素に時間微分を適用,信号処理
+integrate_time(),各要素に時間積分を適用,信号処理
+group_delay(),各要素の群遅延を計算,解析
+smooth(width, ...),各要素を平滑化
+ifft(...),各要素の逆FFTを実行し TimeSeriesList を返す,変換
+to_control_frd(),各要素を control.FRD に変換したリストを返す,相互運用
+to_torch(),各要素を PyTorch Tensor に変換したリストを返す,相互運用
+to_tensorflow(),各要素を TensorFlow Tensor に変換したリストを返す,相互運用
+to_jax(),各要素を JAX Array に変換したリストを返す,相互運用
+to_cupy(),各要素を CuPy Array に変換したリストを返す,相互運用
+to_pandas(),pandas.DataFrame（名前またはインデックスが列名）へ変換,相互運用
+to_xarray(),xarray.DataArray（channel次元で結合）へ変換,相互運用
+to_tmultigraph(),CERN ROOT の TMultiGraph へ変換,相互運用
+write(target, ...),HDF5 や ROOT ファイル等へ書き出し

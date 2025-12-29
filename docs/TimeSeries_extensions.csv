@@ -1,72 +1,71 @@
-﻿api,one_line,category,is_dynamic,note
-is_regular,プロパティ：サンプル間隔が等間隔かを判定,コア拡張,False,
-tail(n),末尾nサンプルを取得,コア拡張,False,
-find_peaks(...),ピーク検出（ピーク値TimeSeries＋性質情報dictを返す）,コア拡張,False,
-dct(),離散コサイン変換を実行しFrequencySeriesを返す,スペクトル変換,False,
-laplace(...),ラプラス変換を計算しFrequencySeriesを返す,スペクトル変換,False,
-cwt(...),連続ウェーブレット変換（CWT）を実行（必要に応じSpectrogram生成）,スペクトル変換,False,
-cepstrum(kind='real'),ケプストラム解析を実行しFrequencySeriesを返す,スペクトル変換,False,
-emd(method='eemd'),経験的モード分解（EMD）を実行しTimeSeriesDict(IMF群)を返す,スペクトル変換,False,
-hilbert_analysis(...),ヒルベルト解析（analytic/amplitude/phase/frequencyのTimeSeries群）を返す,スペクトル変換,False,
-hht(emd_method='eemd'),HHT（EMD＋ヒルベルト解析）を実行し辞書形式の結果を返す,スペクトル変換,False,
-"stlt(stride, window, ...)",短時間ラプラス変換（STFTの大きさの外積による3D TF-F表現）を実行しTimePlaneTransformを返す,スペクトル変換,False,※注：数学的なラプラス変換は将来の課題として保留中
-spectrogram2(...),平均化処理を含む可能性がある代替スペクトログラムを計算,スペクトル変換,False,
-analytic_signal(pad_mode='reflect'),ヒルベルト変換による解析信号（複素TimeSeries）を返す,信号処理,False,
-hilbert(),analytic_signal()のエイリアス,信号処理,False,
-envelope(),包絡線TimeSeriesを返す,信号処理,False,
-instantaneous_phase(unwrap=False),瞬時位相を返す（任意でアンラップ）,信号処理,False,
-unwrap_phase(),instantaneous_phase(unwrap=True)のエイリアス,信号処理,False,
-instantaneous_frequency(),瞬時周波数（Hz）を返す,信号処理,False,
-"mix_down(f0, ...)",指定周波数でミックスダウンし複素ベースバンド信号を返す,信号処理,False,
-"baseband(f0, ..., lowpass=None)",ミックスダウン＋ローパス＋（必要なら）リサンプリングでベースバンド化,信号処理,False,
-"heterodyne(phase, stride=1.0, ...)",指定位相でミックス後に平均化（デモジュレーション）,信号処理,False,
-"lock_in(f0, ..., stride=1.0, output='amp_phase')",ロックイン復調（複素／振幅位相／I-Q出力を選択）,信号処理,False,
-"transfer_function(other, method='gwpy')",伝達関数を推定しFrequencySeriesを返す（gwpy/Welch or FFT比）,信号処理,False,
-"xcorr(other, maxlag=None, ...)",相互相関を計算しラグ時間軸のTimeSeriesを返す,信号処理,False,
-"asfreq(rule, method=None, ...)",固定間隔グリッドへ再サンプリング（補間/外挿指定可）,時間軸・リサンプリング,False,
-"resample(rate_or_dt, method='FFT')",指定レート/間隔へリサンプリング（gwexpyで強化）,時間軸・リサンプリング,False,
-_resample_time_bin(dt),内部：時間ビン集計ヘルパー,時間軸・リサンプリング,False,内部API
-"impute(method='linear', ...)",欠損補完（補間/前値保持等）,前処理・統計,False,
-"standardize(method='zscore', ...)",標準化（zscore/robust等）,前処理・統計,False,
-"fit_arima(order=(p,d,q), ...)",ARIMAフィッティング,前処理・統計,False,
-hurst(),ハースト指数を計算,前処理・統計,False,
-local_hurst(window),局所ハースト指数TimeSeriesを返す,前処理・統計,False,
-"rolling_mean(window, ...)",ローリング平均TimeSeriesを返す,前処理・統計,False,
-"rolling_std(window, ...)",ローリング標準偏差TimeSeriesを返す,前処理・統計,False,
-"rolling_median(window, ...)",ローリング中央値TimeSeriesを返す,前処理・統計,False,
-"rolling_min(window, ...)",ローリング最小値TimeSeriesを返す,前処理・統計,False,
-"rolling_max(window, ...)",ローリング最大値TimeSeriesを返す,前処理・統計,False,
-to_pandas(index='datetime'),pandas.Seriesへ変換,相互運用,False,
-"from_pandas(series, ...)",pandas.Seriesから生成,相互運用,False,
-to_polars(as_dataframe=True),polars DataFrame/Seriesへ変換,相互運用,False,
-"from_polars(data, ...)",polarsから生成,相互運用,False,
-to_tgraph(error=None),ROOT TGraph/TGraphErrorsへ変換,相互運用,False,
-to_th1d(error=None),ROOT TH1Dへ変換,相互運用,False,
-"from_root(obj, ...)",ROOT TGraph/TH1から生成（必要なら誤差系列も）,相互運用,False,
-to_xarray(time_coord='datetime'),xarray.DataArrayへ変換,相互運用,False,
-from_xarray(xarray_obj),xarrayから生成,相互運用,False,
-to_obspy(stats_extra=None),obspy.Traceへ変換,相互運用,False,
-"from_obspy(trace, ...)",obspy.Traceから生成,相互運用,False,
-to_astropy_timeseries(column='value'),astropy.timeseries.TimeSeriesへ変換,相互運用,False,
-"from_astropy_timeseries(ap_ts, ...)",astropy TimeSeriesから生成,相互運用,False,
-to_mne(info=None),mne.io.RawArrayへ変換（単一ch想定）,相互運用,False,
-to_mne(info=None),to_mneのエイリアス,相互運用,False,
-"to_pydub(sample_width=2, channels=1)",pydub.AudioSegmentへ変換,相互運用,False,
-"from_pydub(segment, ...)",pydub.AudioSegmentから生成,相互運用,False,
-to_librosa(y_dtype=np.float32),librosa向けにnumpy配列へエクスポート,相互運用,False,
-"to_torch(device=None, dtype=None, ...)",torch.Tensorへ変換,相互運用,False,
-"from_torch(tensor, t0, dt, ...)","torch.Tensorから生成（t0, dt指定）",相互運用,False,
-to_tensorflow(dtype=None),tensorflow tensorへ変換,相互運用,False,
-"from_tensorflow(tensor, t0, dt, ...)","tensorflow tensorから生成（t0, dt指定）",相互運用,False,
-to_jax(dtype=None),jax配列へ変換,相互運用,False,
-"from_jax(array, t0, dt, ...)","jax配列から生成（t0, dt指定）",相互運用,False,
-to_cupy(dtype=None),cupy配列（GPU）へ変換,相互運用,False,
-"from_cupy(array, t0, dt, ...)","cupy配列から生成（t0, dt指定）",相互運用,False,
-to_dask(chunks='auto'),dask.arrayへ変換,相互運用,False,
-"from_dask(dask_array, t0, dt, ...)","dask.arrayから生成（t0, dt指定）",相互運用,False,
-"to_zarr(store, path, **kwargs)",zarrストアへ保存,相互運用,False,
-"from_zarr(store, path, ...)",zarrストアから読込,相互運用,False,
-"to_netcdf4(dataset, var_name, **kwargs)",netCDF4 Datasetへ書き出し,相互運用,False,
-"to_simpeg(location, ...)",simpeg.data.Data(TDEM)へ変換,相互運用,False,
-"from_simpeg(data_obj, ...)",simpeg.data.Data(TDEM)から生成,相互運用,False,
-fit(...),汎用フィッティング（FitResultオブジェクトを返す）,フィッティング,False,
+api,one_line,category
+is_regular,プロパティ：サンプル間隔が等間隔かを判定,コア拡張
+tail(n),末尾nサンプルを取得,コア拡張
+find_peaks(...),ピーク検出（ピーク値TimeSeries＋性質情報dictを返す）,コア拡張
+dct(),離散コサイン変換を実行しFrequencySeriesを返す,スペクトル変換
+laplace(...),ラプラス変換を計算しFrequencySeriesを返す,スペクトル変換
+cwt(...),連続ウェーブレット変換（CWT）を実行（必要に応じSpectrogram生成）,スペクトル変換
+cepstrum(kind='real'),ケプストラム解析を実行しFrequencySeriesを返す,スペクトル変換
+emd(method='eemd'),経験的モード分解（EMD）を実行しTimeSeriesDict(IMF群)を返す,スペクトル変換
+hilbert_analysis(...),ヒルベルト解析（analytic/amplitude/phase/frequencyのTimeSeries群）を返す,スペクトル変換
+hht(emd_method='eemd'),HHT（EMD＋ヒルベルト解析）を実行し辞書形式の結果を返す,スペクトル変換
+"stlt(stride, window, ...)",短時間ラプラス変換（STFTの大きさの外積による3D TF-F表現）を実行しTimePlaneTransformを返す,スペクトル変換
+spectrogram2(...),平均化処理を含む可能性がある代替スペクトログラムを計算,スペクトル変換
+analytic_signal(pad_mode='reflect'),ヒルベルト変換による解析信号（複素TimeSeries）を返す,信号処理
+hilbert(),analytic_signal()のエイリアス,信号処理
+envelope(),包絡線TimeSeriesを返す,信号処理
+instantaneous_phase(unwrap=False),瞬時位相を返す（任意でアンラップ）,信号処理
+unwrap_phase(),instantaneous_phase(unwrap=True)のエイリアス,信号処理
+instantaneous_frequency(),瞬時周波数（Hz）を返す,信号処理
+"mix_down(f0, ...)",指定周波数でミックスダウンし複素ベースバンド信号を返す,信号処理
+"baseband(f0, ..., lowpass=None)",ミックスダウン＋ローパス＋（必要なら）リサンプリングでベースバンド化,信号処理
+"heterodyne(phase, stride=1.0, ...)",指定位相でミックス後に平均化（デモジュレーション）,信号処理
+"lock_in(f0, ..., stride=1.0, output='amp_phase')",ロックイン復調（複素／振幅位相／I-Q出力を選択）,信号処理
+"transfer_function(other, method='gwpy')",伝達関数を推定しFrequencySeriesを返す（gwpy/Welch or FFT比）,信号処理
+"xcorr(other, maxlag=None, ...)",相互相関を計算しラグ時間軸のTimeSeriesを返す,信号処理
+"asfreq(rule, method=None, ...)",固定間隔グリッドへ再サンプリング（補間/外挿指定可）,時間軸・リサンプリング
+"resample(rate_or_dt, method='FFT')",指定レート/間隔へリサンプリング（gwexpyで強化）,時間軸・リサンプリング
+"impute(method='linear', ...)",欠損補完（補間/前値保持等）,前処理・統計
+"standardize(method='zscore', ...)",標準化（zscore/robust等）,前処理・統計
+"fit_arima(order=(p,d,q), ...)",ARIMAフィッティング,前処理・統計
+hurst(),ハースト指数を計算,前処理・統計
+local_hurst(window),局所ハースト指数TimeSeriesを返す,前処理・統計
+"rolling_mean(window, ...)",ローリング平均TimeSeriesを返す,前処理・統計
+"rolling_std(window, ...)",ローリング標準偏差TimeSeriesを返す,前処理・統計
+"rolling_median(window, ...)",ローリング中央値TimeSeriesを返す,前処理・統計
+"rolling_min(window, ...)",ローリング最小値TimeSeriesを返す,前処理・統計
+"rolling_max(window, ...)",ローリング最大値TimeSeriesを返す,前処理・統計
+to_pandas(index='datetime'),pandas.Seriesへ変換,相互運用
+"from_pandas(series, ...)",pandas.Seriesから生成,相互運用
+to_polars(as_dataframe=True),polars DataFrame/Seriesへ変換,相互運用
+"from_polars(data, ...)",polarsから生成,相互運用
+to_tgraph(error=None),ROOT TGraph/TGraphErrorsへ変換,相互運用
+to_th1d(error=None),ROOT TH1Dへ変換,相互運用
+"from_root(obj, ...)",ROOT TGraph/TH1から生成（必要なら誤差系列も）,相互運用
+to_xarray(time_coord='datetime'),xarray.DataArrayへ変換,相互運用
+from_xarray(xarray_obj),xarrayから生成,相互運用
+to_obspy(stats_extra=None),obspy.Traceへ変換,相互運用
+"from_obspy(trace, ...)",obspy.Traceから生成,相互運用
+to_astropy_timeseries(column='value'),astropy.timeseries.TimeSeriesへ変換,相互運用
+"from_astropy_timeseries(ap_ts, ...)",astropy TimeSeriesから生成,相互運用
+to_mne(info=None),mne.io.RawArrayへ変換（単一ch想定）,相互運用
+to_mne(info=None),to_mneのエイリアス,相互運用
+"to_pydub(sample_width=2, channels=1)",pydub.AudioSegmentへ変換,相互運用
+"from_pydub(segment, ...)",pydub.AudioSegmentから生成,相互運用
+to_librosa(y_dtype=np.float32),librosa向けにnumpy配列へエクスポート,相互運用
+"to_torch(device=None, dtype=None, ...)",torch.Tensorへ変換,相互運用
+"from_torch(tensor, t0, dt, ...)","torch.Tensorから生成（t0, dt指定）",相互運用
+to_tensorflow(dtype=None),tensorflow tensorへ変換,相互運用
+"from_tensorflow(tensor, t0, dt, ...)","tensorflow tensorから生成（t0, dt指定）",相互運用
+to_jax(dtype=None),jax配列へ変換,相互運用
+"from_jax(array, t0, dt, ...)","jax配列から生成（t0, dt指定）",相互運用
+to_cupy(dtype=None),cupy配列（GPU）へ変換,相互運用
+"from_cupy(array, t0, dt, ...)","cupy配列から生成（t0, dt指定）",相互運用
+to_dask(chunks='auto'),dask.arrayへ変換,相互運用
+"from_dask(dask_array, t0, dt, ...)","dask.arrayから生成（t0, dt指定）",相互運用
+"to_zarr(store, path, **kwargs)",zarrストアへ保存,相互運用
+"from_zarr(store, path, ...)",zarrストアから読込,相互運用
+"to_netcdf4(dataset, var_name, **kwargs)",netCDF4 Datasetへ書き出し,相互運用
+"to_simpeg(location, ...)",simpeg.data.Data(TDEM)へ変換,相互運用
+"from_simpeg(data_obj, ...)",simpeg.data.Data(TDEM)から生成,相互運用
+fit(...),汎用フィッティング（FitResultオブジェクトを返す）,フィッティング

@@ -1,11 +1,11 @@
-api,one_line,category,is_dynamic,note
-read(source, ...),HDF5 等から SpectrogramList を読み込み,入出力,False,
-write(target, ...),HDF5 や ROOT ファイル等へ書き出し,入出力,False,
-crop(t0, t1, inplace=False),各要素を指定時間範囲で切り詰め,編集,False,
-crop_frequencies(f0, f1, inplace=False),各要素を指定周波数範囲で切り詰め,編集,False,
-rebin(dt, df, inplace=False),各要素を指定解像度へリビン処理,信号処理,False,
-interpolate(dt, df, inplace=False),各要素を指定解像度へ補間,信号処理,False,
-plot(**kwargs),全要素をスタック表示（Plot オブジェクトを返す）,プロット,False,
-to_matrix(),SpectrogramMatrix (3D形式) へ変換,変換,False,
-to_torch(),各要素を PyTorch Tensor に変換したリストを返す,相互運用,False,
-to_cupy(),各要素を CuPy Array に変換したリストを返す,相互運用,False,
+api,one_line,category
+read(source, ...),HDF5 等から SpectrogramList を読み込み
+write(target, ...),HDF5 や ROOT ファイル等へ書き出し
+crop(t0, t1, inplace=False)
+crop_frequencies(f0, f1, inplace=False)
+rebin(dt, df, inplace=False)
+interpolate(dt, df, inplace=False)
+plot(**kwargs),全要素をスタック表示（Plot オブジェクトを返す）,プロット
+to_matrix(),SpectrogramMatrix (3D形式) へ変換,変換
+to_torch(),各要素を PyTorch Tensor に変換したリストを返す,相互運用
+to_cupy(),各要素を CuPy Array に変換したリストを返す,相互運用
