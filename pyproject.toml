@@ -92,4 +92,5 @@ include = ["gwexpy*"]
 exclude = ["typings*", "tests*", "docs*", "examples*"]
 
 [project.scripts]
-gwexpy = "gwexpy.cli:main"
+"gwexpy" = "gwexpy.cli:main"
+"gwexpy.gui" = "gwexpy.gui.pyaggui:main"
