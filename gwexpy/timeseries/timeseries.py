@@ -26,6 +26,7 @@ from ._analysis import TimeSeriesAnalysisMixin
 from ._interop import TimeSeriesInteropMixin
 from ._statistics import StatisticsMixin
 from gwexpy.fitting.mixin import FittingMixin
+from gwexpy.types.mixin import RegularityMixin
 
 # Import legacy for remaining methods
 from ._timeseries_legacy import TimeSeries as _LegacyTimeSeries
@@ -39,6 +40,7 @@ class TimeSeries(
     TimeSeriesSpectralMixin,   # Spectral transforms
     StatisticsMixin,           # Statistical analysis & correlation
     FittingMixin,              # Fitting functionality
+    RegularityMixin,           # Regularity checking (is_regular, _check_regular)
     _LegacyTimeSeries,         # All legacy methods including BaseTimeSeries
 ):
 
