@@ -64,38 +64,47 @@ pip install .
 pip install ".[all]"
 
 # Install specific features
-pip install ".[interop]"     # All interoperability features (data + ML frameworks)
+pip install ".[gw]"          # GW data analysis (nds2, frames, etc.)
+pip install ".[stats]"       # Stats & Signal Analysis (polars, ARIMA, etc.)
 pip install ".[fitting]"     # Fitting & MCMC (iminuit, emcee, corner)
-pip install ".[geophysics]"  # Obspy, MTh5, wintools, etc.
-pip install ".[analysis]"    # EMD, Wavelet, Hurst, etc.
-pip install ".[gw]"          # pygwinc, dttxml
-pip install ".[audio]"       # Librosa, Pydub, Torchaudio
+pip install ".[astro]"       # Astroparticle Physics (specutils, etc.)
+pip install ".[geophysics]"  # Earth science (obspy, mth5, etc.)
+pip install ".[audio]"       # Audio (librosa, pydub, etc.)
+pip install ".[bio]"         # Bioscience (mne, neo, elephant)
+pip install ".[interop]"     # Deep Learning & Big Data (torch, jax, dask, etc.)
+pip install ".[control]"     # Control Theory
+pip install ".[gui]"         # Experimental GUI
 ```
 
 ### Dependencies
 
-#### 📦 依存ライブラリ一覧
+#### 📦 List of Dependencies
 
-このリポジトリでは、以下の外部 Python ライブラリを使用しています。
+This repository uses the following external Python libraries.
 
-##### ✅ 必須ライブラリ（基本機能に必要）
+##### ✅ Required Libraries (Essential for core functionality)
 
 - [`gwpy`](https://gwpy.github.io/), [`astropy`](https://www.astropy.org/), [`numpy`](https://numpy.org/), [`pandas`](https://pandas.pydata.org/), [`scipy`](https://scipy.org/), [`matplotlib`](https://matplotlib.org/)
+- [`lal`](https://pypi.org/project/lalsuite/), [`lalframe`](https://pypi.org/project/lalframe/), [`gwdatafind`](https://pypi.org/project/gwdatafind/), [`gwosc`](https://pypi.org/project/gwosc/), [`igwn-segments`](https://pypi.org/project/igwn-segments/), [`ligotimegps`](https://pypi.org/project/ligotimegps/), [`dqsegdb2`](https://pypi.org/project/dqsegdb2/), [`dateparser`](https://pypi.org/project/dateparser/), [`h5py`](https://www.h5py.org/)
 
-##### 🔄 限定的に必要なライブラリ（特定機能に必要）
+##### 🔄 Optional Libraries (Required for specific features)
 
-以下は特定の解析・可視化・IO変換機能を使う場合に限り必要です。 GUI・ROOT連携・Tensor変換等は **opt-in** 構成です。
+The following are only required when using specific analysis, visualization, or I/O conversion features. GUI, ROOT integration, and Tensor conversion are **opt-in**.
 
-| カテゴリ | パッケージ名 | 機能 |
+| Category | Package | Functionality |
 | :--- | :--- | :--- |
-| 統計・信号解析系 | [`scikit-learn`](https://scikit-learn.org/), [`statsmodels`](https://www.statsmodels.org/), [`pmdarima`](https://alkaline-ml.com/pmdarima/), [`minepy`](https://minepy.readthedocs.io/), [`dcor`](https://dcor.readthedocs.io/) | ARIMA, ICA/PCA, 相関解析, ローリング統計 |
-| ベイズ推定・MCMC | [`iminuit`](https://iminuit.readthedocs.io/), [`emcee`](https://emcee.readthedocs.io/), [`corner`](https://corner.readthedocs.io/) | 高度なフィッティング, MCMC, コーナープロット |
-| データ形式変換 | [`h5py`](https://www.h5py.org/), [`netCDF4`](https://unidata.github.io/netcdf4-python/), [`xarray`](https://xarray.pydata.org/), [`zarr`](https://zarr.readthedocs.io/), [`polars`](https://www.pola.rs/), [`dask`](https://www.dask.org/), [`torch`](https://pytorch.org/), [`tensorflow`](https://www.tensorflow.org/), [`jax`](https://github.com/google/jax) | 各種データフォーマット(HDF5/Zarr等), 深層学習フレームワーク変換 |
-| 入出力変換 | [`neo`](https://neuralensemble.org/neo/), [`mne`](https://mne.tools/), [`control`](https://python-control.readthedocs.io/), [`gwinc`](https://pypi.org/project/gwinc/), [`dttxml`](https://pypi.org/project/dttxml/), [`pydub`](http://pydub.com/), [`ROOT`](https://root.cern/), [`specutils`](https://specutils.readthedocs.io/), [`pyspeckit`](https://pyspeckit.readthedocs.io/) | 生体データ, 制御解析, 音声, ROOT連携, スペクトル解析 |
-| 地学・物理解析 | [`obspy`](https://docs.obspy.org/), [`mth5`](https://mth5.readthedocs.io/), [`mtpy`](https://mtpy.readthedocs.io/), [`hurst`](https://github.com/Mottl/hurst), [`hurst_exponent`](https://pypi.org/project/hurst-exponent/), [`exp_hurst`](https://pypi.org/project/exp-hurst/) | 地震・地磁気データ, Hurst指数解析 |
-| GUI | [`PyQt5`](https://www.riverbankcomputing.com/software/pyqt/) | 実験的なGUIツール (`gwexpy.gui`) |
+| GW | [`pycbc`](https://pycbc.org/), [`nds2-client`](https://pypi.org/project/python-nds2-client/), [`framel`](https://pypi.org/project/python-framel/), [`framecpp`](https://pypi.org/project/python-ldas-tools-framecpp/), [`gwinc`](https://pypi.org/project/gwinc/), [`dttxml`](https://pypi.org/project/dttxml/) | GW data analysis, frame access, and detector noise models |
+| Stats & Signal Analysis | [`polars`](https://www.pola.rs/), [`scikit-learn`](https://scikit-learn.org/), [`statsmodels`](https://www.statsmodels.org/), [`pmdarima`](https://alkaline-ml.com/pmdarima/), [`minepy`](https://minepy.readthedocs.io/), [`dcor`](https://dcor.readthedocs.io/), [`hurst`](https://github.com/Mottl/hurst), [`hurst-exponent`](https://pypi.org/project/hurst-exponent/), [`exp_hurst`](https://pypi.org/project/exp-hurst/) | ARIMA, ICA/PCA, Correlation analysis, Rolling statistics, Hurst exponent |
+| Fitting | [`iminuit`](https://iminuit.readthedocs.io/), [`emcee`](https://emcee.readthedocs.io/), [`corner`](https://corner.readthedocs.io/) | Advanced fitting, MCMC, Corner plots |
+| Astroparticle Physics | [`ROOT`](https://root.cern/), [`specutils`](https://specutils.readthedocs.io/), [`pyspeckit`](https://pyspeckit.readthedocs.io/) | ROOT integration, Spectral analysis |
+| Geophysics | [`obspy`](https://docs.obspy.org/), [`mth5`](https://mth5.readthedocs.io/), [`mtpy`](https://mtpy.readthedocs.io/), [`mt_metadata`](https://pypi.org/project/mt-metadata/), [`netCDF4`](https://unidata.github.io/netcdf4-python/), [`wintools`](https://pypi.org/project/wintools/), [`win2ndarray`](https://pypi.org/project/win2ndarray/) | Seismic & Geomagnetic data, HDF5-based geophysics formats, NIED Hi-net data |
+| Audio | [`librosa`](https://librosa.org/), [`pydub`](http://pydub.com/), [`torchaudio`](https://pytorch.org/audio/) | Audio signal processing and conversion |
+| Bioscience | [`mne`](https://mne.tools/), [`elephant`](https://elephant.readthedocs.io/), [`neo`](https://neuralensemble.org/neo/) | Biomedical data analysis (EEG/MEG, Neural data) |
+| Deep Learning & Big Data | [`xarray`](https://xarray.pydata.org/), [`zarr`](https://zarr.readthedocs.io/), [`dask`](https://www.dask.org/), [`torch`](https://pytorch.org/), [`tensorflow`](https://www.tensorflow.org/), [`jax`](https://github.com/google/jax), [`cupy`](https://cupy.dev/) | Multidimensional arrays, Distributed computing, DL frameworks, GPU acceleration |
+| Control Theory | [`control`](https://python-control.readthedocs.io/) | Feedback control system analysis |
+| GUI | [`PyQt5`](https://www.riverbankcomputing.com/software/pyqt/) | Experimental GUI tools (`gwexpy.gui`) |
 
-特定機能を使わない場合は、これらのパッケージは不要です。 `pip install ".[all]"` で全て一括インストール可能です。
+These packages are not required if you don't use the specific features. You can install all of them at once with `pip install ".[all]"`.
 
 #### Installation Extras
 
@@ -103,18 +112,17 @@ Required for specific submodules or interpolation features.
 
 | Extra Name | Packages |
 | :--- | :--- |
-| `[analysis]` | `pyemd`, `hurst`, `hurst-exponent`, `exp-hurst`, `pywt`, `librosa`, `obspy` |
-| `[stats]` | `statsmodels`, `scikit-learn`, `bottleneck`, `minepy`, `dcor`, `pmdarima` |
-| `[gw]` | `gwinc`, `dttxml` |
-| `[geophysics]` | `obspy`, `mth5`, `mt_metadata`, `mtpy`, `wintools`, `win2ndarray` |
-| `[bio]` | `mne`, `neo` |
+| `[gw]` | `pycbc`, `nds2-client`, `python-framel`, `ldas-tools-framecpp`, `gwinc`, `dttxml` |
+| `[stats]` | `polars`, `scikit-learn`, `statsmodels`, `pmdarima`, `minepy`, `dcor`, `hurst`, `hurst-exponent`, `exp_hurst`, `bottleneck` |
 | `[fitting]` | `iminuit`, `emcee`, `corner` |
-| `[gpu]` | `cupy`, `torch`, `tensorflow`, `jax` |
+| `[astro]` | `specutils`, `pyspeckit` |
+| `[geophysics]` | `obspy`, `mth5`, `mtpy`, `mt_metadata`, `netCDF4`, `wintools`, `win2ndarray` |
 | `[audio]` | `librosa`, `pydub`, `torchaudio` |
-| `[data]` | `xarray`, `h5py`, `netCDF4` |
+| `[bio]` | `mne`, `elephant`, `neo` |
+| `[interop]` | `torch`, `tensorflow`, `jax`, `jaxlib`, `dask`, `zarr`, `cupy` |
 | `[control]` | `control` |
-| `[interop]` | `torch`, `tensorflow`, `jax`, `dask`, `zarr`, `polars`, `xarray`, `h5py`, `netCDF4`, `obspy`, `mne`, `neo`, `control`, `cupy`, `librosa`, `pydub`, `torchaudio`, `specutils`, `pyspeckit` |
 | `[gui]` | `PyQt5` |
+| `[analysis]` | `PyEMD`, `pywt`, `librosa`, `obspy` |
 | `[dev]` | `pytest`, `pytest-cov`, `ruff`, `mypy` |
 
 To install everything at once, use: `pip install ".[all]"`.

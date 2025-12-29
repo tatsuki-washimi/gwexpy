@@ -14,54 +14,74 @@ dependencies = [
   "numpy>=1.21.0",
   "pandas>=1.3.0",
   "scipy>=1.7.0",
-  "matplotlib>=3.5.0"
+  "matplotlib>=3.5.0",
+  "lalsuite",
+  "gwdatafind",
+  "gwosc",
+  "igwn-segments",
+  "ligotimegps",
+  "dqsegdb2",
+  "dateparser",
+  "h5py"
 ]
 
 [project.optional-dependencies]
 dev = ["pytest", "pytest-cov", "ruff", "mypy"]
-interop = [
-  "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "polars",
-  "xarray", "h5py", "netCDF4", "obspy", "mne", "neo",
-  "control", "cupy",
-  "librosa", "pydub", "torchaudio",
-  "specutils", "pyspeckit"
+gw = [
+  "pycbc",
+  "nds2-client",
+  "python-framel",
+  "ldas-tools-framecpp",
+  "gwinc",
+  "dttxml"
 ]
-torch = ["torch"]
-tensorflow = ["tensorflow"]
-jax = ["jax", "jaxlib"]
-dask = ["dask"]
-zarr = ["zarr"]
-polars = ["polars"]
-audio = ["librosa", "pydub", "torchaudio"]
-data = ["xarray", "h5py", "netCDF4"]
-bio = ["mne", "neo"]
-control = ["control"]
-gpu = ["cupy", "torch", "tensorflow", "jax", "jaxlib"]
-gw = ["gwinc", "dttxml"]
-geophysics = ["obspy", "mth5", "mt_metadata", "mtpy", "wintools", "win2ndarray"]
-gui = ["PyQt5"]
-analysis = [
-    "PyEMD",          # emd, hht
-    "hurst",          # hurst指数
-    "hurst-exponent", # hurst指数 (alternative)
-    "exp-hurst",      # hurst指数 (differential)
-    "pywt",           # wavelet変換 (cwt)
-    "librosa",        # audio‑signal 前処理
-    "obspy"           # ノイズスペクトル解析
+stats = [
+  "polars",
+  "scikit-learn",
+  "statsmodels",
+  "pmdarima",
+  "minepy",
+  "dcor",
+  "hurst",
+  "hurst-exponent",
+  "exp-hurst",
+  "bottleneck"
 ]
 fitting = ["iminuit", "emcee", "corner"]
-stats = ["statsmodels", "scikit-learn", "bottleneck", "minepy", "dcor", "pmdarima"]
-
+astro = ["specutils", "pyspeckit"]
+geophysics = [
+  "obspy",
+  "mth5",
+  "mtpy",
+  "mt_metadata",
+  "netCDF4",
+  "wintools",
+  "win2ndarray"
+]
+audio = ["librosa", "pydub", "torchaudio"]
+bio = ["mne", "elephant", "neo"]
+interop = [
+  "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "cupy"
+]
+control = ["control"]
+gui = ["PyQt5"]
+analysis = [
+    "PyEMD",
+    "pywt",
+    "librosa",
+    "obspy"
+]
 all = [
-    "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "polars",
-    "librosa", "pydub", "torchaudio",
-    "xarray", "h5py", "netCDF4", "obspy", "mne", "neo", "gwinc", "dttxml",
-    "control", "cupy",
-    "wintools", "win2ndarray", "mth5", "mt_metadata", "mtpy",
-    "PyEMD", "hurst", "hurst-exponent", "exp-hurst", "pywt",
+    "pycbc", "nds2-client", "python-framel", "ldas-tools-framecpp", "gwinc", "dttxml",
+    "polars", "scikit-learn", "statsmodels", "pmdarima", "minepy", "dcor", "hurst", "hurst-exponent", "exp-hurst", "bottleneck",
     "iminuit", "emcee", "corner",
-    "statsmodels", "scikit-learn", "bottleneck", "minepy", "dcor", "pmdarima",
-    "specutils", "pyspeckit", "PyQt5"
+    "specutils", "pyspeckit",
+    "obspy", "mth5", "mtpy", "mt_metadata", "netCDF4", "wintools", "win2ndarray",
+    "librosa", "pydub", "torchaudio",
+    "mne", "elephant", "neo",
+    "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "cupy",
+    "control", "PyQt5",
+    "PyEMD", "pywt"
 ]
 
 [tool.setuptools.package-data]
