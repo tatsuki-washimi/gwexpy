@@ -34,74 +34,108 @@ def create_input_tab():
 
     # -- Data Source Selection --
     gb_ds, l_ds = _create_group("Data Source Selection", 'h')
+    ds_combo = QtWidgets.QComboBox(); ds_combo.setVisible(False); ds_combo.addItems(["NDS", "NDS2", "FILE"])
     
-    # Hidden combo for compatibility with MainWindow logic
-    ds_combo = QtWidgets.QComboBox(); ds_combo.setVisible(False); ds_combo.addItems(["SIM", "NDS", "FILE"])
-    
-    rb1 = QtWidgets.QRadioButton("Online system"); rb1.setChecked(True) # Maps to NDS
-    # rb2 Removed
-    rb3 = QtWidgets.QRadioButton("User NDS")
+    rb1 = QtWidgets.QRadioButton("Online system"); rb1.setChecked(True)
+    rb2 = QtWidgets.QRadioButton("User NDS")
+    rb3 = QtWidgets.QRadioButton("NDS2")
     rb4 = QtWidgets.QRadioButton("LiDaX")
     
-    # Logic to update hidden combo
     def update_ds():
-        ds_combo.setCurrentText("NDS") # Default to NDS for all visible options. 
-        # Simulation is now implicit overlay. 
-        # If user wants pure sim, they use NDS mode without connection?
-        # Or we force "SIM" if no NDS connection but Excitation active?
-        # User requirement: "Input tab ... remove Simulation ... Any selection allow Simulation".
-        # This means Signal Generator works in ALL modes.
-        if rb1.isChecked() or rb3.isChecked(): ds_combo.setCurrentText("NDS")
-        elif rb4.isChecked(): ds_combo.setCurrentText("NDS") # or LiDaX specific? Assuming NDS compatible for now.
-    
-    for r in [rb1, rb3, rb4]:
+        if rb3.isChecked(): ds_combo.setCurrentText("NDS2")
+        else: ds_combo.setCurrentText("NDS") # Maps others to NDS for now
+        
+    for r in [rb1, rb2, rb3, rb4]:
         r.toggled.connect(update_ds)
         l_ds.addWidget(r)
-        
-    # Trigger initial update
-    update_ds()
 
     l_ds.addSpacing(20)
-    l_ds.addWidget(QtWidgets.QCheckBox("Reconnect"))
-    l_ds.addItem(_h_spacer())
-    l_ds.addWidget(QtWidgets.QPushButton("Clear cache"))
-    
+    chk_reconnect = QtWidgets.QCheckBox("Reconnect")
+    l_ds.addWidget(chk_reconnect)
+    l_ds.addStretch(1)
+    btn_clear = QtWidgets.QPushButton("Clear cache")
+    l_ds.addWidget(btn_clear)
     vbox.addWidget(gb_ds)
 
-    # -- NDS Selection (for Online system) --
+    # -- NDS Selection --
     gb_nds, l_nds = _create_group("NDS Selection", 'h')
     l_nds.addWidget(QtWidgets.QLabel("Server:"))
-    cb_serv = QtWidgets.QComboBox(); cb_serv.addItems(["k1nds1"]); cb_serv.setMinimumWidth(200); cb_serv.setEditable(True)
+    cb_serv = QtWidgets.QComboBox()
+    cb_serv.addItems(["k1nds1", "localhost"]); cb_serv.setMinimumWidth(250); cb_serv.setEditable(True)
     l_nds.addWidget(cb_serv)
     l_nds.addWidget(QtWidgets.QLabel("Port:"))
-    l_nds.addWidget(_small_spin_int(0, 65535, width=80)) # Default 8088
-    l_nds.addItem(_h_spacer())
-    
-    # Add simple NDS Window control here for functionality, even if not in original looks (it's essential for online)
-    l_nds.addWidget(QtWidgets.QLabel("Window(s):"))
-    nds_win_spin = _small_spin_int(min_val=10, max_val=3600, width=60); nds_win_spin.setValue(30)
-    l_nds.addWidget(nds_win_spin)
-    
+    sb_port = _small_spin_int(0, 65535, width=80); sb_port.setValue(8088)
+    l_nds.addWidget(sb_port)
+    l_nds.addStretch(1)
     vbox.addWidget(gb_nds)
 
     # -- NDS2 Selection --
-    gb_nds2, l_nds2 = _create_group("NDS2 Selection", 'grid')
-    h1 = QtWidgets.QHBoxLayout(); h1.addWidget(QtWidgets.QLabel("Server:")); cb_serv2 = QtWidgets.QComboBox(); cb_serv2.addItems(["k1nds2"]); h1.addWidget(cb_serv2); h1.addWidget(QtWidgets.QLabel("Port:")); h1.addWidget(_small_spin_int(0, 65535, 80)); h1.addStretch(1); l_nds2.addLayout(h1, 0, 0, 1, 2)
+    gb_nds2, l_nds2 = _create_group("NDS2 Selection", 'v')
+    h_top2 = QtWidgets.QHBoxLayout()
+    h_top2.addWidget(QtWidgets.QLabel("Server:"))
+    cb_serv2 = QtWidgets.QComboBox(); cb_serv2.addItems(["k1nds2"]); cb_serv2.setMinimumWidth(250); cb_serv2.setEditable(True)
+    h_top2.addWidget(cb_serv2); h_top2.addWidget(QtWidgets.QLabel("Port:"))
+    sb_port2 = _small_spin_int(0, 65535, width=80); sb_port2.setValue(31200)
+    h_top2.addWidget(sb_port2); h_top2.addWidget(QtWidgets.QLabel("Epoch:"))
+    cb_epoch = QtWidgets.QComboBox(); cb_epoch.addItems(["User specified"]); cb_epoch.setMinimumWidth(150)
+    h_top2.addWidget(cb_epoch); h_top2.addStretch(1)
+    l_nds2.addLayout(h_top2)
+
+    h_epochs = QtWidgets.QHBoxLayout()
+    # Epoch Start
+    gb_start, l_start = _create_group("Epoch Start", 'grid')
+    l_start.addWidget(QtWidgets.QLabel("GPS:"), 0, 0); l_start.addWidget(_small_spin_int(0, 2000000000, 100), 0, 1); l_start.addWidget(QtWidgets.QLabel("sec"), 0, 2)
+    l_start.addWidget(QtWidgets.QLabel("Date/Time:"), 1, 0)
+    de_start = QtWidgets.QDateEdit(); de_start.setDisplayFormat("dd/MM/yyyy"); l_start.addWidget(de_start, 1, 1)
+    te_start = QtWidgets.QTimeEdit(); te_start.setDisplayFormat("HH:mm:ss"); l_start.addWidget(te_start, 1, 2)
+    l_start.addWidget(QtWidgets.QLabel("hh:mm:ss UTC"), 1, 3)
+    h_epochs.addWidget(gb_start)
+
+    # Epoch Stop
+    gb_stop, l_stop = _create_group("Epoch Stop", 'grid')
+    l_stop.addWidget(QtWidgets.QLabel("GPS:"), 0, 0)
+    sb_gps_stop = _small_spin_int(0, 2000000000, 100); sb_gps_stop.setValue(1451117047)
+    l_stop.addWidget(sb_gps_stop, 0, 1); l_stop.addWidget(QtWidgets.QLabel("sec"), 0, 2)
+    l_stop.addWidget(QtWidgets.QLabel("Date/Time:"), 1, 0)
+    de_stop = QtWidgets.QDateEdit(); de_stop.setDisplayFormat("dd/MM/yyyy"); l_stop.addWidget(de_stop, 1, 1)
+    te_stop = QtWidgets.QTimeEdit(); te_stop.setDisplayFormat("HH:mm:ss"); l_stop.addWidget(te_stop, 1, 2)
+    l_stop.addWidget(QtWidgets.QLabel("hh:mm:ss UTC"), 1, 3)
+    h_epochs.addWidget(gb_stop)
+    l_nds2.addLayout(h_epochs)
     vbox.addWidget(gb_nds2)
-    
-    # -- Simulation Settings (Hidden or integrated?) -- 
-    # To keep "looks", we put this in a separate small box or re-use LiDaX?
-    # Let's add a small "Simulation Settings" group at bottom
-    gb_sim, l_sim = _create_group("Simulation Settings", 'h')
-    l_sim.addWidget(QtWidgets.QLabel("Duration (s):"))
-    sim_dur_spin = _small_spin_dbl(1, 60, min_val=0.1, max_val=1e6); sim_dur_spin.setValue(10.0)
-    l_sim.addWidget(sim_dur_spin)
-    l_sim.addStretch(1)
-    vbox.addWidget(gb_sim)
-    
+
+    # -- LiDaX Data Source --
+    gb_lidx, l_lidx = _create_group("LiDaX Data Source", 'grid')
+    l_lidx.addWidget(QtWidgets.QLabel("Server:"), 0, 0)
+    l_lidx.addWidget(QtWidgets.QComboBox(), 0, 1)
+    cb_lfs = QtWidgets.QComboBox(); cb_lfs.addItems(["Local file system"]); l_lidx.addWidget(cb_lfs, 0, 2)
+    l_lidx.addWidget(QtWidgets.QPushButton("Add..."), 0, 3)
+    l_lidx.addWidget(QtWidgets.QLabel("Channels:"), 0, 4); l_lidx.addWidget(QtWidgets.QLineEdit(), 0, 5)
+    l_lidx.addWidget(QtWidgets.QPushButton("Select..."), 0, 6)
+    l_lidx.addWidget(QtWidgets.QLabel("UDN:"), 1, 0); l_lidx.addWidget(QtWidgets.QComboBox(), 1, 1, 1, 2)
+    l_lidx.addWidget(QtWidgets.QPushButton("More..."), 1, 3)
+    l_lidx.addWidget(QtWidgets.QLabel("Keep:"), 1, 4)
+    te_keep = QtWidgets.QTimeEdit(); te_keep.setDisplayFormat("HH:mm"); l_lidx.addWidget(te_keep, 1, 5)
+    l_lidx.addWidget(QtWidgets.QLabel("hh:mm"), 1, 6); l_lidx.addWidget(QtWidgets.QPushButton("Staging..."), 1, 7)
+    vbox.addWidget(gb_lidx)
+
+    # Hidden or integrated NDS Window control
+    nds_win_spin = _small_spin_int(min_val=1, max_val=3600, width=60); nds_win_spin.setValue(30); nds_win_spin.setVisible(False)
+    sim_dur_spin = _small_spin_dbl(1, 60, min_val=0.1, max_val=1e6); sim_dur_spin.setValue(10.0); sim_dur_spin.setVisible(False)
+
     vbox.addStretch(1)
     
-    controls = {'ds_combo': ds_combo, 'sim_dur': sim_dur_spin, 'nds_win': nds_win_spin}
+    controls = {
+        'ds_combo': ds_combo, 
+        'sim_dur': sim_dur_spin, 
+        'nds_win': nds_win_spin,
+        'nds_server': cb_serv,
+        'nds_port': sb_port,
+        'nds2_server': cb_serv2,
+        'nds2_port': sb_port2,
+        'reconnect': chk_reconnect,
+        'clear_cache': btn_clear
+    }
     return tab, controls
 
 def create_measurement_tab():
@@ -137,6 +171,10 @@ def create_measurement_tab():
         hbox_banks.addWidget(rb)
         rb_list.append(rb)
     hbox_banks.addStretch(1)
+    
+    btn_browse = QtWidgets.QPushButton("Channel Browser...")
+    hbox_banks.addWidget(btn_browse)
+    
     v_chan.addLayout(hbox_banks)
     
     # Channel State Management (96 channels)
@@ -166,9 +204,9 @@ def create_measurement_tab():
             ch_idx = start_ch + i
             # Grid logic: i=0..7 is col 1,2; i=8..15 is col 4,5
             # We stored them in flat list chan_grid_refs
-            lbl, chk, cmb = chan_grid_refs[i]
+            lbl, chk, cmb, btn = chan_grid_refs[i]
             channel_states[ch_idx]['active'] = chk.isChecked()
-            channel_states[ch_idx]['name'] = cmb.currentText()
+            channel_states[ch_idx]['name'] = cmb.text()
 
     def load_bank(bank_idx):
         start_ch = bank_idx * 16
@@ -179,16 +217,11 @@ def create_measurement_tab():
         for i in range(16):
             ch_idx = start_ch + i
             state = channel_states[ch_idx]
-            lbl, chk, cmb = chan_grid_refs[i]
+            lbl, chk, cmb, btn = chan_grid_refs[i]
             
             lbl.setText(str(ch_idx))
             chk.setChecked(state['active'])
-            
-            
-            # Ensure item exists in combo
-            txt = state['name']
-            if cmb.findText(txt) == -1: cmb.addItem(txt)
-            cmb.setCurrentText(txt)
+            cmb.setText(state['name'])
             
         for ref in chan_grid_refs:
             ref[1].blockSignals(False); ref[2].blockSignals(False)
@@ -232,60 +265,39 @@ def create_measurement_tab():
     c_grid.setHorizontalSpacing(15)
     
     chan_grid_refs = []
-    # Pre-populate defaults: Removed. 
-    # sim_channels = ... # Removed. Combos start empty.
-    
-    for i in range(8):
-        # Left column (0-7)
-        l_lbl = QtWidgets.QLabel(str(i)); c_grid.addWidget(l_lbl, i, 0)
-        l_chk = QtWidgets.QCheckBox(); c_grid.addWidget(l_chk, i, 1)
-        l_cmb = QtWidgets.QComboBox(); l_cmb.setEditable(True); l_cmb.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        c_grid.addWidget(l_cmb, i, 2)
-        
-        # Right column (8-15) - offset by 8 in the loop logic for index, but visually same row
-        r_lbl = QtWidgets.QLabel(str(i+8)); c_grid.addWidget(r_lbl, i, 3)
-        r_chk = QtWidgets.QCheckBox(); c_grid.addWidget(r_chk, i, 4)
-        r_cmb = QtWidgets.QComboBox(); r_cmb.setEditable(True); r_cmb.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        c_grid.addWidget(r_cmb, i, 5)
-        
-        # Store refs: (label, checkbox, combobox)
-        # Note: We append 2 sets of refs per row loop
-        chan_grid_refs.append((l_lbl, l_chk, l_cmb)) # Index 0-7
-    
-    # Need to handle the second column refs correctly in the flat list
-    # The above loop adds 0-7. We need 8-15. 
-    # Let's refactor the loop slightly to be safer or just append correct objects.
-    # Actually, let's fix the loop to be cleaner and matching the flat 16 items expectation
-    
-    # RE-DOING GRID LOOP specifically to ensure chan_grid_refs has 16 items in order 0-15
-    # The previous loop structure was interlacing creation. 
-    # Let's clear and rebuild the grid layout logic correctly.
-    
-    # Clear any previous widgets (conceptually, though this is first run)
-    chan_grid_refs = []
     
     # Create 16 sets of widgets first
     for i in range(16):
         lbl = QtWidgets.QLabel(str(i))
         chk = QtWidgets.QCheckBox()
-        cmb = QtWidgets.QComboBox(); cmb.setEditable(True); cmb.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        cmb = QtWidgets.QLineEdit(); cmb.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        btn = QtWidgets.QPushButton("▼"); btn.setFixedWidth(25)
         chk.toggled.connect(on_widget_change)
-        cmb.currentTextChanged.connect(on_widget_change)
-        chan_grid_refs.append((lbl, chk, cmb))
+        cmb.textChanged.connect(on_widget_change)
+        chan_grid_refs.append((lbl, chk, cmb, btn))
         
     # Add to layout
+    c_grid.setHorizontalSpacing(4)
+    c_grid.setColumnMinimumWidth(3, 20) # Middle spacer
+    
     for i in range(8):
         # Left: 0-7
         l_widgets = chan_grid_refs[i]
         c_grid.addWidget(l_widgets[0], i, 0)
         c_grid.addWidget(l_widgets[1], i, 1)
-        c_grid.addWidget(l_widgets[2], i, 2)
+        
+        l_box = QtWidgets.QHBoxLayout(); l_box.setSpacing(0); l_box.setContentsMargins(0,0,0,0)
+        l_box.addWidget(l_widgets[2]); l_box.addWidget(l_widgets[3])
+        c_grid.addLayout(l_box, i, 2)
         
         # Right: 8-15
         r_widgets = chan_grid_refs[i+8]
-        c_grid.addWidget(r_widgets[0], i, 3)
-        c_grid.addWidget(r_widgets[1], i, 4)
-        c_grid.addWidget(r_widgets[2], i, 5)
+        c_grid.addWidget(r_widgets[0], i, 4)
+        c_grid.addWidget(r_widgets[1], i, 5)
+
+        r_box = QtWidgets.QHBoxLayout(); r_box.setSpacing(0); r_box.setContentsMargins(0,0,0,0)
+        r_box.addWidget(r_widgets[2]); r_box.addWidget(r_widgets[3])
+        c_grid.addLayout(r_box, i, 6)
 
     v_chan.addLayout(c_grid)
     outer.addWidget(gb_chan)
@@ -308,6 +320,11 @@ def create_measurement_tab():
     #    Solution: The `on_widget_change` handles saving real-time. So the model `channel_states` is ALWAYS up to date for the *visible* bank.
     #    So we only need `load_bank` when switching.
     
+    def get_bank_offset():
+        for i, rb in enumerate(rb_list):
+            if rb.isChecked(): return i * 16
+        return 0
+
     [rb.toggled.connect(lambda checked, idx=i: update_chan_bank(idx) if checked else None) for i, rb in enumerate(rb_list)]
     
     controls['channel_states'] = channel_states
@@ -316,6 +333,9 @@ def create_measurement_tab():
         meas_callback = cb
     controls['set_change_callback'] = set_callback
     controls['set_all_channels'] = set_all_channels
+    controls['btn_browse'] = btn_browse
+    controls['grid_refs'] = chan_grid_refs
+    controls['get_bank_offset'] = get_bank_offset
 
     # Group: Fourier Tools
     gb_fft, g_fft = _create_group("Fourier Tools", 'grid')

@@ -24,7 +24,7 @@
 
 ### 3. Signal Transforms & Peak Finding
 
-- **Short-Time Local Transform (STLT)**: `ts.stlt()` creates a time-frequency representation tailored for local stationarity analysis.
+- **Short-Time Laplace Transform (STLT)**: `ts.stlt()` creates a time-frequency representation tailored for transient damped signal analysis.
 - **Peak Finding**: `ts.find_peaks()` wraps `scipy.signal.find_peaks` with unit-aware parameters (height, distance, width in physical units).
 - **HHT**: Hilbert-Huang Transform support (EMD + Hilbert Spectrum).
 - **Other Transforms**: Laplace Transform, DCT, Cepstrum, CWT.
@@ -215,7 +215,7 @@ peaks.plot(style='o')
 ### 5. Signal Transforms (STLT: [tutorial_ShortTimeLaplaceTransformation.ipynb](examples/tutorial_ShortTimeLaplaceTransformation.ipynb) & HHT: [tutorial_HHT_Analysis.ipynb](examples/tutorial_HHT_Analysis.ipynb))
 
 ```python
-# Short-Time Local Transform
+# Short-Time Laplace Transform
 stlt_res = s1.stlt(window='2s', stride='0.5s') 
 # Returns TimePlaneTransform (interpolate-able)
 val_at_5s = stlt_res.at_time(5*u.s, method="linear")

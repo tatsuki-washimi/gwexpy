@@ -20,7 +20,7 @@
 - **Noise Module**: Refactored `gwexpy.noise.magnetic` and `gwexpy.noise.peaks` for better maintenance and accuracy.
 - **TimeSeries Analysis**: Separated analysis methods into `_analysis.py` for better code organization.
 - **TimePlaneTransform**: Implemented `linear` interpolation for `at_time(t, method='linear')`.
-- **STLT**: Implemented functional Short-Time Local Transform (`TimeSeries.stlt`) using `scipy.signal.stft`.
+- **STLT**: Implemented functional Short-Time Laplace Transform (`TimeSeries.stlt`) using `scipy.signal.stft`.
 - **Resampling**: Enhanced `TimeSeries.resample` to support fast aggregation methods `median`, `min`, `max`, and `std` using `scipy` or `pandas` optimizations.
 - **MTH5 Interop**: Added experimental `to_mth5` and `from_mth5` functions in `gwexpy.interop.mt_` (requires optional `mth5` package).
 - **I/O Error Handling**: Standardized `NotImplementedError` for unsupported formats (WIN, SDB, etc.).
