@@ -48,6 +48,10 @@ def create_input_tab():
     for r in [rb1, rb2, rb3, rb4]:
         r.toggled.connect(update_ds)
         l_ds.addWidget(r)
+    
+    l_ds.addSpacing(10)
+    chk_pcaudio = QtWidgets.QCheckBox("PC Audio")
+    l_ds.addWidget(chk_pcaudio)
 
     l_ds.addSpacing(20)
     chk_reconnect = QtWidgets.QCheckBox("Reconnect")
@@ -134,7 +138,8 @@ def create_input_tab():
         'nds2_server': cb_serv2,
         'nds2_port': sb_port2,
         'reconnect': chk_reconnect,
-        'clear_cache': btn_clear
+        'clear_cache': btn_clear,
+        'pcaudio': chk_pcaudio
     }
     return tab, controls
 

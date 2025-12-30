@@ -1198,6 +1198,15 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
         """Alias for plot(). Plots all series in the dict."""
         return self.plot(*args, **kwargs)
 
+    @classmethod
+    def read(cls, source, *args, **kwargs):
+        from astropy.io import registry
+        return registry.read(cls, source, *args, **kwargs)
+
+    def write(self, target, *args, **kwargs):
+        from astropy.io import registry
+        return registry.write(self, target, *args, **kwargs)
+
 
 @as_series_dict_class(FrequencySeries)
 class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
@@ -1578,6 +1587,15 @@ class FrequencySeriesBaseList(list[_FS]):
     def plot_all(self, *args: Any, **kwargs: Any):
         """Alias for plot(). Plots all series."""
         return self.plot(*args, **kwargs)
+
+    @classmethod
+    def read(cls, source, *args, **kwargs):
+        from astropy.io import registry
+        return registry.read(cls, source, *args, **kwargs)
+
+    def write(self, target, *args, **kwargs):
+        from astropy.io import registry
+        return registry.write(self, target, *args, **kwargs)
 
 
 class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):

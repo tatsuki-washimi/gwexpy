@@ -52,6 +52,25 @@
   - `from_pygwinc()`: Detector noise budgets (aLIGO, KAGRA, etc.).
   - `from_obspy()`: Earth noise models (NLNM/NHNM) and Infrasound models with automatic integration and unit conversion (e.g., Acceleration to Displacement).
 
+### 8. Expanded File I/O
+
+gwexpy adds native read support for various experimental data formats often used in physics experiments but not supported by standard GWpy.
+
+#### New Implementations
+- **WIN (.win)**: NIED Hi-net seismic data format (with fixes for compression bugs).
+- **WAV (.wav)**: Audio/Vibration data (supports multi-channel reading as TimeSeries/TimeSeriesDict).
+- **ATS (.ats)**: Metronix ADU MT logger data (supports both direct binary reading and mth5 integration).
+- **SDB (.sdb/.sqlite)**: Davis Vantage Pro2 Weather Station data (via WeeWX SQLite database) with automatic unit conversion to metric.
+- **TDMS (.tdms)**: National Instruments TDMS format.
+- **GBD (.gbd)**: Graphtec Data Logger format.
+
+#### Extended Support (via Optional Dependencies)
+- **GWF variants (.gwf)**: Wraps `lalframe` / `framecpp` / `framel` for robust Frame reading.
+- **LIGO_LW XML (.xml)**: Supports reading channels from DTT-compatible XML files (via `dttxml`).
+- **MiniSEED (.mseed)**: Full support for seismic data via `obspy`.
+- **CSV/TXT**: Supports standard gwpy CSV format (Time, Value).
+- **ROOT (.root)**: High-performance vectorized conversion to/from CERN ROOT Histograms/Graphs.
+
 ---
 
 ## Installation

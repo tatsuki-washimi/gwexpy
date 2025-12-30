@@ -270,49 +270,55 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btn_start.setEnabled(False); self.btn_pause.setEnabled(True); self.btn_resume.setEnabled(False); self.btn_abort.setEnabled(True)
         # self.tabs.setTabEnabled(0, False) # Allow switching to Input tab even during operation
         
-        if self.data_source == 'NDS':
+        use_pc_audio = self.input_controls['pcaudio'].isChecked()
+        
+        if self.data_source == 'NDS' or use_pc_audio:
             # Collect channels
             channels = []
+            sim_channels = ["HF_sine", "LF_sine", "beating_sine", "white_noise", "sine_plus_noise", "square_wave", "sawtooth_wave", "random_walk"]
             states = self.meas_controls['channel_states']
             for s in states:
                 if s['active'] and s['name']:
-                    # Filter out default SIM channels if accidentally left
-                    sim_channels = ["HF_sine", "LF_sine", "beating_sine", "white_noise", "sine_plus_noise", "square_wave", "sawtooth_wave", "random_walk"]
-                    if s['name'] not in sim_channels:
+                    if s['name'] in sim_channels: 
+                        continue
+                    
+                    if s['name'].startswith("PC:"):
+                        if use_pc_audio:
+                            channels.append(s['name'])
+                    elif self.data_source == 'NDS':
                         channels.append(s['name'])
             
-            # Determine which server/port to use
-            ds_mode = self.input_controls['ds_combo'].currentText()
-            if ds_mode == "NDS2":
-                server = self.input_controls['nds2_server'].currentText()
-                port = self.input_controls['nds2_port'].value()
-            else:
-                server = self.input_controls['nds_server'].currentText()
-                port = self.input_controls['nds_port'].value()
-            
-            print(f"DEBUG: NDS Connect to {server}:{port} for channels: {channels}")
-            self.nds_cache.set_server(f"{server}:{port}")
-            self.nds_cache.set_channels(channels)
-            
-            # Start fetching
-            win_sec = self.input_controls['nds_win'].value()
-            self.nds_cache.online_start(lookback=win_sec)
+            if channels:
+                # Determine which NDS server/port to use (ignored by PC Audio channels anyway)
+                ds_mode = self.input_controls['ds_combo'].currentText()
+                if ds_mode == "NDS2":
+                    server = self.input_controls['nds2_server'].currentText()
+                    port = self.input_controls['nds2_port'].value()
+                else:
+                    server = self.input_controls['nds_server'].currentText()
+                    port = self.input_controls['nds_port'].value()
+                
+                print(f"DEBUG: Starting DataCache for channels: {channels}")
+                self.nds_cache.set_server(f"{server}:{port}")
+                self.nds_cache.set_channels(channels)
+                
+                win_sec = self.input_controls['nds_win'].value()
+                self.nds_cache.online_start(lookback=win_sec)
         
         self.timer.start(50)
 
     def pause_animation(self):
         self.timer.stop(); self.btn_start.setEnabled(False); self.btn_pause.setEnabled(False); self.btn_resume.setEnabled(True); self.btn_abort.setEnabled(True)
-        if self.data_source == 'NDS': self.nds_cache.online_stop()
+        self.nds_cache.online_stop()
 
     def resume_animation(self):
         self.timer.start(50); self.btn_start.setEnabled(False); self.btn_pause.setEnabled(True); self.btn_resume.setEnabled(False); self.btn_abort.setEnabled(True)
-        if self.data_source == 'NDS': 
-             win = self.input_controls['nds_win'].value()
-             self.nds_cache.online_start(lookback=win)
+        win = self.input_controls['nds_win'].value()
+        self.nds_cache.online_start(lookback=win)
 
     def stop_animation(self):
         self.timer.stop(); self.btn_start.setEnabled(True); self.btn_pause.setEnabled(False); self.btn_resume.setEnabled(False); self.btn_abort.setEnabled(True)
-        if self.data_source == 'NDS': self.nds_cache.reset(); self.nds_latest_raw = None
+        self.nds_cache.reset(); self.nds_latest_raw = None
         for t_list in [self.traces1, self.traces2]:
             for t in t_list: t['curve'].setData([], []); t['bar'].setOpts(x=[0], height=[0]); t['img'].clear()
         self.time_counter = 0.0

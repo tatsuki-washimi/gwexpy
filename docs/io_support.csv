@@ -1,23 +1,24 @@
 Format,Read,Write,Extension,Remarks
-GWF,〇,〇,.gwf,Standard (gwpy/framecpp)
-HDF5,〇,〇,.h5 .hdf5,Standard
-LIGO_LW XML,〇,×,.xml .xml.gz,via dttxml (DTT compatible)
-CSV/TXT,〇,〇,.csv .txt,ASCII
-Pickle,〇,〇,.pkl,Python object serialization
-WAV,〇,〇,.wav,Standard Audio
-MiniSEED,〇,〇,.mseed,Seismic (via ObsPy)
-SAC,〇,〇,.sac,Seismic (via ObsPy)
-GSE2,〇,〇,.gse2,Seismic (via ObsPy)
-KNET,〇,×,.knet,Seismic (via ObsPy)
-GBD,〇,×,.gbd,Data Logger (Native)
-WIN / WIN32,〇,×,.win .cnt,Data Logger (Native)
-MTH5,〇,〇,.h5,Magnetotelluric (via mth5)
-ATS,〇,×,.ats,Magnetotelluric (via mth5 conversion)
-ROOT,〇,〇,.root,CERN ROOT (Native/ROOT)
-SQLite,〇,〇,.sqlite .db,Database
-NetCDF4,〇,〇,.nc,Scientific Data
-Zarr,〇,〇,.zarr,Cloud Optimized
-Audio (MP3 etc),〇,〇,.mp3 .flac,via pydub
-NDS2,〇,×,(Network),Network Data Server
-SDB,×,×,.sdb,Not Supported (Stub)
+GWF,○,○,.gwf,Standard (gwpy/framecpp)
+HDF5,○,○,.h5 .hdf5,Standard
+LIGO_LW XML,○,×,.xml .xml.gz,via dttxml (DTT compatible)
+CSV/TXT,○,○,.csv .txt,ASCII (gwpy Standard)
+Pickle,○,○,.pkl,Python object serialization
+WAV,○,○,.wav,Standard Audio (Multi-channel read)
+MiniSEED,○,○,.mseed,Seismic (via ObsPy)
+SAC,○,○,.sac,Seismic (via ObsPy)
+GSE2,○,○,.gse2,Seismic (via ObsPy)
+KNET,○,×,.knet,Seismic (via ObsPy)
+GBD,○,×,.gbd,Data Logger (Native reader)
+WIN / WIN32,○,×,.win .cnt,Data Logger (Native / Fixed obspy)
+MTH5,○,○,.h5,Magnetotelluric (via mth5)
+ATS,○,×,.ats,Magnetotelluric (Native Binary / mth5)
+ROOT,○,○,.root,CERN ROOT (Native/ROOT)
+SQLite,○,○,.sqlite .db,Database
+NetCDF4,○,○,.nc,Scientific Data
+Zarr,○,○,.zarr,Cloud Optimized
+Audio (MP3 etc),○,○,.mp3 .flac,via pydub
+NDS2,○,×,(Network),Network Data Server
+SDB,○,×,.sdb,Davis Weather Station / WeeWX (Native)
 ORF,×,×,.orf,Not Supported (Stub)
+TDMS,○,×,.tdms,National Instruments (via npTDMS)
