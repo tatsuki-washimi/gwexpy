@@ -13,12 +13,10 @@ from __future__ import annotations
 import struct
 import warnings
 import numpy as np
-import obspy
-from obspy import UTCDateTime, Trace, Stream
+from obspy import Stream, Trace, UTCDateTime
 from gwpy.io import registry as io_registry
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
-from gwexpy.io.utils import apply_unit
 
 
 def s4(v):
@@ -136,8 +134,7 @@ def _read_win_fixed(filename, century="20"):
                         # Original: from_buffer(sdata[...] + b' ', '>i')[0] >> 8
                         # Assuming Big Endian 3 bytes -> Pad at END with something, unpack as 4 byte int, shift right 8.
                         # b' ' is 0x20. If we pad with 0x00 it changes nothing for >> 8 if positive?
-                        # Let's follow the patch exactly: sdata[...] + b' '
-                        
+                        # The 'chunk' variable was unused, directly unpack.
                         val_tmp = struct.unpack('>i', sdata[3 * i:3 * (i + 1)] + b' ')[0]
                         val = val_tmp >> 8
                         idata2 = output[chanum][-1] + val
@@ -148,8 +145,8 @@ def _read_win_fixed(filename, century="20"):
                         idata2 = output[chanum][-1] + val
                         output[chanum].append(idata2)
                 else:
-                    msg = "DATAWIDE is %s " % datawide + \
-                          "but only values of 0.5, 1, 2, 3 or 4 are supported."
+                    msg = ("DATAWIDE is %s but only values of 0.5, 1, 2, 3 or 4 "
+                           "are supported.") % datawide
                     raise NotImplementedError(msg)
 
     traces = []
@@ -201,5 +198,9 @@ for fmt in ["win", "win32"]:
     io_registry.register_reader(fmt, TimeSeriesDict, read_win_file, force=True)
     io_registry.register_reader(fmt, TimeSeries, lambda *a, **k: read_win_file(*a, **k)[next(iter(read_win_file(*a, **k).keys()))], force=True)
     io_registry.register_reader(fmt, TimeSeriesMatrix, lambda *a, **k: read_win_file(*a, **k).to_matrix(), force=True)
-    io_registry.register_identifier(fmt, TimeSeriesDict, lambda *args, fmt=fmt, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
-    io_registry.register_identifier(fmt, TimeSeries, lambda *args, fmt=fmt, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
+    io_registry.register_identifier(
+        fmt, TimeSeriesDict,
+        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
+    io_registry.register_identifier(
+        fmt, TimeSeries,
+        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))

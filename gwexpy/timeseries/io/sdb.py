@@ -11,7 +11,6 @@ from astropy.time import Time
 
 from gwpy.io import registry as io_registry
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
-from gwexpy.io.utils import apply_unit
 
 # Unit extraction factors (Imperial to Metric)
 UNIT_CONVERSION = {
@@ -86,7 +85,7 @@ def read_timeseriesdict_sdb(source, table='archive', columns=None, **kwargs):
     # We expect all columns except potentially descriptive ones (none here) to be numeric
     for col in df.columns:
         if col != 'dateTime':
-             df[col] = pd.to_numeric(df[col], errors='coerce')
+            df[col] = pd.to_numeric(df[col], errors='coerce')
     
     # Check if dateTime is present
     if 'dateTime' not in df.columns:
@@ -164,5 +163,9 @@ for fmt in ["sdb", "sqlite", "sqlite3"]:
     io_registry.register_reader(fmt, TimeSeries, read_timeseries_sdb, force=True)
     io_registry.register_reader(fmt, TimeSeriesMatrix, lambda *a, **k: read_timeseriesdict_sdb(*a, **k).to_matrix(), force=True)
     
-    io_registry.register_identifier(fmt, TimeSeriesDict, lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
-    io_registry.register_identifier(fmt, TimeSeries, lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
+    io_registry.register_identifier(
+        fmt, TimeSeriesDict,
+        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
+    io_registry.register_identifier(
+        fmt, TimeSeries,
+        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))

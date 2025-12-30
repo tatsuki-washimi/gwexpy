@@ -7,11 +7,9 @@ from __future__ import annotations
 
 import numpy as np
 from scipy.io import wavfile
-from astropy.time import Time
 
 from gwpy.io import registry as io_registry
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
-from gwexpy.io.utils import apply_unit
 
 def read_timeseriesdict_wav(source, **kwargs):
     """
@@ -68,5 +66,9 @@ for fmt in ["wav"]:
     io_registry.register_reader(fmt, TimeSeries, read_timeseries_wav, force=True)
     io_registry.register_reader(fmt, TimeSeriesMatrix, lambda *a, **k: read_timeseriesdict_wav(*a, **k).to_matrix(), force=True)
     
-    io_registry.register_identifier(fmt, TimeSeriesDict, lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
-    io_registry.register_identifier(fmt, TimeSeries, lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
+    io_registry.register_identifier(
+        fmt, TimeSeriesDict,
+        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
+    io_registry.register_identifier(
+        fmt, TimeSeries,
+        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
