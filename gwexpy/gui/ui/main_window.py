@@ -15,6 +15,7 @@ from nds.cache import NDSDataCache
 # Excitation Module Imports
 from excitation.generator import SignalGenerator
 from excitation.params import GeneratorParams
+from channel_browser import ChannelBrowserDialog
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -84,6 +85,13 @@ class MainWindow(QtWidgets.QMainWindow):
         
         # Connect Measurement Channel Updates
         self.meas_controls['set_change_callback'](self.on_measurement_channel_changed)
+        self.meas_controls['btn_browse'].clicked.connect(lambda: self.show_channel_browser())
+        
+        # Connect Individual Channel Browse buttons
+        for i, row in enumerate(self.meas_controls['grid_refs']):
+            # Each row is (label, checkbox, combobox, browse_button)
+            btn = row[3]
+            btn.clicked.connect(lambda checked, idx=i: self.show_channel_browser(start_slot=idx))
         
         # Connect Excitation Channel Updates to trigger channel list refresh
         if self.exc_controls and 'panels' in self.exc_controls:
@@ -178,6 +186,60 @@ class MainWindow(QtWidgets.QMainWindow):
                         
                         combo.blockSignals(False)
 
+    def show_channel_browser(self, start_slot=None):
+        # Determine which server/port to use based on current selection in Input tab
+        ds_mode = self.input_controls['ds_combo'].currentText()
+        if ds_mode == "NDS2":
+            server = self.input_controls['nds2_server'].currentText()
+            port = self.input_controls['nds2_port'].value()
+        else:
+            server = self.input_controls['nds_server'].currentText()
+            port = self.input_controls['nds_port'].value()
+        
+        dlg = ChannelBrowserDialog(server, port, self)
+        if dlg.exec_():
+            chans = dlg.selected_channels
+            if not chans:
+                return
+
+            # Get current display offset (0, 16, 32, ...)
+            offset = self.meas_controls['get_bank_offset']()
+            states = self.meas_controls['channel_states']
+            new_states = [dict(s) for s in states] 
+
+            if start_slot is not None:
+                # 1. Individual row triggered (starts at start_slot + offset)
+                idx = offset + start_slot
+                
+                # Replace the current one with the first selected channel
+                new_states[idx]['name'] = chans[0]
+                new_states[idx]['active'] = True
+                
+                # Fill subsequent selected channels into empty slots after idx
+                chan_idx = 1
+                if len(chans) > 1:
+                    for j in range(idx + 1, len(new_states)):
+                        if chan_idx >= len(chans): break
+                        if not new_states[j]['name']:
+                            new_states[j]['name'] = chans[chan_idx]
+                            new_states[j]['active'] = True
+                            chan_idx += 1
+                count = chan_idx
+            else:
+                # 2. Master "Channel Browser..." button (find any empty slots from start)
+                count = 0
+                for i in range(len(new_states)):
+                    if not new_states[i]['name']:
+                        new_states[i]['name'] = chans[count]
+                        new_states[i]['active'] = True
+                        count += 1
+                        if count >= len(chans):
+                            break
+            
+            # Update UI to reflect model
+            self.meas_controls['set_all_channels'](new_states)
+            print(f"Added {count} channels from {server}:{port}")
+
     def on_source_changed(self, text):
         self.data_source = text
         if text == "NDS":
@@ -206,26 +268,33 @@ class MainWindow(QtWidgets.QMainWindow):
         print(f"DEBUG: start_animation called. DataSource: {self.data_source}")
         
         self.btn_start.setEnabled(False); self.btn_pause.setEnabled(True); self.btn_resume.setEnabled(False); self.btn_abort.setEnabled(True)
-        self.tabs.setTabEnabled(0, False) # Disable input tab changes
-        
-        # Reset simple Timebase
-        self.time_counter = 0.0
+        # self.tabs.setTabEnabled(0, False) # Allow switching to Input tab even during operation
         
         if self.data_source == 'NDS':
             # Collect channels
             channels = []
-            # Use active channels from Measurement tab
             states = self.meas_controls['channel_states']
             for s in states:
                 if s['active'] and s['name']:
-                    # Filter out default SIM channels to avoid NDS errors if accidentally left
+                    # Filter out default SIM channels if accidentally left
                     sim_channels = ["HF_sine", "LF_sine", "beating_sine", "white_noise", "sine_plus_noise", "square_wave", "sawtooth_wave", "random_walk"]
                     if s['name'] not in sim_channels:
                         channels.append(s['name'])
             
-            # Start NDS
-            print(f"DEBUG: Collected channels: {channels}")
+            # Determine which server/port to use
+            ds_mode = self.input_controls['ds_combo'].currentText()
+            if ds_mode == "NDS2":
+                server = self.input_controls['nds2_server'].currentText()
+                port = self.input_controls['nds2_port'].value()
+            else:
+                server = self.input_controls['nds_server'].currentText()
+                port = self.input_controls['nds_port'].value()
+            
+            print(f"DEBUG: NDS Connect to {server}:{port} for channels: {channels}")
+            self.nds_cache.set_server(f"{server}:{port}")
             self.nds_cache.set_channels(channels)
+            
+            # Start fetching
             win_sec = self.input_controls['nds_win'].value()
             self.nds_cache.online_start(lookback=win_sec)
         
