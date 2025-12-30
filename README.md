@@ -56,20 +56,22 @@
 
 gwexpy adds native read support for various experimental data formats often used in physics experiments but not supported by standard GWpy.
 
-#### New Implementations
-- **WIN (.win)**: NIED Hi-net seismic data format (with fixes for compression bugs).
+#### GWpy read support
+
+- **GWF variants (.gwf)**: Wraps `lalframe` / `framecpp` / `framel` for robust Frame reading.
 - **WAV (.wav)**: Audio/Vibration data (supports multi-channel reading as TimeSeries/TimeSeriesDict).
+- **CSV/TXT**: Supports standard gwpy CSV format (Time, Value).
+
+#### New Implementations
+
+- **LIGO_LW XML (.xml)**: Supports reading channels from DTT-compatible XML files (via `dttxml`).
+- **ROOT (.root)**: High-performance vectorized conversion to/from CERN ROOT Histograms/Graphs.
+- **MiniSEED (.mseed)**: Full support for seismic data via `obspy`.
+- **WIN (.win)**: NIED Hi-net seismic data format (with fixes for compression bugs).
 - **ATS (.ats)**: Metronix ADU MT logger data (supports both direct binary reading and mth5 integration).
 - **SDB (.sdb/.sqlite)**: Davis Vantage Pro2 Weather Station data (via WeeWX SQLite database) with automatic unit conversion to metric.
 - **TDMS (.tdms)**: National Instruments TDMS format.
 - **GBD (.gbd)**: Graphtec Data Logger format.
-
-#### Extended Support (via Optional Dependencies)
-- **GWF variants (.gwf)**: Wraps `lalframe` / `framecpp` / `framel` for robust Frame reading.
-- **LIGO_LW XML (.xml)**: Supports reading channels from DTT-compatible XML files (via `dttxml`).
-- **MiniSEED (.mseed)**: Full support for seismic data via `obspy`.
-- **CSV/TXT**: Supports standard gwpy CSV format (Time, Value).
-- **ROOT (.root)**: High-performance vectorized conversion to/from CERN ROOT Histograms/Graphs.
 
 ---
 
