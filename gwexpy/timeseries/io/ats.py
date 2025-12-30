@@ -9,12 +9,10 @@ import datetime
 from pathlib import Path
 
 import numpy as np
-from astropy.time import Time
 from gwpy.time import to_gps
 
 from gwpy.io import registry as io_registry
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
-from gwexpy.io.utils import apply_unit
 
 
 def read_timeseriesdict_ats(source, **kwargs):
@@ -131,16 +129,15 @@ def read_timeseries_ats_mth5(source, **kwargs):
     # Based on investigation, it checks .suffix in _get_file_type.
     # If source does not end in .atss, we might fail or need to symlink.
     # We will pass it as is and let mth5 handle (or fail).
-    
-    import xarray as xr
+
     from gwexpy.timeseries import TimeSeries
-    
+
     # mth5 read_atss returns a ChannelTS object (wrapping xarray)
     # or sometimes directly ChannelTS?
     # read_atss(fn) -> atss_obj.to_channel_ts()
-    
+
     channel_ts = metronix_atss.read_atss(str(source))
-    
+
     # Convert ChannelTS (xarray) to TimeSeries
     # channel_ts.ts is the xarray DataArray
     data_array = channel_ts.ts
@@ -186,8 +183,12 @@ for fmt in ["ats"]:
     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=True)
     io_registry.register_reader(fmt, TimeSeriesMatrix, lambda *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(), force=True)
     
-    io_registry.register_identifier(fmt, TimeSeriesDict, lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
-    io_registry.register_identifier(fmt, TimeSeries, lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
+    io_registry.register_identifier(
+        fmt, TimeSeriesDict,
+        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
+    io_registry.register_identifier(
+        fmt, TimeSeries,
+        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
 
 # Register mth5 variant
 io_registry.register_reader("ats.mth5", TimeSeries, read_timeseries_ats_mth5)
