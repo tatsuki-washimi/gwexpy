@@ -38,6 +38,9 @@ def load_products(filename: str) -> dict:
         '.txt': 'txt',
         '.dat': 'txt',
         '.wav': 'wav',
+        '.ats': 'ats',
+        '.sdb': 'sdb',
+        '.sqlite': 'sdb',
         '.mseed': 'miniseed',
         '.miniseed': 'miniseed',
         '.sac': 'sac',
@@ -46,7 +49,9 @@ def load_products(filename: str) -> dict:
         '.npy': 'npy',
         '.mat': 'mat',
         '.fits': 'fits',
-        '.pkl': 'pickle'
+        '.pkl': 'pickle',
+        '.gbd': 'gbd',
+        '.tdms': 'tdms'
     }
     
     fmt = ext_map.get(ext)

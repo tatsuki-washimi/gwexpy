@@ -46,7 +46,7 @@ class GBDHeader:
 def read_timeseriesdict_gbd(
     source,
     *,
-    timezone=None,
+    timezone='UTC',
     channels: Optional[Iterable[str]] = None,
     unit=None,
     epoch=None,
@@ -171,15 +171,15 @@ def _read_header_text(fh: io.BufferedReader) -> Tuple[str, int]:
 
 
 def _parse_header(header_text: str, header_size: int) -> GBDHeader:
-    start = _find_field(header_text, r"\$\$Time\s*Start\s*[:=]\s*([^\r\n]+)")
-    stop = _find_field(header_text, r"\$\$Time\s*Stop\s*[:=]\s*([^\r\n]+)", default=start)
-    dt_raw = _find_field(header_text, r"\$\$Data\s*Sample\s*[:=]\s*([^\r\n]+)", default="1")
+    start = _find_field(header_text, r"Start\s*[:=]\s*([^\r\n]+)")
+    stop = _find_field(header_text, r"Stop\s*[:=]\s*([^\r\n]+)", default=start)
+    dt_raw = _find_field(header_text, r"Sample\s*[:=]\s*([^\r\n]+)", default="1")
     dt = _parse_sample(dt_raw)
-    dtype_raw = _find_field(header_text, r"\$\$Data\s*Type\s*[:=]\s*([^\r\n]+)", default="little,float32")
+    dtype_raw = _find_field(header_text, r"Type\s*[:=]\s*([^\r\n]+)", default="little,float32")
     dtype = _parse_dtype(dtype_raw)
-    order_raw = _find_field(header_text, r"\$\$Data\s*Order\s*[:=]\s*([^\r\n]+)", default="")
+    order_raw = _find_field(header_text, r"Order\s*[:=]\s*([^\r\n]+)", default="")
     order = [c.strip() for c in re.split(r"[,\s]+", order_raw) if c.strip()] or ["CH0"]
-    counts_raw = _find_field(header_text, r"\$\$Data\s*Counts\s*[:=]\s*([0-9]+)", default="0")
+    counts_raw = _find_field(header_text, r"Counts\s*[:=]\s*([0-9]+)", default="0")
     counts = int(counts_raw)
     scales = _parse_scales(header_text, order)
     return GBDHeader(
@@ -268,3 +268,5 @@ def _read_data_block(fh, header: GBDHeader) -> np.ndarray:
 io_registry.register_reader("gbd", TimeSeriesDict, read_timeseriesdict_gbd)
 io_registry.register_reader("gbd", TimeSeries, read_timeseries_gbd)
 io_registry.register_reader("gbd", TimeSeriesMatrix, read_timeseriesmatrix_gbd)
+io_registry.register_identifier("gbd", TimeSeriesDict, lambda *args, **kwargs: str(args[1]).lower().endswith(".gbd"))
+io_registry.register_identifier("gbd", TimeSeries, lambda *args, **kwargs: str(args[1]).lower().endswith(".gbd"))

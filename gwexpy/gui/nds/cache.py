@@ -5,6 +5,7 @@ Adapts NDSThread and DataBufferDict.
 import os
 from qtpy import QtCore
 from .nds_thread import NDSThread
+from .audio_thread import AudioThread
 from .buffer import DataBufferDict
 from .util import parse_server_string
 
@@ -18,7 +19,8 @@ class NDSDataCache(QtCore.QObject):
         self.lookback = 30.0
         self.buffers = DataBufferDict(self.lookback)
         self.thread = None
-        self.active_tid = None # To prevent multiple threads
+        self.audio_thread = None
+        self.active_tid = None 
 
     def set_channels(self, channels):
         self.channels = list(set([c for c in channels if c])) # Unique, non-empty
@@ -34,26 +36,45 @@ class NDSDataCache(QtCore.QObject):
             print("NDSDataCache: No channels to fetch.")
             return
 
-        if self.thread and self.thread.isRunning():
-             print("NDSDataCache: Thread already running.")
-             return
+        # Split channels
+        nds_chans = [c for c in self.channels if not c.startswith("PC:")]
+        audio_chans = [c for c in self.channels if c.startswith("PC:")]
 
-        host, port = parse_server_string(self.server)
+        # Start NDS Thread if needed
+        if nds_chans:
+            if self.thread and self.thread.isRunning():
+                print("NDSDataCache: NDS Thread already running.")
+            else:
+                host, port = parse_server_string(self.server)
+                print(f"DEBUG: Starting NDSThread for {nds_chans} on {host}:{port}")
+                self.thread = NDSThread(nds_chans, host, port)
+                self.thread.dataReceived.connect(self._on_data_received)
+                self.thread.start()
         
-        print(f"DEBUG: Starting NDSThread for {self.channels} on {host}:{port}")
-        self.thread = NDSThread(self.channels, host, port)
-        self.thread.dataReceived.connect(self._on_data_received)
-        self.thread.start()
-        print(f"NDS Online started for {self.channels} on {host}:{port}")
+        # Start Audio Thread if needed
+        if audio_chans:
+            if self.audio_thread and self.audio_thread.isRunning():
+                print("NDSDataCache: Audio Thread already running.")
+            else:
+                print(f"DEBUG: Starting AudioThread for {audio_chans}")
+                self.audio_thread = AudioThread(audio_chans)
+                self.audio_thread.dataReceived.connect(self._on_data_received)
+                self.audio_thread.start()
 
     def online_stop(self):
         if self.thread:
             self.thread.stop()
-            self.thread.wait(2000) # Wait up to 2s
-            if self.thread.isRunning():
-                self.thread.terminate() # Force kill if necessary
+            self.thread.wait(2000)
+            if self.thread.isRunning(): self.thread.terminate()
             self.thread = None
             print("NDS Online stopped.")
+        
+        if self.audio_thread:
+            self.audio_thread.stop()
+            self.audio_thread.wait(2000)
+            if self.audio_thread.isRunning(): self.audio_thread.terminate()
+            self.audio_thread = None
+            print("Audio Online stopped.")
 
     def reset(self):
         self.online_stop()

@@ -69,6 +69,15 @@ def _read_obspy_stream(format_name, source, *, pad=np.nan, gap="pad", **kwargs):
         raise ValueError(f"Gaps detected in {format_name} data: {gaps}")
 
     # Merge traces if necessary (handle gaps/overlaps)
+    if pad is not None:
+        try:
+            if np.isnan(pad):
+                for tr in stream:
+                    if not np.issubdtype(tr.data.dtype, np.floating):
+                        tr.data = tr.data.astype(float)
+        except (TypeError, ValueError):
+            pass
+
     stream.merge(method=1, fill_value=pad)
     return stream
 
@@ -192,12 +201,4 @@ io_registry.register_reader("knet", TimeSeriesDict, read_knet_timeseriesdict)
 io_registry.register_reader("knet", TimeSeries, lambda *a, **k: _adapt_timeseries(read_knet_timeseriesdict, *a, **k))
 io_registry.register_reader("knet", TimeSeriesMatrix, lambda *a, **k: _adapt_matrix(read_knet_timeseriesdict, *a, **k))
 
-# -- WIN (Native implementation)
-def read_win_timeseriesdict(source, **kwargs):
-    from .win import read_win_file
-    return read_win_file(source, **kwargs)
 
-for fmt in ["win", "win32"]:
-    io_registry.register_reader(fmt, TimeSeriesDict, read_win_timeseriesdict)
-    io_registry.register_reader(fmt, TimeSeries, lambda *a, **k: _adapt_timeseries(read_win_timeseriesdict, *a, **k))
-    io_registry.register_reader(fmt, TimeSeriesMatrix, lambda *a, **k: _adapt_matrix(read_win_timeseriesdict, *a, **k))

@@ -7,9 +7,6 @@ from gwpy.io import registry as io_registry
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 _P2_FORMATS = [
-    "win",
-    "win32",
-    "sdb",
     "orf",
     "mem",
     "wvf",
