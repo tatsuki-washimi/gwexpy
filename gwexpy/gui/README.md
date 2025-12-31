@@ -82,11 +82,11 @@ python pyaggui.py
 - `pyaggui.py`: エントリーポイント。アプリケーションの初期化を行います。
 - `ui/`: 各タブやウィンドウのUI定義ファイル群（`main_window.py`, `tabs.py`, `graph_panel.py` 等）。
 - `io/`: データ読み込み・パース関連（`loaders.py`, `products.py`）。
-    - ※ **重要**: 現在、DTT XMLのパースロジック (`extract_xml_channels`) はワークスペース制限のため `gui/io/loaders.py` に一時的に実装されています。将来的には **`gwexpy/io/dttxml_common.py` へ統合・修正する必要があります**。
+    - `extract_xml_channels` などの共通ロジックは **`gwexpy/io/dttxml_common.py`** を利用します。
 - `engine.py`: シミュレーションデータの生成や信号処理を行うバックエンド。
 
 ## 既知の問題 / 今後の課題 (Known Issues / Future Work)
 
 - **NDS接続**: 接続動作およびチャンネルリスト取得機能は未検証・未実装です。
 - **ファイル対応**: XML以外の形式（GWF等）におけるチャンネルハンドリングのDTT互換化。
-- **コード統合**: `gui/io/loaders.py` 内のXMLパースロジックを `gwexpy/io/dttxml_common.py` へ移動。
+

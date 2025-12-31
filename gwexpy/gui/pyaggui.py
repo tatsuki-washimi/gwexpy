@@ -4,14 +4,26 @@ import os
 from pathlib import Path
 from PyQt5 import QtWidgets, QtCore
 
-# Add subdirectories to sys.path to allow flat imports
-base_dir = Path(__file__).resolve().parent
-sys.path.append(str(base_dir))
-sys.path.append(str(base_dir / 'io'))
-sys.path.append(str(base_dir / 'plotting'))
-sys.path.append(str(base_dir / 'ui'))
 
-from main_window import MainWindow
+# Note: relative imports require this script to be run as a module (python -m gwexpy.gui)
+# or installed as a package.
+try:
+    from .ui.main_window import MainWindow
+except ImportError:
+    # Fallback for direct execution if needed, though not recommended
+    # But now that we cleaned up, we should rely on package structure.
+    # If running directly, we might need to add cwd to path, but let's assume -m usage or installed.
+    # Actually, for user convenience `python gwexpy/gui/pyaggui.py` might be used.
+    # If so, relative import fails.
+    if __name__ == "__main__":
+        # If run directly, we can try adding the parent to path to make 'gwexpy.gui' resolvable
+        # But 'from .ui' only works in a package.
+        # Let's use absolute import if possible?
+        import sys
+        sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
+        from gwexpy.gui.ui.main_window import MainWindow
+    else:
+        raise
 
 def main():
     import argparse

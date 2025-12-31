@@ -63,6 +63,5 @@
     *   `on_measurement_channel_changed`: Measurement タブからの変更通知を受け取り、Results タブのコンボボックスを更新します。
     *   XML読み込み時に `loaders.extract_xml_channels` を使用して Measurement タブの状態をプログラムから更新 (`set_all_channels`) します。
 *   **技術的負債 / リファクタリング**:
-    *   現在、XMLのパラメータ解析（Active状態読み取り）ロジックは `gwexpy/gui/io/loaders.py` 内に実装されています。
-    *   本来このロジックは **`gwexpy/io/dttxml_common.py`** に実装すべきものです。
-    *   **今後のタスク**: `loaders.py` 内の `extract_xml_channels` 相当の機能を `gwexpy/io/dttxml_common.py` に移動・統合し、`loaders.py` からはそれを呼び出すように修正する必要があります。
+    *   以前は `gwexpy/gui/io/loaders.py` 内に実装されていましたが、現在は **`gwexpy/io/dttxml_common.py`** に移動・統合されました。
+    *   `loaders.py` は必要に応じて `dttxml_common.py` の機能を利用する構成になっています。
