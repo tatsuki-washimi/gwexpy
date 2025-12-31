@@ -5,17 +5,18 @@ import pyqtgraph as pg
 import numpy as np
 from gwpy.timeseries import TimeSeries
 
-import loaders
-import products
-from normalize import normalize_series
-from engine import Engine
-from tabs import create_input_tab, create_measurement_tab, create_excitation_tab, create_result_tab
-from graph_panel import GraphPanel
-from nds.cache import NDSDataCache
+from ..loaders import loaders
+from ..loaders import products
+from gwexpy.io.dttxml_common import extract_xml_channels
+from ..plotting.normalize import normalize_series
+from ..engine import Engine
+from .tabs import create_input_tab, create_measurement_tab, create_excitation_tab, create_result_tab
+from .graph_panel import GraphPanel
+from ..nds.cache import NDSDataCache
 # Excitation Module Imports
-from excitation.generator import SignalGenerator
-from excitation.params import GeneratorParams
-from channel_browser import ChannelBrowserDialog
+from ..excitation.generator import SignalGenerator
+from ..excitation.params import GeneratorParams
+from .channel_browser import ChannelBrowserDialog
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -633,7 +634,7 @@ class MainWindow(QtWidgets.QMainWindow):
             new_states = []
             if filename.lower().endswith('.xml'):
                 # Use local XML parser to get Active states (preserves DTT enabled/disabled state)
-                xml_channels = loaders.extract_xml_channels(filename)
+                xml_channels = extract_xml_channels(filename)
                 if xml_channels:
                      new_states = xml_channels
             
@@ -734,7 +735,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     # Set appropriate axis scales based on graph type
                     res_tab = self.tabs.widget(3)
                     if res_tab:
-                        from graph_panel import GraphPanel
+
                         panels = res_tab.findChildren(GraphPanel)
                         for p in panels:
                             # Trigger the graph type change handler to set correct axis scales

@@ -1,6 +1,6 @@
 from pathlib import Path
 from gwexpy.timeseries import TimeSeriesDict, TimeSeries
-from gwexpy.io.dttxml_common import extract_xml_channels
+
 
 from gwexpy.frequencyseries import FrequencySeriesDict, FrequencySeries
 from gwexpy.spectrogram import Spectrogram

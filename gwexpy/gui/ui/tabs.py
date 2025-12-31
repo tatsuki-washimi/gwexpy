@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 import pyqtgraph as pg
-from graph_panel import GraphPanel
+from .graph_panel import GraphPanel
 
 def _h_spacer():
     s = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
