@@ -15,12 +15,15 @@ class AudioThread(QtCore.QThread):
     dataReceived = QtCore.Signal(object, str, bool)
     finished = QtCore.Signal()
 
-    def __init__(self, channels, sample_rate=44100, block_size=4096):
+    def __init__(self, channels, sample_rate=44100, block_size=8192, device_index=None):
         super().__init__()
-        self.channels = channels # e.g. ["PC:MIC-CH0", "PC:MIC-CH1"]
+        self.channels = channels # e.g. ["PC:MIC-CH0", "PC:MIC:2-CH1"]
         self.sample_rate = sample_rate
         self.block_size = block_size
+        self.device_index = device_index
+        self.next_gps = None
         self.running = True
+        self.skip_blocks = 5 # Discard first 5 blocks to avoid transients (approx 0.5s)
         
     def run(self):
         if sd is None:
@@ -28,10 +31,48 @@ class AudioThread(QtCore.QThread):
             self.finished.emit()
             return
 
-        print(f"DEBUG: Starting AudioThread for {self.channels} at {self.sample_rate}Hz")
+        dev_str = f"device={self.device_index}" if self.device_index is not None else "default"
         
-        # We only support input (Microphone) for now as "PC:MIC-..."
-        # Loopback is harder and platform dependent.
+        # Aggressively find a working sample rate
+        working_rate = None
+        common_rates = [44100, 48000, 16000, 32000, 24000, 8000]
+        
+        # 1. Try requested rate
+        try:
+            sd.check_input_settings(device=self.device_index, samplerate=self.sample_rate)
+            working_rate = self.sample_rate
+        except:
+            pass
+            
+        # 2. Try default rate from device info
+        if working_rate is None:
+            try:
+                if self.device_index is not None:
+                    dev_info = sd.query_devices(self.device_index)
+                    default_sr = int(dev_info.get('default_samplerate', 0))
+                    if default_sr > 0:
+                        sd.check_input_settings(device=self.device_index, samplerate=default_sr)
+                        working_rate = default_sr
+            except:
+                pass
+        
+        # 3. Try common rates
+        if working_rate is None:
+            for r in common_rates:
+                try:
+                    sd.check_input_settings(device=self.device_index, samplerate=r)
+                    working_rate = r
+                    break
+                except:
+                    pass
+        
+        if working_rate is not None and working_rate != self.sample_rate:
+            print(f"AudioThread: {self.sample_rate}Hz NOT supported by {dev_str}. Switching to {working_rate}Hz.")
+            self.sample_rate = working_rate
+        elif working_rate is None:
+            print(f"AudioThread WARNING: No supported sample rate found for {dev_str}. Proceeding with extreme caution...")
+
+        print(f"DEBUG: Starting AudioThread for {self.channels} at {self.sample_rate}Hz (block_size={self.block_size}, {dev_str})")
         
         mic_channels = [c for c in self.channels if "PC:MIC" in c]
         spk_channels = [c for c in self.channels if "PC:SPEAKER" in c]
@@ -41,15 +82,16 @@ class AudioThread(QtCore.QThread):
             self.finished.emit()
             return
 
-        # Simple implementation: capture from default input device
-        # We map PC:MIC-CH0 to device input index 0, PC:MIC-CH1 to 1, etc.
         try:
-            # Determine how many channels we need to capture
+            # Determine how many channels we need to capture from this device
             max_ch = 0
             for c in mic_channels:
                 try:
-                    ch_idx = int(c.split("-CH")[-1])
-                    max_ch = max(max_ch, ch_idx + 1)
+                    # New format: PC:MIC:ID-CHx or PC:MIC-CHx
+                    if "-CH" in c:
+                        ch_part = c.split("-CH")[-1]
+                        ch_idx = int(ch_part)
+                        max_ch = max(max_ch, ch_idx + 1)
                 except:
                     pass
             
@@ -57,17 +99,24 @@ class AudioThread(QtCore.QThread):
 
             def callback(indata, frames, time_info, status):
                 if status:
-                    print(f"AudioThread Status: {status}")
+                    print(f"AudioThread Status ({dev_str}): {status}")
                 
-                # GPS Epoch: 315964800 is 1980-01-06 (Unix). 
-                # Leap seconds since 1980 is 18 (as of now, but let's keep it simple)
-                gps_start = time.time() + 315964800 - 18
+                if self.skip_blocks > 0:
+                    self.skip_blocks -= 1
+                    return
+
+                if self.next_gps is None:
+                    self.next_gps = time.time() - 315964800 + 18
+                
+                gps_start = self.next_gps
+                self.next_gps += frames / self.sample_rate
                 
                 payload = {}
                 for c in self.channels:
                     try:
                         if "PC:MIC" in c:
-                            idx = int(c.split("-CH")[-1])
+                            ch_part = c.split("-CH")[-1]
+                            idx = int(ch_part)
                             if idx < indata.shape[1]:
                                 payload[c] = {
                                     'data': indata[:, idx].copy(),
@@ -86,9 +135,10 @@ class AudioThread(QtCore.QThread):
                 if payload:
                     self.dataReceived.emit(payload, 'raw', True)
 
-            print(f"DEBUG: Attempting to open InputStream for {max_ch} channels")
+            print(f"DEBUG: Attempting to open InputStream for {max_ch} channels on {dev_str}")
             with sd.InputStream(samplerate=self.sample_rate, 
                                 blocksize=self.block_size,
+                                device=self.device_index,
                                 channels=max_ch, 
                                 callback=callback):
                 while self.running:

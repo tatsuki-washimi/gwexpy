@@ -3,6 +3,9 @@ import sys
 import os
 from pathlib import Path
 from PyQt5 import QtWidgets, QtCore
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)s:%(name)s:%(message)s')
 
 # Add subdirectories to sys.path to allow flat imports
 base_dir = Path(__file__).resolve().parent
