@@ -68,6 +68,9 @@ class Engine:
         # Assuming all TimeSeries have same sample_rate for now
         sample_rate = list(data_map.values())[0].sample_rate.value
         fft_kwargs = self._get_fft_kwargs(sample_rate)
+        
+        fftlength_sec = fft_kwargs.get('fftlength', 1.0)
+        min_samples = int(fftlength_sec * sample_rate)
 
         start_f = self.params.get('start_freq', 0)
         stop_f = self.params.get('stop_freq', 1000)
@@ -86,6 +89,16 @@ class Engine:
             if ts_a is None:
                 results.append(None)
                 continue
+            
+            # Check length for spectrum calculations
+            if graph_type in ["Amplitude Spectral Density", "Power Spectral Density", "Coherence", "Squared Coherence", "Transfer Function", "Cross Spectral Density", "Spectrogram"]:
+                if len(ts_a) < min_samples:
+                    # Not enough data yet
+                    results.append(None)
+                    continue
+                if ts_b is not None and len(ts_b) < min_samples:
+                    results.append(None)
+                    continue
 
             # Apply Gain (Calibration)
             gain = trace.get('gain', 1.0)

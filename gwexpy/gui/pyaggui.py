@@ -3,6 +3,9 @@ import sys
 import os
 from pathlib import Path
 from PyQt5 import QtWidgets, QtCore
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)s:%(name)s:%(message)s')
 
 
 # Note: relative imports require this script to be run as a module (python -m gwexpy.gui)
