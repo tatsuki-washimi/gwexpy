@@ -118,7 +118,7 @@ The following are only required when using specific analysis, visualization, or 
 | Stats & Signal Analysis | [`polars`](https://www.pola.rs/), [`scikit-learn`](https://scikit-learn.org/), [`statsmodels`](https://www.statsmodels.org/), [`pmdarima`](https://alkaline-ml.com/pmdarima/), [`minepy`](https://minepy.readthedocs.io/), [`dcor`](https://dcor.readthedocs.io/), [`hurst`](https://github.com/Mottl/hurst), [`hurst-exponent`](https://pypi.org/project/hurst-exponent/), [`exp_hurst`](https://pypi.org/project/exp-hurst/) | ARIMA, ICA/PCA, Correlation analysis, Rolling statistics, Hurst exponent |
 | Fitting | [`iminuit`](https://iminuit.readthedocs.io/), [`emcee`](https://emcee.readthedocs.io/), [`corner`](https://corner.readthedocs.io/) | Advanced fitting, MCMC, Corner plots |
 | Astroparticle Physics | [`ROOT`](https://root.cern/), [`specutils`](https://specutils.readthedocs.io/), [`pyspeckit`](https://pyspeckit.readthedocs.io/) | ROOT integration, Spectral analysis |
-| Geophysics | [`obspy`](https://docs.obspy.org/), [`mth5`](https://mth5.readthedocs.io/), [`mtpy`](https://mtpy.readthedocs.io/), [`mt_metadata`](https://pypi.org/project/mt-metadata/), [`netCDF4`](https://unidata.github.io/netcdf4-python/), [`wintools`](https://pypi.org/project/wintools/), [`win2ndarray`](https://pypi.org/project/win2ndarray/) | Seismic & Geomagnetic data, HDF5-based geophysics formats, NIED Hi-net data |
+| Geophysics | [`obspy`](https://docs.obspy.org/), [`mth5`](https://mth5.readthedocs.io/), [`mtpy`](https://mtpy.readthedocs.io/), [`mt_metadata`](https://pypi.org/project/mt-metadata/), [`netCDF4`](https://unidata.github.io/netcdf4-python/) | Seismic & Geomagnetic data, HDF5-based geophysics formats, NIED Hi-net data |
 | Audio | [`librosa`](https://librosa.org/), [`pydub`](http://pydub.com/), [`torchaudio`](https://pytorch.org/audio/) | Audio signal processing and conversion |
 | Bioscience | [`mne`](https://mne.tools/), [`elephant`](https://elephant.readthedocs.io/), [`neo`](https://neuralensemble.org/neo/) | Biomedical data analysis (EEG/MEG, Neural data) |
 | Deep Learning & Big Data | [`xarray`](https://xarray.pydata.org/), [`zarr`](https://zarr.readthedocs.io/), [`dask`](https://www.dask.org/), [`torch`](https://pytorch.org/), [`tensorflow`](https://www.tensorflow.org/), [`jax`](https://github.com/google/jax), [`cupy`](https://cupy.dev/) | Multidimensional arrays, Distributed computing, DL frameworks, GPU acceleration |
@@ -137,7 +137,7 @@ Required for specific submodules or interpolation features.
 | `[stats]` | `polars`, `scikit-learn`, `statsmodels`, `pmdarima`, `minepy`, `dcor`, `hurst`, `hurst-exponent`, `exp_hurst`, `bottleneck` |
 | `[fitting]` | `iminuit`, `emcee`, `corner` |
 | `[astro]` | `specutils`, `pyspeckit` |
-| `[geophysics]` | `obspy`, `mth5`, `mtpy`, `mt_metadata`, `netCDF4`, `wintools`, `win2ndarray` |
+| `[geophysics]` | `obspy`, `mth5`, `mtpy`, `mt_metadata`, `netCDF4` |
 | `[audio]` | `librosa`, `pydub`, `torchaudio` |
 | `[bio]` | `mne`, `elephant`, `neo` |
 | `[interop]` | `torch`, `tensorflow`, `jax`, `jaxlib`, `dask`, `zarr`, `cupy` |
