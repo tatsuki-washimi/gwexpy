@@ -19,6 +19,78 @@ except ImportError:
     pass
 
 
+def _limit_mask(nans, limit, *, direction="forward"):
+    if limit is None:
+        return np.zeros_like(nans, dtype=bool)
+    limit = int(limit)
+    if limit < 0:
+        raise ValueError("limit must be non-negative")
+    if limit == 0:
+        return nans.copy()
+    mask = np.zeros_like(nans, dtype=bool)
+    run_start = None
+    n = len(nans)
+    for i in range(n):
+        if nans[i]:
+            if run_start is None:
+                run_start = i
+        else:
+            if run_start is not None:
+                run_len = i - run_start
+                if run_len > limit:
+                    if direction == "backward":
+                        mask[run_start:i - limit] = True
+                    else:
+                        mask[run_start + limit:i] = True
+                run_start = None
+    if run_start is not None:
+        run_len = n - run_start
+        if run_len > limit:
+            if direction == "backward":
+                mask[run_start:n - limit] = True
+            else:
+                mask[run_start + limit:n] = True
+    return mask
+
+
+def _ffill_numpy(val, limit=None):
+    out = val.copy()
+    have_last = False
+    last_val = None
+    run = 0
+    for i in range(len(out)):
+        if np.isnan(out[i]):
+            if not have_last:
+                continue
+            if limit is None or run < limit:
+                out[i] = last_val
+            run += 1
+        else:
+            last_val = out[i]
+            have_last = True
+            run = 0
+    return out
+
+
+def _bfill_numpy(val, limit=None):
+    out = val.copy()
+    have_next = False
+    next_val = None
+    run = 0
+    for i in range(len(out) - 1, -1, -1):
+        if np.isnan(out[i]):
+            if not have_next:
+                continue
+            if limit is None or run < limit:
+                out[i] = next_val
+            run += 1
+        else:
+            next_val = out[i]
+            have_next = True
+            run = 0
+    return out
+
+
 def align_timeseries_collection(
     series_list,
     *,
@@ -351,10 +423,8 @@ def align_timeseries_collection(
     return values, common_times, meta
 
 
-def _impute_1d(val_1d, x, method, has_gap_constraint, gap_threshold):
+def _impute_1d(val_1d, x, method, has_gap_constraint, gap_threshold, limit=None):
     """Internal 1D imputation core."""
-    import pandas as pd
-    from scipy.interpolate import interp1d
 
     nans_1d = np.isnan(val_1d)
     if not np.any(nans_1d):
@@ -366,6 +436,7 @@ def _impute_1d(val_1d, x, method, has_gap_constraint, gap_threshold):
 
     x_valid = x[valid_1d]
     y_valid = val_1d[valid_1d]
+    apply_limit_mask = True
 
     # Boundary handling
     if has_gap_constraint:
@@ -374,6 +445,7 @@ def _impute_1d(val_1d, x, method, has_gap_constraint, gap_threshold):
         fill_value = "extrapolate"
 
     if method in ["linear", "nearest", "slinear", "quadratic", "cubic"]:
+        from scipy.interpolate import interp1d
         if np.iscomplexobj(val_1d):
             f_real = interp1d(x_valid, y_valid.real, kind=method, bounds_error=False, fill_value=fill_value)
             f_imag = interp1d(x_valid, y_valid.imag, kind=method, bounds_error=False, fill_value=fill_value)
@@ -382,9 +454,21 @@ def _impute_1d(val_1d, x, method, has_gap_constraint, gap_threshold):
             f = interp1d(x_valid, y_valid, kind=method, bounds_error=False, fill_value=fill_value)
             val_1d[nans_1d] = f(x[nans_1d])
     elif method == "ffill":
-        val_1d[:] = pd.Series(val_1d).ffill().values
+        try:
+            import pandas as pd
+        except ImportError:
+            val_1d[:] = _ffill_numpy(val_1d, limit=limit)
+        else:
+            val_1d[:] = pd.Series(val_1d).ffill(limit=limit).values
+        apply_limit_mask = False
     elif method == "bfill":
-        val_1d[:] = pd.Series(val_1d).bfill().values
+        try:
+            import pandas as pd
+        except ImportError:
+            val_1d[:] = _bfill_numpy(val_1d, limit=limit)
+        else:
+            val_1d[:] = pd.Series(val_1d).bfill(limit=limit).values
+        apply_limit_mask = False
     elif method == "mean":
         val_1d[nans_1d] = np.nanmean(val_1d)
     elif method == "median":
@@ -400,6 +484,14 @@ def _impute_1d(val_1d, x, method, has_gap_constraint, gap_threshold):
                 t_end = x[valid_indices[idx+1]]
                 mask = (x > t_start) & (x < t_end)
                 val_1d[mask] = np.nan
+        if len(valid_indices) > 0:
+            val_1d[:valid_indices[0]] = np.nan
+            val_1d[valid_indices[-1] + 1:] = np.nan
+
+    if limit is not None and apply_limit_mask:
+        limit_mask = _limit_mask(nans_1d, limit, direction="forward")
+        if np.any(limit_mask):
+            val_1d[limit_mask] = np.nan
 
     return val_1d
 
@@ -407,8 +499,6 @@ def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None,
     """
     Impute missing values in a TimeSeries or array. Supports multi-dimensional data.
     """
-    from scipy.interpolate import interp1d
-
     if hasattr(ts, 'value'):
         val = ts.value.copy()
         is_ts = True
@@ -477,6 +567,7 @@ def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None,
             fill_value = "extrapolate"
 
         if method in ["linear", "nearest", "slinear", "quadratic", "cubic"]:
+            from scipy.interpolate import interp1d
             if np.iscomplexobj(val):
                 f_real = interp1d(x_valid, y_valid.real, kind=method, axis=axis, bounds_error=False, fill_value=fill_value)
                 f_imag = interp1d(x_valid, y_valid.imag, kind=method, axis=axis, bounds_error=False, fill_value=fill_value)
@@ -501,6 +592,24 @@ def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None,
                 revert_slc = [slice(None)] * val.ndim
                 revert_slc[axis] = mask_idx
                 val[tuple(revert_slc)] = np.nan
+            if len(x_valid) > 0:
+                lead_mask = np.where(times_val < x_valid[0])[0]
+                tail_mask = np.where(times_val > x_valid[-1])[0]
+                if lead_mask.size:
+                    revert_slc = [slice(None)] * val.ndim
+                    revert_slc[axis] = lead_mask
+                    val[tuple(revert_slc)] = np.nan
+                if tail_mask.size:
+                    revert_slc = [slice(None)] * val.ndim
+                    revert_slc[axis] = tail_mask
+                    val[tuple(revert_slc)] = np.nan
+
+        if limit is not None:
+            limit_mask = _limit_mask(nans_reduced, limit, direction="forward")
+            if np.any(limit_mask):
+                limit_slc = [slice(None)] * val.ndim
+                limit_slc[axis] = limit_mask
+                val[tuple(limit_slc)] = np.nan
     else:
         it = np.ndindex(tuple(s for i, s in enumerate(val.shape) if i != axis))
         for idxs in it:
@@ -510,11 +619,40 @@ def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None,
                 if i != axis:
                     slc[i] = idxs[j]
                     j += 1
-            val[tuple(slc)] = _impute_1d(val[tuple(slc)], times_val, method, has_gap_constraint, gap_threshold)
+            val[tuple(slc)] = _impute_1d(
+                val[tuple(slc)],
+                times_val,
+                method,
+                has_gap_constraint,
+                gap_threshold,
+                limit=limit,
+            )
 
     if is_ts:
-        new_ts = ts.copy()
-        new_ts.value[:] = val
+        target_dtype = val.dtype
+        needs_cast = np.issubdtype(ts.value.dtype, np.integer) and target_dtype.kind in ("f", "c")
+        if needs_cast:
+            val = val.astype(np.result_type(val, np.float64))
+            if getattr(ts, "dt", None) is None or (hasattr(ts, "is_regular") and not ts.is_regular):
+                new_ts = ts.__class__(
+                    val,
+                    times=ts.times,
+                    name=ts.name,
+                    unit=ts.unit,
+                    channel=getattr(ts, "channel", None),
+                )
+            else:
+                new_ts = ts.__class__(
+                    val,
+                    t0=ts.t0,
+                    dt=ts.dt,
+                    name=ts.name,
+                    unit=ts.unit,
+                    channel=getattr(ts, "channel", None),
+                )
+        else:
+            new_ts = ts.copy()
+            new_ts.value[:] = val
         return new_ts
     return val
 

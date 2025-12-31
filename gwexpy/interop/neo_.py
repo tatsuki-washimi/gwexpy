@@ -1,6 +1,5 @@
 
 from ._optional import require_optional
-import numpy as np
 
 def to_neo(obj, units=None):
     """

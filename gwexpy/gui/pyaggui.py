@@ -5,7 +5,7 @@ from pathlib import Path
 from PyQt5 import QtWidgets, QtCore
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(levelname)s:%(name)s:%(message)s')
+logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(name)s:%(message)s")
 
 
 # Note: relative imports require this script to be run as a module (python -m gwexpy.gui)
@@ -23,20 +23,23 @@ except ImportError:
         # But 'from .ui' only works in a package.
         # Let's use absolute import if possible?
         import sys
+
         sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
         from gwexpy.gui.ui.main_window import MainWindow
     else:
         raise
 
+
 def main():
     import argparse
+
     parser = argparse.ArgumentParser(description="gwexpy GUI tool")
     parser.add_argument("filename", nargs="?", help="Data file to open on startup")
     args, unknown = parser.parse_known_args()
 
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
-    
+
     if args.filename:
         file_path = os.path.abspath(args.filename)
         if os.path.exists(file_path):
@@ -47,6 +50,7 @@ def main():
 
     window.show()
     sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     main()

@@ -1,13 +1,15 @@
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSignal as Signal
 import nds2
+
 try:
     import sounddevice as sd
 except ImportError:
     sd = None
 
+
 class SearchThread(QtCore.QThread):
-    finished = Signal(list, str) # results, error_msg
+    finished = Signal(list, str)  # results, error_msg
 
     def __init__(self, server, port, pattern):
         super().__init__()
@@ -16,13 +18,15 @@ class SearchThread(QtCore.QThread):
         self.pattern = pattern
 
     def run(self):
-        print(f"DEBUG: SearchThread starting for {self.pattern} on {self.server}:{self.port}")
+        print(
+            f"DEBUG: SearchThread starting for {self.pattern} on {self.server}:{self.port}"
+        )
         try:
             conn = nds2.connection(self.server, self.port)
             print("DEBUG: Connection established.")
             channels = conn.find_channels(self.pattern)
             print(f"DEBUG: find_channels returned {len(channels)} raw records.")
-            
+
             names = set()
             for c in channels:
                 name = c.name
@@ -30,7 +34,7 @@ class SearchThread(QtCore.QThread):
                 if "," in name and ("-trend" in name):
                     continue
                 names.add(name)
-            
+
             res = sorted(list(names))
             print(f"DEBUG: Filtered to {len(res)} unique channels.")
             self.finished.emit(res, "")
@@ -38,10 +42,11 @@ class SearchThread(QtCore.QThread):
             print(f"DEBUG: SearchThread encountered error: {e}")
             self.finished.emit([], str(e))
 
+
 class ChannelBrowserDialog(QtWidgets.QDialog):
     def __init__(self, server, port, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(f"Channel Browser")
+        self.setWindowTitle("Channel Browser")
         self.resize(700, 500)
         self.server = server
         self.port = port
@@ -105,21 +110,23 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         if sd is None:
             self.status_label.setText("Error: sounddevice not found.")
             return
-        
+
         try:
             devices = sd.query_devices()
             results = []
             for i, dev in enumerate(devices):
                 # We only interest in input devices
-                if dev['max_input_channels'] > 0:
-                    name = dev['name']
-                    n_ch = dev['max_input_channels']
+                if dev["max_input_channels"] > 0:
+                    name = dev["name"]
+                    n_ch = dev["max_input_channels"]
                     for ch in range(n_ch):
                         # Format: PC:MIC:[ID]-CH[N] (Name)
                         results.append(f"PC:MIC:{i}-CH{ch} ({name})")
-            
+
             self.list_widget.addItems(results)
-            self.status_label.setText(f"Found {len(results)} local input channels on {len(devices)} devices.")
+            self.status_label.setText(
+                f"Found {len(results)} local input channels on {len(devices)} devices."
+            )
         except Exception as e:
             self.status_label.setText(f"Error querying devices: {e}")
 
@@ -148,7 +155,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         self.btn_search.setEnabled(False)
         self.status_label.setText(f"Searching for '{pattern}'... please wait.")
         self.list_widget.clear()
-        
+
         self.search_thread = SearchThread(self.server, self.port, pattern)
         self.search_thread.finished.connect(self._on_search_finished)
         self.search_thread.start()
@@ -165,9 +172,9 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         # Safety limit for UI
         display_limit = 10000
         items_to_add = results[:display_limit]
-        
+
         self.list_widget.addItems(items_to_add)
-        
+
         msg = f"Found {len(results)} channels."
         if len(results) > display_limit:
             msg += f" (Showing first {display_limit})"

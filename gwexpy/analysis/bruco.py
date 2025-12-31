@@ -199,7 +199,7 @@ class Bruco:
                 'freq_at_max': freq_at_max
             }
 
-        except Exception as e:
+        except Exception:
             # ログを出したいが、subprocess内のため静かにNoneを返すか、例外を投げる
             # 実運用ではエラーの種類を返すとデバッグしやすい
             return None

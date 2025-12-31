@@ -1,1 +1,12 @@
-from gwpy.types.index import *
+from gwpy.types.index import (
+    COPY_IF_NEEDED,
+    Index,
+    Quantity,
+)
+
+__all__ = [
+    "COPY_IF_NEEDED",
+    "Index",
+    "Quantity",
+]
+

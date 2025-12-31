@@ -1,6 +1,5 @@
 
 import numpy as np
-from astropy.units import Quantity, dimensionless_unscaled
 
 from .array3d import Array3D
 

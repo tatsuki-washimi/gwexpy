@@ -6,7 +6,6 @@ and classic correlations (Pearson, Kendall, MIC).
 import warnings
 import numpy as np
 from scipy import stats
-from astropy.units import Quantity
 
 class StatisticsMixin:
     """

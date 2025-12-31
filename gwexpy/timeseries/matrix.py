@@ -28,7 +28,15 @@ from .decomposition import (
 )
 
 
-from .utils import *
+from .utils import (
+    SeriesType,
+    _extract_axis_info,
+    _extract_freq_axis_info,
+    _validate_common_axis,
+    _validate_common_epoch,
+    _validate_common_frequency_axis,
+)
+
 from .timeseries import TimeSeries
 from .collections import TimeSeriesDict, TimeSeriesList
 class TimeSeriesMatrix(SeriesMatrix):

@@ -23,7 +23,7 @@ instantaneous_frequency(),瞬時周波数（Hz）を返す,信号処理
 "lock_in(f0, ..., stride=1.0, output='amp_phase')",ロックイン復調（複素／振幅位相／I-Q出力を選択）,信号処理
 "transfer_function(other, method='gwpy')",伝達関数を推定しFrequencySeriesを返す（gwpy/Welch or FFT比）,信号処理
 "xcorr(other, maxlag=None, ...)",相互相関を計算しラグ時間軸のTimeSeriesを返す,信号処理
-"asfreq(rule, method=None, ...)",固定間隔グリッドへ再サンプリング（補間/外挿指定可）,時間軸・リサンプリング
+"asfreq(rule, method=None, ...)",固定間隔グリッドへ再サンプリング（補間なし、欠損は埋め）,時間軸・リサンプリング
 "resample(rate_or_dt, method='FFT')",指定レート/間隔へリサンプリング（gwexpyで強化）,時間軸・リサンプリング
 "impute(method='linear', ...)",欠損補完（補間/前値保持等）,前処理・統計
 "standardize(method='zscore', ...)",標準化（zscore/robust等）,前処理・統計

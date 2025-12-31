@@ -44,16 +44,20 @@ def test_append_with_gap_padding_and_overlap_error():
         _ = ts1.append(ts_overlap, inplace=False)
 
 
-def test_asfreq_max_gap_blocks_interpolation():
+def test_asfreq_no_interpolation_fill_value():
     times = np.array([0, 1, 4, 5]) * u.s
     data = np.array([0, 1, 4, 5], dtype=float)
     ts = TimeSeries(data, times=times)
 
-    res_no_gap = ts.asfreq("1s", method="interpolate")
-    np.testing.assert_allclose(res_no_gap.value[2], 2.0)
-    np.testing.assert_allclose(res_no_gap.value[3], 3.0)
+    res = ts.asfreq("1s", fill_value=-9)
+    assert res.value[2] == -9
+    assert res.value[3] == -9
 
-    res_gap = ts.asfreq("1s", method="interpolate", max_gap=2 * u.s, fill_value=-9)
-    # gap between 1s and 4s exceeds 2s -> indices 2,3 should be fill_value
-    assert res_gap.value[2] == -9
-    assert res_gap.value[3] == -9
+    with pytest.raises(ValueError):
+        _ = ts.asfreq("1s", method="interpolate")
+
+
+def test_asfreq_downsample_skip_indices():
+    ts = TimeSeries(np.arange(6, dtype=float), dt=1 * u.s, t0=0 * u.s)
+    res = ts.asfreq("2s")
+    np.testing.assert_array_equal(res.value, [0.0, 2.0, 4.0])

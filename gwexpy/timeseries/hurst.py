@@ -6,7 +6,7 @@ from astropy import units as u
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from .timeseries import TimeSeries
+    pass
 
 @dataclass
 class HurstResult:

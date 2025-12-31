@@ -10,7 +10,7 @@ from typing import Optional, Any, TYPE_CHECKING
 from gwexpy.interop._optional import require_optional
 
 if TYPE_CHECKING:
-    from .timeseries import TimeSeries
+    pass
 
 class TimeSeriesSpectralSpecialMixin:
     """

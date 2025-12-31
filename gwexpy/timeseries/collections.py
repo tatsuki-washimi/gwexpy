@@ -18,7 +18,7 @@ from gwpy.timeseries import TimeSeriesList as BaseTimeSeriesList
 from .spectral import csd_matrix_from_collection, coherence_matrix_from_collection
 
 
-from .utils import *
+
 class TimeSeriesDict(BaseTimeSeriesDict):
     """Dictionary of TimeSeries objects."""
 

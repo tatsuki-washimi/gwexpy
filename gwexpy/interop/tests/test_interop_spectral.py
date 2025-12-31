@@ -9,7 +9,6 @@ class TestSpectralInterop:
         """Test FrequencySeries <-> specutils.Spectrum1D conversion."""
         pytest.importorskip("specutils")
         from specutils import Spectrum1D
-        from astropy import units as u
         
         # 1. Create FrequencySeries
         data = np.random.randn(100)

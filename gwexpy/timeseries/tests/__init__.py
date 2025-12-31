@@ -1,1 +1,2 @@
-from gwpy.timeseries.tests import *
+pass
+

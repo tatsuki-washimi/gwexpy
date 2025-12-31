@@ -147,7 +147,7 @@ Parameters
 rule : str, float, or Quantity
     Target time interval (e.g., '1s', 0.1, 0.5*u.s).
 method : str or None
-    Interpolation method: None (exact), 'interpolate', 'ffill', 'bfill', 'nearest'.
+    Fill method: None (exact), 'ffill', 'bfill', 'nearest'. Use resample() for interpolation.
 fill_value : scalar
     Value for missing data points.
 origin : str
@@ -159,7 +159,7 @@ align : str
 tolerance : float
     Tolerance for matching times.
 max_gap : float
-    Maximum gap for interpolation.
+    Maximum gap for forward/backward/nearest matching.
 copy : bool
     Whether to copy data.
 

@@ -2,7 +2,6 @@
 import sys
 import os
 from pathlib import Path
-import numpy as np
 
 # Add repo root to path
 sys.path.append(os.getcwd())
@@ -30,7 +29,7 @@ def test_load_all_xmls():
         try:
             products = load_dttxml_products(str(path))
             if not products:
-                print(f"  [WARN] No products loaded (empty dict returned).")
+                print("  [WARN] No products loaded (empty dict returned).")
             else:
                 for prod_type, content in products.items():
                     print(f"  Type: {prod_type}")

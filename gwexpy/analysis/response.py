@@ -9,11 +9,10 @@ by calculating averaged ASDs for each stable frequency step.
 import numpy as np
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 from ..timeseries import TimeSeries
 from ..spectrogram import Spectrogram
-from ..types import Array2D
 
 
 @dataclass
@@ -49,7 +48,7 @@ class ResponseFunctionResult:
                   'o-', label="Measured CF", **kwargs)
         
         ax.set_xlabel("Injected Frequency [Hz]")
-        ax.set_ylabel(f"Coupling Factor")
+        ax.set_ylabel("Coupling Factor")
         ax.set_title(f"Response Function: {self.witness_name} -> {self.target_name}")
         ax.grid(True, which="both", linestyle=":")
         ax.legend()
@@ -133,7 +132,7 @@ class ResponseFunctionResult:
         else:
             # Upper Limit Case
             ax.annotate(
-                f"No Excess\n(Upper Limit)", 
+                "No Excess\n(Upper Limit)", 
                 xy=(target_freq, peak_val), 
                 xytext=(target_freq*1.15, peak_val*3),
                 arrowprops=dict(arrowstyle="-|>", color="gray", linestyle=":"),

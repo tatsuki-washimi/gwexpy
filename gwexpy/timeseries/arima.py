@@ -1,7 +1,6 @@
-import warnings
 import numpy as np
 from dataclasses import dataclass
-from typing import Dict, Optional, Union, Tuple, List
+from typing import Dict, Optional, Tuple
 
 # --- Optional Dependencies ---
 try:
@@ -269,12 +268,12 @@ def fit_arima(
     if nan_policy == "impute":
         # Basic imputation if requested
         if np.any(np.isnan(y)):
-            # Simple linear interpolation fallback if impute_timeseries isn't available here
-            # Ideally call: from .preprocess import impute_timeseries; ts = impute_timeseries(timeseries)
-            # For now, simplistic fill
-            mask = np.isnan(y)
-            y = y.copy()
-            y[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), y[~mask])
+            from .preprocess import impute_timeseries
+            ikw = (impute_kwargs or {}).copy()
+            ts_imp = impute_timeseries(timeseries, **ikw)
+            y = np.asarray(ts_imp.value)
+            if np.any(np.isnan(y)):
+                raise ValueError("NaNs remain after imputation; adjust impute_kwargs or nan_policy.")
             
     elif nan_policy == "raise":
         if np.any(np.isnan(y)):

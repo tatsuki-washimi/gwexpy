@@ -2,6 +2,7 @@
 NDS Data Cache management.
 Adapts NDSThread and DataBufferDict.
 """
+
 import os
 from qtpy import QtCore
 from .nds_thread import NDSThread
@@ -9,21 +10,22 @@ from .audio_thread import AudioThread
 from .buffer import DataBufferDict
 from .util import parse_server_string
 
+
 class NDSDataCache(QtCore.QObject):
-    signal_data = QtCore.Signal(object) # emit(DataBufferDict)
+    signal_data = QtCore.Signal(object)  # emit(DataBufferDict)
 
     def __init__(self):
         super().__init__()
         self.channels = []
-        self.server = os.getenv('NDSSERVER', 'localhost:31200')
+        self.server = os.getenv("NDSSERVER", "localhost:31200")
         self.lookback = 30.0
         self.buffers = DataBufferDict(self.lookback)
         self.thread = None
-        self.audio_threads = {} # Dict of device_index -> AudioThread
-        self.active_tid = None 
+        self.audio_threads = {}  # Dict of device_index -> AudioThread
+        self.active_tid = None
 
     def set_channels(self, channels):
-        self.channels = list(set([c for c in channels if c])) # Unique, non-empty
+        self.channels = list(set([c for c in channels if c]))  # Unique, non-empty
 
     def set_server(self, server_env):
         self.server = server_env
@@ -31,7 +33,7 @@ class NDSDataCache(QtCore.QObject):
     def online_start(self, lookback=30.0):
         self.lookback = lookback
         self.buffers.lookback = lookback
-        
+
         if not self.channels:
             print("NDSDataCache: No channels to fetch.")
             return
@@ -50,7 +52,7 @@ class NDSDataCache(QtCore.QObject):
                 self.thread = NDSThread(nds_chans, host, port)
                 self.thread.dataReceived.connect(self._on_data_received)
                 self.thread.start()
-        
+
         # Start Audio Threads if needed
         if audio_chans:
             # Group by device index
@@ -64,18 +66,25 @@ class NDSDataCache(QtCore.QObject):
                         dev_idx = int(dev_str)
                     except:
                         pass
-                
+
                 if dev_idx not in by_device:
                     by_device[dev_idx] = []
                 by_device[dev_idx].append(c)
-            
+
             for dev_idx, chans in by_device.items():
-                if dev_idx in self.audio_threads and self.audio_threads[dev_idx].isRunning():
-                     # Update channels if already running? 
-                     # For simplicity, currently we assume start is called when all channels are set.
-                     print(f"NDSDataCache: Audio Thread for device {dev_idx} already running.")
+                if (
+                    dev_idx in self.audio_threads
+                    and self.audio_threads[dev_idx].isRunning()
+                ):
+                    # Update channels if already running?
+                    # For simplicity, currently we assume start is called when all channels are set.
+                    print(
+                        f"NDSDataCache: Audio Thread for device {dev_idx} already running."
+                    )
                 else:
-                    print(f"DEBUG: Starting AudioThread for {chans} on device {dev_idx}")
+                    print(
+                        f"DEBUG: Starting AudioThread for {chans} on device {dev_idx}"
+                    )
                     ath = AudioThread(chans, device_index=dev_idx)
                     ath.dataReceived.connect(self._on_data_received)
                     ath.start()
@@ -85,14 +94,16 @@ class NDSDataCache(QtCore.QObject):
         if self.thread:
             self.thread.stop()
             self.thread.wait(2000)
-            if self.thread.isRunning(): self.thread.terminate()
+            if self.thread.isRunning():
+                self.thread.terminate()
             self.thread = None
             print("NDS Online stopped.")
-        
+
         for dev_idx, ath in list(self.audio_threads.items()):
             ath.stop()
             ath.wait(2000)
-            if ath.isRunning(): ath.terminate()
+            if ath.isRunning():
+                ath.terminate()
             print(f"Audio Online stopped for device {dev_idx}.")
         self.audio_threads = {}
 
