@@ -3,7 +3,10 @@ from pathlib import Path
 from PyQt5 import QtWidgets, QtCore, QtGui
 import pyqtgraph as pg
 import numpy as np
+import logging
 from gwpy.timeseries import TimeSeries
+
+logger = logging.getLogger(__name__)
 
 import loaders
 import products
@@ -349,7 +352,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if p['active'].isChecked():
                     has_active_excitation = True; break
 
-        if self.data_source == 'NDS':
+        if self.data_source == 'NDS' or self.input_controls['pcaudio'].isChecked():
              # Try to get data
              if self.nds_latest_raw:
                  for ch_name, buf in self.nds_latest_raw.items():
@@ -361,8 +364,8 @@ class MainWindow(QtWidgets.QMainWindow):
                              current_times = buf.tarray
                              current_fs = 1.0/buf.step
              
-             # Fallback if no NDS data but we want to see Excitation
-             if not data_map and has_active_excitation:
+             # Fallback if no data but we want to see Excitation (only in NDS mode)
+             if not data_map and has_active_excitation and self.data_source == 'NDS':
                  self.time_counter += 0.05
                  params = self.get_ui_params()
                  duration = max(10.0, 2.0/params.get('bw', 1.0))
@@ -372,7 +375,7 @@ class MainWindow(QtWidgets.QMainWindow):
                  n = int(fs * duration)
                  current_times = np.linspace(t0, t0 + duration, n, endpoint=False)
              
-             if not data_map and current_times is None: return # No data and no fallback
+             if not data_map and current_times is None and self.data_source == 'NDS': return # No data and no fallback
 
         # SIM Logic (Legacy/Fallback, though UI removed)
         elif self.data_source == 'SIM':

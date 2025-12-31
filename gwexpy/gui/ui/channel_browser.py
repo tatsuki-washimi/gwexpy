@@ -1,6 +1,10 @@
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSignal as Signal
 import nds2
+try:
+    import sounddevice as sd
+except ImportError:
+    sd = None
 
 class SearchThread(QtCore.QThread):
     finished = Signal(list, str) # results, error_msg
@@ -37,8 +41,8 @@ class SearchThread(QtCore.QThread):
 class ChannelBrowserDialog(QtWidgets.QDialog):
     def __init__(self, server, port, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(f"NDS Channel Browser - {server}:{port}")
-        self.resize(600, 500)
+        self.setWindowTitle(f"Channel Browser")
+        self.resize(700, 500)
         self.server = server
         self.port = port
         self.selected_channels = []
@@ -46,16 +50,28 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
 
         layout = QtWidgets.QVBoxLayout(self)
 
-        # Search Area
-        h_search = QtWidgets.QHBoxLayout()
-        h_search.addWidget(QtWidgets.QLabel("Search Pattern (glob):"))
+        # Source Selection
+        h_source = QtWidgets.QHBoxLayout()
+        h_source.addWidget(QtWidgets.QLabel("Source:"))
+        self.source_combo = QtWidgets.QComboBox()
+        self.source_combo.addItems(["NDS Network", "Local PC Audio"])
+        self.source_combo.currentTextChanged.connect(self.on_source_changed)
+        h_source.addWidget(self.source_combo)
+        h_source.addStretch(1)
+        layout.addLayout(h_source)
+
+        # Search Area (NDS)
+        self.nds_widget = QtWidgets.QWidget()
+        nds_layout = QtWidgets.QHBoxLayout(self.nds_widget)
+        nds_layout.setContentsMargins(0, 0, 0, 0)
+        nds_layout.addWidget(QtWidgets.QLabel("Search Pattern (glob):"))
         self.search_edit = QtWidgets.QLineEdit("K1:CAL-CS_PROC_*")
         # Connection for returnPressed removed to use keyPressEvent override
-        h_search.addWidget(self.search_edit)
+        nds_layout.addWidget(self.search_edit)
         self.btn_search = QtWidgets.QPushButton("Search")
         self.btn_search.clicked.connect(self.on_search)
-        h_search.addWidget(self.btn_search)
-        layout.addLayout(h_search)
+        nds_layout.addWidget(self.btn_search)
+        layout.addWidget(self.nds_widget)
 
         # List Area
         self.list_widget = QtWidgets.QListWidget()
@@ -75,6 +91,37 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         btns.accepted.connect(self.accept)
         btns.rejected.connect(self.reject)
         layout.addWidget(btns)
+
+    def on_source_changed(self, text):
+        self.list_widget.clear()
+        if text == "Local PC Audio":
+            self.nds_widget.setVisible(False)
+            self.list_local_devices()
+        else:
+            self.nds_widget.setVisible(True)
+            self.status_label.setText("Enter pattern and click Search.")
+
+    def list_local_devices(self):
+        if sd is None:
+            self.status_label.setText("Error: sounddevice not found.")
+            return
+        
+        try:
+            devices = sd.query_devices()
+            results = []
+            for i, dev in enumerate(devices):
+                # We only interest in input devices
+                if dev['max_input_channels'] > 0:
+                    name = dev['name']
+                    n_ch = dev['max_input_channels']
+                    for ch in range(n_ch):
+                        # Format: PC:MIC:[ID]-CH[N] (Name)
+                        results.append(f"PC:MIC:{i}-CH{ch} ({name})")
+            
+            self.list_widget.addItems(results)
+            self.status_label.setText(f"Found {len(results)} local input channels on {len(devices)} devices.")
+        except Exception as e:
+            self.status_label.setText(f"Error querying devices: {e}")
 
     def keyPressEvent(self, event):
         """Handle Enter key behavior manually based on focus."""
@@ -128,5 +175,12 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         print("DEBUG: UI update complete.")
 
     def accept(self):
-        self.selected_channels = [item.text() for item in self.list_widget.selectedItems()]
+        selected = []
+        for item in self.list_widget.selectedItems():
+            text = item.text()
+            if text.startswith("PC:"):
+                # Strip helper info: "PC:MIC:0-CH0 (Name)" -> "PC:MIC:0-CH0"
+                text = text.split(" (")[0]
+            selected.append(text)
+        self.selected_channels = selected
         super().accept()
