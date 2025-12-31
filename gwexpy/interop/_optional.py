@@ -19,8 +19,6 @@ _OPTIONAL_DEPENDENCIES = {
     "cupy": "cupy",
     "librosa": "librosa",
     "pydub": "pydub",
-    "wintools": "wintools",
-    "win2ndarray": "win2ndarray",
     "astropy": "astropy",
     "mth5": "mth5",
     "mt_metadata": "mt_metadata",

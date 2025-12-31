@@ -93,15 +93,3 @@ def test_leap_seconds():
 
 # --- P0-3 Tests (I/O Stubs) ---
 
-def test_io_unimplemented_win():
-    with pytest.raises(IoNotImplementedError) as excinfo:
-        # Assuming we can trigger the win reader.
-        # It's in interop.win_.read_win but usually called via TimeSeries.read if registered.
-        # If not registered in minimal setup, call function directly.
-        from gwexpy.interop.win_ import read_win
-        read_win(None, [], backend="wintools")
-
-    msg = str(excinfo.value)
-    assert "WIN" in msg
-    assert "unimplemented" in msg
-    assert "Hint" in msg
