@@ -6,7 +6,6 @@ Based on binary header parsing logic provided by user (ats2gwf.py).
 from __future__ import annotations
 
 import datetime
-from pathlib import Path
 
 import numpy as np
 from gwpy.time import to_gps

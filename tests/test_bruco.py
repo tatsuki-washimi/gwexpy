@@ -1,7 +1,6 @@
-import pytest
 import numpy as np
 import pandas as pd
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from gwpy.timeseries import TimeSeries, TimeSeriesDict
 from astropy import units as u
 

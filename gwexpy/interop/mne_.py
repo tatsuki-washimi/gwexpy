@@ -106,7 +106,6 @@ def _mne_spectrum_to_fs(cls, spectrum, **kwargs):
     else:
         data = data[0] # (n_ch, n_freqs)
         
-    from gwexpy.frequencyseries import FrequencySeries
     
     if n_ch == 1:
         # data[0] is (n_freqs,) array.
@@ -478,7 +477,6 @@ def _mne_spectrum_to_fs(cls, spectrum, **kwargs):
     else:
         raise ValueError(f"Unexpected spectrum data shape: {data.shape}")
         
-    from gwexpy.frequencyseries import FrequencySeries
     
     if n_ch == 1:
         # data[0] is (n_freqs,) array.

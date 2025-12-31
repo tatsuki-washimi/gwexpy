@@ -1,1 +1,32 @@
-from gwpy.types.tests.test_array import *
+from gwpy.types.tests.test_array import (
+    CHANNEL,
+    CHANNEL_NAME,
+    GPS_EPOCH,
+    SEED,
+    TIME_EPOCH,
+    Array,
+    Channel,
+    LIGOTimeGPS,
+    TestArray,
+    Time,
+    mock,
+    units,
+    utils,
+)
+
+__all__ = [
+    "CHANNEL",
+    "CHANNEL_NAME",
+    "GPS_EPOCH",
+    "SEED",
+    "TIME_EPOCH",
+    "Array",
+    "Channel",
+    "LIGOTimeGPS",
+    "TestArray",
+    "Time",
+    "mock",
+    "units",
+    "utils",
+]
+

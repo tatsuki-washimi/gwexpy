@@ -1,1 +1,3 @@
-from gwpy.table.tests import *
+# from gwpy.table.tests import *
+pass
+

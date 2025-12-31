@@ -1,1 +1,18 @@
-from gwpy.time.__main__ import *
+from gwpy.time.__main__ import (
+    argparse,
+    datetime,
+    main,
+    sys,
+    tconvert,
+    tz,
+)
+
+__all__ = [
+    "argparse",
+    "datetime",
+    "main",
+    "sys",
+    "tconvert",
+    "tz",
+]
+

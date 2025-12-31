@@ -51,7 +51,7 @@ class TimeSeriesResamplingMixin:
         rule : str, float, or Quantity
             Target time interval (e.g., '1s', 0.1, 0.5*u.s).
         method : str or None
-            Interpolation method: None (exact), 'interpolate', 'ffill', 'bfill', 'nearest'.
+            Fill method: None (exact), 'ffill', 'bfill', 'nearest'.
         fill_value : scalar
             Value for missing data points.
         origin : str
@@ -159,6 +159,16 @@ class TimeSeriesResamplingMixin:
                  else:
                       stop_time_val = old_times_q[-1].to(safe_unit).value
 
+        if target_dt_in_time_unit is None:
+            safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
+            if isinstance(target_dt, u.Quantity):
+                if target_dt.unit == u.dimensionless_unscaled or target_dt.unit is None:
+                    target_dt_in_time_unit = u.Quantity(target_dt.value, safe_unit)
+                else:
+                    target_dt_in_time_unit = target_dt.to(safe_unit)
+            else:
+                target_dt_in_time_unit = u.Quantity(target_dt, safe_unit)
+
         dt_val = target_dt_in_time_unit.value
 
         def _to_time_value(val):
@@ -253,35 +263,7 @@ class TimeSeriesResamplingMixin:
              new_data = new_data.astype(np.complex128)
 
         if method == 'interpolate':
-            valid_mask = np.isfinite(self.value)
-            if np.any(valid_mask):
-                x = old_times_val
-                y = self.value
-
-                if np.iscomplexobj(y):
-                    new_data = np.interp(new_times_val, x, y.real) + 1j * np.interp(new_times_val, x, y.imag)
-                else:
-                    new_data = np.interp(new_times_val, x, y, left=np.nan, right=np.nan)
-
-                if max_gap is not None:
-                    max_gap_val = _to_time_value(max_gap)
-                    gaps = np.where(np.diff(x) > max_gap_val)[0]
-                    for gi in gaps:
-                        start = x[gi]
-                        end = x[gi + 1]
-                        mask_gap = (new_times_val > start) & (new_times_val < end)
-                        new_data[mask_gap] = np.nan
-
-                is_fill_nan = False
-                try:
-                    is_fill_nan = np.isnan(fill_value)
-                except (TypeError, ValueError):
-                    pass
-
-                if not is_fill_nan:
-                    mask = np.isnan(new_data)
-                    new_data[mask] = fill_value
-
+            raise ValueError("asfreq does not interpolate; use resample() for interpolation or filtering.")
         else:
             idx_right = np.searchsorted(old_times_val, new_times_val, side='left')
             np.clip(idx_right - 1, 0, len(old_times_val) - 1)
@@ -292,6 +274,10 @@ class TimeSeriesResamplingMixin:
                  fill_idx = idx_side_right - 1
 
                  valid_f = (fill_idx >= 0)
+                 if tolerance is not None:
+                      tol_val = _to_time_value(tolerance)
+                      dt_diff = new_times_val - old_times_val[np.clip(fill_idx, 0, None)]
+                      valid_f &= (dt_diff <= tol_val)
                  if max_gap is not None:
                       limit = _to_time_value(max_gap)
                       dt_diff = new_times_val - old_times_val[np.clip(fill_idx, 0, None)]
@@ -307,6 +293,10 @@ class TimeSeriesResamplingMixin:
 
                  valid_b = (fill_idx < len(old_times_val))
 
+                 if tolerance is not None:
+                      tol_val = _to_time_value(tolerance)
+                      dt_diff = old_times_val[np.clip(fill_idx, 0, len(old_times_val)-1)] - new_times_val
+                      valid_b &= (dt_diff <= tol_val)
                  if max_gap is not None:
                       limit = _to_time_value(max_gap)
                       dt_diff = old_times_val[np.clip(fill_idx, 0, len(old_times_val)-1)] - new_times_val
@@ -361,6 +351,8 @@ class TimeSeriesResamplingMixin:
                 valid_out = np.where(valid_exact)[0]
                 src_idx = chosen_from_min[valid_exact]
                 new_data[valid_out] = self.value[src_idx]
+            else:
+                raise ValueError(f"Unknown asfreq method: {method}")
 
         # Construct new TimeSeries
         # Construct new TimeSeries
@@ -629,4 +621,3 @@ class TimeSeriesResamplingMixin:
             name=self.name,
             channel=self.channel
         )
-

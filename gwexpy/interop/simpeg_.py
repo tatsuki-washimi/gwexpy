@@ -24,7 +24,7 @@ def to_simpeg(data, location=None, rx_type="PointElectricField", orientation='x'
         SimPEG Data object containing the survey and observed data.
     """
     simpeg = require_optional("simpeg")
-    from simpeg import survey as simpeg_survey, data as simpeg_data
+    from simpeg import data as simpeg_data
     
     if location is None:
         location = np.array([0., 0., 0.])

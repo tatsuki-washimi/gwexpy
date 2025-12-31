@@ -30,7 +30,10 @@ from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
 # --- Imports for delegation ---
 
-from .utils import *
+from .utils import (
+    _extract_axis_info,
+)
+
 
 
 def _extract_axis_info(ts):

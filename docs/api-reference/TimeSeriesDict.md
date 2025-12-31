@@ -128,6 +128,7 @@ asfreq(self, rule, **kwargs)
 
 Apply asfreq to each TimeSeries in the dict.
 Returns a new TimeSeriesDict.
+asfreq does not interpolate; use resample() for interpolation or filtering.
 
 
 ### `average_fft`
@@ -1091,5 +1092,4 @@ zpk(self, *args, **kwargs) -> 'TimeSeriesDict'
 
 Apply ZPK filter to each TimeSeries in the dict.
 Returns a new TimeSeriesDict.
-
 

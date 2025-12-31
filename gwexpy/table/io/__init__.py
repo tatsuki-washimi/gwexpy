@@ -1,1 +1,34 @@
-from gwpy.table.io import *
+from gwpy.table.io import (
+    cwb,
+    fetch,
+    gravityspy,
+    gstlal,
+    gwf,
+    hacr,
+    ligolw,
+    omega,
+    omicron,
+    pycbc,
+    root,
+    snax,
+    sql,
+    utils,
+)
+
+__all__ = [
+    "cwb",
+    "fetch",
+    "gravityspy",
+    "gstlal",
+    "gwf",
+    "hacr",
+    "ligolw",
+    "omega",
+    "omicron",
+    "pycbc",
+    "root",
+    "snax",
+    "sql",
+    "utils",
+]
+

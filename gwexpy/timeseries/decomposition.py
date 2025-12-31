@@ -77,6 +77,8 @@ def _handle_nan_policy(matrix, policy, impute_kwargs=None):
                 if np.any(nans):
                     if method == "interpolate":
                         valid = ~nans
+                        if not np.any(valid):
+                            continue
                         x = np.arange(len(col))
                         col[nans] = np.interp(x[nans], x[valid], col[valid])
                     elif method == "mean":

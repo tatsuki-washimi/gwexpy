@@ -10,7 +10,7 @@ Estimates the coupling function (CF) with flexible threshold strategies:
 import numpy as np
 import warnings
 from abc import ABC, abstractmethod
-from typing import Optional, Union, Dict, List
+from typing import Optional, Union, Dict
 
 from ..timeseries import TimeSeries, TimeSeriesDict
 from ..frequencyseries import FrequencySeries

@@ -1,5 +1,4 @@
 
-from ._optional import require_optional
 import numpy as np
 import json
 

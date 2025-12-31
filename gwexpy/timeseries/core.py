@@ -1,1 +1,42 @@
-from gwpy.timeseries.core import *
+from gwpy.timeseries.core import (
+    GWOSC_DEFAULT_HOST,
+    Channel,
+    ChannelList,
+    LIGOTimeGPS,
+    OrderedDict,
+    SegmentList,
+    Series,
+    Time,
+    TimeSeriesBase,
+    TimeSeriesBaseDict,
+    TimeSeriesBaseList,
+    as_series_dict_class,
+    ceil,
+    gps_types,
+    gprint,
+    io_registry,
+    to_gps,
+    units,
+)
+
+__all__ = [
+    "GWOSC_DEFAULT_HOST",
+    "Channel",
+    "ChannelList",
+    "LIGOTimeGPS",
+    "OrderedDict",
+    "SegmentList",
+    "Series",
+    "Time",
+    "TimeSeriesBase",
+    "TimeSeriesBaseDict",
+    "TimeSeriesBaseList",
+    "as_series_dict_class",
+    "ceil",
+    "gps_types",
+    "gprint",
+    "io_registry",
+    "to_gps",
+    "units",
+]
+

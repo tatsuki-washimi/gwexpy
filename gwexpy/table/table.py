@@ -1,1 +1,34 @@
-from gwpy.table.table import *
+from gwpy.table.table import (
+    DEFAULT_GWOSC_URL,
+    TIME_LIKE_COLUMN_NAMES,
+    EventTable,
+    Table,
+    attrgetter,
+    ceil,
+    filter_table,
+    gps_types,
+    inherit_io_registrations,
+    io_read_multi,
+    parse_operator,
+    registry,
+    vstack,
+    wraps,
+)
+
+__all__ = [
+    "DEFAULT_GWOSC_URL",
+    "TIME_LIKE_COLUMN_NAMES",
+    "EventTable",
+    "Table",
+    "attrgetter",
+    "ceil",
+    "filter_table",
+    "gps_types",
+    "inherit_io_registrations",
+    "io_read_multi",
+    "parse_operator",
+    "registry",
+    "vstack",
+    "wraps",
+]
+

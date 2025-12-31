@@ -1,1 +1,36 @@
-from gwpy.table.gravityspy import *
+from gwpy.table.gravityspy import (
+    DEFAULT_HOST,
+    DURATIONS,
+    ERA,
+    EventTable,
+    GravitySpyTable,
+    JSONDecodeError,
+    JSON_CONTENT_TYPE,
+    Path,
+    SEARCH_PATH,
+    SIMILARITY_SEARCH_PATH,
+    URL_COLUMN,
+    mp_utils,
+    re,
+    requests,
+    urlencode,
+)
+
+__all__ = [
+    "DEFAULT_HOST",
+    "DURATIONS",
+    "ERA",
+    "EventTable",
+    "GravitySpyTable",
+    "JSONDecodeError",
+    "JSON_CONTENT_TYPE",
+    "Path",
+    "SEARCH_PATH",
+    "SIMILARITY_SEARCH_PATH",
+    "URL_COLUMN",
+    "mp_utils",
+    "re",
+    "requests",
+    "urlencode",
+]
+

@@ -1,7 +1,6 @@
 import inspect
 import os
 import sys
-import importlib
 
 # Ensure current directory is in path
 sys.path.insert(0, os.getcwd())
@@ -40,7 +39,7 @@ CLASSES_TO_DOCUMENT = [
     gwexpy.plot.Plot,
 ]
 
-OUTPUT_DIR = '/home/washimi/work/gwexpy/docs/api-reference'
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), 'docs', 'api-reference')
 
 def get_method_signature(method):
     try:
