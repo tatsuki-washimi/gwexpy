@@ -23,6 +23,7 @@ from ..nds.cache import NDSDataCache
 from ..excitation.generator import SignalGenerator
 from ..excitation.params import GeneratorParams
 from .channel_browser import ChannelBrowserDialog
+from ..streaming import SpectralAccumulator
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -70,6 +71,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Signal Generator
         self.sig_gen = SignalGenerator()
+
+        # Streaming Accumulator
+        self.accumulator = SpectralAccumulator()
+        self.nds_cache.signal_payload.connect(self.on_stream_payload)
 
         self.input_controls["ds_combo"].currentTextChanged.connect(
             self.on_source_changed
@@ -341,6 +346,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if text == "NDS":
             self.nds_latest_raw = None
 
+    def on_stream_payload(self, payload):
+        """Handle incremental NDS data."""
+        self.accumulator.add_chunk(payload)
+
     def on_nds_data(self, buffers):
         self.nds_latest_raw = buffers
 
@@ -417,6 +426,27 @@ class MainWindow(QtWidgets.QMainWindow):
                 win_sec = self.input_controls["nds_win"].value()
                 self.nds_cache.online_start(lookback=win_sec)
 
+                # Configure Spectral Accumulator
+                params = self.get_ui_params()
+                all_traces = []
+                for info in [self.graph_info1, self.graph_info2]:
+                    # Also need to know graph type per panel? 
+                    # Accumulator assumes one graph type or generalized.
+                    # Ideally we pass graph type in the trace dict or handle it.
+                    # Current Accumulator.get_results uses params['graph_type'] which is single global.
+                    # But we have 2 graph panels.
+                    # We should probably pass graph_type in trace dict to Accumulator.
+                    g_type = info["graph_combo"].currentText()
+                    for c in info["traces"]:
+                        all_traces.append({
+                            "active": c["active"].isChecked(),
+                            "ch_a": c["chan_a"].currentText(),
+                            "ch_b": c["chan_b"].currentText(),
+                            "graph_type": g_type # Add this!
+                        })
+                self.accumulator.configure(params, all_traces)
+
+        self.meas_start_gps = None  # Initialize measurement start time
         self.timer.start(50)
 
     def pause_animation(self):
@@ -442,8 +472,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btn_pause.setEnabled(False)
         self.btn_resume.setEnabled(False)
         self.btn_abort.setEnabled(True)
+        self.btn_resume.setEnabled(False)
+        self.btn_abort.setEnabled(True)
         self.nds_cache.reset()
+        self.accumulator.reset() # Reset accumulator
         self.nds_latest_raw = None
+        self.meas_start_gps = None  # Reset measurement start
         for t_list in [self.traces1, self.traces2]:
             for t in t_list:
                 t["curve"].setData([], [])
@@ -461,7 +495,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 "bw": c["bw"].value(),
                 "averages": c["averages"].value(),
                 "overlap": c["overlap"].value() / 100.0,
-                "window": c["window"].currentText().lower(),
+                "window": "boxcar" if c["window"].currentText().lower() == "uniform" else c["window"].currentText().lower(),
             }
         )
         p["avg_type"] = (
@@ -602,6 +636,76 @@ class MainWindow(QtWidgets.QMainWindow):
                     )
                     data_map[tgt] = ts_sig
 
+        # --- AVERAGING / STOP LOGIC ---
+        ui_params = self.get_ui_params()
+        
+        # Determine measurement start if not set (Fresh Start)
+        if self.meas_start_gps is None:
+            if current_times is not None and len(current_times) > 0:
+                # Start tracking from the END of the current buffer to ensure fresh data.
+                # Just using current_times[-1] might miss one sample, but safe.
+                # Actually, if we use real-time, we want anything NEWER than now.
+                # But NDS buffer might be lagging.
+                # Let's start from the *beginning* of the 'latest' buffer if it hasn't been seen?
+                # No, standard DTT behavior is "Start Measurement -> Clear buffers -> Accumulate".
+                # Here we simulate clearing by cropping against a start time.
+                self.meas_start_gps = current_times[-1]
+                print(f"DEBUG: Measurement Start GPS set to {self.meas_start_gps}")
+        
+        # Apply Cropping if in Fixed/Fresh mode
+        # Actually we should always crop to self.meas_start_gps to show "measurement progress"
+        if self.meas_start_gps is not None:
+            for k, ts in list(data_map.items()):
+                # Check for empty or old data
+                if ts.t0.value + ts.duration.value <= self.meas_start_gps:
+                    # Entirely old data
+                    del data_map[k]
+                    continue
+                
+                # Crop logic
+                # gwpy crop(start, end)
+                if ts.t0.value < self.meas_start_gps:
+                    try:
+                        data_map[k] = ts.crop(start=self.meas_start_gps)
+                    except Exception:
+                        del data_map[k]
+
+        # Check Stop Condition
+        if ui_params["avg_type"] == "fixed" and data_map:
+            # Calculate required duration
+            # N_avg = (Duration - Overlap) / (FFT_Len - Overlap)
+            # Duration = N_avg * (FFT_Len - Overlap) + Overlap
+            fft_len = 1.0 / max(ui_params["bw"], 1e-9)
+            overlap_pct = ui_params["overlap"] # 0.0-1.0 from get_ui_params (check line 463: value/100.0)
+            overlap_sec = fft_len * overlap_pct
+            stride = fft_len - overlap_sec
+            
+            target_avgs = ui_params["averages"]
+            # Duration needed for N averages
+            # For 1 avg: duration = fft_len
+            # For 2 avg: duration = fft_len + stride
+            # For N avg: duration = fft_len + (N-1)*stride
+            
+            if target_avgs < 1: target_avgs = 1
+            req_duration = fft_len + (target_avgs - 1) * stride
+            
+            # Check collected duration
+            # Use the first available TS
+            try:
+                ts_check = next(iter(data_map.values()))
+                collected = ts_check.duration.value
+                
+                if collected >= req_duration:
+                    print(f"DEBUG: Fixed Averaging Reached. Collected: {collected:.2f}s, Req: {req_duration:.2f}s")
+                    # Should stop
+                    self.pause_animation()
+                    # Crop strict?
+                    # for k in data_map: data_map[k] = data_map[k].crop(end=ts_check.t0.value + req_duration)
+                    # For now just pause is enough to stop updates.
+            except Exception as e:
+                print(f"DEBUG: Error checking stop condition: {e}")
+
+
         # Always publish the global 'Excitation' channel if we have any signal
         if total_excitation is not None and np.any(total_excitation):
             data_map["Excitation"] = TimeSeries(
@@ -626,21 +730,46 @@ class MainWindow(QtWidgets.QMainWindow):
                     info_root["panel"].meta_info["bw"] = ui_p.get("bw", 0)
                     info_root["panel"].update_params_display()
 
+
             try:
                 traces_items = [self.traces1, self.traces2][plot_idx]
                 g_type = info_root["graph_combo"].currentText()
-                results = self.engine.compute(
-                    data_map,
-                    g_type,
-                    [
-                        {
-                            "active": c["active"].isChecked(),
-                            "ch_a": c["chan_a"].currentText(),
-                            "ch_b": c["chan_b"].currentText(),
-                        }
-                        for c in info_root["traces"]
-                    ],
-                )
+                
+                # Decide source of results
+                if self.data_source == "NDS" or self.input_controls["pcaudio"].isChecked():
+                    # Use Accumulator
+                    # Retrieve all results once?
+                    # Ideally we want results for THIS graph panel.
+                    # We configured accumulator with ALL traces combined (traces1 + traces2).
+                    # We need to slice the results.
+                    # Offset calculation:
+                    offset = 0
+                    if plot_idx == 1:
+                         # Skip graph 1 traces
+                         offset = len(self.graph_info1["traces"])
+                    
+                    all_results = self.accumulator.get_results()
+                    print(f"DEBUG: Accumulator returned {len(all_results)} results")
+                    valid_count = sum(1 for r in all_results if r is not None)
+                    print(f"DEBUG: Valid (not None) results: {valid_count} / {len(all_results)}")
+                    # Slice
+                    n_traces = len(info_root["traces"])
+                    results = all_results[offset : offset + n_traces]
+                    # print(f"DEBUG: Graph {plot_idx} results slice: {len(results)} items. First is None? {results[0] is None if results else 'Empty'}")
+                else:
+                    # Legacy Engine (SIM/FILE)
+                    results = self.engine.compute(
+                        data_map,
+                        g_type,
+                        [
+                            {
+                                "active": c["active"].isChecked(),
+                                "ch_a": c["chan_a"].currentText(),
+                                "ch_b": c["chan_b"].currentText(),
+                            }
+                            for c in info_root["traces"]
+                        ],
+                    )
                 for t_idx, result in enumerate(results):
                     try:
                         tr = traces_items[t_idx]

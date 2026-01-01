@@ -446,20 +446,30 @@ def create_measurement_tab():
     c = _add_param(
         0, c, "Stop:", _small_spin_dbl(width=80, max_val=1e5), "Hz", "stop_freq"
     )
-    controls["stop_freq"].setValue(1000)
+    controls["stop_freq"].setValue(900)
     c = _add_param(0, c, "BW:", _small_spin_dbl(width=80), "Hz", "bw")
     controls["bw"].setValue(1)
     ts_spin = _small_spin_dbl(width=80)
     c = _add_param(0, c, "TimeSpan:", ts_spin, "s")
     controls["time_span"] = ts_spin
-    c = _add_param(0, c, "Settling Time:", _small_spin_dbl(width=80), "%")
-    c = _add_param(0, c, "Ramp Down:", _small_spin_dbl(width=80), "Sec")
-    c = _add_param(0, c, "Ramp Up:", _small_spin_dbl(width=80), "")
+    
+    # Settling Time
+    sb_settling = _small_spin_dbl(width=80)
+    sb_settling.setValue(10.0)
+    c = _add_param(0, c, "Settling Time:", sb_settling, "%", "settling_time")
+    
+    # Ramp Down
+    sb_ramp_down = _small_spin_dbl(width=80)
+    sb_ramp_down.setValue(1.0)
+    c = _add_param(0, c, "Ramp Down:", sb_ramp_down, "Sec", "ramp_down")
+    
+    # Ramp Up
+    c = _add_param(0, c, "Ramp Up:", _small_spin_dbl(width=80), "", "ramp_up")
 
     # Row 1
     g_fft.addWidget(QtWidgets.QLabel("Window:"), 1, 0)
     cb_win = QtWidgets.QComboBox()
-    cb_win.addItems(["Hanning", "Flattop", "Uniform"])
+    cb_win.addItems(["Hann", "Flattop", "Uniform"])
     controls["window"] = cb_win
     g_fft.addWidget(cb_win, 1, 1, 1, 2)
 
@@ -470,10 +480,14 @@ def create_measurement_tab():
     g_fft.addWidget(sb_ov, 1, 4)
     g_fft.addWidget(QtWidgets.QLabel("%"), 1, 5)
 
-    g_fft.addWidget(QtWidgets.QCheckBox("Remove mean", checked=True), 1, 6, 1, 2)
+    chk_rm = QtWidgets.QCheckBox("Remove mean", checked=True)
+    controls["remove_mean"] = chk_rm
+    g_fft.addWidget(chk_rm, 1, 6, 1, 2)
 
     g_fft.addWidget(QtWidgets.QLabel("Number of A channels:"), 1, 9)
-    g_fft.addWidget(_small_spin_int(width=60), 1, 10)
+    sb_num_a = _small_spin_int(width=60)
+    controls["num_a_channels"] = sb_num_a
+    g_fft.addWidget(sb_num_a, 1, 10)
 
     # Row 2
     g_fft.addWidget(QtWidgets.QLabel("Averages:"), 2, 0)
@@ -497,7 +511,9 @@ def create_measurement_tab():
     g_fft.addLayout(l_avg, 2, 3, 1, 6)
 
     g_fft.addWidget(QtWidgets.QLabel("Burst Noise Quiet Time"), 2, 12)
-    g_fft.addWidget(_small_spin_dbl(decimals=2, width=80), 2, 13)
+    sb_burst = _small_spin_dbl(decimals=2, width=80)
+    controls["burst_quiet_time"] = sb_burst
+    g_fft.addWidget(sb_burst, 2, 13)
     g_fft.addWidget(QtWidgets.QLabel("sec"), 2, 14)
 
     outer.addWidget(gb_fft)

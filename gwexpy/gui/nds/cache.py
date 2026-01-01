@@ -40,6 +40,7 @@ class ChannelListCache:
 
 class NDSDataCache(QtCore.QObject):
     signal_data = QtCore.Signal(object)  # emit(DataBufferDict)
+    signal_payload = QtCore.Signal(object) # emit(payload) - incremental data
 
     def __init__(self):
         super().__init__()
@@ -145,3 +146,5 @@ class NDSDataCache(QtCore.QObject):
         self.buffers.update_buffers(payload)
         # Emit updated buffers to GUI
         self.signal_data.emit(self.buffers)
+        # Emit incremental payload for streaming analysis
+        self.signal_payload.emit(payload)
