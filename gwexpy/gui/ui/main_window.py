@@ -155,6 +155,49 @@ class MainWindow(QtWidgets.QMainWindow):
         # Initial sync
         self.on_measurement_channel_changed()
 
+        # Startup NDS Cache Pre-loading (like ndscope)
+        QtCore.QTimer.singleShot(0, self.preload_nds_channels)
+
+        # Trigger update when switching away from Input tab (if settings changed)
+        self.tabs.currentChanged.connect(lambda idx: self.preload_nds_channels())
+
+    def preload_nds_channels(self):
+        """Fetch NDS channels in background for the default server."""
+        try:
+            # Determine default server/port (Same logic as show_channel_browser)
+            ds_mode = self.input_controls["ds_combo"].currentText()
+            if ds_mode == "NDS2":
+                server = self.input_controls["nds2_server"].currentText()
+                port = self.input_controls["nds2_port"].value()
+            else:
+                server = self.input_controls["nds_server"].currentText()
+                port = self.input_controls["nds_port"].value()
+
+            from ..nds.nds_thread import ChannelListWorker
+            from ..nds.cache import ChannelListCache
+
+            key = f"{server}:{port}"
+            if ChannelListCache().get_channels(key) is not None:
+                return  # Already cached (unlikely at startup, but safe)
+
+            print(f"DEBUG: Pre-loading NDS channels for {key}")
+            self._preload_worker = ChannelListWorker(server, port)
+            self._preload_worker.finished.connect(
+                lambda results, err: self._on_preload_finished(key, results, err)
+            )
+            self._preload_worker.start()
+        except Exception as e:
+            print(f"Preload Error: {e}")
+
+    def _on_preload_finished(self, key, results, error):
+        from ..nds.cache import ChannelListCache
+        if error:
+            print(f"Pre-load failed for {key}: {error}")
+        else:
+            ChannelListCache().set_channels(key, results)
+            print(f"Pre-load complete for {key}: {len(results)} channels cached.")
+        self._preload_worker = None  # Release ref
+
     def on_measurement_channel_changed(self):
         # Update Result tab comboboxes based on active Measurement channels
         active_channels = []
@@ -239,6 +282,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def show_channel_browser(self, start_slot=None):
         # Determine which server/port to use based on current selection in Input tab
+        use_pc_audio = self.input_controls["pcaudio"].isChecked()
         ds_mode = self.input_controls["ds_combo"].currentText()
         if ds_mode == "NDS2":
             server = self.input_controls["nds2_server"].currentText()
@@ -247,7 +291,7 @@ class MainWindow(QtWidgets.QMainWindow):
             server = self.input_controls["nds_server"].currentText()
             port = self.input_controls["nds_port"].value()
 
-        dlg = ChannelBrowserDialog(server, port, self)
+        dlg = ChannelBrowserDialog(server, port, self, audio_enabled=use_pc_audio)
         if dlg.exec_():
             chans = dlg.selected_channels
             if not chans:

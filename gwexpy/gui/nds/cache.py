@@ -11,6 +11,33 @@ from .buffer import DataBufferDict
 from .util import parse_server_string
 
 
+from .util import parse_server_string
+
+
+class ChannelListCache:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(ChannelListCache, cls).__new__(cls)
+            cls._instance.cache = {}  # server_str -> list of (name, rate, type)
+            cls._instance.is_fetching = {}  # server_str -> bool
+        return cls._instance
+
+    def get_channels(self, server_str):
+        return self.cache.get(server_str)
+
+    def set_channels(self, server_str, channels):
+        """
+        channels: list of (name, rate, type) tuples
+        """
+        self.cache[server_str] = channels
+        self.is_fetching[server_str] = False
+
+    def has_channels(self, server_str):
+        return server_str in self.cache and self.cache[server_str] is not None
+
+
 class NDSDataCache(QtCore.QObject):
     signal_data = QtCore.Signal(object)  # emit(DataBufferDict)
 
