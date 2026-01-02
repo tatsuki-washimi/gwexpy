@@ -1,5 +1,6 @@
 from .plot import Plot
 from .skymap import SkyMap
+from .geomap import GeoMap
 # Dynamic import from gwpy (PEP 562)
 import gwpy.plot
 
