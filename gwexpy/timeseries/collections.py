@@ -424,6 +424,15 @@ class TimeSeriesDict(BaseTimeSeriesDict):
              return write_root_file(self, target, **kwargs)
         return super().write(target, *args, **kwargs)
 
+    def plot(self, **kwargs: Any):
+        """Plot all series. Delegates to gwexpy.plot.Plot."""
+        from gwexpy.plot import Plot
+        return Plot(self, **kwargs)
+
+    def plot_all(self, *args: Any, **kwargs: Any):
+        """Alias for plot(). Plots all series."""
+        return self.plot(*args, **kwargs)
+
 
     def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
         """Apply impute to each item."""
@@ -1424,4 +1433,13 @@ class TimeSeriesList(BaseTimeSeriesList):
     def ica(self, *args, **kwargs):
         """Perform ICA decomposition across channels."""
         return self.to_matrix().ica(*args, **kwargs)
+
+    def plot(self, **kwargs: Any):
+        """Plot all series. Delegates to gwexpy.plot.Plot."""
+        from gwexpy.plot import Plot
+        return Plot(self, **kwargs)
+
+    def plot_all(self, *args: Any, **kwargs: Any):
+        """Alias for plot(). Plots all series."""
+        return self.plot(*args, **kwargs)
 

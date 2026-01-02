@@ -218,7 +218,7 @@ def _normalize_input(
         (value_array, attr_dict, detected_xindex)
         where attr_dict contains per-cell unit/name/channel arrays.
     """
-    from .seriesmatrix import SeriesMatrix # Local import to avoid circularity if needed,
+    # Local import to avoid circularity if needed,
     # but initially we move this to its own file.
 
     # 0. None -> empty matrix

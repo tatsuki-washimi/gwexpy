@@ -1145,24 +1145,24 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
         figsize: Optional[Any] = None,
         **kwargs: Any,
     ):
-        """Plot all series in the dict.
+        """
+        Plot data.
 
         Parameters
         ----------
         label : str, optional
-            'key' (default) to use dict keys as labels, 'name' to use series names.
-        method : str, optional
-            'plot' (default) or 'scatter'.
-        figsize : tuple, optional
-            Figure size.
-        **kwargs
-            Passed to gwpy.plot.Plot.
+            labelling method, one of
 
-        Returns
-        -------
-        plot : gwpy.plot.Plot
+            - ``'key'``: use dictionary key (default)
+            - ``'name'``: use ``name`` attribute of each item
+        method : str, optional
+            method of :class:`~gwpy.plot.Plot` to call, default: ``'plot'``
+        figsize : tuple, optional
+            (width, height) tuple in inches
+        **kwargs
+            other keyword arguments passed to the plot method
         """
-        from gwpy.plot import Plot
+        from gwexpy.plot import Plot
 
         kwargs = dict(kwargs)
         separate = kwargs.get("separate", False)
@@ -1170,11 +1170,23 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
             kwargs.setdefault("figsize", figsize)
         kwargs.update({"label": label, "method": method})
 
+        # We pass the dict directly if separate=True (or False),
+        # but gwexpy.plot.Plot can handle list unpacking now.
+        # To maintain label logic ("key" vs "name"), we might need
+        # to adjust the input items or labels beforehand if not handled by Plot.
+        # However, gwpy.plot.Plot handles dicts by default for labeling if separate=False.
+        
+        # If separate=True, we want subplots. gwexpy.plot.Plot handles this via defaults now.
+         
+        # For 'key' labeling, we rely on the input being a dict/values iteration.
+        
         if separate:
-            plot = Plot(*self.values(), **kwargs)
+             # If separate, Plot(...) with *values usually works in gwpy
+             # gwexpy Plot now supports unpacking
+             plot = Plot(self, **kwargs)
         else:
-            plot = Plot(self.values(), **kwargs)
-
+             plot = Plot(self, **kwargs)
+        
         artmap = {"plot": "lines", "scatter": "collections"}
         artists = [
             artist
@@ -1531,10 +1543,14 @@ class FrequencySeriesBaseList(list[_FS]):
 
     EntryClass = FrequencySeries
 
-    def __init__(self, *items: _FS):
+    def __init__(self, *items: Union[_FS, Iterable[_FS]]):
         super().__init__()
-        for item in items:
-            self.append(item)
+        if len(items) == 1 and isinstance(items[0], (list, tuple)):
+             for item in items[0]:
+                  self.append(item)
+        else:
+             for item in items:
+                  self.append(item)
 
     @property
     def segments(self):
@@ -1579,8 +1595,8 @@ class FrequencySeriesBaseList(list[_FS]):
         return self.__class__(*(item.copy() for item in self))
 
     def plot(self, **kwargs: Any):
-        """Plot all series. Delegates to gwpy.plot.Plot."""
-        from gwpy.plot import Plot
+        """Plot all series. Delegates to gwexpy.plot.Plot."""
+        from gwexpy.plot import Plot
 
         return Plot(self, **kwargs)
 

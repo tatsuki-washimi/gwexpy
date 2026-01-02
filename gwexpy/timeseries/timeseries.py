@@ -60,6 +60,11 @@ class TimeSeries(
     Inherits from gwpy.timeseries.TimeSeries for full compatibility.
     """
 
+    def plot(self, **kwargs: Any):
+        """Plot this TimeSeries. Delegates to gwexpy.plot.Plot."""
+        from gwexpy.plot import Plot
+        return Plot(self, **kwargs)
+
     def __new__(cls, data, *args, **kwargs):
         from gwexpy.timeseries.utils import _coerce_t0_gps
 

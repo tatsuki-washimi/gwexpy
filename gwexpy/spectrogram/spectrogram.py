@@ -230,6 +230,15 @@ class SpectrogramMatrix(np.ndarray):
 
         return obj
 
+    def __getitem__(self, key):
+        if isinstance(key, tuple) and len(key) == 2:
+            row_key, col_key = key
+            if isinstance(row_key, (int, str, np.integer)) and isinstance(col_key, (int, str, np.integer)):
+                i = self.row_index(row_key) if isinstance(row_key, str) else int(row_key)
+                j = self.col_index(col_key) if isinstance(col_key, str) else int(col_key)
+                return super().__getitem__((i, j))
+        return super().__getitem__(key)
+
     def __array_finalize__(self, obj):
         if obj is None:
             return
@@ -241,6 +250,52 @@ class SpectrogramMatrix(np.ndarray):
         self.cols = getattr(obj, 'cols', None)
         self.meta = getattr(obj, 'meta', None)
 
+    def to_series_2Dlist(self):
+        """Convert matrix to a 2D nested list of Spectrogram objects."""
+        from gwexpy.spectrogram import Spectrogram
+        r_keys = self.row_keys()
+        c_keys = self.col_keys()
+        return [[Spectrogram(self[i, j], times=self.times, frequencies=self.frequencies, 
+                            unit=self.meta[i, j].unit, name=self.meta[i, j].name)
+                 for j in range(len(c_keys))] for i in range(len(r_keys))]
+
+    def to_series_1Dlist(self):
+        """Convert matrix to a flat 1D list of Spectrogram objects."""
+        from gwexpy.spectrogram import Spectrogram
+        r_keys = self.row_keys()
+        c_keys = self.col_keys()
+        results = []
+        # Use view(np.ndarray) to pass raw data to Spectrogram constructor
+        raw_data = self.view(np.ndarray)
+        if self.ndim == 3:
+            # (N_rows, Time, Freq)
+            for i in range(len(r_keys)):
+                unit = self.meta[i, 0].unit if self.meta is not None else self.unit
+                name = self.meta[i, 0].name if self.meta is not None else self.name
+                results.append(Spectrogram(raw_data[i], times=self.times, frequencies=self.frequencies,
+                                          unit=unit, name=name))
+        elif self.ndim == 4:
+            # (N_rows, N_cols, Time, Freq)
+            for i in range(len(r_keys)):
+                for j in range(len(c_keys)):
+                    unit = self.meta[i, j].unit
+                    name = self.meta[i, j].name
+                    results.append(Spectrogram(raw_data[i, j], times=self.times, frequencies=self.frequencies,
+                                              unit=unit, name=name))
+        else:
+            raise ValueError(f"Unsupported SpectrogramMatrix dimension: {self.ndim}")
+        return results
+
+    def _all_element_units_equivalent(self):
+        """Check whether all element units are mutually equivalent."""
+        if self.meta is None:
+            return True, self.unit
+        ref_unit = self.meta[0, 0].unit
+        for meta in self.meta.flat:
+            if not meta.unit.is_equivalent(ref_unit):
+                return False, ref_unit
+        return True, ref_unit
+
     def mean(self, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         res = super().mean(axis=axis, dtype=dtype, out=out, keepdims=keepdims, where=where)
         # If result is 1D and matches frequency length, it might be a spectrum
@@ -248,194 +303,38 @@ class SpectrogramMatrix(np.ndarray):
         return res
 
     def row_keys(self):
-        """Return list of row metadata keys."""
-        return list(self.rows.keys()) if self.rows else []
+        return tuple(self.rows.keys()) if self.rows else tuple()
 
     def col_keys(self):
-        """Return list of column metadata keys."""
-        return list(self.cols.keys()) if self.cols else []
+        return tuple(self.cols.keys()) if self.cols else tuple()
+
+    def row_index(self, key):
+        if not self.rows:
+            raise KeyError(f"Invalid row key: {key}")
+        try:
+            return list(self.row_keys()).index(key)
+        except ValueError:
+            raise KeyError(f"Invalid row key: {key}")
+
+    def col_index(self, key):
+        if not self.cols:
+            raise KeyError(f"Invalid column key: {key}")
+        try:
+            return list(self.col_keys()).index(key)
+        except ValueError:
+            raise KeyError(f"Invalid column key: {key}")
 
     def plot(self, **kwargs):
+        """Plot the matrix data using gwexpy.plot.Plot."""
+        from gwexpy.plot import Plot
+        return Plot(self, **kwargs)
+
+    def plot_summary(self, **kwargs):
         """
-        Plot the matrix data.
-
-        If it is 3D (Batch, Time, Freq), plots a vertical list of spectrograms.
-        If it is 4D (Row, Col, Time, Freq), plots a grid of spectrograms.
-        If row/col metadata implies a grid for 3D, that grid is used instead
-        of a single column.
-
-        Optional Kwargs:
-            monitor: int or (row, col) to plot a single element
-            method: 'pcolormesh' (default)
-            separate: bool (default True for 4D)
-            geometry: tuple (default based on shape)
-            yscale: 'log' (default)
-            xscale: 'linear' (default)
+        Plot Matrix as side-by-side Spectrograms and percentile summaries.
         """
-        kwargs.setdefault("method", "pcolormesh")
-        kwargs.setdefault("yscale", "log")
-        kwargs.setdefault("xscale", "linear")
-
-        def _normalize_names(names, keys, count):
-            if names is not None and len(names) == count:
-                if any(name not in (None, "") for name in names):
-                    return [str(name) if name is not None else None for name in names]
-            if keys is not None and len(keys) == count:
-                return [str(key) for key in keys]
-            return [None] * count
-
-        def _spectrogram_name(row_name, col_name):
-            if row_name and col_name:
-                return f"{row_name},{col_name}"
-            if row_name:
-                return str(row_name)
-            if col_name:
-                return str(col_name)
-            return None
-
-        def _apply_grid_labels(plot_obj, nrow, ncol, row_names, col_names):
-            axes = plot_obj.axes[: nrow * ncol]
-            if 'ylabel' not in kwargs:
-                for i, name in enumerate(row_names):
-                    idx = i * ncol
-                    if idx < len(axes) and name:
-                        axes[idx].set_ylabel(str(name))
-            if 'title' not in kwargs:
-                for j, name in enumerate(col_names):
-                    if j < len(axes) and name:
-                        axes[j].set_title(str(name), pad=8)
-            if kwargs.get("constrained_layout", True):
-                try:
-                    plot_obj.set_constrained_layout(True)
-                except (TypeError, ValueError, AttributeError):
-                    pass
-            return plot_obj
-
-        monitor = kwargs.pop("monitor", None)
-
-        if self.ndim == 3:
-             index = monitor
-             if index is not None:
-                  data = self[index]
-                  title = self.rows.names[index] if self.rows else f"Channel {index}"
-                  s = Spectrogram(
-                       data,
-                       times=self.times,
-                       frequencies=self.frequencies,
-                       unit=self.unit,
-                       name=self.name or title
-                  )
-                  return s.plot(**kwargs)
-             else:
-                  # If no monitor, plot as a grid if row/col metadata implies one
-                  n_items = self.shape[0]
-                  geometry = kwargs.get("geometry")
-                  if geometry is not None:
-                      nrow, ncol = geometry
-                  else:
-                      row_count = len(self.rows) if self.rows else 0
-                      col_count = len(self.cols) if self.cols else 0
-                      if row_count and col_count:
-                          if row_count * col_count == n_items:
-                              nrow, ncol = row_count, col_count
-                          elif col_count == n_items:
-                              nrow, ncol = 1, col_count
-                          elif row_count == n_items:
-                              nrow, ncol = row_count, 1
-                          else:
-                              nrow, ncol = n_items, 1
-                      else:
-                          nrow, ncol = n_items, 1
-
-                  row_names = _normalize_names(
-                      self.rows.names if self.rows else None,
-                      list(self.rows.keys()) if self.rows else None,
-                      nrow,
-                  )
-                  col_names = _normalize_names(
-                      self.cols.names if self.cols else None,
-                      list(self.cols.keys()) if self.cols else None,
-                      ncol,
-                  )
-
-                  specs = []
-                  for i in range(nrow):
-                       for j in range(ncol):
-                            idx = i * ncol + j
-                            if idx >= n_items:
-                                break
-                            name = _spectrogram_name(row_names[i], col_names[j])
-                            s = Spectrogram(
-                                 self[idx],
-                                 times=self.times,
-                                 frequencies=self.frequencies,
-                                 unit=self.unit,
-                                 name=name
-                            )
-                            specs.append(s)
-                  kwargs.setdefault("separate", True)
-                  kwargs.setdefault("geometry", (nrow, ncol))
-                  plot = Plot(*specs, **kwargs)
-                  return _apply_grid_labels(plot, nrow, ncol, row_names, col_names)
-
-        elif self.ndim == 4:
-             nrow, ncol = self.shape[:2]
-             r_names = _normalize_names(
-                 self.rows.names if self.rows else None,
-                 list(self.rows.keys()) if self.rows else None,
-                 nrow,
-             )
-             c_names = _normalize_names(
-                 self.cols.names if self.cols else None,
-                 list(self.cols.keys()) if self.cols else None,
-                 ncol,
-             )
-
-             if monitor is not None:
-                  if isinstance(monitor, tuple) and len(monitor) == 2:
-                       row, col = monitor
-                  elif isinstance(monitor, (int, np.integer)):
-                       if ncol == 1:
-                            row, col = int(monitor), 0
-                       elif nrow == 1:
-                            row, col = 0, int(monitor)
-                       else:
-                            row = int(monitor) // ncol
-                            col = int(monitor) % ncol
-                  else:
-                       raise TypeError("monitor must be int or (row, col)")
-
-                  if row < 0 or col < 0 or row >= nrow or col >= ncol:
-                       raise IndexError("monitor index out of range")
-
-                  name = _spectrogram_name(r_names[row], c_names[col])
-                  s = Spectrogram(
-                       self[row, col],
-                       times=self.times,
-                       frequencies=self.frequencies,
-                       unit=self.unit,
-                       name=name
-                  )
-                  return s.plot(**kwargs)
-
-             # Expand into flat list of Spectrogram objects
-             specs = []
-             for i in range(nrow):
-                  for j in range(ncol):
-                       s = Spectrogram(
-                            self[i, j],
-                            times=self.times,
-                            frequencies=self.frequencies,
-                            unit=self.unit,
-                            name=_spectrogram_name(r_names[i], c_names[j])
-                       )
-                       specs.append(s)
-             kwargs.setdefault("separate", True)
-             kwargs.setdefault("geometry", (nrow, ncol))
-             plot = Plot(*specs, **kwargs)
-             return _apply_grid_labels(plot, nrow, ncol, r_names, c_names)
-
-        return Plot()
+        from gwexpy.plot.plot import plot_summary
+        return plot_summary(self, **kwargs)
 
     def to_torch(self, device=None, dtype=None, requires_grad=False, copy=False):
         """Convert to PyTorch tensor."""
@@ -608,17 +507,16 @@ class SpectrogramList(UserList):
 
     def plot(self, **kwargs):
         """Plot all spectrograms stacked vertically."""
-        kwargs.setdefault("method", "pcolormesh")
-        kwargs.setdefault("yscale", "log")
-        kwargs.setdefault("xscale", "linear")
-        if not self:
-             return Plot()
+        from gwexpy.plot import Plot
+        # We pass self directly to Plot
+        return Plot(self, **kwargs)
 
-        # Default to vertical stacking
-        kwargs.setdefault("separate", True)
-        kwargs.setdefault("geometry", (len(self), 1))
-
-        return Plot(*self, **kwargs)
+    def plot_summary(self, **kwargs):
+        """
+        Plot List as side-by-side Spectrograms and percentile summaries.
+        """
+        from gwexpy.plot.plot import plot_summary
+        return plot_summary(self, **kwargs)
 
     def to_matrix(self):
         """Convert to SpectrogramMatrix (N, Time, Freq)."""
@@ -860,17 +758,16 @@ class SpectrogramDict(UserDict):
 
     def plot(self, **kwargs):
         """Plot all spectrograms stacked vertically."""
-        kwargs.setdefault("method", "pcolormesh")
-        kwargs.setdefault("yscale", "log")
-        kwargs.setdefault("xscale", "linear")
-        if not self:
-             return Plot()
+        from gwexpy.plot import Plot
+        # Pass self directly, Plot will unpack values
+        return Plot(self, **kwargs)
 
-        # Default to vertical stacking
-        kwargs.setdefault("separate", True)
-        kwargs.setdefault("geometry", (len(self), 1))
-
-        return Plot(*self.values(), **kwargs)
+    def plot_summary(self, **kwargs):
+        """
+        Plot Dictionary as side-by-side Spectrograms and percentile summaries.
+        """
+        from gwexpy.plot.plot import plot_summary
+        return plot_summary(self, **kwargs)
 
     def to_matrix(self):
         """Convert to SpectrogramMatrix.
