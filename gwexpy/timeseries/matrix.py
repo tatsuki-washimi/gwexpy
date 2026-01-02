@@ -685,9 +685,8 @@ class TimeSeriesMatrix(SeriesMatrix):
         """
         Plot the matrix data.
         """
-        if "xscale" not in kwargs:
-            kwargs["xscale"] = "auto-gps"
-        return super().plot(**kwargs)
+        from gwexpy.plot import Plot
+        return Plot(self, **kwargs)
 
     def _apply_timeseries_method(self, method_name: str, *args: Any, **kwargs: Any) -> Any:
         """

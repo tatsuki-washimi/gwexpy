@@ -53,6 +53,17 @@ class SeriesMatrix(RegularityMixin, SeriesMatrixOps, StatisticalMethodsMixin, np
                 raise ValueError("give only one of unit or units")
             units = unit
 
+            units = unit
+
+        if xindex is not None and xunit is not None:
+            try:
+                xindex = u.Quantity(xindex, xunit)
+            except (TypeError, ValueError, AttributeError) as e:
+                # If conversion fails or type is incompatible, we propagate the error
+                # or assume caller knows what they are doing. But xunit implies intention.
+                print(f"DEBUG: SeriesMatrix xindex conversion failed: {e}")
+                pass  # Or raise u.UnitConversionError(f"xindex conversion failed: {e}")
+
         value_array, data_attrs, detected_xindex = _normalize_input(
             data=data,
             units=units,
@@ -466,9 +477,12 @@ class SeriesMatrix(RegularityMixin, SeriesMatrixOps, StatisticalMethodsMixin, np
         xunit : `~astropy.units.Unit`
             The unit of the x-axis (e.g., seconds for time series, Hz for frequency series).
         """
+        # Priority: dx (regular), xindex (array), x0
         try:
             return self._dx.unit
         except AttributeError:
+            if self.xindex is not None:
+                return getattr(self.xindex, 'unit', u.dimensionless_unscaled)
             try:
                 return self._x0.unit
             except AttributeError:
