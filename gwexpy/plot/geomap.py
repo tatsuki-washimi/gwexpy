@@ -118,8 +118,20 @@ class GeoMap:
         # PyGMT text expects justify, font, etc.
         self.fig.text(x=x, y=y, text=text, **kwargs)
 
-    def plot_detector(self, name, label=True, **kwargs):
-        """Plot a gravitational wave detector by name (e.g., 'K1')."""
+    def plot_detector(self, name, label=True, label_offset=None, **kwargs):
+        """Plot a gravitational wave detector by name (e.g., 'K1').
+        
+        Parameters
+        ----------
+        name : str
+            Name of the detector.
+        label : bool, optional
+            If True, plot a label above the marker.
+        label_offset : float, optional
+            Manual latitude offset for the label. If None, it's calculated dynamically.
+        **kwargs
+            Additional arguments for GeoMap.plot (e.g., color, markersize).
+        """
         if name not in DETECTORS:
             raise ValueError(f"Unknown detector: {name}")
         
@@ -131,8 +143,43 @@ class GeoMap:
         self.plot(det['lon'], det['lat'], **plot_kwargs)
         
         if label:
-            self.text(det['lon'], det['lat'] + 5, text=det['name'], 
+            if label_offset is not None:
+                offset = label_offset
+            else:
+                # Calculate dynamic offset based on the latitude range
+                if isinstance(self.region, (list, tuple, np.ndarray)):
+                    lat_min, lat_max = self.region[2], self.region[3]
+                    lat_span = lat_max - lat_min
+                elif self.region == 'd':
+                    lat_span = 180.0
+                else:
+                    # If region is a string (e.g., 'JP'), it's likely a regional map.
+                    # We assume a standard regional span (e.g., 30 degrees) for the heuristic.
+                    lat_span = 30.0
+                
+                offset = max(0.2, lat_span * 0.03) # 3% of the span, minimum 0.2 degrees
+            
+            self.text(det['lon'], det['lat'] + offset, text=det['name'], 
                       font="10p,Helvetica-Bold,black", justify="CM")
+
+    def add_scale_bar(self, width='500k', position='jBL', offset='0.5c/0.5c', fancy=True):
+        """Add a scale bar to the map.
+        
+        Parameters
+        ----------
+        width : str, optional
+            Width of the scale bar (e.g., '500k' for 500 km, '100k' for 100 km).
+        position : str, optional
+            Position anchor (e.g., 'jBL' for Bottom Left).
+        offset : str, optional
+            Offset from the anchor (e.g., '0.5c/0.5c').
+        fancy : bool, optional
+            If True, use a fancy scale bar.
+        """
+        spec = f"{position}+w{width}+o{offset}"
+        if fancy:
+            spec += "+f"
+        self.fig.basemap(map_scale=spec)
 
     def show(self):
         """Display the plot."""
