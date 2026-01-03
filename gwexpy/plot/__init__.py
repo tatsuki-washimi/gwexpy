@@ -1,6 +1,7 @@
 from .plot import Plot
 from .skymap import SkyMap
 from .geomap import GeoMap
+from .pairplot import PairPlot
 # Dynamic import from gwpy (PEP 562)
 import gwpy.plot
 
