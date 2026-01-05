@@ -452,17 +452,17 @@ def create_measurement_tab():
     ts_spin = _small_spin_dbl(width=80)
     c = _add_param(0, c, "TimeSpan:", ts_spin, "s")
     controls["time_span"] = ts_spin
-    
+
     # Settling Time
     sb_settling = _small_spin_dbl(width=80)
     sb_settling.setValue(10.0)
     c = _add_param(0, c, "Settling Time:", sb_settling, "%", "settling_time")
-    
+
     # Ramp Down
     sb_ramp_down = _small_spin_dbl(width=80)
     sb_ramp_down.setValue(1.0)
     c = _add_param(0, c, "Ramp Down:", sb_ramp_down, "Sec", "ramp_down")
-    
+
     # Ramp Up
     c = _add_param(0, c, "Ramp Up:", _small_spin_dbl(width=80), "", "ramp_up")
 

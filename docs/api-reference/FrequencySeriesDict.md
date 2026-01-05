@@ -180,22 +180,22 @@ Returns a new FrequencySeriesDict.
 plot(self, label: 'str' = 'key', method: 'str' = 'plot', figsize: 'Optional[Any]' = None, **kwargs: 'Any')
 ```
 
-Plot all series in the dict.
+
+Plot data.
 
 Parameters
 ----------
 label : str, optional
-    'key' (default) to use dict keys as labels, 'name' to use series names.
-method : str, optional
-    'plot' (default) or 'scatter'.
-figsize : tuple, optional
-    Figure size.
-**kwargs
-    Passed to gwpy.plot.Plot.
+    labelling method, one of
 
-Returns
--------
-plot : gwpy.plot.Plot
+    - ``'key'``: use dictionary key (default)
+    - ``'name'``: use ``name`` attribute of each item
+method : str, optional
+    method of :class:`~gwpy.plot.Plot` to call, default: ``'plot'``
+figsize : tuple, optional
+    (width, height) tuple in inches
+**kwargs
+    other keyword arguments passed to the plot method
 
 
 ### `plot_all`
@@ -216,6 +216,14 @@ prepend(self, *args, **kwargs) -> "'FrequencySeriesDict'"
 Prepend to each FrequencySeries in the dict (in-place).
 Returns self.
 
+
+### `read`
+
+```python
+read(source, *args, **kwargs)
+```
+
+_No documentation available._
 
 ### `setdefault`
 
@@ -287,6 +295,14 @@ to_jax(self, *args, **kwargs) -> 'dict'
 Convert each item to jax.Array.
 Returns a dict of Arrays.
 
+
+### `to_matrix`
+
+```python
+to_matrix(self)
+```
+
+Convert this FrequencySeriesDict to a FrequencySeriesMatrix (Nx1).
 
 ### `to_pandas`
 

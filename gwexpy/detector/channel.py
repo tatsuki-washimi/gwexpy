@@ -1,1 +1,1 @@
-from gwpy.detector.channel import *
+from gwpy.detector.channel import *  # noqa: F403

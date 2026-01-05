@@ -1,1 +1,1 @@
-from gwpy.cli.tests.test_spectrum import *
+from gwpy.cli.tests.test_spectrum import *  # noqa: F403

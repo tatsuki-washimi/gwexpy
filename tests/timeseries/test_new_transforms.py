@@ -7,7 +7,7 @@ from gwexpy.frequencyseries import FrequencySeries
 
 SCIPY_AVAILABLE = False
 try:
-    import scipy
+    import scipy  # noqa: F401 - availability check
     SCIPY_AVAILABLE = True
 except ImportError:
     pass
@@ -69,7 +69,7 @@ class TestTransforms:
 
     def test_cwt_ndarray(self, sine_wave):
         try:
-             import pywt
+             import pywt  # noqa: F401 - availability check
         except ImportError:
              pytest.skip("pywt (PyWavelets) not found")
 
@@ -83,7 +83,7 @@ class TestTransforms:
 
     def test_cwt_spectrogram(self, sine_wave):
         try:
-             import pywt
+             import pywt  # noqa: F401 - availability check
         except ImportError:
              pytest.skip("pywt (PyWavelets) not found")
 

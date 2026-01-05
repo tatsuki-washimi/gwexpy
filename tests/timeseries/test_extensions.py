@@ -8,19 +8,19 @@ from gwexpy.timeseries.preprocess import align_timeseries_collection
 
 # Optional deps
 try:
-    import sklearn
+    import sklearn  # noqa: F401 - availability check
     HAS_SKLEARN = True
 except ImportError:
     HAS_SKLEARN = False
 
 try:
-    import statsmodels
+    import statsmodels  # noqa: F401
     HAS_STATSMODELS = True
 except ImportError:
     HAS_STATSMODELS = False
 
 try:
-    import hurst
+    import hurst  # noqa: F401 - availability check
     HAS_HURST = True
 except ImportError:
     HAS_HURST = False

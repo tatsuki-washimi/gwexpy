@@ -83,7 +83,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         # NDS Logic
         cache = ChannelListCache()
         data = cache.get_channels(self.server_key)
-        
+
         if data is not None:
             self.full_channel_list = data
             self.lbl_info.setText(f"server: <b>{self.server_key}</b> [{len(data)} channels (cached)]")
@@ -93,7 +93,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             self.lbl_status.setText("Fetching channel list from NDS... This may take a while.")
             if self.worker:
                 if self.worker.isRunning(): return
-            
+
             self.worker = ChannelListWorker(self.server_host, self.port, "*")
             self.worker.finished.connect(self.on_worker_finished)
             self.worker.start()
@@ -102,7 +102,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         if sd is None:
             QtWidgets.QMessageBox.warning(self, "Error", "sounddevice module not found.")
             return
-            
+
         try:
             results = []
             devices = sd.query_devices()
@@ -111,20 +111,20 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
                 if dev['max_input_channels'] > 0:
                      # Add each channel
                      for ch in range(dev['max_input_channels']):
-                         name = f"PC:MIC:{i}-CH{ch}" 
+                         name = f"PC:MIC:{i}-CH{ch}"
                          results.append((name, dev['default_samplerate'], 'audio'))
-                         
+
             self.full_channel_list = results
             self.lbl_info.setText(f"Local PC Audio [{len(results)} channels]")
             self.populate_ui()
-            
+
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", str(e))
 
     # ... rest of methods ...
     def setup_search_tab(self):
         layout = QtWidgets.QVBoxLayout(self.tab_search)
-        
+
         self.search_edit = QtWidgets.QLineEdit()
         self.search_edit.setPlaceholderText("Search filter (substring or glob match)")
         self.search_edit.textChanged.connect(self.on_filter_changed)
@@ -149,42 +149,42 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
     def setup_bottom_controls(self, parent_layout):
         # Filtering Radios
         h_filter = QtWidgets.QHBoxLayout()
-        
+
         self.rb_all = QtWidgets.QRadioButton("All")
         self.rb_slow = QtWidgets.QRadioButton("Slow Only")
         self.rb_fast = QtWidgets.QRadioButton("Fast Only")
         self.rb_all.setChecked(True)
-        
+
         self.bg_filter = QtWidgets.QButtonGroup(self)
         self.bg_filter.addButton(self.rb_all)
         self.bg_filter.addButton(self.rb_slow)
         self.bg_filter.addButton(self.rb_fast)
-        
+
         self.bg_filter.buttonToggled.connect(self.on_filter_changed)
 
         h_filter.addWidget(self.rb_all)
         h_filter.addWidget(self.rb_slow)
         h_filter.addWidget(self.rb_fast)
-        
+
         h_filter.addStretch(1)
-        
+
         # Testpoints label
         lbl_tp = QtWidgets.QLabel("testpoints in blue")
         lbl_tp.setStyleSheet("color: blue;")
         h_filter.addWidget(lbl_tp)
 
         parent_layout.addLayout(h_filter)
-        
+
         # Actions
         h_btns = QtWidgets.QHBoxLayout()
         self.lbl_status = QtWidgets.QLabel("Ready")
         h_btns.addWidget(self.lbl_status)
         h_btns.addStretch(1)
-        
+
         btn_close = QtWidgets.QPushButton("Close") # Screenshot says Close
         btn_close.clicked.connect(self.reject)
         # We also need an "Add" or "Ok" logic. Screenshot shows "Drag channels into plot to add." and "Close".
-        # But our main window expects a result on exec_. 
+        # But our main window expects a result on exec_.
         # Standard usage: Double click or maybe we add an "Add" button?
         # Original had OK/Cancel.
         # Let's keep standard OK/Cancel for modal behavior, but maybe label it "Add"?
@@ -192,16 +192,16 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         # Let's add an explicit "Add Selected" button just in case.
         self.btn_add = QtWidgets.QPushButton("Add Selected")
         self.btn_add.clicked.connect(self.accept)
-        
+
         h_btns.addWidget(self.btn_add)
         h_btns.addWidget(btn_close)
-        
+
         parent_layout.addLayout(h_btns)
 
     def load_data(self):
         cache = ChannelListCache()
         data = cache.get_channels(self.server_key)
-        
+
         if data is not None:
             self.full_channel_list = data
             self.lbl_info.setText(f"server: <b>{self.server_key}</b> [{len(data)} channels (cached)]")
@@ -245,36 +245,35 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         mode = "all"
         if self.rb_slow.isChecked(): mode = "slow"
         elif self.rb_fast.isChecked(): mode = "fast"
-        
+
         # We only filter the Search Tab list. The Tree Tab usually shows everything or could be filtered too.
         # For performance, let's filter the Search List.
-        
-        filtered = []
+
         is_glob = "*" in pattern or "?" in pattern
-        
+
         # Pre-compile glob if needed? fnmatch is ok.
-        
+
         count = 0
         limit = 5000 # Safety limit for display
-        
+
         self.search_tree.clear()
-        
+
         items = []
         for name, rate, ctype in self.full_channel_list:
             # Rate Filter
             if mode == "slow" and rate > 16: continue
             if mode == "fast" and rate <= 16: continue
-            
+
             # Name Filter
             if pattern:
                 if is_glob:
                     if not fnmatch.fnmatch(name, pattern): continue
                 else:
                     if pattern not in name: continue
-            
+
             # Add to list
             item = QtWidgets.QTreeWidgetItem([name, str(rate)])
-            
+
             # Color logic (mimicking screenshot)
             # 16Hz -> Green?
             # Fast -> Blue?
@@ -284,14 +283,14 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             else:
                 item.setForeground(0, QtGui.QBrush(QtGui.QColor("blue")))
                 item.setForeground(1, QtGui.QBrush(QtGui.QColor("blue")))
-                
+
             items.append(item)
             count += 1
             if count >= limit:
                 break
-        
+
         self.search_tree.addTopLevelItems(items)
-        
+
         if count >= limit:
             self.lbl_status.setText(f"Showing first {limit} matches.")
         else:
@@ -299,25 +298,25 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
 
     def build_hierarchy_tree(self, channels):
         self.hier_tree.clear()
-        
+
         # A simple tree builder: split by ':' then '-' or '_'
         # But standard NDS names are usually K1:SYS-SUBSYS_...
         # Let's use a standard separator set for splitting.
         # Or just ':' for top level.
-        
+
         # K1:ADS-DCU_ID
         #  -> K1
         #    -> ADS
         #      -> DCU
         #        -> K1:ADS-DCU_ID
-        
+
         # We need a recursive dict builder first
         root = {}
-        
+
         for name, rate, ctype in channels:
             # Heuristic splitting
             parts = name.split(':')
-            # Further split the second part if exists? 
+            # Further split the second part if exists?
             # Example: K1:ADS-DCU... -> [K1, ADS, DCU...]
             # Actually, usually subsystem is first 3 chars after :?
             # Let's keep it simple: Split by ':' first.
@@ -325,13 +324,13 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
                 # [K1, ADS-...]
                 domain = parts[0]
                 rest = parts[1]
-                
+
                 # Try to split by '-'
                 sub_parts = rest.split('-')
                 path = [domain] + sub_parts
             else:
                 path = parts
-            
+
             # Traverse/Build dict
             current = root
             for p in path[:-1]:
@@ -339,7 +338,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
                     current[p] = {}
                 current = current[p]
                 if isinstance(current, tuple): # Conflict: node is both leaf and branch?
-                     # Should not happen if naming is consistent, but if it does, 
+                     # Should not happen if naming is consistent, but if it does,
                      # we might lose the leaf. NDS names are unique.
                      # But if we have A:B and A:B-C, then B is a leaf in first and node in second?
                      # We'll see.
@@ -351,7 +350,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
 
         # Now convert dict to QTreeItems
         # This is recursive
-        
+
         def dict_to_items(node_dict):
             items = []
             keys = sorted(node_dict.keys())
@@ -386,18 +385,18 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         # Gather selected from ACTIVE tab
         selected = []
         current_widget = self.tabs.currentWidget()
-        
+
         tree = None
         if current_widget == self.tab_search:
             tree = self.search_tree
         elif current_widget == self.tab_tree:
             tree = self.hier_tree
-            
+
         if tree:
             for item in tree.selectedItems():
                 # Check if it is a channel (has rate)
                 if item.childCount() == 0 and item.text(1):
                     selected.append(item.text(0))
-        
+
         self.selected_channels = selected
         super().accept()

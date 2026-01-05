@@ -1,6 +1,6 @@
 # TimeSeriesDict
 
-**Inherits from:** TimeSeriesDict
+**Inherits from:** PhaseMethodsMixin, TimeSeriesDict
 
 Dictionary of TimeSeries objects.
 
@@ -88,6 +88,14 @@ analytic_signal(self, *args, **kwargs)
 
 Apply analytic_signal to each item.
 
+### `angle`
+
+```python
+angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+Alias for `phase(unwrap=unwrap, deg=deg)`.
+
 ### `append`
 
 ```python
@@ -101,22 +109,11 @@ Append another mapping of TimeSeries or a single TimeSeries to each item.
 ### `asd`
 
 ```python
-asd(self, fftlength=4, overlap=2)
+asd(self, *args, **kwargs)
 ```
 
-Compute Amplitude Spectral Density for each TimeSeries.
-
-Parameters
-----------
-fftlength : float, optional
-    FFT length in seconds (default 4).
-overlap : float, optional
-    Overlap between segments in seconds (default 2).
-
-Returns
--------
-FrequencySeriesDict
-    Dictionary of ASD results.
+Compute Amplitude Spectral Density for each TimeSeries in the dict.
+Returns a FrequencySeriesDict.
 
 
 ### `asfreq`
@@ -128,7 +125,6 @@ asfreq(self, rule, **kwargs)
 
 Apply asfreq to each TimeSeries in the dict.
 Returns a new TimeSeriesDict.
-asfreq does not interpolate; use resample() for interpolation or filtering.
 
 
 ### `average_fft`
@@ -261,6 +257,14 @@ decimate(self, *args, **kwargs) -> 'TimeSeriesDict'
 Decimate each TimeSeries in the dict.
 Returns a new TimeSeriesDict.
 
+
+### `degree`
+
+```python
+degree(self, *args, **kwargs) -> 'TimeSeriesDict'
+```
+
+Compute instantaneous phase (in degrees) of each item.
 
 ### `detrend`
 
@@ -430,6 +434,28 @@ RuntimeError
     fails.
 
 
+### `from_control`
+
+```python
+from_control(response: Any, **kwargs) -> 'TimeSeriesDict'
+```
+
+
+Create TimeSeriesDict from python-control TimeResponseData.
+
+Parameters
+----------
+response : control.TimeResponseData
+    The simulation result from python-control.
+**kwargs : dict
+    Additional arguments passed to the TimeSeries constructor.
+
+Returns
+-------
+TimeSeriesDict
+    The converted time-domain data.
+
+
 ### `from_mne`
 
 ```python
@@ -554,6 +580,14 @@ verbose : `bool`, optional
     `TimeSeriesBaseDict.find` (for direct GWF file access) or
     `TimeSeriesBaseDict.fetch` for remote NDS2 access
 
+
+### `heterodyne`
+
+```python
+heterodyne(self, *args, **kwargs)
+```
+
+Apply heterodyne to each item.
 
 ### `hht`
 
@@ -687,29 +721,47 @@ pca(self, *args, **kwargs)
 
 Perform PCA decomposition across channels.
 
-### `plot`
+### `phase`
 
 ```python
-plot(self, label='key', method='plot', figsize=(12, 4), xscale='auto-gps', **kwargs)
+phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
 ```
 
-Plot the data for this `TimeSeriesBaseDict`.
+
+Calculate the phase of the data.
 
 Parameters
 ----------
-label : `str`, optional
-    labelling system to use, or fixed label for all elements
-    Special values include
-
-    - ``'key'``: use the key of the `TimeSeriesBaseDict`,
-    - ``'name'``: use the :attr:`~TimeSeries.name` of each element
-
-    If anything else, that fixed label will be used for all lines.
-
+unwrap : `bool`, optional
+    If `True`, unwrap the phase to remove discontinuities.
+    Default is `False`.
+deg : `bool`, optional
+    If `True`, return the phase in degrees.
+    Default is `False` (radians).
 **kwargs
-    all other keyword arguments are passed to the plotter as
-    appropriate
+    Additional arguments passed to the underlying calculation.
 
+Returns
+-------
+`Series` or `Matrix` or `Collection`
+    The phase of the data.
+
+
+### `plot`
+
+```python
+plot(self, **kwargs: Any)
+```
+
+Plot all series. Delegates to gwexpy.plot.Plot.
+
+### `plot_all`
+
+```python
+plot_all(self, *args: Any, **kwargs: Any)
+```
+
+Alias for plot(). Plots all series.
 
 ### `prepend`
 
@@ -728,8 +780,7 @@ Returns self.
 psd(self, *args, **kwargs)
 ```
 
-
-Compute PSD for each TimeSeries in the dict.
+Compute Power Spectral Density for each TimeSeries in the dict.
 Returns a FrequencySeriesDict.
 
 
@@ -743,6 +794,14 @@ q_transform(self, *args, **kwargs)
 Compute Q-transform for each TimeSeries in the dict.
 Returns a SpectrogramDict.
 
+
+### `radian`
+
+```python
+radian(self, *args, **kwargs) -> 'TimeSeriesDict'
+```
+
+Compute instantaneous phase (in radians) of each item.
 
 ### `read`
 
@@ -798,8 +857,9 @@ The available built-in formats are:
 ======== ==== ===== =============
  Format  Read Write Auto-identify
 ======== ==== ===== =============
-  dttxml  Yes    No            No
-     gbd  Yes    No            No
+     ats  Yes    No           Yes
+  dttxml  Yes    No           Yes
+     gbd  Yes    No           Yes
     gse2  Yes   Yes            No
     knet  Yes    No            No
       li  Yes    No            No
@@ -808,11 +868,15 @@ The available built-in formats are:
 miniseed  Yes   Yes            No
      orf  Yes    No            No
      sac  Yes   Yes            No
-     sdb  Yes    No            No
+     sdb  Yes    No           Yes
+  sqlite  Yes    No           Yes
+ sqlite3  Yes    No           Yes
  taffmat  Yes    No            No
+    tdms  Yes    No           Yes
+     wav  Yes    No           Yes
      wdf  Yes    No            No
-     win  Yes    No            No
-   win32  Yes    No            No
+     win  Yes    No           Yes
+   win32  Yes    No           Yes
      wvf  Yes    No            No
 ======== ==== ===== =============
 
@@ -841,7 +905,7 @@ Compute RMS for each TimeSeries. Returns pandas.Series of scalars.
 ### `rolling_max`
 
 ```python
-rolling_max(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto')
+rolling_max(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto', ignore_nan=None)
 ```
 
 Apply rolling max to each item.
@@ -849,7 +913,7 @@ Apply rolling max to each item.
 ### `rolling_mean`
 
 ```python
-rolling_mean(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto')
+rolling_mean(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto', ignore_nan=None)
 ```
 
 Apply rolling mean to each item.
@@ -857,7 +921,7 @@ Apply rolling mean to each item.
 ### `rolling_median`
 
 ```python
-rolling_median(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto')
+rolling_median(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto', ignore_nan=None)
 ```
 
 Apply rolling median to each item.
@@ -865,7 +929,7 @@ Apply rolling median to each item.
 ### `rolling_min`
 
 ```python
-rolling_min(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto')
+rolling_min(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto', ignore_nan=None)
 ```
 
 Apply rolling min to each item.
@@ -873,7 +937,7 @@ Apply rolling min to each item.
 ### `rolling_std`
 
 ```python
-rolling_std(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto', ddof=0)
+rolling_std(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto', ddof=0, ignore_nan=None)
 ```
 
 Apply rolling std to each item.
@@ -958,6 +1022,14 @@ label : `str`, optional
     appropriate
 
 
+### `stlt`
+
+```python
+stlt(self, *args, **kwargs)
+```
+
+Apply stlt to each item. Returns a dict of TimePlaneTransforms.
+
 ### `taper`
 
 ```python
@@ -978,14 +1050,6 @@ to_matrix(self, *, align='intersection', **kwargs)
 
 Convert dictionary to TimeSeriesMatrix with alignment.
 
-
-### `to_mne`
-
-```python
-to_mne(self, info=None, picks=None)
-```
-
-Alias for :meth:`to_mne`.
 
 ### `to_mne`
 
@@ -1092,4 +1156,5 @@ zpk(self, *args, **kwargs) -> 'TimeSeriesDict'
 
 Apply ZPK filter to each TimeSeries in the dict.
 Returns a new TimeSeriesDict.
+
 

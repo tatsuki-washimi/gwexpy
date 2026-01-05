@@ -22,6 +22,11 @@
   - `leap='floor'`: Clamps to `59.999999`s.
   - `leap='ceil'`: Rounds to next minute `00.000000`s.
 
+- **SpectrogramMatrix Refactor**:
+  - `SpectrogramMatrix` now inherits from `SeriesMatrix`, enabling powerful analysis methods: `crop`, `append`, `pad`, `interpolate`, and statistical aggregations (`mean`, `std`, etc).
+  - Robust support for 3D `(Batch, Time, Freq)` and 4D `(Row, Col, Time, Freq)` data structures.
+  - Added `to_series_1Dlist()` and `to_series_2Dlist()` conversion methods.
+
 ### Improved
 - **ROOT Interoperability**: Significantly optimized `to_th1d`, `to_th2d`, and `from_root` using vectorization, improving performance for large arrays.
 - **Noise Module**: Refactored `gwexpy.noise.magnetic` and `gwexpy.noise.peaks` for better maintenance and accuracy.
@@ -32,3 +37,6 @@
 - **MTH5 Interop**: Added experimental `to_mth5` and `from_mth5` functions in `gwexpy.interop.mt_` (requires optional `mth5` package).
 - **I/O Error Handling**: Standardized `NotImplementedError` for unsupported formats.
   - Now raises `gwexpy.interop.errors.IoNotImplementedError` with specific hints and references.
+
+### Fixed
+- **SpectrogramMatrix**: Fixed unit propagation in arithmetic operations and `append` compatibility checks.

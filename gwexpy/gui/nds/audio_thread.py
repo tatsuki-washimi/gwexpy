@@ -50,7 +50,7 @@ class AudioThread(QtCore.QThread):
                 device=self.device_index, samplerate=self.sample_rate
             )
             working_rate = self.sample_rate
-        except:
+        except Exception:
             pass
 
         # 2. Try default rate from device info
@@ -64,7 +64,7 @@ class AudioThread(QtCore.QThread):
                             device=self.device_index, samplerate=default_sr
                         )
                         working_rate = default_sr
-            except:
+            except Exception:
                 pass
 
         # 3. Try common rates
@@ -74,7 +74,7 @@ class AudioThread(QtCore.QThread):
                     sd.check_input_settings(device=self.device_index, samplerate=r)
                     working_rate = r
                     break
-                except:
+                except Exception:
                     pass
 
         if working_rate is not None and working_rate != self.sample_rate:
@@ -109,7 +109,7 @@ class AudioThread(QtCore.QThread):
                         ch_part = c.split("-CH")[-1]
                         ch_idx = int(ch_part)
                         max_ch = max(max_ch, ch_idx + 1)
-                except:
+                except Exception:
                     pass
 
             if max_ch == 0 and mic_channels:
@@ -147,7 +147,7 @@ class AudioThread(QtCore.QThread):
                                 "gps_start": gps_start,
                                 "step": 1.0 / self.sample_rate,
                             }
-                    except:
+                    except Exception:
                         pass
 
                 if payload:

@@ -4,7 +4,7 @@ from typing import Dict, Optional, Tuple
 
 # --- Optional Dependencies ---
 try:
-    import statsmodels.api as sm
+    import statsmodels.api as sm  # noqa: F401
     from statsmodels.tsa.arima.model import ARIMA
     try:
         from statsmodels.tsa.statespace.sarimax import SARIMAX
@@ -88,7 +88,7 @@ class ArimaResult:
         pred = self.res.predict(start=start_idx, end=end_idx, dynamic=dynamic)
 
         new_t0 = self.t0 + start_idx * self.dt
-        
+
         # Handle case where predict returns a single value
         if np.ndim(pred) == 0:
              pred = [pred]
@@ -166,6 +166,29 @@ class ArimaResult:
             name=f"{self.name}_resid"
         )
 
+    def params_dict(self) -> Dict:
+        """
+        Return model parameters as a dictionary.
+
+        Returns
+        -------
+        dict
+            Dictionary containing 'params' (parameter values), 'param_names'
+            (parameter names), and 'aic', 'bic' if available.
+        """
+        result = {
+            'params': self.res.params,
+            'param_names': list(self.res.params.index) if hasattr(self.res.params, 'index') else None,
+        }
+
+        # Add fit statistics if available
+        if hasattr(self.res, 'aic'):
+            result['aic'] = self.res.aic
+        if hasattr(self.res, 'bic'):
+            result['bic'] = self.res.bic
+
+        return result
+
     def summary(self):
         """Return the statsmodels summary object."""
         return self.res.summary()
@@ -192,26 +215,28 @@ class ArimaResult:
 
         # 1. Original Data
         if self.original_data is not None:
-            ax.plot(self.original_data.times.value, self.original_data.value, 
+            ax.plot(self.original_data,
                     label="Original", color="gray", alpha=0.6, linewidth=1.5)
 
         # 2. In-sample Prediction (Fit)
         # Note: ARIMA fits usually have bad predictions for the very first few samples (diffs)
         pred = self.predict(start=0, dynamic=False)
         # Shift slightly for visibility if needed, but usually exact overlay is best
-        ax.plot(pred.times.value, pred.value, label="Model Fit", color="tab:blue", linestyle="--", alpha=0.8)
+        ax.plot(pred, label="Model Fit", color="tab:blue", linestyle="--", alpha=0.8)
 
         # 3. Forecast
         if forecast_steps is not None and forecast_steps > 0:
             fc, conf = self.forecast(steps=forecast_steps, alpha=alpha)
-            ax.plot(fc.times.value, fc.value, label="Forecast", color="tab:orange", linewidth=2)
-            ax.fill_between(
-                fc.times.value,
-                conf['lower'].value,
-                conf['upper'].value,
-                color='tab:orange',
-                alpha=0.2,
-                label=f"{int((1-alpha)*100)}% CI"
+
+            from ..plot import plot_mmm
+            plot_mmm(
+                fc, conf['lower'], conf['upper'],
+                ax=ax,
+                color="tab:orange",
+                linewidth=2,
+                label="Forecast",
+                alpha_fill=0.2,
+                label_fill=f"{int((1-alpha)*100)}% CI"
             )
 
         ax.set_xlabel("GPS Time [s]")
@@ -274,7 +299,7 @@ def fit_arima(
             y = np.asarray(ts_imp.value)
             if np.any(np.isnan(y)):
                 raise ValueError("NaNs remain after imputation; adjust impute_kwargs or nan_policy.")
-            
+
     elif nan_policy == "raise":
         if np.any(np.isnan(y)):
             raise ValueError("NaNs in data and nan_policy='raise'")
@@ -285,13 +310,13 @@ def fit_arima(
     if auto:
         if not PMDARIMA_AVAILABLE:
             raise ImportError("pmdarima is required for auto=True. `pip install pmdarima`")
-        
+
         akwargs = (auto_kwargs or {}).copy()
         # Merge extra kwargs into akwargs
         for k, v in kwargs.items():
             if k not in akwargs:
                 akwargs[k] = v
-        
+
         # Ensure seasonal and trend are set without conflict
         if 'seasonal' not in akwargs:
             akwargs['seasonal'] = (seasonal_order is not None)
@@ -300,19 +325,19 @@ def fit_arima(
 
         # Adjust start values if max values are smaller (pmdarima requirement)
         # Defaults are start_p=2, start_q=2, start_P=1, start_Q=1
-        for m_key, s_key in [('max_p', 'start_p'), ('max_q', 'start_q'), 
+        for m_key, s_key in [('max_p', 'start_p'), ('max_q', 'start_q'),
                              ('max_P', 'start_P'), ('max_Q', 'start_Q')]:
             if m_key in akwargs:
                 default_start = 2 if s_key in ['start_p', 'start_q'] else 1
                 current_start = akwargs.get(s_key, default_start)
                 if akwargs[m_key] < current_start:
                     akwargs[s_key] = akwargs[m_key]
-            
+
         model_auto = pm.auto_arima(y, **akwargs)
-        
+
         # pmdarima wraps a statsmodels result. We extract it to wrap in our ArimaResult
         res = model_auto.arima_res_
-        
+
         return ArimaResult(
             res,
             t0=t0,
@@ -329,7 +354,7 @@ def fit_arima(
     for k, v in kwargs.items():
         if k not in fit_kwargs:
             fit_kwargs[k] = v
-            
+
     if method:
         fit_kwargs["method"] = method
 

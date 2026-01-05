@@ -1,1 +1,1 @@
-from gwpy.plot.gps import *
+from gwpy.plot.gps import *  # noqa: F403

@@ -1,6 +1,6 @@
 # FrequencySeries
 
-**Inherits from:** FrequencySeries
+**Inherits from:** RegularityMixin, FittingMixin, StatisticalMethodsMixin, FrequencySeries
 
 Light wrapper of gwpy's FrequencySeries for compatibility and future extension.
 
@@ -402,35 +402,19 @@ method : `str`, optional
 
 Returns
 -------
-`tuple`
-    (peaks, props) where `peaks` is a new `FrequencySeries` containing the peak values and frequencies, and `props` is a dictionary of properties.
+peaks : `FrequencySeries`
+    A new FrequencySeries containing only the peak values, indexed by their frequencies.
+props : `dict`
+    Dictionary of peak properties returned by `scipy.signal.find_peaks`.
 
 
 ### `fit`
 
 ```python
-fit(self, model: 'str', p0: 'Optional[dict[str, float]]' = None, method: 'str' = 'leastsq', **kwargs: 'Any') -> 'Any'
+fit(self, model: 'Any', x_range: 'Optional[tuple[float, float]]' = None, sigma: 'Optional[Any]' = None, p0: 'Optional[dict[str, float]]' = None, limits: 'Optional[dict[str, tuple[float, float]]]' = None, fixed: 'Optional[Iterable[str]]' = None, **kwargs: 'Any') -> 'Any'
 ```
 
-
-Fit the FrequencySeries to a model function.
-
-Parameters
-----------
-model : `str` or `callable`
-    Name of built-in model (e.g., 'gaussian', 'power_law') or a callable function.
-p0 : `dict`, optional
-    Initial guess for parameters.
-method : `str`, optional
-    Fitting method: 'leastsq' (default) or 'mcmc' (requires `emcee`).
-**kwargs
-    Additional arguments passed to the fitter.
-
-Returns
--------
-`FitResult`
-    Object containing fit results, parameters, and plotting methods.
-
+Fit the series data to a model.
 
 ### `flatten`
 
@@ -513,46 +497,47 @@ Generate a new `FrequencySeries` from a LAL `FrequencySeries`
 of any type.
 
 
-
 ### `from_mne`
 
 ```python
-from_mne(spectrum)
+from_mne(spectrum: 'Any', **kwargs: 'Any') -> 'Any'
 ```
 
-Create FrequencySeries from MNE Spectrum object.
+
+Create FrequencySeries from MNE-Python Spectrum object.
+
+Parameters
+----------
+spectrum : mne.time_frequency.Spectrum
+    Input spectrum data.
+**kwargs
+    Additional arguments passed to constructor.
+
+Returns
+-------
+FrequencySeries or FrequencySeriesDict
+
 
 ### `from_obspy`
 
 ```python
-from_obspy(trace, **kwargs)
+from_obspy(trace: 'Any', **kwargs: 'Any') -> 'Any'
 ```
+
 
 Create FrequencySeries from Obspy Trace.
 
-### `from_simpeg`
+Parameters
+----------
+trace : obspy.Trace
+    Input trace.
+**kwargs
+    Additional arguments.
 
-```python
-from_simpeg(data_obj, **kwargs)
-```
+Returns
+-------
+FrequencySeries
 
-Create FrequencySeries from SimPEG Data object (FDEM).
-
-### `from_specutils`
-
-```python
-from_specutils(spectrum, **kwargs)
-```
-
-Create FrequencySeries from specutils.Spectrum1D.
-
-### `from_pyspeckit`
-
-```python
-from_pyspeckit(spectrum, **kwargs)
-```
-
-Create FrequencySeries from pyspeckit.Spectrum.
 
 ### `from_pandas`
 
@@ -565,11 +550,24 @@ Create FrequencySeries from pandas.Series.
 ### `from_polars`
 
 ```python
-from_polars(data: 'Any', index_column: 'Optional[str]' = 'frequency', **kwargs: 'Any') -> 'Any'
+from_polars(data: 'Any', frequencies: 'Optional[str]' = 'frequency', **kwargs: 'Any') -> 'Any'
 ```
 
 
-Create FrequencySeries from polars object.
+Create a FrequencySeries from a polars.DataFrame or polars.Series.
+
+Parameters
+----------
+data : polars.DataFrame or polars.Series
+    Input data.
+frequencies : str, optional
+    If data is a DataFrame, name of the column to use as frequency.
+**kwargs
+    Additional arguments passed to frequency series constructor.
+
+Returns
+-------
+FrequencySeries
 
 
 ### `from_pycbc`
@@ -596,6 +594,46 @@ spectrum : `FrequencySeries`
     a GWpy version of the input frequency series
 
 
+### `from_pyspeckit`
+
+```python
+from_pyspeckit(spectrum, **kwargs)
+```
+
+
+Create FrequencySeries from pyspeckit.Spectrum.
+
+Parameters
+----------
+spectrum : pyspeckit.Spectrum
+    Input spectrum.
+
+Returns
+-------
+FrequencySeries
+
+
+### `from_quantities`
+
+```python
+from_quantities(q: 'Any', frequencies: 'Any') -> 'Any'
+```
+
+
+Create FrequencySeries from quantities.Quantity.
+
+Parameters
+----------
+q : quantities.Quantity
+    Input data.
+frequencies : array-like
+    Frequencies corresponding to the data.
+
+Returns
+-------
+FrequencySeries
+
+
 ### `from_root`
 
 ```python
@@ -604,6 +642,44 @@ from_root(obj: 'Any', return_error: 'bool' = False, **kwargs: 'Any') -> 'Any'
 
 
 Create FrequencySeries from ROOT TGraph or TH1.
+
+
+### `from_simpeg`
+
+```python
+from_simpeg(data_obj: 'Any', **kwargs: 'Any') -> 'Any'
+```
+
+
+Create FrequencySeries from SimPEG Data object.
+
+Parameters
+----------
+data_obj : simpeg.data.Data
+    Input SimPEG Data.
+
+Returns
+-------
+FrequencySeries
+
+
+### `from_specutils`
+
+```python
+from_specutils(spectrum, **kwargs)
+```
+
+
+Create FrequencySeries from specutils.Spectrum1D.
+
+Parameters
+----------
+spectrum : specutils.Spectrum1D
+    Input spectrum.
+
+Returns
+-------
+FrequencySeries
 
 
 ### `from_tensorflow`
@@ -669,23 +745,7 @@ Returns
 idct(self, type: 'int' = 2, norm: 'str' = 'ortho', *, n: 'Optional[int]' = None) -> 'Any'
 ```
 
-
-Compute the Inverse Discrete Cosine Transform (IDCT).
-
-Parameters
-----------
-type : `int`, optional
-    DCT type (1-4).
-norm : `str`, optional
-    Normalization mode.
-n : `int`, optional
-    Length of the output time series. If not specified, tries to use metadata `original_n`.
-
-Returns
--------
-out : `TimeSeries`
-    The TimeSeries.
-
+_No documentation available._
 
 ### `ifft`
 
@@ -788,57 +848,6 @@ numpy.interp
     for the underlying 1-D linear interpolation scheme
 
 
-
-### `to_mne`
-
-```python
-to_mne(self, info=None) -> 'mne.time_frequency.SpectrumArray'
-```
-
-Convert to MNE SpectrumArray.
-
-Parameters
-----------
-info : `mne.Info`, optional
-    Measurement info. If None, a default info is created.
-
-Returns
--------
-`mne.time_frequency.SpectrumArray`
-
-### `to_obspy`
-
-```python
-to_obspy(self, **kwargs) -> 'obspy.Trace'
-```
-
-Convert to Obspy Trace.
-
-### `to_simpeg`
-
-```python
-to_simpeg(self, location=None, rx_type='PointElectricField', orientation='x', **kwargs) -> 'simpeg.data.Data'
-```
-
-Convert to SimPEG Data object.
-
-### `to_specutils`
-
-```python
-to_specutils(self, **kwargs) -> 'specutils.Spectrum1D'
-```
-
-Convert to specutils.Spectrum1D.
-
-### `to_pyspeckit`
-
-```python
-to_pyspeckit(self, **kwargs) -> 'pyspeckit.Spectrum'
-```
-
-Convert to pyspeckit.Spectrum.
-
-
 ### `is_compatible`
 
 ```python
@@ -886,12 +895,48 @@ the contiguity check will always pass
 
 ### `is_regular`
 
-Return True if this FrequencySeries has a regular frequency grid.
+Return True if this series has a regular grid (constant spacing).
+
+### `max`
+
+```python
+max(self, axis=None, out=None, keepdims=False, initial=None, where=True, ignore_nan=True)
+```
+
+a.max(axis=None, out=None, keepdims=False, initial=<no value>, where=True)
+
+Return the maximum along a given axis.
+
+Refer to `numpy.amax` for full documentation.
+
+See Also
+--------
+numpy.amax : equivalent function
+
+*(Inherited from `FrequencySeries`)*
+
+### `mean`
+
+```python
+mean(self, axis=None, dtype=None, out=None, keepdims=False, *, where=True, ignore_nan=True)
+```
+
+a.mean(axis=None, dtype=None, out=None, keepdims=False, *, where=True)
+
+Returns the average of the array elements along given axis.
+
+Refer to `numpy.mean` for full documentation.
+
+See Also
+--------
+numpy.mean : equivalent function
+
+*(Inherited from `ndarray`)*
 
 ### `median`
 
 ```python
-median(self, axis=None, **kwargs)
+median(self, axis=None, out=None, overwrite_input=False, keepdims=False, ignore_nan=True)
 ```
 
 
@@ -974,6 +1019,26 @@ array([7.,  2.])
 >>> assert not np.all(a==b)
 
 
+
+*(Inherited from `FrequencySeries`)*
+
+### `min`
+
+```python
+min(self, axis=None, out=None, keepdims=False, initial=None, where=True, ignore_nan=True)
+```
+
+a.min(axis=None, out=None, keepdims=False, initial=<no value>, where=True)
+
+Return the minimum along a given axis.
+
+Refer to `numpy.amin` for full documentation.
+
+See Also
+--------
+numpy.amin : equivalent function
+
+*(Inherited from `FrequencySeries`)*
 
 ### `name`
 
@@ -1199,21 +1264,22 @@ Notes
 -----
 The available built-in formats are:
 
-======= ==== ===== =============
- Format Read Write Auto-identify
-======= ==== ===== =============
- dttxml  Yes    No            No
-     li  Yes    No            No
-    lsf  Yes    No            No
-    mem  Yes    No            No
-    orf  Yes    No            No
-    sdb  Yes    No            No
-taffmat  Yes    No            No
-    wdf  Yes    No            No
-    win  Yes    No            No
-  win32  Yes    No            No
-    wvf  Yes    No            No
-======= ==== ===== =============
+====== ==== ===== =============
+Format Read Write Auto-identify
+====== ==== ===== =============
+   csv  Yes   Yes           Yes
+  hdf5  Yes   Yes           Yes
+ligolw  Yes    No            No
+   txt  Yes   Yes           Yes
+====== ==== ===== =============
+
+### `rms`
+
+```python
+rms(self, axis=None, keepdims=False, ignore_nan=True)
+```
+
+_No documentation available._
 
 ### `shift`
 
@@ -1247,7 +1313,7 @@ Examples
 ### `smooth`
 
 ```python
-smooth(self, width: 'Any', method: 'str' = 'amplitude') -> 'Any'
+smooth(self, width: 'Any', method: 'str' = 'amplitude', ignore_nan: 'bool' = True) -> 'Any'
 ```
 
 
@@ -1265,11 +1331,31 @@ method : `str`, optional
     - 'power': Smooth power |X|^2. Returns REAL series.
     - 'complex': Smooth real and imaginary parts separately. Preserves complex.
     - 'db': Smooth dB values. Returns REAL series (in dB).
+ignore_nan : `bool`, optional
+    If True, ignore NaNs during smoothing. Default is True.
 
 Returns
 -------
 `FrequencySeries`
 
+
+### `std`
+
+```python
+std(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True, ignore_nan=True)
+```
+
+a.std(axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True)
+
+Returns the standard deviation of the array elements along given axis.
+
+Refer to `numpy.std` for full documentation.
+
+See Also
+--------
+numpy.std : equivalent function
+
+*(Inherited from `ndarray`)*
 
 ### `step`
 
@@ -1370,35 +1456,34 @@ conversion.
 ### `to_mne`
 
 ```python
-to_mne(self) -> 'Any'
+to_mne(self, info: 'Optional[Any]' = None) -> 'Any'
 ```
 
 
-Convert to MNE Spectrum object.
+Convert to MNE-Python object.
 
-Raises
-------
-NotImplementedError
-    MNE Spectrum objects are typically derived from Raw/Epochs/Evoked data.
-    Direct creation from frequency domain data is not standard in MNE API
-    without wrapping in a time-domain container first.
+Parameters
+----------
+info : mne.Info, optional
+    MNE Info object.
+
+Returns
+-------
+mne.time_frequency.SpectrumArray
 
 
 ### `to_obspy`
 
 ```python
-to_obspy(self) -> 'Any'
+to_obspy(self, **kwargs: 'Any') -> 'Any'
 ```
 
 
-Convert to ObsPy spectrum representation.
+Convert to Obspy Trace.
 
-Raises
-------
-NotImplementedError
-    ObsPy primarily manages time-domain Traces and Streams.
-    There is no standard standalone Spectrum container in ObsPy
-    comparable to FrequencySeries.
+Returns
+-------
+obspy.Trace
 
 
 ### `to_pandas`
@@ -1412,29 +1497,25 @@ Convert to pandas.Series.
 ### `to_polars`
 
 ```python
-to_polars(self, name: 'Optional[str]' = None, as_dataframe: 'bool' = True, index_column: 'str' = 'frequency') -> 'Any'
+to_polars(self, name: 'Optional[str]' = None, as_dataframe: 'bool' = True, frequencies: 'str' = 'frequency') -> 'Any'
 ```
 
-Create FrequencySeries from polars object.
 
-### `to_quantities`
+Convert this series to a polars.DataFrame or polars.Series.
 
-```python
-to_quantities(self, units: 'Optional[str]' = None) -> 'Any'
-```
+Parameters
+----------
+name : str, optional
+    Name for the polars Series/Column.
+as_dataframe : bool, default True
+    If True, returns a DataFrame with a 'frequency' column.
+    If False, returns a raw Series of values.
+frequencies : str, default "frequency"
+    Name of the frequency column (only if as_dataframe=True).
 
-Convert to quantities.Quantity (Elephant/Neo compatible).
-
-### `from_quantities`
-
-```python
-from_quantities(q: 'Any', frequencies: 'Any') -> 'Any'
-```
-
-Create FrequencySeries from quantities.Quantity.
-
-
-Convert FrequencySeries to polars object.
+Returns
+-------
+polars.DataFrame or polars.Series
 
 
 ### `to_pycbc`
@@ -1455,6 +1536,86 @@ Returns
 -------
 frequencyseries : `pycbc.types.frequencyseries.FrequencySeries`
     a PyCBC representation of this `FrequencySeries`
+
+
+### `to_pyspeckit`
+
+```python
+to_pyspeckit(self, **kwargs)
+```
+
+
+Convert to pyspeckit.Spectrum.
+
+Parameters
+----------
+**kwargs
+    Arguments passed to pyspeckit.Spectrum constructor.
+
+Returns
+-------
+pyspeckit.Spectrum
+
+
+### `to_quantities`
+
+```python
+to_quantities(self, units: 'Optional[str]' = None) -> 'Any'
+```
+
+
+Convert to quantities.Quantity (Elephant/Neo compatible).
+
+Parameters
+----------
+units : str or quantities.UnitQuantity, optional
+    Target units.
+
+Returns
+-------
+quantities.Quantity
+
+
+### `to_simpeg`
+
+```python
+to_simpeg(self, location=None, rx_type='PointElectricField', orientation='x', **kwargs) -> 'Any'
+```
+
+
+Convert to SimPEG Data object.
+
+Parameters
+----------
+location : array_like, optional
+    Rx location (x, y, z). Default is [0, 0, 0].
+rx_type : str, optional
+    Receiver class name. Default "PointElectricField".
+orientation : str, optional
+    Receiver orientation ('x', 'y', 'z'). Default 'x'.
+
+Returns
+-------
+simpeg.data.Data
+
+
+### `to_specutils`
+
+```python
+to_specutils(self, **kwargs)
+```
+
+
+Convert to specutils.Spectrum1D.
+
+Parameters
+----------
+**kwargs
+    Arguments passed to Spectrum1D constructor.
+
+Returns
+-------
+specutils.Spectrum1D
 
 
 ### `to_tensorflow`
@@ -1606,6 +1767,24 @@ Returns
 y : `~astropy.units.Quantity`
     the value of this Series at the given `xindex` value
 
+
+### `var`
+
+```python
+var(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True, ignore_nan=True)
+```
+
+a.var(axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True)
+
+Returns the variance of the array elements, along given axis.
+
+Refer to `numpy.var` for full documentation.
+
+See Also
+--------
+numpy.var : equivalent function
+
+*(Inherited from `ndarray`)*
 
 ### `write`
 

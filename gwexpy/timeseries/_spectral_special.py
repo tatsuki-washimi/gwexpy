@@ -52,7 +52,7 @@ class TimeSeriesSpectralSpecialMixin:
             Output data type.
         chunk_size : `int`, optional
             Number of frequencies to process at once for memory efficiency.
-        
+
         Returns
         -------
         `FrequencySeries`
@@ -171,9 +171,9 @@ class TimeSeriesSpectralSpecialMixin:
     ) -> Any:
         """
         Compute Short-Time Laplace Transform (STLT).
-        
+
         Chunk the time series, apply window w[n] * exp(-sigma * t_rel[n]), and compute FFT.
-        
+
         Parameters
         ----------
         stride : Quantity or str, optional
@@ -204,7 +204,7 @@ class TimeSeriesSpectralSpecialMixin:
             If None, defaults to True for real data, False for complex data.
         legacy : bool, optional
             If True, use the old magnitude-outer-product implementation (deprecated).
-            
+
         Returns
         -------
         LaplaceGram
@@ -214,15 +214,15 @@ class TimeSeriesSpectralSpecialMixin:
              return self._stlt_legacy(stride, window, **kwargs)
 
         try:
-             import scipy.signal
+             import scipy.signal  # noqa: F401 - availability check
         except ImportError:
              raise ImportError("scipy is required for stlt.")
-        
+
         # --- 1. Resolve Time Parameters ---
         if self.dt is None:
              raise ValueError("TimeSeries must have a valid dt.")
         dt_s = self.dt.to("s").value
-        fs_val = 1.0 / dt_s
+        1.0 / dt_s
 
         # Helper to ensure quantity is in seconds
         def _to_sec(val, name):
@@ -246,11 +246,11 @@ class TimeSeriesSpectralSpecialMixin:
         # Resolve fftlength (duration) / window (function vs duration)
         window_func = 'hann'
         win_dur = None
-        
+
         if fftlength is not None:
              win_dur = _to_sec(fftlength, "fftlength")
              if window is not None and not isinstance(window, (u.Quantity, float, int)):
-                  window_func = window 
+                  window_func = window
         elif window is not None:
              is_dur = False
              if isinstance(window, (int, float, np.number)) or isinstance(window, u.Quantity):
@@ -258,7 +258,7 @@ class TimeSeriesSpectralSpecialMixin:
              elif isinstance(window, str) and any(c.isdigit() for c in window):
                   # Heuristic: if string contains digits, treat as quantity string "4s"
                   is_dur = True
-             
+
              if is_dur:
                   win_dur = _to_sec(window, "window")
              else:
@@ -280,11 +280,11 @@ class TimeSeriesSpectralSpecialMixin:
         elif stride is not None:
              str_dur = _to_sec(stride, "stride")
              step = int(np.round(str_dur / dt_s))
-             
-             # Re-calculate str_dur from integer step to match actual execution? 
+
+             # Re-calculate str_dur from integer step to match actual execution?
              # Or keep user's request? Standard is usually to snap to samples.
              # step = max(1, step) # ensure at least 1 sample? Validated below.
-             
+
              noverlap = nperseg - step
              ov_dur = noverlap * dt_s
         else:
@@ -298,18 +298,18 @@ class TimeSeriesSpectralSpecialMixin:
 
         # --- 2. Data Chunking & Pre-checks ---
         from numpy.lib.stride_tricks import sliding_window_view
-        
+
         data_arr = self.value
         if len(data_arr) < nperseg:
              raise ValueError("Data shorter than window length.")
 
         chunks = sliding_window_view(data_arr, window_shape=nperseg, axis=0)[::step]
         n_chunks = chunks.shape[0]
-        
+
         t0_val = self.t0.to("s").value
         t_starts = t0_val + (np.arange(n_chunks) * step * dt_s)
         t_centers = t_starts + (win_dur / 2.0)
-        times_q = u.Quantity(t_centers, "s") 
+        times_q = u.Quantity(t_centers, "s")
 
         # --- 3. Window & Sigma Prep ---
         if isinstance(window_func, (str, tuple)):
@@ -324,7 +324,7 @@ class TimeSeriesSpectralSpecialMixin:
              sigmas_arr = [sigmas]
         else:
              sigmas_arr = sigmas
-        
+
         sigmas_vals = []
         for s in sigmas_arr:
              if isinstance(s, u.Quantity):
@@ -337,7 +337,7 @@ class TimeSeriesSpectralSpecialMixin:
         is_complex_input = np.iscomplexobj(data_arr)
         if onesided is None:
              onesided = not is_complex_input
-        
+
         if onesided and is_complex_input:
              raise ValueError("Cannot perform one-sided FFT on complex data.")
 
@@ -356,18 +356,18 @@ class TimeSeriesSpectralSpecialMixin:
         max_sigma = sigmas_vals.max()
         max_t = t_rel.max()
         min_t = t_rel.min() # negative if centered
-        
+
         # We care about -sigma * t
         # Case 1: sigma positive, t negative (if centered) -> -sigma*t positive (growth)
         # Case 2: sigma negative, t positive -> -sigma*t positive (growth)
-        
+
         max_exponent = max(
              -min_sigma * min_t,
              -min_sigma * max_t,
              -max_sigma * min_t,
              -max_sigma * max_t
         )
-        
+
         if max_exponent > 700: # approx exp(709) is max double
              raise ValueError(
                  f"Configuration leads to overflow: max exponent ~{max_exponent:.1f} > 700. "
@@ -398,7 +398,7 @@ class TimeSeriesSpectralSpecialMixin:
 
         n_freqs = len(freqs_val)
         n_sigmas = len(sigmas_vals)
-        
+
         dtype = np.result_type(chunks.dtype, np.complex64)
         out_cube = np.zeros((n_chunks, n_sigmas, n_freqs), dtype=dtype)
 
@@ -408,31 +408,31 @@ class TimeSeriesSpectralSpecialMixin:
         # We want to keep weighted_chunks < ~100MB?
         # 100MB / 16 bytes ~ 6e6 elements.
         # If nperseg=1000, batch_size=6000 chunks.
-        
+
         BATCH_ELEMENTS = 5_000_000
         chunk_batch_size = max(1, BATCH_ELEMENTS // nperseg)
-        
+
         fft_func = np.fft.rfft if onesided else np.fft.fft
-        
+
         for i_chunk in range(0, n_chunks, chunk_batch_size):
              end_chunk = min(i_chunk + chunk_batch_size, n_chunks)
              # Get batch of chunks: (batch_size, nperseg)
              batch_chunks = chunks[i_chunk:end_chunk] # View
-             
+
              # Loop over sigmas for this batch
              for i_sig, sigma_val in enumerate(sigmas_vals):
                   # Compute window for this sigma
                   # w_sig (nperseg,)
                   decay = np.exp(-sigma_val * t_rel)
                   w_sig = win_base * decay
-                  
+
                   # Apply window: (batch, nperseg) * (nperseg,) -> broadcast
                   # Allocates (batch, nperseg) temporary
-                  weighted_batch = batch_chunks * w_sig 
-                  
+                  weighted_batch = batch_chunks * w_sig
+
                   # FFT
                   spec = fft_func(weighted_batch, axis=-1)
-                  
+
                   # Store
                   out_cube[i_chunk:end_chunk, i_sig, :] = spec
 
@@ -448,17 +448,17 @@ class TimeSeriesSpectralSpecialMixin:
         # --- 6. Container ---
         from gwexpy.types.time_plane_transform import LaplaceGram
         from gwexpy.types.array3d import Array3D
-        
+
         # Axis 1 is Sigma
         axis_sigma = u.Quantity(sigmas_vals, "1/s")
         # Axis 2 is Frequency
         axis_freq = freqs_q
-        
+
         # Unit
         res_unit = self.unit
         if scaling == "dt":
              res_unit = res_unit * u.s
-        
+
         # Construct Array3D explicitly
         arr3d = Array3D(
             out_cube,
@@ -468,7 +468,7 @@ class TimeSeriesSpectralSpecialMixin:
             axis2=axis_freq,
             axis_names=["time", "sigma", "frequency"]
         )
-        
+
         return LaplaceGram(
              arr3d,
              kind="stlt",
@@ -484,7 +484,7 @@ class TimeSeriesSpectralSpecialMixin:
         # Copied from original implementation
         from gwexpy.types.time_plane_transform import TimePlaneTransform
         try:
-            import scipy.signal
+            import scipy.signal  # noqa: F401 - availability check
         except ImportError:
             raise ImportError(
                 "scipy is required for stlt. "

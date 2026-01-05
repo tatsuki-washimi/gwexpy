@@ -1,1 +1,1 @@
-from gwpy.segments.tests.test_segments import *
+from gwpy.segments.tests.test_segments import *  # noqa: F403

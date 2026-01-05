@@ -13,17 +13,17 @@ def test_to_obspy_stream():
     """Test conversion from Spectrogram to Obspy Stream."""
     nf = 5
     nt = 10
-    data = np.random.rand(nf, nt)
+    data = np.random.rand(nt, nf)
     freqs = np.linspace(0, 4, nf)
     times = np.linspace(0, 9, nt)
-    
+
     spec = Spectrogram(data, frequencies=freqs, times=times, unit='m', name='TEST_SPEC')
-    
+
     st = spec.to_obspy()
-    
+
     assert isinstance(st, obspy.Stream)
     assert len(st) == nf
-    
+
     # Check first trace (first frequency bin)
     tr0 = st[0]
     assert tr0.stats.npts == nt
@@ -32,12 +32,12 @@ def test_to_obspy_stream():
     # Check if frequency info is preserved in our custom header
     assert hasattr(tr0.stats, 'frequency')
     assert tr0.stats.frequency == freqs[0]
-    
-    np.testing.assert_array_equal(tr0.data, data[0])
-    
+
+    np.testing.assert_array_equal(tr0.data, data[:, 0])
+
     # Check reconstruction
     spec_rec = Spectrogram.from_obspy(st)
-    
+
     np.testing.assert_array_equal(spec_rec.value, spec.value)
     np.testing.assert_array_equal(spec_rec.frequencies.value, spec.frequencies.value)
     # Check time axis

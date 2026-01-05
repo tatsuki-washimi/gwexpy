@@ -1,1 +1,1 @@
-from gwpy.signal.spectral._ui import *
+from gwpy.signal.spectral._ui import *  # noqa: F403

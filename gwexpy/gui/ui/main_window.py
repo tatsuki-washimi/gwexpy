@@ -430,7 +430,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 params = self.get_ui_params()
                 all_traces = []
                 for info in [self.graph_info1, self.graph_info2]:
-                    # Also need to know graph type per panel? 
+                    # Also need to know graph type per panel?
                     # Accumulator assumes one graph type or generalized.
                     # Ideally we pass graph type in the trace dict or handle it.
                     # Current Accumulator.get_results uses params['graph_type'] which is single global.
@@ -638,7 +638,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # --- AVERAGING / STOP LOGIC ---
         ui_params = self.get_ui_params()
-        
+
         # Determine measurement start if not set (Fresh Start)
         if self.meas_start_gps is None:
             if current_times is not None and len(current_times) > 0:
@@ -651,7 +651,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 # Here we simulate clearing by cropping against a start time.
                 self.meas_start_gps = current_times[-1]
                 print(f"DEBUG: Measurement Start GPS set to {self.meas_start_gps}")
-        
+
         # Apply Cropping if in Fixed/Fresh mode
         # Actually we should always crop to self.meas_start_gps to show "measurement progress"
         if self.meas_start_gps is not None:
@@ -661,7 +661,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     # Entirely old data
                     del data_map[k]
                     continue
-                
+
                 # Crop logic
                 # gwpy crop(start, end)
                 if ts.t0.value < self.meas_start_gps:
@@ -679,22 +679,22 @@ class MainWindow(QtWidgets.QMainWindow):
             overlap_pct = ui_params["overlap"] # 0.0-1.0 from get_ui_params (check line 463: value/100.0)
             overlap_sec = fft_len * overlap_pct
             stride = fft_len - overlap_sec
-            
+
             target_avgs = ui_params["averages"]
             # Duration needed for N averages
             # For 1 avg: duration = fft_len
             # For 2 avg: duration = fft_len + stride
             # For N avg: duration = fft_len + (N-1)*stride
-            
+
             if target_avgs < 1: target_avgs = 1
             req_duration = fft_len + (target_avgs - 1) * stride
-            
+
             # Check collected duration
             # Use the first available TS
             try:
                 ts_check = next(iter(data_map.values()))
                 collected = ts_check.duration.value
-                
+
                 if collected >= req_duration:
                     print(f"DEBUG: Fixed Averaging Reached. Collected: {collected:.2f}s, Req: {req_duration:.2f}s")
                     # Should stop
@@ -734,7 +734,7 @@ class MainWindow(QtWidgets.QMainWindow):
             try:
                 traces_items = [self.traces1, self.traces2][plot_idx]
                 g_type = info_root["graph_combo"].currentText()
-                
+
                 # Decide source of results
                 if self.data_source == "NDS" or self.input_controls["pcaudio"].isChecked():
                     # Use Accumulator
@@ -747,7 +747,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     if plot_idx == 1:
                          # Skip graph 1 traces
                          offset = len(self.graph_info1["traces"])
-                    
+
                     all_results = self.accumulator.get_results()
                     print(f"DEBUG: Accumulator returned {len(all_results)} results")
                     valid_count = sum(1 for r in all_results if r is not None)
@@ -899,7 +899,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 for t_idx, ctrl in enumerate(info["traces"]):
                     try:
                         tr = traces[t_idx]
-                        curve, bar, img = tr["curve"], tr["bar"], tr["img"]
+                        curve, _bar, img = tr["curve"], tr["bar"], tr["img"]
 
                         if not ctrl["active"].isChecked():
                             curve.setData([], [])

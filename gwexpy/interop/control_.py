@@ -13,7 +13,7 @@ import numpy as np
 
 from ._optional import require_optional
 
-__all__ = ["to_control_frd", "from_control_frd"]
+__all__ = ["to_control_frd", "from_control_frd", "from_control_response"]
 
 
 def to_control_frd(fs, frequency_unit: str = "rad/s"):
@@ -126,3 +126,67 @@ def from_control_frd(cls, frd, frequency_unit: str = "Hz"):
         from gwexpy.frequencyseries import FrequencySeriesMatrix
         return FrequencySeriesMatrix(data, frequencies=freqs)
     return cls(np.asarray(data).flatten(), frequencies=freqs)
+
+
+def from_control_response(cls, response, **kwargs):
+    """
+    Create TimeSeries or TimeSeriesDict from control.TimeResponseData.
+
+    Parameters
+    ----------
+    cls : type
+        The TimeSeries (or TimeSeriesDict) class.
+    response : control.TimeResponseData
+        The simulation result from python-control (e.g., from forced_response).
+    **kwargs : dict
+        Additional arguments passed to the TimeSeries constructor (e.g., unit).
+
+    Returns
+    -------
+    TimeSeries or TimeSeriesDict
+        The converted time-domain data.
+    """
+    # response is a TimeResponseData object
+    # It has attributes: time, outputs, inputs, states
+    # usually we want outputs.
+    # outputs shape is (noutputs, nsteps)
+
+    time = np.asarray(response.time)
+    outputs = np.asarray(response.outputs)
+
+    if len(time) > 1:
+        dt = time[1] - time[0]
+    else:
+        dt = 1.0  # Default if only one point
+
+    t0 = time[0]
+
+    # MIMO check
+    if response.noutputs > 1:
+        from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+
+        # If the user called TimeSeries.from_control, we might still want to return
+        # a Dict if it's MIMO, or we could raise an error.
+        # Following TimeSeriesDict.from_mne pattern, we should be flexible.
+
+        tdict = TimeSeriesDict()
+        for i in range(response.noutputs):
+            label = None
+            if hasattr(response, 'output_labels') and response.output_labels is not None:
+                label = response.output_labels[i]
+
+            name = label or f"output_{i}"
+            tdict[name] = TimeSeries(outputs[i], dt=dt, t0=t0, name=name, **kwargs)
+        return tdict
+    else:
+        from gwexpy.timeseries import TimeSeries
+
+        label = None
+        if hasattr(response, 'output_labels') and response.output_labels is not None:
+            label = response.output_labels[0]
+
+        name = label or "output"
+        # If it's SISO but forced to be (1, nsteps), flatten it
+        data = outputs.flatten()
+        return TimeSeries(data, dt=dt, t0=t0, name=name, **kwargs)
+

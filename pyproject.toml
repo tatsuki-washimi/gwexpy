@@ -92,3 +92,27 @@ exclude = ["typings*", "tests*", "docs*", "examples*"]
 [project.scripts]
 "gwexpy" = "gwexpy.cli:main"
 "gwexpy.gui" = "gwexpy.gui.pyaggui:main"
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = [
+    # Allow module-level imports not at top (for circular import avoidance and optional deps)
+    "E402",
+    # Allow multiple statements on one line (for compact GUI code)
+    "E701",
+    "E702",
+    # Allow long lines (many scientific expressions are naturally long)
+    "E501",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests and examples: allow unused imports (for availability checks)
+"tests/*" = ["F401", "E741"]
+"examples/*" = ["F401", "E741"]
+"gwexpy/*/tests/*" = ["F401", "E741"]
+# GUI code: compact style is acceptable
+"gwexpy/gui/*" = ["E701", "E702"]

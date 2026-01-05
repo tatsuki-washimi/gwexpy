@@ -14,15 +14,15 @@ def test_to_obspy_trace():
     data = np.arange(10).astype(float)
     freqs = np.linspace(0, 9, 10)
     fs = FrequencySeries(data, frequencies=freqs, unit='m', name='TEST_FS')
-    
+
     tr = fs.to_obspy()
-    
+
     assert isinstance(tr, obspy.Trace)
     assert tr.stats.npts == 10
     assert tr.stats.delta == 1.0 # f1-f0
     assert tr.stats.station == 'TEST_FS'
     np.testing.assert_array_equal(tr.data, data)
-    
+
     # Check if we can reconstruct
     fs_rec = FrequencySeries.from_obspy(tr)
     np.testing.assert_array_equal(fs_rec.value, fs.value)
@@ -40,9 +40,9 @@ def test_from_obspy_trace():
     header = {'delta': 0.5, 'starttime': 100.0, 'station': 'OBSPY_TR', 'channel': 'CH1'}
     data = np.random.rand(20)
     tr = obspy.Trace(data=data, header=header)
-    
+
     fs = FrequencySeries.from_obspy(tr)
-    
+
     assert isinstance(fs, FrequencySeries)
     assert fs.df.value == 0.5
     assert fs.f0.value == 100.0 # starttime timestamp
@@ -55,5 +55,5 @@ def test_from_obspy_trace():
     # Checking default behavior of from_obspy (legacy uses name_policy='id')
     # Let's check what ID looks like
     print(fs.name)
-    
+
     np.testing.assert_array_equal(fs.value, data)

@@ -28,44 +28,44 @@ def read_timeseries_ats(source, **kwargs):
     """
     filename = str(source)
     with open(filename, mode='rb') as f:
-        # Read entire file content buffer? 
-        # For large files, memory mapping or chunk reading is better, 
+        # Read entire file content buffer?
+        # For large files, memory mapping or chunk reading is better,
         # but following original script's logic:
-        # f_data = f.read() 
+        # f_data = f.read()
         # Header is fixed size usually. Let's read header first.
-        
+
         # Header length is at offset 0 (int16)
         header_len_bytes = f.read(2)
         header_length = np.frombuffer(header_len_bytes, dtype=np.int16)[0]
-        
+
         # Read the rest of the header (assuming 1024 bytes based on previous checks)
         f.seek(0)
         header_bytes = f.read(header_length)
-        
+
         # Parse Header
         # Offsets based on ats2gwf.py
         # SampleFreq: 8-12 (float32)
         sample_freq = np.frombuffer(header_bytes[8:12], dtype=np.float32)[0]
-        
+
         # StartTime: 12-16 (int32 - Reference Unix Timestamp?)
         start_time_int = np.frombuffer(header_bytes[12:16], dtype=np.int32)[0]
-        
+
         # LSB Value: 16-24 (float64)
         lsb_val = np.frombuffer(header_bytes[16:24], dtype=np.float64)[0]
-        
+
         # System Number: 32-34 (int16)
         system_number = np.frombuffer(header_bytes[32:34], dtype=np.int16)[0]
-        
+
         # Strings are fixed width, null padded?
         # Channel Type: 38-40
         channel_type = header_bytes[38:40].decode('utf-8', errors='ignore').strip()
-        
+
         # Sensor Type: 40-46
         sensor_type = header_bytes[40:46].decode('utf-8', errors='ignore').strip()
-        
+
         # Serial Number: 46-48 (int16)
         serial_number = np.frombuffer(header_bytes[46:48], dtype=np.int16)[0]
-        
+
         # System Type: 132-144
         system_type = header_bytes[132:144].strip(b'\x00').decode('utf-8', errors='ignore').strip()
 
@@ -77,27 +77,27 @@ def read_timeseries_ats(source, **kwargs):
             sensor_type,
             serial_number
         )
-        
+
         # Calculate t0
         # StartTime is Unix timestamp
         dt_obj = datetime.datetime.fromtimestamp(start_time_int, tz=datetime.timezone.utc)
         t0 = to_gps(dt_obj)
-        
+
         # Read Data
         # Data starts after HeaderLength
         # Using memmap for data to be efficient if needed, or fromfile
         f.seek(header_length)
         data_raw = np.fromfile(f, dtype=np.int32)
-        
+
         # Scale Data
         # unit='Volt', value = raw * LSB / 1000 ? (LSB is likely nV or similar?)
         # User script: * LSBval / 1000
-        # If LSBval is in uV/count? 
+        # If LSBval is in uV/count?
         # Assuming result unit is Volts? Or mV?
         # ats2gwf says unit='Volt'.
-        
+
         data_scaled = data_raw * lsb_val / 1000.0
-        
+
         ts = TimeSeries(
             data_scaled,
             sample_rate=sample_freq,
@@ -106,14 +106,14 @@ def read_timeseries_ats(source, **kwargs):
             channel=chname,
             unit='V' # 'Volt'
         )
-        
+
         return ts
 
 
 def read_timeseries_ats_mth5(source, **kwargs):
     """
     Read Metronix ATS/ATSS file using mth5 library.
-    
+
     This function uses `mth5.io.metronix.metronix_atss.read_atss`.
     Note that mth5 enforces strict filename conventions (e.g. extension .atss, specific underscores)
     to parse metadata. If your file does not adhere to these conventions, use the default
@@ -123,7 +123,7 @@ def read_timeseries_ats_mth5(source, **kwargs):
         from mth5.io.metronix import metronix_atss
     except ImportError:
         raise ImportError("mth5 library is required to use this reader. Install it via pip.")
-    
+
     # mth5 requires .atss extension?
     # Based on investigation, it checks .suffix in _get_file_type.
     # If source does not end in .atss, we might fail or need to symlink.
@@ -140,18 +140,18 @@ def read_timeseries_ats_mth5(source, **kwargs):
     # Convert ChannelTS (xarray) to TimeSeries
     # channel_ts.ts is the xarray DataArray
     data_array = channel_ts.ts
-    
+
     # Extract data
     data = data_array.data
-    
+
     # Extract metadata
     # t0: start time. Obspy/MTH5 usually uses comparison-safe types.
     # xarray time index:
     # data_array.time[0]
-    
+
     from gwpy.time import to_gps
     import pandas as pd
-    
+
     # Attempt to get t0 from time index
     if len(data_array.time) > 0:
         # Convert numpy.datetime64/pandas timestamp to GPS
@@ -162,10 +162,10 @@ def read_timeseries_ats_mth5(source, **kwargs):
         # Fallback or error
         t0 = 0
         dt = 1.0
-        
+
     name = channel_ts.channel_metadata.id or "mth5_channel"
     unit = channel_ts.channel_metadata.units
-    
+
     return TimeSeries(
         data,
         t0=t0,
@@ -181,7 +181,7 @@ for fmt in ["ats"]:
     io_registry.register_reader(fmt, TimeSeriesDict, read_timeseriesdict_ats, force=True)
     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=True)
     io_registry.register_reader(fmt, TimeSeriesMatrix, lambda *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(), force=True)
-    
+
     io_registry.register_identifier(
         fmt, TimeSeriesDict,
         lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))

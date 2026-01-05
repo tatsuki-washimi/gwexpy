@@ -1,2 +1,0 @@
-# tests for gwexpy.spectral
-

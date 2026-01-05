@@ -271,12 +271,12 @@ class TimePlaneTransform:
 
         # 2. Slice (nearest case handled above)
         # return self.plane(0, idx)
-    
+
     def at_sigma(self, sigma):
         """
-        Extract a 2D plane (Spectrogram-like) at a specific sigma index (if axis1 is sigma) 
+        Extract a 2D plane (Spectrogram-like) at a specific sigma index (if axis1 is sigma)
         or value.
-        
+
         This assumes axis 1 is sigma.
         """
         # If sigma is an index (int)
@@ -285,7 +285,7 @@ class TimePlaneTransform:
              # User requested `.at_sigma(sigma)` which implies value lookup potentially.
              # Similar to at_time logic.
              # Let's assume simplest implementation: nearest lookup or index.
-             
+
              sigma_ax = self.axis1.index
              if isinstance(sigma, int) and (not hasattr(sigma_ax, 'shape') or sigma < len(sigma_ax)):
                  # It might be an index
@@ -296,16 +296,16 @@ class TimePlaneTransform:
              s_val = sigma
              if hasattr(sigma, "value"):
                   s_val = sigma.value
-             
+
              ax_val = sigma_ax
              if hasattr(sigma_ax, "value"):
                   ax_val = sigma_ax.value
-             
+
              if isinstance(s_val, (int, np.integer)) and (s_val >= 0 and s_val < len(ax_val)):
                   # Ambiguous if values are integers. Assume value first?
                   # But typically sigma is float.
                   pass
-             
+
              # Nearest neighbor
              idx = np.abs(ax_val - s_val).argmin()
              return self.plane(1, idx)
@@ -363,14 +363,14 @@ class LaplaceGram(TimePlaneTransform):
         """
         # Calculate magnitude
         mag = np.abs(self.value)
-        
+
         # Sum over frequency axis (axis 2 / -1)
         denom = np.sum(mag, axis=-1, keepdims=True)
         denom = np.maximum(denom, eps)
-        
+
         # Normalize
         norm_data = mag / denom
-        
+
         # Create new Array3D for the result
         # Normalized data is effectively a probability distribution or shape profile, so dimensionless
         new_data = Array3D(
@@ -381,7 +381,7 @@ class LaplaceGram(TimePlaneTransform):
             axis1=self.axis1.index,
             axis2=self.axis2.index
         )
-        
+
         # Return wrapped in LaplaceGram
         return LaplaceGram(new_data, kind=self.kind, meta=self.meta.copy())
 

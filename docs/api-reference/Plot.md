@@ -282,6 +282,14 @@ Returns
 axlist : `list` of `~matplotlib.axes.Axes`
 
 
+### `plot_mmm`
+
+```python
+plot_mmm(self, median, min_s, max_s, ax=None, **kwargs)
+```
+
+_No documentation available._
+
 ### `refresh`
 
 ```python
@@ -306,29 +314,8 @@ all arguments are passed directory to that method.
 ### `show`
 
 ```python
-show(self, block=None, warn=True)
+show(self, warn=True)
 ```
 
-Display the current figure (if possible).
-
-If blocking, this method replicates the behaviour of
-:func:`matplotlib.pyplot.show()`, otherwise it just calls up to
-:meth:`~matplotlib.figure.Figure.show`.
-
-This method also supports repeatedly showing the same figure, even
-after closing the display window, which isn't supported by
-`pyplot.show` (AFAIK).
-
-Parameters
-----------
-block : `bool`, optional
-    open the figure and block until the figure is closed, otherwise
-    open the figure as a detached window, default: `None`.
-    If `None`, block if using an interactive backend and _not_
-    inside IPython.
-
-warn : `bool`, optional
-    print a warning if matplotlib is not running in an interactive
-    backend and cannot display the figure, default: `True`.
-
+Show the figure.
 

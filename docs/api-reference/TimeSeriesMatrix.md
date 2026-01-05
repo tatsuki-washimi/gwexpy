@@ -1,6 +1,6 @@
 # TimeSeriesMatrix
 
-**Inherits from:** SeriesMatrix
+**Inherits from:** PhaseMethodsMixin, TimeSeriesMatrixCoreMixin, TimeSeriesMatrixAnalysisMixin, TimeSeriesMatrixSpectralMixin, TimeSeriesMatrixInteropMixin, SeriesMatrix
 
 
 Matrix container for multiple TimeSeries objects.
@@ -14,86 +14,21 @@ Provides dt, t0, times aliases and constructs FrequencySeriesMatrix via FFT.
 
 Metadata matrix containing per-element metadata.
 
-Returns
--------
-MetaDataMatrix
-    A 2D matrix of MetaData objects, one for each (row, col) element.
-
-
 ### `N_samples`
 
 Number of samples along the x-axis.
 
-Returns
--------
-int
-    The length of the sample axis (third dimension of the matrix).
-
-
 ### `T`
 
-View of the transposed array.
-
-Same as ``self.transpose()``.
-
-Examples
---------
->>> a = np.array([[1, 2], [3, 4]])
->>> a
-array([[1, 2],
-       [3, 4]])
->>> a.T
-array([[1, 3],
-       [2, 4]])
-
->>> a = np.array([1, 2, 3, 4])
->>> a
-array([1, 2, 3, 4])
->>> a.T
-array([1, 2, 3, 4])
-
-See Also
---------
-transpose
-
-*(Inherited from `ndarray`)*
-
-### `abs`
-
-```python
-abs(self)
-```
-
-Compute element-wise absolute value.
-
-For complex-valued matrices, this returns the magnitude.
-
-Returns
--------
-SeriesMatrix
-    A new matrix with real-valued absolute values.
-
+Transpose of the matrix (rows and columns swapped).
 
 ### `angle`
 
 ```python
-angle(self, deg: bool = False)
+angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
 ```
 
-Compute element-wise phase angle.
-
-For complex-valued matrices, this returns the phase angle (argument).
-
-Parameters
-----------
-deg : bool, optional
-    If True, return angle in degrees; otherwise radians (default).
-
-Returns
--------
-SeriesMatrix
-    A new matrix with phase angles, unit set to degrees or radians.
-
+Alias for `phase(unwrap=unwrap, deg=deg)`.
 
 ### `append`
 
@@ -103,32 +38,6 @@ append(self, other, inplace=True, pad=None, gap=None, resize=True)
 
 Append another matrix along the sample axis.
 
-Parameters
-----------
-other : SeriesMatrix
-    Matrix to append. Must have compatible row/column structure.
-inplace : bool, optional
-    If True (default), modify this matrix in place.
-pad : float or None, optional
-    Value to use for padding gaps. If None, gaps raise an error.
-gap : str, float, or None, optional
-    Gap handling: 'raise' (error on gap), 'pad' (fill with pad value),
-    'ignore' (simple concatenation), or a numeric tolerance.
-resize : bool, optional
-    If True (default), allow the matrix to grow. If False, keep
-    the original length by trimming from the start.
-
-Returns
--------
-SeriesMatrix
-    The concatenated matrix (self if inplace=True).
-
-Raises
-------
-ValueError
-    If matrices overlap or have incompatible gaps.
-
-
 ### `append_exact`
 
 ```python
@@ -136,33 +45,6 @@ append_exact(self, other, inplace=False, pad=None, gap=None, tol=3.814697265625e
 ```
 
 Append another matrix with strict contiguity checking.
-
-This method performs exact sample-by-sample appending with tolerance
-checking for gaps between the matrices.
-
-Parameters
-----------
-other : SeriesMatrix
-    Matrix to append.
-inplace : bool, optional
-    If True, modify this matrix in place. Default is False.
-pad : float or None, optional
-    Value to use for padding gaps.
-gap : float or None, optional
-    Maximum allowed gap size for padding.
-tol : float, optional
-    Tolerance for contiguity check (default: 1/2^18 ≈ 3.8e-6).
-
-Returns
--------
-SeriesMatrix
-    The concatenated matrix.
-
-Raises
-------
-ValueError
-    If shapes don't match or gap exceeds tolerance.
-
 
 ### `asd`
 
@@ -183,19 +65,6 @@ astype(self, dtype, copy=True)
 
 Cast matrix data to a specified type.
 
-Parameters
-----------
-dtype : str or numpy.dtype
-    Target data type.
-copy : bool, optional
-    If True (default), return a copy even if dtype is unchanged.
-
-Returns
--------
-SeriesMatrix
-    A new matrix with the specified data type.
-
-
 ### `auto_coherence`
 
 ```python
@@ -212,15 +81,13 @@ bandpass(self, *args, **kwargs)
 
 Element-wise delegate to `TimeSeries.bandpass`.
 
+### `channel_names`
+
+Flattened list of all element names.
+
 ### `channels`
 
 2D array of channel identifiers for each matrix element.
-
-Returns
--------
-numpy.ndarray
-    A 2D object array of channel names or Channel objects.
-
 
 ### `coherence`
 
@@ -233,59 +100,26 @@ Element-wise delegate to `TimeSeries.coherence` with another TimeSeries.
 ### `col_index`
 
 ```python
-col_index(self, key: Any) -> int
+col_index(self, key: 'Any') -> 'int'
 ```
 
 Get the integer index for a column key.
 
-Parameters
-----------
-key : Any
-    The column key to look up.
-
-Returns
--------
-int
-    The zero-based index of the column.
-
-Raises
-------
-KeyError
-    If the key is not found.
-
-
-### `correlation_vector`
-
-```python
-correlation_vector(self, target_timeseries, method='mic', nproc=None)
-```
-
-Calculate correlation between a target TimeSeries and all channels in this Matrix.
-
-Args:
-    target_timeseries (TimeSeries): The target signal (e.g., DARM).
-    method (str): 'pearson', 'kendall', 'mic'.
-    nproc (int, optional): Number of parallel processes. 
-                           If None, uses os.cpu_count() (or 1 if cannot determine).
-
-Returns:
-    pandas.DataFrame: Ranking of channels by correlation score.
-                      Columns: ['row', 'col', 'channel', 'score']
-
-
 ### `col_keys`
 
 ```python
-col_keys(self) -> list[typing.Any]
+col_keys(self) -> 'tuple[Any, ...]'
 ```
 
 Get the keys (labels) for all columns.
 
-Returns
--------
-tuple
-    A tuple of column keys in order.
+### `conj`
 
+```python
+conj(self)
+```
+
+Complex conjugate of the matrix.
 
 ### `copy`
 
@@ -295,21 +129,20 @@ copy(self, order='C')
 
 Create a deep copy of this matrix.
 
-Parameters
-----------
-order : {'C', 'F', 'A', 'K'}, optional
-    Memory layout of the copy. Default is 'C' (row-major).
+### `correlation_vector`
 
-Returns
--------
-SeriesMatrix
-    A new matrix with copied data and metadata.
+```python
+correlation_vector(self, target_timeseries, method='mic', nproc=None)
+```
+
+
+Calculate correlation between a target TimeSeries and all channels in this Matrix.
 
 
 ### `crop`
 
 ```python
-crop(self, start: 'Any' = None, end: 'Any' = None, copy: 'bool' = False) -> "'TimeSeriesMatrix'"
+crop(self, start: 'Any' = None, end: 'Any' = None, copy: 'bool' = False) -> 'Any'
 ```
 
 
@@ -325,17 +158,26 @@ csd(self, other, *args, **kwargs)
 
 Element-wise delegate to `TimeSeries.csd` with another TimeSeries.
 
-### `dagger`
+### `degree`
 
-Conjugate transpose (Hermitian adjoint) of the matrix.
+```python
+degree(self, unwrap: 'bool' = False, **kwargs: 'Any') -> 'Any'
+```
 
-Returns the complex conjugate of the transposed matrix,
-often denoted as A† in matrix notation.
+
+Calculate the instantaneous phase of the matrix in degrees.
+
+Parameters
+----------
+unwrap : bool, optional
+    If True, unwrap the phase.
+**kwargs
+    Passed to analytic_signal.
 
 Returns
 -------
-SeriesMatrix
-    The Hermitian adjoint of this matrix.
+TimeSeriesMatrix
+    The phase of the matrix elements, in degrees.
 
 
 ### `det`
@@ -345,19 +187,6 @@ det(self)
 ```
 
 Compute the determinant of the matrix at each sample point.
-
-Returns
--------
-Series
-    A Series containing the determinant values.
-
-Raises
-------
-ValueError
-    If the matrix is not square.
-UnitConversionError
-    If element units are not equivalent.
-
 
 ### `detrend`
 
@@ -370,45 +199,26 @@ Element-wise delegate to `TimeSeries.detrend`.
 ### `diagonal`
 
 ```python
-diagonal(self, output: str = 'list')
+diagonal(self, output: 'str' = 'list')
 ```
 
 Extract diagonal elements from the matrix.
 
-Parameters
-----------
-output : {'list', 'vector', 'matrix'}, optional
-    Output format:
-    - 'list': Return a list of Series (default)
-    - 'vector': Return as column vector (n x 1 matrix)
-    - 'matrix': Return full matrix with off-diagonal zeroed
+### `dict_class`
 
-Returns
--------
-list, SeriesMatrix
-    Diagonal elements in the requested format.
+```python
+dict_class(...)
+```
 
+Dictionary of TimeSeries objects.
 
 ### `diff`
 
 ```python
-diff(self, n=1, axis=2)
+diff(self, n=1, axis=None)
 ```
 
 Calculate the n-th discrete difference along the sample axis.
-
-Parameters
-----------
-n : int, optional
-    Number of times to difference. Default is 1.
-axis : int, optional
-    Must be 2 (sample axis). Other values raise ValueError.
-
-Returns
--------
-SeriesMatrix
-    Differenced matrix with length reduced by n.
-
 
 ### `dt`
 
@@ -416,27 +226,11 @@ Time spacing (dx).
 
 ### `duration`
 
-
 Duration covered by the samples.
-
 
 ### `dx`
 
 Step size between samples on the x-axis.
-
-For regularly-sampled data, this is the constant spacing between
-consecutive samples. For time series, this equals ``1/sample_rate``.
-
-Returns
--------
-dx : `~astropy.units.Quantity`
-    The sample spacing with appropriate units.
-
-Raises
-------
-AttributeError
-    If xindex is not set or if the series has irregular sampling.
-
 
 ### `fft`
 
@@ -463,28 +257,26 @@ Element-wise delegate to `TimeSeries.filter`.
 from_neo(sig: 'Any') -> 'Any'
 ```
 
-Create from neo.AnalogSignal.
+
+Create TimeSeriesMatrix from neo.AnalogSignal.
+
+Parameters
+----------
+sig : neo.core.AnalogSignal
+    Input signal.
+
+Returns
+-------
+TimeSeriesMatrix
+
 
 ### `get_index`
 
 ```python
-get_index(self, key_row: Any, key_col: Any) -> tuple[int, int]
+get_index(self, key_row: 'Any', key_col: 'Any') -> 'tuple[int, int]'
 ```
 
 Get the (row, col) integer indices for given keys.
-
-Parameters
-----------
-key_row : Any
-    The row key.
-key_col : Any
-    The column key.
-
-Returns
--------
-tuple of int
-    A 2-tuple of (row_index, col_index).
-
 
 ### `highpass`
 
@@ -528,16 +320,11 @@ Transform using ICA.
 
 ### `imag`
 
+```python
+imag(self)
+```
+
 Imaginary part of the matrix.
-
-For complex matrices, returns only the imaginary component.
-For real matrices, returns zeros.
-
-Returns
--------
-SeriesMatrix
-    Matrix with imaginary components as real values.
-
 
 ### `impute`
 
@@ -547,160 +334,77 @@ impute(self, *, method: 'str' = 'linear', limit: 'Optional[int]' = None, axis: '
 
 Impute missing values in the matrix.
 
+### `interpolate`
+
+```python
+interpolate(self, xindex, **kwargs)
+```
+
+Interpolate the matrix to a new sample axis.
+
 ### `inv`
 
 ```python
-inv(self, swap_rowcol: bool = True)
+inv(self, swap_rowcol: 'bool' = True)
 ```
 
 Compute the matrix inverse at each sample point.
 
-Parameters
-----------
-swap_rowcol : bool, optional
-    If True (default), swap row/col labels in the result.
-
-Returns
--------
-SeriesMatrix
-    The inverse matrix with unit^-1.
-
-Raises
-------
-ValueError
-    If the matrix is not square.
-UnitConversionError
-    If element units are not equivalent.
-
-
 ### `is_compatible`
 
 ```python
-is_compatible(self, other: Any) -> bool
+is_compatible(self, other: 'Any') -> 'bool'
 ```
 
-
 Compatibility check.
-
 
 ### `is_compatible_exact`
 
 ```python
-is_compatible_exact(self, other)
+is_compatible_exact(self, other: 'Any') -> 'bool'
 ```
 
 Check strict compatibility with another matrix.
 
-Requires identical shape, xindex values, row/col keys,
-and element units.
-
-Parameters
-----------
-other : SeriesMatrix
-    The other matrix to check compatibility with.
-
-Returns
--------
-bool
-    True if compatible.
-
-Raises
-------
-ValueError
-    If any compatibility check fails.
-
-
 ### `is_contiguous`
 
 ```python
-is_contiguous(self, other, tol=3.814697265625e-06)
+is_contiguous(self, other: 'Any', tol: 'float' = 3.814697265625e-06) -> 'int'
 ```
 
-Check if this matrix is contiguous with another (gwpy-like semantics).
-
-Two matrices are contiguous if the end of one aligns with the start
-of the other within the specified tolerance.
-
-Parameters
-----------
-other : SeriesMatrix
-    The other matrix to check contiguity with.
-tol : float, optional
-    Tolerance for the contiguity check (default: 1/2^18 ≈ 3.8e-6).
-
-Returns
--------
-int
-    1 if self ends where other starts,
-    -1 if other ends where self starts,
-    0 if not contiguous.
-
+Check if this matrix is contiguous with another.
 
 ### `is_contiguous_exact`
 
 ```python
-is_contiguous_exact(self, other, tol=3.814697265625e-06)
+is_contiguous_exact(self, other: 'Any', tol: 'float' = 3.814697265625e-06) -> 'int'
 ```
 
 Check contiguity with strict shape matching.
 
-Unlike :meth:`is_contiguous`, this method requires identical shapes.
-
-Parameters
-----------
-other : SeriesMatrix
-    The other matrix to check contiguity with.
-tol : float, optional
-    Tolerance for the contiguity check (default: 1/2^18 ≈ 3.8e-6).
-
-Returns
--------
-int
-    1 if self ends where other starts,
-    -1 if other ends where self starts,
-    0 if not contiguous.
-
-Raises
-------
-ValueError
-    If shapes do not match.
-
-
 ### `is_regular`
 
-Return True if this TimeSeriesMatrix has a regular sample rate.
+Return True if this series has a regular grid (constant spacing).
 
 ### `keys`
 
 ```python
-keys(self) -> list[tuple[typing.Any, typing.Any]]
+keys(self) -> 'tuple[tuple[Any, ...], tuple[Any, ...]]'
 ```
 
 Get both row and column keys.
 
-Returns
--------
-tuple
-    A 2-tuple of (row_keys, col_keys).
+### `list_class`
 
+```python
+list_class(*items)
+```
+
+List of TimeSeries objects.
 
 ### `loc`
 
 Label-based indexer for direct value access.
-
-Provides pandas-like `.loc` accessor for getting/setting values
-directly in the underlying data array using index notation.
-
-Returns
--------
-_LocAccessor
-    An accessor object supporting ``[]`` indexing.
-
-Examples
---------
->>> matrix.loc[0, 1, :] = new_values  # Set all samples at row 0, col 1
->>> vals = matrix.loc[0, 1, :]  # Get all samples at row 0, col 1
-
 
 ### `lock_in`
 
@@ -726,15 +430,71 @@ lowpass(self, *args, **kwargs)
 
 Element-wise delegate to `TimeSeries.lowpass`.
 
+### `max`
+
+```python
+max(self, axis=None, out=None, keepdims=False, initial=None, where=True, ignore_nan=True)
+```
+
+a.max(axis=None, out=None, keepdims=False, initial=<no value>, where=True)
+
+Return the maximum along a given axis.
+
+Refer to `numpy.amax` for full documentation.
+
+See Also
+--------
+numpy.amax : equivalent function
+
+*(Inherited from `ndarray`)*
+
+### `mean`
+
+```python
+mean(self, axis=None, dtype=None, out=None, keepdims=False, *, where=True, ignore_nan=True)
+```
+
+a.mean(axis=None, dtype=None, out=None, keepdims=False, *, where=True)
+
+Returns the average of the array elements along given axis.
+
+Refer to `numpy.mean` for full documentation.
+
+See Also
+--------
+numpy.mean : equivalent function
+
+*(Inherited from `ndarray`)*
+
+### `median`
+
+```python
+median(self, axis=None, out=None, overwrite_input=False, keepdims=False, ignore_nan=True)
+```
+
+_No documentation available._
+
+### `min`
+
+```python
+min(self, axis=None, out=None, keepdims=False, initial=None, where=True, ignore_nan=True)
+```
+
+a.min(axis=None, out=None, keepdims=False, initial=<no value>, where=True)
+
+Return the minimum along a given axis.
+
+Refer to `numpy.amin` for full documentation.
+
+See Also
+--------
+numpy.amin : equivalent function
+
+*(Inherited from `ndarray`)*
+
 ### `names`
 
-2D array of names for each matrix element.
-
-Returns
--------
-numpy.ndarray
-    A 2D object array of string names.
-
+2D array of names for each matrix element. Alias for channel_names if 1D.
 
 ### `notch`
 
@@ -751,20 +511,6 @@ pad(self, pad_width, **kwargs)
 ```
 
 Pad the matrix along the sample axis.
-
-Parameters
-----------
-pad_width : int or tuple of (int, int)
-    Number of samples to pad. If int, pads equally on both sides.
-    If tuple, specifies (before, after) padding.
-**kwargs
-    Additional arguments passed to numpy.pad. Default mode is 'constant'.
-
-Returns
--------
-SeriesMatrix
-    Padded matrix with extended sample axis.
-
 
 ### `pca`
 
@@ -798,15 +544,39 @@ pca_transform(self, pca_res: 'Any', **kwargs: 'Any') -> 'Any'
 
 Transform using PCA.
 
+### `phase`
+
+```python
+phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+
+Calculate the phase of the data.
+
+Parameters
+----------
+unwrap : `bool`, optional
+    If `True`, unwrap the phase to remove discontinuities.
+    Default is `False`.
+deg : `bool`, optional
+    If `True`, return the phase in degrees.
+    Default is `False` (radians).
+**kwargs
+    Additional arguments passed to the underlying calculation.
+
+Returns
+-------
+`Series` or `Matrix` or `Collection`
+    The phase of the data.
+
+
 ### `plot`
 
 ```python
 plot(self, **kwargs: 'Any') -> 'Any'
 ```
 
-
 Plot the matrix data.
-
 
 ### `prepend`
 
@@ -816,25 +586,6 @@ prepend(self, other, inplace=True, pad=None, gap=None, resize=True)
 
 Prepend another matrix at the beginning along the sample axis.
 
-Parameters
-----------
-other : SeriesMatrix
-    Matrix to prepend.
-inplace : bool, optional
-    If True (default), modify this matrix in place.
-pad : float or None, optional
-    Value to use for padding gaps.
-gap : str, float, or None, optional
-    Gap handling strategy (see :meth:`append`).
-resize : bool, optional
-    If True (default), allow the matrix to grow.
-
-Returns
--------
-SeriesMatrix
-    The concatenated matrix.
-
-
 ### `prepend_exact`
 
 ```python
@@ -842,9 +593,6 @@ prepend_exact(self, other, inplace=False, pad=None, gap=None, tol=3.814697265625
 ```
 
 Prepend another matrix with strict contiguity checking.
-
-See :meth:`append_exact` for parameter details.
-
 
 ### `psd`
 
@@ -868,12 +616,33 @@ Compute Q-transform of each element.
 Returns SpectrogramMatrix.
 
 
+### `radian`
+
+```python
+radian(self, unwrap: 'bool' = False, **kwargs: 'Any') -> 'Any'
+```
+
+
+Calculate the instantaneous phase of the matrix in radians.
+
+Parameters
+----------
+unwrap : bool, optional
+    If True, unwrap the phase.
+**kwargs
+    Passed to analytic_signal.
+
+Returns
+-------
+TimeSeriesMatrix
+    The phase of the matrix elements, in radians.
+
+
 ### `read`
 
 ```python
 read(source, format=None, **kwargs)
 ```
-
 
 Read a SeriesMatrix from file.
 
@@ -896,6 +665,7 @@ The available built-in formats are:
 ======== ==== ===== =============
  Format  Read Write Auto-identify
 ======== ==== ===== =============
+     ats  Yes    No            No
   dttxml  Yes    No            No
      gbd  Yes    No            No
     gse2  Yes    No            No
@@ -907,7 +677,11 @@ miniseed  Yes    No            No
      orf  Yes    No            No
      sac  Yes    No            No
      sdb  Yes    No            No
+  sqlite  Yes    No            No
+ sqlite3  Yes    No            No
  taffmat  Yes    No            No
+    tdms  Yes    No            No
+     wav  Yes    No            No
      wdf  Yes    No            No
      win  Yes    No            No
    win32  Yes    No            No
@@ -916,16 +690,11 @@ miniseed  Yes    No            No
 
 ### `real`
 
+```python
+real(self)
+```
+
 Real part of the matrix.
-
-For complex matrices, returns only the real component.
-For real matrices, returns a copy.
-
-Returns
--------
-SeriesMatrix
-    Matrix with real-valued elements.
-
 
 ### `resample`
 
@@ -935,10 +704,26 @@ resample(self, *args, **kwargs)
 
 Element-wise delegate to `TimeSeries.resample`.
 
+### `reshape`
+
+```python
+reshape(self, shape, order='C')
+```
+
+Reshape the matrix dimensions.
+
+### `rms`
+
+```python
+rms(self, axis=None, keepdims=False, ignore_nan=True)
+```
+
+_No documentation available._
+
 ### `rolling_max`
 
 ```python
-rolling_max(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto') -> 'Any'
+rolling_max(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto', ignore_nan: 'Optional[bool]' = None) -> 'Any'
 ```
 
 Rolling maximum along the time axis.
@@ -946,7 +731,7 @@ Rolling maximum along the time axis.
 ### `rolling_mean`
 
 ```python
-rolling_mean(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto') -> 'Any'
+rolling_mean(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto', ignore_nan: 'Optional[bool]' = None) -> 'Any'
 ```
 
 Rolling mean along the time axis.
@@ -954,7 +739,7 @@ Rolling mean along the time axis.
 ### `rolling_median`
 
 ```python
-rolling_median(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto') -> 'Any'
+rolling_median(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto', ignore_nan: 'Optional[bool]' = None) -> 'Any'
 ```
 
 Rolling median along the time axis.
@@ -962,7 +747,7 @@ Rolling median along the time axis.
 ### `rolling_min`
 
 ```python
-rolling_min(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto') -> 'Any'
+rolling_min(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto', ignore_nan: 'Optional[bool]' = None) -> 'Any'
 ```
 
 Rolling minimum along the time axis.
@@ -970,7 +755,7 @@ Rolling minimum along the time axis.
 ### `rolling_std`
 
 ```python
-rolling_std(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto', ddof: 'int' = 0) -> 'Any'
+rolling_std(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto', ddof: 'int' = 0, ignore_nan: 'Optional[bool]' = None) -> 'Any'
 ```
 
 Rolling standard deviation along the time axis.
@@ -978,40 +763,18 @@ Rolling standard deviation along the time axis.
 ### `row_index`
 
 ```python
-row_index(self, key: Any) -> int
+row_index(self, key: 'Any') -> 'int'
 ```
 
 Get the integer index for a row key.
 
-Parameters
-----------
-key : Any
-    The row key to look up.
-
-Returns
--------
-int
-    The zero-based index of the row.
-
-Raises
-------
-KeyError
-    If the key is not found.
-
-
 ### `row_keys`
 
 ```python
-row_keys(self) -> list[typing.Any]
+row_keys(self) -> 'tuple[Any, ...]'
 ```
 
 Get the keys (labels) for all rows.
-
-Returns
--------
-tuple
-    A tuple of row keys in order.
-
 
 ### `sample_rate`
 
@@ -1024,33 +787,6 @@ schur(self, keep_rows, keep_cols=None, eliminate_rows=None, eliminate_cols=None)
 ```
 
 Compute the Schur complement of a block matrix.
-
-The Schur complement is computed as: A - B @ D^(-1) @ C
-where the matrix is partitioned into blocks [[A, B], [C, D]].
-
-Parameters
-----------
-keep_rows : list
-    Row keys/indices to keep (block A rows).
-keep_cols : list, optional
-    Column keys/indices to keep. If None, same as keep_rows.
-eliminate_rows : list, optional
-    Row keys/indices to eliminate (block D rows). If None, auto-inferred.
-eliminate_cols : list, optional
-    Column keys/indices to eliminate. If None, auto-inferred.
-
-Returns
--------
-SeriesMatrix
-    The Schur complement matrix.
-
-Raises
-------
-ValueError
-    If eliminate sets have different sizes or keep sets are empty.
-UnitConversionError
-    If element units are not equivalent.
-
 
 ### `series_class`
 
@@ -1074,11 +810,8 @@ Inherits from gwpy.timeseries.TimeSeries for full compatibility.
 ### `shape3D`
 
 Shape of the matrix as a 3-tuple (n_rows, n_cols, n_samples).
-
-Returns
--------
-tuple
-    A 3-tuple of integers representing (rows, columns, samples).
+For 4D matrices (spectrograms), the last dimension is likely frequency,
+so n_samples is determined by _x_axis_index.
 
 
 ### `shift`
@@ -1088,17 +821,6 @@ shift(self, delta)
 ```
 
 Shift the sample axis by a constant offset.
-
-Parameters
-----------
-delta : float or Quantity
-    Amount to shift the x-axis. Positive values shift forward.
-
-Returns
--------
-self
-    Returns self for method chaining (modifies in place).
-
 
 ### `span`
 
@@ -1137,26 +859,31 @@ Standardize the matrix.
 See gwexpy.timeseries.preprocess.standardize_matrix.
 
 
+### `std`
+
+```python
+std(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True, ignore_nan=True)
+```
+
+a.std(axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True)
+
+Returns the standard deviation of the array elements along given axis.
+
+Refer to `numpy.std` for full documentation.
+
+See Also
+--------
+numpy.std : equivalent function
+
+*(Inherited from `ndarray`)*
+
 ### `step`
 
 ```python
-step(self, where='post', **kwargs)
+step(self, where: 'str' = 'post', **kwargs: 'Any') -> 'Any'
 ```
 
 Plot the matrix as a step function.
-
-Parameters
-----------
-where : {'pre', 'post', 'mid'}, optional
-    Where to place the step. Default is 'post'.
-**kwargs
-    Additional arguments passed to plot().
-
-Returns
--------
-Plot
-    The matplotlib figure.
-
 
 ### `submatrix`
 
@@ -1165,19 +892,6 @@ submatrix(self, row_keys, col_keys)
 ```
 
 Extract a submatrix by selecting specific rows and columns.
-
-Parameters
-----------
-row_keys : list
-    List of row keys to include in the submatrix.
-col_keys : list
-    List of column keys to include in the submatrix.
-
-Returns
--------
-SeriesMatrix
-    A new matrix containing only the selected rows and columns.
-
 
 ### `t0`
 
@@ -1195,13 +909,40 @@ Element-wise delegate to `TimeSeries.taper`.
 
 Time array (xindex).
 
+### `to_cupy`
+
+```python
+to_cupy(self, dtype=None) -> Any
+```
+
+Convert to CuPy Array.
+
+### `to_dask`
+
+```python
+to_dask(self, chunks='auto') -> Any
+```
+
+Convert to Dask Array.
+
 ### `to_dict`
 
 ```python
-to_dict(self) -> "'TimeSeriesDict'"
+to_dict(self) -> 'Any'
 ```
 
-Convert to TimeSeriesDict.
+
+Convert matrix to an appropriate collection dict (e.g. TimeSeriesDict).
+Follows the matrix structure (row, col) unless it's a 1-column matrix.
+
+
+### `to_dict_flat`
+
+```python
+to_dict_flat(self) -> 'dict[str, Series]'
+```
+
+Convert matrix to a flat dictionary mapping name to Series.
 
 ### `to_hdf5`
 
@@ -1211,37 +952,21 @@ to_hdf5(self, filepath, **kwargs)
 
 Write matrix to HDF5 file.
 
-Parameters
-----------
-filepath : str or path-like
-    Output file path.
-**kwargs
-    Additional arguments passed to h5py.File.
+### `to_jax`
 
-Notes
------
-The HDF5 file structure includes:
-- /data: 3D array of values
-- /xindex: Sample axis information
-- /meta: Per-element metadata (units, names, channels)
-- /rows, /cols: Row and column metadata
+```python
+to_jax(self) -> Any
+```
 
+Convert to JAX Array.
 
 ### `to_list`
 
 ```python
-to_list(self) -> "'TimeSeriesList'"
+to_list(self) -> 'Any'
 ```
 
-Convert to TimeSeriesList.
-
-### `to_mne`
-
-```python
-to_mne(self, info: 'Any' = None) -> 'Any'
-```
-
-Alias for :meth:`to_mne`.
+Convert matrix to an appropriate collection list (e.g. TimeSeriesList).
 
 ### `to_mne`
 
@@ -1254,10 +979,16 @@ Convert to mne.io.RawArray.
 ### `to_neo`
 
 ```python
-to_neo(self, units: 'Optional[str]' = None) -> 'Any'
+to_neo(self, units: 'Any' = None) -> 'Any'
 ```
 
+
 Convert to neo.AnalogSignal.
+
+Returns
+-------
+neo.core.AnalogSignal
+
 
 ### `to_pandas`
 
@@ -1267,56 +998,45 @@ to_pandas(self, format='wide')
 
 Convert matrix to a pandas DataFrame.
 
-Parameters
-----------
-format : {'wide', 'long'}, optional
-    Output format. 'wide' creates columns for each row-col combination.
-    'long' creates a tidy format with row, col, value columns.
-    Default is 'wide'.
-
-Returns
--------
-pandas.DataFrame
-    The data as a DataFrame.
-
-
 ### `to_series_1Dlist`
 
 ```python
-to_series_1Dlist(self)
+to_series_1Dlist(self) -> 'list[Series]'
 ```
 
 Convert matrix to a flat 1D list of Series objects.
 
-Returns
--------
-list
-    A flat list of Series, ordered by columns then rows.
-
-
 ### `to_series_2Dlist`
 
 ```python
-to_series_2Dlist(self)
+to_series_2Dlist(self) -> 'list[list[Series]]'
 ```
 
 Convert matrix to a 2D nested list of Series objects.
 
-Returns
--------
-list of list
-    A 2D list where ``result[i][j]`` is the Series at row i, column j.
+### `to_tensorflow`
 
+```python
+to_tensorflow(self, dtype: Any = None) -> Any
+```
+
+Convert to tensorflow.Tensor.
 
 ### `to_torch`
 
 ```python
-to_torch(self, device: 'Optional[str]' = None, dtype: 'Any' = None, requires_grad: 'bool' = False, copy: 'bool' = False) -> 'Any'
+to_torch(self, device: Optional[str] = None, dtype: Any = None, requires_grad: bool = False, copy: bool = False) -> Any
 ```
 
+Convert to torch.Tensor.
 
-Convert matrix values to a torch.Tensor (shape preserved).
+### `to_zarr`
 
+```python
+to_zarr(self, store, path=None, **kwargs) -> Any
+```
+
+Save to Zarr storage.
 
 ### `trace`
 
@@ -1325,19 +1045,6 @@ trace(self)
 ```
 
 Compute the trace of the matrix (sum of diagonal elements).
-
-Returns
--------
-Series
-    A Series containing the trace values at each sample point.
-
-Raises
-------
-ValueError
-    If the matrix is not square.
-UnitConversionError
-    If diagonal elements have incompatible units.
-
 
 ### `transfer_function`
 
@@ -1350,71 +1057,14 @@ Element-wise delegate to `TimeSeries.transfer_function` with another TimeSeries.
 ### `transpose`
 
 ```python
-transpose(self)
+transpose(self, *axes)
 ```
 
-a.transpose(*axes)
-
-Returns a view of the array with axes transposed.
-
-Refer to `numpy.transpose` for full documentation.
-
-Parameters
-----------
-axes : None, tuple of ints, or `n` ints
-
- * None or no argument: reverses the order of the axes.
-
- * tuple of ints: `i` in the `j`-th place in the tuple means that the
-   array's `i`-th axis becomes the transposed array's `j`-th axis.
-
- * `n` ints: same as an n-tuple of the same ints (this form is
-   intended simply as a "convenience" alternative to the tuple form).
-
-Returns
--------
-p : ndarray
-    View of the array with its axes suitably permuted.
-
-See Also
---------
-transpose : Equivalent function.
-ndarray.T : Array property returning the array transposed.
-ndarray.reshape : Give a new shape to an array without changing its data.
-
-Examples
---------
->>> a = np.array([[1, 2], [3, 4]])
->>> a
-array([[1, 2],
-       [3, 4]])
->>> a.transpose()
-array([[1, 3],
-       [2, 4]])
->>> a.transpose((1, 0))
-array([[1, 3],
-       [2, 4]])
->>> a.transpose(1, 0)
-array([[1, 3],
-       [2, 4]])
-
->>> a = np.array([1, 2, 3, 4])
->>> a
-array([1, 2, 3, 4])
->>> a.transpose()
-array([1, 2, 3, 4])
-
-*(Inherited from `ndarray`)*
+Transpose rows and columns, preserving sample axis as 2.
 
 ### `units`
 
 2D array of units for each matrix element.
-
-Returns
--------
-numpy.ndarray
-    A 2D object array of `astropy.units.Unit` instances.
-
 
 ### `update`
 
@@ -1424,34 +1074,9 @@ update(self, other, inplace=True, pad=None, gap=None)
 
 Update matrix by appending without resizing (rolling buffer style).
 
-Appends `other` and trims from the start to maintain original length.
-
-Parameters
-----------
-other : SeriesMatrix
-    Matrix to append.
-inplace : bool, optional
-    If True (default), modify this matrix in place.
-pad : float or None, optional
-    Value to use for padding gaps.
-gap : str, float, or None, optional
-    Gap handling strategy.
-
-Returns
--------
-SeriesMatrix
-    The updated matrix with same length as original.
-
-
 ### `value`
 
 Underlying numpy array of data values.
-
-Returns
--------
-numpy.ndarray
-    3D array of shape (n_rows, n_cols, n_samples) containing the data.
-
 
 ### `value_at`
 
@@ -1461,21 +1086,23 @@ value_at(self, x)
 
 Get the matrix values at a specific x-axis location.
 
-Parameters
-----------
-x : float or Quantity
-    The x-axis value to look up.
+### `var`
 
-Returns
--------
-numpy.ndarray
-    2D array of shape (n_rows, n_cols) with values at that x.
+```python
+var(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True, ignore_nan=True)
+```
 
-Raises
-------
-ValueError
-    If x is not in xindex.
+a.var(axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True)
 
+Returns the variance of the array elements, along given axis.
+
+Refer to `numpy.var` for full documentation.
+
+See Also
+--------
+numpy.var : equivalent function
+
+*(Inherited from `ndarray`)*
 
 ### `whiten`
 
@@ -1506,77 +1133,23 @@ write(self, target, format=None, **kwargs)
 
 Write matrix to file.
 
-Parameters
-----------
-target : str or path-like
-    Output file path.
-format : {'hdf5', 'csv', 'parquet'} or None, optional
-    Output format. If None, inferred from file extension.
-**kwargs
-    Additional arguments passed to the writer.
-
-Returns
--------
-None or result from underlying writer.
-
-Notes
------
-Supported extensions:
-- .h5, .hdf5, .hdf → HDF5 format
-- .csv → CSV format (wide layout)
-- .parquet, .pq → Parquet format (wide layout)
-
-
 ### `x0`
 
 Starting value of the sample axis.
 
-Returns
--------
-x0 : `~astropy.units.Quantity`
-    The first value of xindex, representing the start time/frequency.
-
-
 ### `xarray`
 
-
 Return the sample axis values.
-
 
 ### `xindex`
 
 Sample axis index array.
 
-This is the array of x-axis values (e.g., time or frequency) corresponding
-to each sample in the matrix. For time series, this represents timestamps;
-for frequency series, this represents frequency bins.
-
-Returns
--------
-xindex : `~gwpy.types.Index`, `~astropy.units.Quantity`, or `numpy.ndarray`
-    The sample axis values with appropriate units.
-
-
 ### `xspan`
 
 Full extent of the sample axis as a tuple (start, end).
 
-The end value is calculated as the last sample plus one step (dx),
-representing the exclusive upper bound of the data range.
-
-Returns
--------
-xspan : tuple
-    A 2-tuple of (start, end) values with appropriate units.
-
-
 ### `xunit`
 
-Physical unit of the sample axis.
-
-Returns
--------
-xunit : `~astropy.units.Unit`
-    The unit of the x-axis (e.g., seconds for time series, Hz for frequency series).
-
+_No documentation available._
 

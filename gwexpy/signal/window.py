@@ -1,1 +1,1 @@
-from gwpy.signal.window import *
+from gwpy.signal.window import *  # noqa: F403

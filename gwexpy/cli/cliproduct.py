@@ -1,1 +1,1 @@
-from gwpy.cli.cliproduct import *
+from gwpy.cli.cliproduct import *  # noqa: F403

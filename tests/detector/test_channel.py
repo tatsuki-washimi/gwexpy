@@ -1,1 +1,1 @@
-from gwpy.detector.tests.test_channel import *
+from gwpy.detector.tests.test_channel import *  # noqa: F403

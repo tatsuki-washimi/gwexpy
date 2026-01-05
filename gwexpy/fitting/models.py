@@ -34,8 +34,8 @@ def landau(x, A, mu, sigma):
     Landau distribution approximation (Moyal distribution).
     f(x) = A * exp(-0.5 * (lambda + exp(-lambda))), where lambda = (x - mu) / sigma
     """
-    l = (x - mu) / sigma
-    return A * np.exp(-0.5 * (l + np.exp(-l)))
+    lam = (x - mu) / sigma
+    return A * np.exp(-0.5 * (lam + np.exp(-lam)))
 
 def make_pol_func(n):
     """

@@ -1,1 +1,1 @@
-from gwpy.cli.tests.test_coherence import *
+from gwpy.cli.tests.test_coherence import *  # noqa: F403

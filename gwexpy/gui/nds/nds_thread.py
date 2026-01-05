@@ -47,7 +47,7 @@ class NDSThread(QtCore.QThread):
             if self.conn:
                 try:
                     self.conn.close()
-                except:
+                except Exception:
                     pass
             self.finished.emit()
 
@@ -75,25 +75,25 @@ class ChannelListWorker(QtCore.QThread):
             # nds2.find_channels returns list of channel objects.
             # We want name, rate, type.
             channels = conn.find_channels(self.pattern)
-            
+
             # Convert to list of tuples: (name, rate, type)
             results = []
             for c in channels:
-                # Filter trends (simple heuristic from existing code if needed, 
+                # Filter trends (simple heuristic from existing code if needed,
                 # but typically we want raw channels mostly)
                 name = c.name
                 if "," in name and "-trend" in name:
                     continue
-                    
+
                 # c.channel_type is an integer enum usually.
                 # c.sample_rate is float.
                 results.append((c.name, c.sample_rate, c.channel_type))
-            
+
             # Sort by name
             results.sort(key=lambda x: x[0])
-            
+
             self.finished.emit(results, "")
-            
+
         except Exception as e:
             self.finished.emit([], str(e))
 

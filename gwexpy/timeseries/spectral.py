@@ -4,7 +4,7 @@ Spectral matrix calculation helpers for TimeSeries collections.
 
 import numpy as np
 from astropy import units as u
-from gwexpy.frequencyseries.frequencyseries import FrequencySeriesMatrix
+from gwexpy.frequencyseries import FrequencySeriesMatrix
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
 
 def _get_series_list_and_names(collection):

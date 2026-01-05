@@ -1,1 +1,1 @@
-from gwpy.signal.tests.test_spectral_pycbc import *
+from gwpy.signal.tests.test_spectral_pycbc import *  # noqa: F403

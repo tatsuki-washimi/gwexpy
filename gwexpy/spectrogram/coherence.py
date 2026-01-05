@@ -1,1 +1,1 @@
-from gwpy.spectrogram.coherence import *
+from gwpy.spectrogram.coherence import *  # noqa: F403

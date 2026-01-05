@@ -1,6 +1,18 @@
 api,one_line,category
 plot(**kwargs),行列データをグリッドまたはスタック形式でプロット,プロット
+plot_summary(**kwargs),行列データを要約（パーセンタイル等）してプロット,プロット
 to_torch(...),PyTorch Tensor へ変換,相互運用
 to_cupy(...),CuPy Array へ変換,相互運用
+to_list(),SpectrogramList へ変換,変換
+to_dict(),SpectrogramDict へ変換,変換
 row_keys() / col_keys(),行/列のメタデータ（チャンネル名等）のキー一覧を取得,メタデータ
-mean(axis=None, ...),指定した軸（時間/周波数/Ch）に沿って平均を計算
+crop(start, end),時間軸に沿ってトリミング,解析
+interpolate(new_times),新しい時間軸へ補間,解析
+pad(pad_width),時間軸に沿ってゼロ埋め,解析
+radian(),位相(rad)を計算した新しい行列を返す,解析
+degree(),位相(deg)を計算した新しい行列を返す,解析
+mean(axis=None, ...),指定した軸（時間/周波数/Ch）に沿って平均を計算,統計
+append(other),時間軸方向に別の行列を結合,解析
+to_series_1Dlist(),1次元の Series (Spectrogram) リストへ変換,変換
+to_series_2Dlist(),2次元の Series (Spectrogram) リストへ変換,変換
+T,転置行列 (Time/Freq 軸等の入れ替え),構造

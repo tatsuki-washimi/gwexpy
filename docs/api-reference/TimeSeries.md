@@ -1,6 +1,6 @@
 # TimeSeries
 
-**Inherits from:** TimeSeriesInteropMixin, TimeSeriesAnalysisMixin, TimeSeriesResamplingMixin, TimeSeriesSignalMixin, TimeSeriesSpectralMixin, TimeSeries
+**Inherits from:** TimeSeriesInteropMixin, TimeSeriesAnalysisMixin, TimeSeriesResamplingMixin, TimeSeriesSignalMixin, SignalAnalysisMixin, TimeSeriesSpectralMixin, StatisticsMixin, FittingMixin, PhaseMethodsMixin, RegularityMixin, TimeSeries
 
 
 Extended TimeSeries with all gwexpy functionality.
@@ -115,6 +115,14 @@ If input is real, returns complex analytic signal z(t) = x(t) + i H[x(t)].
 If input is complex, returns a copy (casting to complex if needed).
 
 
+### `angle`
+
+```python
+angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+Alias for `phase(unwrap=unwrap, deg=deg)`.
+
 ### `append`
 
 ```python
@@ -125,13 +133,103 @@ append(self, other: 'Any', inplace: 'bool' = True, pad: 'Any' = None, gap: 'Any'
 Append another TimeSeries (GWpy-compatible), returning gwexpy TimeSeries.
 
 
+### `ar`
+
+```python
+ar(self, p: 'int' = 1, **kwargs)
+```
+
+
+Fit an AutoRegressive AR(p) model.
+Shortcut for .arima(order=(p, 0, 0)).
+
+
+### `arima`
+
+```python
+arima(self, order: 'tuple' = (1, 0, 0), *, seasonal_order: 'Optional[tuple]' = None, auto: 'bool' = False, **kwargs)
+```
+
+
+Fit an ARIMA or SARIMAX model to this TimeSeries.
+
+This method wraps `statsmodels.tsa.arima.model.ARIMA` (or SARIMAX).
+If `auto=True`, it uses `pmdarima` to automatically find the best parameters.
+
+Parameters
+----------
+order : tuple, default=(1, 0, 0)
+    The (p,d,q) order of the model.
+seasonal_order : tuple, optional
+    The (P,D,Q,s) seasonal order.
+auto : bool, default=False
+    If True, perform Auto-ARIMA search (requires pmdarima).
+**kwargs
+    Additional arguments passed to `fit_arima`.
+
+Returns
+-------
+ArimaResult
+    Object containing the fitted model, with methods .predict(), .forecast(), .plot().
+
+
+### `arma`
+
+```python
+arma(self, p: 'int' = 1, q: 'int' = 1, **kwargs)
+```
+
+
+Fit an ARMA(p, q) model.
+Shortcut for .arima(order=(p, 0, q)).
+
+
 ### `asd`
 
 ```python
 asd(self, *args: 'Any', **kwargs: 'Any') -> 'Any'
 ```
 
-Compute ASD of the TimeSeries.
+Calculate the ASD `FrequencySeries` of this `TimeSeries`
+
+Parameters
+----------
+fftlength : `float`
+    number of seconds in single FFT, defaults to a single FFT
+    covering the full duration
+
+overlap : `float`, optional
+    number of seconds of overlap between FFTs, defaults to the
+    recommended overlap for the given window (if given), or 0
+
+window : `str`, `numpy.ndarray`, optional
+    window function to apply to timeseries prior to FFT,
+    see :func:`scipy.signal.get_window` for details on acceptable
+    formats
+
+method : `str`, optional
+    FFT-averaging method (default: ``'median'``),
+    see *Notes* for more details
+
+Returns
+-------
+asd :  `~gwpy.frequencyseries.FrequencySeries`
+    a data series containing the ASD
+
+See also
+--------
+TimeSeries.psd
+
+Notes
+-----
+The accepted ``method`` arguments are:
+
+- ``'bartlett'`` : a mean average of non-overlapping periodograms
+- ``'median'`` : a median average of overlapping periodograms
+- ``'welch'`` : a mean average of overlapping periodograms
+
+
+*(Inherited from `TimeSeries`)*
 
 ### `asfreq`
 
@@ -147,7 +245,7 @@ Parameters
 rule : str, float, or Quantity
     Target time interval (e.g., '1s', 0.1, 0.5*u.s).
 method : str or None
-    Fill method: None (exact), 'ffill', 'bfill', 'nearest'. Use resample() for interpolation.
+    Fill method: None (exact), 'ffill', 'bfill', 'nearest'.
 fill_value : scalar
     Value for missing data points.
 origin : str
@@ -159,7 +257,7 @@ align : str
 tolerance : float
     Tolerance for matching times.
 max_gap : float
-    Maximum gap for forward/backward/nearest matching.
+    Maximum gap for interpolation.
 copy : bool
     Whether to copy data.
 
@@ -325,27 +423,7 @@ Demodulate the TimeSeries to baseband, optionally applying lowpass filter and re
 cepstrum(self, kind: 'str' = 'real', *, window: 'Any' = None, detrend: 'bool' = False, eps: 'Optional[float]' = None, fft_mode: 'str' = 'gwpy') -> 'Any'
 ```
 
-
-Compute the Cepstrum of the TimeSeries.
-
-Parameters
-----------
-kind : {"real", "power", "complex"}, optional
-    Type of cepstrum. Default is "real".
-window : `str`, `numpy.ndarray`, or `None`, optional
-    Window function to apply.
-detrend : `bool`, optional
-    If `True`, detrend (linear).
-eps : `float`, optional
-    Small value to avoid log(0).
-fft_mode : `str`, optional
-    Mode for the underlying FFT.
-
-Returns
--------
-out : `FrequencySeries`
-    The cepstrum, with frequencies interpreted as quefrency (seconds).
-
+_No documentation available._
 
 ### `channel`
 
@@ -360,7 +438,52 @@ Instrumental channel associated with these data
 coherence(self, *args: 'Any', **kwargs: 'Any') -> 'Any'
 ```
 
-Compute coherence of the TimeSeries.
+Calculate the frequency-coherence between this `TimeSeries`
+and another.
+
+Parameters
+----------
+other : `TimeSeries`
+    `TimeSeries` signal to calculate coherence with
+
+fftlength : `float`, optional
+    number of seconds in single FFT, defaults to a single FFT
+    covering the full duration
+
+overlap : `float`, optional
+    number of seconds of overlap between FFTs, defaults to the
+    recommended overlap for the given window (if given), or 0
+
+window : `str`, `numpy.ndarray`, optional
+    window function to apply to timeseries prior to FFT,
+    see :func:`scipy.signal.get_window` for details on acceptable
+    formats
+
+**kwargs
+    any other keyword arguments accepted by
+    :func:`matplotlib.mlab.cohere` except ``NFFT``, ``window``,
+    and ``noverlap`` which are superceded by the above keyword
+    arguments
+
+Returns
+-------
+coherence : `~gwpy.frequencyseries.FrequencySeries`
+    the coherence `FrequencySeries` of this `TimeSeries`
+    with the other
+
+Notes
+-----
+If `self` and `other` have difference
+:attr:`TimeSeries.sample_rate` values, the higher sampled
+`TimeSeries` will be down-sampled to match the lower.
+
+See also
+--------
+scipy.signal.coherence
+    for details of the coherence calculator
+
+
+*(Inherited from `TimeSeries`)*
 
 ### `coherence_spectrogram`
 
@@ -566,16 +689,16 @@ the expected mean.
 correlation(self, other, method='pearson', **kwargs)
 ```
 
+
 Calculate correlation coefficient with another TimeSeries.
 
 Args:
     other (TimeSeries): The series to compare with.
-    method (str): 'pearson', 'kendall', or 'mic'.
+    method (str): 'pearson', 'kendall', 'mic', or 'distance'.
     **kwargs: Additional arguments passed to the underlying function.
 
 Returns:
     float: The correlation coefficient.
-
 
 
 ### `crop`
@@ -592,10 +715,36 @@ Accepts any time format supported by gwexpy.time.to_gps.
 ### `csd`
 
 ```python
-csd(self, *args: 'Any', **kwargs: 'Any') -> 'Any'
+csd(self, other: 'Any', *args: 'Any', **kwargs: 'Any') -> 'Any'
 ```
 
-Compute CSD of the TimeSeries.
+Calculate the CSD `FrequencySeries` for two `TimeSeries`
+
+Parameters
+----------
+other : `TimeSeries`
+    the second `TimeSeries` in this CSD calculation
+
+fftlength : `float`
+    number of seconds in single FFT, defaults to a single FFT
+    covering the full duration
+
+overlap : `float`, optional
+    number of seconds of overlap between FFTs, defaults to the
+    recommended overlap for the given window (if given), or 0
+
+window : `str`, `numpy.ndarray`, optional
+    window function to apply to timeseries prior to FFT,
+    see :func:`scipy.signal.get_window` for details on acceptable
+    formats
+
+Returns
+-------
+csd :  `~gwpy.frequencyseries.FrequencySeries`
+    a data series containing the CSD.
+
+
+*(Inherited from `TimeSeries`)*
 
 ### `csd_spectrogram`
 
@@ -643,99 +792,7 @@ spectrogram : `~gwpy.spectrogram.Spectrogram`
 cwt(self, wavelet: 'str' = 'cmor1.5-1.0', widths: 'Any' = None, frequencies: 'Any' = None, *, window: 'Any' = None, detrend: 'bool' = False, output: 'str' = 'spectrogram', chunk_size: 'Optional[int]' = None, **kwargs: 'Any') -> 'Any'
 ```
 
-
-Compute the Continuous Wavelet Transform (CWT) using PyWavelets.
-
-Parameters
-----------
-wavelet : `str`, optional
-    Wavelet name (default "cmor1.5-1.0" for complex morlet).
-widths : `array-like`, optional
-    Scales to use for CWT.
-frequencies : `array-like`, optional
-     Frequencies to use (Hz). If provided, converts to scales.
-window : `str`, `numpy.ndarray`, or `None`
-     Window function to apply before CWT.
-detrend : `bool`
-     If True, detrend the time series.
-output : {"spectrogram", "ndarray"}
-     Output format.
-chunk_size : `int`, optional
-     If provided, compute in chunks to save memory.
-**kwargs :
-     Additional arguments passed to `pywt.cwt`.
-
-Returns
--------
-out : `gwpy.spectrogram.Spectrogram` or `(ndarray, freqs)`
-
-
-### `ktau`
-
-```python
-ktau(self, other)
-```
-
-Calculate Kendall's Rank Correlation Coefficient.
-
-Robust against outliers and non-parametric.
-Note: Calculation is O(N log N).
-
-
-### `kurtosis`
-
-```python
-kurtosis(self, fisher=True, nan_policy='propagate')
-```
-
-Compute the kurtosis (Fisher or Pearson) of the time series data.
-
-Kurtosis is a measure of the "tailedness" of the probability distribution 
-of a real-valued random variable.
-
-Parameters
-----------
-fisher : `bool`, optional
-    If True, Fisher's definition is used (normal ==> 0.0). 
-    If False, Pearson's definition is used (normal ==> 3.0).
-nan_policy : `str`, optional
-    'propagate', 'raise', 'omit'.
-
-Returns
--------
-float
-    The kurtosis.
-
-
-
-### `mic`
-
-```python
-mic(self, other, alpha=0.6, c=15, est="mic_approx")
-```
-
-Calculate Maximal Information Coefficient (MIC) using minepy.
-
-MIC is robust against non-linear relationships.
-Reference: Reshef et al. (2011), Jung et al. (2022).
-
-Args:
-    other (TimeSeries): The series to compare with.
-    alpha (float): Exponent for B = n^alpha. Default 0.6.
-    c (float): Clumping parameter. Default 15.
-    est (str): Estimator name. Default "mic_approx".
-
-
-### `pcc`
-
-```python
-pcc(self, other)
-```
-
-Calculate Pearson Correlation Coefficient.
-
-Linear correlation coefficient.
-
+_No documentation available._
 
 ### `dct`
 
@@ -743,24 +800,23 @@ Linear correlation coefficient.
 dct(self, type: 'int' = 2, norm: 'str' = 'ortho', *, window: 'Any' = None, detrend: 'bool' = False) -> 'Any'
 ```
 
+_No documentation available._
 
-Compute the Discrete Cosine Transform (DCT) of the TimeSeries.
+### `degree`
+
+```python
+degree(self, unwrap: 'bool' = False, **kwargs: 'Any') -> "'TimeSeriesSignalMixin'"
+```
+
+
+Calculate the instantaneous phase of the TimeSeries in degrees.
 
 Parameters
 ----------
-type : `int`, optional
-    Type of the DCT (1, 2, 3, 4). Default is 2.
-norm : `str`, optional
-    Normalization mode. Default is "ortho".
-window : `str`, `numpy.ndarray`, or `None`, optional
-    Window function to apply before DCT.
-detrend : `bool`, optional
-    If `True`, remove the mean (or detrend) from the data before DCT.
-
-Returns
--------
-out : `FrequencySeries`
-     The DCT of the TimeSeries.
+unwrap : bool, optional
+    If True, unwrap the phase.
+**kwargs
+    Passed to instantaneous_phase.
 
 
 ### `demodulate`
@@ -894,10 +950,11 @@ numpy.diff
 distance_correlation(self, other)
 ```
 
+
 Calculate Distance Correlation (dCor).
 
-Distance correlation is a measure of dependence between two random vectors 
-that is 0 if and only if the random vectors are independent. 
+Distance correlation is a measure of dependence between two random vectors
+that is 0 if and only if the random vectors are independent.
 It can detect non-linear relationships.
 
 Args:
@@ -905,7 +962,6 @@ Args:
 
 Returns:
     float: The distance correlation (0 to 1).
-
 
 
 ### `dt`
@@ -950,33 +1006,7 @@ X-axis sample separation
 emd(self, *, method: 'str' = 'eemd', max_imf: 'Optional[int]' = None, sift_max_iter: 'int' = 1000, stopping_criterion: 'Any' = 'default', eemd_noise_std: 'float' = 0.2, eemd_trials: 'int' = 100, random_state: 'Optional[int]' = None, return_residual: 'bool' = True) -> 'Any'
 ```
 
-
-Perform Empirical Mode Decomposition (EMD) or EEMD.
-
-Parameters
-----------
-method : {"emd", "eemd"}, optional
-    Decomposition method. Default is "eemd".
-max_imf : `int`, optional
-    Maximum number of IMFs to extract.
-sift_max_iter : `int`, optional
-    Maximum number of sifting iterations.
-stopping_criterion : `str` or `dict`, optional
-    Stopping criterion configuration.
-eemd_noise_std : `float`, optional
-    Noise standard deviation for EEMD. Default 0.2.
-eemd_trials : `int`, optional
-    Number of trials for EEMD. Default 100.
-random_state : `int` or `np.random.RandomState`, optional
-    Seed for reproducibility.
-return_residual : `bool`, optional
-    If True, include residual in the output.
-
-Returns
--------
-imfs : `TimeSeriesDict`
-    A dictionary of extracted IMFs (keys: "IMF1", "IMF2", ..., "residual").
-
+_No documentation available._
 
 ### `envelope`
 
@@ -1147,34 +1177,27 @@ fft(self, nfft: 'Optional[int]' = None, *, mode: 'str' = 'gwpy', pad_mode: 'str'
 ```
 
 
-Compute the one-dimensional discrete Fourier Transform.
+Compute the Discrete Fourier Transform (DFT).
 
 Parameters
 ----------
 nfft : `int`, optional
-    Length of the FFT. If `None`, the length of the TimeSeries is used.
-mode : `str`, optional, default: "gwpy"
-    "gwpy": Standard behavior (circular convolution assumption).
-    "transient": Transient-friendly mode with padding options.
-pad_mode : `str`, optional, default: "zero"
-    Padding mode for "transient" mode. "zero" or "reflect".
-pad_left : `int`, optional, default: 0
-    Number of samples to pad on the left (for "transient" mode).
-pad_right : `int`, optional, default: 0
-    Number of samples to pad on the right (for "transient" mode).
-nfft_mode : `str`, optional, default: None
-    "next_fast_len": Use scipy.fft.next_fast_len to optimize FFT size.
-    None: Use exact calculated length.
-other_length : `int`, optional, default: None
-    If provided in "transient" mode, the target length is calculated as
-    len(self) + other_length - 1 (linear convolution size).
-**kwargs
-    Keyword arguments passed to the `FrequencySeries` constructor.
+    Length of the FFT.
+mode : `str`, optional
+    "gwpy": standard GWpy FFT (normalized).
+    "transient": transient-restoration mode for round-trip IFFT.
+pad_mode : `str`, optional
+    Padding mode ("zero", "reflect"). Only for "transient" mode.
+pad_left, pad_right : `int`, optional
+    Padding length (samples or seconds).
+nfft_mode : `str`, optional
+    "next_fast_len" for optimal performance.
+other_length : `int`, optional
+    For convolution-like transforms.
 
 Returns
 -------
-out : `FrequencySeries`
-    The DFT of the TimeSeries.
+`FrequencySeries`
 
 
 ### `fftgram`
@@ -1399,35 +1422,19 @@ Wraps `scipy.signal.find_peaks`.
 
 Returns
 -------
-`tuple`
-    (peaks, props) where `peaks` is a new `TimeSeries` containing the peak values and times, and `props` is a dictionary of properties.
+peaks : `TimeSeries`
+    A new TimeSeries containing only the peak values, indexed by their times.
+props : `dict`
+    Dictionary of peak properties returned by `scipy.signal.find_peaks`.
 
 
 ### `fit`
 
 ```python
-fit(self, model: 'str', p0: 'Optional[dict[str, float]]' = None, method: 'str' = 'leastsq', **kwargs: 'Any') -> 'Any'
+fit(self, model: 'Any', x_range: 'Optional[tuple[float, float]]' = None, sigma: 'Optional[Any]' = None, p0: 'Optional[dict[str, float]]' = None, limits: 'Optional[dict[str, tuple[float, float]]]' = None, fixed: 'Optional[Iterable[str]]' = None, **kwargs: 'Any') -> 'Any'
 ```
 
-
-Fit the TimeSeries to a model function.
-
-Parameters
-----------
-model : `str` or `callable`
-    Name of built-in model (e.g., 'gaussian', 'exponential', 'damped_oscillation') or a callable function.
-p0 : `dict`, optional
-    Initial guess for parameters.
-method : `str`, optional
-    Fitting method: 'leastsq' (default) or 'mcmc' (requires `emcee`).
-**kwargs
-    Additional arguments passed to the fitter (e.g., `nwalkers`, `nsteps` for MCMC).
-
-Returns
--------
-`FitResult`
-    Object containing fit results, parameters, and plotting methods.
-
+Fit the series data to a model.
 
 ### `fit_arima`
 
@@ -1517,6 +1524,28 @@ Returns
 TimeSeries
 
 
+### `from_control`
+
+```python
+from_control(response: 'Any', **kwargs) -> 'Any'
+```
+
+
+Create TimeSeries from python-control TimeResponseData.
+
+Parameters
+----------
+response : control.TimeResponseData
+    The simulation result from python-control.
+**kwargs : dict
+    Additional arguments passed to the constructor.
+
+Returns
+-------
+TimeSeries or TimeSeriesDict
+    The converted time-domain data.
+
+
 ### `from_cupy`
 
 ```python
@@ -1559,6 +1588,25 @@ unit : Unit, optional
     Physical unit.
 compute : bool
     Whether to compute immediately.
+
+Returns
+-------
+TimeSeries
+
+
+### `from_dict`
+
+```python
+from_dict(data_dict: 'dict') -> 'Any'
+```
+
+
+Create TimeSeries from a dictionary.
+
+Parameters
+----------
+data_dict : dict
+    Dictionary representation.
 
 Returns
 -------
@@ -1609,6 +1657,25 @@ Returns
 TimeSeries
 
 
+### `from_json`
+
+```python
+from_json(json_str: 'str') -> 'Any'
+```
+
+
+Create TimeSeries from a JSON string.
+
+Parameters
+----------
+json_str : str
+    JSON representation.
+
+Returns
+-------
+TimeSeries
+
+
 ### `from_lal`
 
 ```python
@@ -1617,6 +1684,29 @@ from_lal(lalts, copy=True)
 
 Generate a new TimeSeries from a LAL TimeSeries of any type.
         
+
+### `from_mne`
+
+```python
+from_mne(raw: 'Any', channel: 'str', *, unit: 'Optional[Any]' = None) -> 'Any'
+```
+
+
+Create TimeSeries from mne.io.Raw.
+
+Parameters
+----------
+raw : mne.io.Raw
+    Input MNE data.
+channel : str
+    Channel name to extract. REQUIRED.
+unit : Unit, optional
+    Physical unit.
+
+Returns
+-------
+TimeSeries
+
 
 ### `from_nds2_buffer`
 
@@ -1702,23 +1792,12 @@ from_pandas(series: 'Any', *, unit: 'Optional[Any]' = None, t0: 'Any' = None, dt
 ```
 
 
-Create TimeSeries from Pandas Series.
-
-### `from_simpeg`
-
-```python
-from_simpeg(cls, data_obj, **kwargs)
-```
-
-
-Create TimeSeries from SimPEG Data object (TDEM).
+Create TimeSeries from pandas.Series.
 
 Parameters
 ----------
-cls : type
-    The class itself (for class method).
-data_obj : SimPEG.data.Data
-    Input SimPEG data object.
+series : pandas.Series
+    Input series.
 unit : Unit, optional
     Physical unit of the data.
 t0 : Quantity or float, optional
@@ -1734,7 +1813,7 @@ TimeSeries
 ### `from_polars`
 
 ```python
-from_polars(data: 'Any', time_column: 'Optional[str]' = 'time', unit: 'Optional[Any]' = None) -> 'Any'
+from_polars(data: 'Any', times: 'Optional[str]' = 'time', unit: 'Optional[Any]' = None) -> 'Any'
 ```
 
 
@@ -1744,7 +1823,7 @@ Parameters
 ----------
 data : polars.DataFrame or polars.Series
     Input data.
-time_column : str, optional
+times : str, optional
     If data is a DataFrame, name of the column to use as time.
 unit : Unit, optional
     Physical unit.
@@ -1816,6 +1895,25 @@ return_error : bool, default False
 Returns
 -------
 TimeSeries or tuple of TimeSeries
+
+
+### `from_simpeg`
+
+```python
+from_simpeg(data_obj: 'Any', **kwargs: 'Any') -> 'Any'
+```
+
+
+Create TimeSeries from SimPEG Data object.
+
+Parameters
+----------
+data_obj : simpeg.data.Data
+    Input SimPEG Data.
+
+Returns
+-------
+TimeSeries
 
 
 ### `from_sqlite`
@@ -2068,95 +2166,50 @@ TimeSeries.find
     for discovering and reading data from local GWF files
 
 
+### `granger_causality`
+
+```python
+granger_causality(self, other, maxlag=10, test='ssr_ftest', verbose=False)
+```
+
+
+Check if 'other' Granger-causes 'self'.
+
+Null Hypothesis: The past values of 'other' do NOT help in predicting 'self'.
+
+Args:
+    other (TimeSeries): The potential cause series.
+    maxlag (int): Maximum lag to check.
+    test (str): Statistical test to use ('ssr_ftest', 'ssr_chi2test', etc.).
+    verbose (bool): Whether to print verbose output.
+
+Returns:
+    float: The minimum p-value across all lags up to maxlag.
+           A small p-value (e.g., < 0.05) indicates Granger causality.
+
+
 ### `heterodyne`
 
 ```python
-heterodyne(self, phase, stride=1, singlesided=False)
+heterodyne(self, phase: 'Any', stride: 'Any' = 1.0, singlesided: 'bool' = True) -> "'TimeSeriesSignalMixin'"
 ```
 
-Compute the average magnitude and phase of this `TimeSeries`
-once per stride after heterodyning with a given phase series
+
+Mix with phase and average over strides.
 
 Parameters
 ----------
-phase : `array_like`
-    an array of phase measurements (radians) with which to heterodyne
-    the signal
-
-stride : `float`, optional
-    stride (seconds) between calculations, defaults to 1 second
-
+phase : `array_like` or `Series`
+    Phase to mix with (radians).
+stride : `float` or `Quantity`, optional
+    Time step for averaging (default 1.0s).
 singlesided : `bool`, optional
-    Boolean switch to return single-sided output (i.e., to multiply by
-    2 so that the signal is distributed across positive frequencies
-    only), default: False
+    If True, double the amplitude (useful for real signals).
 
 Returns
 -------
-out : `TimeSeries`
-    magnitude and phase trends, represented as
-    `mag * exp(1j*phase)` with `dt=stride`
-
-Notes
------
-This is similar to the :meth:`~gwpy.timeseries.TimeSeries.demodulate`
-method, but is more general in that it accepts a varying phase
-evolution, rather than a fixed frequency.
-
-Unlike :meth:`~gwpy.timeseries.TimeSeries.demodulate`, the complex
-output is double-sided by default, so is not multiplied by 2.
-
-Examples
---------
-Heterodyning can be useful in analysing quasi-monochromatic signals
-with a known phase evolution, such as continuous-wave signals
-from rapidly rotating neutron stars. These sources radiate at a
-frequency that slowly decreases over time, and is Doppler modulated
-due to the Earth's rotational and orbital motion.
-
-To see an example of heterodyning in action, we can simulate a signal
-whose phase evolution is described by the frequency and its first
-derivative with respect to time. We can download some O1 era
-LIGO-Livingston data from GWOSC, inject the simulated signal, and
-recover its amplitude.
-
->>> from gwpy.timeseries import TimeSeries
->>> data = TimeSeries.fetch_open_data('L1', 1131350417, 1131354017)
-
-We now need to set the signal parameters, generate the expected
-phase evolution, and create the signal:
-
->>> import numpy
->>> f0 = 123.456789  # signal frequency (Hz)
->>> fdot = -9.87654321e-7  # signal frequency derivative (Hz/s)
->>> fepoch = 1131350417  # phase epoch
->>> amp = 1.5e-22  # signal amplitude
->>> phase0 = 0.4  # signal phase at the phase epoch
->>> times = data.times.value - fepoch
->>> phase = 2 * numpy.pi * (f0 * times + 0.5 * fdot * times**2)
->>> signal = TimeSeries(amp * numpy.cos(phase + phase0),
->>>                     sample_rate=data.sample_rate, t0=data.t0)
->>> data = data.inject(signal)
-
-To recover the signal, we can bandpass the injected data around the
-signal frequency, then heterodyne using our phase model with a stride
-of 60 seconds:
-
->>> filtdata = data.bandpass(f0 - 0.5, f0 + 0.5)
->>> het = filtdata.heterodyne(phase, stride=60, singlesided=True)
-
-We can then plot signal amplitude over time (cropping the first two
-minutes to remove the filter response):
-
->>> plot = het.crop(het.x0.value + 180).abs().plot()
->>> ax = plot.gca()
->>> ax.set_ylabel("Strain amplitude")
->>> plot.show()
-
-See also
---------
-TimeSeries.demodulate
-    for a method to heterodyne at a fixed frequency
+TimeSeries
+    Average (complex) demodulated signal.
 
 
 ### `hht`
@@ -2165,24 +2218,7 @@ TimeSeries.demodulate
 hht(self, *, emd_method: 'str' = 'eemd', emd_kwargs: 'Optional[dict[str, Any]]' = None, hilbert_kwargs: 'Optional[dict[str, Any]]' = None, output: 'str' = 'dict') -> 'Any'
 ```
 
-
-Perform Hilbert-Huang Transform (HHT): EMD + HSA.
-
-Parameters
-----------
-emd_method : `str`
-    "emd" or "eemd".
-emd_kwargs : `dict`, optional
-    Arguments for `emd()`.
-hilbert_kwargs : `dict`, optional
-    Arguments for `hilbert_analysis()`.
-output : `str`
-    "dict" (returns IMFs and properties) or "spectrogram" (returns Spectrogram).
-
-Returns
--------
-result : `dict` or `Spectrogram`
-
+_No documentation available._
 
 ### `highpass`
 
@@ -2240,19 +2276,7 @@ Alias for analytic_signal.
 hilbert_analysis(self, *, unwrap_phase: 'bool' = True, frequency_unit: 'str' = 'Hz') -> 'dict[str, Any]'
 ```
 
-
-Perform Hilbert Spectral Analysis (HSA) to get instantaneous properties.
-
-Returns
--------
-results : `dict`
-    {
-        "analytic": TimeSeries (complex),
-        "amplitude": TimeSeries (real),
-        "phase": TimeSeries (rad),
-        "frequency": TimeSeries (Hz)
-    }
-
+_No documentation available._
 
 ### `hurst`
 
@@ -2281,7 +2305,7 @@ gwexpy.timeseries.hurst.hurst
 ### `impute`
 
 ```python
-impute(self, *, method: 'str' = 'linear', limit: 'Optional[int]' = None, axis: 'str' = 'time', max_gap: 'Optional[float]' = None, **kwargs: 'Any') -> 'Any'
+impute(self, *, method: 'str' = 'linear', limit: 'Optional[int]' = None, axis: 'str' = 'time', max_gap: 'Optional[float]' = None, **kwargs: 'Any') -> "'TimeSeries'"
 ```
 
 
@@ -2416,56 +2440,76 @@ the contiguity check will always pass
 
 ### `is_regular`
 
-Return True if this TimeSeries has a regular sample rate.
+Return True if this series has a regular grid (constant spacing).
+
+### `ktau`
+
+```python
+ktau(self, other)
+```
+
+
+Calculate Kendall's Rank Correlation Coefficient.
+
+
+### `kurtosis`
+
+```python
+kurtosis(self, fisher=True, nan_policy='propagate')
+```
+
+
+Compute the kurtosis (Fisher or Pearson) of the time series data.
+
+Kurtosis is a measure of the "tailedness" of the probability distribution
+of a real-valued random variable.
+
+Args:
+    fisher (bool): If True, Fisher's definition is used (normal ==> 0.0).
+                   If False, Pearson's definition is used (normal ==> 3.0).
+    nan_policy (str): 'propagate', 'raise', 'omit'.
+
+Returns:
+    float: The kurtosis.
+
 
 ### `laplace`
 
 ```python
-laplace(self, *, sigma: 'Any' = 0.0, frequencies: 'Any' = None, t_start: 'Any' = None, t_stop: 'Any' = None, window: 'Any' = None, detrend: 'bool' = False, normalize: 'str' = 'integral', dtype: 'Any' = None, chunk_size: 'Optional[int]' = None, **kwargs: 'Any') -> 'Any'
+laplace(self, *, sigma: 'float | u.Quantity' = 0.0, frequencies: 'Optional[np.ndarray | u.Quantity]' = None, t_start: 'Optional[float | u.Quantity]' = None, t_stop: 'Optional[float | u.Quantity]' = None, window: 'Optional[str | tuple | np.ndarray]' = None, detrend: 'bool' = False, normalize: 'str' = 'integral', dtype: 'Optional[np.dtype]' = None, chunk_size: 'Optional[int]' = None, **kwargs: 'Any') -> 'Any'
 ```
 
 
-One-sided finite-interval Laplace transform.
-
-Define s = sigma + i*2*pi*f (f in Hz).
-Compute on a cropped segment [t_start, t_stop] but shift time origin to t_start:
-    L(s) = integral_0^T x(tau) exp(-(sigma + i 2pi f) tau) dtau
-Discrete approximation uses uniform dt.
+Compute the Laplace Transform.
 
 Parameters
 ----------
-sigma : `float` or `astropy.units.Quantity`, optional
-    Real part of the Laplace variable s (1/s). Default 0.0.
-frequencies : `numpy.ndarray` or `astropy.units.Quantity`, optional
-    Frequencies for the imaginary part of s (Hz).
-    If None, defaults to `np.fft.rfftfreq(n, d=dt)`.
-t_start : `float` or `astropy.units.Quantity`, optional
-    Start time relative to the beginning of the TimeSeries (seconds).
-t_stop : `float` or `astropy.units.Quantity`, optional
-    Stop time relative to the beginning of the TimeSeries (seconds).
-window : `str`, `numpy.ndarray`, or `None`, optional
+sigma : `float` or `Quantity`, optional
+    The real part of the complex frequency s = sigma + j*omega.
+frequencies : `array_like` or `Quantity`, optional
+    The frequencies (omega / 2pi) at which to evaluate.
+t_start, t_stop : `float` or `Quantity`, optional
+    Time range for the transform.
+window : `str`, `tuple`, or `array_like`, optional
     Window function to apply.
 detrend : `bool`, optional
-    If True, remove the mean before transformation.
-normalize : `str`, optional
-    "integral": Sum * dt (standard Laplace integral approximation).
-    "mean": Sum / n.
-dtype : `numpy.dtype`, optional
+    If `True`, detrend the data before transforming.
+normalize : {"integral", "mean"}, optional
+    Normalization mode.
+dtype : `dtype`, optional
     Output data type.
 chunk_size : `int`, optional
-    If provided, compute the transform in chunks along the frequency axis
-    to save memory.
+    Number of frequencies to process at once for memory efficiency.
 
 Returns
 -------
-out : `FrequencySeries`
-    The Laplace transform result (complex).
+`FrequencySeries`
 
 
 ### `local_hurst`
 
 ```python
-local_hurst(self, window: 'Any', **kwargs: 'Any') -> 'Any'
+local_hurst(self, window: 'Any', **kwargs: 'Any') -> "'TimeSeries'"
 ```
 
 
@@ -2491,7 +2535,7 @@ gwexpy.timeseries.hurst.local_hurst
 ### `lock_in`
 
 ```python
-lock_in(self, *, phase: 'Any' = None, f0: 'Any' = None, fdot: 'Any' = 0.0, fddot: 'Any' = 0.0, phase_epoch: 'Any' = None, phase0: 'float' = 0.0, stride: 'float' = 1.0, singlesided: 'bool' = True, output: 'str' = 'amp_phase', deg: 'bool' = True) -> 'Any'
+lock_in(self, f0: 'Any' = None, *, phase: 'Any' = None, fdot: 'Any' = 0.0, fddot: 'Any' = 0.0, phase_epoch: 'Any' = None, phase0: 'float' = 0.0, stride: 'Optional[float]' = None, bandwidth: 'Optional[float]' = None, singlesided: 'bool' = True, output: 'str' = 'amp_phase', deg: 'bool' = True, **kwargs: 'Any') -> 'Any'
 ```
 
 
@@ -2538,6 +2582,17 @@ gwpy.signal.filter_design.lowpass
     for details on the filter design
 TimeSeries.filter
     for details on how the filter is applied
+
+
+### `ma`
+
+```python
+ma(self, q: 'int' = 1, **kwargs)
+```
+
+
+Fit a Moving Average MA(q) model.
+Shortcut for .arima(order=(0, 0, q)).
 
 
 ### `mask`
@@ -2697,6 +2752,16 @@ array([7.,  2.])
 
 
 
+### `mic`
+
+```python
+mic(self, other, alpha=0.6, c=15, est='mic_approx')
+```
+
+
+Calculate Maximal Information Coefficient (MIC) using minepy.
+
+
 ### `mix_down`
 
 ```python
@@ -2802,30 +2867,49 @@ numpy.pad
     for details on the underlying functionality
 
 
-### `plot`
+### `pcc`
 
 ```python
-plot(self, method='plot', figsize=(12, 4), xscale='auto-gps', **kwargs)
+pcc(self, other)
 ```
 
-Plot the data for this timeseries
+
+Calculate Pearson Correlation Coefficient.
+
+
+### `phase`
+
+```python
+phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+
+Calculate the phase of the data.
+
+Parameters
+----------
+unwrap : `bool`, optional
+    If `True`, unwrap the phase to remove discontinuities.
+    Default is `False`.
+deg : `bool`, optional
+    If `True`, return the phase in degrees.
+    Default is `False` (radians).
+**kwargs
+    Additional arguments passed to the underlying calculation.
 
 Returns
 -------
-figure : `~matplotlib.figure.Figure`
-    the newly created figure, with populated Axes.
+`Series` or `Matrix` or `Collection`
+    The phase of the data.
 
-See also
---------
-matplotlib.pyplot.figure
-    for documentation of keyword arguments used to create the
-    figure
-matplotlib.figure.Figure.add_subplot
-    for documentation of keyword arguments used to create the
-    axes
-matplotlib.axes.Axes.plot
-    for documentation of keyword arguments used in rendering the data
 
+### `plot`
+
+```python
+plot(self, **kwargs: 'Any')
+```
+
+Plot this TimeSeries. Delegates to gwexpy.plot.Plot.
 
 ### `prepend`
 
@@ -2882,7 +2966,46 @@ series : `TimeSeries`
 psd(self, *args: 'Any', **kwargs: 'Any') -> 'Any'
 ```
 
-Compute PSD of the TimeSeries.
+Calculate the PSD `FrequencySeries` for this `TimeSeries`
+
+Parameters
+----------
+fftlength : `float`
+    number of seconds in single FFT, defaults to a single FFT
+    covering the full duration
+
+overlap : `float`, optional
+    number of seconds of overlap between FFTs, defaults to the
+    recommended overlap for the given window (if given), or 0
+
+window : `str`, `numpy.ndarray`, optional
+    window function to apply to timeseries prior to FFT,
+    see :func:`scipy.signal.get_window` for details on acceptable
+    formats
+
+method : `str`, optional
+    FFT-averaging method (default: ``'median'``),
+    see *Notes* for more details
+
+**kwargs
+    other keyword arguments are passed to the underlying
+    PSD-generation method
+
+Returns
+-------
+psd :  `~gwpy.frequencyseries.FrequencySeries`
+    a data series containing the PSD.
+
+Notes
+-----
+The accepted ``method`` arguments are:
+
+- ``'bartlett'`` : a mean average of non-overlapping periodograms
+- ``'median'`` : a median average of overlapping periodograms
+- ``'welch'`` : a mean average of overlapping periodograms
+
+
+*(Inherited from `TimeSeries`)*
 
 ### `q_gram`
 
@@ -3066,6 +3189,23 @@ Compute and plot the Q-transform of these data:
 >>> plot.show()
 
 
+### `radian`
+
+```python
+radian(self, unwrap: 'bool' = False, **kwargs: 'Any') -> "'TimeSeriesSignalMixin'"
+```
+
+
+Calculate the instantaneous phase of the TimeSeries in radians.
+
+Parameters
+----------
+unwrap : bool, optional
+    If True, unwrap the phase.
+**kwargs
+    Passed to instantaneous_phase.
+
+
 ### `rayleigh_spectrogram`
 
 ```python
@@ -3196,8 +3336,10 @@ The available built-in formats are:
 ======== ==== ===== =============
  Format  Read Write Auto-identify
 ======== ==== ===== =============
-  dttxml  Yes    No            No
-     gbd  Yes    No            No
+     ats  Yes    No           Yes
+ats.mth5  Yes    No            No
+  dttxml  Yes    No           Yes
+     gbd  Yes    No           Yes
     gse2  Yes   Yes            No
     knet  Yes    No            No
       li  Yes    No            No
@@ -3206,18 +3348,22 @@ The available built-in formats are:
 miniseed  Yes   Yes            No
      orf  Yes    No            No
      sac  Yes   Yes            No
-     sdb  Yes    No            No
+     sdb  Yes    No           Yes
+  sqlite  Yes    No           Yes
+ sqlite3  Yes    No           Yes
  taffmat  Yes    No            No
+    tdms  Yes    No           Yes
+     wav  Yes    No           Yes
      wdf  Yes    No            No
-     win  Yes    No            No
-   win32  Yes    No            No
+     win  Yes    No           Yes
+   win32  Yes    No           Yes
      wvf  Yes    No            No
 ======== ==== ===== =============
 
 ### `resample`
 
 ```python
-resample(self, rate: 'Any', *args: 'Any', **kwargs: 'Any') -> "'TimeSeriesResamplingMixin'"
+resample(self, rate: 'Any', *args: 'Any', ignore_nan: 'Optional[bool]' = None, **kwargs: 'Any') -> "'TimeSeriesResamplingMixin'"
 ```
 
 
@@ -3233,7 +3379,7 @@ Otherwise, performs signal processing resampling (gwpy standard).
 rfft(self, *args: 'Any', **kwargs: 'Any') -> 'Any'
 ```
 
-Compute RFFT of the TimeSeries.
+_No documentation available._
 
 ### `rms`
 
@@ -3258,7 +3404,7 @@ rms : `TimeSeries`
 ### `rolling_max`
 
 ```python
-rolling_max(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto') -> 'Any'
+rolling_max(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto', ignore_nan: 'Optional[bool]' = None) -> "'TimeSeries'"
 ```
 
 
@@ -3276,6 +3422,8 @@ nan_policy : str
     How to handle NaN values.
 backend : str
     Computation backend.
+ignore_nan : bool, optional
+    If True, ignore NaNs (overrides nan_policy).
 
 Returns
 -------
@@ -3286,7 +3434,7 @@ TimeSeries
 ### `rolling_mean`
 
 ```python
-rolling_mean(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto') -> 'Any'
+rolling_mean(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto', ignore_nan: 'Optional[bool]' = None) -> "'TimeSeries'"
 ```
 
 
@@ -3304,6 +3452,8 @@ nan_policy : str
     How to handle NaN values.
 backend : str
     Computation backend.
+ignore_nan : bool, optional
+    If True, ignore NaNs (overrides nan_policy).
 
 Returns
 -------
@@ -3314,7 +3464,7 @@ TimeSeries
 ### `rolling_median`
 
 ```python
-rolling_median(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto') -> 'Any'
+rolling_median(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto', ignore_nan: 'Optional[bool]' = None) -> "'TimeSeries'"
 ```
 
 
@@ -3332,6 +3482,8 @@ nan_policy : str
     How to handle NaN values.
 backend : str
     Computation backend.
+ignore_nan : bool, optional
+    If True, ignore NaNs (overrides nan_policy).
 
 Returns
 -------
@@ -3342,7 +3494,7 @@ TimeSeries
 ### `rolling_min`
 
 ```python
-rolling_min(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto') -> 'Any'
+rolling_min(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto', ignore_nan: 'Optional[bool]' = None) -> "'TimeSeries'"
 ```
 
 
@@ -3360,6 +3512,8 @@ nan_policy : str
     How to handle NaN values.
 backend : str
     Computation backend.
+ignore_nan : bool, optional
+    If True, ignore NaNs (overrides nan_policy).
 
 Returns
 -------
@@ -3370,7 +3524,7 @@ TimeSeries
 ### `rolling_std`
 
 ```python
-rolling_std(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto', ddof: 'int' = 0) -> 'Any'
+rolling_std(self, window: 'Any', *, center: 'bool' = False, min_count: 'int' = 1, nan_policy: 'str' = 'omit', backend: 'str' = 'auto', ddof: 'int' = 0, ignore_nan: 'Optional[bool]' = None) -> "'TimeSeries'"
 ```
 
 
@@ -3390,6 +3544,8 @@ backend : str
     Computation backend.
 ddof : int
     Delta degrees of freedom.
+ignore_nan : bool, optional
+    If True, ignore NaNs (overrides nan_policy).
 
 Returns
 -------
@@ -3433,6 +3589,49 @@ Examples
 5.0 m
 >>> a.shift('-1 km')
 -995.0 m
+
+
+### `skewness`
+
+```python
+skewness(self, nan_policy='propagate')
+```
+
+
+Compute the skewness of the time series data.
+
+Skewness is a measure of the asymmetry of the probability distribution
+of a real-valued random variable about its mean.
+
+Args:
+    nan_policy (str): 'propagate', 'raise', 'omit'.
+
+Returns:
+    float: The skewness.
+
+
+### `smooth`
+
+```python
+smooth(self, width: Any, method: str = 'amplitude', ignore_nan: bool = True) -> Any
+```
+
+
+Smooth the series.
+
+Parameters
+----------
+width : `int`
+    Number of samples for the smoothing winow.
+method : `str`, optional
+    Smoothing target: 'amplitude', 'power', 'complex', 'db'.
+ignore_nan : `bool`, optional
+    If True, ignore NaNs.
+
+Returns
+-------
+Series
+    Smoothed series.
 
 
 ### `span`
@@ -3578,60 +3777,18 @@ The accepted ``method`` arguments are:
 ### `spectrogram2`
 
 ```python
-spectrogram2(self, fftlength, overlap=None, window='hann', **kwargs)
+spectrogram2(self, *args: 'Any', **kwargs: 'Any') -> 'Any'
 ```
 
-Calculate the non-averaged power `Spectrogram` of this `TimeSeries`
 
-Parameters
-----------
-fftlength : `float`
-    number of seconds in single FFT.
-
-overlap : `float`, optional
-    number of seconds of overlap between FFTs, defaults to the
-    recommended overlap for the given window (if given), or 0
-
-window : `str`, `numpy.ndarray`, optional
-    window function to apply to timeseries prior to FFT,
-    see :func:`scipy.signal.get_window` for details on acceptable
-    formats
-
-scaling : [ 'density' | 'spectrum' ], optional
-    selects between computing the power spectral density ('density')
-    where the `Spectrogram` has units of V**2/Hz if the input is
-    measured in V and computing the power spectrum ('spectrum')
-    where the `Spectrogram` has units of V**2 if the input is
-    measured in V. Defaults to 'density'.
-
-**kwargs
-    other parameters to be passed to `scipy.signal.periodogram` for
-    each column of the `Spectrogram`
-
-Returns
--------
-spectrogram: `~gwpy.spectrogram.Spectrogram`
-    a power `Spectrogram` with `1/fftlength` frequency resolution and
-    (fftlength - overlap) time resolution.
-
-See also
---------
-scipy.signal.periodogram
-    for documentation on the Fourier methods used in this calculation
-
-Notes
------
-This method calculates overlapping periodograms for all possible
-chunks of data entirely containing within the span of the input
-`TimeSeries`, then normalises the power in overlapping chunks using
-a triangular window centred on that chunk which most overlaps the
-given `Spectrogram` time sample.
+Compute an alternative spectrogram (spectrogram2).
+Returns Spectrogram.
 
 
 ### `standardize`
 
 ```python
-standardize(self, *, method: 'str' = 'zscore', ddof: 'int' = 0, robust: 'bool' = False) -> 'Any'
+standardize(self, *, method: 'str' = 'zscore', ddof: 'int' = 0, robust: 'bool' = False) -> "'TimeSeries'"
 ```
 
 
@@ -3668,49 +3825,49 @@ Create a step plot of this series
 ### `stlt`
 
 ```python
-stlt(self, stride=None, window=None, fftlength=None, overlap=None, *, sigmas=0.0, frequencies=None, scaling='dt', time_ref='start', onesided=None, legacy=False, **kwargs)
+stlt(self, stride: 'Any' = None, window: 'Any' = None, fftlength: 'Any' = None, overlap: 'Any' = None, *, sigmas: 'Any' = 0.0, frequencies: 'Any' = None, scaling: 'str' = 'dt', time_ref: 'str' = 'start', onesided: 'Optional[bool]' = None, legacy: 'bool' = False, **kwargs: 'Any') -> 'Any'
 ```
+
 
 Compute Short-Time Laplace Transform (STLT).
 
-Chunk the time series, apply window $w[n] \cdot e^{-\sigma t_{rel}[n]}$, and compute FFT.
+Chunk the time series, apply window w[n] * exp(-sigma * t_rel[n]), and compute FFT.
 
 Parameters
 ----------
-stride : `Quantity` or `str`, optional
+stride : Quantity or str, optional
     Step size in seconds between chunks.
-window : `Quantity`, `str`, or `array-like`, optional
+window : Quantity, str, or array-like, optional
     If Quantity/str with units: window duration (legacy style or alias for fftlength).
     If str (no units) or array: window function (passed to scipy.signal.get_window).
     Default 'hann'.
-fftlength : `Quantity` or `str`, optional
+fftlength : Quantity or str, optional
     Window duration. Preferred over 'window' for specifying duration.
-overlap : `Quantity` or `str`, optional
+overlap : Quantity or str, optional
     Overlap duration.
-sigmas : `float`, `array-like` or `Quantity`, optional
+sigmas : float or array-like or Quantity, optional
     Real part of Laplace frequency s = sigma + j*omega. Default 0.
-frequencies : `array-like`, optional
+frequencies : array-like, optional
     Output frequencies. Currently ignored (always uses FFT grid).
-scaling : `str`, optional
+scaling : str, optional
     'dt' (multiply by dt, discrete integral), 'none' (raw FFT).
     Default 'dt'.
-time_ref : `str`, optional
+time_ref : str, optional
     Time reference for the exponential term within each window.
     'start': t_rel in [0, T_win].
     'center': t_rel in [-T_win/2, T_win/2]. Recommended for large sigmas to avoid overflow.
     Default 'start'.
-onesided : `bool`, optional
+onesided : bool, optional
     If True, return one-sided FFT (real input only).
     If False, return two-sided FFT.
     If None, defaults to True for real data, False for complex data.
-legacy : `bool`, optional
+legacy : bool, optional
     If True, use the old magnitude-outer-product implementation (deprecated).
 
 Returns
 -------
 LaplaceGram
     3D transform result with shape (time, sigma, frequency).
-
 
 
 ### `t0`
@@ -3821,39 +3978,31 @@ astropy.timeseries.TimeSeries
 ### `to_cupy`
 
 ```python
-to_cupy(self, dtype: 'Any' = None) -> 'Any'
+to_cupy(self, dtype=None) -> Any
 ```
 
-
-Convert to cupy.array.
-
-Parameters
-----------
-dtype : cupy.dtype, optional
-    Output dtype.
-
-Returns
--------
-cupy.ndarray
-
+Convert to CuPy Array.
 
 ### `to_dask`
 
 ```python
-to_dask(self, chunks: 'Any' = 'auto') -> 'Any'
+to_dask(self, chunks='auto') -> Any
+```
+
+Convert to Dask Array.
+
+### `to_dict`
+
+```python
+to_dict(self) -> 'dict'
 ```
 
 
-Convert to dask.array.
-
-Parameters
-----------
-chunks : int or 'auto'
-    Chunk size for the dask array.
+Convert TimeSeries to a dictionary.
 
 Returns
 -------
-dask.array.Array
+dict
 
 
 ### `to_hdf5_dataset`
@@ -3882,20 +4031,23 @@ compression_opts : int, optional
 ### `to_jax`
 
 ```python
-to_jax(self, dtype: 'Any' = None) -> 'Any'
+to_jax(self) -> Any
+```
+
+Convert to JAX Array.
+
+### `to_json`
+
+```python
+to_json(self) -> 'str'
 ```
 
 
-Convert to jax.numpy.array.
-
-Parameters
-----------
-dtype : jax.numpy.dtype, optional
-    Output dtype.
+Convert TimeSeries to a JSON string.
 
 Returns
 -------
-jax.numpy.ndarray
+str
 
 
 ### `to_lal`
@@ -3937,14 +4089,6 @@ tuple
 to_mne(self, info: 'Any' = None) -> 'Any'
 ```
 
-Alias for :meth:`to_mne`.
-
-### `to_mne`
-
-```python
-to_mne(self, info: 'Any' = None) -> 'Any'
-```
-
 
 Convert to ``mne.io.RawArray`` (single-channel).
 
@@ -3956,6 +4100,25 @@ info : mne.Info, optional
 Returns
 -------
 mne.io.RawArray
+
+
+### `to_neo`
+
+```python
+to_neo(self, units: 'Optional[Any]' = None) -> 'Any'
+```
+
+
+Convert to neo.AnalogSignal.
+
+Parameters
+----------
+units : str or Unit, optional
+    Units for the signal.
+
+Returns
+-------
+neo.core.AnalogSignal
 
 
 ### `to_netcdf4`
@@ -4021,19 +4184,10 @@ Returns
 pandas.Series
 
 
-### `to_simpeg`
-
-```python
-to_simpeg(self, location=None, rx_type='PointElectricField', orientation='x', **kwargs) -> 'simpeg.data.Data'
-```
-
-Convert to SimPEG Data object.
-
-
 ### `to_polars`
 
 ```python
-to_polars(self, name: 'Optional[str]' = None, as_dataframe: 'bool' = True, time_column: 'str' = 'time', time_unit: 'str' = 'datetime') -> 'Any'
+to_polars(self, name: 'Optional[str]' = None, as_dataframe: 'bool' = True, times: 'str' = 'time', time_unit: 'str' = 'datetime') -> 'Any'
 ```
 
 
@@ -4046,7 +4200,7 @@ name : str, optional
 as_dataframe : bool, default True
     If True, returns a DataFrame with a time column.
     If False, returns a raw Series of values.
-time_column : str, default "time"
+times : str, default "time"
     Name of the time column (only if as_dataframe=True).
 time_unit : str, default "datetime"
     Format of the time column: "datetime", "gps", or "unix".
@@ -4097,6 +4251,29 @@ Returns
 pydub.AudioSegment
 
 
+### `to_simpeg`
+
+```python
+to_simpeg(self, location=None, rx_type='PointElectricField', orientation='x', **kwargs) -> 'Any'
+```
+
+
+Convert to SimPEG Data object.
+
+Parameters
+----------
+location : array_like, optional
+    Rx location (x, y, z). Default is [0, 0, 0].
+rx_type : str, optional
+    Receiver class name. Default "PointElectricField".
+orientation : str, optional
+    Receiver orientation ('x', 'y', 'z'). Default 'x'.
+
+Returns
+-------
+simpeg.data.Data
+
+
 ### `to_sqlite`
 
 ```python
@@ -4124,21 +4301,10 @@ str
 ### `to_tensorflow`
 
 ```python
-to_tensorflow(self, dtype: 'Any' = None) -> 'Any'
+to_tensorflow(self, dtype: Any = None) -> Any
 ```
 
-
 Convert to tensorflow.Tensor.
-
-Parameters
-----------
-dtype : tf.dtype, optional
-    Output dtype.
-
-Returns
--------
-tensorflow.Tensor
-
 
 ### `to_tgraph`
 
@@ -4181,27 +4347,10 @@ ROOT.TH1D
 ### `to_torch`
 
 ```python
-to_torch(self, device: 'Optional[str]' = None, dtype: 'Any' = None, requires_grad: 'bool' = False, copy: 'bool' = False) -> 'Any'
+to_torch(self, device: Optional[str] = None, dtype: Any = None, requires_grad: bool = False, copy: bool = False) -> Any
 ```
 
-
 Convert to torch.Tensor.
-
-Parameters
-----------
-device : str, optional
-    Target device ('cpu', 'cuda', etc.).
-dtype : torch.dtype, optional
-    Output dtype.
-requires_grad : bool
-    Whether to enable gradient tracking.
-copy : bool
-    Whether to force a copy.
-
-Returns
--------
-torch.Tensor
-
 
 ### `to_xarray`
 
@@ -4225,25 +4374,10 @@ xarray.DataArray
 ### `to_zarr`
 
 ```python
-to_zarr(self, store: 'Any', path: 'str', chunks: 'Any' = None, compressor: 'Any' = None, overwrite: 'bool' = False) -> 'None'
+to_zarr(self, store, path=None, **kwargs) -> Any
 ```
 
-
-Write to Zarr array.
-
-Parameters
-----------
-store : str or zarr.Store
-    Target store.
-path : str
-    Array path within store.
-chunks : int, optional
-    Chunk size.
-compressor : numcodecs.Codec, optional
-    Compression codec.
-overwrite : bool
-    Whether to overwrite existing.
-
+Save to Zarr storage.
 
 ### `tostring`
 
@@ -4588,52 +4722,3 @@ To apply a zpk filter with file poles at 100 Hz, and five zeros at
 >>> data2 = data.zpk([100]*5, [1]*5, 1e-10)
 
 
-
-### `granger_causality`
-
-```python
-granger_causality(self, other, maxlag=10, test='ssr_ftest', verbose=False)
-```
-
-Check if 'other' Granger-causes 'self'.
-
-Null Hypothesis: The past values of 'other' do NOT help in predicting 'self'.
-
-Parameters
-----------
-other : `TimeSeries`
-    The potential cause series.
-maxlag : `int`, optional
-    Maximum lag to check.
-test : `str`, optional
-    Statistical test to use ('ssr_ftest', 'ssr_chi2test', etc.).
-verbose : `bool`, optional
-    Whether to print verbose output.
-
-Returns
--------
-float
-    The minimum p-value across all lags up to maxlag. 
-    A small p-value (e.g., < 0.05) indicates Granger causality.
-
-
-### `skewness`
-
-```python
-skewness(self, nan_policy='propagate')
-```
-
-Compute the skewness of the time series data.
-
-Skewness is a measure of the asymmetry of the probability distribution 
-of a real-valued random variable about its mean.
-
-Parameters
-----------
-nan_policy : `str`, optional
-    'propagate', 'raise', 'omit'.
-
-Returns
--------
-float
-    The skewness.

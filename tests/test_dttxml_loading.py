@@ -18,13 +18,13 @@ def test_load_all_xmls():
         "gwexpy/gui/TS_ETMX_23-6kHz_ringdown_No2_20251202.xml",
         "gwexpy/gui/test.xml"
     ]
-    
+
     for f in xml_files:
         path = Path(f)
         if not path.exists():
             print(f"Skipping {f} (Not found)")
             continue
-            
+
         print(f"\n--- Testing {f} ---")
         try:
             products = load_dttxml_products(str(path))

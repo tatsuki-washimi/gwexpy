@@ -1,1 +1,1 @@
-from gwpy.astro.range import *
+from gwpy.astro.range import *  # noqa: F403

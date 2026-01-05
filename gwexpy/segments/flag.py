@@ -1,1 +1,1 @@
-from gwpy.segments.flag import *
+from gwpy.segments.flag import *  # noqa: F403

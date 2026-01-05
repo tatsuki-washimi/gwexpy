@@ -1,1 +1,1 @@
-from gwpy.plot.tests.test_text import *
+from gwpy.plot.tests.test_text import *  # noqa: F403

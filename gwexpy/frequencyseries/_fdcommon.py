@@ -1,1 +1,1 @@
-from gwpy.frequencyseries._fdcommon import *
+from gwpy.frequencyseries._fdcommon import *  # noqa: F403

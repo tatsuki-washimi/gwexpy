@@ -1,1 +1,1 @@
-from gwpy.cli.transferfunction import *
+from gwpy.cli.transferfunction import *  # noqa: F403

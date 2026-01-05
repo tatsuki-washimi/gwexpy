@@ -17,15 +17,35 @@ from .seriesmatrix_validation import (
     check_add_sub_compatibility
 )
 
-from .seriesmatrix_ops import SeriesMatrixOps
+from .series_matrix_core import SeriesMatrixCoreMixin
+from .series_matrix_indexing import SeriesMatrixIndexingMixin
+from .series_matrix_io import SeriesMatrixIOMixin
+from .series_matrix_math import SeriesMatrixMathMixin
+from .series_matrix_analysis import SeriesMatrixAnalysisMixin
+from .series_matrix_structure import SeriesMatrixStructureMixin
+from .series_matrix_visualization import SeriesMatrixVisualizationMixin
+from .series_matrix_validation_mixin import SeriesMatrixValidationMixin
 from ._stats import StatisticalMethodsMixin
-from gwexpy.types.mixin import RegularityMixin
+from gwexpy.types.mixin import RegularityMixin, InteropMixin
 
 class PerformanceWarning(RuntimeWarning):
     """Warning raised when an operation falls back to a slower implementation."""
     pass
 
-class SeriesMatrix(RegularityMixin, SeriesMatrixOps, StatisticalMethodsMixin, np.ndarray):
+class SeriesMatrix(
+    RegularityMixin,
+    InteropMixin,
+    SeriesMatrixCoreMixin,
+    SeriesMatrixIndexingMixin,
+    SeriesMatrixIOMixin,
+    SeriesMatrixMathMixin,
+    SeriesMatrixAnalysisMixin,
+    SeriesMatrixStructureMixin,
+    SeriesMatrixVisualizationMixin,
+    SeriesMatrixValidationMixin,
+    StatisticalMethodsMixin,
+    np.ndarray,
+):
     def __new__(cls,
                 data: Any = None,
                 *,
@@ -210,7 +230,7 @@ class SeriesMatrix(RegularityMixin, SeriesMatrixOps, StatisticalMethodsMixin, np
                     for j in range(self._value.shape[1]):
                         meta_array[i, j] = MetaData(unit=unit, name=f"s{i}{j}")
                 meta_matrix = MetaDataMatrix(meta_array)
-                casted_inputs.append(SeriesMatrix(arr, xindex=xindex, meta=meta_matrix, shape=self._value.shape))
+                casted_inputs.append(self.__class__(arr, xindex=xindex, meta=meta_matrix, shape=self._value.shape))
             elif isinstance(inp, (float, int, complex)):
                 arr = np.full(self._value.shape, inp)
                 unit = u.dimensionless_unscaled
@@ -219,7 +239,7 @@ class SeriesMatrix(RegularityMixin, SeriesMatrixOps, StatisticalMethodsMixin, np
                     for j in range(self._value.shape[1]):
                         meta_array[i, j] = MetaData(unit=unit, name=f"s{i}{j}")
                 meta_matrix = MetaDataMatrix(meta_array)
-                casted_inputs.append(SeriesMatrix(arr, xindex=xindex, meta=meta_matrix, shape=self._value.shape))
+                casted_inputs.append(self.__class__(arr, xindex=xindex, meta=meta_matrix, shape=self._value.shape))
             elif isinstance(inp, np.ndarray):
                 val = np.asarray(inp)
                 N, M, K = shape
@@ -246,7 +266,7 @@ class SeriesMatrix(RegularityMixin, SeriesMatrixOps, StatisticalMethodsMixin, np
                         f"ndarray with ndim={val.ndim} is not supported in __array_ufunc__"
                     )
 
-                casted_inputs.append(SeriesMatrix(arr, xindex=xindex, shape=self._value.shape))
+                casted_inputs.append(self.__class__(arr, xindex=xindex, shape=self._value.shape))
             else:
                 return NotImplemented
 
@@ -357,343 +377,3 @@ class SeriesMatrix(RegularityMixin, SeriesMatrixOps, StatisticalMethodsMixin, np
             attrs=attrs
         )
 
-    ##### xindex Information #####
-    @property
-    def xindex(self) -> Any:
-        """Sample axis index array.
-
-        This is the array of x-axis values (e.g., time or frequency) corresponding
-        to each sample in the matrix. For time series, this represents timestamps;
-        for frequency series, this represents frequency bins.
-
-        Returns
-        -------
-        xindex : `~gwpy.types.Index`, `~astropy.units.Quantity`, or `numpy.ndarray`
-            The sample axis values with appropriate units.
-        """
-        return getattr(self, "_xindex", None)
-
-    @xindex.setter
-    def xindex(self, value: Any) -> None:
-        if value is None:
-            self._xindex = None
-        else:
-            if isinstance(value, Index):
-                xi = value
-            elif isinstance(value, u.Quantity):
-                xi = value
-            else:
-                xi = np.asarray(value)
-            try:
-                n_samples = self._value.shape[2]
-            except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-                n_samples = None
-            suppress = getattr(self, "_suppress_xindex_check", False)
-            if (not suppress) and n_samples is not None and hasattr(xi, "__len__") and len(xi) != n_samples:
-                raise ValueError(f"xindex length mismatch: expected {n_samples}, got {len(xi)}")
-            self._xindex = xi
-        for attr in ("_dx", "_x0"):
-            if hasattr(self, attr):
-                delattr(self, attr)
-
-    @property
-    def x0(self) -> Any:
-        """Starting value of the sample axis.
-
-        Returns
-        -------
-        x0 : `~astropy.units.Quantity`
-            The first value of xindex, representing the start time/frequency.
-        """
-        try:
-            return self._x0
-        except AttributeError:
-            try:
-                self._x0 = self.xindex[0]
-            except (AttributeError, IndexError):
-                self._x0 = u.Quantity(0, self.xunit)
-            return self._x0
-
-    @property
-    def dx(self) -> Any:
-        """Step size between samples on the x-axis.
-
-        For regularly-sampled data, this is the constant spacing between
-        consecutive samples. For time series, this equals ``1/sample_rate``.
-
-        Returns
-        -------
-        dx : `~astropy.units.Quantity`
-            The sample spacing with appropriate units.
-
-        Raises
-        ------
-        AttributeError
-            If xindex is not set or if the series has irregular sampling.
-        """
-        try:
-            return self._dx
-        except AttributeError:
-            if not hasattr(self, "xindex") or self.xindex is None:
-                raise AttributeError("dx is undefined because xindex is not set")
-            if hasattr(self.xindex, "regular") and not self.xindex.regular:
-                raise AttributeError("This SeriesMatrix has an irregular x-axis index, so 'dx' is not well defined")
-            dx = self.xindex[1] - self.xindex[0]
-            if not isinstance(dx, u.Quantity):
-                xunit = getattr(self.xindex, 'unit', u.dimensionless_unscaled)
-                dx = u.Quantity(dx, xunit)
-            self._dx = dx
-            return self._dx
-
-    @property
-    def xspan(self) -> Any:
-        """Full extent of the sample axis as a tuple (start, end).
-
-        The end value is calculated as the last sample plus one step (dx),
-        representing the exclusive upper bound of the data range.
-
-        Returns
-        -------
-        xspan : tuple
-            A 2-tuple of (start, end) values with appropriate units.
-        """
-        xindex = self.xindex
-        try:
-            if hasattr(xindex, "regular") and xindex.regular:
-                return (xindex[0], xindex[-1] + self.dx)
-            if len(xindex) > 1:
-                step = xindex[-1] - xindex[-2]
-                return (xindex[0], xindex[-1] + step)
-            return (xindex[0], xindex[0])
-        except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-            return (xindex[0], xindex[-1])
-
-    @property
-    def xunit(self) -> Any:
-        """Physical unit of the sample axis.
-
-        Returns
-        -------
-        xunit : `~astropy.units.Unit`
-            The unit of the x-axis (e.g., seconds for time series, Hz for frequency series).
-        """
-        # Priority: dx (regular), xindex (array), x0
-        try:
-            return self._dx.unit
-        except AttributeError:
-            if self.xindex is not None:
-                return getattr(self.xindex, 'unit', u.dimensionless_unscaled)
-            try:
-                return self._x0.unit
-            except AttributeError:
-                return u.dimensionless_unscaled
-
-    @property
-    def N_samples(self) -> int:
-        """Number of samples along the x-axis.
-
-        Returns
-        -------
-        int
-            The length of the sample axis (third dimension of the matrix).
-        """
-        return len(self.xindex) if self.xindex is not None else 0
-
-    @property
-    def xarray(self) -> np.ndarray:
-        """
-        Return the sample axis values.
-        """
-        return self.xindex
-
-    @property
-    def duration(self) -> Any:
-        """
-        Duration covered by the samples.
-        """
-        if self.N_samples == 0:
-            try:
-                return 0 * self.xunit
-            except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-                return 0
-        return self.xindex[-1] - self.xindex[0]
-
-    def is_compatible(self, other: Any) -> bool:
-        """
-        Compatibility check.
-        """
-        if not isinstance(other, SeriesMatrix):
-            arr = np.asarray(other)
-            if arr.shape != self._value.shape:
-                raise ValueError(f"shape does not match: {self._value.shape} vs {arr.shape}")
-            return True
-
-        if self._value.shape[:2] != other._value.shape[:2]:
-            raise ValueError(f"matrix shape does not match: {self._value.shape[:2]} vs {other._value.shape[:2]}")
-
-        xunit_self = getattr(self.xindex, "unit", None)
-        xunit_other = getattr(other.xindex, "unit", None)
-        if xunit_self is not None and xunit_other is not None:
-            try:
-                if not u.Unit(xunit_self).is_equivalent(u.Unit(xunit_other)):
-                    raise ValueError(f"xindex unit does not match: {xunit_self} vs {xunit_other}")
-            except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-                raise ValueError(f"xindex unit does not match: {xunit_self} vs {xunit_other}")
-
-        try:
-            dx_self = self.dx
-            dx_other = other.dx
-            if dx_self != dx_other:
-                raise ValueError(f"dx does not match: {dx_self} vs {dx_other}")
-        except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-            lhs = np.asarray(self.xindex)
-            rhs = np.asarray(other.xindex)
-            if not np.array_equal(lhs, rhs):
-                raise ValueError("xindex does not match")
-
-        for i in range(self._value.shape[0]):
-            for j in range(self._value.shape[1]):
-                u1 = self.meta[i, j].unit
-                u2 = other.meta[i, j].unit
-                if u1 != u2:
-                    raise ValueError(f"unit does not match at ({i},{j}): {u1} vs {u2}")
-        return True
-
-    ##### rows/cols Information #####
-    def row_keys(self) -> list[Any]:
-        """Get the keys (labels) for all rows.
-
-        Returns
-        -------
-        tuple
-            A tuple of row keys in order.
-        """
-        return tuple(self.rows.keys())
-
-    def col_keys(self) -> list[Any]:
-        """Get the keys (labels) for all columns.
-
-        Returns
-        -------
-        tuple
-            A tuple of column keys in order.
-        """
-        return tuple(self.cols.keys())
-
-    def keys(self) -> list[tuple[Any, Any]]:
-        """Get both row and column keys.
-
-        Returns
-        -------
-        tuple
-            A 2-tuple of (row_keys, col_keys).
-        """
-        return (self.row_keys(), self.col_keys())
-
-    def row_index(self, key: Any) -> int:
-        """Get the integer index for a row key.
-
-        Parameters
-        ----------
-        key : Any
-            The row key to look up.
-
-        Returns
-        -------
-        int
-            The zero-based index of the row.
-
-        Raises
-        ------
-        KeyError
-            If the key is not found.
-        """
-        try:
-            return list(self.row_keys()).index(key)
-        except ValueError:
-            raise KeyError(f"Invalid row key: {key}")
-
-    def col_index(self, key: Any) -> int:
-        """Get the integer index for a column key.
-
-        Parameters
-        ----------
-        key : Any
-            The column key to look up.
-
-        Returns
-        -------
-        int
-            The zero-based index of the column.
-
-        Raises
-        ------
-        KeyError
-            If the key is not found.
-        """
-        try:
-            return list(self.col_keys()).index(key)
-        except ValueError:
-            raise KeyError(f"Invalid column key: {key}")
-
-    def get_index(self, key_row: Any, key_col: Any) -> tuple[int, int]:
-        """Get the (row, col) integer indices for given keys.
-
-        Parameters
-        ----------
-        key_row : Any
-            The row key.
-        key_col : Any
-            The column key.
-
-        Returns
-        -------
-        tuple of int
-            A 2-tuple of (row_index, col_index).
-        """
-        return self.row_index(key_row), self.col_index(key_col)
-
-    ##### Elements Metadata #####
-    @property
-    def MetaDataMatrix(self) -> "MetaDataMatrix":
-        """Metadata matrix containing per-element metadata.
-
-        Returns
-        -------
-        MetaDataMatrix
-            A 2D matrix of MetaData objects, one for each (row, col) element.
-        """
-        return self.meta
-
-    @property
-    def units(self) -> np.ndarray:
-        """2D array of units for each matrix element.
-
-        Returns
-        -------
-        numpy.ndarray
-            A 2D object array of `astropy.units.Unit` instances.
-        """
-        return self.meta.units
-
-    @property
-    def names(self) -> np.ndarray:
-        """2D array of names for each matrix element.
-
-        Returns
-        -------
-        numpy.ndarray
-            A 2D object array of string names.
-        """
-        return self.meta.names
-
-    @property
-    def channels(self) -> np.ndarray:
-        """2D array of channel identifiers for each matrix element.
-
-        Returns
-        -------
-        numpy.ndarray
-            A 2D object array of channel names or Channel objects.
-        """
-        return self.meta.channels

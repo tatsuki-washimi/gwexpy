@@ -397,7 +397,7 @@ def ica_fit(
         whiten_arg = whiten
 
     ica = FastICA(
-        n_components=n_components,
+        n_components=n_components if whiten_arg else None,
         algorithm=algorithm,
         fun=fun,
         whiten=whiten_arg,

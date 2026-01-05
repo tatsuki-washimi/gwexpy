@@ -50,13 +50,36 @@ class MetaData(dict):
     def name(self):
         return self["name"]
 
+    @name.setter
+    def name(self, value):
+        self["name"] = value
+
     @property
     def channel(self):
         return self["channel"]
 
+    @channel.setter
+    def channel(self, value):
+        try:
+            self["channel"] = Channel(value)
+        except (ValueError, TypeError):
+            self["channel"] = Channel("")
+
     @property
     def unit(self):
         return self["unit"]
+
+    @unit.setter
+    def unit(self, value):
+        try:
+            if isinstance(value, u.UnitBase):
+                self["unit"] = value
+            elif isinstance(value, str):
+                self["unit"] = u.Unit(value) if value else u.dimensionless_unscaled
+            else:
+                self["unit"] = u.Unit(value)
+        except (ValueError, TypeError):
+            self["unit"] = u.dimensionless_unscaled
 
     @classmethod
     def from_series(cls, series):
@@ -424,15 +447,39 @@ class MetaDataMatrix(np.ndarray):
         flat = [m.name for m in self.flat]
         return np.asarray(flat, dtype=object).reshape(self.shape)
 
+    @names.setter
+    def names(self, value):
+        value = np.asarray(value)
+        if value.shape != self.shape:
+            value = value.reshape(self.shape)
+        for m, name in zip(self.flat, value.flat):
+            m.name = name
+
     @property
     def units(self):
         flat = [m.unit for m in self.flat]
         return np.asarray(flat, dtype=object).reshape(self.shape)
 
+    @units.setter
+    def units(self, value):
+        value = np.asarray(value)
+        if value.shape != self.shape:
+            value = value.reshape(self.shape)
+        for m, unit in zip(self.flat, value.flat):
+            m.unit = unit
+
     @property
     def channels(self):
         flat = [m.channel for m in self.flat]
         return np.asarray(flat, dtype=object).reshape(self.shape)
+
+    @channels.setter
+    def channels(self, value):
+        value = np.asarray(value)
+        if value.shape != self.shape:
+            value = value.reshape(self.shape)
+        for m, channel in zip(self.flat, value.flat):
+            m.channel = channel
 
     @classmethod
     def from_array(cls, array2d):

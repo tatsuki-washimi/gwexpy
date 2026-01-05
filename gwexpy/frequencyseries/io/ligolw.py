@@ -1,1 +1,1 @@
-from gwpy.frequencyseries.io.ligolw import *
+from gwpy.frequencyseries.io.ligolw import *  # noqa: F403

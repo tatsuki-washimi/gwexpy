@@ -7,6 +7,40 @@ if TYPE_CHECKING:
 
 __all__ = ["Plot"]
 
+def plot_mmm(median, min_s, max_s, ax=None, **kwargs):
+    """
+    Plot Median, Min, and Max series with a filled area between Min and Max.
+
+    Parameters
+    ----------
+    median : Series
+    min_s : Series
+    max_s : Series
+    ax : Axes, optional
+    **kwargs
+        Passed to ax.plot for the median line.
+    """
+    if ax is None:
+        from matplotlib import pyplot as plt
+        ax = plt.gca()
+
+    # Plot fill between
+    color = kwargs.pop('color', None)
+    if color is None:
+        # Get next color in cycle if not provided
+        line, = ax.plot(median.xindex.value, median.value, alpha=0)
+        color = line.get_color()
+        line.remove()
+
+    alpha = kwargs.pop('alpha_fill', 0.2)
+    label_fill = kwargs.pop('label_fill', None)
+    ax.fill_between(min_s.xindex.value, min_s.value, max_s.value,
+                    color=color, alpha=alpha, label=label_fill)
+
+    # Plot median line
+    label = kwargs.pop('label', median.name)
+    return ax.plot(median.xindex.value, median.value, color=color, label=label, **kwargs)
+
 class Plot(BasePlot):
     """
     An extension of :class:`gwpy.plot.Plot` that automatically handles
@@ -14,15 +48,18 @@ class Plot(BasePlot):
     individual :class:`gwpy.types.Series` objects, while preserving
     matrix layout and metadata where possible.
     """
+    
+    # Suppress _repr_html_ to prevent double plotting (repr + backend)
+    _repr_html_ = None
 
     def __init__(self, *args, **kwargs):
+        kwargs_orig = kwargs.copy()
         # Local import to avoid circular dependency
         from gwexpy.types.seriesmatrix import SeriesMatrix
         from gwexpy.frequencyseries import (
             FrequencySeriesMatrix,
             FrequencySeriesList,
-            FrequencySeriesDict,
-            FrequencySeries
+            FrequencySeriesDict
         )
         from gwexpy.spectrogram import (
             Spectrogram,
@@ -32,16 +69,49 @@ class Plot(BasePlot):
         )
         from gwexpy.plot import defaults
 
+        # 0. Handle monitor filtering
+        monitor = kwargs.get('monitor')
+        if monitor is not None:
+             new_args = []
+             for arg in args:
+                  if isinstance(arg, (SeriesMatrix, SpectrogramMatrix)):
+                       # Apply filtering
+                       try:
+                            # Use the object's own indexing (supporting labels, lists, etc. if implemented)
+                            filtered_arg = arg[monitor]
+                            new_args.append(filtered_arg)
+                       except (IndexError, KeyError, TypeError, ValueError):
+                            # Fallback: if single integer monitor on SpectrogramMatrix fails (e.g. 4D vs 3D confusion)
+                            if type(arg).__name__ == 'SpectrogramMatrix' and isinstance(monitor, (int, np.integer)):
+                                 if arg.ndim == 4:
+                                      nrow, ncol = arg.shape[:2]
+                                      row_idx = monitor // ncol
+                                      col_idx = monitor % ncol
+                                      new_args.append(arg[row_idx, col_idx])
+                                 else:
+                                      new_args.append(arg[monitor])
+                            else:
+                                 new_args.append(arg)
+                  else:
+                       new_args.append(arg)
+             args = tuple(new_args)
+
         # 1. Unpack Collections
         matrices = []
         expanded_args = []
-        
-        has_matrix = False
+
 
         for arg in args:
             if isinstance(arg, (SeriesMatrix, SpectrogramMatrix)):
-                matrices.append(arg)
-                has_matrix = True
+                if monitor is not None:
+                     # If we already filtered, and it's NO LONGER a matrix (ndim decreased),
+                     # we treat it as an expanded element to avoid re-expansion
+                     if arg.ndim < 3: # Series (2D) or Spectrogram (3D-flat)
+                          expanded_args.append(arg)
+                     else:
+                          matrices.append(arg)
+                else:
+                     matrices.append(arg)
             elif isinstance(arg, (FrequencySeriesList, SpectrogramList)):
                 expanded_args.extend(arg)
             elif isinstance(arg, (FrequencySeriesDict, SpectrogramDict)):
@@ -53,52 +123,75 @@ class Plot(BasePlot):
             else:
                 expanded_args.append(arg)
 
+        # 1.5 Sync matrix_args (legacy name used in late logic)
+        matrix_args = matrices
+
 
         # 2. Defaults (Figsize, Scales, Geometry)
         all_data = expanded_args[:]
         if matrices:
             all_data.append(matrices[0])
-        
+
+        if monitor is not None and not matrices:
+             pass
+
         # Geometry / Separate
         separate = kwargs.get('separate')
         geometry = kwargs.get('geometry')
-        
-        separate, geometry = defaults.determine_geometry_and_separate(
-            all_data, separate=separate, geometry=geometry
-        )
-        
+
+        # If monitor is used, we only want to consider the filtered data for geometry
+        if monitor is not None:
+             # Use the actual args (which are already filtered) for geometry determination
+             # If args[0] is now a Series/Spectrogram instead of Matrix, defaults will treat it correctly.
+             separate, geometry = defaults.determine_geometry_and_separate(
+                 list(args), separate=separate, geometry=geometry
+             )
+        else:
+             separate, geometry = defaults.determine_geometry_and_separate(
+                 all_data, separate=separate, geometry=geometry
+             )
+
         if separate is not None:
              kwargs['separate'] = separate
         if geometry is not None:
+             # If monitor is used, and it wasn't an explicit user geometry, override it
+             if monitor is not None and 'geometry' not in kwargs_orig:
+                  geometry = None
              kwargs['geometry'] = geometry
 
         # Scales
-        kwargs['xscale'] = defaults.determine_xscale(all_data, current_value=kwargs.get('xscale'))
-        kwargs['yscale'] = defaults.determine_yscale(all_data, current_value=kwargs.get('yscale'))
-        
-        det_xlabel = defaults.determine_xlabel(all_data, current_value=kwargs.get('xlabel'))
+        # Use filtered data (args) if monitor is specified for better scale/label determination
+        scale_data = list(args) if monitor is not None else all_data
+        kwargs['xscale'] = defaults.determine_xscale(scale_data, current_value=kwargs.get('xscale'))
+        kwargs['yscale'] = defaults.determine_yscale(scale_data, current_value=kwargs.get('yscale'))
+
+        det_xlabel = defaults.determine_xlabel(scale_data, current_value=kwargs.get('xlabel'))
         if det_xlabel is not None:
              kwargs['xlabel'] = det_xlabel
-             
-        det_ylabel = defaults.determine_ylabel(all_data, current_value=kwargs.get('ylabel'))
+
+        det_ylabel = defaults.determine_ylabel(scale_data, current_value=kwargs.get('ylabel'))
         if det_ylabel is not None:
              kwargs['ylabel'] = det_ylabel
-        
+
         new_norm = defaults.determine_norm(all_data, current_value=kwargs.get('norm'))
         if new_norm is not None:
              kwargs['norm'] = new_norm
 
         det_clabel = defaults.determine_clabel(all_data)
+        
+        det_ylim = defaults.determine_ylim(scale_data, current_value=kwargs.get('ylim'), yscale=kwargs.get('yscale'))
+        if det_ylim is not None:
+             kwargs['ylim'] = det_ylim
 
         # Figsize
-        if 'figsize' not in kwargs and 'geometry' in kwargs:
+        if 'figsize' not in kwargs and kwargs.get('geometry') is not None:
              nrow, ncol = kwargs['geometry']
              kwargs['figsize'] = defaults.calculate_default_figsize((nrow, ncol), nrow, ncol)
 
 
         # 3. Matrix Logic (Legacy adaptation)
-        matrix_args = [arg for arg in args if isinstance(arg, (SeriesMatrix, SpectrogramMatrix))]
-        
+        # matrix_args is already synced from matrices in step 1.5
+
         use_smart_layout = False
         subplots = kwargs.pop('subplots', None)
         separate = kwargs.get('separate')
@@ -107,6 +200,11 @@ class Plot(BasePlot):
             separate = subplots
 
         subplots_orig = separate
+
+        # If monitor was used, we force separate=True to handle it as individual plots
+        if monitor is not None:
+             separate = True
+             use_smart_layout = False # Avoid matrix expansion
 
         if separate == 'row' and matrix_args:
              use_smart_layout = True
@@ -128,9 +226,9 @@ class Plot(BasePlot):
              separate = True
              ref = matrix_args[0]
              kwargs.setdefault('geometry', (len(ref.row_keys()), len(ref.col_keys())))
-        
+
         # Enforce geometry update
-        if 'geometry' in kwargs and 'figsize' not in kwargs:
+        if kwargs.get('geometry') is not None and 'figsize' not in kwargs:
              nrow, ncol = kwargs['geometry']
              kwargs['figsize'] = defaults.calculate_default_figsize(None, nrow, ncol)
 
@@ -207,9 +305,11 @@ class Plot(BasePlot):
                                   val_data = base_m[ri]
                               else:
                                   val_data = base_m[ri, ci]
-                              val = Spectrogram(val_data.view(np.ndarray), 
-                                               times=base_m.times, frequencies=base_m.frequencies,
-                                               unit=base_m.meta[ri, ci].unit, name=base_m.meta[ri, ci].name)
+                              val = Spectrogram(val_data.view(np.ndarray),
+                                                times=base_m.times,
+                                                frequencies=base_m.frequencies,
+                                                unit=base_m.meta[ri, ci].unit,
+                                                name=base_m.meta[ri, ci].name)
                           else:
                               # For TimeSeriesMatrix, FrequencySeriesMatrix, etc.
                               val = base_m[r, c]
@@ -245,7 +345,7 @@ class Plot(BasePlot):
         # 5. Super Init
         layout_kwargs = {}
         for k in ['separate', 'geometry', 'sharex', 'sharey', 'xscale', 'yscale', 'norm',
-                  'xlim', 'ylim', 'xlabel', 'ylabel', 'title', 'legend']:
+                  'xlim', 'ylim', 'xlabel', 'ylabel', 'title', 'legend', 'method']:
             if k in kwargs:
                 layout_kwargs[k] = kwargs.pop(k)
 
@@ -262,14 +362,16 @@ class Plot(BasePlot):
         force_ylabel = layout_kwargs.get('ylabel')
         force_xlabel = layout_kwargs.get('xlabel')
 
-        # Pop 'ax' if it exists to avoid passing it to BasePlot which might pass it down to artists
+        # Pop redundant or gwexpy-specific keywords that shouldn't go to BasePlot/Matplotlib
         kwargs.pop('ax', None)
+        kwargs.pop('monitor', None)
+        kwargs.pop('show', None)
 
         super().__init__(*final_args, **layout_kwargs, **fig_params, **kwargs)
 
         # Explicitly apply labels to all axes if they were provided but not applied
         # This fixes an issue where gwpy/matplotlib might only label the last axis or specific columns
-        
+
         # 1. Y-Label
         candidate_ylabel = force_ylabel
         if candidate_ylabel is None:
@@ -279,12 +381,53 @@ class Plot(BasePlot):
                  if yl:
                       candidate_ylabel = yl
                       break
-        
+
         if candidate_ylabel:
+            # Detect axes in the first column vs others
+            first_col_axes = []
+            other_axes = []
             for ax in self.axes:
-                if not ax.get_ylabel():
-                    ax.set_ylabel(candidate_ylabel)
-        
+                try:
+                    is_left = ax.get_subplotspec().is_first_col()
+                except (AttributeError, ValueError, IndexError):
+                    is_left = True
+                if is_left:
+                    first_col_axes.append(ax)
+                else:
+                    other_axes.append(ax)
+
+            # If many rows in the first column share the same label, only label the middle one
+            if len(first_col_axes) > 2:
+                all_same = True
+                for ax in first_col_axes:
+                    yl = ax.get_ylabel()
+                    if yl and yl != candidate_ylabel:
+                        all_same = False
+                        break
+                
+                if all_same:
+                    mid_idx = len(first_col_axes) // 2
+                    for i, ax in enumerate(first_col_axes):
+                        if i == mid_idx:
+                            if not ax.get_ylabel():
+                                ax.set_ylabel(candidate_ylabel)
+                        else:
+                            ax.set_ylabel('')
+                else:
+                    for ax in first_col_axes:
+                        if not ax.get_ylabel():
+                            ax.set_ylabel(candidate_ylabel)
+            else:
+                for ax in first_col_axes:
+                    if not ax.get_ylabel():
+                        ax.set_ylabel(candidate_ylabel)
+
+            # Clear labels in other columns if sharing Y
+            if layout_kwargs.get('sharey', False):
+                for ax in other_axes:
+                    if ax.get_ylabel() == candidate_ylabel:
+                        ax.set_ylabel('')
+
         # 2. X-Label
         candidate_xlabel = force_xlabel
         if candidate_xlabel is None:
@@ -296,7 +439,9 @@ class Plot(BasePlot):
 
         if candidate_xlabel:
              for ax in self.axes:
-                 if not ax.get_xlabel():
+                 # Only apply if xlabel is empty AND NOT in sharex mode
+                 # In sharex mode, gwpy handles the labels correctly (usually non-bottom are empty)
+                 if not ax.get_xlabel() and not layout_kwargs.get('sharex', False):
                       ax.set_xlabel(candidate_xlabel)
 
         if use_cl:
@@ -311,6 +456,22 @@ class Plot(BasePlot):
                  # Sometimes tight_layout fails with constrained_layout
                  pass
 
+        # Force scales if they were determined but not applied/overridden by super class
+        if layout_kwargs.get('xscale'):
+             for ax in self.axes:
+                 try:
+                     ax.set_xscale(layout_kwargs['xscale'])
+                     ax.autoscale_view()
+                 except (ValueError, TypeError):
+                     pass
+        if layout_kwargs.get('yscale'):
+             for ax in self.axes:
+                 try:
+                     ax.set_yscale(layout_kwargs['yscale'])
+                     ax.autoscale_view()
+                 except (ValueError, TypeError):
+                     pass
+
         # 6. Post-Plotting
         if use_overlay and matrix_args:
              axes = self.axes
@@ -322,9 +483,9 @@ class Plot(BasePlot):
 
              def _plot_on_ax(ax, other):
                  if hasattr(other, 'times'):
-                      ax.plot(other.times, other.value, label=getattr(other, 'name', None))
+                      ax.plot(other, label=getattr(other, 'name', None))
                  elif hasattr(other, 'frequencies'):
-                      ax.plot(other.frequencies, other.value, label=getattr(other, 'name', None))
+                      ax.plot(other, label=getattr(other, 'name', None))
                  else:
                       ax.plot(other)
 
@@ -347,7 +508,7 @@ class Plot(BasePlot):
                                  _plot_on_ax(ax, val)
                             except (TypeError, ValueError, AttributeError):
                                  pass
-                       
+
                        if (subplots_orig == 'row' and j == 0) or \
                           (subplots_orig == 'col' and i == 0) or \
                           (subplots_orig not in ('row', 'col')):
@@ -385,7 +546,7 @@ class Plot(BasePlot):
                      if idx < len(axes):
                          label = _get_label(ref_matrix.cols, ck)
                          axes[idx].set_title(label)
-             
+
              if layout_kwargs.get('legend', True):
                   for ax in axes:
                       handles, labels = ax.get_legend_handles_labels()
@@ -406,56 +567,45 @@ class Plot(BasePlot):
                             self.colorbar(mappable, ax=ax, label=det_clabel)
                        except (TypeError, ValueError, AttributeError):
                             pass
-        
+
         # Hide x-labels for non-bottom rows when sharex is True
         current_geom = layout_kwargs.get('geometry')
         if current_geom and layout_kwargs.get('sharex', False):
+            # Recalculate based on current axes length if needed, but geometry is more reliable
             nrow_g, ncol_g = current_geom
             for i, ax in enumerate(self.axes):
                 row_idx = i // ncol_g
                 if row_idx < nrow_g - 1:
                     ax.set_xlabel('')
                     ax.tick_params(labelbottom=False)
-        # Final layout polish
 
+        # Ensure x-axis label for bottom row is applied if sharex=True but label is missing
+        if layout_kwargs.get('sharex', False) and candidate_xlabel:
+             nrow_g, ncol_g = current_geom if current_geom else (len(self.axes), 1)
+             for i, ax in enumerate(self.axes):
+                 row_idx = i // ncol_g
+                 if row_idx == nrow_g - 1:
+                      if not ax.get_xlabel():
+                           ax.set_xlabel(candidate_xlabel)
+        # Final layout polish
     def plot_mmm(self, median, min_s, max_s, ax=None, **kwargs):
-        """
-        Plot Median, Min, and Max series with a filled area between Min and Max.
-        
-        Parameters
-        ----------
-        median : Series
-        min_s : Series
-        max_s : Series
-        ax : Axes, optional
-        **kwargs
-            Passed to ax.plot for the median line.
-        """
         if ax is None:
             ax = self.gca()
-        
-        # Plot fill between
-        from matplotlib import pyplot as plt
-        color = kwargs.get('color')
-        if color is None:
-            # Get next color in cycle if not provided
-            line, = ax.plot(median.xindex.value, median.value, alpha=0)
-            color = line.get_color()
-            line.remove()
-        
-        alpha = kwargs.pop('alpha_fill', 0.2)
-        ax.fill_between(min_s.xindex.value, min_s.value, max_s.value, color=color, alpha=alpha)
-        
-        # Plot median line
-        label = kwargs.pop('label', median.name)
-        return ax.plot(median.xindex.value, median.value, color=color, label=label, **kwargs)
+        return plot_mmm(median, min_s, max_s, ax=ax, **kwargs)
+
+    def show(self, warn=True):
+        """Show the figure and close it to prevent double display."""
+        import matplotlib.pyplot as plt
+        plt.show()
+        plt.close(self)
+        return None
 
 def plot_summary(sg_collection, fmin=None, fmax=None, title='', **kwargs):
     """
     Plot a grid of Spectrograms and their percentile summaries side-by-side.
-    
+
     Suitable for ASD, PSD, Coherence, and other spectrograms.
-    
+
     Parameters
     ----------
     sg_collection : SpectrogramList, SpectrogramDict, or SpectrogramMatrix
@@ -466,8 +616,7 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title='', **kwargs):
         Passed to Plot constructor for global settings.
     """
     from matplotlib import pyplot as plt
-    from gwexpy.spectrogram import Spectrogram, SpectrogramList, SpectrogramDict, SpectrogramMatrix
-    from gwexpy.plot import Plot
+    from gwexpy.spectrogram import SpectrogramList, SpectrogramDict, SpectrogramMatrix
     import numpy as np
 
     # Normalize collection to a dict-like or list of (name, spectrogram)
@@ -512,13 +661,13 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title='', **kwargs):
                              gridspec_kw={"width_ratios": [2, 1], "wspace": 0.05})
     if num_rows == 1:
         axes = np.expand_dims(axes, axis=0)
-    
+
     if title:
         fig.suptitle(title)
 
     # Import gwpy scales for auto-gps
     try:
-        from gwpy.plot import Plot as GwpyPlot
+        from gwpy.plot import Plot as GwpyPlot  # noqa: F401 - registers auto-gps scale
         # This import registers the 'auto-gps' scale with matplotlib
     except ImportError:
         pass
@@ -529,17 +678,16 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title='', **kwargs):
         p50 = sg.percentile(50)
         p10 = sg.percentile(10)
         p90 = sg.percentile(90)
-        
+
         # Plot directly on the axis without creating extra figures
-        freqs = p50.frequencies.value
-        ax_asd.fill_between(freqs, p10.value, p90.value, alpha=0.3, label='10%-90%')
-        ax_asd.plot(freqs, p50.value, label='50%')
-        
+        ax_asd.fill_between(p10.frequencies.value, p10.value, p90.value, alpha=0.3, label='10%-90%')
+        ax_asd.plot(p50.frequencies.value, p50.value, label='50%')
+
         ax_asd.set_xscale('log')
         ax_asd.set_yscale('log')
-        
+
         unit_str = sg.unit.to_string('latex_inline').replace('Hz^{-1/2}', r'/\sqrt{Hz}')
-        
+
         # Auto-detect title based on unit
         unit_lower = str(sg.unit).lower()
         name_lower = str(getattr(sg, 'name', '')).lower()
@@ -552,24 +700,27 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title='', **kwargs):
         else:
             summary_title = f'Percentile Summary [{unit_str}]'
         ax_asd.set_title(summary_title)
-        ax_asd.set_xlim(fmin, fmax)
+        # Avoid warning by ensuring xlim > 0 for log axis
+        pos_freqs = p50.frequencies.value[p50.frequencies.value > 0]
+        fmin_plot = max(fmin, pos_freqs[0]) if len(pos_freqs) > 0 else (fmin if fmin > 0 else 1e-3)
+        ax_asd.set_xlim(fmin_plot, fmax)
         ax_asd.legend(loc='upper right', fontsize=8)
-        
+
         # Only show x-label on bottom row
         if i == num_rows - 1:
             ax_asd.set_xlabel('Frequency [Hz]')
         else:
             ax_asd.tick_params(labelbottom=False)
-        
+
         clim = ax_asd.get_ylim()
-        
+
         # 2. Spectrogram Plot (Left)
         ax_sg = axes[i, 0]
         # Ensure log norm for spectrogram
         from matplotlib.colors import LogNorm
         vmin = clim[0] if clim[0] > 0 else 1e-25
         vmax = clim[1] if clim[1] > 0 else 1e-15
-        
+
         # Plot spectrogram directly using pcolormesh
         times = sg.times.value
         freqs = sg.frequencies.value
@@ -577,23 +728,23 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title='', **kwargs):
         ax_sg.set_title(name)
         ax_sg.set_ylim(fmin, fmax)
         ax_sg.set_ylabel('Frequency [Hz]')
-        
+
         # Apply auto-gps scale if available
         try:
             ax_sg.set_xscale('auto-gps')
         except ValueError:
             pass  # Fall back to default scale
-        
+
         # Only show x-label on bottom row - clear any auto-generated labels on non-bottom rows
         if i == num_rows - 1:
             pass  # Let auto-gps handle the xlabel for bottom row
         else:
             ax_sg.set_xlabel('')
             ax_sg.tick_params(labelbottom=False)
-        
+
         # Add colorbar
         fig.colorbar(mesh, ax=ax_sg, label=sg.unit.to_string('latex_inline'))
-        
+
     fig.tight_layout()
 
     return fig, axes

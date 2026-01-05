@@ -529,6 +529,7 @@ def _normalize_input(
         return arr, {"unit": unit_arr, "name": name_arr, "channel": channel_arr}, detected_xindex
 
     # 5. SeriesMatrix input
+    from .seriesmatrix import SeriesMatrix
     if isinstance(data, SeriesMatrix):
         arr = np.array(data)
         unit_arr = _broadcast_attr(units, data.units.shape, "units") if units is not None else data.units.copy()

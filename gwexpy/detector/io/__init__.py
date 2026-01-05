@@ -1,1 +1,1 @@
-from gwpy.detector.io import *
+from gwpy.detector.io import *  # noqa: F403

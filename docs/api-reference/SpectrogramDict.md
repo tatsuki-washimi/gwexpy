@@ -1,6 +1,6 @@
 # SpectrogramDict
 
-**Inherits from:** UserDict
+**Inherits from:** PhaseMethodsMixin, UserDict
 
 
 Dictionary of Spectrogram objects.
@@ -20,7 +20,23 @@ __init__(self, dict=None, **kwargs)
 
 Initialize self.  See help(type(self)) for accurate signature.
 
-*(Inherited from `MutableMapping`)*
+*(Inherited from `PhaseMethodsMixin`)*
+
+### `angle`
+
+```python
+angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+Alias for `phase(unwrap=unwrap, deg=deg)`.
+
+### `bootstrap_asd`
+
+```python
+bootstrap_asd(self, *args, **kwargs)
+```
+
+Estimate robust ASD from each spectrogram in the dict (returns FrequencySeriesDict).
 
 ### `crop`
 
@@ -62,6 +78,14 @@ Returns
 SpectrogramDict
 
 
+### `degree`
+
+```python
+degree(self, unwrap: 'bool' = False) -> "'SpectrogramDict'"
+```
+
+Compute phase (in degrees) of each spectrogram.
+
 ### `interpolate`
 
 ```python
@@ -84,6 +108,32 @@ Returns
 SpectrogramDict
 
 
+### `phase`
+
+```python
+phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+
+Calculate the phase of the data.
+
+Parameters
+----------
+unwrap : `bool`, optional
+    If `True`, unwrap the phase to remove discontinuities.
+    Default is `False`.
+deg : `bool`, optional
+    If `True`, return the phase in degrees.
+    Default is `False` (radians).
+**kwargs
+    Additional arguments passed to the underlying calculation.
+
+Returns
+-------
+`Series` or `Matrix` or `Collection`
+    The phase of the data.
+
+
 ### `plot`
 
 ```python
@@ -91,6 +141,24 @@ plot(self, **kwargs)
 ```
 
 Plot all spectrograms stacked vertically.
+
+### `plot_summary`
+
+```python
+plot_summary(self, **kwargs)
+```
+
+
+Plot Dictionary as side-by-side Spectrograms and percentile summaries.
+
+
+### `radian`
+
+```python
+radian(self, unwrap: 'bool' = False) -> "'SpectrogramDict'"
+```
+
+Compute phase (in radians) of each spectrogram.
 
 ### `read`
 
@@ -125,10 +193,26 @@ SpectrogramDict
 ### `to_cupy`
 
 ```python
-to_cupy(self, dtype=None)
+to_cupy(self, *args, **kwargs) -> 'dict'
 ```
 
-Convert to dict of CuPy arrays.
+Convert each item to cupy.ndarray. Returns a dict.
+
+### `to_dask`
+
+```python
+to_dask(self, *args, **kwargs) -> 'dict'
+```
+
+Convert each item to dask.array. Returns a dict.
+
+### `to_jax`
+
+```python
+to_jax(self, *args, **kwargs) -> 'dict'
+```
+
+Convert each item to jax.Array. Returns a dict.
 
 ### `to_matrix`
 
@@ -144,13 +228,21 @@ SpectrogramMatrix
     3D array of (N, Time, Freq).
 
 
+### `to_tensorflow`
+
+```python
+to_tensorflow(self, *args, **kwargs) -> 'dict'
+```
+
+Convert each item to tensorflow.Tensor. Returns a dict.
+
 ### `to_torch`
 
 ```python
-to_torch(self, device=None, dtype=None)
+to_torch(self, *args, **kwargs) -> 'dict'
 ```
 
-Convert to dict of PyTorch tensors.
+Convert each item to torch.Tensor. Returns a dict.
 
 ### `update`
 
