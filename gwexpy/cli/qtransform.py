@@ -1,1 +1,1 @@
-from gwpy.cli.qtransform import *
+from gwpy.cli.qtransform import *  # noqa: F403

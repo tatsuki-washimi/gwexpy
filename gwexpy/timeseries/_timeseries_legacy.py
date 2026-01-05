@@ -21,7 +21,7 @@ from __future__ import annotations
 
 
 try:
-    import scipy.signal
+    import scipy.signal  # noqa: F401 - availability check
 except ImportError:
     pass
 
@@ -30,26 +30,6 @@ from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
 # --- Imports for delegation ---
 
-from .utils import (
-    _extract_axis_info,
-)
-
-
-
-def _extract_axis_info(ts):
-    """Extract axis information from a TimeSeries.
-
-    Returns a dict with:
-    - 'dt': sample interval (Quantity or None)
-    - 'regular': whether the series has regular sampling
-    """
-    try:
-        dt = ts.dt
-        regular = True
-    except (AttributeError, ValueError):
-        dt = None
-        regular = False
-    return {'dt': dt, 'regular': regular}
 
 
 class TimeSeries(BaseTimeSeries):

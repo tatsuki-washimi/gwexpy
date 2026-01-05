@@ -1,1 +1,1 @@
-from gwpy.signal.fft import *
+from gwpy.signal.fft import *  # noqa: F403

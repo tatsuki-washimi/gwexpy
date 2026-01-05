@@ -1,1 +1,1 @@
-from gwpy.io.registry import *
+from gwpy.io.registry import *  # noqa: F403

@@ -1,6 +1,6 @@
 # TimeSeriesList
 
-**Inherits from:** TimeSeriesList
+**Inherits from:** PhaseMethodsMixin, TimeSeriesList
 
 List of TimeSeries objects.
 
@@ -89,6 +89,22 @@ which can then be simply visualised via
 >>> plot.show()
 
 
+### `analytic_signal`
+
+```python
+analytic_signal(self, *args, **kwargs)
+```
+
+Apply analytic_signal to each item.
+
+### `angle`
+
+```python
+angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+Alias for `phase(unwrap=unwrap, deg=deg)`.
+
 ### `append`
 
 ```python
@@ -118,6 +134,14 @@ average_fft(self, *args, **kwargs)
 Apply average_fft to each TimeSeries in the list.
 Returns a FrequencySeriesList.
 
+
+### `baseband`
+
+```python
+baseband(self, *args, **kwargs)
+```
+
+Apply baseband to each item.
 
 ### `coalesce`
 
@@ -234,6 +258,14 @@ Decimate each TimeSeries in the list.
 Returns a new TimeSeriesList.
 
 
+### `degree`
+
+```python
+degree(self, *args, **kwargs) -> 'TimeSeriesList'
+```
+
+Compute instantaneous phase (in degrees) of each item.
+
 ### `detrend`
 
 ```python
@@ -244,6 +276,14 @@ detrend(self, *args, **kwargs) -> 'TimeSeriesList'
 Detrend each TimeSeries in the list.
 Returns a new TimeSeriesList.
 
+
+### `envelope`
+
+```python
+envelope(self, *args, **kwargs)
+```
+
+Apply envelope to each item.
 
 ### `extend`
 
@@ -286,6 +326,22 @@ Gate each TimeSeries in the list.
 Returns a new TimeSeriesList.
 
 
+### `heterodyne`
+
+```python
+heterodyne(self, *args, **kwargs)
+```
+
+Apply heterodyne to each item.
+
+### `hilbert`
+
+```python
+hilbert(self, *args, **kwargs)
+```
+
+Alias for analytic_signal.
+
 ### `ica`
 
 ```python
@@ -319,6 +375,22 @@ Returns
 -------
 TimeSeriesList
 
+
+### `instantaneous_frequency`
+
+```python
+instantaneous_frequency(self, *args, **kwargs)
+```
+
+Apply instantaneous_frequency to each item.
+
+### `instantaneous_phase`
+
+```python
+instantaneous_phase(self, *args, **kwargs)
+```
+
+Apply instantaneous_phase to each item.
 
 ### `is_contiguous`
 
@@ -363,6 +435,14 @@ TimeSeries.append
     for details on how the individual series are concatenated together
 
 
+### `lock_in`
+
+```python
+lock_in(self, *args, **kwargs)
+```
+
+Apply lock_in to each item.
+
 ### `mask`
 
 ```python
@@ -398,6 +478,14 @@ min(self, *args, **kwargs)
 
 Compute minimum for each TimeSeries. Returns list of scalars.
 
+### `mix_down`
+
+```python
+mix_down(self, *args, **kwargs)
+```
+
+Apply mix_down to each item.
+
 ### `notch`
 
 ```python
@@ -416,6 +504,48 @@ pca(self, *args, **kwargs)
 ```
 
 Perform PCA decomposition across channels.
+
+### `phase`
+
+```python
+phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+
+Calculate the phase of the data.
+
+Parameters
+----------
+unwrap : `bool`, optional
+    If `True`, unwrap the phase to remove discontinuities.
+    Default is `False`.
+deg : `bool`, optional
+    If `True`, return the phase in degrees.
+    Default is `False` (radians).
+**kwargs
+    Additional arguments passed to the underlying calculation.
+
+Returns
+-------
+`Series` or `Matrix` or `Collection`
+    The phase of the data.
+
+
+### `plot`
+
+```python
+plot(self, **kwargs: Any)
+```
+
+Plot all series. Delegates to gwexpy.plot.Plot.
+
+### `plot_all`
+
+```python
+plot_all(self, *args: Any, **kwargs: Any)
+```
+
+Alias for plot(). Plots all series.
 
 ### `psd`
 
@@ -439,6 +569,14 @@ Compute Q-transform for each TimeSeries in the list.
 Returns a SpectrogramList.
 
 
+### `radian`
+
+```python
+radian(self, *args, **kwargs) -> 'TimeSeriesList'
+```
+
+Compute instantaneous phase (in radians) of each item.
+
 ### `resample`
 
 ```python
@@ -461,7 +599,7 @@ Compute RMS for each TimeSeries. Returns list of scalars.
 ### `rolling_max`
 
 ```python
-rolling_max(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto')
+rolling_max(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto', ignore_nan=None)
 ```
 
 Apply rolling max to each element.
@@ -469,7 +607,7 @@ Apply rolling max to each element.
 ### `rolling_mean`
 
 ```python
-rolling_mean(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto')
+rolling_mean(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto', ignore_nan=None)
 ```
 
 Apply rolling mean to each element.
@@ -477,7 +615,7 @@ Apply rolling mean to each element.
 ### `rolling_median`
 
 ```python
-rolling_median(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto')
+rolling_median(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto', ignore_nan=None)
 ```
 
 Apply rolling median to each element.
@@ -485,7 +623,7 @@ Apply rolling median to each element.
 ### `rolling_min`
 
 ```python
-rolling_min(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto')
+rolling_min(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto', ignore_nan=None)
 ```
 
 Apply rolling min to each element.
@@ -493,7 +631,7 @@ Apply rolling min to each element.
 ### `rolling_std`
 
 ```python
-rolling_std(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto', ddof=0)
+rolling_std(self, window, *, center=False, min_count=1, nan_policy='omit', backend='auto', ddof=0, ignore_nan=None)
 ```
 
 Apply rolling std to each element.
@@ -552,6 +690,14 @@ std(self, *args, **kwargs)
 
 Compute standard deviation for each TimeSeries. Returns list of scalars.
 
+### `stlt`
+
+```python
+stlt(self, *args, **kwargs)
+```
+
+Apply stlt to each item. Returns a list of TimePlaneTransforms.
+
 ### `taper`
 
 ```python
@@ -603,6 +749,14 @@ to_tmultigraph(self, name: Optional[str] = None) -> Any
 ```
 
 Convert to ROOT TMultiGraph.
+
+### `unwrap_phase`
+
+```python
+unwrap_phase(self, *args, **kwargs)
+```
+
+Apply unwrap_phase to each item.
 
 ### `value_at`
 

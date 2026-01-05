@@ -39,7 +39,7 @@ UNIT_CONVERSION = {
 def read_timeseriesdict_sdb(source, table='archive', columns=None, **kwargs):
     """
     Read SDB (SQLite) file into TimeSeriesDict.
-    
+
     Parameters
     ----------
     source : str
@@ -52,7 +52,7 @@ def read_timeseriesdict_sdb(source, table='archive', columns=None, **kwargs):
     filename = str(source)
     # Open SQLite connection
     conn = sqlite3.connect(filename)
-    
+
     try:
         # Determine columns to query
         if columns is None:
@@ -60,7 +60,7 @@ def read_timeseriesdict_sdb(source, table='archive', columns=None, **kwargs):
             cursor = conn.cursor()
             cursor.execute(f"PRAGMA table_info({table})")
             table_cols = [info[1] for info in cursor.fetchall()]
-            
+
             # Filter columns that we know how to convert + dynamic others?
             # For now, stick to known weather columns
             target_cols = [c for c in table_cols if c in UNIT_CONVERSION or c == 'dateTime']
@@ -68,25 +68,25 @@ def read_timeseriesdict_sdb(source, table='archive', columns=None, **kwargs):
             target_cols = columns
             if 'dateTime' not in target_cols:
                 target_cols.append('dateTime')
-        
+
         col_str = ", ".join(target_cols)
         query = f"SELECT {col_str} FROM {table} ORDER BY dateTime"
-        
+
         # Use pandas for easy reading using the connection context
         df = pd.read_sql_query(query, conn)
-        
+
     finally:
         conn.close()
 
     if df.empty:
         return TimeSeriesDict()
-    
+
     # Coerce numeric columns to handle potential NULLs -> NaN
     # We expect all columns except potentially descriptive ones (none here) to be numeric
     for col in df.columns:
         if col != 'dateTime':
             df[col] = pd.to_numeric(df[col], errors='coerce')
-    
+
     # Check if dateTime is present
     if 'dateTime' not in df.columns:
         raise ValueError("Table must contain 'dateTime' column for time series conversion.")
@@ -96,7 +96,7 @@ def read_timeseriesdict_sdb(source, table='archive', columns=None, **kwargs):
     # gwpy.time.to_gps handles datetime objects.
     # Convert first timestamp
     t_start_unix = df['dateTime'].values[0]
-    
+
     # Calculate sampling rate/dt
     # Assume regular?
     if len(df) > 1:
@@ -108,22 +108,22 @@ def read_timeseriesdict_sdb(source, table='archive', columns=None, **kwargs):
         sample_rate = 1.0 / dt_median
     else:
         sample_rate = 1.0 # default
-        
+
     # Convert to TimeSeriesDict
     tsd = TimeSeriesDict()
-    
+
     # Use astropy Time for accurate conversion if needed, but simple offset is faster
     # Unix 0 = 1970-01-01 00:00:00 UTC = GPS 315964819 (wait, 315964819 is with leap seconds)
     # Correct way: Time(unix_val, format='unix').gps
     t0_gps = Time(t_start_unix, format='unix').gps
-    
+
     for col in df.columns:
         if col == 'dateTime':
             continue
-            
+
         data = df[col].values
         unit = ''
-        
+
         # Apply conversion
         if col in UNIT_CONVERSION:
             u_name, factor = UNIT_CONVERSION[col]
@@ -132,7 +132,7 @@ def read_timeseriesdict_sdb(source, table='archive', columns=None, **kwargs):
                 data = factor(data)
             else:
                 data = data * factor
-                
+
         ts = TimeSeries(
             data,
             t0=t0_gps,
@@ -141,7 +141,7 @@ def read_timeseriesdict_sdb(source, table='archive', columns=None, **kwargs):
             unit=unit
         )
         tsd[col] = ts
-        
+
     return tsd
 
 
@@ -162,7 +162,7 @@ for fmt in ["sdb", "sqlite", "sqlite3"]:
     io_registry.register_reader(fmt, TimeSeriesDict, read_timeseriesdict_sdb, force=True)
     io_registry.register_reader(fmt, TimeSeries, read_timeseries_sdb, force=True)
     io_registry.register_reader(fmt, TimeSeriesMatrix, lambda *a, **k: read_timeseriesdict_sdb(*a, **k).to_matrix(), force=True)
-    
+
     io_registry.register_identifier(
         fmt, TimeSeriesDict,
         lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))

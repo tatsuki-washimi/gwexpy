@@ -16,7 +16,7 @@ def to_dict(ts):
     """
     from .base import to_plain_array
     data = to_plain_array(ts)
-    
+
     meta = {
         "t0": float(ts.t0.value) if hasattr(ts.t0, "value") else float(ts.t0),
         "dt": float(ts.dt.value) if hasattr(ts.dt, "value") else float(ts.dt),
@@ -42,5 +42,5 @@ def from_dict(cls, data_dict):
     dt = data_dict.get("dt", 1)
     unit = data_dict.get("unit")
     name = data_dict.get("name")
-    
+
     return cls(data, t0=t0, dt=dt, unit=unit, name=name)

@@ -1,1 +1,1 @@
-from gwpy.io.kerberos import *
+from gwpy.io.kerberos import *  # noqa: F403

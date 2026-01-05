@@ -17,7 +17,10 @@ if TYPE_CHECKING:
     pass
 
 
-class TimeSeriesInteropMixin:
+from gwexpy.types.mixin import InteropMixin
+
+
+class TimeSeriesInteropMixin(InteropMixin):
     """
     Mixin class providing interoperability methods for TimeSeries.
 
@@ -378,33 +381,7 @@ class TimeSeriesInteropMixin:
     # PyTorch
     # ===============================
 
-    def to_torch(
-        self,
-        device: Optional[str] = None,
-        dtype: Any = None,
-        requires_grad: bool = False,
-        copy: bool = False,
-    ) -> Any:
-        """
-        Convert to torch.Tensor.
-
-        Parameters
-        ----------
-        device : str, optional
-            Target device ('cpu', 'cuda', etc.).
-        dtype : torch.dtype, optional
-            Output dtype.
-        requires_grad : bool
-            Whether to enable gradient tracking.
-        copy : bool
-            Whether to force a copy.
-
-        Returns
-        -------
-        torch.Tensor
-        """
-        from gwexpy.interop import to_torch
-        return to_torch(self, device=device, dtype=dtype, requires_grad=requires_grad, copy=copy)
+    # to_torch provided by InteropMixin
 
     @classmethod
     def from_torch(
@@ -442,21 +419,7 @@ class TimeSeriesInteropMixin:
     # TensorFlow
     # ===============================
 
-    def to_tensorflow(self, dtype: Any = None) -> Any:
-        """
-        Convert to tensorflow.Tensor.
-
-        Parameters
-        ----------
-        dtype : tf.dtype, optional
-            Output dtype.
-
-        Returns
-        -------
-        tensorflow.Tensor
-        """
-        from gwexpy.interop import to_tf
-        return to_tf(self, dtype=dtype)
+    # to_tensorflow provided by InteropMixin
 
     @classmethod
     def from_tensorflow(
@@ -492,21 +455,7 @@ class TimeSeriesInteropMixin:
     # Dask
     # ===============================
 
-    def to_dask(self, chunks: Any = "auto") -> Any:
-        """
-        Convert to dask.array.
-
-        Parameters
-        ----------
-        chunks : int or 'auto'
-            Chunk size for the dask array.
-
-        Returns
-        -------
-        dask.array.Array
-        """
-        from gwexpy.interop import to_dask
-        return to_dask(self, chunks=chunks)
+    # to_dask provided by InteropMixin
 
     @classmethod
     def from_dask(
@@ -545,32 +494,7 @@ class TimeSeriesInteropMixin:
     # Zarr
     # ===============================
 
-    def to_zarr(
-        self,
-        store: Any,
-        path: str,
-        chunks: Any = None,
-        compressor: Any = None,
-        overwrite: bool = False,
-    ) -> None:
-        """
-        Write to Zarr array.
-
-        Parameters
-        ----------
-        store : str or zarr.Store
-            Target store.
-        path : str
-            Array path within store.
-        chunks : int, optional
-            Chunk size.
-        compressor : numcodecs.Codec, optional
-            Compression codec.
-        overwrite : bool
-            Whether to overwrite existing.
-        """
-        from gwexpy.interop import to_zarr
-        to_zarr(self, store, path, chunks=chunks, compressor=compressor, overwrite=overwrite)
+    # to_zarr provided by InteropMixin
 
     @classmethod
     def from_zarr(cls, store: Any, path: str) -> Any:
@@ -634,21 +558,11 @@ class TimeSeriesInteropMixin:
     # JAX
     # ===============================
 
-    def to_jax(self, dtype: Any = None) -> Any:
-        """
-        Convert to jax.numpy.array.
+    # ===============================
+    # JAX
+    # ===============================
 
-        Parameters
-        ----------
-        dtype : jax.numpy.dtype, optional
-            Output dtype.
-
-        Returns
-        -------
-        jax.numpy.ndarray
-        """
-        from gwexpy.interop import to_jax
-        return to_jax(self, dtype=dtype)
+    # to_jax provided by InteropMixin
 
     @classmethod
     def from_jax(
@@ -684,21 +598,7 @@ class TimeSeriesInteropMixin:
     # CuPy
     # ===============================
 
-    def to_cupy(self, dtype: Any = None) -> Any:
-        """
-        Convert to cupy.array.
-
-        Parameters
-        ----------
-        dtype : cupy.dtype, optional
-            Output dtype.
-
-        Returns
-        -------
-        cupy.ndarray
-        """
-        from gwexpy.interop import to_cupy
-        return to_cupy(self, dtype=dtype)
+    # to_cupy provided by InteropMixin
 
     @classmethod
     def from_cupy(

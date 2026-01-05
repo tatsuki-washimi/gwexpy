@@ -1,1 +1,1 @@
-from gwpy.cli.coherencegram import *
+from gwpy.cli.coherencegram import *  # noqa: F403

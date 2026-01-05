@@ -87,7 +87,7 @@ def _read_win_fixed(filename, century="20"):
                 else:
                     output[chanum] = [idata22, ]
                     srates[chanum] = srate
-                
+
                 xlen = int(xlen) # ensure int
                 sdata = fpin.read(xlen)
                 leng += xlen
@@ -101,20 +101,20 @@ def _read_win_fixed(filename, century="20"):
                 if datawide == 0.5:
                     for i in range(xlen):
                         val_byte = sdata[i] # int in Py3
-                        
+
                         # Upper 4 bits
                         v_upper = (val_byte & 0b11110000) >> 4
                         idata2 = output[chanum][-1] + s4(v_upper)
                         output[chanum].append(idata2)
-                        
+
                         if i == (xlen - 1):
                             break
-                            
+
                         # Lower 4 bits
                         v_lower = val_byte & 0b00001111
                         idata2 = idata2 + s4(v_lower)
                         output[chanum].append(idata2)
-                        
+
                 elif datawide == 1:
                     for i in range(int(xlen // datawide)):
                         val = np.frombuffer(sdata[i:i + 1], np.int8)[0]
@@ -128,8 +128,8 @@ def _read_win_fixed(filename, century="20"):
                 elif datawide == 3:
                     for i in range(int(xlen // datawide)):
                         # PATCH: Add parenthesis and sign extension for 3-byte int
-                        chunk = sdata[3 * i:3 * (i + 1)] + b'\x00' # Pad to 4 bytes? No, b' ' is 0x20. 
-                        # Wait, original code uses b' '. 
+                        sdata[3 * i:3 * (i + 1)] + b'\x00' # Pad to 4 bytes? No, b' ' is 0x20.
+                        # Wait, original code uses b' '.
                         # struct.unpack('>i', chunk + b' ') ? No chunk is 3 bytes.
                         # Original: from_buffer(sdata[...] + b' ', '>i')[0] >> 8
                         # Assuming Big Endian 3 bytes -> Pad at END with something, unpack as 4 byte int, shift right 8.
@@ -164,7 +164,7 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
     Read a WIN/WIN32 format file using fixed ObsPy-based reader.
     """
     stream = _read_win_fixed(source, **kwargs)
-    
+
     # Merge if necessary (simple gap handling)
     stream.merge(method=1, fill_value=np.nan)
 
@@ -174,13 +174,13 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
         # Convert ObsPy trace to TimeSeries
         from gwexpy.io.utils import datetime_to_gps
         import datetime
-        
+
         # Start time
         dt = tr.stats.starttime.datetime
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=datetime.timezone.utc)
         t0 = datetime_to_gps(dt)
-        
+
         ts = TimeSeries(
             tr.data,
             t0=t0,
@@ -189,7 +189,7 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
             channel=tr.id,
         )
         tsd[tr.id] = ts
-        
+
     return tsd
 
 

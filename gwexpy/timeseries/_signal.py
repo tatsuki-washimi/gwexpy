@@ -15,7 +15,7 @@ from astropy import units as u
 from typing import Optional, Any, TYPE_CHECKING
 
 try:
-    import scipy.signal
+    import scipy.signal  # noqa: F401 - availability check
 except ImportError:
     scipy = None
 
@@ -142,6 +142,32 @@ class TimeSeriesSignalMixin:
         # Override unit
         out.override_unit('deg' if deg else 'rad')
         return out
+
+    def radian(self, unwrap: bool = False, **kwargs: Any) -> "TimeSeriesSignalMixin":
+        """
+        Calculate the instantaneous phase of the TimeSeries in radians.
+
+        Parameters
+        ----------
+        unwrap : bool, optional
+            If True, unwrap the phase.
+        **kwargs
+            Passed to instantaneous_phase.
+        """
+        return self.instantaneous_phase(deg=False, unwrap=unwrap, **kwargs)
+
+    def degree(self, unwrap: bool = False, **kwargs: Any) -> "TimeSeriesSignalMixin":
+        """
+        Calculate the instantaneous phase of the TimeSeries in degrees.
+
+        Parameters
+        ----------
+        unwrap : bool, optional
+            If True, unwrap the phase.
+        **kwargs
+            Passed to instantaneous_phase.
+        """
+        return self.instantaneous_phase(deg=True, unwrap=unwrap, **kwargs)
 
     def unwrap_phase(self, deg: bool = False, **kwargs: Any) -> "TimeSeriesSignalMixin":
         """Alias for instantaneous_phase(unwrap=True)."""
@@ -343,13 +369,13 @@ class TimeSeriesSignalMixin:
         """
         # 1. Mix down
         z = self.mix_down(phase=phase, singlesided=singlesided)
-        
+
         # 2. Resample (average) to stride-based rate
         if isinstance(stride, (float, int)):
              stride_dt = stride * u.s
         else:
              stride_dt = u.Quantity(stride)
-        
+
         # Use our bin-based resample to get the average
         return z.resample(stride_dt, agg='mean')
 
@@ -393,34 +419,51 @@ class TimeSeriesSignalMixin:
 
     def lock_in(
         self,
+        f0: Any = None,
         *,
         phase: Any = None,
-        f0: Any = None,
         fdot: Any = 0.0,
         fddot: Any = 0.0,
         phase_epoch: Any = None,
         phase0: float = 0.0,
-        stride: float = 1.0,
+        stride: Optional[float] = None,
+        bandwidth: Optional[float] = None,
         singlesided: bool = True,
         output: str = "amp_phase",
         deg: bool = True,
+        **kwargs: Any,
     ) -> Any:
         """
         Perform lock-in amplification (demodulation + averaging).
         """
         self._check_regular("lock_in")
 
-        phase_series = self._build_phase_series(
-            phase=phase,
-            f0=f0,
-            fdot=fdot,
-            fddot=fddot,
-            phase_epoch=phase_epoch,
-            phase0=phase0,
-            prefer_dt=True
-        )
-
-        outc = self.heterodyne(phase_series, stride=stride, singlesided=singlesided)
+        if bandwidth is not None:
+            # LPF based
+            outc = self.baseband(
+                phase=phase,
+                f0=f0,
+                fdot=fdot,
+                fddot=fddot,
+                phase_epoch=phase_epoch,
+                phase0=phase0,
+                lowpass=bandwidth,
+                singlesided=singlesided,
+                **kwargs
+            )
+        else:
+            # Averaging based
+            stride = stride or 1.0
+            phase_series = self._build_phase_series(
+                phase=phase,
+                f0=f0,
+                fdot=fdot,
+                fddot=fddot,
+                phase_epoch=phase_epoch,
+                phase0=phase0,
+                prefer_dt=True
+            )
+            outc = self.heterodyne(phase_series, stride=stride, singlesided=singlesided)
 
         if output == 'complex':
              return outc

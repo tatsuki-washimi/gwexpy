@@ -35,9 +35,8 @@ def read_timeseriesdict_tdms(
     """
     TdmsFile = _import_nptdms()
     tdms_file = TdmsFile.read(source)
-    
+
     # Fallback timing from root
-    root_t0 = 0.0
     if 'DateTime' in tdms_file.properties:
         dt_root = tdms_file.properties['DateTime']
         if isinstance(dt_root, (np.datetime64, datetime.datetime)):
@@ -45,22 +44,22 @@ def read_timeseriesdict_tdms(
              pass
 
     tsd = TimeSeriesDict()
-    
+
     for group in tdms_file.groups():
         for channel in group.channels():
             full_name = f"{group.name}/{channel.name}"
-            
+
             if channels and full_name not in channels and channel.name not in channels:
                 continue
-                
+
             data = channel.read_data()
             props = channel.properties
-            
+
             # Timing
             dt = props.get('wf_increment', 1.0)
             if dt == 0 or np.isinf(dt) or np.isnan(dt):
                 dt = 1.0 # fallback
-                
+
             t0 = props.get('wf_start_time', 0.0)
             if (t0 == 0.0 or (isinstance(t0, np.datetime64) and np.isnat(t0))) and 'DateTime' in tdms_file.properties:
                 t0 = tdms_file.properties['DateTime']
@@ -81,7 +80,7 @@ def read_timeseriesdict_tdms(
                     if t0.tzinfo is None:
                         t0 = t0.replace(tzinfo=datetime.timezone.utc)
                     t0 = datetime_to_gps(t0)
-            
+
             ts = TimeSeries(
                 data,
                 dt=dt,
@@ -91,7 +90,7 @@ def read_timeseriesdict_tdms(
             )
             ts = apply_unit(ts, unit)
             tsd[full_name] = ts
-            
+
     set_provenance(
         tsd,
         {

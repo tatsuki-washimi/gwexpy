@@ -1,1 +1,1 @@
-from gwpy.cli.timeseries import *
+from gwpy.cli.timeseries import *  # noqa: F403

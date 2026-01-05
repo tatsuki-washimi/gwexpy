@@ -343,8 +343,8 @@ class GraphPanel(QtWidgets.QFrame):
                 )
             )
             bchk.toggled.connect(
-                lambda checked, x=i, l=lchk: (
-                    l.setChecked(False) if checked else None,
+                lambda checked, x=i, line_ck=lchk: (
+                    line_ck.setChecked(False) if checked else None,
                     update_style(x),
                 )
             )
@@ -822,11 +822,11 @@ class GraphPanel(QtWidgets.QFrame):
         def apply_margins():
             # diaggui margins are often normalized. Here we estimate pixels for pyqtgraph setContentsMargins.
             # Usually these are 0.0 - 1.0. Let's multiply by a factor (e.g. 200) for visual effect.
-            l = margin_sbs["L"].value() * 200
+            left = margin_sbs["L"].value() * 200
             r = margin_sbs["R"].value() * 200
             t = margin_sbs["T"].value() * 200
             b = margin_sbs["B"].value() * 200
-            self.target_plot.getPlotItem().setContentsMargins(l, t, r, b)
+            self.target_plot.getPlotItem().setContentsMargins(left, t, r, b)
 
         # Connect title signals
         style_title_edit.textChanged.connect(apply_title_style)
@@ -995,7 +995,7 @@ class GraphPanel(QtWidgets.QFrame):
             axis.setLabel(text=ctrls["title"].text(), **label_style)
 
             # Tick Labels Style
-            l_px = f"{int(ctrls['l_size'].value() * 300)}pt"
+            f"{int(ctrls['l_size'].value() * 300)}pt"
             axis.setStyle(tickTextOffset=int(ctrls["l_off"].value() * 1000))
             axis.setTextPen(l_clr)
             # Apply font to tick labels via dummy QFont (pyqtgraph axis uses it)

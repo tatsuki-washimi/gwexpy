@@ -63,28 +63,28 @@ def test_frequencyseriesdict_plot_separate_axes_count_matches():
 
 
 def test_frequencyserieslist_type_constraint_append():
-    l = FrequencySeriesList()
+    fsl = FrequencySeriesList()
     with pytest.raises(TypeError):
-        l.append(object())
+        fsl.append(object())
 
 
 def test_frequencyserieslist_slice_returns_same_type():
-    l = FrequencySeriesList(_make_frequencyseries(), _make_frequencyseries(2.0))
-    sliced = l[:1]
+    fsl = FrequencySeriesList(_make_frequencyseries(), _make_frequencyseries(2.0))
+    sliced = fsl[:1]
     assert isinstance(sliced, FrequencySeriesList)
     assert len(sliced) == 1
 
 
 def test_frequencyserieslist_copy_deepcopy_value_not_shared():
-    l = FrequencySeriesList(_make_frequencyseries(), _make_frequencyseries(2.0))
-    l2 = l.copy()
-    assert isinstance(l2, FrequencySeriesList)
-    assert not np.shares_memory(l[0].value, l2[0].value)
+    fsl = FrequencySeriesList(_make_frequencyseries(), _make_frequencyseries(2.0))
+    fsl2 = fsl.copy()
+    assert isinstance(fsl2, FrequencySeriesList)
+    assert not np.shares_memory(fsl[0].value, fsl2[0].value)
 
 
 def test_frequencyserieslist_plot_does_not_error():
-    l = FrequencySeriesList(_make_frequencyseries(), _make_frequencyseries(2.0))
-    plot = l.plot()
+    fsl = FrequencySeriesList(_make_frequencyseries(), _make_frequencyseries(2.0))
+    plot = fsl.plot()
     try:
         assert isinstance(plot, Plot)
     finally:
@@ -100,8 +100,8 @@ def test_frequencyseriesdict_span_uses_xspan():
 
 
 def test_frequencyserieslist_segments_uses_xspan():
-    l = FrequencySeriesList(_make_frequencyseries(), _make_frequencyseries(2.0))
-    segments = l.segments
+    fsl = FrequencySeriesList(_make_frequencyseries(), _make_frequencyseries(2.0))
+    segments = fsl.segments
     assert len(segments) == 2
-    assert segments[0].start == l[0].xspan.start
-    assert segments[0].end == l[0].xspan.end
+    assert segments[0].start == fsl[0].xspan.start
+    assert segments[0].end == fsl[0].xspan.end

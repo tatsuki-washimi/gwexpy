@@ -1,1 +1,1 @@
-from gwpy.cli.spectrum import *
+from gwpy.cli.spectrum import *  # noqa: F403

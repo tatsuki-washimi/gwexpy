@@ -1,1 +1,1 @@
-from gwpy.plot.axes import *
+from gwpy.plot.axes import *  # noqa: F403

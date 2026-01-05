@@ -1,6 +1,6 @@
 # Array2D
 
-**Inherits from:** AxisApiMixin, Array2D
+**Inherits from:** AxisApiMixin, StatisticalMethodsMixin, Array2D
 
 
 2D Array with unified axis API.
@@ -362,6 +362,14 @@ GPS epoch associated with these data
 :type: `~astropy.time.Time`
 
 
+### `fit`
+
+```python
+fit(self: 'Series', *args: 'Any', **kwargs: 'Any') -> 'Any'
+```
+
+_No documentation available._
+
 ### `flatten`
 
 ```python
@@ -515,10 +523,46 @@ subset
     Sliced array.
 
 
+### `max`
+
+```python
+max(self, axis=None, out=None, keepdims=False, initial=None, where=True, ignore_nan=True)
+```
+
+a.max(axis=None, out=None, keepdims=False, initial=<no value>, where=True)
+
+Return the maximum along a given axis.
+
+Refer to `numpy.amax` for full documentation.
+
+See Also
+--------
+numpy.amax : equivalent function
+
+*(Inherited from `Array2D`)*
+
+### `mean`
+
+```python
+mean(self, axis=None, dtype=None, out=None, keepdims=False, *, where=True, ignore_nan=True)
+```
+
+a.mean(axis=None, dtype=None, out=None, keepdims=False, *, where=True)
+
+Returns the average of the array elements along given axis.
+
+Refer to `numpy.mean` for full documentation.
+
+See Also
+--------
+numpy.mean : equivalent function
+
+*(Inherited from `ndarray`)*
+
 ### `median`
 
 ```python
-median(self, axis=None, **kwargs)
+median(self, axis=None, out=None, overwrite_input=False, keepdims=False, ignore_nan=True)
 ```
 
 
@@ -601,6 +645,26 @@ array([7.,  2.])
 >>> assert not np.all(a==b)
 
 
+
+*(Inherited from `Array2D`)*
+
+### `min`
+
+```python
+min(self, axis=None, out=None, keepdims=False, initial=None, where=True, ignore_nan=True)
+```
+
+a.min(axis=None, out=None, keepdims=False, initial=<no value>, where=True)
+
+Return the minimum along a given axis.
+
+Refer to `numpy.amin` for full documentation.
+
+See Also
+--------
+numpy.amin : equivalent function
+
+*(Inherited from `Array2D`)*
 
 ### `name`
 
@@ -816,6 +880,14 @@ Returns
 self or copy
 
 
+### `rms`
+
+```python
+rms(self, axis=None, keepdims=False, ignore_nan=True)
+```
+
+_No documentation available._
+
 ### `sel`
 
 ```python
@@ -867,6 +939,24 @@ Examples
 >>> a.shift('-1 km')
 -995.0 m
 
+
+### `std`
+
+```python
+std(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True, ignore_nan=True)
+```
+
+a.std(axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True)
+
+Returns the standard deviation of the array elements along given axis.
+
+Refer to `numpy.std` for full documentation.
+
+See Also
+--------
+numpy.std : equivalent function
+
+*(Inherited from `ndarray`)*
 
 ### `step`
 
@@ -987,6 +1077,24 @@ Returns
 z : `~astropy.units.Quantity`
     the value of this Series at the given coordinates
 
+
+### `var`
+
+```python
+var(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True, ignore_nan=True)
+```
+
+a.var(axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True)
+
+Returns the variance of the array elements, along given axis.
+
+Refer to `numpy.var` for full documentation.
+
+See Also
+--------
+numpy.var : equivalent function
+
+*(Inherited from `ndarray`)*
 
 ### `write`
 

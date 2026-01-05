@@ -1,6 +1,6 @@
 # SpectrogramList
 
-**Inherits from:** UserList
+**Inherits from:** PhaseMethodsMixin, UserList
 
 
 List of Spectrogram objects.
@@ -21,7 +21,15 @@ __init__(self, initlist=None)
 
 Initialize self.  See help(type(self)) for accurate signature.
 
-*(Inherited from `MutableSequence`)*
+*(Inherited from `PhaseMethodsMixin`)*
+
+### `angle`
+
+```python
+angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+Alias for `phase(unwrap=unwrap, deg=deg)`.
 
 ### `append`
 
@@ -32,6 +40,14 @@ append(self, item)
 S.append(value) -- append value to the end of the sequence
 
 *(Inherited from `MutableSequence`)*
+
+### `bootstrap_asd`
+
+```python
+bootstrap_asd(self, *args, **kwargs)
+```
+
+Estimate robust ASD from each spectrogram in the list (returns FrequencySeriesList).
 
 ### `crop`
 
@@ -48,6 +64,14 @@ crop_frequencies(self, f0, f1, inplace=False)
 ```
 
 Crop frequencies.
+
+### `degree`
+
+```python
+degree(self, unwrap: 'bool' = False) -> "'SpectrogramList'"
+```
+
+Compute phase (in degrees) of each spectrogram.
 
 ### `extend`
 
@@ -67,6 +91,32 @@ interpolate(self, dt, df, inplace=False)
 
 Interpolate each spectrogram.
 
+### `phase`
+
+```python
+phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+
+Calculate the phase of the data.
+
+Parameters
+----------
+unwrap : `bool`, optional
+    If `True`, unwrap the phase to remove discontinuities.
+    Default is `False`.
+deg : `bool`, optional
+    If `True`, return the phase in degrees.
+    Default is `False` (radians).
+**kwargs
+    Additional arguments passed to the underlying calculation.
+
+Returns
+-------
+`Series` or `Matrix` or `Collection`
+    The phase of the data.
+
+
 ### `plot`
 
 ```python
@@ -74,6 +124,24 @@ plot(self, **kwargs)
 ```
 
 Plot all spectrograms stacked vertically.
+
+### `plot_summary`
+
+```python
+plot_summary(self, **kwargs)
+```
+
+
+Plot List as side-by-side Spectrograms and percentile summaries.
+
+
+### `radian`
+
+```python
+radian(self, unwrap: 'bool' = False) -> "'SpectrogramList'"
+```
+
+Compute phase (in radians) of each spectrogram.
 
 ### `read`
 
@@ -94,10 +162,26 @@ Rebin each spectrogram.
 ### `to_cupy`
 
 ```python
-to_cupy(self, dtype=None)
+to_cupy(self, *args, **kwargs) -> 'list'
 ```
 
-Convert each spectrogram to CuPy array. Returns a list.
+Convert each item to cupy.ndarray. Returns a list.
+
+### `to_dask`
+
+```python
+to_dask(self, *args, **kwargs) -> 'list'
+```
+
+Convert each item to dask.array. Returns a list.
+
+### `to_jax`
+
+```python
+to_jax(self, *args, **kwargs) -> 'list'
+```
+
+Convert each item to jax.Array. Returns a list.
 
 ### `to_matrix`
 
@@ -107,13 +191,21 @@ to_matrix(self)
 
 Convert to SpectrogramMatrix (N, Time, Freq).
 
+### `to_tensorflow`
+
+```python
+to_tensorflow(self, *args, **kwargs) -> 'list'
+```
+
+Convert each item to tensorflow.Tensor. Returns a list.
+
 ### `to_torch`
 
 ```python
-to_torch(self, device=None, dtype=None)
+to_torch(self, *args, **kwargs) -> 'list'
 ```
 
-Convert each spectrogram to PyTorch tensor. Returns a list.
+Convert each item to torch.Tensor. Returns a list.
 
 ### `write`
 

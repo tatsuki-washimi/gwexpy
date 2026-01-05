@@ -5,7 +5,7 @@ gwexpy.types.mixin
 Common mixins for gwexpy types.
 """
 
-from typing import Optional
+from typing import Optional, Any
 import numpy as np
 
 class RegularityMixin:
@@ -45,5 +45,37 @@ class RegularityMixin:
                 msg = f"{method} requires a regular frequency grid."
             else:
                 msg = f"{method} requires a regular grid (constant spacing)."
-            
+
             raise ValueError(msg)
+
+
+class PhaseMethodsMixin:
+    """Mixin to provide unified phase and angle methods."""
+
+    def phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any:
+        """
+        Calculate the phase of the data.
+
+        Parameters
+        ----------
+        unwrap : `bool`, optional
+            If `True`, unwrap the phase to remove discontinuities.
+            Default is `False`.
+        deg : `bool`, optional
+            If `True`, return the phase in degrees.
+            Default is `False` (radians).
+        **kwargs
+            Additional arguments passed to the underlying calculation.
+
+        Returns
+        -------
+        `Series` or `Matrix` or `Collection`
+            The phase of the data.
+        """
+        if deg:
+            return self.degree(unwrap=unwrap, **kwargs)
+        return self.radian(unwrap=unwrap, **kwargs)
+
+    def angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any:
+        """Alias for `phase(unwrap=unwrap, deg=deg)`."""
+        return self.phase(unwrap=unwrap, deg=deg, **kwargs)

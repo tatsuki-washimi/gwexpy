@@ -1,1 +1,1 @@
-from gwpy.frequencyseries.io.ascii import *
+from gwpy.frequencyseries.io.ascii import *  # noqa: F403

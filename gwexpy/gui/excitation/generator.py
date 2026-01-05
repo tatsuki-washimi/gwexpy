@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.signal
+import scipy.signal  # noqa: F401 - availability check
 from .params import GeneratorParams
 
 
@@ -80,7 +80,7 @@ class SignalGenerator:
             phi = np.deg2rad(params.phase)
             # Create a localized pulse if t is near a multiple of 1/f
             period = 1.0 / params.frequency if params.frequency > 0 else 1.0
-            t_mod = (t + phi / (2 * np.pi) * period) % period
+            (t + phi / (2 * np.pi) * period) % period
             # Impulse width: 1 sample? or fixed percentage? Let's say 1% duty cycle.
             # Impulse = 1 if t within narrow window.
             # Simpler: use scipy.signal.gausspulse or unit impulse?

@@ -38,7 +38,7 @@ def causal_relationship():
     # Y depends on X from 1 step ago
     for i in range(1, n):
         y_val[i] = 0.5 * y_val[i-1] + 0.8 * x_val[i-1] + 0.1 * np.random.randn()
-    
+
     x = TimeSeries(x_val, dt=1)
     y = TimeSeries(y_val, dt=1)
     return x, y
@@ -46,7 +46,7 @@ def causal_relationship():
 def test_skewness(gaussian_data, non_gaussian_data):
     s_gauss = gaussian_data.skewness()
     s_exp = non_gaussian_data.skewness()
-    
+
     # Gaussian should be near 0
     assert abs(s_gauss) < 0.2
     # Exponential should be positive (around 2)
@@ -55,7 +55,7 @@ def test_skewness(gaussian_data, non_gaussian_data):
 def test_kurtosis(gaussian_data, non_gaussian_data):
     k_gauss = gaussian_data.kurtosis(fisher=True)
     k_exp = non_gaussian_data.kurtosis(fisher=True)
-    
+
     # Gaussian (Fisher) should be near 0
     assert abs(k_gauss) < 0.2
     # Exponential should be positive (excess kurtosis)
@@ -68,11 +68,11 @@ def test_pearson_correlation(simple_linear_relationship):
 
 def test_distance_correlation(non_linear_relationship):
     x, y = non_linear_relationship
-    
+
     # Linear correlation should be close to 0 for parabola on symmetric domain
     pcc = x.pcc(y)
     assert abs(pcc) < 0.1
-    
+
     try:
         # Distance correlation should detect the dependence
         dcor = x.distance_correlation(y)
@@ -95,7 +95,7 @@ def test_granger_causality(causal_relationship):
         p_val_xy = y.granger_causality(x, maxlag=5)
         # Should be significant (small p-value)
         assert p_val_xy < 0.05
-        
+
         # Check if Y causes X (should not be significant)
         p_val_yx = x.granger_causality(y, maxlag=5)
         assert p_val_yx > 0.05

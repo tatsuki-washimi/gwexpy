@@ -1,1 +1,1 @@
-from gwpy.plot.segments import *
+from gwpy.plot.segments import *  # noqa: F403

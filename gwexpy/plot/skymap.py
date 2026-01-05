@@ -1,6 +1,5 @@
 from astropy.coordinates import SkyCoord
 import astropy.units as u
-import matplotlib.pyplot as plt
 import numpy as np
 
 from .plot import Plot
@@ -11,13 +10,13 @@ try:
     import scipy.integrate
     if not hasattr(scipy.integrate, 'trapz'):
         scipy.integrate.trapz = getattr(scipy.integrate, 'trapezoid', None)
-    
+
     # Also patch sys.modules to be extremely safe
     import sys
     if 'scipy.integrate' in sys.modules:
         setattr(sys.modules['scipy.integrate'], 'trapz', scipy.integrate.trapz)
 
-    import ligo.skymap.plot
+    import ligo.skymap.plot  # noqa: F401
     HAS_LIGO_SKYMAP = True
 except (ImportError, AttributeError):
     HAS_LIGO_SKYMAP = False
@@ -42,7 +41,7 @@ class SkyMap(Plot):
         # Default projection: Mollweide in hour angle (RA) units
         if "projection" not in kwargs and "geometry" not in kwargs:
             kwargs.setdefault("projection", "astro hours mollweide")
-        
+
         # Ensure at least one axis if no data provided
         if not args and "geometry" not in kwargs:
              kwargs.setdefault("geometry", (1, 1))
@@ -66,14 +65,12 @@ class SkyMap(Plot):
             try:
                 import scipy.integrate
                 scipy.integrate.trapz = getattr(scipy.integrate, 'trapezoid', None)
-                import ligo.skymap.plot
             except Exception:
                 raise ImportError(
                     "ligo.skymap is required for add_healpix. Install with: pip install ligo.skymap"
                 )
         ax = self.gca()
         # ``imshow_hpx`` handles the projection internally.
-        import ligo.skymap.plot
         im = ax.imshow_hpx(map_data, **kwargs)
         # Add a colorbar if not suppressed by the caller.
         if kwargs.get("colorbar", True):

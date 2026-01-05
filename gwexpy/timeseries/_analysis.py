@@ -13,7 +13,7 @@ from __future__ import annotations
 from typing import Optional, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    pass
+    from gwexpy.timeseries.timeseries import TimeSeries
 
 
 class TimeSeriesAnalysisMixin:

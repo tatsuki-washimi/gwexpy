@@ -4,21 +4,21 @@ from ._optional import require_optional
 def to_quantity(series, units=None):
     """
     Convert a series (TimeSeries, FrequencySeries, etc) to a quantities.Quantity.
-    
+
     Parameters
     ----------
     series : Series or array-like
         The input series with a .value and .unit attribute (or similar).
     units : str or quantities.UnitQuantity, optional
-        Target units for the output Quantity. 
-    
+        Target units for the output Quantity.
+
     Returns
     -------
     quantities.Quantity
         The data wrapped as a Quantity.
     """
     pq = require_optional("quantities")
-    
+
     # Get value (numpy array)
     if hasattr(series, "value"):
         val = series.value
@@ -26,17 +26,17 @@ def to_quantity(series, units=None):
         val = series.magnitude
     else:
         val = series
-    
+
     # Ensure val is not an astropy Quantity (which behaves like array but carries unit)
     # If it was astropy Quantity, .value returns ndarray. But just in case.
     import numpy as np
     val = np.asarray(val)
-    
+
     # Get unit
-    
+
     # Get unit
     unit = getattr(series, "unit", None)
-    
+
     # Convert astropy unit to string if necessary, then to pq unit
     if unit is not None:
         if hasattr(unit, "to_string"):
@@ -45,7 +45,7 @@ def to_quantity(series, units=None):
             u_str = str(unit)
     else:
         u_str = "dimensionless"
-    
+
     # Create Quantity
     # quantities usually parses strings well
     try:
@@ -67,13 +67,13 @@ def to_quantity(series, units=None):
         else:
              # assume it is a quantities unit object
              q = q.rescale(units)
-             
+
     return q
 
 def from_quantity(cls, q, **kwargs):
     """
     Create a GWpy/GWexpy Series from a quantities.Quantity.
-    
+
     Parameters
     ----------
     cls : type
@@ -82,21 +82,21 @@ def from_quantity(cls, q, **kwargs):
         Input quantity.
     **kwargs :
         Additional arguments required by the class constructor (e.g. t0, dt, frequencies).
-        
+
     Returns
     -------
     instance of cls
     """
     # Extract magnitude (numpy array)
     val = q.magnitude
-    
+
     # Extract unit string
     # quantities.dimensionality.string is often formulated like "m**2/s"
     u_str = q.dimensionality.string
     if u_str == "dimensionless":
         u_str = ""
-        
+
     # User might override unit in kwargs, but default to q's unit
     kwargs.setdefault("unit", u_str)
-    
+
     return cls(val, **kwargs)

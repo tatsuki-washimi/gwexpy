@@ -7,39 +7,41 @@ Extends gwpy.frequencyseries with matrix support and future extensibility.
 
 from __future__ import annotations
 
-from collections import OrderedDict
 from enum import Enum
-from typing import Any, Optional, Iterable, TypeVar
+from typing import Any, Optional, TypeVar
 
 import numpy as np
-from astropy import units as u
 import scipy.signal
+from astropy import units as u
 
 from gwpy.frequencyseries import FrequencySeries as BaseFrequencySeries
-from gwexpy.types.seriesmatrix import SeriesMatrix
-from gwexpy.types._stats import StatisticalMethodsMixin
-from gwexpy.interop._optional import require_optional
+
+from gwexpy.fitting.mixin import FittingMixin
 from gwexpy.interop import (
-    to_pandas_frequencyseries,
+    from_hdf5_frequencyseries,
     from_pandas_frequencyseries,
-    to_xarray_frequencyseries,
     from_xarray_frequencyseries,
     to_hdf5_frequencyseries,
-    from_hdf5_frequencyseries,
+    to_pandas_frequencyseries,
+    to_xarray_frequencyseries,
 )
+from gwexpy.interop._optional import require_optional
+from gwexpy.types._stats import StatisticalMethodsMixin
 from gwexpy.types.mixin import RegularityMixin
-from gwexpy.fitting.mixin import FittingMixin
 
 try:
     from gwpy.types.index import SeriesType  # pragma: no cover - optional in gwpy
 except ImportError:
+
     class SeriesType(Enum):
         TIME = "time"
         FREQ = "freq"
 
+
 # =============================
 # FrequencySeries
 # =============================
+
 
 class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, BaseFrequencySeries):
     """Light wrapper of gwpy's FrequencySeries for compatibility and future extension."""
@@ -68,12 +70,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         name = self.name + "_phase" if self.name else "phase"
 
         return self.__class__(
-            val,
-            frequencies=self.frequencies,
-            unit="rad",
-            name=name,
-            channel=self.channel,
-            epoch=self.epoch
+            val, frequencies=self.frequencies, unit="rad", name=name, channel=self.channel, epoch=self.epoch
         )
 
     def angle(self, unwrap: bool = False) -> "FrequencySeries":
@@ -100,12 +97,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         name = self.name + "_phase_deg" if self.name else "phase_deg"
 
         return self.__class__(
-            val,
-            frequencies=self.frequencies,
-            unit="deg",
-            name=name,
-            channel=self.channel,
-            epoch=self.epoch
+            val, frequencies=self.frequencies, unit="deg", name=name, channel=self.channel, epoch=self.epoch
         )
 
     # --- dB / Logarithmic ---
@@ -136,7 +128,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
 
         # Avoid log(0)
         # We could use a small epsilon or let numpy handle -inf
-        with np.errstate(divide='ignore'):
+        with np.errstate(divide="ignore"):
             log_val = np.log10(mag / ref)
 
         factor = 20.0 if amplitude else 10.0
@@ -145,13 +137,13 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         name = self.name + "_db" if self.name else "db"
 
         return self.__class__(
-            db_val,
-            frequencies=self.frequencies,
-            unit="dB",
-            name=name,
-            channel=self.channel,
-            epoch=self.epoch
+            db_val, frequencies=self.frequencies, unit="dB", name=name, channel=self.channel, epoch=self.epoch
         )
+
+    def plot(self, **kwargs: Any) -> Any:
+        """Plot this FrequencySeries. Delegates to gwexpy.plot.Plot."""
+        from gwexpy.plot import Plot
+        return Plot(self, **kwargs)
 
     # --- Interop helpers ---
     def filterba(self, *args, **kwargs):
@@ -193,14 +185,18 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         """
         require_optional("polars")
         if as_dataframe:
-             from gwexpy.interop import to_polars_frequencyseries
-             return to_polars_frequencyseries(self, index_column=frequencies)
+            from gwexpy.interop import to_polars_frequencyseries
+
+            return to_polars_frequencyseries(self, index_column=frequencies)
         else:
-             from gwexpy.interop import to_polars_series
-             return to_polars_series(self, name=name)
+            from gwexpy.interop import to_polars_series
+
+            return to_polars_series(self, name=name)
 
     @classmethod
-    def from_polars(cls: type["FrequencySeries"], data: Any, frequencies: Optional[str] = "frequency", **kwargs: Any) -> Any:
+    def from_polars(
+        cls: type["FrequencySeries"], data: Any, frequencies: Optional[str] = "frequency", **kwargs: Any
+    ) -> Any:
         """
         Create a FrequencySeries from a polars.DataFrame or polars.Series.
 
@@ -219,18 +215,21 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         """
         pl = require_optional("polars")
         if isinstance(data, pl.DataFrame):
-             # We reuse from_polars_dataframe but might need specific frequency logic
-             from gwexpy.interop import from_polars_dataframe
-             return from_polars_dataframe(cls, data, index_column=frequencies, **kwargs)
+            # We reuse from_polars_dataframe but might need specific frequency logic
+            from gwexpy.interop import from_polars_dataframe
+
+            return from_polars_dataframe(cls, data, index_column=frequencies, **kwargs)
         else:
-             from gwexpy.interop import from_polars_series
-             return from_polars_series(cls, data, **kwargs)
+            from gwexpy.interop import from_polars_series
+
+            return from_polars_series(cls, data, **kwargs)
 
     def to_tgraph(self, error: Optional[Any] = None) -> Any:
         """
         Convert to ROOT TGraph or TGraphErrors.
         """
         from gwexpy.interop import to_tgraph
+
         return to_tgraph(self, error=error)
 
     def to_th1d(self, error: Optional[Any] = None) -> Any:
@@ -238,6 +237,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         Convert to ROOT TH1D.
         """
         from gwexpy.interop import to_th1d
+
         return to_th1d(self, error=error)
 
     @classmethod
@@ -246,6 +246,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         Create FrequencySeries from ROOT TGraph or TH1.
         """
         from gwexpy.interop import from_root
+
         return from_root(cls, obj, return_error=return_error, **kwargs)
 
     def to_xarray(self, freq_coord: str = "Hz") -> Any:
@@ -309,6 +310,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         """
         self._check_regular("ifft")
         from gwexpy.timeseries import TimeSeries
+
         mode_to_use = mode
         if mode == "auto":
             mode_to_use = "transient" if getattr(self, "_gwex_fft_mode", None) == "transient" else "gwpy"
@@ -383,23 +385,23 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
 
         # Determine dt
         if meta_dt is not None:
-             dt = meta_dt
+            dt = meta_dt
         elif self.df is not None:
-             N_out = len(out_data)
-             # Handle quantity df
-             if isinstance(self.df, u.Quantity):
-                  df_val = self.df.to("Hz").value
-             else:
-                  df_val = self.df
+            N_out = len(out_data)
+            # Handle quantity df
+            if isinstance(self.df, u.Quantity):
+                df_val = self.df.to("Hz").value
+            else:
+                df_val = self.df
 
-             with np.errstate(divide='ignore'):
-                  if df_val > 0:
-                       dt_val = 1.0 / (2 * N_out * df_val)
-                       dt = u.Quantity(dt_val, "s")
-                  else:
-                       dt = 1.0 * u.s # Fallback
+            with np.errstate(divide="ignore"):
+                if df_val > 0:
+                    dt_val = 1.0 / (2 * N_out * df_val)
+                    dt = u.Quantity(dt_val, "s")
+                else:
+                    dt = 1.0 * u.s  # Fallback
         else:
-             dt = 1.0 * u.s
+            dt = 1.0 * u.s
 
         from gwexpy.timeseries import TimeSeries
 
@@ -409,7 +411,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
             dt=dt,
             unit=self.unit,
             name=self.name + "_idct" if self.name else "idct",
-            channel=self.channel
+            channel=self.channel,
         )
 
     def differentiate_time(self) -> Any:
@@ -437,12 +439,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         name = f"d({self.name})/dt" if self.name else "differentiation"
 
         return self.__class__(
-            new_val,
-            frequencies=self.frequencies,
-            unit=new_unit,
-            name=name,
-            channel=self.channel,
-            epoch=self.epoch
+            new_val, frequencies=self.frequencies, unit=new_unit, name=name, channel=self.channel, epoch=self.epoch
         )
 
     def integrate_time(self) -> Any:
@@ -460,7 +457,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         omega = 2 * np.pi * f
 
         # Avoid division by zero at DC
-        with np.errstate(divide='ignore', invalid='ignore'):
+        with np.errstate(divide="ignore", invalid="ignore"):
             factor = 1.0 / (1j * omega)
 
         # Handle DC (0 Hz) -> set to 0 or leave as inf/nan?
@@ -477,12 +474,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         name = f"int({self.name})dt" if self.name else "integration"
 
         return self.__class__(
-            new_val,
-            frequencies=self.frequencies,
-            unit=new_unit,
-            name=name,
-            channel=self.channel,
-            epoch=self.epoch
+            new_val, frequencies=self.frequencies, unit=new_unit, name=name, channel=self.channel, epoch=self.epoch
         )
 
     # --- Analysis & Smoothing ---
@@ -510,7 +502,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         -------
         `FrequencySeries`
         """
-        if method == 'complex':
+        if method == "complex":
             # Convolve/filter real and imag separately
             # Use 'same' to keep size, but handle boundary effects
             # scipy.ndimage.uniform_filter1d or regular convolution
@@ -524,6 +516,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
             def _smooth(x):
                 if ignore_nan:
                     import pandas as pd
+
                     return pd.Series(x).rolling(window=width, center=True, min_periods=1).mean().values
                 else:
                     return uniform_filter1d(x, size=width)
@@ -533,47 +526,48 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
             val = re + 1j * im
             unit = self.unit
 
-        elif method == 'amplitude':
+        elif method == "amplitude":
             mag = np.abs(self.value)
             if ignore_nan:
                 import pandas as pd
+
                 val = pd.Series(mag).rolling(window=width, center=True, min_periods=1).mean().values
             else:
                 from scipy.ndimage import uniform_filter1d
+
                 val = uniform_filter1d(mag, size=width)
             unit = self.unit
-        elif method == 'power':
-            pwr = np.abs(self.value)**2
+        elif method == "power":
+            pwr = np.abs(self.value) ** 2
             if ignore_nan:
                 import pandas as pd
+
                 val = pd.Series(pwr).rolling(window=width, center=True, min_periods=1).mean().values
             else:
                 from scipy.ndimage import uniform_filter1d
+
                 val = uniform_filter1d(pwr, size=width)
             unit = self.unit**2
-        elif method == 'db':
+        elif method == "db":
             # To dB
             mag = np.abs(self.value)
-            with np.errstate(divide='ignore'):
-                 db = 20 * np.log10(mag)
+            with np.errstate(divide="ignore"):
+                db = 20 * np.log10(mag)
             if ignore_nan:
                 import pandas as pd
+
                 val = pd.Series(db).rolling(window=width, center=True, min_periods=1).mean().values
             else:
                 from scipy.ndimage import uniform_filter1d
+
                 val = uniform_filter1d(db, size=width)
-            unit = u.Unit('dB')
+            unit = u.Unit("dB")
 
         else:
             raise ValueError(f"Unknown smoothing method: {method}")
 
         return self.__class__(
-            val,
-            frequencies=self.frequencies,
-            unit=unit,
-            name=self.name,
-            channel=self.channel,
-            epoch=self.epoch
+            val, frequencies=self.frequencies, unit=unit, name=self.name, channel=self.channel, epoch=self.epoch
         )
 
     def find_peaks(self, threshold: Optional[float] = None, method: str = "amplitude", **kwargs: Any) -> Any:
@@ -599,63 +593,65 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
             Dictionary of peak properties returned by `scipy.signal.find_peaks`.
         """
         # Prepare target array
-        if method == 'amplitude':
+        if method == "amplitude":
             target = np.abs(self.value)
-        elif method == 'power':
-            target = np.abs(self.value)**2
-        elif method == 'db':
+        elif method == "power":
+            target = np.abs(self.value) ** 2
+        elif method == "db":
             target = 20 * np.log10(np.abs(self.value))
         else:
             raise ValueError(f"Unknown method {method}")
 
         if threshold is not None:
-            if hasattr(threshold, 'unit'):  # astropy.units.Quantity
-                if method == 'amplitude':
+            if hasattr(threshold, "unit"):  # astropy.units.Quantity
+                if method == "amplitude":
                     threshold = threshold.to(self.unit).value
-                elif method == 'power':
+                elif method == "power":
                     threshold = threshold.to(self.unit**2).value
-                elif method == 'db':
+                elif method == "db":
                     threshold = threshold.value
-            kwargs['height'] = threshold
+            kwargs["height"] = threshold
 
         # Unit support for distance and width
         df = self.df.to("Hz").value if hasattr(self.df, "to") else self.df
-        
+
         # Distance (Hz -> samples)
-        dist = kwargs.get('distance', None)
+        dist = kwargs.get("distance", None)
         if dist is not None and hasattr(dist, "to"):
-            kwargs['distance'] = int(dist.to("Hz").value / df)
+            kwargs["distance"] = int(dist.to("Hz").value / df)
 
         # Width (Hz -> samples)
-        wid = kwargs.get('width', None)
+        wid = kwargs.get("width", None)
         if wid is not None:
-             if np.iterable(wid):
-                  new_wid = []
-                  for w in wid:
-                       if hasattr(w, "to"):
-                            new_wid.append(w.to("Hz").value / df)
-                       else:
-                            new_wid.append(w)
-                  kwargs['width'] = tuple(new_wid) if isinstance(wid, tuple) else new_wid
-             elif hasattr(wid, "to"):
-                  kwargs['width'] = wid.to("Hz").value / df
+            if np.iterable(wid):
+                new_wid = []
+                for w in wid:
+                    if hasattr(w, "to"):
+                        new_wid.append(w.to("Hz").value / df)
+                    else:
+                        new_wid.append(w)
+                kwargs["width"] = tuple(new_wid) if isinstance(wid, tuple) else new_wid
+            elif hasattr(wid, "to"):
+                kwargs["width"] = wid.to("Hz").value / df
 
         peaks_indices, props = scipy.signal.find_peaks(target, **kwargs)
 
-
         if len(peaks_indices) == 0:
-             return self.__class__([], frequencies=[], unit=self.unit, name=self.name, channel=self.channel), props
+            return (
+                self.__class__([], frequencies=[], unit=self.unit, name=self.name, channel=self.channel),
+                props,
+            )
 
         peak_freqs = self.frequencies[peaks_indices]
         peak_vals = self.value[peaks_indices]
 
         out = self.__class__(
-             peak_vals,
-             frequencies=peak_freqs,
-             unit=self.unit,
-             name=f"{self.name}_peaks" if self.name else "peaks",
-             channel=self.channel,
-             epoch=self.epoch
+            peak_vals,
+            frequencies=peak_freqs,
+            unit=self.unit,
+            name=f"{self.name}_peaks" if self.name else "peaks",
+            channel=self.channel,
+            epoch=self.epoch,
         )
         return out, props
 
@@ -683,11 +679,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         val = np.sqrt(mag_self**2 + mag_other**2)
 
         return self.__class__(
-            val,
-            frequencies=self.frequencies,
-            unit=self.unit,
-            name=f"sqrt({self.name}^2 + {other.name}^2)",
-            epoch=self.epoch
+            val, frequencies=self.frequencies, unit=self.unit, name=f"sqrt({self.name}^2 + {other.name}^2)", epoch=self.epoch
         )
 
     def group_delay(self) -> Any:
@@ -719,18 +711,20 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
             unit="s",
             name=self.name + "_group_delay" if self.name else "group_delay",
             channel=self.channel,
-            epoch=self.epoch
+            epoch=self.epoch,
         )
 
     def to_control_frd(self, frequency_unit: str = "Hz") -> Any:
         """Convert to control.FRD."""
         from gwexpy.interop import to_control_frd
+
         return to_control_frd(self, frequency_unit=frequency_unit)
 
     @classmethod
     def from_control_frd(cls: type["FrequencySeries"], frd: Any, *, frequency_unit: str = "Hz") -> Any:
         """Create from control.FRD."""
         from gwexpy.interop import from_control_frd
+
         return from_control_frd(cls, frd, frequency_unit=frequency_unit)
 
     # --- ML Framework Interop ---
@@ -761,6 +755,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         `torch.Tensor`
         """
         from gwexpy.interop.torch_ import to_torch
+
         return to_torch(self, device=device, dtype=dtype, requires_grad=requires_grad, copy=copy)
 
     @classmethod
@@ -798,6 +793,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         `tensorflow.Tensor`
         """
         from gwexpy.interop.tensorflow_ import to_tf
+
         return to_tf(self, dtype=dtype)
 
     @classmethod
@@ -815,12 +811,14 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         `jax.Array`
         """
         from gwexpy.interop.jax_ import to_jax
+
         return to_jax(self, dtype=dtype)
 
     @classmethod
     def from_jax(cls: type["FrequencySeries"], array: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
         """Create FrequencySeries from JAX array."""
         import numpy as np
+
         data = np.array(array)
         return cls(data, frequencies=frequencies, unit=unit)
 
@@ -833,6 +831,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         `cupy.ndarray`
         """
         from gwexpy.interop.cupy_ import to_cupy
+
         return to_cupy(self, dtype=dtype)
 
     @classmethod
@@ -843,7 +842,6 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         return cls(data, frequencies=frequencies, unit=unit)
 
     # --- Domain Specific Interop ---
-
 
     def to_quantities(self, units: Optional[str] = None) -> Any:
         """
@@ -859,6 +857,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         quantities.Quantity
         """
         from gwexpy.interop import to_quantity
+
         return to_quantity(self, units=units)
 
     @classmethod
@@ -878,6 +877,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         FrequencySeries
         """
         from gwexpy.interop import from_quantity
+
         return from_quantity(cls, q, frequencies=frequencies)
 
     def to_mne(self, info: Optional[Any] = None) -> Any:
@@ -894,6 +894,7 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         mne.time_frequency.SpectrumArray
         """
         from gwexpy.interop import to_mne
+
         return to_mne(self, info=info)
 
     @classmethod
@@ -913,42 +914,45 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         FrequencySeries or FrequencySeriesDict
         """
         from gwexpy.interop import from_mne
+
         return from_mne(cls, spectrum, **kwargs)
 
     def to_obspy(self, **kwargs: Any) -> Any:
         """
         Convert to Obspy Trace.
-        
+
         Returns
         -------
         obspy.Trace
         """
         from gwexpy.interop import to_obspy
+
         return to_obspy(self, **kwargs)
 
     @classmethod
     def from_obspy(cls, trace: Any, **kwargs: Any) -> Any:
         """
         Create FrequencySeries from Obspy Trace.
-        
+
         Parameters
         ----------
         trace : obspy.Trace
             Input trace.
         **kwargs
             Additional arguments.
-            
+
         Returns
         -------
         FrequencySeries
         """
         from gwexpy.interop import from_obspy
+
         return from_obspy(cls, trace, **kwargs)
 
-    def to_simpeg(self, location=None, rx_type="PointElectricField", orientation='x', **kwargs) -> Any:
+    def to_simpeg(self, location=None, rx_type="PointElectricField", orientation="x", **kwargs) -> Any:
         """
         Convert to SimPEG Data object.
-        
+
         Parameters
         ----------
         location : array_like, optional
@@ -957,100 +961,108 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
             Receiver class name. Default "PointElectricField".
         orientation : str, optional
             Receiver orientation ('x', 'y', 'z'). Default 'x'.
-            
+
         Returns
         -------
         simpeg.data.Data
         """
         from gwexpy.interop import to_simpeg
+
         return to_simpeg(self, location=location, rx_type=rx_type, orientation=orientation, **kwargs)
 
     @classmethod
     def from_simpeg(cls, data_obj: Any, **kwargs: Any) -> Any:
         """
         Create FrequencySeries from SimPEG Data object.
-        
+
         Parameters
         ----------
         data_obj : simpeg.data.Data
             Input SimPEG Data.
-            
+
         Returns
         -------
         FrequencySeries
         """
         from gwexpy.interop import from_simpeg
+
         return from_simpeg(cls, data_obj, **kwargs)
 
     def to_specutils(self, **kwargs):
         """
         Convert to specutils.Spectrum1D.
-        
+
         Parameters
         ----------
         **kwargs
             Arguments passed to Spectrum1D constructor.
-            
+
         Returns
         -------
         specutils.Spectrum1D
         """
         from gwexpy.interop import to_specutils
+
         return to_specutils(self, **kwargs)
-        
+
     @classmethod
     def from_specutils(cls, spectrum, **kwargs):
         """
         Create FrequencySeries from specutils.Spectrum1D.
-        
+
         Parameters
         ----------
         spectrum : specutils.Spectrum1D
             Input spectrum.
-            
+
         Returns
         -------
         FrequencySeries
         """
         from gwexpy.interop import from_specutils
+
         return from_specutils(cls, spectrum, **kwargs)
 
     def to_pyspeckit(self, **kwargs):
         """
         Convert to pyspeckit.Spectrum.
-        
+
         Parameters
         ----------
         **kwargs
             Arguments passed to pyspeckit.Spectrum constructor.
-            
+
         Returns
         -------
         pyspeckit.Spectrum
         """
         from gwexpy.interop import to_pyspeckit
+
         return to_pyspeckit(self, **kwargs)
-        
+
     @classmethod
     def from_pyspeckit(cls, spectrum, **kwargs):
         """
         Create FrequencySeries from pyspeckit.Spectrum.
-        
+
         Parameters
         ----------
         spectrum : pyspeckit.Spectrum
             Input spectrum.
-            
+
         Returns
         -------
         FrequencySeries
         """
         from gwexpy.interop import from_pyspeckit
+
         return from_pyspeckit(cls, spectrum, **kwargs)
+
 
 # =============================
 # Helpers
 # =============================
+
 
 def as_series_dict_class(seriesclass):
     """Decorate a `dict` class as the `DictClass` for a series class.
@@ -1071,1095 +1083,3 @@ def as_series_dict_class(seriesclass):
 # =============================
 
 _FS = TypeVar("_FS", bound=FrequencySeries)
-
-
-class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
-    """Ordered mapping container for `FrequencySeries` objects.
-
-    This is a lightweight GWpy-inspired container:
-    - enforces `EntryClass` on insertion/update
-    - provides map-style helpers (`copy`, `crop`, `plot`)
-    - default values for setdefault() must be FrequencySeries (None not allowed)
-
-    Non-trivial operations (I/O, fetching, axis coercion, joins) are
-    intentionally out-of-scope for this MVP.
-    """
-
-    EntryClass = FrequencySeries
-
-    @property
-    def span(self):
-        """Frequency extent across all elements (based on xspan)."""
-        from gwpy.segments import SegmentList
-
-        span = SegmentList([val.xspan for val in self.values()])
-        try:
-            return span.extent()
-        except ValueError as exc:  # empty
-            exc.args = (f"cannot calculate span for empty {type(self).__name__}",)
-            raise
-
-    def __init__(self, *args: Any, **kwargs: Any):
-        super().__init__()
-        if args or kwargs:
-            self.update(*args, **kwargs)
-
-    def __setitem__(self, key: str, value: _FS) -> None:
-        if not isinstance(value, self.EntryClass):
-            raise TypeError(
-                f"Cannot set key '{key}' to type '{type(value).__name__}' in {type(self).__name__}"
-            )
-        super().__setitem__(key, value)
-
-    def setdefault(self, key: str, default: Optional[_FS] = None) -> _FS:  # type: ignore[override]
-        if key in self:
-            return self[key]
-        if default is None:
-            raise TypeError(
-                f"Cannot set default None for {type(self).__name__}; expected {self.EntryClass.__name__}"
-            )
-        if not isinstance(default, self.EntryClass):
-            raise TypeError(
-                f"Cannot set default type '{type(default).__name__}' in {type(self).__name__}"
-            )
-        self[key] = default
-        return default
-
-    def copy(self) -> "FrequencySeriesBaseDict[_FS]":
-        new = self.__class__()
-        for key, val in self.items():
-            new[key] = val.copy()
-        return new
-
-    def crop(
-        self, start: Any = None, end: Any = None, copy: bool = False
-    ) -> "FrequencySeriesBaseDict[_FS]":
-        for key, val in list(self.items()):
-            self[key] = val.crop(start=start, end=end, copy=copy)
-        return self
-
-    def plot(
-        self,
-        label: str = "key",
-        method: str = "plot",
-        figsize: Optional[Any] = None,
-        **kwargs: Any,
-    ):
-        """
-        Plot data.
-
-        Parameters
-        ----------
-        label : str, optional
-            labelling method, one of
-
-            - ``'key'``: use dictionary key (default)
-            - ``'name'``: use ``name`` attribute of each item
-        method : str, optional
-            method of :class:`~gwpy.plot.Plot` to call, default: ``'plot'``
-        figsize : tuple, optional
-            (width, height) tuple in inches
-        **kwargs
-            other keyword arguments passed to the plot method
-        """
-        from gwexpy.plot import Plot
-
-        kwargs = dict(kwargs)
-        separate = kwargs.get("separate", False)
-        if figsize is not None:
-            kwargs.setdefault("figsize", figsize)
-        kwargs.update({"label": label, "method": method})
-
-        # We pass the dict directly if separate=True (or False),
-        # but gwexpy.plot.Plot can handle list unpacking now.
-        # To maintain label logic ("key" vs "name"), we might need
-        # to adjust the input items or labels beforehand if not handled by Plot.
-        # However, gwpy.plot.Plot handles dicts by default for labeling if separate=False.
-        
-        # If separate=True, we want subplots. gwexpy.plot.Plot handles this via defaults now.
-         
-        # For 'key' labeling, we rely on the input being a dict/values iteration.
-        
-        if separate:
-             # If separate, Plot(...) with *values usually works in gwpy
-             # gwexpy Plot now supports unpacking
-             plot = Plot(self, **kwargs)
-        else:
-             plot = Plot(self, **kwargs)
-        
-        artmap = {"plot": "lines", "scatter": "collections"}
-        artists = [
-            artist
-            for ax in plot.axes
-            for artist in getattr(ax, artmap.get(method, "lines"))
-        ]
-
-        label_key = label.lower()
-        for key, artist in zip(self, artists):
-            if label_key == "name":
-                lab = self[key].name
-            elif label_key == "key":
-                lab = key
-            else:
-                lab = label
-            artist.set_label(lab)
-
-        return plot
-
-    def plot_all(self, *args: Any, **kwargs: Any):
-        """Alias for plot(). Plots all series in the dict."""
-        return self.plot(*args, **kwargs)
-
-    @classmethod
-    def read(cls, source, *args, **kwargs):
-        from astropy.io import registry
-        return registry.read(cls, source, *args, **kwargs)
-
-    def write(self, target, *args, **kwargs):
-        from astropy.io import registry
-        return registry.write(self, target, *args, **kwargs)
-
-
-@as_series_dict_class(FrequencySeries)
-class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
-    """Ordered mapping of `FrequencySeries` objects keyed by label."""
-
-    EntryClass = FrequencySeries
-
-    # ===============================
-    # 1. Axis & Edit Operations
-    # ===============================
-
-    def crop(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Crop each FrequencySeries in the dict.
-        In-place operation (GWpy-compatible). Returns self.
-        """
-        super().crop(*args, **kwargs)
-        return self
-
-    def pad(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Pad each FrequencySeries in the dict.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.pad(*args, **kwargs)
-        return new_dict
-
-    def interpolate(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Interpolate each FrequencySeries in the dict.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.interpolate(*args, **kwargs)
-        return new_dict
-
-    # --- In-place Element Operations ---
-
-    def append(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Append to each FrequencySeries in the dict (in-place).
-        Returns self.
-        """
-        for fs in self.values():
-            fs.append(*args, **kwargs)
-        return self
-
-    def prepend(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Prepend to each FrequencySeries in the dict (in-place).
-        Returns self.
-        """
-        for fs in self.values():
-            fs.prepend(*args, **kwargs)
-        return self
-
-    # def update(self, *args, **kwargs) -> "FrequencySeriesDict":
-    #     """
-    #     Update each FrequencySeries in the dict (in-place).
-    #     Returns self.
-    #     """
-    #     for fs in self.values():
-    #         fs.update(*args, **kwargs)
-    #     return self
-
-    # ===============================
-    # 2. Filter & Response
-    # ===============================
-
-    def zpk(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Apply ZPK filter to each FrequencySeries.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.zpk(*args, **kwargs)
-        return new_dict
-
-    def filter(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Apply filter to each FrequencySeries.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.filter(*args, **kwargs)
-        return new_dict
-
-    def apply_response(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Apply response to each FrequencySeries.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.apply_response(*args, **kwargs)
-        return new_dict
-
-    # ===============================
-    # 3. Analysis & Conversion
-    # ===============================
-
-    def phase(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Compute phase of each FrequencySeries.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.phase(*args, **kwargs)
-        return new_dict
-
-    def angle(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """Alias for phase(). Returns a new FrequencySeriesDict."""
-        return self.phase(*args, **kwargs)
-
-    def degree(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Compute phase (in degrees) of each FrequencySeries.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.degree(*args, **kwargs)
-        return new_dict
-
-    def to_db(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Convert each FrequencySeries to dB.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.to_db(*args, **kwargs)
-        return new_dict
-
-    def differentiate_time(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Apply time differentiation to each item.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.differentiate_time(*args, **kwargs)
-        return new_dict
-
-    def integrate_time(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Apply time integration to each item.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.integrate_time(*args, **kwargs)
-        return new_dict
-
-    def group_delay(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Compute group delay of each item.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.group_delay(*args, **kwargs)
-        return new_dict
-
-    def smooth(self, *args, **kwargs) -> "FrequencySeriesDict":
-        """
-        Smooth each FrequencySeries.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.smooth(*args, **kwargs)
-        return new_dict
-
-    # ===============================
-    # 4. Time Domain Conversion
-    # ===============================
-
-    def ifft(self, *args, **kwargs):
-        """
-        Compute IFFT of each FrequencySeries.
-        Returns a TimeSeriesDict.
-        """
-        from gwexpy.timeseries import TimeSeriesDict
-        new_dict = TimeSeriesDict()
-        for key, fs in self.items():
-            new_dict[key] = fs.ifft(*args, **kwargs)
-        return new_dict
-
-    # ===============================
-    # 5. External Library Interop
-    # ===============================
-
-    def to_control_frd(self, *args, **kwargs) -> dict:
-        """
-        Convert each item to control.FRD.
-        Returns a dict of FRD objects.
-        """
-        return {key: fs.to_control_frd(*args, **kwargs) for key, fs in self.items()}
-
-    def to_torch(self, *args, **kwargs) -> dict:
-        """
-        Convert each item to torch.Tensor.
-        Returns a dict of Tensors.
-        """
-        return {key: fs.to_torch(*args, **kwargs) for key, fs in self.items()}
-
-    def to_tensorflow(self, *args, **kwargs) -> dict:
-        """
-        Convert each item to tensorflow.Tensor.
-        Returns a dict of Tensors.
-        """
-        return {key: fs.to_tensorflow(*args, **kwargs) for key, fs in self.items()}
-
-    def to_jax(self, *args, **kwargs) -> dict:
-        """
-        Convert each item to jax.Array.
-        Returns a dict of Arrays.
-        """
-        return {key: fs.to_jax(*args, **kwargs) for key, fs in self.items()}
-
-    def to_cupy(self, *args, **kwargs) -> dict:
-        """
-        Convert each item to cupy.ndarray.
-        Returns a dict of Arrays.
-        """
-        return {key: fs.to_cupy(*args, **kwargs) for key, fs in self.items()}
-
-    # ===============================
-    # 6. Aggregation
-    # ===============================
-
-    def to_pandas(self, **kwargs):
-        """
-        Convert to pandas.DataFrame.
-        Keys become columns.
-        """
-        import pandas as pd
-        data = {}
-        for key, fs in self.items():
-            # Extract Series with index from FrequencySeries
-            if hasattr(fs, "to_pandas"):
-                # to_pandas(index="frequency") ensures index is frequency
-                s = fs.to_pandas(index="frequency", copy=False)
-                # s could be Series or DataFrame (gwpy usually returns Series for 1D)
-                if isinstance(s, pd.DataFrame):
-                    s = s.iloc[:, 0]
-                elif not isinstance(s, pd.Series): # Fallback
-                     s = pd.Series(fs.value, index=fs.frequencies.value)
-            else:
-                s = pd.Series(fs.value, index=fs.frequencies.value)
-            data[key] = s
-
-        return pd.DataFrame(data)
-
-    def to_xarray(self):
-        """
-        Convert to xarray.Dataset.
-        Keys become data variables.
-        """
-        import xarray as xr
-        ds = xr.Dataset()
-        for key, fs in self.items():
-             # FrequencySeries.to_xarray returns DataArray
-             ds[key] = fs.to_xarray()
-        return ds
-
-    def to_matrix(self):
-        """Convert this FrequencySeriesDict to a FrequencySeriesMatrix (Nx1)."""
-        from gwexpy.frequencyseries import FrequencySeriesMatrix
-        from gwexpy.types.metadata import MetaData, MetaDataMatrix
-        keys = list(self.keys())
-        if not keys:
-             return FrequencySeriesMatrix(np.empty((0, 0, 0)))
-
-        first = self[keys[0]]
-        n_row = len(keys)
-        n_samp = len(first)
-        data = np.empty((n_row, 1, n_samp), dtype=first.value.dtype)
-
-        meta_arr = np.empty((n_row, 1), dtype=object)
-        for i, key in enumerate(keys):
-            fs = self[key]
-            if len(fs) != n_samp:
-                 raise ValueError(f"FrequencySeriesDict items must have same length to convert to matrix. '{key}' has {len(fs)}, expected {n_samp}")
-            data[i, 0] = fs.value
-            meta_arr[i, 0] = MetaData(unit=fs.unit, name=fs.name, channel=fs.channel)
-
-        return FrequencySeriesMatrix(
-            data,
-            frequencies=first.frequencies,
-            rows=keys,
-            cols=["value"],
-            meta=MetaDataMatrix(meta_arr),
-            epoch=first.epoch.gps if hasattr(first.epoch, "gps") else first.epoch
-        )
-
-    def to_tmultigraph(self, name: Optional[str] = None) -> Any:
-        """Convert to ROOT TMultiGraph."""
-        from gwexpy.interop import to_tmultigraph
-        return to_tmultigraph(self, name=name)
-    def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
-        """Write dict to file (HDF5, ROOT, etc.)."""
-        fmt = kwargs.get("format")
-        if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
-             from gwexpy.interop.root_ import write_root_file
-             return write_root_file(self, target, **kwargs)
-        from astropy.io import registry
-        return registry.write(self, target, *args, **kwargs)
-
-
-
-
-class FrequencySeriesBaseList(list[_FS]):
-    """List container for `FrequencySeries` objects with type enforcement."""
-
-    EntryClass = FrequencySeries
-
-    def __init__(self, *items: Union[_FS, Iterable[_FS]]):
-        super().__init__()
-        if len(items) == 1 and isinstance(items[0], (list, tuple)):
-             for item in items[0]:
-                  self.append(item)
-        else:
-             for item in items:
-                  self.append(item)
-
-    @property
-    def segments(self):
-        """Frequency spans of each element (xspan)."""
-        from gwpy.segments import SegmentList
-
-        return SegmentList([item.xspan for item in self])
-
-    def _validate(self, item: Any, *, op: str) -> None:
-        if not isinstance(item, self.EntryClass):
-            raise TypeError(
-                f"Cannot {op} type '{type(item).__name__}' to {type(self).__name__}"
-            )
-
-    def append(self, item: _FS):  # type: ignore[override]
-        self._validate(item, op="append")
-        super().append(item)
-        return self
-
-    def extend(self, items: Iterable[_FS]) -> None:  # type: ignore[override]
-        validated = self.__class__(*items)
-        super().extend(validated)
-
-    def insert(self, index: int, item: _FS) -> None:  # type: ignore[override]
-        self._validate(item, op="insert")
-        super().insert(index, item)
-
-    def __setitem__(self, index, item) -> None:  # type: ignore[override]
-        if isinstance(index, slice):
-            validated = self.__class__(*item)
-            super().__setitem__(index, validated)
-            return
-        self._validate(item, op="set")
-        super().__setitem__(index, item)
-
-    def __getitem__(self, index):  # type: ignore[override]
-        if isinstance(index, slice):
-            return self.__class__(*super().__getitem__(index))
-        return super().__getitem__(index)
-
-    def copy(self) -> "FrequencySeriesBaseList[_FS]":
-        return self.__class__(*(item.copy() for item in self))
-
-    def plot(self, **kwargs: Any):
-        """Plot all series. Delegates to gwexpy.plot.Plot."""
-        from gwexpy.plot import Plot
-
-        return Plot(self, **kwargs)
-
-    def plot_all(self, *args: Any, **kwargs: Any):
-        """Alias for plot(). Plots all series."""
-        return self.plot(*args, **kwargs)
-
-    @classmethod
-    def read(cls, source, *args, **kwargs):
-        from astropy.io import registry
-        return registry.read(cls, source, *args, **kwargs)
-
-    def write(self, target, *args, **kwargs):
-        from astropy.io import registry
-        return registry.write(self, target, *args, **kwargs)
-
-
-class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
-    """List of `FrequencySeries` objects."""
-
-    EntryClass = FrequencySeries
-
-    # ===============================
-    # 1. Axis & Edit Operations
-    # ===============================
-
-    def crop(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Crop each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.crop(*args, **kwargs))
-        return new_list
-
-    def pad(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Pad each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.pad(*args, **kwargs))
-        return new_list
-
-    def interpolate(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Interpolate each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.interpolate(*args, **kwargs))
-        return new_list
-
-    # --- In-place Element Operations ---
-
-    # def append(self, *args, **kwargs) -> "FrequencySeriesList":
-    #     """
-    #     Append to each FrequencySeries in the list (in-place).
-    #     Returns self.
-    #     """
-    #     for fs in self:
-    #         fs.append(*args, **kwargs)
-    #     return self
-
-    # def prepend(self, *args, **kwargs) -> "FrequencySeriesList":
-    #     """
-    #     Prepend to each FrequencySeries in the list (in-place).
-    #     Returns self.
-    #     """
-    #     for fs in self:
-    #         fs.prepend(*args, **kwargs)
-    #     return self
-
-    # def update(self, *args, **kwargs) -> "FrequencySeriesList":
-    #     """
-    #     Update each FrequencySeries in the list (in-place).
-    #     Returns self.
-    #     """
-    #     for fs in self:
-    #         fs.update(*args, **kwargs)
-    #     return self
-
-    # ===============================
-    # 2. Filter & Response
-    # ===============================
-
-    def zpk(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Apply ZPK filter to each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.zpk(*args, **kwargs))
-        return new_list
-
-    def filter(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Apply filter to each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.filter(*args, **kwargs))
-        return new_list
-
-    def apply_response(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Apply response to each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.apply_response(*args, **kwargs))
-        return new_list
-
-    # ===============================
-    # 3. Analysis & Conversion
-    # ===============================
-
-    def phase(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Compute phase of each FrequencySeries.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.phase(*args, **kwargs))
-        return new_list
-
-    def angle(self, *args, **kwargs) -> "FrequencySeriesList":
-        """Alias for phase(). Returns a new FrequencySeriesList."""
-        return self.phase(*args, **kwargs)
-
-    def degree(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Compute phase (in degrees) of each FrequencySeries.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.degree(*args, **kwargs))
-        return new_list
-
-    def to_db(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Convert each FrequencySeries to dB.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.to_db(*args, **kwargs))
-        return new_list
-
-    def differentiate_time(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Apply time differentiation to each item.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.differentiate_time(*args, **kwargs))
-        return new_list
-
-    def integrate_time(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Apply time integration to each item.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.integrate_time(*args, **kwargs))
-        return new_list
-
-    def group_delay(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Compute group delay of each item.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.group_delay(*args, **kwargs))
-        return new_list
-
-    def smooth(self, *args, **kwargs) -> "FrequencySeriesList":
-        """
-        Smooth each FrequencySeries.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.smooth(*args, **kwargs))
-        return new_list
-
-    # ===============================
-    # 4. Time Domain Conversion
-    # ===============================
-
-    def ifft(self, *args, **kwargs):
-        """
-        Compute IFFT of each FrequencySeries.
-        Returns a TimeSeriesList.
-        """
-        from gwexpy.timeseries import TimeSeriesList
-        new_list = TimeSeriesList()
-        for fs in self:
-            list.append(new_list, fs.ifft(*args, **kwargs))
-        return new_list
-
-    # ===============================
-    # 5. External Library Interop
-    # ===============================
-
-    def to_control_frd(self, *args, **kwargs) -> list:
-        """
-        Convert each item to control.FRD.
-        Returns a list of FRD objects.
-        """
-        return [fs.to_control_frd(*args, **kwargs) for fs in self]
-
-    def to_torch(self, *args, **kwargs) -> list:
-        """
-        Convert each item to torch.Tensor.
-        Returns a list of Tensors.
-        """
-        return [fs.to_torch(*args, **kwargs) for fs in self]
-
-    def to_tensorflow(self, *args, **kwargs) -> list:
-        """
-        Convert each item to tensorflow.Tensor.
-        Returns a list of Tensors.
-        """
-        return [fs.to_tensorflow(*args, **kwargs) for fs in self]
-
-    def to_jax(self, *args, **kwargs) -> list:
-        """
-        Convert each item to jax.Array.
-        Returns a list of Arrays.
-        """
-        return [fs.to_jax(*args, **kwargs) for fs in self]
-
-    def to_cupy(self, *args, **kwargs) -> list:
-        """
-        Convert each item to cupy.ndarray.
-        Returns a list of Arrays.
-        """
-        return [fs.to_cupy(*args, **kwargs) for fs in self]
-
-    # ===============================
-    # 6. Aggregation
-    # ===============================
-
-    def to_pandas(self, **kwargs):
-        """
-        Convert to pandas.DataFrame.
-        Columns are named by channel name or index.
-        """
-        import pandas as pd
-        data = {}
-        for i, fs in enumerate(self):
-            name = fs.name or f"series_{i}"
-            if hasattr(fs, "to_pandas"):
-                s = fs.to_pandas(index="frequency", copy=False)
-                if isinstance(s, pd.DataFrame):
-                     s = s.iloc[:, 0]
-                elif not isinstance(s, pd.Series):
-                     s = pd.Series(fs.value, index=fs.frequencies.value)
-            else:
-                s = pd.Series(fs.value, index=fs.frequencies.value)
-            data[name] = s
-
-        return pd.DataFrame(data)
-
-    def to_xarray(self):
-        """
-        Convert to xarray.DataArray.
-        Concatenates along a new dimension 'channel'.
-        """
-        import xarray as xr
-        # Requires common coords usually, but concat handles it
-        das = [fs.to_xarray() for fs in self]
-
-        # We need a new dimension for channel.
-        # If das have names, we can use them as coordinates?
-        # But DataArrays are concatenated.
-
-        # Check if we should assign channel names
-        names = [getattr(fs, 'name', f'ch{i}') for i, fs in enumerate(self)]
-
-        # Concat
-        return xr.concat(das, dim=xr.DataArray(names, dims="channel", name="channel"))
-
-    def to_tmultigraph(self, name: Optional[str] = None) -> Any:
-        """Convert to ROOT TMultiGraph."""
-        from gwexpy.interop import to_tmultigraph
-        return to_tmultigraph(self, name=name)
-    def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
-        """Write list to file (HDF5, ROOT, etc.)."""
-        fmt = kwargs.get("format")
-        if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
-             from gwexpy.interop.root_ import write_root_file
-             return write_root_file(self, target, **kwargs)
-        from astropy.io import registry
-        return registry.write(self, target, *args, **kwargs)
-
-
-# =============================
-# FrequencySeriesMatrix
-# =============================
-
-class FrequencySeriesMatrix(SeriesMatrix):
-    """
-    Matrix container for multiple FrequencySeries objects.
-
-    Inherits from SeriesMatrix and returns FrequencySeries instances when indexed.
-    """
-    series_class = FrequencySeries
-    series_type = SeriesType.FREQ
-    default_xunit = "Hz"
-    default_yunit = None
-    _default_plot_method = "plot"
-
-    def __new__(cls, data=None, frequencies=None, df=None, f0=None, **kwargs):
-        channel_names = kwargs.pop("channel_names", None)
-
-        # Map frequency-specific arguments to SeriesMatrix generic arguments
-        if frequencies is not None:
-            kwargs['xindex'] = frequencies
-        if df is not None:
-            kwargs['dx'] = df
-        if f0 is not None:
-            kwargs['x0'] = f0
-        elif frequencies is None and df is not None and 'x0' not in kwargs:
-            # Default f0 to 0 if not specified but df is provided (requiring explicit axis)
-            kwargs['x0'] = 0
-
-        # Set default xunit to Hz if not specified
-        if 'xunit' not in kwargs:
-            kwargs['xunit'] = cls.default_xunit
-
-        obj = super().__new__(cls, data, **kwargs)
-        if channel_names is not None:
-            obj.channel_names = list(channel_names)
-        return obj
-
-    # --- Properties mapping to SeriesMatrix attributes ---
-
-    @property
-    def df(self):
-        """Frequency spacing (dx)."""
-        return self.dx
-
-
-    @property
-    def f0(self) -> Any:
-        """Starting frequency (x0)."""
-        return self.x0
-
-    @property
-    def frequencies(self):
-        """Frequency array (xindex)."""
-        return self.xindex
-
-    def _repr_string_(self):
-        if self.size > 0:
-            u = self.meta[0, 0].unit
-        else:
-            u = None
-        return f"<FrequencySeriesMatrix shape={self.shape}, df={self.df}, unit={u}>"
-
-    @frequencies.setter
-    def frequencies(self, value):
-        self.xindex = value
-
-    # --- Methods ---
-
-    def __getitem__(self, item):
-        """
-        Return FrequencySeries for single element access, or FrequencySeriesMatrix for slicing.
-        """
-        if isinstance(item, tuple) and len(item) == 2:
-            r, c = item
-            is_scalar_r = isinstance(r, (int, np.integer, str))
-            is_scalar_c = isinstance(c, (int, np.integer, str))
-
-            if is_scalar_r and is_scalar_c:
-                ri = self.row_index(r) if isinstance(r, str) else r
-                ci = self.col_index(c) if isinstance(c, str) else c
-
-                val = self._value[ri, ci]
-                meta = self.meta[ri, ci]
-
-                return self.series_class(
-                    val,
-                    frequencies=self.frequencies,
-                    unit=meta.unit,
-                    name=meta.name,
-                    channel=meta.channel,
-                    epoch=getattr(self, "epoch", None),
-                )
-
-        ret = super().__getitem__(item)
-        if isinstance(ret, SeriesMatrix) and not isinstance(ret, FrequencySeriesMatrix):
-            return ret.view(FrequencySeriesMatrix)
-        return ret
-
-    def ifft(self):
-        """
-        Compute the inverse FFT of this frequency-domain matrix.
-
-        Matches GWpy FrequencySeries.ifft normalization.
-
-        Returns
-        -------
-        TimeSeriesMatrix
-            The time-domain matrix resulting from the inverse FFT.
-        """
-        import numpy.fft as fft
-        from astropy import units as u
-        from gwexpy.timeseries import TimeSeriesMatrix
-
-        n_freq = self.shape[-1]
-        nout = (n_freq - 1) * 2
-
-        # Undo normalization from TimeSeries.fft (GWpy logic):
-        # the DC component does not have the factor of two applied.
-        spectrum = self.value.copy()
-        spectrum[..., 1:] /= 2.0
-        time_data = fft.irfft(spectrum * nout, n=nout, axis=-1)
-
-        # 4. Metadata
-        # dt = 1 / (df * nout)
-        if isinstance(self.df, u.Quantity):
-            dt = (1 / (self.df * nout)).to("s")
-        else:
-            dt = u.Quantity(1.0 / (float(self.df) * nout), "s")
-
-        return TimeSeriesMatrix(
-            time_data,
-            meta=self.meta,
-            dt=dt,
-            epoch=self.epoch,
-            name=getattr(self, 'name', ""),
-            rows=self.rows,
-            cols=self.cols,
-            xunit='s'
-        )
-
-    def filter(self, *filt, **kwargs):
-        """
-        Apply a filter to the FrequencySeriesMatrix.
-
-        Matches GWpy FrequencySeries.filter behavior (magnitude-only response)
-        by delegating to gwpy.frequencyseries._fdcommon.fdfilter.
-        Use apply_response() for complex response application.
-
-        Parameters
-        ----------
-        *filt : filter arguments
-            Filter definition.
-        inplace : bool, optional
-            If True, modify in-place. Default False.
-        **kwargs :
-            Additional arguments passed to fdfilter (e.g. analog=True).
-
-        Returns
-        -------
-        FrequencySeriesMatrix
-            Filtered matrix.
-        """
-        from gwpy.frequencyseries._fdcommon import fdfilter
-        return fdfilter(self, *filt, **kwargs)
-
-    def apply_response(self, response, inplace=False):
-        """
-        Apply a complex frequency response to the matrix.
-
-        Extension method (not in GWpy) to support complex filtering/calibration.
-
-        Parameters
-        ----------
-        response : array-like or Quantity
-            Complex frequency response array aligned with self.frequencies.
-        inplace : bool, optional
-            If True, modify in-place.
-        """
-        from astropy import units as u
-        import numpy as np
-
-        if isinstance(response, u.Quantity):
-            h = response
-        else:
-            h = u.Quantity(np.asarray(response), u.dimensionless_unscaled)
-
-        if inplace:
-            self *= h
-            return self
-        else:
-            return self * h
-
-    def smooth(self, width: int, method: str = "amplitude", ignore_nan: bool = True) -> "FrequencySeriesMatrix":
-        """
-        Smooth the frequency series matrix along the frequency axis.
-
-        Parameters
-        ----------
-        width : int
-            Full width of the smoothing window in samples.
-        method : str, optional
-            Smoothing method: 'amplitude', 'power', 'complex', 'db'.
-            Default is 'amplitude'.
-        ignore_nan : bool, optional
-            If True, ignore NaNs during smoothing. Default is True.
-        """
-        from scipy.ndimage import uniform_filter1d
-        from astropy import units as u
-
-        val = self.value
-        # FrequencySeriesMatrix elements can have different units.
-        # We take the first one as representative for calculation, or handle carefully.
-        unit = self.meta[0, 0].unit
-        axis = -1 # Frequency axis is always last
-
-        def _smooth_axis(x):
-            if ignore_nan:
-                import pandas as pd
-                # Handle n-dimensional array by reshaping to 2D (batch, time), smoothing, and reshaping back.
-                orig_shape = x.shape
-                flat_x = x.reshape(-1, orig_shape[-1])
-                # pandas rolling mean on DataFrame (axis=1)
-                res = pd.DataFrame(flat_x).T.rolling(window=width, center=True, min_periods=1).mean().T.values
-                return res.reshape(orig_shape)
-            else:
-                return uniform_filter1d(x, size=width, axis=axis)
-
-        if method == 'complex':
-            # Complex data: smooth real and imag parts separately
-            re = _smooth_axis(val.real)
-            im = _smooth_axis(val.imag)
-            new_val = re + 1j * im
-        elif method == 'amplitude':
-            new_val = _smooth_axis(np.abs(val))
-        elif method == 'power':
-            new_val = _smooth_axis(np.abs(val)**2)
-            unit = unit**2
-        elif method == 'db':
-            # Convert to dB first
-            with np.errstate(divide='ignore'):
-                 db = 20 * np.log10(np.abs(val))
-            new_val = _smooth_axis(db)
-            unit = u.Unit('dB')
-        else:
-            raise ValueError(f"Unknown smoothing method: {method}")
-
-        new_mat = self.copy()
-        new_mat.value[:] = new_val
-        # Note: if unit changed (power, db), update all metadata.
-        if unit != self.meta[0, 0].unit:
-             for r in range(new_mat.shape[0]):
-                 for c in range(new_mat.shape[1]):
-                      new_mat.meta[r, c].unit = unit
-
-        return new_mat

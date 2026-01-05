@@ -1,0 +1,350 @@
+from __future__ import annotations
+
+import numpy as np
+from astropy import units as u
+
+from .metadata import MetaData, MetaDataMatrix
+
+
+class SeriesMatrixMathMixin:
+    """Mixin for SeriesMatrix math operations (linear algebra)."""
+
+    def _all_element_units_equivalent(self) -> tuple[bool, u.Unit | None]:
+        """Check whether all element units are mutually equivalent."""
+        units = self.meta.units
+        if units.size == 0:
+            return True, None
+        first = units[0, 0]
+        if first is None:
+            first = u.dimensionless_unscaled
+
+        def _eq(u_):
+            if u_ is None:
+                u_ = u.dimensionless_unscaled
+            return u_.is_equivalent(first)
+
+        v_eq = np.vectorize(_eq)
+        if np.all(v_eq(units)):
+            return True, first
+        return False, None
+
+    def _to_common_unit_values(self, ref_unit: u.Unit) -> np.ndarray:
+        """Convert all element values to a common reference unit."""
+        ref_unit = u.Unit(ref_unit)
+        N, M, K = self._value.shape
+        out = np.empty((N, M, K), dtype=self._value.dtype)
+
+        units = self.meta.units
+
+        def _eq(u_):
+            if u_ is None:
+                u_ = u.dimensionless_unscaled
+            return u_ == ref_unit
+
+        v_eq = np.vectorize(_eq)
+        if np.all(v_eq(units)):
+            return self._value.copy()
+
+        for i in range(N):
+            for j in range(M):
+                u_ij = units[i, j]
+                if u_ij is None:
+                    u_ij = u.dimensionless_unscaled
+                if u_ij == ref_unit:
+                    out[i, j] = self._value[i, j]
+                else:
+                    out[i, j] = u.Quantity(self._value[i, j], u_ij).to_value(ref_unit)
+        return out
+
+    def __matmul__(self, other):
+        """
+        Matrix multiplication (broadcasting over sample axis).
+        """
+        if not isinstance(other, type(self)):
+            # If other is not a SeriesMatrix, try to use ndarray matmul
+            return np.matmul(self, other)
+
+        if self._value.shape[2] != other._value.shape[2]:
+            raise ValueError("Sample axis length mismatch in matrix multiplication")
+        if self._value.shape[1] != other._value.shape[0]:
+            raise ValueError(
+                f"Matrix dimension mismatch: ({self._value.shape[0]}, {self._value.shape[1]}) @ ({other._value.shape[0]}, {other._value.shape[1]})"
+            )
+
+        # Move sample axis to front for np.matmul broadcasting
+        a = np.moveaxis(self._value, 2, 0)
+        b = np.moveaxis(other._value, 2, 0)
+        res_stack = np.matmul(a, b)
+        res_vals = np.moveaxis(res_stack, 0, 2)
+
+        N = self._value.shape[0]
+        M = other._value.shape[1]
+        K = self._value.shape[1]
+
+        # Compute metadata (units)
+        # Result unit at (i, j) is sum_k (self[i, k].unit * other[k, j].unit)
+        # We assume for each (i, j), the units for all k are equivalent.
+        res_meta = np.empty((N, M), dtype=object)
+        for i in range(N):
+            for j in range(M):
+                # Calculate the unit of the first term k=0
+                u0 = self.meta[i, 0].unit * other.meta[0, j].unit
+                # Check consistency and assign
+                for k in range(1, K):
+                    uk = self.meta[i, k].unit * other.meta[k, j].unit
+                    if not uk.is_equivalent(u0):
+                        raise u.UnitConversionError(
+                            f"Inconsistent units in matrix multiplication at result ({i},{j}): term 0 has {u0}, term {k} has {uk}"
+                        )
+                res_meta[i, j] = MetaData(unit=u0)
+
+        return type(self)(
+            res_vals,
+            xindex=self.xindex,
+            rows=self.rows,
+            cols=other.cols,
+            meta=MetaDataMatrix(res_meta),
+            name=f"({getattr(self, 'name', '')} @ {getattr(other, 'name', '')})",
+            epoch=getattr(self, "epoch", 0.0),
+            attrs=getattr(self, "attrs", {}),
+        )
+
+    def trace(self):
+        """Compute the trace of the matrix (sum of diagonal elements)."""
+        nrow, ncol, _ = self._value.shape
+        if nrow != ncol:
+            raise ValueError("trace requires a square matrix")
+        ref_unit = self.meta[0, 0].unit
+        diag_values = []
+        for i in range(nrow):
+            u_ii = self.meta[i, i].unit
+            if not u_ii.is_equivalent(ref_unit):
+                raise u.UnitConversionError(f"Diagonal units not equivalent: {u_ii} vs {ref_unit}")
+            diag_values.append(u.Quantity(self._value[i, i], u_ii).to_value(ref_unit))
+        summed = np.sum(diag_values, axis=0)
+
+        # Result is a Series. Need to find base Series class.
+        series_class = getattr(self, "series_class", None)
+        if series_class is None:
+            from gwpy.types.series import Series as series_class
+
+        name = f"trace({self.name})" if getattr(self, "name", "") else "trace"
+        return series_class(summed, xindex=self.xindex, unit=ref_unit, name=name)
+
+    def diagonal(self, output: str = "list"):
+        """Extract diagonal elements from the matrix."""
+        from .metadata import MetaDataDict
+
+        nrow, ncol, nsamp = self._value.shape
+        n = min(nrow, ncol)
+        diag_series = []
+
+        series_class = getattr(self, "series_class", None)
+        if series_class is None:
+            from gwpy.types.series import Series as series_class
+
+        for i in range(n):
+            meta = self.meta[i, i]
+            diag_series.append(
+                series_class(
+                    self._value[i, i],
+                    xindex=self.xindex,
+                    unit=meta.unit,
+                    name=meta.name,
+                    channel=meta.channel,
+                )
+            )
+
+        if output == "list":
+            return diag_series
+
+        if output == "vector":
+            values = np.empty((n, 1, nsamp), dtype=self._value.dtype)
+            meta_arr = np.empty((n, 1), dtype=object)
+            for i in range(n):
+                values[i, 0] = diag_series[i].value
+                meta_arr[i, 0] = MetaData(**dict(self.meta[i, i]))
+            from .seriesmatrix_validation import _slice_metadata_dict
+
+            rows_dict = _slice_metadata_dict(self.rows, list(range(n)), "row")
+            cols_dict = MetaDataDict({"diag": MetaData()}, expected_size=1, key_prefix="col")
+            return self.__class__(
+                values,
+                xindex=self.xindex,
+                rows=rows_dict,
+                cols=cols_dict,
+                meta=MetaDataMatrix(meta_arr),
+                name=getattr(self, "name", ""),
+                epoch=getattr(self, "epoch", 0.0),
+                attrs=getattr(self, "attrs", {}),
+            )
+
+        if output == "matrix":
+            values = np.zeros_like(self._value)
+            for i in range(n):
+                values[i, i] = self._value[i, i]
+            return self.__class__(
+                values,
+                xindex=self.xindex,
+                rows=self.rows,
+                cols=self.cols,
+                meta=self.meta,
+                name=getattr(self, "name", ""),
+                epoch=getattr(self, "epoch", 0.0),
+                attrs=getattr(self, "attrs", {}),
+            )
+
+        raise ValueError("output must be one of {'list', 'vector', 'matrix'}")
+
+    def det(self):
+        """Compute the determinant of the matrix at each sample point."""
+        nrow, ncol, nsamp = self._value.shape
+        if nrow != ncol:
+            raise ValueError("det requires a square matrix")
+
+        # These helpers must be in the mixin or base class
+        ok, ref_unit = self._all_element_units_equivalent()
+        if not ok:
+            raise u.UnitConversionError("All element units must be equivalent for det()")
+        common = self._to_common_unit_values(ref_unit)
+        mats = np.moveaxis(common, 2, 0)
+        det_vals = np.linalg.det(mats)
+        result_unit = ref_unit**nrow
+
+        series_class = getattr(self, "series_class", None)
+        if series_class is None:
+            from gwpy.types.series import Series as series_class
+
+        name = f"det({self.name})" if getattr(self, "name", "") else "det"
+        return series_class(det_vals, xindex=self.xindex, unit=result_unit, name=name)
+
+    def inv(self, swap_rowcol: bool = True):
+        """Compute the matrix inverse at each sample point."""
+        from collections import OrderedDict
+
+        from .metadata import MetaDataDict
+
+        nrow, ncol, nsamp = self._value.shape
+        if nrow != ncol:
+            raise ValueError("inv requires a square matrix")
+        ok, ref_unit = self._all_element_units_equivalent()
+        if not ok:
+            raise u.UnitConversionError("All element units must be equivalent for inv()")
+        common = self._to_common_unit_values(ref_unit)
+        mats = np.moveaxis(common, 2, 0)
+        inv_stack = np.linalg.inv(mats)
+        inv_vals = np.moveaxis(inv_stack, 0, 2)
+
+        inv_unit = ref_unit**-1
+        meta_arr = np.empty((nrow, ncol), dtype=object)
+        for i in range(nrow):
+            for j in range(ncol):
+                meta_arr[i, j] = MetaData(unit=inv_unit, name="", channel=None)
+        meta_matrix = MetaDataMatrix(meta_arr)
+
+        def _copy_meta_dict(md: MetaDataDict, prefix: str):
+            items = OrderedDict()
+            for k, v in md.items():
+                items[k] = MetaData(**dict(v))
+            return MetaDataDict(items, expected_size=len(md), key_prefix=prefix)
+
+        rows_out = _copy_meta_dict(self.cols, "row") if swap_rowcol else _copy_meta_dict(self.rows, "row")
+        cols_out = _copy_meta_dict(self.rows, "col") if swap_rowcol else _copy_meta_dict(self.cols, "col")
+
+        return self.__class__(
+            inv_vals,
+            xindex=self.xindex,
+            rows=rows_out,
+            cols=cols_out,
+            meta=meta_matrix,
+            name=f"inv({self.name})" if getattr(self, "name", "") else "inv",
+            epoch=getattr(self, "epoch", 0.0),
+            attrs=getattr(self, "attrs", {}),
+        )
+
+    def schur(self, keep_rows, keep_cols=None, eliminate_rows=None, eliminate_cols=None):
+        """Compute the Schur complement of a block matrix."""
+        from collections import OrderedDict
+
+        from .metadata import MetaDataDict
+
+        nrow, ncol, nsamp = self._value.shape
+        if keep_cols is None:
+            keep_cols = keep_rows
+
+        def _row_idx(k):
+            return int(k) if isinstance(k, (int, np.integer)) else self.row_index(k)
+
+        def _col_idx(k):
+            return int(k) if isinstance(k, (int, np.integer)) else self.col_index(k)
+
+        all_row_idx = list(range(nrow))
+        all_col_idx = list(range(ncol))
+        keep_rows_idx = [_row_idx(k) for k in keep_rows]
+        keep_cols_idx = [_col_idx(k) for k in keep_cols]
+        if eliminate_rows is None:
+            eliminate_rows_idx = [i for i in all_row_idx if i not in keep_rows_idx]
+        else:
+            eliminate_rows_idx = [_row_idx(k) for k in eliminate_rows]
+        if eliminate_cols is None:
+            eliminate_cols_idx = [j for j in all_col_idx if j not in keep_cols_idx]
+        else:
+            eliminate_cols_idx = [_col_idx(k) for k in eliminate_cols]
+
+        if len(eliminate_rows_idx) != len(eliminate_cols_idx):
+            raise ValueError("Eliminated row/col sets must have the same size for Schur complement")
+        if not keep_rows_idx or not keep_cols_idx:
+            raise ValueError("Keep sets must be non-empty")
+
+        ok, ref_unit = self._all_element_units_equivalent()
+        if not ok:
+            raise u.UnitConversionError("All element units must be equivalent for schur()")
+        common = self._to_common_unit_values(ref_unit)
+
+        r_keep = len(keep_rows_idx)
+        c_keep = len(keep_cols_idx)
+
+        if len(eliminate_rows_idx) == 0:
+            result_vals = common[np.ix_(keep_rows_idx, keep_cols_idx)]
+        else:
+            stack = np.moveaxis(common, 2, 0)
+            A = np.take(np.take(stack, keep_rows_idx, axis=1), keep_cols_idx, axis=2)
+            B = np.take(np.take(stack, keep_rows_idx, axis=1), eliminate_cols_idx, axis=2)
+            C = np.take(np.take(stack, eliminate_rows_idx, axis=1), keep_cols_idx, axis=2)
+            D = np.take(np.take(stack, eliminate_rows_idx, axis=1), eliminate_cols_idx, axis=2)
+
+            D_inv = np.linalg.inv(D)
+            schur_block = A - np.matmul(np.matmul(B, D_inv), C)
+            result_vals = np.moveaxis(schur_block, 0, 2)
+
+        meta_arr = np.empty((r_keep, c_keep), dtype=object)
+        for ii, ri in enumerate(keep_rows_idx):
+            for jj, cj in enumerate(keep_cols_idx):
+                base_meta = self.meta[ri, cj]
+                meta_arr[ii, jj] = MetaData(unit=ref_unit, name=base_meta.name, channel=base_meta.channel)
+
+        def _subset_meta_dict(md: MetaDataDict, indices, prefix):
+            items = OrderedDict()
+            keys = list(md.keys())
+            for idx in indices:
+                key = keys[idx]
+                items[key] = MetaData(**dict(md[key]))
+            return MetaDataDict(items, expected_size=len(indices), key_prefix=prefix)
+
+        rows_out = _subset_meta_dict(self.rows, keep_rows_idx, "row")
+        cols_out = _subset_meta_dict(self.cols, keep_cols_idx, "col")
+
+        return self.__class__(
+            result_vals,
+            xindex=self.xindex,
+            rows=rows_out,
+            cols=cols_out,
+            meta=MetaDataMatrix(meta_arr),
+            name=f"schur({self.name})" if getattr(self, "name", "") else "schur",
+            epoch=getattr(self, "epoch", 0.0),
+            attrs=getattr(self, "attrs", {}),
+        )
+
+    def abs(self):
+        """Return the absolute value of the matrix element-wise."""
+        return np.abs(self)

@@ -26,7 +26,11 @@ from ._analysis import TimeSeriesAnalysisMixin
 from ._interop import TimeSeriesInteropMixin
 from ._statistics import StatisticsMixin
 from gwexpy.fitting.mixin import FittingMixin
-from gwexpy.types.mixin import RegularityMixin
+from gwexpy.types.mixin import (
+    RegularityMixin,
+    PhaseMethodsMixin,
+    SignalAnalysisMixin
+)
 
 # Import legacy for remaining methods
 from ._timeseries_legacy import TimeSeries as _LegacyTimeSeries
@@ -37,9 +41,11 @@ class TimeSeries(
     TimeSeriesAnalysisMixin,   # Analysis
     TimeSeriesResamplingMixin, # Resampling
     TimeSeriesSignalMixin,     # Signal processing
+    SignalAnalysisMixin,       # Generic Signal Analysis (smooth, find_peaks)
     TimeSeriesSpectralMixin,   # Spectral transforms
     StatisticsMixin,           # Statistical analysis & correlation
     FittingMixin,              # Fitting functionality
+    PhaseMethodsMixin,         # Phase/Angle methods (radian, degree, phase, angle)
     RegularityMixin,           # Regularity checking (is_regular, _check_regular)
     _LegacyTimeSeries,         # All legacy methods including BaseTimeSeries
 ):
@@ -59,6 +65,13 @@ class TimeSeries(
 
     Inherits from gwpy.timeseries.TimeSeries for full compatibility.
     """
+
+    def _get_meta_for_constructor(self):
+        """Helper for SignalAnalysisMixin to reconstruct object."""
+        return {
+            "t0": self.t0,
+            "dt": self.dt,
+        }
 
     def plot(self, **kwargs: Any):
         """Plot this TimeSeries. Delegates to gwexpy.plot.Plot."""
@@ -236,7 +249,7 @@ class TimeSeries(
     def to_simpeg(self, location=None, rx_type="PointElectricField", orientation='x', **kwargs) -> Any:
         """
         Convert to SimPEG Data object.
-        
+
         Parameters
         ----------
         location : array_like, optional
@@ -245,7 +258,7 @@ class TimeSeries(
             Receiver class name. Default "PointElectricField".
         orientation : str, optional
             Receiver orientation ('x', 'y', 'z'). Default 'x'.
-            
+
         Returns
         -------
         simpeg.data.Data
@@ -257,18 +270,38 @@ class TimeSeries(
     def from_simpeg(cls, data_obj: Any, **kwargs: Any) -> Any:
         """
         Create TimeSeries from SimPEG Data object.
-        
+
         Parameters
         ----------
         data_obj : simpeg.data.Data
             Input SimPEG Data.
-            
+
         Returns
         -------
         TimeSeries
         """
         from gwexpy.interop import from_simpeg
         return from_simpeg(cls, data_obj, **kwargs)
+
+    @classmethod
+    def from_control(cls, response: Any, **kwargs) -> Any:
+        """
+        Create TimeSeries from python-control TimeResponseData.
+
+        Parameters
+        ----------
+        response : control.TimeResponseData
+            The simulation result from python-control.
+        **kwargs : dict
+            Additional arguments passed to the constructor.
+
+        Returns
+        -------
+        TimeSeries or TimeSeriesDict
+            The converted time-domain data.
+        """
+        from gwexpy.interop import from_control_response
+        return from_control_response(cls, response, **kwargs)
 
     # =========================================================================
     # ARIMA / Modeling Methods

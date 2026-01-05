@@ -13,8 +13,8 @@ from .utils import _coerce_t0_gps
 try:
     from typing import TYPE_CHECKING
     if TYPE_CHECKING:
-        from .timeseries import TimeSeries
-        from .matrix import TimeSeriesMatrix
+        from .timeseries import TimeSeries  # noqa: F401
+        from .matrix import TimeSeriesMatrix  # noqa: F401
 except ImportError:
     pass
 

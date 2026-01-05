@@ -1,7 +1,7 @@
 from astropy import units as u
 from typing import Optional, Any
 try:
-    import scipy.signal
+    import scipy.signal  # noqa: F401 - availability check
 except ImportError:
     pass # scipy is optional dependency for gwpy but required here for hilbert
 
@@ -14,12 +14,12 @@ from gwpy.timeseries import TimeSeriesList as BaseTimeSeriesList
 # --- Monkey Patch TimeSeriesDict ---
 
 
-# New Imports
+from gwexpy.types.mixin import PhaseMethodsMixin
 from .spectral import csd_matrix_from_collection, coherence_matrix_from_collection
 
 
 
-class TimeSeriesDict(BaseTimeSeriesDict):
+class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
     """Dictionary of TimeSeries objects."""
 
     def asfreq(self, rule, **kwargs):
@@ -110,6 +110,49 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         """Create from mne.io.Raw."""
         from gwexpy.interop import from_mne_raw
         return from_mne_raw(cls, raw, unit_map=unit_map)
+
+    @classmethod
+    def from_control(cls, response: Any, **kwargs) -> "TimeSeriesDict":
+        """
+        Create TimeSeriesDict from python-control TimeResponseData.
+
+        Parameters
+        ----------
+        response : control.TimeResponseData
+            The simulation result from python-control.
+        **kwargs : dict
+            Additional arguments passed to the TimeSeries constructor.
+
+        Returns
+        -------
+        TimeSeriesDict
+            The converted time-domain data.
+        """
+        from gwexpy.interop import from_control_response
+        res = from_control_response(cls, response, **kwargs)
+        if not isinstance(res, cls):
+            # Wrap in a Dictionary if it isn't one already
+            obj = cls()
+            name = getattr(res, "name", "output")
+            obj[name] = res
+            return obj
+        return res
+
+    def radian(self, *args, **kwargs) -> "TimeSeriesDict":
+        """Compute instantaneous phase (in radians) of each item."""
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.radian(*args, **kwargs)
+        return new_dict
+
+    def degree(self, *args, **kwargs) -> "TimeSeriesDict":
+        """Compute instantaneous phase (in degrees) of each item."""
+        new_dict = self.__class__()
+        for key, ts in self.items():
+            new_dict[key] = ts.degree(*args, **kwargs)
+        return new_dict
+
+    # phase() and angle() are provided by PhaseMethodsMixin
 
     def unwrap_phase(self, *args, **kwargs):
         """Apply unwrap_phase to each item."""
@@ -531,8 +574,8 @@ class TimeSeriesDict(BaseTimeSeriesDict):
              for ts in self.values():
                  ts.append(other, **kwargs)
              return self
-        
-        # If 'copy' key is present in 'other' (can happen with some readers), 
+
+        # If 'copy' key is present in 'other' (can happen with some readers),
         # it will cause super().append to fail if 'copy' is not a TimeSeries.
         # We should filter it out if it's not a TimeSeries.
         if hasattr(other, 'pop') and 'copy' in other and not isinstance(other['copy'], BaseTimeSeries):
@@ -541,7 +584,7 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         # Ensure we don't pass 'copy' twice if it's already in kwargs
         if 'copy' in kwargs:
             copy = kwargs.pop('copy')
-            
+
         return super().append(other, copy=copy, **kwargs)
 
     def prepend(self, *args, **kwargs) -> "TimeSeriesDict":
@@ -771,7 +814,7 @@ class TimeSeriesDict(BaseTimeSeriesDict):
         return self.to_matrix().ica(*args, **kwargs)
 
 
-class TimeSeriesList(BaseTimeSeriesList):
+class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
     """List of TimeSeries objects."""
 
     def csd_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs):
@@ -979,6 +1022,7 @@ class TimeSeriesList(BaseTimeSeriesList):
             Matrix with all series aligned to common time axis.
         """
         from gwexpy.timeseries.preprocess import align_timeseries_collection
+        from gwexpy.timeseries.matrix import TimeSeriesMatrix
         vals, times, meta = align_timeseries_collection(list(self), how=align, **kwargs)
         # Use names from metadata (from TS objects)
         names = meta.get("channel_names")
@@ -1227,7 +1271,7 @@ class TimeSeriesList(BaseTimeSeriesList):
         """Apply lock_in to each item."""
         if not self:
             return self.__class__()
-        
+
         # Peek first
         first_res = self[0].lock_in(*args, **kwargs)
         if isinstance(first_res, tuple):
@@ -1442,4 +1486,20 @@ class TimeSeriesList(BaseTimeSeriesList):
     def plot_all(self, *args: Any, **kwargs: Any):
         """Alias for plot(). Plots all series."""
         return self.plot(*args, **kwargs)
+
+    def radian(self, *args, **kwargs) -> "TimeSeriesList":
+        """Compute instantaneous phase (in radians) of each item."""
+        new_list = self.__class__()
+        for ts in self:
+            new_list.append(ts.radian(*args, **kwargs))
+        return new_list
+
+    def degree(self, *args, **kwargs) -> "TimeSeriesList":
+        """Compute instantaneous phase (in degrees) of each item."""
+        new_list = self.__class__()
+        for ts in self:
+            new_list.append(ts.degree(*args, **kwargs))
+        return new_list
+
+    # phase() and angle() are provided by PhaseMethodsMixin
 

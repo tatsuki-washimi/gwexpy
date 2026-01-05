@@ -1,1 +1,1 @@
-from gwpy.io.hdf5 import *
+from gwpy.io.hdf5 import *  # noqa: F403

@@ -19,7 +19,7 @@ class TimeSeriesSpectralFourierMixin:
     def _prepare_data_for_transform(self, data=None, window=None, detrend=False):
         """Helper to copy data and apply detrending and windowing."""
         try:
-            import scipy.signal
+            import scipy.signal  # noqa: F401 - availability check
         except ImportError:
             raise ImportError("scipy is required for this transform")
 
@@ -71,7 +71,7 @@ class TimeSeriesSpectralFourierMixin:
             "next_fast_len" for optimal performance.
         other_length : `int`, optional
             For convolution-like transforms.
-        
+
         Returns
         -------
         `FrequencySeries`

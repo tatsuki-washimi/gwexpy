@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from iminuit import Minuit
-from iminuit.util import describe, make_func_code
+from iminuit.util import describe
 import inspect
 from .models import get_model
 
@@ -29,7 +29,7 @@ class ComplexLeastSquares:
         # Determine parameters from model (skipping 'x')
         # describe returns a list of parameter names
         params = describe(model)[1:]
-        self.func_code = make_func_code(params)
+        self._parameters = {name: None for name in params}
 
     def __call__(self, *args):
         # Calculate model prediction
@@ -66,7 +66,7 @@ class RealLeastSquares:
         self.model = model
 
         params = describe(model)[1:]
-        self.func_code = make_func_code(params)
+        self._parameters = {name: None for name in params}
 
     def __call__(self, *args):
         ym = self.model(self.x, *args)
@@ -638,7 +638,7 @@ def fit_series(series, model, x_range=None, sigma=None,
     sig = inspect.signature(model)
 
     init_params = {}
-    
+
     # Handle list/tuple p0 by mapping positional args to parameter names
     if p0 is not None and isinstance(p0, (list, tuple, np.ndarray)):
         # Optionally check lengths

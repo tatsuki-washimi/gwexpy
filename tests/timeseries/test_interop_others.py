@@ -41,7 +41,7 @@ def test_sqlite_interop():
         conn.close()
 
 try:
-    import h5py
+    import h5py  # noqa: F401 - availability check
 except ImportError:
     h5py = None
 

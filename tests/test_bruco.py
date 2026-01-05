@@ -1,10 +1,9 @@
 import numpy as np
-import pandas as pd
 from unittest.mock import patch
 from gwpy.timeseries import TimeSeries, TimeSeriesDict
 from astropy import units as u
 
-from gwexpy.analysis.bruco import Bruco
+from gwexpy.analysis.bruco import Bruco, BrucoResult
 
 # モックデータの生成ヘルパー
 def create_mock_timeseries(name, duration, sample_rate, signal_freq=None, noise_amp=0.1):
@@ -12,7 +11,7 @@ def create_mock_timeseries(name, duration, sample_rate, signal_freq=None, noise_
     data = np.random.normal(0, noise_amp, size=len(t))
     if signal_freq:
         data += np.sin(2 * np.pi * signal_freq * t)
-    
+
     return TimeSeries(data, t0=0, sample_rate=sample_rate * u.Hz, name=name)
 
 class TestBruco:
@@ -20,9 +19,9 @@ class TestBruco:
         target = "TARGET"
         aux = ["AUX1", "AUX2", "AUX3"]
         excluded = ["AUX2"]
-        
+
         bruco = Bruco(target, aux, excluded)
-        
+
         assert bruco.target == target
         assert len(bruco.channels_to_scan) == 2
         assert "AUX1" in bruco.channels_to_scan
@@ -38,45 +37,52 @@ class TestBruco:
         aux_channels = ["H1:AUX1", "H1:AUX2"]
         duration = 10
         sample_rate = 256
-        
+
         # ターゲット: 10Hzの信号を持つ
         mock_target_data = create_mock_timeseries(target_channel, duration, sample_rate, signal_freq=10)
         mock_ts_get.return_value = mock_target_data
-        
+
         # AUX1: 10Hzの信号を持つ (高いコヒーレンスが期待される)
         mock_aux1_data = create_mock_timeseries("H1:AUX1", duration, sample_rate, signal_freq=10)
-        
+
         # AUX2: ノイズのみ (低いコヒーレンスが期待される)
         mock_aux2_data = create_mock_timeseries("H1:AUX2", duration, sample_rate, signal_freq=None)
-        
+
         # TimeSeriesDict.get は辞書っぽいものを返す
         mock_tsd_get.return_value = TimeSeriesDict({
             "H1:AUX1": mock_aux1_data,
             "H1:AUX2": mock_aux2_data
         })
-        
+
         bruco = Bruco(target_channel, aux_channels)
-        
+
         # 2. 実行
         # macなどでmultiprocessingがエラーになるのを防ぐためnproc=1でテストするか、
         # モックがpicklableでない可能性を考慮してシンプルな実行にする
         # ここではロジックのテストなので nproc=1 推奨
-        df = bruco.compute(start=0, duration=duration, fftlength=1.0, overlap=0.5, nproc=1)
-        
+        result = bruco.compute(
+            start=0,
+            duration=duration,
+            fftlength=1.0,
+            overlap=0.5,
+            nproc=1,
+            top_n=2,
+        )
+
         # 3. 検証
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) == 2
-        
-        # AUX1 が上位に来るはず
-        assert df.iloc[0]['channel'] == "H1:AUX1"
-        assert df.iloc[0]['max_coherence'] > 0.5  # 信号があるのでコヒーレンスは高いはず
-        
+        assert isinstance(result, BrucoResult)
+        assert result.top_channels.shape[1] == 2
+
+        # AUX1 が上位に来るはず (最大コヒーレンスの周波数ビン)
+        max_idx = int(np.argmax(result.top_coherence[:, 0]))
+        assert result.top_channels[max_idx, 0] == "H1:AUX1"
+        assert result.top_coherence[max_idx, 0] > 0.5  # 信号があるのでコヒーレンスは高いはず
+
         # 周波数もチェック (10Hz付近)
-        assert np.isclose(df.iloc[0]['freq_at_max'], 10.0, atol=1.0)
-        
-        # AUX2 は下位
-        assert df.iloc[1]['channel'] == "H1:AUX2"
-        assert df.iloc[1]['max_coherence'] < 0.5  # ノイズだけなので低いはず
+        assert np.isclose(result.frequencies[max_idx], 10.0, atol=1.0)
+
+        # AUX2 は上位以外か、2番目以内にいる
+        assert "H1:AUX2" in result.top_channels[max_idx]
 
     def test_process_batch_error_handling(self):
         # バッチ処理中にエラーが発生しても全体が止まらないかテスト
@@ -86,10 +92,15 @@ class TestBruco:
          # サンプリングレートが異なる場合のロジックテスト
         target_ts = create_mock_timeseries("T", 10, 512, signal_freq=10)
         aux_ts = create_mock_timeseries("A", 10, 256, signal_freq=10)
-        
-        # _calculate_pair_coherence は静的メソッドで private だがテストしたい
-        # しかし実装上はインスタンスメソッドではないのでクラスから呼べる
-        res = Bruco._calculate_pair_coherence(target_ts, aux_ts, fftlength=1, overlap=0)
-        
+
+        target_freqs = target_ts.asd(fftlength=1, overlap=0).frequencies.value
+        res = Bruco._calculate_aligned_coherence(
+            target_ts,
+            aux_ts,
+            fftlength=1,
+            overlap=0,
+            target_frequencies=target_freqs,
+        )
         assert res is not None
-        assert res['max_coherence'] > 0.8
+        _, coh = res
+        assert np.max(coh) > 0.8

@@ -11,7 +11,6 @@ from .buffer import DataBufferDict
 from .util import parse_server_string
 
 
-from .util import parse_server_string
 
 
 class ChannelListCache:
@@ -92,7 +91,7 @@ class NDSDataCache(QtCore.QObject):
                     try:
                         dev_str = c.split(":")[2].split("-")[0]
                         dev_idx = int(dev_str)
-                    except:
+                    except Exception:
                         pass
 
                 if dev_idx not in by_device:

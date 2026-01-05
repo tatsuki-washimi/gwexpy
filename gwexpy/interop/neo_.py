@@ -27,15 +27,34 @@ def to_neo(obj, units=None):
             # (n_ch, 1, time) -> (time, n_ch)
             data = val.squeeze(axis=1).T
             # channels is 2D (n_ch, 1) extract first column
-            if hasattr(obj, "channels"):
+            # Try to get names/channels from metadata
+            # SeriesMatrix base has obj.names and obj.channels
+            def _is_valid_array(arr):
+                if arr is None or arr.size == 0: return False
+                # Check at least one element is not None AND has a useful name
+                for x in arr.flat:
+                    if x is None: continue
+                    # For GWpy Channel objects, check if name is not None/ "None"
+                    if hasattr(x, "name"):
+                        if x.name is not None and str(x.name) != "None": return True
+                    else:
+                        # For raw strings or other objects
+                        if x is not None and str(x) != "None": return True
+                return False
+
+            if hasattr(obj, "channel_names") and obj.channel_names:
+                ch_names = [str(x) for x in obj.channel_names]
+            elif hasattr(obj, "channels") and _is_valid_array(obj.channels):
                 ch_names = [str(x) for x in obj.channels[:, 0]]
+            elif hasattr(obj, "names") and _is_valid_array(obj.names):
+                ch_names = [str(x) for x in obj.names[:, 0]]
             else:
                 ch_names = [str(i) for i in range(data.shape[1])]
         else:
             # Handle other cases if needed
             data = val.T
             ch_names = [str(i) for i in range(data.shape[1])]
-            
+
         sample_rate = obj.sample_rate
         t0 = obj.t0
         # TimeSeriesMatrix has .units (2D array), not .unit

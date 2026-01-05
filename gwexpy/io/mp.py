@@ -1,1 +1,1 @@
-from gwpy.io.mp import *
+from gwpy.io.mp import *  # noqa: F403

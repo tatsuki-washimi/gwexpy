@@ -1,13 +1,12 @@
 import pytest
 import numpy as np
 from gwexpy.plot import SkyMap
-import matplotlib.pyplot as plt
 
 def test_skymap_init():
     """Test SkyMap initialization."""
     fig = SkyMap()
     assert len(fig.axes) == 1
-    # Check default projection (astro hours mollweide usually results in WCSAxes or polar-like depending on version, 
+    # Check default projection (astro hours mollweide usually results in WCSAxes or polar-like depending on version,
     # but we just check if it's created).
     fig.close()
 
@@ -25,10 +24,10 @@ def test_mark_target():
 def test_add_healpix():
     """Test add_healpix if ligo.skymap is available."""
     try:
-        import ligo.skymap
+        import ligo.skymap  # noqa: F401 - availability check
     except ImportError:
         pytest.skip("ligo.skymap not available")
-    
+
     # Create a small HEALPix map (nside=1 has 12 pixels)
     map_data = np.random.rand(12)
     fig = SkyMap()

@@ -15,7 +15,7 @@ except ImportError:
 
 # Import order matters: dask -> torch/tf avoids segfaults in some envs.
 try:
-    import torch
+    import torch  # noqa: F401 - availability check
 except ImportError:
     torch = None
 

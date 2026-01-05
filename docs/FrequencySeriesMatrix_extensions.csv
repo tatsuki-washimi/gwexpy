@@ -1,8 +1,12 @@
 api,one_line,category
 ifft(),逆FFTを実行し TimeSeriesMatrix を返す,変換
-filter(*filt, **kwargs),行列全体にデジタルフィルタ（fdfilter）を適用
-apply_response(response, ...),行列全体に複素周波数応答を適用
-smooth(width, method='amplitude'),行列全体を指定軸に沿って平滑化
+filter(*filt, **kwargs),行列全体にデジタルフィルタ（filter）を適用,信号処理
+apply_response(response, ...),行列全体に複素周波数応答を適用,信号処理
+smooth(width, method='amplitude'),行列全体を指定軸に沿って平滑化,信号処理
 to_torch(...),PyTorch Tensor へ変換,相互運用
 to_cupy(...),CuPy Array へ変換,相互運用
 row_keys() / col_keys(),行/列のメタデータ（チャンネル名等）のキー一覧を取得,メタデータ
+crop(start, end),周波数軸に沿ってトリミング,解析
+interpolate(new_freqs),新しい周波数定軸へ補間,解析
+to_list(),FrequencySeriesList へ変換,変換
+to_dict(),FrequencySeriesDict へ変換,変換

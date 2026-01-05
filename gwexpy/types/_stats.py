@@ -10,13 +10,13 @@ class StatisticalMethodsMixin:
         # Extract data and unit
         data = np.asarray(self)
         unit = getattr(self, "unit", None)
-        
+
         func = func_nan if ignore_nan else func_raw
-        
+
         # Pull out arguments that numpy functions expect
         # This is a bit generic but works for mean, std, var, min, max, median
         res = func(data, **kwargs)
-        
+
         if unit is not None:
             from astropy.units import Quantity
             return Quantity(res, unit=unit)

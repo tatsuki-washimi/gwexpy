@@ -9,7 +9,7 @@ List of `FrequencySeries` objects.
 ### `__init__`
 
 ```python
-__init__(self, *items: '_FS')
+__init__(self, *items: 'Union[_FS, Iterable[_FS]]')
 ```
 
 Initialize self.  See help(type(self)) for accurate signature.
@@ -199,7 +199,7 @@ Returns a new FrequencySeriesList.
 plot(self, **kwargs: 'Any')
 ```
 
-Plot all series. Delegates to gwpy.plot.Plot.
+Plot all series. Delegates to gwexpy.plot.Plot.
 
 ### `plot_all`
 
@@ -208,6 +208,14 @@ plot_all(self, *args: 'Any', **kwargs: 'Any')
 ```
 
 Alias for plot(). Plots all series.
+
+### `read`
+
+```python
+read(source, *args, **kwargs)
+```
+
+_No documentation available._
 
 ### `segments`
 

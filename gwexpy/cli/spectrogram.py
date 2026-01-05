@@ -1,1 +1,1 @@
-from gwpy.cli.spectrogram import *
+from gwpy.cli.spectrogram import *  # noqa: F403

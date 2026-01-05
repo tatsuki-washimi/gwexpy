@@ -1,5 +1,5 @@
 import sys
-from gwpy.cli import *
+from gwpy.cli import *  # noqa: F403
 from .._version import __version__
 
 def main(args=None):
