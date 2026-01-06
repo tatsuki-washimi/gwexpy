@@ -310,7 +310,7 @@ def _normalize_input(
             N, M = (1, 1)
         else:
             N, M = arr_raw.shape
-            arr = np.asarray(arr_raw).reshape(N, M, 1)
+            arr = np.asarray(arr_raw).reshape(N, 1, M)
 
         unit_arr = _broadcast_attr(units, (N, M), "units") if units is not None else np.full((N, M), base_unit)
         name_arr = _broadcast_attr(names, (N, M), "names") if names is not None else np.full((N, M), None)

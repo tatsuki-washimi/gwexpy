@@ -28,6 +28,11 @@ from .series_matrix_validation_mixin import SeriesMatrixValidationMixin
 from ._stats import StatisticalMethodsMixin
 from gwexpy.types.mixin import RegularityMixin, InteropMixin
 
+_ADD_SUB_COMPARISON_UFUNCS = {
+    np.add, np.subtract, np.less, np.less_equal, np.equal,
+    np.not_equal, np.greater, np.greater_equal
+}
+
 class PerformanceWarning(RuntimeWarning):
     """Warning raised when an operation falls back to a slower implementation."""
     pass
@@ -272,7 +277,7 @@ class SeriesMatrix(
 
         check_shape_xindex_compatibility(*casted_inputs)
 
-        if ufunc in [np.add, np.subtract, np.less, np.less_equal, np.equal, np.not_equal, np.greater, np.greater_equal]:
+        if ufunc in _ADD_SUB_COMPARISON_UFUNCS:
             check_add_sub_compatibility(*casted_inputs)
 
         value_arrays = [inp.view(np.ndarray) for inp in casted_inputs]

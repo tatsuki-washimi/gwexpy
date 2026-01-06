@@ -12,6 +12,159 @@ from .utils import _extract_axis_info, _validate_common_axis
 class TimeSeriesMatrixSpectralMixin:
     """Spectral analysis methods for TimeSeriesMatrix."""
 
+    def _vectorized_fft(self, **kwargs: Any) -> Any:
+        """
+        Vectorized implementation of FFT.
+        """
+        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        
+        # We assume regular sampling for vectorized FFT
+        self._check_regular("Vectorized FFT")
+        
+        # Handle n-dimensional array (N, M, T)
+        # np.fft.rfft handles axis
+        data = np.asarray(self.value)
+        n = data.shape[-1]
+        
+        # Pass kwargs to rfft (like n)
+        rfft_len = kwargs.get("n", n)
+        fs_data = np.fft.rfft(data, n=rfft_len, axis=-1)
+        
+        # Calculate frequencies
+        df = 1.0 / (self.dt.value * rfft_len)
+        freqs = np.fft.rfftfreq(rfft_len, d=self.dt.value) * u.Hz
+        
+        # Metadata logic: simplified for now, uses same meta for all
+        return FrequencySeriesMatrix(
+            fs_data,
+            frequencies=freqs,
+            meta=self.meta,
+            rows=self.rows,
+            cols=self.cols,
+            name=self.name,
+            epoch=self.epoch,
+        )
+
+    def _vectorized_psd(self, **kwargs: Any) -> Any:
+        """
+        Vectorized implementation of PSD (Welch).
+        """
+        from scipy.signal import welch
+        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        
+        self._check_regular("Vectorized PSD")
+        
+        data = np.asarray(self.value)
+        fs = 1.0 / self.dt.value
+        
+        # Adjust kwargs to match scipy.signal.welch
+        nperseg = kwargs.pop("fftlength", kwargs.pop("nperseg", None))
+        noverlap = kwargs.pop("overlap", kwargs.pop("noverlap", None))
+        
+        freqs, psd_data = welch(
+            data, 
+            fs=fs, 
+            nperseg=nperseg, 
+            noverlap=noverlap, 
+            axis=-1, 
+            **kwargs
+        )
+        
+        return FrequencySeriesMatrix(
+            psd_data,
+            frequencies=freqs * u.Hz,
+            meta=self.meta,
+            rows=self.rows,
+            cols=self.cols,
+            name=self.name,
+            epoch=self.epoch,
+        )
+
+    def _vectorized_asd(self, **kwargs: Any) -> Any:
+        """
+        Vectorized implementation of ASD.
+        """
+        psd = self._vectorized_psd(**kwargs)
+        asd_data = np.sqrt(psd.value)
+        psd.value[:] = asd_data
+        return psd
+
+        asd_data = np.sqrt(psd.value)
+        psd.value[:] = asd_data
+        return psd
+
+    def _vectorized_csd(self, other: Any, **kwargs: Any) -> Any:
+        """
+        Vectorized implementation of CSD.
+        """
+        from scipy.signal import csd
+        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        
+        self._check_regular("Vectorized CSD")
+        
+        data = np.asarray(self.value)
+        other_data = np.asarray(other.value)
+        fs = 1.0 / self.dt.value
+        
+        nperseg = kwargs.pop("fftlength", kwargs.pop("nperseg", None))
+        noverlap = kwargs.pop("overlap", kwargs.pop("noverlap", None))
+        
+        freqs, csd_data = csd(
+            data, 
+            other_data, 
+            fs=fs, 
+            nperseg=nperseg, 
+            noverlap=noverlap, 
+            axis=-1, 
+            **kwargs
+        )
+        
+        return FrequencySeriesMatrix(
+            csd_data,
+            frequencies=freqs * u.Hz,
+            meta=self.meta,
+            rows=self.rows,
+            cols=self.cols,
+            name=self.name,
+            epoch=self.epoch,
+        )
+
+    def _vectorized_coherence(self, other: Any, **kwargs: Any) -> Any:
+        """
+        Vectorized implementation of Coherence.
+        """
+        from scipy.signal import coherence
+        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        
+        self._check_regular("Vectorized Coherence")
+        
+        data = np.asarray(self.value)
+        other_data = np.asarray(other.value)
+        fs = 1.0 / self.dt.value
+        
+        nperseg = kwargs.pop("fftlength", kwargs.pop("nperseg", None))
+        noverlap = kwargs.pop("overlap", kwargs.pop("noverlap", None))
+        
+        freqs, coh_data = coherence(
+            data, 
+            other_data, 
+            fs=fs, 
+            nperseg=nperseg, 
+            noverlap=noverlap, 
+            axis=-1, 
+            **kwargs
+        )
+        
+        return FrequencySeriesMatrix(
+            coh_data,
+            frequencies=freqs * u.Hz,
+            meta=self.meta,
+            rows=self.rows,
+            cols=self.cols,
+            name=self.name,
+            epoch=self.epoch,
+        )
+
     def lock_in(self, **kwargs: Any) -> Any:
         """
         Apply lock-in amplification element-wise.

@@ -251,6 +251,14 @@ filter(self, *args, **kwargs)
 
 Element-wise delegate to `TimeSeries.filter`.
 
+### `find_peaks`
+
+```python
+find_peaks(self, threshold: 'Optional[float]' = None, method: 'str' = 'amplitude', **kwargs: 'Any') -> 'Any'
+```
+
+Find peaks in each element of the matrix. Element-wise delegate to `TimeSeries.find_peaks`.
+
 ### `from_neo`
 
 ```python
@@ -796,6 +804,14 @@ series_class(data, *args, **kwargs)
 
 
 Extended TimeSeries with all gwexpy functionality.
+
+### `smooth`
+
+```python
+smooth(self, width: 'Any', method: 'str' = 'amplitude', ignore_nan: 'bool' = True) -> 'Any'
+```
+
+Smooth the data. Element-wise delegate to `TimeSeries.smooth`.
 
 This class combines functionality from multiple modules:
 - Core operations: is_regular, _check_regular, tail, crop, append, find_peaks

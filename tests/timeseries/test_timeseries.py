@@ -5,11 +5,12 @@ Some tests may be marked as xfail due to upstream API changes.
 """
 import pytest
 
+from gwpy.timeseries.tests import test_timeseries as gwpy_test_module
 from gwpy.timeseries.tests.test_timeseries import *  # noqa: F401,F403
 
 
 # Override failing tests that expect warnings no longer emitted by newer gwpy versions
-class TestTimeSeries(TestTimeSeries):  # noqa: F405
+class TestTimeSeries(gwpy_test_module.TestTimeSeries):  # noqa: F405
     """Extended TestTimeSeries with xfail markers for known upstream issues."""
 
     @pytest.mark.xfail(

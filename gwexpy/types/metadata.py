@@ -14,6 +14,14 @@ from astropy.units import Unit, UnitConversionError
 from gwpy.detector import Channel
 from gwpy.types.array import Array
 from gwpy.types.series import Series
+from gwexpy.types.mixin import RegularityMixin, InteropMixin
+
+_UFUNC_ABS_REAL = {np.abs, np.negative, np.positive, np.real, np.imag}
+_UFUNC_CONJ = {np.conjugate, np.conj}
+_UFUNC_TRANSCENDENTAL = {np.exp, np.sin, np.cos, np.log}
+_UFUNC_ADD_SUB = {np.add, np.subtract}
+_UFUNC_COMPARISON = {np.less, np.less_equal, np.equal, np.not_equal, np.greater, np.greater_equal}
+_UFUNC_MULT_DIV = {np.multiply, np.divide, np.floor_divide}
 from gwpy.timeseries import TimeSeries
 from gwpy.frequencyseries import FrequencySeries
 
@@ -99,15 +107,15 @@ class MetaData(dict):
         # unary operations
         if len(inputs) == 1:
             lhs = self
-            if ufunc in [np.abs, np.negative, np.positive, np.real, np.imag]:
+            if ufunc in _UFUNC_ABS_REAL:
                 return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit)
-            if ufunc in [np.conjugate, np.conj]:
+            if ufunc in _UFUNC_CONJ:
                 return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit)
             if ufunc == np.sqrt:
                 return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit ** 0.5)
             if ufunc == np.square:
                 return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit ** 2)
-            if ufunc in [np.exp, np.sin, np.cos, np.log]:
+            if ufunc in _UFUNC_TRANSCENDENTAL:
                 if not lhs.unit.is_equivalent(1):
                     raise UnitConversionError(f"{ufunc.__name__} requires dimensionless input")
                 return MetaData(name=lhs.name, channel=lhs.channel, unit=u.dimensionless_unscaled)
@@ -139,22 +147,21 @@ class MetaData(dict):
         rhs_unit = get_unit(rhs)
 
         # addition / subtraction
-        if ufunc in [np.add, np.subtract]:
+        if ufunc in _UFUNC_ADD_SUB:
             if not lhs_unit.is_equivalent(rhs_unit):
                 raise UnitConversionError(f"{ufunc.__name__} requires compatible units")
             base = lhs if isinstance(lhs, MetaData) else rhs
             return MetaData(name=base.name, channel=base.channel, unit=lhs_unit)
 
         # comparisons -> dimensionless (bool result)
-        if ufunc in [np.less, np.less_equal, np.equal, np.not_equal,
-                     np.greater, np.greater_equal]:
+        if ufunc in _UFUNC_COMPARISON:
             if not lhs_unit.is_equivalent(rhs_unit):
                 raise UnitConversionError(f"{ufunc.__name__} requires compatible units")
             base = lhs if isinstance(lhs, MetaData) else rhs
             return MetaData(name=base.name, channel=base.channel, unit=u.dimensionless_unscaled)
 
         # multiplication/division
-        if ufunc in [np.multiply, np.divide, np.floor_divide]:
+        if ufunc in _UFUNC_MULT_DIV:
             if ufunc == np.multiply:
                 new_unit = lhs_unit * rhs_unit
             else:

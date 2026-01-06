@@ -209,6 +209,10 @@ class TimeSeriesSpectralSpecialMixin:
         -------
         LaplaceGram
             3D transform result with shape (time, sigma, frequency).
+
+        Notes
+        -----
+        This method uses a fully vectorized implementation for performance, broadcasting over sigmas and time chunks.
         """
         if legacy:
              return self._stlt_legacy(stride, window, **kwargs)
@@ -410,31 +414,37 @@ class TimeSeriesSpectralSpecialMixin:
         # If nperseg=1000, batch_size=6000 chunks.
 
         BATCH_ELEMENTS = 5_000_000
-        chunk_batch_size = max(1, BATCH_ELEMENTS // nperseg)
+        # Adjust batch size to account for expansion by n_sigmas
+        # Each element in the batch loop will become (batch_size, n_sigmas, nperseg) complex128
+        # So we divide BATCH_ELEMENTS by (nperseg * n_sigmas)
+        elements_per_chunk = nperseg * n_sigmas
+        chunk_batch_size = max(1, BATCH_ELEMENTS // elements_per_chunk)
 
         fft_func = np.fft.rfft if onesided else np.fft.fft
+
+        # Precompute effective windows for all sigmas: (n_sigmas, nperseg)
+        # decay = exp(-sigma * t)
+        # shape: (S, N)
+        decay_matrix = np.exp(-sigmas_vals[:, None] * t_rel[None, :])
+        effective_windows = win_base[None, :] * decay_matrix
 
         for i_chunk in range(0, n_chunks, chunk_batch_size):
              end_chunk = min(i_chunk + chunk_batch_size, n_chunks)
              # Get batch of chunks: (batch_size, nperseg)
              batch_chunks = chunks[i_chunk:end_chunk] # View
 
-             # Loop over sigmas for this batch
-             for i_sig, sigma_val in enumerate(sigmas_vals):
-                  # Compute window for this sigma
-                  # w_sig (nperseg,)
-                  decay = np.exp(-sigma_val * t_rel)
-                  w_sig = win_base * decay
+             # Vectorized Window Application
+             # batch_chunks: (B, N)
+             # effective_windows: (S, N)
+             # Broadcasting: (B, 1, N) * (1, S, N) -> (B, S, N)
+             weighted_batch = batch_chunks[:, None, :] * effective_windows[None, :, :]
 
-                  # Apply window: (batch, nperseg) * (nperseg,) -> broadcast
-                  # Allocates (batch, nperseg) temporary
-                  weighted_batch = batch_chunks * w_sig
+             # FFT along the last axis (time/window axis)
+             # Result shape: (B, S, n_freqs)
+             spec = fft_func(weighted_batch, axis=-1)
 
-                  # FFT
-                  spec = fft_func(weighted_batch, axis=-1)
-
-                  # Store
-                  out_cube[i_chunk:end_chunk, i_sig, :] = spec
+             # Store
+             out_cube[i_chunk:end_chunk, :, :] = spec
 
         # --- 5. Scaling ---
         if scaling == "dt":
@@ -678,8 +688,9 @@ class TimeSeriesSpectralSpecialMixin:
         return out_dict
 
     def hilbert_analysis(self, *, unwrap_phase: bool = True, frequency_unit: str = "Hz") -> dict[str, Any]:
-        analytic = self.analytic_signal()
+        analytic = self.hilbert()
         amp = np.abs(analytic.value)
+
         amplitude = self.__class__(
              amp,
              t0=self.t0,

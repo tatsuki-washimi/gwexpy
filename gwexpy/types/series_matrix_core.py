@@ -218,11 +218,7 @@ class SeriesMatrixCoreMixin:
     def to_series_1Dlist(self) -> list[Series]:
         """Convert matrix to a flat 1D list of Series objects."""
         N, M = self._value.shape[:2]
-        results = []
-        for i in range(N):
-            for j in range(M):
-                results.append(self[i, j])
-        return results
+        return [self[i, j] for i in range(N) for j in range(M)]
 
     def to_list(self) -> Any:
         """Convert matrix to an appropriate collection list (e.g. TimeSeriesList)."""

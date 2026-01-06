@@ -59,16 +59,14 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             # gwpy's TimeSeriesDict.resample is in-place
             return super().resample(rate, **kwargs)
 
-    def analytic_signal(self, *args, **kwargs):
-        """Apply analytic_signal to each item."""
+    def hilbert(self, *args, **kwargs):
+        """Apply Hilbert transform to each item."""
         new_dict = self.__class__()
         for key, ts in self.items():
-            new_dict[key] = ts.analytic_signal(*args, **kwargs)
+            new_dict[key] = ts.hilbert(*args, **kwargs)
         return new_dict
 
-    def hilbert(self, *args, **kwargs):
-        """Alias for analytic_signal."""
-        return self.analytic_signal(*args, **kwargs)
+
 
     def envelope(self, *args, **kwargs):
         """Apply envelope to each item."""
@@ -86,15 +84,6 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
 
         return new_dict
 
-    def hht(self, *args, **kwargs):
-        """
-        Apply hht (Hilbert-Huang Transform) to each item.
-        Returns a dict of results (either dicts or Spectrograms).
-        """
-        results = {}
-        for key, ts in self.items():
-            results[key] = ts.hht(*args, **kwargs)
-        return results
 
     # ===============================
     # P2 Methods (Domain Specific)
@@ -220,12 +209,6 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
                   new_dict[key] = self[key].lock_in(*args, **kwargs)
              return new_dict
 
-    def stlt(self, *args, **kwargs):
-        """Apply stlt to each item. Returns a dict of TimePlaneTransforms."""
-        results = {}
-        for key, ts in self.items():
-            results[key] = ts.stlt(*args, **kwargs)
-        return results
 
     def csd_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs):
         """Compute Cross-Spectral Density matrix for all pairs.
@@ -769,26 +752,6 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         else:
             return pd.Series(results)
 
-    def rms(self, *args, **kwargs):
-        """Compute RMS for each TimeSeries. Returns pandas.Series of scalars."""
-        return self._apply_scalar_or_map("rms", *args, **kwargs)
-
-    def min(self, *args, **kwargs):
-        """Compute minimum for each TimeSeries. Returns pandas.Series of scalars."""
-        return self._apply_scalar_or_map("min", *args, **kwargs)
-
-    def max(self, *args, **kwargs):
-        """Compute maximum for each TimeSeries. Returns pandas.Series of scalars."""
-        return self._apply_scalar_or_map("max", *args, **kwargs)
-
-    def mean(self, *args, **kwargs):
-        """Compute mean for each TimeSeries. Returns pandas.Series of scalars."""
-        return self._apply_scalar_or_map("mean", *args, **kwargs)
-
-    def std(self, *args, **kwargs):
-        """Compute standard deviation for each TimeSeries. Returns pandas.Series of scalars."""
-        return self._apply_scalar_or_map("std", *args, **kwargs)
-
     def value_at(self, *args, **kwargs):
         """Get value at a specific time for each TimeSeries."""
         return self._apply_scalar_or_map("value_at", *args, **kwargs)
@@ -796,6 +759,55 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
     def is_contiguous(self, *args, **kwargs):
         """Check contiguity with another object for each TimeSeries."""
         return self._apply_scalar_or_map("is_contiguous", *args, **kwargs)
+
+
+    def skewness(self, **kwargs):
+        """Compute skewness. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().skewness(**kwargs)
+
+    def kurtosis(self, **kwargs):
+        """Compute kurtosis. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().kurtosis(**kwargs)
+
+    def mean(self, **kwargs):
+        """Compute mean. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().mean(**kwargs)
+
+    def std(self, **kwargs):
+        """Compute standard deviation. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().std(**kwargs)
+
+    def rms(self, **kwargs):
+        """Compute root-mean-square. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().rms(**kwargs)
+
+    def min(self, **kwargs):
+        """Compute minimum. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().min(**kwargs)
+
+    def max(self, **kwargs):
+        """Compute maximum. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().max(**kwargs)
+
+    def correlation(self, other=None, **kwargs):
+        """Compute correlation. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().correlation(other=other, **kwargs)
+
+    def mic(self, other, **kwargs):
+        """Compute MIC. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().mic(other, **kwargs)
+
+    def distance_correlation(self, other, **kwargs):
+        """Compute distance correlation. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().distance_correlation(other, **kwargs)
+
+    def pcc(self, other, **kwargs):
+        """Compute Pearson correlation. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().pcc(other, **kwargs)
+
+    def ktau(self, other, **kwargs):
+        """Compute Kendall's tau. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().ktau(other, **kwargs)
 
     # --- State Analysis ---
 
@@ -1200,23 +1212,14 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             list.append(new_list, ts.taper(*args, **kwargs))
         return new_list
 
-    def stlt(self, *args, **kwargs):
-        """Apply stlt to each item. Returns a list of TimePlaneTransforms."""
-        new_list = []
-        for ts in self:
-            new_list.append(ts.stlt(*args, **kwargs))
-        return new_list
-
-    def analytic_signal(self, *args, **kwargs):
-        """Apply analytic_signal to each item."""
+    def hilbert(self, *args, **kwargs):
+        """Apply Hilbert transform to each item."""
         new_list = self.__class__()
         for ts in self:
-            list.append(new_list, ts.analytic_signal(*args, **kwargs))
+            list.append(new_list, ts.hilbert(*args, **kwargs))
         return new_list
 
-    def hilbert(self, *args, **kwargs):
-        """Alias for analytic_signal."""
-        return self.analytic_signal(*args, **kwargs)
+
 
     def envelope(self, *args, **kwargs):
         """Apply envelope to each item."""
@@ -1399,26 +1402,6 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
 
         return results
 
-    def rms(self, *args, **kwargs):
-        """Compute RMS for each TimeSeries. Returns list of scalars."""
-        return self._apply_scalar_or_map("rms", *args, **kwargs)
-
-    def min(self, *args, **kwargs):
-        """Compute minimum for each TimeSeries. Returns list of scalars."""
-        return self._apply_scalar_or_map("min", *args, **kwargs)
-
-    def max(self, *args, **kwargs):
-        """Compute maximum for each TimeSeries. Returns list of scalars."""
-        return self._apply_scalar_or_map("max", *args, **kwargs)
-
-    def mean(self, *args, **kwargs):
-        """Compute mean for each TimeSeries. Returns list of scalars."""
-        return self._apply_scalar_or_map("mean", *args, **kwargs)
-
-    def std(self, *args, **kwargs):
-        """Compute standard deviation for each TimeSeries. Returns list of scalars."""
-        return self._apply_scalar_or_map("std", *args, **kwargs)
-
     def value_at(self, *args, **kwargs):
         """Get value at a specific time for each TimeSeries."""
         return self._apply_scalar_or_map("value_at", *args, **kwargs)
@@ -1427,11 +1410,44 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         """Check contiguity with another object for each TimeSeries."""
         return self._apply_scalar_or_map("is_contiguous", *args, **kwargs)
 
-    # --- State Analysis ---
 
-    def state_segments(self, *args, **kwargs):
-        """Run state_segments on each element (returns list of SegmentLists)."""
-        return self._apply_scalar_or_map("state_segments", *args, **kwargs)
+    def skewness(self, **kwargs):
+        """Compute skewness. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().skewness(**kwargs)
+
+    def kurtosis(self, **kwargs):
+        """Compute kurtosis. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().kurtosis(**kwargs)
+
+    def mean(self, **kwargs):
+        """Compute mean. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().mean(**kwargs)
+
+    def std(self, **kwargs):
+        """Compute standard deviation. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().std(**kwargs)
+
+    def rms(self, **kwargs):
+        """Compute root-mean-square. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().rms(**kwargs)
+
+    def min(self, **kwargs):
+        """Compute minimum. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().min(**kwargs)
+
+    def max(self, **kwargs):
+        """Compute maximum. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().max(**kwargs)
+
+    def correlation(self, other=None, **kwargs):
+        """Compute correlation. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().correlation(other=other, **kwargs)
+
+    def mic(self, other, **kwargs):
+        """Compute MIC. Vectorized via TimeSeriesMatrix."""
+        return self.to_matrix().mic(other, **kwargs)
+
+    # --- State Analysis ---
 
     # --- Multivariate ---
 

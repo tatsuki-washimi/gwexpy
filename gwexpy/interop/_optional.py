@@ -27,6 +27,7 @@ _OPTIONAL_DEPENDENCIES = {
     "neo": "neo",
     "dttxml": "dttxml",
     "gwinc": "gwinc",
+    "joblib": "joblib",
 }
 
 def require_optional(name: str) -> Any:
@@ -80,6 +81,7 @@ def require_optional(name: str) -> Any:
         "pywt": "analysis",
         "dttxml": "gw",
         "gwinc": "gw",
+        "joblib": "analysis",
     }
 
     try:

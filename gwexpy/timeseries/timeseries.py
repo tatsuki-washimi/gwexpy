@@ -59,7 +59,7 @@ class TimeSeries(
     This class combines functionality from multiple modules:
     - Core operations: is_regular, _check_regular, tail, crop, append, find_peaks
     - Spectral transforms: fft, psd, cwt, laplace, etc.
-    - Signal processing: analytic_signal, mix_down, xcorr, etc.
+    - Signal processing: hilbert, mix_down, xcorr, etc.
     - Analysis: impute, standardize, rolling_*, etc.
     - Interoperability: to_pandas, to_torch, to_xarray, etc.
 
