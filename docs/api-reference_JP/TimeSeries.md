@@ -5,7 +5,7 @@
 `gwexpy` の全機能を備えた、拡張された TimeSeries クラスです。
 GWpy の TimeSeries と完全な互換性を持ちつつ、以下の機能を追加・統合しています。
 
-- **信号処理**: 解析信号 (analytic_signal), 周波数復調 (demodulate), 相互相関 (correlate) など。
+- **信号処理**: 解析信号 (hilbert), 周波数復調 (demodulate), 相互相関 (correlate) など。
 - **スペクトル変換**: FFT, PSD, ASD, CWT (連続ウェーブレット変換), STLT (短時間ラプラス変換), DCT (離散コサイン変換) など。
 - **データ分析**: 欠損値補完 (impute), 標準化 (standardize), 移動平均などのローリング統計 (rolling_*) など。
 - **相互運用性**: PyTorch, TensorFlow, JAX, pandas, xarray, MNE, ObsPy などの他ライブラリへの変換。
@@ -16,9 +16,6 @@ GWpy の TimeSeries と完全な互換性を持ちつつ、以下の機能を追
 
 要素ごとの絶対値を計算します。
 
-### `analytic_signal`
-
-解析信号（ヒルベルト変換）を計算し、複素数形式の信号を返します。
 
 ### `asd`, `psd`
 
@@ -65,6 +62,10 @@ FIR フィルタとの畳み込み（overlap-save 法）を行います。
 
 離散コサイン変換 (DCT) を計算します。
 
+### `degree`
+
+位相（偏角）を「度 (degree)」単位で計算します。`np.angle(deg=True)` を使用します。
+
 ### `demodulate`
 
 指定した周波数で信号を復調し、振幅と位相のトレンドを取得します。
@@ -91,7 +92,7 @@ FIR フィルタとの畳み込み（overlap-save 法）を行います。
 
 ### `find_peaks`
 
-信号内のピークを検出します。(戻り値: `TimeSeries` オブジェクトとプロパティのタプル)
+信号内のピークを検出します。`method` ('amplitude', 'power', 'db' 等) による閾値判定が可能です。(戻り値: ピークを含む `FrequencySeries` とプロパティの辞書)
 
 ### `fit`
 
@@ -107,7 +108,13 @@ ARIMA（自己回帰移動平均）モデルなどの時系列モデルを適合
 
 ### `heterodyne`
 
+
+
 ヘテロダイン検波（デジタル復調）を行います。
+
+### `hilbert`
+
+解析信号（ヒルベルト変換）を計算し、複素数形式の信号を返します。
 
 ### `lock_in`
 
@@ -133,6 +140,10 @@ NaN などの欠損値を補完します。
 
 指定したサンプリングレートへ補間します。
 
+### `radian`
+
+位相（偏角）を「ラジアン (radian)」単位で計算します。`np.angle` を使用します。
+
 ### `resample`
 
 信号処理的な再サンプリング、または時間軸のリサンプリングを行います。
@@ -144,6 +155,10 @@ NaN などの欠損値を補完します。
 ### `rolling_mean` (他 `rolling_*`)
 
 移動窓を用いた統計計算（平均、中央値、標準偏差、最大値、最小値）を行います。
+
+### `smooth`
+
+データを平滑化します。Boxcar (移動平均), Hanning, Gaussian などの窓関数を利用可能です。
 
 ### `spectrogram`
 

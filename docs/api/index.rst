@@ -8,4 +8,5 @@ API Reference
    frequencyseries
    spectrogram
    spectral
+   analysis
    types

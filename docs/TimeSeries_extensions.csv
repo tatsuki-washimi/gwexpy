@@ -11,8 +11,7 @@ hilbert_analysis(...),ヒルベルト解析（analytic/amplitude/phase/frequency
 hht(emd_method='eemd'),HHT（EMD＋ヒルベルト解析）を実行し辞書形式の結果を返す,スペクトル変換
 "stlt(stride, window, ...)",短時間ラプラス変換（STFTの大きさの外積による3D TF-F表現）を実行しTimePlaneTransformを返す,スペクトル変換
 spectrogram2(...),平均化処理を含む可能性がある代替スペクトログラムを計算,スペクトル変換
-analytic_signal(pad_mode='reflect'),ヒルベルト変換による解析信号（複素TimeSeries）を返す,信号処理
-hilbert(),analytic_signal()のエイリアス,信号処理
+hilbert(pad_mode='reflect'),ヒルベルト変換による解析信号（複素TimeSeries）を返す,信号処理
 envelope(),包絡線TimeSeriesを返す,信号処理
 instantaneous_phase(unwrap=False),瞬時位相を返す（任意でアンラップ）,信号処理
 unwrap_phase(),instantaneous_phase(unwrap=True)のエイリアス,信号処理

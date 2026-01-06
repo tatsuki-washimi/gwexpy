@@ -331,6 +331,103 @@ class CouplingResult:
 
 # --- Analysis Class ---
 
+# --- Helper for Parallel Processing ---
+
+def _process_single_target(
+    tgt_key,
+    ts_tgt_inj,
+    ts_tgt_bkg,
+    psd_kwargs,
+    psd_wit_inj,
+    psd_wit_bkg,
+    mask_wit,
+    delta_wit,
+    witness_key,
+    ts_wit_inj,
+    ts_wit_bkg,
+    threshold_target,
+    check_kwargs,
+    fftlength,
+    overlap
+):
+    """
+    Process a single target channel.
+    This function is defined at module level to ensuring picklability for multiprocessing.
+    """
+    # Target PSDs
+    psd_tgt_inj = ts_tgt_inj.psd(**psd_kwargs)
+    psd_tgt_bkg = ts_tgt_bkg.psd(**psd_kwargs)
+
+    # Frequency check
+    if not np.allclose(psd_wit_inj.xindex.value, psd_tgt_inj.xindex.value):
+         warnings.warn(f"Frequency mismatch for {tgt_key}. Skipping.")
+         return None
+
+    # Check Target Excess
+    mask_tgt = threshold_target.check(
+        psd_tgt_inj, psd_tgt_bkg,
+        raw_bkg=ts_tgt_bkg,
+        **check_kwargs
+    )
+
+    delta_tgt = psd_tgt_inj.value - psd_tgt_bkg.value
+
+    # --- Compute CF ---
+    valid_mask = mask_wit & mask_tgt & (delta_wit > 0) & (delta_tgt > 0)
+
+    cf_values = np.full_like(delta_wit, np.nan)
+
+    with np.errstate(divide='ignore', invalid='ignore'):
+        sq_cf = delta_tgt[valid_mask] / delta_wit[valid_mask]
+        cf_values[valid_mask] = np.sqrt(sq_cf)
+
+    try:
+        cf_unit = psd_tgt_inj.unit.is_unity() and "dimensionless" or (ts_tgt_inj.unit / ts_wit_inj.unit)
+    except Exception:
+        cf_unit = "dimensionless"
+
+    cf = FrequencySeries(
+        cf_values,
+        xindex=psd_wit_inj.xindex,
+        unit=cf_unit,
+        name=f"CF: {witness_key} -> {tgt_key}"
+    )
+
+    # --- Calculate Upper Limit (UL) ---
+    mask_ul = mask_wit & (~mask_tgt) & (delta_wit > 0)
+    ul_values = np.full_like(delta_wit, np.nan)
+
+    with np.errstate(divide='ignore', invalid='ignore'):
+        sq_ul = psd_tgt_bkg.value / delta_wit
+        ul_values[mask_ul] = np.sqrt(sq_ul[mask_ul])
+
+    cf_ul = FrequencySeries(
+        ul_values,
+        xindex=psd_wit_inj.xindex,
+        unit=cf_unit,
+        name=f"CF Upper Limit: {witness_key} -> {tgt_key}"
+    )
+
+    res = CouplingResult(
+        cf=cf,
+        cf_ul=cf_ul,
+        psd_witness_inj=psd_wit_inj,
+        psd_witness_bkg=psd_wit_bkg,
+        psd_target_inj=psd_tgt_inj,
+        psd_target_bkg=psd_tgt_bkg,
+        valid_mask=valid_mask,
+        witness_name=witness_key,
+        target_name=tgt_key,
+        ts_witness_bkg=ts_wit_bkg,
+        ts_target_bkg=ts_tgt_bkg,
+        fftlength=fftlength,
+        overlap=overlap
+    )
+    return tgt_key, res
+
+
+# --- Analysis Class ---
+
 class CouplingFunctionAnalysis:
     """
     Analysis class to estimate Coupling Functions (CF).
@@ -345,6 +442,7 @@ class CouplingFunctionAnalysis:
         overlap: float = 0,
         threshold_witness: ThresholdStrategy = RatioThreshold(25.0),
         threshold_target: ThresholdStrategy = RatioThreshold(4.0),
+        n_jobs: Optional[int] = None,
         **kwargs
     ) -> Union[CouplingResult, Dict[str, CouplingResult]]:
         """
@@ -367,6 +465,9 @@ class CouplingFunctionAnalysis:
             Strategy to determine if Witness is excited.
         threshold_target : ThresholdStrategy
             Strategy to determine if Target is excited.
+        n_jobs : int, optional
+            Number of jobs for parallel processing. None means 1 unless in a joblib.parallel_config context.
+            -1 means using all processors.
         """
         # --- 1. Identify Witness Channel ---
         all_channels = list(data_inj.keys())
@@ -425,86 +526,64 @@ class CouplingFunctionAnalysis:
 
         results = {}
 
-        # --- 4. Loop over Targets ---
-        for tgt_key in target_keys:
-            if tgt_key not in data_bkg:
-                continue
+        # --- 4. Parallel Loop over Targets ---
+        
+        # Determine joblib usage
+        from gwexpy.interop._optional import require_optional
+        try:
+            joblib = require_optional("joblib")
+            Parallel, delayed = joblib.Parallel, joblib.delayed
+        except ImportError:
+            # Fallback for when joblib is strictly not installed even though we tried
+            # Or if user opted out? No, if require_optional fails it raises ImportError.
+            # But here we want smooth fallback if user doesn't have it?
+            # Actually require_optional raises informative error. 
+            # If n_jobs is 1 or None, we can just run sequential loop and avoid import error if joblib missing?
+            # But the user might want parallel.
+            # Let's say: if n_jobs is explicit (not None/1), we require logic.
+            # But to keep code clean, let's use joblib if available, else standard loop?
+            # We updated _optional.py, so `require_optional` will tell user to install it.
+            # But if n_jobs=1 (default-ish), we shouldn't crash if joblib missing.
+            n_jobs_eff = n_jobs if n_jobs is not None else 1
+            if n_jobs_eff == 1:
+                # Sequential Fallback (no joblib needed)
+                Parallel = None
+            else:
+                joblib = require_optional("joblib")
+                Parallel, delayed = joblib.Parallel, joblib.delayed
 
-            ts_tgt_inj = data_inj[tgt_key]
-            ts_tgt_bkg = data_bkg[tgt_key]
-
-            # Target PSDs
-            psd_tgt_inj = ts_tgt_inj.psd(**psd_kwargs)
-            psd_tgt_bkg = ts_tgt_bkg.psd(**psd_kwargs)
-
-            if not np.allclose(psd_wit_inj.xindex.value, psd_tgt_inj.xindex.value):
-                 warnings.warn(f"Frequency mismatch for {tgt_key}. Skipping.")
-                 continue
-
-            # Check Target Excess
-            mask_tgt = threshold_target.check(
-                psd_tgt_inj, psd_tgt_bkg,
-                raw_bkg=ts_tgt_bkg,
-                **check_kwargs
+        if Parallel is None:
+             # Sequential execution
+            for tgt_key in target_keys:
+                if tgt_key not in data_bkg: continue
+                
+                res = _process_single_target(
+                    tgt_key,
+                    data_inj[tgt_key], data_bkg[tgt_key],
+                    psd_kwargs,
+                    psd_wit_inj, psd_wit_bkg, mask_wit, delta_wit,
+                    witness_key, ts_wit_inj, ts_wit_bkg,
+                    threshold_target, check_kwargs, fftlength, overlap
+                )
+                if res:
+                    results[res[0]] = res[1]
+        else:
+            # Parallel execution
+            # Prepare generator
+            par_results = Parallel(n_jobs=n_jobs)(
+                delayed(_process_single_target)(
+                    tgt_key,
+                    data_inj[tgt_key], data_bkg[tgt_key],
+                    psd_kwargs,
+                    psd_wit_inj, psd_wit_bkg, mask_wit, delta_wit,
+                    witness_key, ts_wit_inj, ts_wit_bkg,
+                    threshold_target, check_kwargs, fftlength, overlap
+                ) for tgt_key in target_keys if tgt_key in data_bkg
             )
-
-            delta_tgt = psd_tgt_inj.value - psd_tgt_bkg.value
-
-            # --- 5. Compute CF ---
-            valid_mask = mask_wit & mask_tgt & (delta_wit > 0) & (delta_tgt > 0)
-
-            cf_values = np.full_like(delta_wit, np.nan)
-
-            with np.errstate(divide='ignore', invalid='ignore'):
-                sq_cf = delta_tgt[valid_mask] / delta_wit[valid_mask]
-                cf_values[valid_mask] = np.sqrt(sq_cf)
-
-            try:
-                cf_unit = psd_tgt_inj.unit.is_unity() and "dimensionless" or (ts_tgt_inj.unit / ts_wit_inj.unit)
-            except Exception:
-                cf_unit = "dimensionless"
-
-            cf = FrequencySeries(
-                cf_values,
-                xindex=psd_wit_inj.xindex,
-                unit=cf_unit,
-                name=f"CF: {witness_key} -> {tgt_key}"
-            )
-
-            # --- Calculate Upper Limit (UL) ---
-            # Condition: Witness is excessively coupled, but Target is NOT.
-            # We want to know: What is the MAX coupling that *could* exist given the Target noise floor?
-            # UL ~ ASD_tgt_bkg / (ASD_wit_inj - ASD_wit_bkg) ~ sqrt(PSD_tgt_bkg / delta_wit)
-
-            mask_ul = mask_wit & (~mask_tgt) & (delta_wit > 0)
-            ul_values = np.full_like(delta_wit, np.nan)
-
-            with np.errstate(divide='ignore', invalid='ignore'):
-                sq_ul = psd_tgt_bkg.value / delta_wit
-                ul_values[mask_ul] = np.sqrt(sq_ul[mask_ul])
-
-            cf_ul = FrequencySeries(
-                ul_values,
-                xindex=psd_wit_inj.xindex,
-                unit=cf_unit,
-                name=f"CF Upper Limit: {witness_key} -> {tgt_key}"
-            )
-
-            results[tgt_key] = CouplingResult(
-                cf=cf,
-                cf_ul=cf_ul,
-                psd_witness_inj=psd_wit_inj,
-                psd_witness_bkg=psd_wit_bkg,
-                psd_target_inj=psd_tgt_inj,
-                psd_target_bkg=psd_tgt_bkg,
-                valid_mask=valid_mask,
-                witness_name=witness_key,
-                target_name=tgt_key,
-                ts_witness_bkg=ts_wit_bkg,
-                ts_target_bkg=ts_tgt_bkg,
-                fftlength=fftlength,
-                overlap=overlap
-            )
+            
+            for res in par_results:
+                if res:
+                    results[res[0]] = res[1]
 
         if len(results) == 1:
             return list(results.values())[0]
@@ -520,6 +599,7 @@ def estimate_coupling(
     witness: Optional[str] = None,
     threshold_witness: Union[ThresholdStrategy, float] = 25.0,
     threshold_target: Union[ThresholdStrategy, float] = 4.0,
+    n_jobs: Optional[int] = None,
     **kwargs
 ) -> Union[CouplingResult, Dict[str, CouplingResult]]:
     """Helper function to estimate CF."""
@@ -538,5 +618,6 @@ def estimate_coupling(
         witness=witness,
         threshold_witness=tw,
         threshold_target=tt,
+        n_jobs=n_jobs,
         **kwargs
     )

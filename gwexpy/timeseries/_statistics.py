@@ -7,6 +7,9 @@ import warnings
 import numpy as np
 from scipy import stats
 
+from gwexpy.types._stats import StatisticalMethodsMixin
+
+
 class GrangerResult(float):
     """
     Subclass of float that holds Granger causality test results.
@@ -43,46 +46,17 @@ class GrangerResult(float):
             ('p_values', self.p_values)
         ]
 
-class StatisticsMixin:
+
+class StatisticsMixin(StatisticalMethodsMixin):
     """
     Mixin class to add statistical analysis and correlation methods to TimeSeries.
+    
+    Inherits basic statistics (mean, std, skewness, kurtosis, etc.) from
+    StatisticalMethodsMixin and adds correlation and causality methods.
     """
 
-    # ===============================
-    # Basic Statistics (Gaussianity)
-    # ===============================
+    # skewness and kurtosis are now inherited from StatisticalMethodsMixin
 
-    def skewness(self, nan_policy='propagate'):
-        """
-        Compute the skewness of the time series data.
-
-        Skewness is a measure of the asymmetry of the probability distribution
-        of a real-valued random variable about its mean.
-
-        Args:
-            nan_policy (str): 'propagate', 'raise', 'omit'.
-
-        Returns:
-            float: The skewness.
-        """
-        return stats.skew(self.value, nan_policy=nan_policy)
-
-    def kurtosis(self, fisher=True, nan_policy='propagate'):
-        """
-        Compute the kurtosis (Fisher or Pearson) of the time series data.
-
-        Kurtosis is a measure of the "tailedness" of the probability distribution
-        of a real-valued random variable.
-
-        Args:
-            fisher (bool): If True, Fisher's definition is used (normal ==> 0.0).
-                           If False, Pearson's definition is used (normal ==> 3.0).
-            nan_policy (str): 'propagate', 'raise', 'omit'.
-
-        Returns:
-            float: The kurtosis.
-        """
-        return stats.kurtosis(self.value, fisher=fisher, nan_policy=nan_policy)
 
     # ===============================
     # Correlation & Causality

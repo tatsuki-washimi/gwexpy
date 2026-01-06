@@ -115,9 +115,12 @@ class TestHHT:
         data["C1"] = chirp
         data["S1"] = sine
 
-        res = data.hht(output="dict") # Pass output param to ts.hht
-        assert isinstance(res, dict)
-        assert "C1" in res
-        assert "S1" in res
+        # hht() should no longer exist on TimeSeriesDict directly
+        with pytest.raises(AttributeError):
+            data.hht(output="dict")
 
-        assert "imfs" in res["C1"]
+        # Instead, it should be applied to individual TimeSeries
+        results = {name: ts.hht(output="dict") for name, ts in data.items()}
+        assert "C1" in results
+        assert "S1" in results
+        assert "imfs" in results["C1"]

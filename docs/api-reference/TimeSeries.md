@@ -8,7 +8,7 @@ Extended TimeSeries with all gwexpy functionality.
 This class combines functionality from multiple modules:
 - Core operations: is_regular, _check_regular, tail, crop, append, find_peaks
 - Spectral transforms: fft, psd, cwt, laplace, etc.
-- Signal processing: analytic_signal, mix_down, xcorr, etc.
+- Signal processing: hilbert, mix_down, xcorr, etc.
 - Analysis: impute, standardize, rolling_*, etc.
 - Interoperability: to_pandas, to_torch, to_xarray, etc.
 
@@ -101,18 +101,6 @@ ndarrays.
 >>> x = np.array([-1.2, 1.2])
 >>> abs(x)
 array([1.2, 1.2])
-
-### `analytic_signal`
-
-```python
-analytic_signal(self, pad: 'Any' = None, pad_mode: 'str' = 'reflect', pad_value: 'float' = 0.0, nan_policy: 'str' = 'raise', copy: 'bool' = True) -> "'TimeSeriesSignalMixin'"
-```
-
-
-Compute the analytic signal (Hilbert transform) of the TimeSeries.
-
-If input is real, returns complex analytic signal z(t) = x(t) + i H[x(t)].
-If input is complex, returns a copy (casting to complex if needed).
 
 
 ### `angle`
@@ -805,18 +793,22 @@ _No documentation available._
 ### `degree`
 
 ```python
-degree(self, unwrap: 'bool' = False, **kwargs: 'Any') -> "'TimeSeriesSignalMixin'"
+degree(self, unwrap: 'bool' = False) -> "'TimeSeriesSignalMixin'"
 ```
 
 
-Calculate the instantaneous phase of the TimeSeries in degrees.
+Calculate the phase angle of the TimeSeries in degrees.
+
+Computes np.angle(self.value) directly. Works for both real and complex
+time series. For real signals, this will return 0 or 180 depending on sign.
+
+For instantaneous phase of a real signal via Hilbert transform,
+use :meth:`instantaneous_phase` instead.
 
 Parameters
 ----------
 unwrap : bool, optional
-    If True, unwrap the phase.
-**kwargs
-    Passed to instantaneous_phase.
+    If True, unwrap the phase. Default is False.
 
 
 ### `demodulate`
@@ -1412,19 +1404,27 @@ TimeSeries.gate
 ### `find_peaks`
 
 ```python
-find_peaks(self, height: 'Any' = None, threshold: 'Any' = None, distance: 'Any' = None, prominence: 'Any' = None, width: 'Any' = None, wlen: 'Optional[int]' = None, rel_height: 'float' = 0.5, plateau_size: 'Any' = None) -> "tuple['TimeSeries', dict[str, Any]]"
+find_peaks(self, threshold: 'Optional[float]' = None, method: 'str' = 'amplitude', **kwargs: 'Any') -> 'Any'
 ```
 
-
-Find peaks in the TimeSeries.
+Find peaks in the series.
 
 Wraps `scipy.signal.find_peaks`.
 
+Parameters
+----------
+threshold : `float`, optional
+    Vertical threshold for peak detection.
+method : `str`, optional
+    Target for peak finding: 'amplitude', 'power', 'complex', 'db'.
+**kwargs
+    Passed to `scipy.signal.find_peaks` (e.g. distance, prominence).
+
 Returns
 -------
-peaks : `TimeSeries`
-    A new TimeSeries containing only the peak values, indexed by their times.
-props : `dict`
+peaks : Series
+    Subset of the series containing only the peaks.
+properties : dict
     Dictionary of peak properties returned by `scipy.signal.find_peaks`.
 
 
@@ -2265,10 +2265,34 @@ TimeSeries.filter
 ### `hilbert`
 
 ```python
-hilbert(self, *args: 'Any', **kwargs: 'Any') -> "'TimeSeriesSignalMixin'"
+hilbert(self, pad: 'Any' = None, pad_mode: 'str' = 'reflect', pad_value: 'float' = 0.0, nan_policy: 'str' = 'raise', copy: 'bool' = True) -> "'TimeSeriesSignalMixin'"
 ```
 
-Alias for analytic_signal.
+Compute the analytic signal via Hilbert transform.
+
+For a real input x(t), returns the complex analytic signal:
+    z(t) = x(t) + i * H[x(t)]
+where H[x] is the Hilbert transform of x.
+
+If input is already complex, returns a copy.
+
+Parameters
+----------
+pad : int or Quantity, optional
+    Number of samples (or time duration) to pad on each side.
+pad_mode : str, optional
+    Padding mode ('reflect', 'constant', etc.). Default is 'reflect'.
+pad_value : float, optional
+    Value for 'constant' padding mode.
+nan_policy : str, optional
+    How to handle NaNs: 'raise' (default) or 'propagate'.
+copy : bool, optional
+    If input is complex, whether to return a copy.
+
+Returns
+-------
+TimeSeries
+    Complex analytic signal.
 
 ### `hilbert_analysis`
 
@@ -3192,18 +3216,22 @@ Compute and plot the Q-transform of these data:
 ### `radian`
 
 ```python
-radian(self, unwrap: 'bool' = False, **kwargs: 'Any') -> "'TimeSeriesSignalMixin'"
+radian(self, unwrap: 'bool' = False) -> "'TimeSeriesSignalMixin'"
 ```
 
 
-Calculate the instantaneous phase of the TimeSeries in radians.
+Calculate the phase angle of the TimeSeries in radians.
+
+Computes np.angle(self.value) directly. Works for both real and complex
+time series. For real signals, this will return 0 or π depending on sign.
+
+For instantaneous phase of a real signal via Hilbert transform,
+use :meth:`instantaneous_phase` instead.
 
 Parameters
 ----------
 unwrap : bool, optional
-    If True, unwrap the phase.
-**kwargs
-    Passed to instantaneous_phase.
+    If True, unwrap the phase. Default is False.
 
 
 ### `rayleigh_spectrogram`

@@ -89,6 +89,11 @@ class TimeSeriesMatrixCoreMixin:
         """
         Apply a TimeSeries method element-wise and rebuild a TimeSeriesMatrix.
         """
+        # Vectorized implementation hook
+        vectorized_name = f"_vectorized_{method_name}"
+        if hasattr(self, vectorized_name):
+            return getattr(self, vectorized_name)(*args, **kwargs)
+
         N, M, _ = self.shape
         if N == 0 or M == 0:
             return self if kwargs.get("inplace", False) else self.copy()

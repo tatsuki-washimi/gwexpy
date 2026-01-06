@@ -2,7 +2,7 @@
 Signal processing methods for TimeSeries.
 
 This module provides signal processing functionality as a mixin class:
-- Hilbert transform: analytic_signal, hilbert, envelope
+- Hilbert transform: hilbert, envelope
 - Phase/frequency: instantaneous_phase, unwrap_phase, instantaneous_frequency
 - Demodulation: _build_phase_series, mix_down, baseband, lock_in
 - Cross-correlation: xcorr, transfer_function
@@ -46,7 +46,7 @@ class TimeSeriesSignalMixin:
     # Hilbert Transform Methods
     # ===============================
 
-    def analytic_signal(
+    def hilbert(
         self,
         pad: Any = None,
         pad_mode: str = "reflect",
@@ -55,10 +55,31 @@ class TimeSeriesSignalMixin:
         copy: bool = True,
     ) -> "TimeSeriesSignalMixin":
         """
-        Compute the analytic signal (Hilbert transform) of the TimeSeries.
+        Compute the analytic signal via Hilbert transform.
 
-        If input is real, returns complex analytic signal z(t) = x(t) + i H[x(t)].
-        If input is complex, returns a copy (casting to complex if needed).
+        For a real input x(t), returns the complex analytic signal:
+            z(t) = x(t) + i * H[x(t)]
+        where H[x] is the Hilbert transform of x.
+
+        If input is already complex, returns a copy.
+
+        Parameters
+        ----------
+        pad : int or Quantity, optional
+            Number of samples (or time duration) to pad on each side.
+        pad_mode : str, optional
+            Padding mode ('reflect', 'constant', etc.). Default is 'reflect'.
+        pad_value : float, optional
+            Value for 'constant' padding mode.
+        nan_policy : str, optional
+            How to handle NaNs: 'raise' (default) or 'propagate'.
+        copy : bool, optional
+            If input is complex, whether to return a copy.
+
+        Returns
+        -------
+        TimeSeries
+            Complex analytic signal.
         """
         # 1. Complex check
         if np.iscomplexobj(self.value):
@@ -67,7 +88,7 @@ class TimeSeriesSignalMixin:
         # 2. Check regular
         info = _extract_axis_info(self)
         if not info['regular']:
-             raise ValueError("analytic_signal requires regular sampling (dt). Use asfreq/resample first.")
+             raise ValueError("hilbert requires regular sampling (dt). Use asfreq/resample first.")
 
         # 3. Handle NaN
         if nan_policy == 'raise':
@@ -107,13 +128,11 @@ class TimeSeriesSignalMixin:
              name=self.name
         )
 
-    def hilbert(self, *args: Any, **kwargs: Any) -> "TimeSeriesSignalMixin":
-        """Alias for analytic_signal."""
-        return self.analytic_signal(*args, **kwargs)
+
 
     def envelope(self, *args: Any, **kwargs: Any) -> "TimeSeriesSignalMixin":
-        """Compute the envelope of the TimeSeries."""
-        analytic = self.analytic_signal(*args, **kwargs)
+        """Compute the envelope (amplitude) of the TimeSeries via Hilbert transform."""
+        analytic = self.hilbert(*args, **kwargs)
         return abs(analytic)
 
     # ===============================
@@ -122,9 +141,30 @@ class TimeSeriesSignalMixin:
 
     def instantaneous_phase(self, deg: bool = False, unwrap: bool = False, **kwargs: Any) -> "TimeSeriesSignalMixin":
         """
-        Compute the instantaneous phase of the TimeSeries.
+        Compute the instantaneous phase of the TimeSeries via Hilbert transform.
+
+        This method first computes the analytic signal using Hilbert transform,
+        then extracts the phase. Use this for real-valued signals when you need
+        the instantaneous phase.
+
+        For complex-valued signals, consider using :meth:`radian` or :meth:`degree`
+        which directly compute np.angle() without Hilbert transform.
+
+        Parameters
+        ----------
+        deg : bool, optional
+            If True, return phase in degrees. Default is False (radians).
+        unwrap : bool, optional
+            If True, unwrap the phase. Default is False.
+        **kwargs
+            Passed to :meth:`hilbert`.
+
+        Returns
+        -------
+        TimeSeries
+            Instantaneous phase.
         """
-        analytic = self.analytic_signal(**kwargs)
+        analytic = self.hilbert(**kwargs)
         phi = np.angle(analytic.value, deg=deg)
 
         if unwrap:
@@ -143,31 +183,75 @@ class TimeSeriesSignalMixin:
         out.override_unit('deg' if deg else 'rad')
         return out
 
-    def radian(self, unwrap: bool = False, **kwargs: Any) -> "TimeSeriesSignalMixin":
+    def radian(self, unwrap: bool = False) -> "TimeSeriesSignalMixin":
         """
-        Calculate the instantaneous phase of the TimeSeries in radians.
+        Calculate the phase angle of the TimeSeries in radians.
+
+        Computes np.angle(self.value) directly. Works for both real and complex
+        time series. For real signals, this will return 0 or π depending on sign.
+
+        For instantaneous phase of a real signal via Hilbert transform,
+        use :meth:`instantaneous_phase` instead.
 
         Parameters
         ----------
         unwrap : bool, optional
-            If True, unwrap the phase.
-        **kwargs
-            Passed to instantaneous_phase.
-        """
-        return self.instantaneous_phase(deg=False, unwrap=unwrap, **kwargs)
+            If True, unwrap the phase. Default is False.
 
-    def degree(self, unwrap: bool = False, **kwargs: Any) -> "TimeSeriesSignalMixin":
+        Returns
+        -------
+        TimeSeries
+            Phase angle in radians.
         """
-        Calculate the instantaneous phase of the TimeSeries in degrees.
+        phi = np.angle(self.value)
+
+        if unwrap:
+            phi = np.unwrap(phi)
+
+        out = self.__class__(
+            phi,
+            t0=self.t0,
+            dt=self.dt,
+            channel=self.channel,
+            name=self.name
+        )
+        out.override_unit('rad')
+        return out
+
+    def degree(self, unwrap: bool = False) -> "TimeSeriesSignalMixin":
+        """
+        Calculate the phase angle of the TimeSeries in degrees.
+
+        Computes np.angle(self.value) directly. Works for both real and complex
+        time series. For real signals, this will return 0 or 180 depending on sign.
+
+        For instantaneous phase of a real signal via Hilbert transform,
+        use :meth:`instantaneous_phase` instead.
 
         Parameters
         ----------
         unwrap : bool, optional
-            If True, unwrap the phase.
-        **kwargs
-            Passed to instantaneous_phase.
+            If True, unwrap the phase. Default is False.
+
+        Returns
+        -------
+        TimeSeries
+            Phase angle in degrees.
         """
-        return self.instantaneous_phase(deg=True, unwrap=unwrap, **kwargs)
+        phi = np.angle(self.value, deg=True)
+
+        if unwrap:
+            phi = np.unwrap(phi, period=360.0)
+
+        out = self.__class__(
+            phi,
+            t0=self.t0,
+            dt=self.dt,
+            channel=self.channel,
+            name=self.name
+        )
+        out.override_unit('deg')
+        return out
 
     def unwrap_phase(self, deg: bool = False, **kwargs: Any) -> "TimeSeriesSignalMixin":
         """Alias for instantaneous_phase(unwrap=True)."""

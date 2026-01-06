@@ -389,16 +389,16 @@ find_peaks(self, threshold: 'Optional[float]' = None, method: 'str' = 'amplitude
 
 Find peaks in the series.
 
-Wraps `scipy.signal.find_peaks`.
+Uses `SignalAnalysisMixin`.
 
 Parameters
 ----------
-threshold : `float` or `str`
-    Height threshold.
+threshold : `float`, optional
+    Height threshold. If None, no threshold.
 method : `str`, optional
-    'amplitude', 'power', 'db'. Defines what metric to search on.
+    'amplitude', 'power', 'db', 'complex', 'abs'. Defines what metric to search on.
 **kwargs
-    Passed to `scipy.signal.find_peaks` (e.g. distance, prominence).
+    Passed to `scipy.signal.find_peaks` (e.g. distance, prominence, width).
 
 Returns
 -------

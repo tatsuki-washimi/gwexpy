@@ -27,7 +27,7 @@ from gwexpy.interop import (
 )
 from gwexpy.interop._optional import require_optional
 from gwexpy.types._stats import StatisticalMethodsMixin
-from gwexpy.types.mixin import RegularityMixin
+from gwexpy.types.mixin import RegularityMixin, SignalAnalysisMixin
 
 try:
     from gwpy.types.index import SeriesType  # pragma: no cover - optional in gwpy
@@ -43,7 +43,7 @@ except ImportError:
 # =============================
 
 
-class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, BaseFrequencySeries):
+class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, StatisticalMethodsMixin, BaseFrequencySeries):
     """Light wrapper of gwpy's FrequencySeries for compatibility and future extension."""
 
     # --- Phase and Angle ---
@@ -99,6 +99,97 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
         return self.__class__(
             val, frequencies=self.frequencies, unit="deg", name=name, channel=self.channel, epoch=self.epoch
         )
+
+    # --- Calculus ---
+
+    def differentiate(self, order: int = 1) -> "FrequencySeries":
+        """
+        Differentiate the FrequencySeries in the frequency domain.
+
+        Multiplies by (i * 2 * pi * f)^order.
+
+        Parameters
+        ----------
+        order : `int`, optional
+            Order of differentiation. Default is 1.
+
+        Returns
+        -------
+        `FrequencySeries`
+            The differentiated series.
+        """
+        if order == 0:
+            return self.copy()
+
+        f = self.frequencies.value
+        # If frequencies has unit, we should handle it, but usually we just consider numerical differentiation
+        # respective to the unit basis (Hz).
+        # Typically x(t) -> dx/dt involves multiplying X(f) by i*2pi*f
+        
+        factor = (1j * 2 * np.pi * f) ** order
+        val = self.value * factor
+
+        # Update unit: unit * (Hz)^order = unit * (1/s)^order
+        # Assuming f is in Hz.
+        if self.unit:
+            new_unit = self.unit * (u.Hz**order)
+        else:
+            new_unit = u.Hz**order
+
+        name = f"d({self.name})/dt" if self.name else "derivative"
+        if order > 1:
+            name = f"d^{order}({self.name})/dt^{order}" if self.name else f"{order}-th_derivative"
+
+        return self.__class__(
+            val, frequencies=self.frequencies, unit=new_unit, name=name, channel=self.channel, epoch=self.epoch
+        )
+
+    def integrate(self, order: int = 1) -> "FrequencySeries":
+        """
+        Integrate the FrequencySeries in the frequency domain.
+
+        Divides by (i * 2 * pi * f)^order.
+
+        Parameters
+        ----------
+        order : `int`, optional
+            Order of integration. Default is 1.
+
+        Returns
+        -------
+        `FrequencySeries`
+            The integrated series.
+        """
+        if order == 0:
+            return self.copy()
+
+        f = self.frequencies.value
+        with np.errstate(divide="ignore", invalid="ignore"):
+            factor = (1j * 2 * np.pi * f) ** (-order)
+        
+        # Handle DC component (f=0): usually set to 0 or leave as inf/nan?
+        # Standard practice often is 0 for DC integration or just ignore warning.
+        # numpy will produce inf for f=0.
+        # Let's set f=0 term to 0 to be safe/clean? Or leave it?
+        # Usually zeroing out DC is safer for subsequent operations.
+        if f[0] == 0:
+            factor[0] = 0
+
+        val = self.value * factor
+
+        if self.unit:
+            new_unit = self.unit * (u.s**order)
+        else:
+            new_unit = u.s**order
+
+        name = f"int({self.name})dt" if self.name else "integral"
+        if order > 1:
+             name = f"int^{order}({self.name})dt^{order}" if self.name else f"{order}-th_integral"
+
+        return self.__class__(
+            val, frequencies=self.frequencies, unit=new_unit, name=name, channel=self.channel, epoch=self.epoch
+        )
+
 
     # --- dB / Logarithmic ---
 
@@ -477,183 +568,8 @@ class FrequencySeries(RegularityMixin, FittingMixin, StatisticalMethodsMixin, Ba
             new_val, frequencies=self.frequencies, unit=new_unit, name=name, channel=self.channel, epoch=self.epoch
         )
 
-    # --- Analysis & Smoothing ---
+    # smooth() and find_peaks() are now inherited from SignalAnalysisMixin
 
-    def smooth(self, width: Any, method: str = "amplitude", ignore_nan: bool = True) -> Any:
-        """
-        Smooth the frequency series.
-
-        Parameters
-        ----------
-        width : `int`
-            Number of samples for the smoothing winow (e.g. rolling mean size).
-        method : `str`, optional
-            Smoothing target:
-            - 'amplitude': Smooth absolute value |X|, keep phase 'original' (or 0?).
-                           Actually, strictly smoothing magnitude destroys phase coherence.
-                           Returns REAL series (magnitude only).
-            - 'power': Smooth power |X|^2. Returns REAL series.
-            - 'complex': Smooth real and imaginary parts separately. Preserves complex.
-            - 'db': Smooth dB values. Returns REAL series (in dB).
-        ignore_nan : `bool`, optional
-            If True, ignore NaNs during smoothing. Default is True.
-
-        Returns
-        -------
-        `FrequencySeries`
-        """
-        if method == "complex":
-            # Convolve/filter real and imag separately
-            # Use 'same' to keep size, but handle boundary effects
-            # scipy.ndimage.uniform_filter1d or regular convolution
-            # Let's use simple convolution for MVP
-
-            # Boundary handling: 'valid' shrinks, 'same' has edge effects.
-            # GWpy generally prefers exact preservation or careful handling.
-            # We will use 'same' mode convolution.
-            from scipy.ndimage import uniform_filter1d
-
-            def _smooth(x):
-                if ignore_nan:
-                    import pandas as pd
-
-                    return pd.Series(x).rolling(window=width, center=True, min_periods=1).mean().values
-                else:
-                    return uniform_filter1d(x, size=width)
-
-            re = _smooth(self.value.real)
-            im = _smooth(self.value.imag)
-            val = re + 1j * im
-            unit = self.unit
-
-        elif method == "amplitude":
-            mag = np.abs(self.value)
-            if ignore_nan:
-                import pandas as pd
-
-                val = pd.Series(mag).rolling(window=width, center=True, min_periods=1).mean().values
-            else:
-                from scipy.ndimage import uniform_filter1d
-
-                val = uniform_filter1d(mag, size=width)
-            unit = self.unit
-        elif method == "power":
-            pwr = np.abs(self.value) ** 2
-            if ignore_nan:
-                import pandas as pd
-
-                val = pd.Series(pwr).rolling(window=width, center=True, min_periods=1).mean().values
-            else:
-                from scipy.ndimage import uniform_filter1d
-
-                val = uniform_filter1d(pwr, size=width)
-            unit = self.unit**2
-        elif method == "db":
-            # To dB
-            mag = np.abs(self.value)
-            with np.errstate(divide="ignore"):
-                db = 20 * np.log10(mag)
-            if ignore_nan:
-                import pandas as pd
-
-                val = pd.Series(db).rolling(window=width, center=True, min_periods=1).mean().values
-            else:
-                from scipy.ndimage import uniform_filter1d
-
-                val = uniform_filter1d(db, size=width)
-            unit = u.Unit("dB")
-
-        else:
-            raise ValueError(f"Unknown smoothing method: {method}")
-
-        return self.__class__(
-            val, frequencies=self.frequencies, unit=unit, name=self.name, channel=self.channel, epoch=self.epoch
-        )
-
-    def find_peaks(self, threshold: Optional[float] = None, method: str = "amplitude", **kwargs: Any) -> Any:
-        """
-        Find peaks in the series.
-
-        Wraps `scipy.signal.find_peaks`.
-
-        Parameters
-        ----------
-        threshold : `float` or `str`
-            Height threshold.
-        method : `str`, optional
-            'amplitude', 'power', 'db'. Defines what metric to search on.
-        **kwargs
-            Passed to `scipy.signal.find_peaks` (e.g. distance, prominence).
-
-        Returns
-        -------
-        peaks : `FrequencySeries`
-            A new FrequencySeries containing only the peak values, indexed by their frequencies.
-        props : `dict`
-            Dictionary of peak properties returned by `scipy.signal.find_peaks`.
-        """
-        # Prepare target array
-        if method == "amplitude":
-            target = np.abs(self.value)
-        elif method == "power":
-            target = np.abs(self.value) ** 2
-        elif method == "db":
-            target = 20 * np.log10(np.abs(self.value))
-        else:
-            raise ValueError(f"Unknown method {method}")
-
-        if threshold is not None:
-            if hasattr(threshold, "unit"):  # astropy.units.Quantity
-                if method == "amplitude":
-                    threshold = threshold.to(self.unit).value
-                elif method == "power":
-                    threshold = threshold.to(self.unit**2).value
-                elif method == "db":
-                    threshold = threshold.value
-            kwargs["height"] = threshold
-
-        # Unit support for distance and width
-        df = self.df.to("Hz").value if hasattr(self.df, "to") else self.df
-
-        # Distance (Hz -> samples)
-        dist = kwargs.get("distance", None)
-        if dist is not None and hasattr(dist, "to"):
-            kwargs["distance"] = int(dist.to("Hz").value / df)
-
-        # Width (Hz -> samples)
-        wid = kwargs.get("width", None)
-        if wid is not None:
-            if np.iterable(wid):
-                new_wid = []
-                for w in wid:
-                    if hasattr(w, "to"):
-                        new_wid.append(w.to("Hz").value / df)
-                    else:
-                        new_wid.append(w)
-                kwargs["width"] = tuple(new_wid) if isinstance(wid, tuple) else new_wid
-            elif hasattr(wid, "to"):
-                kwargs["width"] = wid.to("Hz").value / df
-
-        peaks_indices, props = scipy.signal.find_peaks(target, **kwargs)
-
-        if len(peaks_indices) == 0:
-            return (
-                self.__class__([], frequencies=[], unit=self.unit, name=self.name, channel=self.channel),
-                props,
-            )
-
-        peak_freqs = self.frequencies[peaks_indices]
-        peak_vals = self.value[peaks_indices]
-
-        out = self.__class__(
-            peak_vals,
-            frequencies=peak_freqs,
-            unit=self.unit,
-            name=f"{self.name}_peaks" if self.name else "peaks",
-            channel=self.channel,
-            epoch=self.epoch,
-        )
-        return out, props
 
     def quadrature_sum(self, other: Any) -> Any:
         """

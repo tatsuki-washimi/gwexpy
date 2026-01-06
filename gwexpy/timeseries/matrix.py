@@ -194,12 +194,16 @@ _TSM_TIME_DOMAIN_METHODS = [
     "detrend",
     "taper",
     "whiten",
+    "hilbert",
+    "instantaneous_phase",
     "filter",
     "lowpass",
     "highpass",
     "bandpass",
     "notch",
     "resample",
+    "smooth",
+    "find_peaks",
 ]
 
 _TSM_MISSING_TIME_DOMAIN_METHODS = [

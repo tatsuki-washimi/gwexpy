@@ -4,6 +4,45 @@ from scipy.signal import get_window
 from gwexpy.frequencyseries import FrequencySeries
 
 
+# Optional Numba import
+try:
+    from numba import njit, prange
+    HAS_NUMBA = True
+except ImportError:
+    HAS_NUMBA = False
+    prange = range
+    # Create a dummy njit decorator that just returns the function
+    def njit(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
+@njit(parallel=True)
+def _bootstrap_resample_jit(data, all_indices, use_median, ignore_nan):
+    n_boot = all_indices.shape[0]
+    n_freq = data.shape[1]
+    resampled_stats = np.zeros((n_boot, n_freq), dtype=data.dtype)
+    
+    for i in prange(n_boot):
+        indices = all_indices[i]
+        
+        # Iterate over frequency bins to save memory (avoid creating full (T, F) sample)
+        for f in range(n_freq):
+            # Extract column using fancy indexing
+            col = data[indices, f]
+            
+            if use_median:
+                if ignore_nan:
+                    resampled_stats[i, f] = np.nanmedian(col)
+                else:
+                    resampled_stats[i, f] = np.median(col)
+            else: # mean
+                if ignore_nan:
+                    resampled_stats[i, f] = np.nanmean(col)
+                else:
+                    resampled_stats[i, f] = np.mean(col)
+    return resampled_stats
+
 def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
     """
     Calculate the variance inflation factor for Welch's method with overlap.
@@ -110,6 +149,10 @@ def bootstrap_spectrogram(
     Error bars are corrected for correlation between overlapping segments
     based on the window function's autocorrelation.
 
+    Performance Note:
+    This function utilizes Numba for JIT compilation and parallelization
+    if available, significantly accelerating the resampling process.
+
     Parameters
     ----------
     spectrogram : gwpy.spectrogram.Spectrogram
@@ -140,22 +183,29 @@ def bootstrap_spectrogram(
     if avg not in {"median", "mean"}:
         raise ValueError("average must be 'median' or 'mean'.")
 
-    resampled_stats = np.zeros((n_boot, data.shape[1]))
+    use_median = (avg == "median")
 
-    for i in range(n_boot):
-        # Generate indices for this iteration only to save memory
-        indices = np.random.randint(0, n_time, size=n_time)
-        sample = data[indices]
-        if avg == "median":
-            if ignore_nan:
-                resampled_stats[i] = np.nanmedian(sample, axis=0)
+    # Generate all bootstrap indices at once using NumPy (ensures reproducibility with seed)
+    all_indices = np.random.randint(0, n_time, (n_boot, n_time))
+
+    if HAS_NUMBA:
+        resampled_stats = _bootstrap_resample_jit(data, all_indices, use_median, ignore_nan)
+    else:
+        # Fallback to pure Python/NumPy implementation
+        resampled_stats = np.zeros((n_boot, data.shape[1]))
+        for i in range(n_boot):
+            indices = all_indices[i]
+            sample = data[indices]
+            if use_median:
+                if ignore_nan:
+                    resampled_stats[i] = np.nanmedian(sample, axis=0)
+                else:
+                    resampled_stats[i] = np.median(sample, axis=0)
             else:
-                resampled_stats[i] = np.median(sample, axis=0)
-        else:
-            if ignore_nan:
-                resampled_stats[i] = np.nanmean(sample, axis=0)
-            else:
-                resampled_stats[i] = np.mean(sample, axis=0)
+                if ignore_nan:
+                    resampled_stats[i] = np.nanmean(sample, axis=0)
+                else:
+                    resampled_stats[i] = np.mean(sample, axis=0)
 
     if avg == "median":
         if ignore_nan:

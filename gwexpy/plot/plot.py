@@ -54,6 +54,7 @@ class Plot(BasePlot):
 
     def __init__(self, *args, **kwargs):
         kwargs_orig = kwargs.copy()
+        
         # Local import to avoid circular dependency
         from gwexpy.types.seriesmatrix import SeriesMatrix
         from gwexpy.frequencyseries import (
@@ -68,6 +69,7 @@ class Plot(BasePlot):
             SpectrogramDict
         )
         from gwexpy.plot import defaults
+        from gwexpy.timeseries import TimeSeriesMatrix
 
         # 0. Handle monitor filtering
         monitor = kwargs.get('monitor')
@@ -96,251 +98,212 @@ class Plot(BasePlot):
                        new_args.append(arg)
              args = tuple(new_args)
 
-        # 1. Unpack Collections
-        matrices = []
-        expanded_args = []
-
-
-        for arg in args:
-            if isinstance(arg, (SeriesMatrix, SpectrogramMatrix)):
-                if monitor is not None:
-                     # If we already filtered, and it's NO LONGER a matrix (ndim decreased),
-                     # we treat it as an expanded element to avoid re-expansion
-                     if arg.ndim < 3: # Series (2D) or Spectrogram (3D-flat)
-                          expanded_args.append(arg)
-                     else:
-                          matrices.append(arg)
-                else:
-                     matrices.append(arg)
-            elif isinstance(arg, (FrequencySeriesList, SpectrogramList)):
-                expanded_args.extend(arg)
-            elif isinstance(arg, (FrequencySeriesDict, SpectrogramDict)):
-                expanded_args.extend(arg.values())
-            elif isinstance(arg, (list, tuple)):
-                expanded_args.extend(arg)
-            elif isinstance(arg, dict):
-                expanded_args.extend(arg.values())
-            else:
-                expanded_args.append(arg)
-
-        # 1.5 Sync matrix_args (legacy name used in late logic)
-        matrix_args = matrices
-
-
-        # 2. Defaults (Figsize, Scales, Geometry)
-        all_data = expanded_args[:]
-        if matrices:
-            all_data.append(matrices[0])
-
-        if monitor is not None and not matrices:
-             pass
-
-        # Geometry / Separate
+        # 1. Determine Layout Mode (Separate / Geometry)
         separate = kwargs.get('separate')
         geometry = kwargs.get('geometry')
-
-        # If monitor is used, we only want to consider the filtered data for geometry
-        if monitor is not None:
-             # Use the actual args (which are already filtered) for geometry determination
-             # If args[0] is now a Series/Spectrogram instead of Matrix, defaults will treat it correctly.
-             separate, geometry = defaults.determine_geometry_and_separate(
-                 list(args), separate=separate, geometry=geometry
-             )
-        else:
-             separate, geometry = defaults.determine_geometry_and_separate(
-                 all_data, separate=separate, geometry=geometry
-             )
-
-        if separate is not None:
-             kwargs['separate'] = separate
-        if geometry is not None:
-             # If monitor is used, and it wasn't an explicit user geometry, override it
-             if monitor is not None and 'geometry' not in kwargs_orig:
-                  geometry = None
-             kwargs['geometry'] = geometry
-
-        # Scales
-        # Use filtered data (args) if monitor is specified for better scale/label determination
-        scale_data = list(args) if monitor is not None else all_data
-        kwargs['xscale'] = defaults.determine_xscale(scale_data, current_value=kwargs.get('xscale'))
-        kwargs['yscale'] = defaults.determine_yscale(scale_data, current_value=kwargs.get('yscale'))
-
-        det_xlabel = defaults.determine_xlabel(scale_data, current_value=kwargs.get('xlabel'))
-        if det_xlabel is not None:
-             kwargs['xlabel'] = det_xlabel
-
-        det_ylabel = defaults.determine_ylabel(scale_data, current_value=kwargs.get('ylabel'))
-        if det_ylabel is not None:
-             kwargs['ylabel'] = det_ylabel
-
-        new_norm = defaults.determine_norm(all_data, current_value=kwargs.get('norm'))
-        if new_norm is not None:
-             kwargs['norm'] = new_norm
-
-        det_clabel = defaults.determine_clabel(all_data)
         
-        det_ylim = defaults.determine_ylim(scale_data, current_value=kwargs.get('ylim'), yscale=kwargs.get('yscale'))
-        if det_ylim is not None:
-             kwargs['ylim'] = det_ylim
-
-        # Figsize
-        if 'figsize' not in kwargs and kwargs.get('geometry') is not None:
-             nrow, ncol = kwargs['geometry']
-             kwargs['figsize'] = defaults.calculate_default_figsize((nrow, ncol), nrow, ncol)
-
-
-        # 3. Matrix Logic (Legacy adaptation)
-        # matrix_args is already synced from matrices in step 1.5
-
-        use_smart_layout = False
-        subplots = kwargs.pop('subplots', None)
-        separate = kwargs.get('separate')
-
-        if separate is None:
-            separate = subplots
-
-        subplots_orig = separate
-
-        # If monitor was used, we force separate=True to handle it as individual plots
-        if monitor is not None:
+        # Use defaults logic to infer separate/geometry from inputs
+        separate, geometry = defaults.determine_geometry_and_separate(
+             list(args), separate=separate, geometry=geometry
+        )
+        
+        # If monitor is active, we force separation (unless explicitly overridden?)
+        if monitor is not None and separate is None:
              separate = True
-             use_smart_layout = False # Avoid matrix expansion
 
-        if separate == 'row' and matrix_args:
-             use_smart_layout = True
-             separate = True
-             ref = matrix_args[0]
-             kwargs.setdefault('geometry', (len(ref.row_keys()), 1))
-        elif separate == 'col' and matrix_args:
-             use_smart_layout = True
-             separate = True
-             ref = matrix_args[0]
-             kwargs.setdefault('geometry', (1, len(ref.col_keys())))
-        elif separate is True:
-             use_smart_layout = True
-             if matrix_args and 'geometry' not in kwargs:
-                 ref = matrix_args[0]
-                 kwargs['geometry'] = (len(ref.row_keys()), len(ref.col_keys()))
-        elif separate is None and matrix_args:
-             use_smart_layout = True
-             separate = True
-             ref = matrix_args[0]
-             kwargs.setdefault('geometry', (len(ref.row_keys()), len(ref.col_keys())))
-
-        # Enforce geometry update
-        if kwargs.get('geometry') is not None and 'figsize' not in kwargs:
-             nrow, ncol = kwargs['geometry']
-             kwargs['figsize'] = defaults.calculate_default_figsize(None, nrow, ncol)
-
-        kwargs['separate'] = separate
-
-        # Share Axis Logic for Matrices
-        if use_smart_layout and matrix_args:
-            from gwexpy.timeseries import TimeSeriesMatrix
-            has_time = any(isinstance(m, TimeSeriesMatrix) for m in matrix_args)
-            has_freq = any(isinstance(m, FrequencySeriesMatrix) for m in matrix_args)
-
-            units_consistent = True
-            for m in matrix_args:
-                consistent, _ = m._all_element_units_equivalent()
-                if not consistent:
-                    units_consistent = False
-                    break
-
-            if (has_time and has_freq) or not units_consistent:
-                 kwargs.setdefault('sharex', False)
-                 kwargs.setdefault('sharey', False)
-            else:
-                 kwargs.setdefault('sharex', True)
-                 kwargs.setdefault('sharey', True)
-
-        is_spectrogram = any(isinstance(a, (Spectrogram, SpectrogramMatrix)) for a in all_data)
-        if is_spectrogram:
-             kwargs.setdefault('sharex', True)
-             kwargs.setdefault('sharey', True)
-             # Default to pcolormesh for Spectrograms if not specified
-             kwargs.setdefault('method', 'pcolormesh')
-
-        kwargs.setdefault('constrained_layout', False)
-        kwargs.setdefault('tight_layout', True)
-
-        # 4. Final Args
+        # 2. Expand Arguments based on Separate Mode
         final_args = []
-        use_overlay = False
-
-        if use_smart_layout and matrix_args:
-             base_m = matrix_args[0]
-             r_keys = base_m.row_keys()
-             c_keys = base_m.col_keys()
-
-             if subplots_orig == 'row':
+        
+        for arg in args:
+             is_matrix = isinstance(arg, (SeriesMatrix, SpectrogramMatrix))
+             
+             if separate is True:
+                  # Grid / Separate mode: Flatten everything to individual items
+                  if is_matrix:
+                       final_args.extend(arg.to_series_1Dlist())
+                  elif isinstance(arg, (list, tuple)):
+                       final_args.extend(arg)
+                  elif isinstance(arg, dict):
+                       final_args.extend(arg.values())
+                  elif isinstance(arg, (FrequencySeriesList, SpectrogramList)):
+                       final_args.extend(arg)
+                  elif isinstance(arg, (FrequencySeriesDict, SpectrogramDict)):
+                       final_args.extend(arg.values())
+                  else:
+                       final_args.append(arg)
+             
+             elif separate == 'row' and is_matrix:
+                  # Row mode: Each row is a group
+                  # Assuming SeriesMatrix has row_keys iterator or similar
+                  r_keys = arg.row_keys()
+                  c_keys = arg.col_keys()
                   for r in r_keys:
-                       row_elements = []
+                       row_items = []
                        for c in c_keys:
-                            val = base_m[r, c]
-                            if not getattr(val, 'name', None):
-                                 val.name = f"{r} / {c}"
-                            row_elements.append(val)
-                       final_args.append(row_elements)
-                  use_overlay = True
-             elif subplots_orig == 'col':
+                            try:
+                                 val = arg[r, c]
+                                 # Ensure name for legend
+                                 if not getattr(val, 'name', None):
+                                      val.name = f"{r} / {c}"
+                                 row_items.append(val)
+                            except (TypeError, ValueError, IndexError):
+                                 pass
+                       final_args.append(row_items)
+                       
+             elif separate == 'col' and is_matrix:
+                  # Col mode: Each col is a group
+                  r_keys = arg.row_keys()
+                  c_keys = arg.col_keys()
                   for c in c_keys:
-                       col_elements = []
+                       col_items = []
                        for r in r_keys:
-                            val = base_m[r, c]
-                            if not getattr(val, 'name', None):
-                                 val.name = f"{r} / {c}"
-                            col_elements.append(val)
-                       final_args.append(col_elements)
-                  use_overlay = True
-             else:
-                  for r in r_keys:
-                      for c in c_keys:
-                          # Wrap in Spectrogram if it's SpectrogramMatrix
-                          if type(base_m).__name__ == 'SpectrogramMatrix':
-                              from gwexpy.spectrogram import Spectrogram
-                              ri = base_m.row_index(r)
-                              ci = base_m.col_index(c)
-                              if getattr(base_m, 'ndim', 0) == 3:
-                                  val_data = base_m[ri]
-                              else:
-                                  val_data = base_m[ri, ci]
-                              val = Spectrogram(val_data.view(np.ndarray),
-                                                times=base_m.times,
-                                                frequencies=base_m.frequencies,
-                                                unit=base_m.meta[ri, ci].unit,
-                                                name=base_m.meta[ri, ci].name)
-                          else:
-                              # For TimeSeriesMatrix, FrequencySeriesMatrix, etc.
-                              val = base_m[r, c]
-                              if not getattr(val, 'name', None):
-                                   val.name = f"{r} / {c}"
-                          final_args.append(val)
-                  use_overlay = True
-        else:
-             for m in matrix_args:
-                 final_args.extend(m.to_series_1Dlist())
-             final_args.extend(expanded_args)
+                            try:
+                                 val = arg[r, c]
+                                 if not getattr(val, 'name', None):
+                                      val.name = f"{r} / {c}"
+                                 col_items.append(val)
+                            except (TypeError, ValueError, IndexError):
+                                 pass
+                       final_args.append(col_items)
 
-        # 4.5. Optimize Large TimeSeries (Adaptive Decimation)
+             else:
+                  # separate=False (Overlay) or None (Default behavior)
+                  # For Matrix: Flatten into ONE group
+                  if is_matrix:
+                       final_args.append(arg.to_series_1Dlist())
+                  # For List/Dict: Keep as ONE group (Preserve structure for gwpy)
+                  elif isinstance(arg, dict):
+                       final_args.append(list(arg.values()))
+                  elif isinstance(arg, (FrequencySeriesDict, SpectrogramDict)):
+                       final_args.append(list(arg.values()))
+                  elif isinstance(arg, (FrequencySeriesList, SpectrogramList)):
+                       final_args.append(list(arg))
+                  else:
+                       final_args.append(arg)
+
+        # 2.5 TimeSeries Optimization (Adaptive Decimation)
         from gwexpy.plot.utils import adaptive_decimate
         from gwexpy.timeseries import TimeSeries
-
+        
         decimate_threshold = kwargs.pop('decimate_threshold', 50000)
         decimate_points = kwargs.pop('decimate_points', 10000)
 
-        def _optimize_if_needed(arg):
-            if isinstance(arg, TimeSeries) and len(arg) > decimate_threshold:
-                return adaptive_decimate(arg, target_points=decimate_points)
-            if isinstance(arg, list):
-                return [_optimize_if_needed(a) for a in arg]
-            if isinstance(arg, tuple):
-                return tuple(_optimize_if_needed(a) for a in arg)
-            if isinstance(arg, dict):
-                return {k: _optimize_if_needed(v) for k, v in arg.items()}
-            return arg
+        def _optimize_if_needed(val):
+            if isinstance(val, TimeSeries) and len(val) > decimate_threshold:
+                return adaptive_decimate(val, target_points=decimate_points)
+            if isinstance(val, list):
+                return [_optimize_if_needed(v) for v in val]
+            if isinstance(val, tuple):
+                 return tuple(_optimize_if_needed(v) for v in val)
+            return val
 
-        final_args = [_optimize_if_needed(arg) for arg in final_args]
+        final_args = [_optimize_if_needed(a) for a in final_args]
+
+        # 3. Determine Scales and Labels (using flattened/inspected data)
+        # We need a flat list of all data to scan for scales
+        def _flatten_scan(ax_args):
+             flat = []
+             for a in ax_args:
+                  if isinstance(a, (list, tuple)):
+                       flat.extend(_flatten_scan(a))
+                  else:
+                       flat.append(a)
+             return flat
+        
+        scan_data = _flatten_scan(final_args)
+        
+        if 'xscale' not in kwargs:
+             det_xscale = defaults.determine_xscale(scan_data)
+             if det_xscale is not None:
+                  kwargs['xscale'] = det_xscale
+
+        if 'yscale' not in kwargs:
+             det_yscale = defaults.determine_yscale(scan_data)
+             if det_yscale is not None:
+                  kwargs['yscale'] = det_yscale
+
+        if 'xlabel' not in kwargs:
+             det_xlabel = defaults.determine_xlabel(scan_data)
+             if det_xlabel is not None:
+                  kwargs['xlabel'] = det_xlabel
+
+        if 'ylabel' not in kwargs:
+             # Only determine global ylabel if units are consistent across all data
+             # Check consistency
+             units_set = set()
+             units_consistent = True
+             for x in scan_data:
+                  u_val = getattr(x, 'unit', None)
+                  # Treat None and Dimensionless as distinct? gwpy might handle them.
+                  # For simplicity, store string representation unless None
+                  if hasattr(u_val, 'to_string'):
+                       units_set.add(u_val.to_string())
+                  else:
+                       units_set.add(str(u_val))
+             
+             if len(units_set) <= 1:
+                  det_ylabel = defaults.determine_ylabel(scan_data)
+                  if det_ylabel is not None:
+                       kwargs['ylabel'] = det_ylabel
+             # Else: do not set global ylabel, let individual axes handle it (or handle in post-processing)
+             else:
+                  # Explicitly ensure NO global label is enforced so gwpy doesn't pick just one?
+                  # If we pass nothing, gwpy might autopick from the first one?
+                  # We might need to handle this in post-processing.
+                  pass
+        
+        if 'norm' not in kwargs:
+             det_norm = defaults.determine_norm(scan_data)
+             if det_norm is not None:
+                  kwargs['norm'] = det_norm
+
+        if 'clabel' not in kwargs:
+             det_clabel = defaults.determine_clabel(scan_data)
+             # clabel is handled separately later for colorbars or passed?
+             # If we want to pass it, we should check if valid.
+             # But clabel is not a standard Plot kwarg usually.
+             pass
+
+        if 'ylim' not in kwargs:
+             det_ylim = defaults.determine_ylim(scan_data, yscale=kwargs.get('yscale'))
+             if det_ylim is not None:
+                  kwargs['ylim'] = det_ylim
+
+        # 4. Geometry Check
+        if geometry is not None:
+             kwargs['geometry'] = geometry
+        
+        if separate is not None:
+             # Pass separate to base plot
+             kwargs['separate'] = True if isinstance(separate, str) else separate
+
+        # Figsize Logic
+        if 'figsize' not in kwargs and geometry is not None:
+             kwargs['figsize'] = defaults.calculate_default_figsize(geometry, geometry[0], geometry[1])
+        elif 'figsize' not in kwargs and separate is True:
+             # Infer geometry from final_args length
+             n_axes = len(final_args)
+             kwargs['figsize'] = defaults.calculate_default_figsize(None, n_axes, 1)
+
+        # Definitions for Legacy/Post-Init Logic
+        use_overlay = any(isinstance(fa, (list, tuple)) and len(fa) > 1 for fa in final_args)
+        matrix_args = [a for a in args if isinstance(a, (SeriesMatrix, SpectrogramMatrix))]
+        is_spectrogram = any(isinstance(a, (Spectrogram, SpectrogramMatrix)) for a in scan_data)
+        subplots_orig = separate
+        
+        expanded_args = []
+        for arg in args:
+             if not isinstance(arg, (SeriesMatrix, SpectrogramMatrix)):
+                  if isinstance(arg, (list, tuple)):
+                       expanded_args.extend(arg)
+                  elif isinstance(arg, dict):
+                       expanded_args.extend(arg.values())
+                  elif isinstance(arg, (FrequencySeriesList, SpectrogramList)):
+                       expanded_args.extend(arg)
+                  elif isinstance(arg, (FrequencySeriesDict, SpectrogramDict)):
+                       expanded_args.extend(arg.values())
+                  else:
+                       expanded_args.append(arg)
 
         # 5. Super Init
         layout_kwargs = {}
@@ -427,6 +390,20 @@ class Plot(BasePlot):
                 for ax in other_axes:
                     if ax.get_ylabel() == candidate_ylabel:
                         ax.set_ylabel('')
+
+        # 6. Auto-Label Individual Axes if needed
+        # If no global ylabel was enforced (e.g. diverse units), try to label each axis individually
+        if force_ylabel is None:
+             # Heuristic: map final_args to axes one-to-one
+             # This works well for separate=True or standard gwpy behavior
+             if len(self.axes) == len(final_args):
+                  for ax, data_item in zip(self.axes, final_args):
+                       if not ax.get_ylabel():
+                            # data_item might be a list (if grouped) or single obj
+                            d_list = data_item if isinstance(data_item, (list, tuple)) else [data_item]
+                            lbl = defaults.determine_ylabel(d_list)
+                            if lbl:
+                                 ax.set_ylabel(lbl)
 
         # 2. X-Label
         candidate_xlabel = force_xlabel

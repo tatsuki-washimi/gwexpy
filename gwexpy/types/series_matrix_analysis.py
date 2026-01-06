@@ -127,24 +127,6 @@ class SeriesMatrixAnalysisMixin:
         if not resize:
             orig_len = target.shape[axis]
             sl = slice(-orig_len, None)
-            out_full = out_full._value[out_full._get_axis_slice(axis, sl)] # Wait, this returns ndarray, we want object.
-            # Actually we want sliced object. But reusing crop or just calling constructor?
-            # crop is cleaner.
-            # But xindex needs slicing too.
-            # Let's slice data and xindex and rebuild.
-            
-            # Re-read original code logic:
-            # out_full = out_full[:, :, -orig_len:]
-            # This was slicing the object actually (SeriesMatrix slicing).
-            # SeriesMatrix slicing might not update xindex correctly if not indexing-aware?
-            # But SeriesMatrixIndexingMixin handles slicing.
-            # So `out_full` is SeriesMatrix.
-            # `out_full[..., -orig_len:]` -> generic slice.
-            
-            # For SpectrogramMatrix (Time, Freq), we want to slice Time axis.
-            # `out_full` s slicing syntax depends on dimensions.
-            # Using generic data reconstruction is safer.
-            
             new_data = out_full.value[out_full._get_axis_slice(axis, sl)]
             new_xindex = out_full.xindex[sl]
             out_full = self.__class__(**self._get_meta_for_constructor(new_data, new_xindex))
