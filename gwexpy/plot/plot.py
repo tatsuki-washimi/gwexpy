@@ -79,6 +79,14 @@ class Plot(BasePlot):
                   if isinstance(arg, (SeriesMatrix, SpectrogramMatrix)):
                        # Apply filtering
                        try:
+                            # For SpectrogramMatrix 4D, map a flat index to (row, col)
+                            if type(arg).__name__ == 'SpectrogramMatrix' and isinstance(monitor, (int, np.integer)):
+                                 if arg.ndim == 4:
+                                      nrow, ncol = arg.shape[:2]
+                                      row_idx = monitor // ncol
+                                      col_idx = monitor % ncol
+                                      new_args.append(arg[row_idx, col_idx])
+                                      continue
                             # Use the object's own indexing (supporting labels, lists, etc. if implemented)
                             filtered_arg = arg[monitor]
                             new_args.append(filtered_arg)
@@ -99,6 +107,9 @@ class Plot(BasePlot):
              args = tuple(new_args)
 
         # 1. Determine Layout Mode (Separate / Geometry)
+        if 'subplots' in kwargs and 'separate' not in kwargs:
+             kwargs['separate'] = kwargs['subplots']
+        kwargs.pop('subplots', None)
         separate = kwargs.get('separate')
         geometry = kwargs.get('geometry')
         
@@ -211,7 +222,13 @@ class Plot(BasePlot):
              return flat
         
         scan_data = _flatten_scan(final_args)
-        
+
+        # Ensure spectrograms use a 2D plotting method instead of line plotting.
+        if 'method' not in kwargs:
+             has_spectrogram = any(isinstance(a, (Spectrogram, SpectrogramMatrix)) for a in scan_data)
+             if has_spectrogram:
+                  kwargs['method'] = 'pcolormesh'
+
         if 'xscale' not in kwargs:
              det_xscale = defaults.determine_xscale(scan_data)
              if det_xscale is not None:
@@ -725,4 +742,3 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title='', **kwargs):
     fig.tight_layout()
 
     return fig, axes
-
