@@ -10,7 +10,7 @@ except ImportError:
 
 
 class ChannelBrowserDialog(QtWidgets.QDialog):
-    def __init__(self, server, port, parent=None, audio_enabled=False):
+    def __init__(self, server, port, parent=None, audio_enabled=False, initial_source="NDS"):
         super().__init__(parent)
         self.setWindowTitle("Channel List")
         self.resize(800, 600)
@@ -18,7 +18,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         self.port = port
         self.server_key = f"{server}:{port}"
         self.audio_enabled = audio_enabled
-        self.current_source = "NDS"  # NDS or AUDIO
+        self.current_source = initial_source
         self.selected_channels = []
         self.full_channel_list = []  # List of (name, rate, type)
         self.worker = None
@@ -33,6 +33,12 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         self.cb_source.addItem(f"NDS ({self.server_key})", "NDS")
         if self.audio_enabled:
             self.cb_source.addItem("Local PC Audio", "AUDIO")
+        
+        # Set initial selection
+        idx = self.cb_source.findData(self.current_source)
+        if idx != -1:
+            self.cb_source.setCurrentIndex(idx)
+        
         self.cb_source.currentIndexChanged.connect(self.on_source_changed)
         h_src.addWidget(self.cb_source)
         h_src.addStretch(1)

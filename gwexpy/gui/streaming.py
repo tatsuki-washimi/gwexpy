@@ -12,6 +12,7 @@ class SpectralAccumulator:
 
     def __init__(self):
         self.params = {}
+        self.active_traces = []
         self.reset()
 
     def reset(self):

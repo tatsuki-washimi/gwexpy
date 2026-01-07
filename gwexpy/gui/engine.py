@@ -177,18 +177,29 @@ class Engine:
                             "overlap", 0
                         )  # Remove overlap from kwargs to avoid conflict/confusion
 
-                        # Calculate stride (step size)
-                        # The error "fftlength cannot be greater than stride" suggests that overlapping spectrograms
-                        # might not be supported easily or arguments are mismatched in this version.
-                        # For now, to ensure it works, we enforce stride >= fftlength (i.e., no overlap).
-
-                        stride = length
-                        if ovlap > 0:
-                            logger.warning(
-                                f"Spectrogram overlap disabled (stride force set to fftlength={length}s) to avoid potential error."
-                            )
-
-                        spec = ts_a.spectrogram(stride, **fft_kwargs)
+                        # Use spectrogram2 which supports overlap correctly.
+                        # spectrogram2(fftlength, overlap=..., window=...)
+                        # Note: spectrogram2 usually returns a Spectrogram object similar to the others.
+                        
+                        length = fft_kwargs["fftlength"]
+                        # overlap was removed from fft_kwargs in _get_fft_kwargs but stored in ovlap variable above?
+                        # Wait, in compute() we popped overlap into ovlap.
+                        
+                        # Re-construct overlap argument if needed, or pass directly.
+                        # spectrogram2 takes 'overlap' in seconds (default 0).
+                        
+                        # fft_kwargs has 'window', 'fftlength'.
+                        # We need to ensure we call it correctly.
+                        
+                        # Remove 'fftlength' from kwargs if we pass it as positional args?
+                        # spectrogram2 signature: spectrogram2(fftlength, overlap=None, window=None, ...)
+                        
+                        kw = fft_kwargs.copy()
+                        if "fftlength" in kw:
+                            del kw["fftlength"]
+                        
+                        # ovlap is in seconds (calculated in _get_fft_kwargs as overlap * fftlength)
+                        spec = ts_a.spectrogram2(length, overlap=ovlap, **kw)
 
                         # Crop Frequency (Y-axis)
                         # Spectrogram.crop() acts on Time (X-axis).
