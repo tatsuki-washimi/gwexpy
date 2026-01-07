@@ -173,7 +173,53 @@ result.generate_report(output_dir="bruco_report")
 
 - **データの取得**: `TimeSeriesDict.get()` を使用してデータを取得します。バッチ内で一部のチャンネル取得に失敗した場合、自動的に個別取得モードに切り替えて有効なチャンネルのみを解析します。
 - **リサンプリング**: ターゲットと補助チャンネルのサンプリングレートが異なる場合、遅い方のレートに合わせて自動的にダウンサンプリングされます。
-- **メモリ管理**: 非常に多くのチャンネルを扱う場合、`batch_size` を調整してメモリ使用量をコントロールしてください。
+- **内部はPSD基準**: 解析の内部表現は PSD で統一し、ASD 表示は描画時のみ変換します。`coherence_threshold` は `asd=True` のとき振幅コヒーレンス基準で適用されます。
+- **メモリ管理**: 非常に多くのチャンネルを扱う場合、`batch_size` と `block_size` を調整してメモリ使用量をコントロールしてください。
+
+### Top-N更新のブロックサイズ
+
+`BrucoResult` の Top-N 更新は、チャンネルをブロック単位で処理します。  
+ブロックサイズは以下の順で決まります。
+
+1. `block_size` 引数（`int` または `"auto"`）
+2. `GWEXPY_BRUCO_BLOCK_SIZE` 環境変数（`int` または `"auto"`）
+3. デフォルト `256`
+
+`"auto"` の場合は `GWEXPY_BRUCO_BLOCK_BYTES` を使って以下の式で推定します。
+
+```
+max_cols = (block_bytes // (n_bins * 8)) - top_n
+block_size = clamp(max_cols, 16, 1024)
+```
+
+目標の `block_size` を決めたい場合は以下を目安に設定します。
+
+```
+block_bytes ~= (top_n + block_size) * n_bins * 8
+```
+
+例: `n_bins=20000`, `top_n=5`, `block_size=256` の場合
+
+```bash
+export GWEXPY_BRUCO_BLOCK_SIZE=auto
+export GWEXPY_BRUCO_BLOCK_BYTES=41760000
+```
+
+### ベンチマーク
+
+`scripts/bruco_bench.py` で `update_batch` の簡易ベンチが実行できます。
+
+```bash
+python scripts/bruco_bench.py --n-bins 20000 --n-channels 300 --top-n 5 --block-size auto
+```
+
+参考値 (環境依存):
+
+```
+elapsed_s=0.153
+ru_maxrss_kb=627808
+block_size_resolved=414
+```
 
 ## API リファレンス
 
@@ -184,7 +230,7 @@ result.generate_report(output_dir="bruco_report")
 - `aux_channels`: 比較対象の補助チャンネル名のリスト。
 - `excluded_channels`: 解析から除外するチャンネル名のリスト。
 
-**`compute(self, start=None, duration=None, fftlength=2.0, overlap=1.0, nproc=4, batch_size=100, top_n=5, ...) -> BrucoResult`**
+**`compute(self, start=None, duration=None, fftlength=2.0, overlap=1.0, nproc=4, batch_size=100, top_n=5, block_size=None, ...) -> BrucoResult`**
 - `start`: GPS開始時刻。データ（`target_data` または `aux_data`辞書）から推定できる場合は省略可能。
 - `duration`: 解析データの長さ（秒）。推定できる場合は省略可能。
 - `fftlength`: スペクトル計算のFFT長（秒）。
@@ -192,6 +238,7 @@ result.generate_report(output_dir="bruco_report")
 - `nproc`: 並列計算に使用するプロセス数。
 - `batch_size`: 一度にデータを取得するチャンネル数。
 - `top_n`: 各周波数ビンで保持する上位チャンネル数。
+- `block_size`: Top-N 更新のブロックサイズ（`int` または `"auto"`）。
 - `target_data`: (`TimeSeries`) 事前に取得したターゲットデータ。
 - `aux_data`: (`TimeSeriesDict` or `Iterable`) 事前に取得した補助チャンネルデータ。
 - `preprocess_batch`: (`Callable`) バッチ前処理用コールバック関数。

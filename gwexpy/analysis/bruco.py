@@ -15,6 +15,46 @@ from astropy import units as u
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
+_BRUCO_BLOCK_SIZE_DEFAULT = 256
+_BRUCO_BLOCK_BYTES_DEFAULT = 64 * 1024 * 1024
+_BRUCO_BLOCK_SIZE_MIN = 16
+_BRUCO_BLOCK_SIZE_MAX = 1024
+
+
+def _auto_block_size(n_bins: int, top_n: int) -> int:
+    if n_bins <= 0:
+        return _BRUCO_BLOCK_SIZE_DEFAULT
+    try:
+        budget = int(os.getenv("GWEXPY_BRUCO_BLOCK_BYTES", _BRUCO_BLOCK_BYTES_DEFAULT))
+    except ValueError:
+        budget = _BRUCO_BLOCK_BYTES_DEFAULT
+    if budget <= 0:
+        budget = _BRUCO_BLOCK_BYTES_DEFAULT
+    max_cols = (budget // (n_bins * 8)) - top_n
+    if max_cols < _BRUCO_BLOCK_SIZE_MIN:
+        return _BRUCO_BLOCK_SIZE_MIN
+    if max_cols > _BRUCO_BLOCK_SIZE_MAX:
+        return _BRUCO_BLOCK_SIZE_MAX
+    return int(max_cols)
+
+
+def _resolve_block_size(block_size: Optional[Union[int, str]], n_bins: int, top_n: int) -> int:
+    if block_size is None:
+        block_size = os.getenv("GWEXPY_BRUCO_BLOCK_SIZE", _BRUCO_BLOCK_SIZE_DEFAULT)
+
+    if isinstance(block_size, str):
+        if block_size.lower() == "auto":
+            return _auto_block_size(n_bins, top_n)
+        try:
+            block_size = int(block_size)
+        except ValueError as exc:
+            raise ValueError("block_size must be an int or 'auto'") from exc
+
+    if not isinstance(block_size, int):
+        raise TypeError("block_size must be an int or 'auto'")
+    if block_size < 1:
+        raise ValueError("block_size must be >= 1")
+    return block_size
 
 
 class FastCoherenceEngine:
@@ -86,6 +126,7 @@ class BrucoResult:
         target_spectrum: np.ndarray,
         top_n: int = 5,
         metadata: Optional[Dict[str, Any]] = None,
+        block_size: Optional[Union[int, str]] = None,
     ) -> None:
         """
         Args:
@@ -94,6 +135,7 @@ class BrucoResult:
             target_spectrum: PSD of the target channel (same length as frequencies).
             top_n: Number of top channels to keep per frequency bin.
             metadata: Optional metadata dict for reporting.
+            block_size: Channels per block in Top-N updates (int or 'auto').
         """
 
         if top_n < 1:
@@ -104,10 +146,11 @@ class BrucoResult:
         self.frequencies = frequencies
         self.target_name = target_name
         self.target_spectrum = target_spectrum
-        # self.spectrum_kind = spectrum_kind # Now handled at plot/calc time, assuming ASD input
+        # Internal calculations use PSD; ASD is derived only for display.
         self.top_n = top_n
         self.metadata = metadata or {}
         self.n_bins = len(frequencies)
+        self.block_size = _resolve_block_size(block_size, self.n_bins, self.top_n)
 
         # Top-N storage: [n_bins, top_n]
         self.top_coherence = np.zeros((self.n_bins, top_n), dtype=float)
@@ -132,25 +175,50 @@ class BrucoResult:
             raise ValueError("coherences columns must match number of frequency bins")
 
         coh_clean = np.nan_to_num(coherences, nan=0.0, posinf=0.0, neginf=0.0)
-        batch_coh_t = coh_clean.T  # (bins, n_new)
         batch_names = np.asarray(channel_names, dtype=object)
-        batch_names_tiled = np.tile(batch_names, (self.n_bins, 1))
 
-        combined_coh = np.concatenate([self.top_coherence, batch_coh_t], axis=1)
-        combined_names = np.concatenate([self.top_channels, batch_names_tiled], axis=1)
+        # Blocked top-k update to cap memory while keeping vectorized selection.
+        block_size = min(batch_names.size, self.block_size)
+        for start in range(0, batch_names.size, block_size):
+            end = start + block_size
+            block_names = batch_names[start:end]
+            block_coh = coh_clean[start:end]
+            block_coh_t = block_coh.T  # (bins, n_block)
+            if block_coh_t.size == 0:
+                continue
 
-        row_indices = np.arange(self.n_bins)[:, None]
-        if combined_coh.shape[1] <= self.top_n:
-            sorted_indices = np.argsort(-combined_coh, axis=1)
-            top_indices = sorted_indices[:, :self.top_n]
-        else:
-            partition_indices = np.argpartition(-combined_coh, self.top_n - 1, axis=1)[:, :self.top_n]
-            partition_coh = combined_coh[row_indices, partition_indices]
-            order = np.argsort(-partition_coh, axis=1)
-            top_indices = partition_indices[row_indices, order]
+            open_slots = np.any(self.top_channels == None, axis=1)
+            block_max = np.max(block_coh_t, axis=1)
+            needs_update = open_slots | (block_max > self.top_coherence[:, -1])
+            if not np.any(needs_update):
+                continue
 
-        self.top_coherence = combined_coh[row_indices, top_indices]
-        self.top_channels = combined_names[row_indices, top_indices]
+            combined_coh = np.concatenate(
+                [self.top_coherence[needs_update], block_coh_t[needs_update]],
+                axis=1,
+            )
+            name_block = np.broadcast_to(
+                block_names, (combined_coh.shape[0], block_names.size)
+            )
+            combined_names = np.concatenate(
+                [self.top_channels[needs_update], name_block],
+                axis=1,
+            )
+
+            row_indices = np.arange(combined_coh.shape[0])[:, None]
+            if combined_coh.shape[1] <= self.top_n:
+                sorted_indices = np.argsort(-combined_coh, axis=1)
+                top_indices = sorted_indices[:, :self.top_n]
+            else:
+                partition_indices = np.argpartition(
+                    -combined_coh, self.top_n - 1, axis=1
+                )[:, :self.top_n]
+                partition_coh = combined_coh[row_indices, partition_indices]
+                order = np.argsort(-partition_coh, axis=1)
+                top_indices = partition_indices[row_indices, order]
+
+            self.top_coherence[needs_update] = combined_coh[row_indices, top_indices]
+            self.top_channels[needs_update] = combined_names[row_indices, top_indices]
 
     def _apply_projection(
         self,
@@ -159,17 +227,16 @@ class BrucoResult:
         asd: bool = True,
         threshold: float = 0.0,
     ) -> np.ndarray:
+        """Apply coherence to PSD and optionally return ASD for display."""
         coh_safe = np.clip(coherence, 0.0, None)
         if threshold > 0:
             comparison_thresh = threshold ** 2 if asd else threshold
             coh_safe = np.where(coh_safe < comparison_thresh, np.nan, coh_safe)
-            
+
+        proj_psd = spectrum * coh_safe
         if asd:
-            # spectrum is ASD, coh_safe is Squared Coherence
-            return spectrum * np.sqrt(coh_safe)
-        
-        # spectrum is PSD, coh_safe is Squared Coherence
-        return spectrum * coh_safe
+            return np.sqrt(proj_psd)
+        return proj_psd
 
     def get_noise_projection(
         self,
@@ -191,12 +258,9 @@ class BrucoResult:
             raise ValueError(f"Rank {rank} is out of range for top_n={self.top_n}")
 
         coh = self.top_coherence[:, rank]
-        
-        target = self.target_spectrum
-        if asd:
-            target = np.sqrt(target)
-            
-        proj = self._apply_projection(target, coh, asd=asd, threshold=coherence_threshold)
+        proj = self._apply_projection(
+            self.target_spectrum, coh, asd=asd, threshold=coherence_threshold
+        )
         return proj, coh
 
     def projection_for_channel(
@@ -209,16 +273,12 @@ class BrucoResult:
         Calculate projection spectrum for a specific channel where it appears in Top-N.
         """
         projection = np.zeros(self.n_bins, dtype=float)
-        
-        target = self.target_spectrum
-        if asd:
-            target = np.sqrt(target)
-            
+
         for rank in range(self.top_n):
             mask = self.top_channels[:, rank] == channel
             if np.any(mask):
                 projection[mask] = self._apply_projection(
-                    target[mask],
+                    self.target_spectrum[mask],
                     self.top_coherence[mask, rank],
                     asd=asd,
                     threshold=coherence_threshold,
@@ -252,7 +312,7 @@ class BrucoResult:
         for rank in range(self.top_n):
             names = self.top_channels[:, rank]
             cohs = self.top_coherence[:, rank]
-            # Vectorized summation for this rank? 
+            # Vectorized summation for this rank?
             # Channels are mixed in the column.
             # Iteration might be slow if bins are huge, but numpy unique is fast.
             # Let's iterate over unique names in this rank.
@@ -261,7 +321,7 @@ class BrucoResult:
                 mask = names == name
                 score = np.nanmax(cohs[mask])
                 channel_scores[name] = max(channel_scores.get(name, 0.0), score)
-        
+
         sorted_channels = sorted(channel_scores.items(), key=lambda x: x[1], reverse=True)
         return [name for name, score in sorted_channels[:limit]]
 
@@ -277,18 +337,17 @@ class BrucoResult:
         Args:
             channel: Channel name.
             asd: If True, return Amplitude Coherence. If False, Squared Coherence.
-            threshold: Mask values below this threshold with NaN.
 
         Returns:
             Coherence spectrum (same length as frequencies).
         """
         coherence = np.full(self.n_bins, np.nan, dtype=float)
-        
+
         for rank in range(self.top_n):
             mask = self.top_channels[:, rank] == channel
             if np.any(mask):
                 coherence[mask] = self.top_coherence[mask, rank]
-            
+
         if asd:
             return np.sqrt(coherence)
         return coherence
@@ -310,23 +369,21 @@ class BrucoResult:
 
         frames = []
         freqs = self.frequencies[::stride]
-        
-        target = self.target_spectrum
-        if asd:
-            target = np.sqrt(target)
-        spectrum = target[::stride]
-        
+
+        spectrum = self.target_spectrum[::stride]
+
         for rank in ranks:
             coh = self.top_coherence[::stride, rank]
             proj = self._apply_projection(spectrum, coh, asd=asd, threshold=coherence_threshold)
             ch = self.top_channels[::stride, rank]
+            coh_display = np.sqrt(np.clip(coh, 0.0, None)) if asd else coh
             frames.append(
                 pd.DataFrame(
                     {
                         "frequency": freqs,
                         "rank": rank + 1,
                         "channel": ch,
-                        "coherence": coh,
+                        "coherence": coh_display,
                         "projection": proj,
                     }
                 )
@@ -346,24 +403,24 @@ class BrucoResult:
     ) -> plt.Figure:
         """
         Plot target spectrum and noise projections for selected ranks or channels.
-        
+
         Default behavior (ranks=None, channels=None):
             Plots the Top-K contributors (per-channel mode).
         """
         if ranks is None and channels is None:
             channels = self.get_ranked_channels(max_channels)
-            
+
         if ranks is not None and isinstance(ranks, int):
             ranks = [ranks]
         if channels is not None and isinstance(channels, str):
             channels = [channels]
 
         fig, ax = plt.subplots(figsize=(12, 8))
-        
+
         target = self.target_spectrum
         if asd:
             target = np.sqrt(target)
-            
+
         ax.loglog(self.frequencies, target, label=f"Target: {self.target_name}", color="black", linewidth=1,alpha=0.5)
 
         if ranks is not None:
@@ -408,7 +465,7 @@ class BrucoResult:
 
         Default behavior (ranks=None, channels=None):
             Plots the Top-K contributors (per-channel mode).
-        
+
         Args:
             asd: If True (default), plot Amplitude Coherence (sqrt(Coh^2)).
                  If False, plot Squared Coherence (Coh^2).
@@ -416,14 +473,14 @@ class BrucoResult:
         """
         if ranks is None and channels is None:
             channels = self.get_ranked_channels(max_channels)
-            
+
         if ranks is not None and isinstance(ranks, int):
             ranks = [ranks]
         if channels is not None and isinstance(channels, str):
             channels = [channels]
 
         fig, ax = plt.subplots(figsize=(12, 6))
-        
+
         if ranks is not None:
             for rank in ranks:
                 coh = self.top_coherence[:, rank]
@@ -440,11 +497,11 @@ class BrucoResult:
         ylabel = "Coherence (Amplitude)" if asd else "Coherence (Power)"
         ax.set_ylabel(ylabel)
         ax.set_ylim(0.0, 1.05)
-        
+
         # Plot threshold line
         if coherence_threshold > 0:
             ax.axhline(coherence_threshold, color="red", linestyle="--", linewidth=1.5, label=f"Threshold ({coherence_threshold:.2g})")
-            
+
         ax.grid(True, which="both", ls="-", alpha=0.4)
         ax.legend()
         if len(self.frequencies) > 1:
@@ -483,14 +540,14 @@ class BrucoResult:
 
         proj_plot_path = os.path.join(output_dir, "projection.png")
         self.plot_projection(
-            ranks=list(range(min(plot_ranks, self.top_n))), 
-            asd=asd, 
-            coherence_threshold=coherence_threshold, 
+            ranks=list(range(min(plot_ranks, self.top_n))),
+            asd=asd,
+            coherence_threshold=coherence_threshold,
             save_path=proj_plot_path
         )
         coh_plot_path = os.path.join(output_dir, "coherence.png")
         self.plot_coherence(
-            ranks=list(range(min(plot_ranks, self.top_n))), 
+            ranks=list(range(min(plot_ranks, self.top_n))),
             asd=asd,
             coherence_threshold=coherence_threshold,
             save_path=coh_plot_path,
@@ -500,17 +557,13 @@ class BrucoResult:
         table_freqs = self.frequencies[::stride]
         table_channels = self.top_channels[::stride, 0]
         table_coherent_values = self.top_coherence[::stride, 0]
-        
-        target = self.target_spectrum
-        if asd:
-            target = np.sqrt(target)
-            
+
         table_proj = self._apply_projection(
-            target[::stride], 
-            table_coherent_values, 
-            asd=asd, 
+            self.target_spectrum[::stride],
+            table_coherent_values,
+            asd=asd,
             threshold=coherence_threshold,
-        ) 
+        )
 
         rows = []
         for freq, ch, coh, proj in zip(table_freqs, table_channels, table_coherent_values, table_proj):
@@ -518,7 +571,7 @@ class BrucoResult:
             display_coh = coh
             if asd:
                 display_coh = np.sqrt(np.clip(coh, 0.0, None))
-                
+
             color = self._coherence_color(coh) # Color logic uses Squared [0-1]
             rows.append(
                 "<tr>"
@@ -537,24 +590,21 @@ class BrucoResult:
             + "</tbody></table>"
         )
 
-        peak_mask = self.top_coherence[:, 0] >= coherence_threshold
+        thresh_coh = coherence_threshold ** 2 if asd else coherence_threshold
+        peak_mask = self.top_coherence[:, 0] >= thresh_coh
         peak_freqs = self.frequencies[peak_mask]
         peak_ch = self.top_channels[peak_mask, 0]
         peak_coh = self.top_coherence[peak_mask, 0]
-        
+
         peak_coh = self.top_coherence[peak_mask, 0]
-        
-        peak_target = self.target_spectrum[peak_mask]
-        if asd:
-            peak_target = np.sqrt(peak_target)
-            
+
         peak_proj = self._apply_projection(
-            peak_target, 
-            peak_coh, 
-            asd=asd, 
+            self.target_spectrum[peak_mask],
+            peak_coh,
+            asd=asd,
             threshold=coherence_threshold
         )
-        
+
         display_peak_coh = peak_coh
         col_coh_name = "Coherence (Amplitude)" if asd else "Coherence (Squared)"
         if asd:
@@ -665,6 +715,7 @@ class Bruco:
         nproc: int = 4,
         batch_size: int = 100,
         top_n: int = 5,
+        block_size: Optional[Union[int, str]] = None,
         target_data: Optional[TimeSeries] = None,
         aux_data: Union[TimeSeriesDict, Iterable[TimeSeries], None] = None,
         preprocess_batch: Optional[Callable[[TimeSeriesDict], TimeSeriesDict]] = None,
@@ -680,6 +731,7 @@ class Bruco:
             nproc (int): Number of parallel processes.
             batch_size (int): Channels per batch.
             top_n (int): Number of top channels to keep per frequency bin.
+            block_size (int or 'auto', optional): Channels per block in Top-N updates.
             target_data (TimeSeries, optional): Pre-loaded target channel data.
             aux_data (TimeSeriesDict or Iterable[TimeSeries], optional): Pre-loaded auxiliary channels data.
                          Can be a dictionary-like object or an iterable/generator yielding TimeSeries.
@@ -707,8 +759,8 @@ class Bruco:
                             first_ts = next(iter(aux_data.values()))
                         else:
                             # fallback if dict-like but no values()? (unlikely for TimeSeriesDict)
-                            first_ts = aux_data[list(aux_data.keys())[0]] 
-                        
+                            first_ts = aux_data[list(aux_data.keys())[0]]
+
                         if start is None:
                             start = float(first_ts.t0.value)
                         if duration is None:
@@ -737,7 +789,7 @@ class Bruco:
 
             # Calculate Target PSD reference (Internal storage is PSD)
             target_spectrum = target_ts.psd(fftlength=fftlength, overlap=overlap)
-            
+
             target_frequencies = target_spectrum.frequencies.value
             target_spectrum_values = target_spectrum.value
 
@@ -772,10 +824,11 @@ class Bruco:
             target_spectrum_values,
             top_n=top_n,
             metadata=metadata,
+            block_size=block_size,
         )
 
         # 2. Processing
-        
+
         # Case A: Aux data provided
         if aux_data is not None:
              # Case A-1: Dictionary-like (Everything in memory)
@@ -783,7 +836,7 @@ class Bruco:
                 logger.info(f"Using provided auxiliary data dict ({len(aux_data)} channels).")
                 all_aux_channels = list(aux_data.keys())
                 total_channels = len(all_aux_channels)
-                
+
                 # Validation: check span overlap
                 # Only check the first channel for performance? Or checks per batch?
                 # User asked to error if span contradicts.
@@ -802,12 +855,12 @@ class Bruco:
                     batch_keys = all_aux_channels[i : i + batch_size]
                     logger.info(f"Processing data batch {i // batch_size + 1}/{(total_channels // batch_size) + 1} "
                                 f"({len(batch_keys)} channels)")
-                    
+
                     # Slice the dict
                     batch_dict = TimeSeriesDict()
                     for k in batch_keys:
                         batch_dict[k] = aux_data[k]
-                    
+
                     # Apply preprocessing if callback provided
                     if preprocess_batch is not None:
                         try:
@@ -819,21 +872,21 @@ class Bruco:
                     self._run_and_update_batch(
                         result, target_ts, batch_dict, fftlength, overlap, nproc, target_frequencies
                     )
-            
+
             # Case A-2: Iterable/Generator (Memory efficient streaming)
             else:
                 logger.info("Using provided auxiliary data generator/iterable.")
                 batch_dict = TimeSeriesDict()
                 batch_count = 0
-                
+
                 for ts in aux_data:
                     # Ensure it has a name, handle potential missing name if not TimeSeries
                     if not hasattr(ts, "name") or not ts.name:
                         logger.warning("Skipping unnamed TimeSeries in aux_data iterator.")
                         continue
-                    
-                    # Optional: Check span for streamed data? 
-                    # Might be computationally expensive to check every single one strictly, 
+
+                    # Optional: Check span for streamed data?
+                    # Might be computationally expensive to check every single one strictly,
                     # but valuable for safety.
                     if ts.t0.value > start + 0.1 or (ts.t0.value + ts.duration.value) < end - 0.1:
                          # We can skip or raise. User requested error/strictness.
@@ -842,16 +895,16 @@ class Bruco:
                          raise ValueError(f"Streamed TimeSeries {ts.name} does not cover requested span.")
 
                     batch_dict[ts.name] = ts
-                    
+
                     if len(batch_dict) >= batch_size:
                         batch_count += 1
                         logger.info(f"Processing generator batch {batch_count} ({len(batch_dict)} channels)")
-                        
+
                         self._run_and_update_batch(
                             result, target_ts, batch_dict, fftlength, overlap, nproc, target_frequencies
                         )
                         batch_dict = TimeSeriesDict() # Clear memory
-                
+
                 # Process remaining
                 if len(batch_dict) > 0:
                     batch_count += 1
@@ -865,7 +918,7 @@ class Bruco:
         if self.channels_to_scan:
             total_channels = len(self.channels_to_scan)
             logger.info(f"Starting auto-fetch for {total_channels} channels configured in Bruco.")
-            
+
             for i in range(0, total_channels, batch_size):
                 batch_channels = self.channels_to_scan[i : i + batch_size]
                 logger.info(f"Processing auto-fetch batch {i // batch_size + 1}/{(total_channels // batch_size) + 1} "
@@ -883,11 +936,11 @@ class Bruco:
                             batch_dict[ch] = TimeSeries.get(ch, start, end, allow_tape=True)
                         except Exception as ch_err:
                              logger.warning(f"Failed to fetch individual channel {ch}: {ch_err}")
-                    
+
                     if not batch_dict:
                         logger.warning("No valid channels in this batch after fallback. Skipping.")
                         continue
-                
+
                 # Apply preprocessing if callback provided
                 if preprocess_batch is not None:
                     try:

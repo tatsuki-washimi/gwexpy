@@ -4,8 +4,8 @@ from gwexpy.analysis.bruco import BrucoResult
 
 def test_bruco_result_top_n():
     freqs = np.array([10, 20, 30])
-    target_asd = np.array([1.0, 1.0, 1.0])
-    res = BrucoResult(freqs, "Target", target_asd, top_n=2)
+    target_psd = np.array([1.0, 1.0, 1.0])
+    res = BrucoResult(freqs, "Target", target_psd, top_n=2)
 
     # Batch 1: Channels A, B
     # A: [0.1, 0.9, 0.5]
@@ -48,8 +48,8 @@ def test_bruco_result_top_n():
 
 def test_projection():
     freqs = np.array([10])
-    target_asd = np.array([2.0])
-    res = BrucoResult(freqs, "Target", target_asd, top_n=1)
+    target_psd = np.array([4.0])
+    res = BrucoResult(freqs, "Target", target_psd, top_n=1)
 
     res.update_batch(["A"], np.array([[0.25]])) # sqrt(0.25) = 0.5
 

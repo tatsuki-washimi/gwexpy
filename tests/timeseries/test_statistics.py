@@ -86,7 +86,7 @@ def test_mic(non_linear_relationship):
         mic = x.mic(y)
         assert mic > 0.5
     except ImportError:
-        pytest.skip("minepy not installed")
+        pytest.skip("mictools (or minepy) not installed")
 
 def test_granger_causality(causal_relationship):
     x, y = causal_relationship

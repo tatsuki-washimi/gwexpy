@@ -19,11 +19,11 @@ class SpectrogramMatrix(
 ):
     """
     Evaluation Matrix for Spectrograms (Time-Frequency maps).
-    
+
     This class represents a collection of Spectrograms, structured as either:
     - 3D: (Batch, Time, Frequency)
     - 4D: (Row, Col, Time, Frequency)
-    
+
     It inherits from SeriesMatrix, providing powerful indexing, metadata management,
     and analysis capabilities (slicing, interpolation, statistics).
     """
@@ -33,11 +33,11 @@ class SpectrogramMatrix(
 
     def __new__(cls, data, times=None, frequencies=None, unit=None, name=None,
                 rows=None, cols=None, meta=None, **kwargs):
-        
+
         # Handle alias
         if times is None:
              times = kwargs.get('xindex')
-        
+
         # SeriesMatrix expects 'xindex' and 'xunit' etc.
         # We assume 'data' might be (N, M, Time, Freq) or (N, Time, Freq).
         # We pass xindex=times.
@@ -49,52 +49,52 @@ class SpectrogramMatrix(
 
         # For now, we try to perform basic setup and call super().__new__ via np.ndarray mechanism
         # but SeriesMatrix does a lot of heavy lifting in __new__.
-        
+
         # Strategy: adapt arguments to SeriesMatrix signature
         # times -> xindex
-        
+
         # Note: SeriesMatrix input normalization might flatten extra dims if not careful.
-        # Check gwexpy/types/series_matrix_validation.py: _normalize_input handles 3D. 
+        # Check gwexpy/types/series_matrix_validation.py: _normalize_input handles 3D.
         # For 4D specific handling, we might need to manually prep or rely on SeriesMatrix letting it pass?
         # Actually SeriesMatrixValidationMixin _normalize_input mainly handles 1D, 2D, 3D.
-        
+
         # If data is 4D, SeriesMatrix _normalize_input might fail or treat it oddly.
         # Let's verify _normalize_input logic (Step 1167).
         # It has blocks for Scalar, Series, Array, 1D/2D, 3D. It does NOT explicitly handle 4D.
         # So we might need to override behavior or pre-process data to be SeriesMatrix-compatible (stored as object array?)
-        # NO, we want numeric array. 
+        # NO, we want numeric array.
 
         # If data is 4D (N, M, T, F), SeriesMatrix assumes (Row, Col, Sample).
         # If we want to use SeriesMatrix infrastructure, we must respect the 3-axis structure `(Row, Col, X)`?
         # Integrating 4D directly into SeriesMatrix (nd=4) might break many assumptions in `series_matrix_core` (e.g. shape3D return).
-        
+
         # ALTERNATIVE: Use Object Array of Spectrograms? No, expensive.
         # ALTERNATIVE: Treat Freq axis as implicit?
-        
+
         # If we invoke SeriesMatrix, it calls `_normalize_input`.
         # If we just call `np.array(data).view(cls)`, we bypass SeriesMatrix.__new__ logic entirely?
         # But we want mixins.
-        
+
         # Since we inherit SeriesMatrix, calling SeriesMatrix(data...) creates a new object using SeriesMatrix.__new__.
-        
+
         # Let's implement a custom __new__ that handles the 4D init, sets properties, and returns the view,
         # mimicking SeriesMatrix.__new__ but tailored for 4D.
-        
+
         # ... Wait, if we inherit SeriesMatrix, `super()` refers to SeriesMatrix.
         # If we don't call `super().__new__`, we skip its logic. That's fine if we replicate what we need.
 
         obj = np.asarray(data).view(cls)
-        
+
         # Set Spectrogram-specific props
         obj.times = times  # sets xindex via CoreMixin
         obj.frequencies = frequencies
-        
+
         # Set metadata manually or via helpers if available.
         # Only do basic setup here to replicate old behavior + SeriesMatrix props
-        
+
         obj.name = name
         obj.unit = unit # logic for unit array vs scalar unit needed?
-        
+
         # Setup MetaDataMatrix using rows/cols logic from previous implementation
         from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 
@@ -181,18 +181,18 @@ class SpectrogramMatrix(
              result_data = ufunc(*args, **kwargs)
         except Exception:
              return NotImplemented
-        
+
         # 3. Propagate Metadata (Units)
         # We assume result has same shape structure (or broadcasted).
         # We take self's (this instance's) non-data props (times, freqs, rows, cols).
         # If ufunc allows, units might change.
-        
+
         # Simple logic: if preserving unit or changing unit, update meta/unit property.
         # This is complex to do perfectly (SeriesMatrix tries hard).
         # For now, we take unit from first operand if it's SpectrogramMatrix, and apply ufunc to unit?
-        
+
         main = [x for x in inputs if isinstance(x, SpectrogramMatrix)][0]
-        
+
         # Attempt to compute new global unit
         unit_args = []
         for inp in inputs:
@@ -204,7 +204,7 @@ class SpectrogramMatrix(
         for x in unit_args:
              if x is None: q_args.append(1)
              else: q_args.append(u.Quantity(1, x))
-        
+
         try:
              res_q = ufunc(*q_args)
              new_unit = res_q.unit if hasattr(res_q, 'unit') else None
@@ -217,7 +217,7 @@ class SpectrogramMatrix(
         # If shape matches main, keep rows/cols/times/freqs
         # If shape changed (e.g. reduction), this ufunc shouldn't have been handled here (method != call usually?)
         # Standard ufuncs like add/mul preserve shape.
-        
+
         if result_data.shape == main.shape:
              # Propagate meta if possible
              new_meta = None
@@ -229,7 +229,7 @@ class SpectrogramMatrix(
                        # Doing shallow copy of meta matrix
                        pass
                   new_meta = main.meta # Simplification: keep meta structure
-                  
+
              obj = self.__class__(
                  result_data,
                  times=main.times,
@@ -241,7 +241,7 @@ class SpectrogramMatrix(
                  unit=new_unit
              )
              return obj
-        
+
         return result_data
 
     def row_keys(self):
@@ -249,11 +249,11 @@ class SpectrogramMatrix(
 
     def col_keys(self):
         return tuple(self.cols.keys()) if self.cols else tuple()
-        
+
     def is_compatible(self, other: Any) -> bool:
         """
         Check compatibility with another SpectrogramMatrix/object.
-        Overrides SeriesMatrix.is_compatible to avoid loop range issues due to 
+        Overrides SeriesMatrix.is_compatible to avoid loop range issues due to
         mismatch between data shape (Time axis) and metadata shape (Batch/Col).
         """
         # 1. Type check
@@ -282,13 +282,13 @@ class SpectrogramMatrix(
         # But we only need unit compatibility usually for ops?
         # is_contiguous calls is_compatible.
         # Let's keep it simple: check units match. Content matching is handled by append logic (overlap check etc).
-        
+
         # 4. Meta/Channel Unit consistency
         if self.meta.shape != other.meta.shape:
              # Should match if shapes match (unless metadata structure differs profoundly)
              # But let's proceed to loop over valid meta range
              raise ValueError(f"metadata shape mismatch: {self.meta.shape} vs {other.meta.shape}")
-        
+
         for i in range(self.meta.shape[0]):
              for j in range(self.meta.shape[1]):
                   u1 = self.meta[i, j].unit
@@ -300,7 +300,7 @@ class SpectrogramMatrix(
                             raise ValueError(f"Unit mismatch at meta ({i},{j}): {u1} vs {u2}")
                        if not u1.is_equivalent(u2):
                             raise ValueError(f"Unit mismatch at meta ({i},{j}): {u1} vs {u2}")
-                            
+
         return True
 
     def row_index(self, key):
@@ -320,7 +320,7 @@ class SpectrogramMatrix(
             raise KeyError(f"Invalid column key: {key}")
 
     def __getitem__(self, key):
-        from gwexpy.types.seriesmatrix_validation import _expand_key, _slice_metadata_dict
+        from gwexpy.types.seriesmatrix_validation import _slice_metadata_dict
 
         # Handle label-based indexing
         if isinstance(key, str):
@@ -351,7 +351,7 @@ class SpectrogramMatrix(
         # Check for scalar element extraction (returning Spectrogram)
         is_single_element = False
         r_idx, c_idx = 0, 0
-        
+
 
         if self.ndim == 3: # (Batch, Time, Freq)
             if isinstance(key, (int, np.integer)):
@@ -364,19 +364,19 @@ class SpectrogramMatrix(
                 if isinstance(r, (int, np.integer)) and isinstance(c, (int, np.integer)):
                      is_single_element = True
                      r_idx, c_idx = r, c
-        
+
         if is_single_element:
              # Return Spectrogram
              meta = self.meta[r_idx, c_idx] if self.meta is not None else None
              unit = meta.unit if meta else self.unit
              name = (meta.name if meta and meta.name else self.name)
              channel = meta.channel if meta else None
-             
+
              # raw_data should be (Time, Freq)
              if raw_data.ndim != 2:
                  # Should not happen if indices are correct for 3D/4D
                  raise ValueError(f"Extracted data has wrong dimension for Spectrogram: {raw_data.ndim} (expected 2)")
-                 
+
              return self.series_class(
                  raw_data,
                  times=self.times,
@@ -391,7 +391,7 @@ class SpectrogramMatrix(
         # We assume raw_data is ndarray. View as SpectrogramMatrix.
         ret = np.asarray(raw_data).view(type(self))
         ret._value = ret.view(np.ndarray)
-        
+
         # Propagate global props
         ret.times = getattr(self, 'times', None)
         ret.frequencies = getattr(self, 'frequencies', None)
@@ -403,9 +403,9 @@ class SpectrogramMatrix(
         # If ndim preserved, try to slice rows/cols.
         # If ndim reduced (e.g. 4D -> 3D), adjust.
         # Basic case: Batch slicing on 3D or Row slicing on 4D
-        
+
         main_key = key[0] if isinstance(key, tuple) else key
-        
+
         # 3D: (Batch, T, F) -> Slice batch
         if self.ndim == 3 and ret.ndim == 3:
              if self.rows:
@@ -420,7 +420,7 @@ class SpectrogramMatrix(
         elif self.ndim == 4 and ret.ndim == 4:
              r_key = key[0] if isinstance(key, tuple) else key
              c_key = key[1] if isinstance(key, tuple) and len(key) > 1 else slice(None)
-             
+
              if self.rows: ret.rows = _slice_metadata_dict(self.rows, r_key, 'row')
              if self.cols: ret.cols = _slice_metadata_dict(self.cols, c_key, 'col')
              if self.meta is not None:
@@ -430,16 +430,15 @@ class SpectrogramMatrix(
                       if isinstance(key, tuple) and len(key) <= 2:
                            ret.meta = self.meta[key]
                       else:
-                           # complex slicing? 
-                           pass 
-                  except:
+                           # complex slicing?
+                           pass
+                  except Exception:
                       pass
-                      
+
         return ret
 
     def to_series_2Dlist(self):
         """Convert matrix to a 2D nested list of Spectrogram objects."""
-        from .spectrogram import Spectrogram
         r_keys = self.row_keys()
         c_keys = self.col_keys()
         if self.ndim == 3:
@@ -499,11 +498,11 @@ class SpectrogramMatrix(
 
     @property
     def shape3D(self):
-        # Override Base logic to return relevant 3D view (Batch, Time, Freq) for display? 
+        # Override Base logic to return relevant 3D view (Batch, Time, Freq) for display?
         # Or (Row, Col, Time) if we treat Freq as hidden dim?
         # For uniformity with SeriesMatrix which is (Row, Col, Sample),
         # if we are 4D (Row, Col, Time, Freq), we might want to return (Row, Col, Time) as 'main' shape with _x_axis_index logic?
-        # But core checks shape[-1]. 
+        # But core checks shape[-1].
         return self.shape
 
     def plot(self, **kwargs):

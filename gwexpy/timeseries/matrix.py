@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Any
+from typing import Any
 import numpy as np
 from astropy import units as u
 
@@ -87,7 +87,7 @@ class TimeSeriesMatrix(
             # epoch is preserved as metadata.
             existing_xindex = kwargs.pop("xindex", None)
             kwargs["xindex"] = times
-            
+
             if epoch is not None:
                 kwargs["epoch"] = epoch
             elif "epoch" not in kwargs:
@@ -152,14 +152,14 @@ class TimeSeriesMatrix(
         if channel_names is not None:
             if "names" not in kwargs:
                 cn = np.asarray(channel_names)
-                
+
                 # Intelligent reshaping based on data shape
                 try:
                     if hasattr(data, "shape"):
                          dshape = data.shape
                     else:
                          dshape = np.shape(data)
-                    
+
                     if len(dshape) >= 2:
                         N, M = dshape[:2]
                         if cn.size == N * M:
@@ -223,7 +223,7 @@ for _m in _TSM_TIME_DOMAIN_METHODS:
         _wrapper.__qualname__ = f"TimeSeriesMatrix.{name}"
         _wrapper.__doc__ = f"Element-wise delegate to `TimeSeries.{name}`."
         return _wrapper
-    
+
     setattr(TimeSeriesMatrix, _m, _make_wrapper(_m))
 
 

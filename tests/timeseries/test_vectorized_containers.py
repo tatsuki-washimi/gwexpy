@@ -136,6 +136,14 @@ class TestVectorizedContainers:
         assert tsd.rms().shape == (2, 1)
 
     def test_mic_vectorized(self, sample_data):
+        try:
+            import mictools
+        except ImportError:
+            try:
+                import minepy
+            except ImportError:
+                pytest.skip("mictools (or minepy) not installed")
+
         tsm = TimeSeriesMatrix(sample_data, sample_rate=100)
         # MIC between ch1 and itself
         m = tsm.mic(tsm[0,0])

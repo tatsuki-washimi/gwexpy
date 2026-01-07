@@ -39,7 +39,7 @@ class TimeSeriesMatrixAnalysisMixin:
     def skewness(self, axis: str = "time", nan_policy: str = "propagate") -> np.ndarray:
         """
         Compute the skewness of the matrix along the specified axis.
-        
+
         Parameters
         ----------
         axis : str or int
@@ -54,7 +54,7 @@ class TimeSeriesMatrixAnalysisMixin:
     def kurtosis(self, axis: str = "time", fisher: bool = True, nan_policy: str = "propagate") -> np.ndarray:
         """
         Compute the kurtosis of the matrix along the specified axis.
-        
+
         Parameters
         ----------
         axis : str or int
@@ -104,17 +104,17 @@ class TimeSeriesMatrixAnalysisMixin:
         Vectorized implementation of detrend.
         """
         from scipy.signal import detrend as scipy_detrend
-        
+
         inplace = kwargs.pop("inplace", False)
-        
+
         # Scipy detrend supports axis
         # Note: GWpy uses 'constant' or 'linear'. Scipy uses 'constant' or 'linear'.
         new_data = scipy_detrend(self.value, axis=-1, type=detrend, **kwargs)
-        
+
         if inplace:
             self.value[:] = new_data
             return self
-        
+
         new_mat = self.copy()
         new_mat.value[:] = new_data
         return new_mat
@@ -126,22 +126,22 @@ class TimeSeriesMatrixAnalysisMixin:
         # GWpy's taper implementation is complex (zero-crossing detection etc.)
         # To ensure exact match, we apply it per channel but avoid TimeSeriesMatrix overhead.
         from gwpy.timeseries import TimeSeries as BaseTimeSeries
-        
+
         data = np.asarray(self.value)
         out_data = np.empty_like(data)
-        
+
         N, M = self.shape[:2]
         for i in range(N):
             for j in range(M):
                 # Use a minimal BaseTimeSeries to get GWpy's taper logic
                 ts = BaseTimeSeries(data[i, j], dt=self.dt)
                 out_data[i, j] = ts.taper(side=side, **kwargs).value
-        
+
         inplace = kwargs.get("inplace", False)
         if inplace:
             self.value[:] = out_data
             return self
-        
+
         new_mat = self.copy()
         new_mat.value[:] = out_data
         return new_mat
@@ -157,10 +157,10 @@ class TimeSeriesMatrixAnalysisMixin:
         Vectorized implementation of filter (and bandpass, lowpass, etc.).
         """
         from scipy.signal import sosfiltfilt, filtfilt
-        
+
         data = np.asarray(self.value)
         inplace = kwargs.pop("inplace", False)
-        
+
         # Handle SOS or BA filter
         if len(filt) == 1 and np.asarray(filt[0]).ndim == 2 and np.asarray(filt[0]).shape[1] == 6:
             new_data = sosfiltfilt(filt[0], data, axis=-1, **kwargs)
@@ -172,7 +172,7 @@ class TimeSeriesMatrixAnalysisMixin:
         if inplace:
             self.value[:] = new_data
             return self
-        
+
         new_mat = self.copy()
         new_mat.value[:] = new_data
         return new_mat
@@ -182,10 +182,10 @@ class TimeSeriesMatrixAnalysisMixin:
         Vectorized implementation of Hilbert transform (analytic signal).
         """
         from scipy.signal import hilbert
-        
+
         data = np.asarray(self.value)
         h_data = hilbert(data, axis=-1)
-        
+
         new_mat = self.copy().astype(complex)
         new_mat.value[:] = h_data
         return new_mat
@@ -197,10 +197,10 @@ class TimeSeriesMatrixAnalysisMixin:
         Vectorized implementation of radian (phase angle via np.angle).
         """
         phi = np.angle(self.value)
-        
+
         if unwrap:
             phi = np.unwrap(phi, axis=-1)
-            
+
         new_mat = self.copy()
         new_mat.value[:] = phi
         new_mat.unit = u.rad
@@ -211,10 +211,10 @@ class TimeSeriesMatrixAnalysisMixin:
         Vectorized implementation of degree (phase angle via np.angle).
         """
         phi = np.angle(self.value, deg=True)
-        
+
         if unwrap:
             phi = np.unwrap(phi, axis=-1, period=360.0)
-            
+
         new_mat = self.copy()
         new_mat.value[:] = phi
         new_mat.unit = u.deg
@@ -397,7 +397,7 @@ class TimeSeriesMatrixAnalysisMixin:
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         """
         from gwexpy.time import to_gps
-        
+
         def _to_float(val):
             if val is None:
                 return None
@@ -406,7 +406,7 @@ class TimeSeriesMatrixAnalysisMixin:
             if hasattr(gps, 'gpsSeconds'):
                 return float(gps)
             return float(gps)
-        
+
         start_float = _to_float(start)
         end_float = _to_float(end)
         return super().crop(start=start_float, end=end_float, copy=copy)
@@ -454,7 +454,7 @@ class TimeSeriesMatrixAnalysisMixin:
     def correlation(self, other: Any = None, method: str = 'pearson', **kwargs: Any) -> Any:
         """
         Calculate correlation coefficients.
-        
+
         - If `other` is None: Returns (N, M) x (N, M) pairwise correlation ndarray.
         - If `other` is a TimeSeries: Returns correlation with target as a DataFrame (via correlation_vector).
         - If `other` is a TimeSeriesMatrix: Element-wise correlation (if shapes match).
@@ -466,11 +466,11 @@ class TimeSeriesMatrixAnalysisMixin:
             if method == 'pearson':
                 return np.corrcoef(data)
             # Other methods might need loops or specialized vectorized impls
-        
+
         if hasattr(other, 'ndim') and other.ndim == 1:
              # Target TimeSeries
              return self.correlation_vector(other, method=method, **kwargs)
-        
+
         return self._apply_timeseries_method("correlation", other, method=method, **kwargs)
 
     def mic(self, other: Any, **kwargs: Any) -> Any:

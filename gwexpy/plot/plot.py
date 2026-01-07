@@ -48,17 +48,15 @@ class Plot(BasePlot):
     individual :class:`gwpy.types.Series` objects, while preserving
     matrix layout and metadata where possible.
     """
-    
+
     # Suppress _repr_html_ to prevent double plotting (repr + backend)
     _repr_html_ = None
 
     def __init__(self, *args, **kwargs):
-        kwargs_orig = kwargs.copy()
-        
+
         # Local import to avoid circular dependency
         from gwexpy.types.seriesmatrix import SeriesMatrix
         from gwexpy.frequencyseries import (
-            FrequencySeriesMatrix,
             FrequencySeriesList,
             FrequencySeriesDict
         )
@@ -69,7 +67,6 @@ class Plot(BasePlot):
             SpectrogramDict
         )
         from gwexpy.plot import defaults
-        from gwexpy.timeseries import TimeSeriesMatrix
 
         # 0. Handle monitor filtering
         monitor = kwargs.get('monitor')
@@ -112,22 +109,22 @@ class Plot(BasePlot):
         kwargs.pop('subplots', None)
         separate = kwargs.get('separate')
         geometry = kwargs.get('geometry')
-        
+
         # Use defaults logic to infer separate/geometry from inputs
         separate, geometry = defaults.determine_geometry_and_separate(
              list(args), separate=separate, geometry=geometry
         )
-        
+
         # If monitor is active, we force separation (unless explicitly overridden?)
         if monitor is not None and separate is None:
              separate = True
 
         # 2. Expand Arguments based on Separate Mode
         final_args = []
-        
+
         for arg in args:
              is_matrix = isinstance(arg, (SeriesMatrix, SpectrogramMatrix))
-             
+
              if separate is True:
                   # Grid / Separate mode: Flatten everything to individual items
                   if is_matrix:
@@ -142,7 +139,7 @@ class Plot(BasePlot):
                        final_args.extend(arg.values())
                   else:
                        final_args.append(arg)
-             
+
              elif separate == 'row' and is_matrix:
                   # Row mode: Each row is a group
                   # Assuming SeriesMatrix has row_keys iterator or similar
@@ -160,7 +157,7 @@ class Plot(BasePlot):
                             except (TypeError, ValueError, IndexError):
                                  pass
                        final_args.append(row_items)
-                       
+
              elif separate == 'col' and is_matrix:
                   # Col mode: Each col is a group
                   r_keys = arg.row_keys()
@@ -195,7 +192,7 @@ class Plot(BasePlot):
         # 2.5 TimeSeries Optimization (Adaptive Decimation)
         from gwexpy.plot.utils import adaptive_decimate
         from gwexpy.timeseries import TimeSeries
-        
+
         decimate_threshold = kwargs.pop('decimate_threshold', 50000)
         decimate_points = kwargs.pop('decimate_points', 10000)
 
@@ -220,7 +217,7 @@ class Plot(BasePlot):
                   else:
                        flat.append(a)
              return flat
-        
+
         scan_data = _flatten_scan(final_args)
 
         # Ensure spectrograms use a 2D plotting method instead of line plotting.
@@ -248,7 +245,6 @@ class Plot(BasePlot):
              # Only determine global ylabel if units are consistent across all data
              # Check consistency
              units_set = set()
-             units_consistent = True
              for x in scan_data:
                   u_val = getattr(x, 'unit', None)
                   # Treat None and Dimensionless as distinct? gwpy might handle them.
@@ -257,7 +253,7 @@ class Plot(BasePlot):
                        units_set.add(u_val.to_string())
                   else:
                        units_set.add(str(u_val))
-             
+
              if len(units_set) <= 1:
                   det_ylabel = defaults.determine_ylabel(scan_data)
                   if det_ylabel is not None:
@@ -268,7 +264,7 @@ class Plot(BasePlot):
                   # If we pass nothing, gwpy might autopick from the first one?
                   # We might need to handle this in post-processing.
                   pass
-        
+
         if 'norm' not in kwargs:
              det_norm = defaults.determine_norm(scan_data)
              if det_norm is not None:
@@ -289,7 +285,7 @@ class Plot(BasePlot):
         # 4. Geometry Check
         if geometry is not None:
              kwargs['geometry'] = geometry
-        
+
         if separate is not None:
              # Pass separate to base plot
              kwargs['separate'] = True if isinstance(separate, str) else separate
@@ -307,7 +303,7 @@ class Plot(BasePlot):
         matrix_args = [a for a in args if isinstance(a, (SeriesMatrix, SpectrogramMatrix))]
         is_spectrogram = any(isinstance(a, (Spectrogram, SpectrogramMatrix)) for a in scan_data)
         subplots_orig = separate
-        
+
         expanded_args = []
         for arg in args:
              if not isinstance(arg, (SeriesMatrix, SpectrogramMatrix)):
@@ -384,7 +380,7 @@ class Plot(BasePlot):
                     if yl and yl != candidate_ylabel:
                         all_same = False
                         break
-                
+
                 if all_same:
                     mid_idx = len(first_col_axes) // 2
                     for i, ax in enumerate(first_col_axes):

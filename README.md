@@ -10,7 +10,7 @@
 
 - **`TimeSeriesMatrix`**: A 3D container `(channels, 1, time)` for handling multi-channel time-series data with shared time axes. Supports element-wise operations, slicing, PCA/ICA decomposition, and bulk processing.
 - **`FrequencySeriesMatrix`**: A matrix container for frequency-domain data, ideal for representing Transfer Functions, CSD, and Coherence matrices.
-- **`TimePlaneTransform`**: A container for 2D time-frequency representations (like STLT output), supporting interpolation along the time axis.
+- **`LaplaceGram`**: A specialized container (subclass of `TimePlaneTransform`) for 2D time-frequency representations (like STLT output), supporting interpolation along the time axis.
 - **Auto-expanding `SeriesMatrix`**: Assigning to new `(row_key, col_key)` adds rows/cols automatically (e.g. `mat["H1", "Strain"] = ts`).
 
 ### 2. Spectral Analysis Extensions
@@ -75,6 +75,17 @@ gwexpy adds native read support for various experimental data formats often used
 
 ---
 
+## Bruco Performance Tuning
+
+Bruco computes Top-N coherence per frequency bin and can be tuned for large channel scans.
+
+- `block_size`: Channels per Top-N update block (int or `"auto"`). `"auto"` uses `GWEXPY_BRUCO_BLOCK_BYTES` to estimate a safe block size and clamps to 16–1024.
+- Env vars: `GWEXPY_BRUCO_BLOCK_SIZE` (`int` or `"auto"`), `GWEXPY_BRUCO_BLOCK_BYTES` (byte budget for `"auto"`).
+- Benchmark: `python scripts/bruco_bench.py --n-bins 20000 --n-channels 300 --top-n 5 --block-size auto`
+- Targeting a size: `GWEXPY_BRUCO_BLOCK_BYTES ~= (top_n + block_size) * n_bins * 8` (bytes).
+
+---
+
 ## Installation
 
 ```bash
@@ -115,7 +126,7 @@ The following are only required when using specific analysis, visualization, or 
 | Category | Package | Functionality |
 | :--- | :--- | :--- |
 | GW | [`pycbc`](https://pycbc.org/), [`nds2-client`](https://pypi.org/project/python-nds2-client/), [`framel`](https://pypi.org/project/python-framel/), [`framecpp`](https://pypi.org/project/python-ldas-tools-framecpp/), [`gwinc`](https://pypi.org/project/gwinc/), [`dttxml`](https://pypi.org/project/dttxml/) | GW data analysis, frame access, and detector noise models |
-| Stats & Signal Analysis | [`polars`](https://www.pola.rs/), [`scikit-learn`](https://scikit-learn.org/), [`statsmodels`](https://www.statsmodels.org/), [`pmdarima`](https://alkaline-ml.com/pmdarima/), [`minepy`](https://minepy.readthedocs.io/), [`dcor`](https://dcor.readthedocs.io/), [`hurst`](https://github.com/Mottl/hurst), [`hurst-exponent`](https://pypi.org/project/hurst-exponent/), [`exp_hurst`](https://pypi.org/project/exp-hurst/) | ARIMA, ICA/PCA, Correlation analysis, Rolling statistics, Hurst exponent |
+| Stats & Signal Analysis | [`polars`](https://www.pola.rs/), [`scikit-learn`](https://scikit-learn.org/), [`statsmodels`](https://www.statsmodels.org/), [`pmdarima`](https://alkaline-ml.com/pmdarima/), [`mictools`](https://github.com/minepy/mictools), [`dcor`](https://dcor.readthedocs.io/), [`hurst`](https://github.com/Mottl/hurst), [`hurst-exponent`](https://pypi.org/project/hurst-exponent/), [`exp_hurst`](https://pypi.org/project/exp-hurst/) | ARIMA, ICA/PCA, Correlation analysis, Rolling statistics, Hurst exponent |
 | Fitting | [`iminuit`](https://iminuit.readthedocs.io/), [`emcee`](https://emcee.readthedocs.io/), [`corner`](https://corner.readthedocs.io/) | Advanced fitting, MCMC, Corner plots |
 | Astroparticle Physics | [`ROOT`](https://root.cern/), [`specutils`](https://specutils.readthedocs.io/), [`pyspeckit`](https://pyspeckit.readthedocs.io/) | ROOT integration, Spectral analysis |
 | Geophysics | [`obspy`](https://docs.obspy.org/), [`mth5`](https://mth5.readthedocs.io/), [`mtpy`](https://mtpy.readthedocs.io/), [`mt_metadata`](https://pypi.org/project/mt-metadata/), [`netCDF4`](https://unidata.github.io/netcdf4-python/) | Seismic & Geomagnetic data, HDF5-based geophysics formats, NIED Hi-net data |
@@ -134,7 +145,7 @@ Required for specific submodules or interpolation features.
 | Extra Name | Packages |
 | :--- | :--- |
 | `[gw]` | `pycbc`, `nds2-client`, `python-framel`, `ldas-tools-framecpp`, `gwinc`, `dttxml` |
-| `[stats]` | `polars`, `scikit-learn`, `statsmodels`, `pmdarima`, `minepy`, `dcor`, `hurst`, `hurst-exponent`, `exp_hurst`, `bottleneck` |
+| `[stats]` | `polars`, `scikit-learn`, `statsmodels`, `pmdarima`, `mictools`, `dcor`, `hurst`, `hurst-exponent`, `exp_hurst`, `bottleneck` |
 | `[fitting]` | `iminuit`, `emcee`, `corner` |
 | `[astro]` | `specutils`, `pyspeckit` |
 | `[geophysics]` | `obspy`, `mth5`, `mtpy`, `mt_metadata`, `netCDF4` |
