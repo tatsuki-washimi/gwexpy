@@ -171,6 +171,10 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             # Determine default server/port (Same logic as show_channel_browser)
             ds_mode = self.input_controls["ds_combo"].currentText()
+            # If not in NDS mode, do not preload
+            if ds_mode not in ["NDS", "NDS2"]:
+                return
+
             if ds_mode == "NDS2":
                 server = self.input_controls["nds2_server"].currentText()
                 port = self.input_controls["nds2_port"].value()
@@ -185,22 +189,22 @@ class MainWindow(QtWidgets.QMainWindow):
             if ChannelListCache().get_channels(key) is not None:
                 return  # Already cached (unlikely at startup, but safe)
 
-            print(f"DEBUG: Pre-loading NDS channels for {key}")
+            logger.debug(f"Pre-loading NDS channels for {key}")
             self._preload_worker = ChannelListWorker(server, port)
             self._preload_worker.finished.connect(
                 lambda results, err: self._on_preload_finished(key, results, err)
             )
             self._preload_worker.start()
         except Exception as e:
-            print(f"Preload Error: {e}")
+            logger.error(f"Preload Error: {e}")
 
     def _on_preload_finished(self, key, results, error):
         from ..nds.cache import ChannelListCache
         if error:
-            print(f"Pre-load failed for {key}: {error}")
+            logger.error(f"Pre-load failed for {key}: {error}")
         else:
             ChannelListCache().set_channels(key, results)
-            print(f"Pre-load complete for {key}: {len(results)} channels cached.")
+            logger.info(f"Pre-load complete for {key}: {len(results)} channels cached.")
         self._preload_worker = None  # Release ref
 
     def on_measurement_channel_changed(self):
@@ -296,7 +300,12 @@ class MainWindow(QtWidgets.QMainWindow):
             server = self.input_controls["nds_server"].currentText()
             port = self.input_controls["nds_port"].value()
 
-        dlg = ChannelBrowserDialog(server, port, self, audio_enabled=use_pc_audio)
+        initial_source = "NDS"
+        if use_pc_audio and ds_mode not in ["NDS", "NDS2"]:
+            # If we are in SIM/FILE mode but want to browse, default to Audio if enabled
+            initial_source = "AUDIO"
+
+        dlg = ChannelBrowserDialog(server, port, self, audio_enabled=use_pc_audio, initial_source=initial_source)
         if dlg.exec_():
             chans = dlg.selected_channels
             if not chans:
@@ -339,7 +348,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             # Update UI to reflect model
             self.meas_controls["set_all_channels"](new_states)
-            print(f"Added {count} channels from {server}:{port}")
+            logger.info(f"Added {count} channels from {server}:{port}")
 
     def on_source_changed(self, text):
         self.data_source = text
@@ -374,7 +383,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Read Data Source directly from UI to avoid signal issues
         self.data_source = self.input_controls["ds_combo"].currentText()
-        print(f"DEBUG: start_animation called. DataSource: {self.data_source}")
+        logger.debug(f"start_animation called. DataSource: {self.data_source}")
 
         self.btn_start.setEnabled(False)
         self.btn_pause.setEnabled(True)
@@ -419,13 +428,36 @@ class MainWindow(QtWidgets.QMainWindow):
                     server = self.input_controls["nds_server"].currentText()
                     port = self.input_controls["nds_port"].value()
 
-                print(f"DEBUG: Starting DataCache for channels: {channels}")
-                self.nds_cache.set_server(f"{server}:{port}")
-                self.nds_cache.set_channels(channels)
 
-                win_sec = self.input_controls["nds_win"].value()
-                self.nds_cache.online_start(lookback=win_sec)
-
+                # If we have NDS channels, configure server. Otherwise skip to allow PC Audio only.
+                # Filter strictly NDS channels (exclude PC: and Excitation specific if any)
+                real_nds_channels = [c for c in channels if not c.startswith("PC:") and c != "Excitation"]
+                
+                if real_nds_channels:
+                    logger.debug(f"Starting DataCache for channels: {channels}")
+                    self.nds_cache.set_server(f"{server}:{port}")
+                    self.nds_cache.set_channels(channels)
+    
+                    win_sec = self.input_controls["nds_win"].value()
+                    self.nds_cache.online_start(lookback=win_sec)
+                elif any(c.startswith("PC:") for c in channels):
+                    # PC Audio only case
+                    logger.debug(f"Starting Audio Only (no NDS connection). Channels: {channels}")
+                    # Audio thread is managed via ChannelListWorker? No, AudioThread. 
+                    # Wait, where is AudioThread managed?
+                    # Ah, NDSDataCache handles AudioThread internally if channel name starts with PC: ?
+                    # Let's check NDSDataCache implementation.
+                    # Assuming NDSDataCache handles it, we still need to set channels.
+                    # But we should NOT set server if we don't want NDS connection.
+                    # If NDSDataCache requires set_server even for Audio, that's a dependency we need to check.
+                    # For now, let's assume it might need configuration but we want to avoid `online_start` triggering NDS logic if no NDS channels.
+                    # Actually, `nds_cache.set_channels` might be enough if cache handles the types.
+                    # Let's call set_channels anyway, but maybe set a dummy server or skip set_server?
+                    # Start should be called.
+                    self.nds_cache.set_channels(channels)
+                    win_sec = self.input_controls["nds_win"].value()
+                    self.nds_cache.online_start(lookback=win_sec)
+                
                 # Configure Spectral Accumulator
                 params = self.get_ui_params()
                 all_traces = []
@@ -510,10 +542,6 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         data_map = {}
-
-        # NDS Mode Logic: Build data_map from buffers
-        current_times = None
-        current_fs = 16384  # Fallback
 
         # NDS Mode Logic: Build data_map from buffers
         current_times = None
@@ -624,7 +652,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         # In-place addition to simulate injection
                         data_map[tgt] = data_map[tgt] + sig
                     except Exception as e:
-                        print(f"Injection Error for {tgt}: {e}")
+                        logger.error(f"Injection Error for {tgt}: {e}")
                 else:
                     # If target does NOT exist (e.g. Pure Simulation or 'Excitation' placeholder),
                     # Create it.
@@ -650,7 +678,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 # No, standard DTT behavior is "Start Measurement -> Clear buffers -> Accumulate".
                 # Here we simulate clearing by cropping against a start time.
                 self.meas_start_gps = current_times[-1]
-                print(f"DEBUG: Measurement Start GPS set to {self.meas_start_gps}")
+                logger.debug(f"Measurement Start GPS set to {self.meas_start_gps}")
 
         # Apply Cropping if in Fixed/Fresh mode
         # Actually we should always crop to self.meas_start_gps to show "measurement progress"
@@ -696,14 +724,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 collected = ts_check.duration.value
 
                 if collected >= req_duration:
-                    print(f"DEBUG: Fixed Averaging Reached. Collected: {collected:.2f}s, Req: {req_duration:.2f}s")
+                    logger.debug(f"Fixed Averaging Reached. Collected: {collected:.2f}s, Req: {req_duration:.2f}s")
                     # Should stop
                     self.pause_animation()
                     # Crop strict?
                     # for k in data_map: data_map[k] = data_map[k].crop(end=ts_check.t0.value + req_duration)
                     # For now just pause is enough to stop updates.
             except Exception as e:
-                print(f"DEBUG: Error checking stop condition: {e}")
+                logger.debug(f"Error checking stop condition: {e}")
 
 
         # Always publish the global 'Excitation' channel if we have any signal
@@ -736,7 +764,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 g_type = info_root["graph_combo"].currentText()
 
                 # Decide source of results
-                if self.data_source == "NDS" or self.input_controls["pcaudio"].isChecked():
+                use_accumulator = (self.data_source == "NDS" or self.input_controls["pcaudio"].isChecked())
+                
+                # Fallback: If NDS is selected but no data arrived (NDS dead), and we have generated Simulation data (data_map),
+                # we should use the legacy Engine to compute results from data_map.
+                if use_accumulator and self.nds_latest_raw is None and not self.input_controls["pcaudio"].isChecked() and data_map:
+                     use_accumulator = False
+
+                if use_accumulator:
                     # Use Accumulator
                     # Retrieve all results once?
                     # Ideally we want results for THIS graph panel.
@@ -749,9 +784,9 @@ class MainWindow(QtWidgets.QMainWindow):
                          offset = len(self.graph_info1["traces"])
 
                     all_results = self.accumulator.get_results()
-                    print(f"DEBUG: Accumulator returned {len(all_results)} results")
+                    logger.debug(f"Accumulator returned {len(all_results)} results")
                     valid_count = sum(1 for r in all_results if r is not None)
-                    print(f"DEBUG: Valid (not None) results: {valid_count} / {len(all_results)}")
+                    logger.debug(f"Valid (not None) results: {valid_count} / {len(all_results)}")
                     # Slice
                     n_traces = len(info_root["traces"])
                     results = all_results[offset : offset + n_traces]
@@ -770,20 +805,67 @@ class MainWindow(QtWidgets.QMainWindow):
                             for c in info_root["traces"]
                         ],
                     )
+                
+                # Helper to determine if X axis is Time
+                is_time_axis = g_type in ["Time Series", "Spectrogram"]
+                start_time_gps = None
+                start_time_utc = None
+
+                # Find T0 from the first valid result if possible
+                if is_time_axis:
+                     # Try to get t0 from data source or results
+                     if current_times is not None and len(current_times) > 0:
+                         start_time_gps = current_times[0]
+                     elif results:
+                         # Try to find first result with time
+                         for r in results:
+                             if r is not None:
+                                 if isinstance(r, dict) and "times" in r:
+                                      start_time_gps = r["times"][0]
+                                      break
+                                 elif isinstance(r, tuple) and len(r) == 2:
+                                      # (x, y)
+                                      if len(r[0]) > 0:
+                                          start_time_gps = r[0][0]
+                                          break
+                     
+                     if start_time_gps is not None:
+                         # Convert to UTC string
+                         try:
+                             from astropy.time import Time
+                             t = Time(start_time_gps, format="gps", scale="utc")
+                             start_time_utc = t.isot.replace("T", " ")
+                         except:
+                             start_time_utc = "?"
+
+                         # Update Plot Label/Title
+                         # "Time [s] (Start: YYYY-MM-DD HH:MM:SS UTC / GPS: XXXXX)"
+                         label_text = f"Time [s] (Start: {start_time_utc} / GPS: {start_time_gps})"
+                         info_root["plot"].setLabel("bottom", label_text)
+
                 for t_idx, result in enumerate(results):
                     try:
                         tr = traces_items[t_idx]
                         curve, bar, img = tr["curve"], tr["bar"], tr["img"]
+                        
                         if result is None:
                             curve.setData([], [])
                             (bar.setOpts(height=[]) if bar.isVisible() else None)
                             img.clear()
                             continue
+
                         if (
                             isinstance(result, dict)
                             and result.get("type") == "spectrogram"
                         ):
                             data = result["value"]
+                            times = result["times"]
+                            freqs = result["freqs"]
+                            
+                            # Shift to relative time
+                            if start_time_gps is not None:
+                                times = times - start_time_gps
+
                             disp = (
                                 info_root.get("units", {})
                                 .get("display_y")
@@ -799,48 +881,48 @@ class MainWindow(QtWidgets.QMainWindow):
                                 )
                             elif disp == "Magnitude":
                                 data = np.abs(data)
+                            
                             img.setImage(data, autoLevels=False)
                             img.setLevels([np.min(data), np.max(data)])
-                            if len(result["times"]) > 1 and len(result["freqs"]) > 1:
+                            
+                            if len(times) > 1 and len(freqs) > 1:
                                 img.setRect(
                                     QtCore.QRectF(
-                                        result["times"][0],
-                                        result["freqs"][0],
-                                        (result["times"][1] - result["times"][0])
-                                        * len(result["times"]),
-                                        (result["freqs"][1] - result["freqs"][0])
-                                        * len(result["freqs"]),
+                                        times[0],
+                                        freqs[0],
+                                        (times[1] - times[0])
+                                        * len(times),
+                                        (freqs[1] - freqs[0])
+                                        * len(freqs),
                                     )
                                 )
                                 img.setVisible(True)
-                                curve.setData([], [])
-                                (bar.setOpts(height=[]) if bar.isVisible() else None)
-                            else:
-                                img.clear()
-                            continue
-                        img.setVisible(False)
-                        x_vals, y_vals = result
-                        disp = info_root.get("units", {}).get("display_y").currentText()
-                        if disp == "dB":
-                            y_vals = (
-                                10 if "Power" in g_type or "Squared" in g_type else 20
-                            ) * np.log10(np.abs(y_vals) + 1e-20)
-                        elif disp == "Phase":
-                            y_vals = (
-                                np.angle(y_vals, deg=True)
-                                if np.iscomplexobj(y_vals)
-                                else np.zeros_like(y_vals)
-                            )
-                        elif disp == "Magnitude":
-                            y_vals = np.abs(y_vals)
-                        # "None" case does nothing, keeping y_vals as is
-                        curve.setData(x_vals, y_vals)
-                        if bar.isVisible():
-                            bar.setOpts(
-                                x=x_vals,
-                                height=y_vals,
-                                width=(x_vals[1] - x_vals[0] if len(x_vals) > 1 else 1),
-                            )
+                        else:
+                            img.setVisible(False)
+                            x_vals, y_vals = result
+                            if is_time_axis and start_time_gps is not None:
+                                x_vals = x_vals - start_time_gps
+                            disp = info_root.get("units", {}).get("display_y").currentText()
+                            if disp == "dB":
+                                y_vals = (
+                                    10 if "Power" in g_type or "Squared" in g_type else 20
+                                ) * np.log10(np.abs(y_vals) + 1e-20)
+                            elif disp == "Phase":
+                                y_vals = (
+                                    np.angle(y_vals, deg=True)
+                                    if np.iscomplexobj(y_vals)
+                                    else np.zeros_like(y_vals)
+                                )
+                            elif disp == "Magnitude":
+                                y_vals = np.abs(y_vals)
+                            # "None" case does nothing, keeping y_vals as is
+                            curve.setData(x_vals, y_vals)
+                            if bar.isVisible():
+                                bar.setOpts(
+                                    x=x_vals,
+                                    height=y_vals,
+                                    width=(x_vals[1] - x_vals[0] if len(x_vals) > 1 else 1),
+                                )
                     except Exception as e:
                         print(f"Error updating Graph {plot_idx + 1} Trace {t_idx}: {e}")
                 if "range_updater" in info_root:
