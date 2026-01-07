@@ -14,7 +14,6 @@ from astropy.units import Unit, UnitConversionError
 from gwpy.detector import Channel
 from gwpy.types.array import Array
 from gwpy.types.series import Series
-from gwexpy.types.mixin import RegularityMixin, InteropMixin
 
 _UFUNC_ABS_REAL = {np.abs, np.negative, np.positive, np.real, np.imag}
 _UFUNC_CONJ = {np.conjugate, np.conj}

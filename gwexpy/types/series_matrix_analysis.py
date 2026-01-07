@@ -3,7 +3,6 @@ from __future__ import annotations
 import numpy as np
 from astropy import units as u
 
-from .metadata import MetaDataMatrix
 
 
 class SeriesMatrixAnalysisMixin:
@@ -41,21 +40,21 @@ class SeriesMatrixAnalysisMixin:
 
         idx0 = np.searchsorted(xvalues, start_val, side="left") if start_val is not None else 0
         idx1 = np.searchsorted(xvalues, end_val, side="left") if end_val is not None else len(xvalues)
-        
+
         sl = slice(idx0, idx1)
         new_data = self.value[self._get_axis_slice(self._x_axis_norm, sl)]
-        
+
         if copy:
             new_data = np.array(new_data, copy=True)
         new_xindex = xindex[idx0:idx1]
-        
+
         return self.__class__(**self._get_meta_for_constructor(new_data, new_xindex))
 
     def append(self, other, inplace=True, pad=None, gap=None, resize=True):
         """Append another matrix along the sample axis."""
         target = self
         axis = target._x_axis_norm
-        
+
         if gap is None:
             gap = "raise" if pad is None else "pad"
         if pad is None and gap == "pad":
@@ -151,12 +150,12 @@ class SeriesMatrixAnalysisMixin:
         """Append another matrix with strict contiguity checking."""
         # Shape check: all dims except x-axis must match
         axis = self._x_axis_norm
-        
+
         s_shape = list(self.shape)
         o_shape = list(other.shape)
         s_shape.pop(axis)
         o_shape.pop(axis)
-        
+
         if s_shape != o_shape:
              raise ValueError(f"Matrix shapes mismatch (excluding append axis): {self.shape} vs {other.shape}")
 
@@ -216,7 +215,7 @@ class SeriesMatrixAnalysisMixin:
             # Resizing inplace ndarray is tricky/impossible if size changes.
             # But SeriesMatrix logic tried to do self._value[:] = ...
             pass # We return res mostly.
-            
+
         return res
 
     def prepend(self, other, inplace=True, pad=None, gap=None, resize=True):
@@ -237,14 +236,14 @@ class SeriesMatrixAnalysisMixin:
     def diff(self, n=1, axis=None):
         """Calculate the n-th discrete difference along the sample axis."""
         target_axis = self._x_axis_norm if axis is None else axis
-        
+
         new_data = np.diff(self.value, n=n, axis=target_axis)
-        
+
         if target_axis == self._x_axis_norm:
              new_xindex = self.xindex[n:]
         else:
              new_xindex = self.xindex
-             
+
         # Name update handled by caller usually or simple append
         new_inst = self.__class__(**self._get_meta_for_constructor(new_data, new_xindex))
         if self.name:
@@ -263,14 +262,14 @@ class SeriesMatrixAnalysisMixin:
         idx = np.searchsorted(xvalues, target)
         if idx >= len(xvalues) or not np.isclose(xvalues[idx], target):
             raise ValueError(f"Value {x} not found in xindex")
-            
+
         return self.value[self._get_axis_slice(self._x_axis_norm, idx)]
 
     def pad(self, pad_width, **kwargs):
         """Pad the matrix along the sample axis."""
-        
+
         axis = self._x_axis_norm
-        
+
         if isinstance(pad_width, int):
             pw = (pad_width, pad_width)
         else:
@@ -281,7 +280,7 @@ class SeriesMatrixAnalysisMixin:
         full_pad = [(0, 0)] * self.ndim
         full_pad[axis] = pw
         full_pad = tuple(full_pad)
-        
+
         kwargs.setdefault("mode", "constant")
         new_data = np.pad(self.value, full_pad, **kwargs)
 
@@ -308,7 +307,7 @@ class SeriesMatrixAnalysisMixin:
 
         # Prepare interpolator
         x_old = getattr(self.xindex, "value", np.asarray(self.xindex))
-        
+
         axis = self._x_axis_norm
         y_old = np.moveaxis(self.value, axis, 0)  # Move x-axis to 0
 

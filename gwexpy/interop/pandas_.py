@@ -136,49 +136,6 @@ def from_pandas_dataframe(cls, df, *, unit_map=None, t0=None, dt=None):
         tsd[str(col)] = from_pandas_series(tsd.EntryClass, s, unit=unit, t0=t0, dt=dt)
     return tsd
 
-def to_pandas_frequencyseries(fs, index="frequency", name=None, copy=False):
-    """
-    Convert FrequencySeries to pandas.Series.
+# Note: to_pandas_frequencyseries and from_pandas_frequencyseries
+# are defined in gwexpy.interop.frequency module to avoid duplication.
 
-    Parameters
-    ----------
-    index : str, default "frequency"
-        "frequency" or "index" (integer sample index).
-    """
-    pd = require_optional("pandas")
-    from .base import to_plain_array
-    data = to_plain_array(fs, copy=copy)
-
-    if index == "frequency":
-        freqs = to_plain_array(fs.frequencies)
-        if hasattr(fs.frequencies, "unit") and fs.frequencies.unit:
-             # Try to normalize to Hz if possible for consistency, or keep raw
-             # Usually frequencies is Quantity(Hz).
-             pass
-        idx = pd.Index(freqs, name="frequency")
-    else:
-        idx = pd.RangeIndex(len(data), name="index")
-
-    return pd.Series(data, index=idx, name=name or fs.name)
-
-def from_pandas_frequencyseries(cls, series, **kwargs):
-    """
-    Create FrequencySeries from pandas.Series.
-    """
-    pd = require_optional("pandas")
-    values = series.values
-
-    # Try to extract frequencies from index
-    index = series.index
-    frequencies = None
-
-    if isinstance(index, pd.Index) and np.issubdtype(index.dtype, np.number) and index.name == "frequency":
-        frequencies = index.values
-
-    # kwargs might contain frequencies override
-    if "frequencies" in kwargs:
-         frequencies = kwargs.pop("frequencies")
-
-    return cls(values, frequencies=frequencies, name=series.name, **kwargs)
-
-# Re-export or adapt df functions if needed, but FrequencySeriesDict is minimal.

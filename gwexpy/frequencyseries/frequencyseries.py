@@ -11,7 +11,6 @@ from enum import Enum
 from typing import Any, Optional, TypeVar
 
 import numpy as np
-import scipy.signal
 from astropy import units as u
 
 from gwpy.frequencyseries import FrequencySeries as BaseFrequencySeries
@@ -125,7 +124,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         # If frequencies has unit, we should handle it, but usually we just consider numerical differentiation
         # respective to the unit basis (Hz).
         # Typically x(t) -> dx/dt involves multiplying X(f) by i*2pi*f
-        
+
         factor = (1j * 2 * np.pi * f) ** order
         val = self.value * factor
 
@@ -166,7 +165,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         f = self.frequencies.value
         with np.errstate(divide="ignore", invalid="ignore"):
             factor = (1j * 2 * np.pi * f) ** (-order)
-        
+
         # Handle DC component (f=0): usually set to 0 or leave as inf/nan?
         # Standard practice often is 0 for DC integration or just ignore warning.
         # numpy will produce inf for f=0.

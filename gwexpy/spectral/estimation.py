@@ -22,15 +22,15 @@ def _bootstrap_resample_jit(data, all_indices, use_median, ignore_nan):
     n_boot = all_indices.shape[0]
     n_freq = data.shape[1]
     resampled_stats = np.zeros((n_boot, n_freq), dtype=data.dtype)
-    
+
     for i in prange(n_boot):
         indices = all_indices[i]
-        
+
         # Iterate over frequency bins to save memory (avoid creating full (T, F) sample)
         for f in range(n_freq):
             # Extract column using fancy indexing
             col = data[indices, f]
-            
+
             if use_median:
                 if ignore_nan:
                     resampled_stats[i, f] = np.nanmedian(col)

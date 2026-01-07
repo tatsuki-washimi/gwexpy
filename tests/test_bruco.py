@@ -1,3 +1,5 @@
+import os
+import time
 import numpy as np
 from unittest.mock import patch
 from gwpy.timeseries import TimeSeries, TimeSeriesDict
@@ -104,3 +106,25 @@ class TestBruco:
         assert res is not None
         _, coh = res
         assert np.max(coh) > 0.8
+
+    def test_block_size_auto_env(self, monkeypatch):
+        monkeypatch.setenv("GWEXPY_BRUCO_BLOCK_SIZE", "auto")
+        monkeypatch.setenv("GWEXPY_BRUCO_BLOCK_BYTES", "1048576")
+        res = BrucoResult(np.arange(1000), "Target", np.ones(1000), top_n=5)
+        expected = max(16, min(1024, int((1048576 // (1000 * 8)) - 5)))
+        assert res.block_size == expected
+
+    def test_update_batch_perf_threshold(self):
+        n_bins = 2000
+        n_channels = 100
+        top_n = 5
+        rng = np.random.default_rng(0)
+        coherences = rng.random((n_channels, n_bins))
+        channel_names = [f"CH{i}" for i in range(n_channels)]
+        res = BrucoResult(np.arange(n_bins), "Target", np.ones(n_bins), top_n=top_n, block_size="auto")
+
+        max_seconds = float(os.getenv("GWEXPY_BRUCO_BENCH_MAX_S", "2.0"))
+        start = time.perf_counter()
+        res.update_batch(channel_names, coherences)
+        elapsed = time.perf_counter() - start
+        assert elapsed < max_seconds

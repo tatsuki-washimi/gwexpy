@@ -3,7 +3,6 @@ import numpy as np
 from collections import OrderedDict
 from typing import Optional, Union, Any
 from astropy import units as u
-from gwpy.types.index import Index
 
 from .metadata import MetaData, MetaDataDict, MetaDataMatrix
 from .seriesmatrix_validation import (

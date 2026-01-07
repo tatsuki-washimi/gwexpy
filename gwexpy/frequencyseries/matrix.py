@@ -52,14 +52,14 @@ class FrequencySeriesMatrix(
         if channel_names is not None:
             if "names" not in kwargs:
                 cn = np.asarray(channel_names)
-                
+
                 # Intelligent reshaping based on data shape
                 try:
                     if hasattr(data, "shape"):
                          dshape = data.shape
                     else:
                          dshape = np.shape(data)
-                    
+
                     if len(dshape) >= 2:
                         N, M = dshape[:2]
                         if cn.size == N * M:

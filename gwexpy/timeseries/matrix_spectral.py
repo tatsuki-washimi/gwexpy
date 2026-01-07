@@ -17,23 +17,22 @@ class TimeSeriesMatrixSpectralMixin:
         Vectorized implementation of FFT.
         """
         from gwexpy.frequencyseries import FrequencySeriesMatrix
-        
+
         # We assume regular sampling for vectorized FFT
         self._check_regular("Vectorized FFT")
-        
+
         # Handle n-dimensional array (N, M, T)
         # np.fft.rfft handles axis
         data = np.asarray(self.value)
         n = data.shape[-1]
-        
+
         # Pass kwargs to rfft (like n)
         rfft_len = kwargs.get("n", n)
         fs_data = np.fft.rfft(data, n=rfft_len, axis=-1)
-        
+
         # Calculate frequencies
-        df = 1.0 / (self.dt.value * rfft_len)
         freqs = np.fft.rfftfreq(rfft_len, d=self.dt.value) * u.Hz
-        
+
         # Metadata logic: simplified for now, uses same meta for all
         return FrequencySeriesMatrix(
             fs_data,
@@ -51,25 +50,25 @@ class TimeSeriesMatrixSpectralMixin:
         """
         from scipy.signal import welch
         from gwexpy.frequencyseries import FrequencySeriesMatrix
-        
+
         self._check_regular("Vectorized PSD")
-        
+
         data = np.asarray(self.value)
         fs = 1.0 / self.dt.value
-        
+
         # Adjust kwargs to match scipy.signal.welch
         nperseg = kwargs.pop("fftlength", kwargs.pop("nperseg", None))
         noverlap = kwargs.pop("overlap", kwargs.pop("noverlap", None))
-        
+
         freqs, psd_data = welch(
-            data, 
-            fs=fs, 
-            nperseg=nperseg, 
-            noverlap=noverlap, 
-            axis=-1, 
+            data,
+            fs=fs,
+            nperseg=nperseg,
+            noverlap=noverlap,
+            axis=-1,
             **kwargs
         )
-        
+
         return FrequencySeriesMatrix(
             psd_data,
             frequencies=freqs * u.Hz,
@@ -99,26 +98,26 @@ class TimeSeriesMatrixSpectralMixin:
         """
         from scipy.signal import csd
         from gwexpy.frequencyseries import FrequencySeriesMatrix
-        
+
         self._check_regular("Vectorized CSD")
-        
+
         data = np.asarray(self.value)
         other_data = np.asarray(other.value)
         fs = 1.0 / self.dt.value
-        
+
         nperseg = kwargs.pop("fftlength", kwargs.pop("nperseg", None))
         noverlap = kwargs.pop("overlap", kwargs.pop("noverlap", None))
-        
+
         freqs, csd_data = csd(
-            data, 
-            other_data, 
-            fs=fs, 
-            nperseg=nperseg, 
-            noverlap=noverlap, 
-            axis=-1, 
+            data,
+            other_data,
+            fs=fs,
+            nperseg=nperseg,
+            noverlap=noverlap,
+            axis=-1,
             **kwargs
         )
-        
+
         return FrequencySeriesMatrix(
             csd_data,
             frequencies=freqs * u.Hz,
@@ -135,26 +134,26 @@ class TimeSeriesMatrixSpectralMixin:
         """
         from scipy.signal import coherence
         from gwexpy.frequencyseries import FrequencySeriesMatrix
-        
+
         self._check_regular("Vectorized Coherence")
-        
+
         data = np.asarray(self.value)
         other_data = np.asarray(other.value)
         fs = 1.0 / self.dt.value
-        
+
         nperseg = kwargs.pop("fftlength", kwargs.pop("nperseg", None))
         noverlap = kwargs.pop("overlap", kwargs.pop("noverlap", None))
-        
+
         freqs, coh_data = coherence(
-            data, 
-            other_data, 
-            fs=fs, 
-            nperseg=nperseg, 
-            noverlap=noverlap, 
-            axis=-1, 
+            data,
+            other_data,
+            fs=fs,
+            nperseg=nperseg,
+            noverlap=noverlap,
+            axis=-1,
             **kwargs
         )
-        
+
         return FrequencySeriesMatrix(
             coh_data,
             frequencies=freqs * u.Hz,

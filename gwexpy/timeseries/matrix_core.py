@@ -7,7 +7,6 @@ import numpy as np
 from astropy import units as u
 
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
-from gwexpy.types.seriesmatrix import SeriesMatrix
 from .utils import (
     _extract_axis_info,
     _extract_freq_axis_info,

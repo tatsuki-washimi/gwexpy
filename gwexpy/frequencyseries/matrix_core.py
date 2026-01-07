@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-import numpy as np
 
-from gwexpy.types.seriesmatrix import SeriesMatrix
 
 
 class FrequencySeriesMatrixCoreMixin:

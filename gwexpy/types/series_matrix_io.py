@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from collections import OrderedDict
-from typing import Any, Optional
 
 import numpy as np
 from astropy import units as u

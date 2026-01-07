@@ -9,11 +9,11 @@ class SpectrogramMatrixCoreMixin:
     """
     Core properties and metadata for SpectrogramMatrix.
     Overrides SeriesMatrix defaults to handle 4D (or 3D) Spectrogram data structure.
-    
+
     Structure:
     - 3D: (Batch, Time, Freq)
     - 4D: (Row, Col, Time, Freq)
-    
+
     xindex corresponds to Time (shape[-2] usually).
     We add 'yindex'/'frequencies' for Frequency (shape[-1]).
     """
@@ -63,7 +63,7 @@ class SpectrogramMatrixCoreMixin:
             fi = value
         else:
             fi = np.asarray(value)
-        
+
         # Check length against last dimension (frequency axis)
         try:
              n_freqs = self._value.shape[-1]

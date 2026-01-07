@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from .timeseries import TimeSeries
-from .collections import TimeSeriesDict, TimeSeriesList
 
 
 class TimeSeriesMatrixInteropMixin:

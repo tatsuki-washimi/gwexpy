@@ -22,20 +22,20 @@ def determine_xscale(data_list, current_value=None):
 
     for ref in data_list:
         ref_type = type(ref).__name__
-        
+
         # 1. Spectral types (FrequencySeries, FSM)
         if isinstance(ref, FrequencySeries) or ref_type == 'FrequencySeriesMatrix':
              n_samples = ref.shape[-1] if hasattr(ref, 'shape') else getattr(ref, 'size', 0)
              return 'log' if n_samples > 256 else None
-             
+
         # 2. Time-domain or Time-Frequency types (TimeSeries, Spectrogram, TSM, SpecMatrix)
         if isinstance(ref, Spectrogram) or ref_type in ('Spectrogram', 'SpectrogramMatrix', 'TimeSeriesMatrix'):
              return 'auto-gps'
-        
+
         # 3. Duck typing fallback
         if hasattr(ref, 'frequencies') and not hasattr(ref, 'times') and getattr(ref, 'size', 0) > 256:
              return 'log'
-             
+
         if hasattr(ref, 'xindex') and hasattr(ref.xindex, 'unit'):
              phys = getattr(ref.xindex.unit, 'physical_type', None)
              if phys == 'time' or ref.xindex.unit == u.s:
@@ -76,7 +76,7 @@ def determine_ylim(data_list, current_value=None, yscale=None):
         from gwpy.frequencyseries import FrequencySeries
         from gwpy.timeseries import TimeSeries
         from gwpy.spectrogram import Spectrogram as BaseSpectrogram
-        
+
         all_min = []
         all_max = []
         for d in data_list:
@@ -94,20 +94,20 @@ def determine_ylim(data_list, current_value=None, yscale=None):
                 if np.any(f_mask):
                     all_min.append(np.min(freqs[f_mask]))
                     all_max.append(np.max(freqs))
-        
+
         if not all_min:
             return None
-            
+
         ymin, ymax = min(all_min), max(all_max)
         if ymin <= 0: return None # Safety
-        
+
         # Expand decades only for log scale line plots (FrequencySeries/TimeSeries values)
         is_only_axes = all(isinstance(d, BaseSpectrogram) or type(d).__name__ == 'Spectrogram' or type(d).__name__ == 'SpectrogramMatrix' for d in data_list)
         if not is_only_axes and yscale == 'log' and ymax / ymin < 100.0:
             # Expand to 2 decades centered around geometric mean
             center = np.sqrt(ymin * ymax)
             return (center / 10.0, center * 10.0)
-        
+
         return (ymin, ymax)
     except Exception:
         pass

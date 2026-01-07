@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any, Optional
 
 import numpy as np
-from astropy import units as u
 
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 from gwexpy.types.mixin import PhaseMethodsMixin, InteropMixin
@@ -192,5 +191,3 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
 
 # Import Matrix, List, and Dict to maintain backward compatibility if this file is imported
-from .matrix import SpectrogramMatrix
-from .collections import SpectrogramList, SpectrogramDict

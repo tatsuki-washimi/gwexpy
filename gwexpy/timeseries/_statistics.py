@@ -50,7 +50,7 @@ class GrangerResult(float):
 class StatisticsMixin(StatisticalMethodsMixin):
     """
     Mixin class to add statistical analysis and correlation methods to TimeSeries.
-    
+
     Inherits basic statistics (mean, std, skewness, kurtosis, etc.) from
     StatisticalMethodsMixin and adds correlation and causality methods.
     """
@@ -218,10 +218,15 @@ class StatisticsMixin(StatisticalMethodsMixin):
         try:
             from minepy import MINE
         except ImportError:
-            raise ImportError(
-                "The 'minepy' package is required for MIC calculation. "
-                "Please install it via `pip install minepy` or `pip install gwexpy[stat]`."
-            )
+            try:
+                # Some mictools installations might expose minepy
+                import mictools
+                from minepy import MINE
+            except ImportError:
+                raise ImportError(
+                    "The 'mictools' (or 'minepy') package is required for MIC calculation. "
+                    "Please install it via `pip install mictools` or `pip install gwexpy[stat]`."
+                )
 
         # MINE calculation
         m = MINE(alpha=alpha, c=c, est=est)

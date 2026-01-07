@@ -5,7 +5,7 @@ from scipy import stats as scipy_stats
 class StatisticalMethodsMixin:
     """
     Mixin class providing statistical methods with ignore_nan support.
-    
+
     This mixin works for both 1D (TimeSeries) and N-D (Matrix) data.
     For matrices, use axis parameter to specify the reduction axis.
     """

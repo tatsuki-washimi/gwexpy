@@ -527,7 +527,7 @@ class CouplingFunctionAnalysis:
         results = {}
 
         # --- 4. Parallel Loop over Targets ---
-        
+
         # Determine joblib usage
         from gwexpy.interop._optional import require_optional
         try:
@@ -537,7 +537,7 @@ class CouplingFunctionAnalysis:
             # Fallback for when joblib is strictly not installed even though we tried
             # Or if user opted out? No, if require_optional fails it raises ImportError.
             # But here we want smooth fallback if user doesn't have it?
-            # Actually require_optional raises informative error. 
+            # Actually require_optional raises informative error.
             # If n_jobs is 1 or None, we can just run sequential loop and avoid import error if joblib missing?
             # But the user might want parallel.
             # Let's say: if n_jobs is explicit (not None/1), we require logic.
@@ -556,7 +556,7 @@ class CouplingFunctionAnalysis:
              # Sequential execution
             for tgt_key in target_keys:
                 if tgt_key not in data_bkg: continue
-                
+
                 res = _process_single_target(
                     tgt_key,
                     data_inj[tgt_key], data_bkg[tgt_key],
@@ -580,7 +580,7 @@ class CouplingFunctionAnalysis:
                     threshold_target, check_kwargs, fftlength, overlap
                 ) for tgt_key in target_keys if tgt_key in data_bkg
             )
-            
+
             for res in par_results:
                 if res:
                     results[res[0]] = res[1]
