@@ -108,6 +108,9 @@ pip install ".[control]"     # Control Theory
 pip install ".[gui]"         # Experimental GUI
 ```
 
+> [!NOTE]
+> `gwexpy`コマンドは現在プレースホルダであり、主要な機能はPython APIを通じて提供されます。将来的にはサブコマンドが実装される予定です。
+
 ### Dependencies
 
 #### 📦 List of Dependencies
@@ -117,7 +120,7 @@ This repository uses the following external Python libraries.
 ##### ✅ Required Libraries (Essential for core functionality)
 
 - [`gwpy`](https://gwpy.github.io/), [`astropy`](https://www.astropy.org/), [`numpy`](https://numpy.org/), [`pandas`](https://pandas.pydata.org/), [`scipy`](https://scipy.org/), [`matplotlib`](https://matplotlib.org/)
-- [`lal`](https://pypi.org/project/lalsuite/), [`lalframe`](https://pypi.org/project/lalframe/), [`gwdatafind`](https://pypi.org/project/gwdatafind/), [`gwosc`](https://pypi.org/project/gwosc/), [`igwn-segments`](https://pypi.org/project/igwn-segments/), [`ligotimegps`](https://pypi.org/project/ligotimegps/), [`dqsegdb2`](https://pypi.org/project/dqsegdb2/), [`dateparser`](https://pypi.org/project/dateparser/), [`h5py`](https://www.h5py.org/)
+- [`lalsuite`](https://pypi.org/project/lalsuite/), [`gwdatafind`](https://pypi.org/project/gwdatafind/), [`gwosc`](https://pypi.org/project/gwosc/), [`igwn-segments`](https://pypi.org/project/igwn-segments/), [`ligotimegps`](https://pypi.org/project/ligotimegps/), [`dqsegdb2`](https://pypi.org/project/dqsegdb2/), [`dateparser`](https://pypi.org/project/dateparser/), [`h5py`](https://www.h5py.org/)
 
 ##### 🔄 Optional Libraries (Required for specific features)
 

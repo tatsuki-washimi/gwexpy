@@ -1,3 +1,4 @@
+import datetime
 
 from ._optional import require_optional
 from ._time import datetime_utc_to_gps
@@ -75,20 +76,58 @@ def from_pandas_series(cls, series, *, unit=None, t0=None, dt=None):
             t0_dt = index[0]
             # Handle naive as UTC
             if t0_dt.tzinfo is None:
-                 t0_dt = t0_dt.replace(tzinfo=pd.Timestamp.utcnow().tz)
+                t0_dt = t0_dt.replace(tzinfo=datetime.timezone.utc)
 
             inferred_t0 = datetime_utc_to_gps(t0_dt)
 
             if len(index) > 1:
-                t1_dt = index[1]
-                if t1_dt.tzinfo is None:
-                    t1_dt = t1_dt.replace(tzinfo=pd.Timestamp.utcnow().tz)
-                t1_gps = datetime_utc_to_gps(t1_dt)
-                inferred_dt = t1_gps - inferred_t0
+                if hasattr(index, "freq") and index.freq is not None:
+                    try:
+                        inferred_dt = index.freq.delta.total_seconds()
+                    except (AttributeError, ValueError):
+                         pass
+
+                if inferred_dt is None:
+                    # Robust dt estimation using median of differences
+                    # (Limit to first 1000 items for performance)
+                    sample_size = min(len(index), 1000)
+                    subset = index[:sample_size]
+                    
+                    if isinstance(index, pd.DatetimeIndex):
+                        # Convert to GPS float array for calculation
+                        t_gps = []
+                        for t in subset:
+                            if t.tzinfo is None:
+                                t = t.replace(tzinfo=datetime.timezone.utc)
+                            t_gps.append(float(datetime_utc_to_gps(t)))
+                        diffs = np.diff(t_gps)
+                    else:
+                        diffs = np.diff(subset.to_numpy().astype(float))
+                    
+                    inferred_dt = float(np.median(diffs))
+                    
+                    # Warn if intervals are not uniform (std > 0.1% of median)
+                    if len(diffs) > 1 and np.std(diffs) > (1e-3 * np.abs(inferred_dt)):
+                        import warnings
+                        warnings.warn(
+                            "Non-uniform time intervals detected in pandas index. "
+                            f"Using median interval (dt={inferred_dt}). "
+                            "Consider providing dt explicitly if this is unexpected.",
+                            UserWarning
+                        )
         elif isinstance(index, (pd.Index, pd.RangeIndex)) and np.issubdtype(index.dtype, np.number):
             inferred_t0 = float(index[0])
             if len(index) > 1:
-                inferred_dt = float(index[1] - index[0])
+                diffs = np.diff(index[:1000].to_numpy())
+                inferred_dt = float(np.median(diffs))
+                if len(diffs) > 1 and np.std(diffs) > (1e-3 * np.abs(inferred_dt)):
+                    import warnings
+                    warnings.warn(
+                        "Non-uniform intervals detected in numeric index. "
+                        f"Using median interval (dt={inferred_dt}). "
+                        "Consider providing dt explicitly if this is unexpected.",
+                        UserWarning
+                    )
 
     final_t0 = t0 if t0 is not None else (inferred_t0 if inferred_t0 is not None else 0)
     final_dt = dt if dt is not None else (inferred_dt if inferred_dt is not None else 1)
