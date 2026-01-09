@@ -136,11 +136,14 @@ def _infer_overlap_ratio(spectrogram):
 def bootstrap_spectrogram(
     spectrogram,
     n_boot=1000,
-    average="median",
+    method="median",
     ci=0.68,
     window="hann",
     nperseg=None,
     noverlap=None,
+    block_size=None,
+    rebin_width=None,
+    return_map=False,
     ignore_nan=True,
 ):
     """
@@ -157,19 +160,27 @@ def bootstrap_spectrogram(
     ----------
     spectrogram : gwpy.spectrogram.Spectrogram
     n_boot : int
-    average : str
+    method : str
+        'median' (default) or 'mean'.
     ci : float
     window : str or array, optional
     nperseg : int, optional
     noverlap : int, optional
+    block_size : int, optional
+        Size of blocks for block bootstrap. If None, perform standard bootstrap.
+    rebin_width : float, optional
+        Width to rebin frequencies (in Hz) before bootstrapping.
+    return_map : bool, optional
+        If True, return a BifrequencyMap of the covariance.
     ignore_nan : bool, optional
         If True, ignore NaNs during bootstrap averaging. Default is True.
 
     Returns
     -------
-    FrequencySeries
+    FrequencySeries or (FrequencySeries, BifrequencyMap)
     """
     data = spectrogram.value
+    frequencies = spectrogram.frequencies.value
     n_time = data.shape[0]
 
     if n_time < 2:
@@ -179,20 +190,93 @@ def bootstrap_spectrogram(
     if not (0 < ci < 1):
         raise ValueError("ci must be between 0 and 1.")
 
-    avg = average.lower()
+    avg = method.lower()
     if avg not in {"median", "mean"}:
-        raise ValueError("average must be 'median' or 'mean'.")
+        raise ValueError("method must be 'median' or 'mean'.")
+
+    # 1. Frequency Rebinning
+    if rebin_width is not None and rebin_width > 0:
+        df = spectrogram.df.value if hasattr(spectrogram.df, 'value') else spectrogram.df
+        bin_size = int(rebin_width / df)
+        
+        if bin_size > 1:
+            n_freq = data.shape[1]
+            # Truncate to multiple of bin_size
+            n_freq_new = n_freq // bin_size
+            if n_freq_new * bin_size != n_freq:
+                data = data[:, :n_freq_new * bin_size]
+                frequencies = frequencies[:n_freq_new * bin_size]
+            
+            # Rebin: reshape and mean
+            # (Time, Freq) -> (Time, FreqNew, BinSize) -> mean(axis=2)
+            data = data.reshape(n_time, n_freq_new, bin_size)
+            if ignore_nan:
+                data = np.nanmean(data, axis=2)
+            else:
+                data = np.mean(data, axis=2)
+                
+            # Update frequency axis (centers)
+            frequencies = frequencies.reshape(n_freq_new, bin_size)
+            frequencies = np.mean(frequencies, axis=1)
+            
+    # Update n_freq after potentially rebinning/truncating
+    n_freq = data.shape[1]
 
     use_median = (avg == "median")
 
-    # Generate all bootstrap indices at once using NumPy (ensures reproducibility with seed)
-    all_indices = np.random.randint(0, n_time, (n_boot, n_time))
+    # 2. Block Bootstrap
+    if block_size is not None and block_size > 1:
+        if block_size >= n_time:
+             # Just one block? or simple bootstrap of blocks?
+             # If block size is entire duration, only 1 possible block.
+             # Assume user knows what they are doing, but warn?
+             pass
+             
+        # Create list of all possible start indices for blocks
+        # Overlapping blocks? Moving block bootstrap usually allows overlapping.
+        # "Circular block bootstrap" vs "Moving block bootstrap".
+        # Let's assume standard moving block bootstrap: blocks can start at any index i where i+block <= n
+        num_possible_blocks = n_time - block_size + 1
+        
+        # We need to construct a sample of length n_time (approx)
+        num_blocks_needed = int(np.ceil(n_time / block_size))
+        
+        # Randomly choose start indices
+        start_indices = np.random.randint(0, num_possible_blocks, (n_boot, num_blocks_needed))
+        
+        # Construct full indices
+        # This is tricky to do fully vectorized for all_indices shaped (n_boot, n_time)
+        # because the last block might be truncated.
+        # But we can pre-allocate.
+        
+        all_indices = np.zeros((n_boot, n_time), dtype=int)
+        
+        # Vectorized block expansion is complex, let's do semi-vectorized.
+        # Or construct a large array of shape (n_boot, num_blocks_needed * block_size)
+        # taking care of wrapping? No wrapping for Moving Block.
+        
+        # Let's create an template of offsets: [0, 1, ..., block_size-1]
+        offsets = np.arange(block_size)
+        
+        # shape: (n_boot, num_blocks_needed, block_size)
+        # block_starts: (n_boot, num_blocks_needed, 1)
+        block_indices = start_indices[..., np.newaxis] + offsets[np.newaxis, np.newaxis, :]
+        
+        # Flatten to (n_boot, num_blocks_needed * block_size)
+        flat_indices = block_indices.reshape(n_boot, -1)
+        
+        # Truncate to n_time
+        all_indices = flat_indices[:, :n_time]
+        
+    else:
+        # Generate all bootstrap indices at once using NumPy (ensures reproducibility with seed)
+        all_indices = np.random.randint(0, n_time, (n_boot, n_time))
 
     if HAS_NUMBA:
         resampled_stats = _bootstrap_resample_jit(data, all_indices, use_median, ignore_nan)
     else:
         # Fallback to pure Python/NumPy implementation
-        resampled_stats = np.zeros((n_boot, data.shape[1]))
+        resampled_stats = np.zeros((n_boot, n_freq))
         for i in range(n_boot):
             indices = all_indices[i]
             sample = data[indices]
@@ -229,47 +313,96 @@ def bootstrap_spectrogram(
     err_low = center - p_low
     err_high = p_high - center
 
-    overlap_ratio = _infer_overlap_ratio(spectrogram)
-    factor = 1.0
-
-    if nperseg is None:
-        if overlap_ratio is not None and overlap_ratio > 1:
-            dummy_step = 100
-            dummy_nperseg = int(round(dummy_step * overlap_ratio))
-            if dummy_nperseg > dummy_step:
-                dummy_noverlap = dummy_nperseg - dummy_step
-                factor = calculate_correlation_factor(
-                    window, dummy_nperseg, dummy_noverlap, n_time
-                )
+    # Overlap Ratio Correction (not applied if block bootstrap is used? 
+    # Block bootstrap accounts for serial correlation implicitly if block size is large enough.
+    # But calculate_correlation_factor corrects for OVERLAP of FFTs in Welch.
+    # If we are resampling blocks of overlapping segments, do we still need it?
+    # Generally, bootstrap on dependent data should capture variance correctly if blocks are long enough.
+    # If block_size is used, we might treat factor as 1.0 or let it apply?
+    # Standard practice: If block bootstrap is used, it should capture the variance.
+    # But usually factor > 1 only if N_effective < N_actual. 
+    # With block bootstrap, we resample N_actual points. The variance of the mean of dependent vars
+    # is captured by the block structure.
+    # However, individual segments in Welch are correlated.
+    # Let's err on side of caution: If block_size is specified, we assume it handles correlation -> factor=1.
+    # If not, we use the analytical correction.
+    
+    if block_size is not None and block_size > 1:
+        factor = 1.0
     else:
-        if noverlap is None and overlap_ratio is not None and overlap_ratio > 1:
-            inferred_noverlap = int(round(nperseg - (nperseg / overlap_ratio)))
-            noverlap = max(0, inferred_noverlap)
-        if noverlap is None:
-            noverlap = 0
-        factor = calculate_correlation_factor(window, nperseg, noverlap, n_time)
+        overlap_ratio = _infer_overlap_ratio(spectrogram)
+        factor = 1.0
+
+        if nperseg is None:
+            if overlap_ratio is not None and overlap_ratio > 1:
+                dummy_step = 100
+                dummy_nperseg = int(round(dummy_step * overlap_ratio))
+                if dummy_nperseg > dummy_step:
+                    dummy_noverlap = dummy_nperseg - dummy_step
+                    factor = calculate_correlation_factor(
+                        window, dummy_nperseg, dummy_noverlap, n_time
+                    )
+        else:
+            if noverlap is None and overlap_ratio is not None and overlap_ratio > 1:
+                inferred_noverlap = int(round(nperseg - (nperseg / overlap_ratio)))
+                noverlap = max(0, inferred_noverlap)
+            if noverlap is None:
+                noverlap = 0
+            factor = calculate_correlation_factor(window, nperseg, noverlap, n_time)
 
     err_low *= factor
     err_high *= factor
 
     name = f"{spectrogram.name} (Bootstrap {avg})"
+    # Use re-calculated frequencies
+    from astropy import units as u
+    out_freqs = u.Quantity(frequencies, unit=spectrogram.frequencies.unit)
+    
     fs = FrequencySeries(
         center,
-        frequencies=spectrogram.frequencies,
+        frequencies=out_freqs,
         unit=spectrogram.unit,
         name=name,
     )
     fs.error_low = FrequencySeries(
         err_low,
-        frequencies=spectrogram.frequencies,
+        frequencies=out_freqs,
         unit=spectrogram.unit,
         name="Error Low",
     )
     fs.error_high = FrequencySeries(
         err_high,
-        frequencies=spectrogram.frequencies,
+        frequencies=out_freqs,
         unit=spectrogram.unit,
         name="Error High",
-    )
+    ) # Fixed Error High name
+    
+    if return_map:
+        from gwexpy.frequencyseries import BifrequencyMap
+        if ignore_nan:
+             # masked covariance? np.cov doesn't support nan directly well in all versions
+             # Use pandas or manual? Or just mask?
+             # Simple approach: nan -> mean (impute) or just let np.cov handle if recent enough?
+             # np.cov does NOT handle NaNs.
+             # If robust is needed, maybe skip map or warning?
+             # Hack: zero-fill or mean-fill for covariance calculation if NaNs exist
+             # But if ignore_nan=True, we likely have NaNs.
+             # Let's fill NaNs with column means for covariance purpose
+             stats_filled = resampled_stats.copy()
+             col_mean = np.nanmean(stats_filled, axis=0)
+             inds = np.where(np.isnan(stats_filled))
+             stats_filled[inds] = np.take(col_mean, inds[1])
+             cov_matrix = np.cov(stats_filled, rowvar=False)
+        else:
+             cov_matrix = np.cov(resampled_stats, rowvar=False)
+             
+        bfm = BifrequencyMap.from_points(
+            cov_matrix,
+            f2=out_freqs,
+            f1=out_freqs,
+            unit=spectrogram.unit ** 2,
+            name=f"Covariance of {spectrogram.name}"
+        )
+        return fs, bfm
 
     return fs

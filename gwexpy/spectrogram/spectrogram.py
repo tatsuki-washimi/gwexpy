@@ -17,14 +17,17 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         from gwexpy.plot import Plot
         return Plot(self, **kwargs)
 
-    def bootstrap_asd(
+    def bootstrap(
         self,
         n_boot=1000,
-        average="median",
+        method="median",
         ci=0.68,
         window="hann",
         nperseg=None,
         noverlap=None,
+        block_size=None,
+        rebin_width=None,
+        return_map=False,
         ignore_nan=True,
     ):
         """
@@ -37,11 +40,14 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         return bootstrap_spectrogram(
             self,
             n_boot=n_boot,
-            average=average,
+            method=method,
             ci=ci,
             window=window,
             nperseg=nperseg,
             noverlap=noverlap,
+            block_size=block_size,
+            rebin_width=rebin_width,
+            return_map=return_map,
             ignore_nan=ignore_nan,
         )
 
