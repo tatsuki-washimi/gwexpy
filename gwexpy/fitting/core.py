@@ -94,6 +94,7 @@ class FitResult:
         y_data=None,
         dy_data=None,
         x_fit_range=None,
+        cov_inv=None,
     ):
         self.minuit = minuit_obj
         self.model = model
@@ -108,12 +109,13 @@ class FitResult:
         self.y_data = y_data if y_data is not None else y
         self.dy_data = dy_data
         self.x_fit_range = x_fit_range
+        self.cov_inv = cov_inv  # Inverse covariance matrix for GLS
         self.sampler = None
         self.samples = None
         self.mcmc_labels = None
         self.has_dy = dy is not None
         if self.dy is None:
-            self.dy = np.ones_like(y)
+            self.dy = np.ones_like(y, dtype=float)
 
     @property
     def params(self):
@@ -460,6 +462,26 @@ class FitResult:
     def run_mcmc(self, n_walkers=32, n_steps=3000, burn_in=500, progress=True):
         """
         Run MCMC using emcee starting from the best-fit parameters.
+        
+        This method supports both standard least squares and GLS (Generalized
+        Least Squares) error structures. If `cov_inv` is available, the log
+        probability is computed using the full covariance structure.
+        
+        Parameters
+        ----------
+        n_walkers : int, optional
+            Number of MCMC walkers. Default is 32.
+        n_steps : int, optional
+            Number of MCMC steps per walker. Default is 3000.
+        burn_in : int, optional
+            Number of initial steps to discard. Default is 500.
+        progress : bool, optional
+            Whether to show progress bar. Default is True.
+        
+        Returns
+        -------
+        sampler : emcee.EnsembleSampler
+            The emcee sampler object containing the full chain.
         """
         if emcee is None:
             raise ImportError("Please install 'emcee' and 'corner' to use MCMC features.")
@@ -471,6 +493,16 @@ class FitResult:
 
         # Dictionary of fixed parameters
         fixed_params = {p: self.minuit.values[p] for p in self.minuit.parameters if self.minuit.fixed[p]}
+        
+        # Cache values for log_prob closure
+        x = self.x
+        y = self.y
+        model = self.model
+        cov_inv = self.cov_inv
+        dy = self.dy
+        all_param_names = list(self.minuit.parameters)
+        limits_dict = {p: self.minuit.limits[p] for p in self.minuit.parameters 
+                       if self.minuit.limits[p] != (None, None)}
 
         # Log Probability Function
         def log_prob(theta):
@@ -482,23 +514,34 @@ class FitResult:
                 current_params[name] = val
 
                 # Check limits defined in minuit
-                if name in self.minuit.limits:
-                    vmin, vmax = self.minuit.limits[name]
-                    if not (vmin <= val <= vmax):
+                if name in limits_dict:
+                    vmin, vmax = limits_dict[name]
+                    if vmin is not None and val < vmin:
+                        return -np.inf
+                    if vmax is not None and val > vmax:
                         return -np.inf
 
-            # iminuit Cost (Chi2) -> log_prob = -0.5 * Chi2
-            # LeastSquares(*args) expects arguments in order
             try:
-                args = [current_params[p] for p in self.minuit.parameters]
-                chi2 = self.cost_func(*args)
+                # Get model prediction
+                args = [current_params[p] for p in all_param_names]
+                ym = model(x, *args)
+                r = y - ym
+                
+                # Compute log probability based on error structure
+                if cov_inv is not None:
+                    # GLS: use full covariance structure
+                    chi2 = float(r @ cov_inv @ r)
+                else:
+                    # Standard: use diagonal errors
+                    chi2 = float(np.sum((r / dy) ** 2))
+                
                 return -0.5 * chi2
+                
             except (ValueError, TypeError, ZeroDivisionError):
                 # Expected numerical errors
                 return -np.inf
             except Exception:
-                # Unexpected errors - ideally log this or re-raise if debugging
-                # warnings.warn(f"MCMC log_prob encountered unexpected error: {e}")
+                # Unexpected errors
                 return -np.inf
 
         # Initial state: small ball around minuit result
@@ -516,29 +559,216 @@ class FitResult:
         # Save flattened samples (discarding burn-in)
         self.samples = self.sampler.get_chain(discard=burn_in, flat=True)
         self.mcmc_labels = float_params
+        self._burn_in = burn_in
 
         return self.sampler
 
-    def plot_corner(self, **kwargs):
-        """Plot corner plot of MCMC samples."""
+    @property
+    def parameter_intervals(self):
+        """
+        Get parameter confidence intervals from MCMC samples.
+        
+        Returns 16th, 50th, and 84th percentiles for each parameter,
+        corresponding to median and ±1σ bounds.
+        
+        Returns
+        -------
+        dict
+            Dictionary mapping parameter names to (lower, median, upper) tuples.
+        
+        Raises
+        ------
+        RuntimeError
+            If run_mcmc() has not been called.
+        """
+        if self.samples is None:
+            raise RuntimeError("Run .run_mcmc() first.")
+        
+        intervals = {}
+        for i, name in enumerate(self.mcmc_labels):
+            samples_i = self.samples[:, i]
+            q16, q50, q84 = np.percentile(samples_i, [16, 50, 84])
+            intervals[name] = (q16, q50, q84)
+        
+        return intervals
+
+    @property
+    def mcmc_chain(self):
+        """
+        Get the full MCMC chain (not flattened, not discarded).
+        
+        Returns
+        -------
+        ndarray
+            Shape (n_steps, n_walkers, n_params). Returns None if MCMC not run.
+        """
+        if self.sampler is None:
+            return None
+        return self.sampler.get_chain()
+
+    def plot_corner(self, show_titles=True, quantiles=None, **kwargs):
+        """
+        Plot corner plot of MCMC samples.
+        
+        Parameters
+        ----------
+        show_titles : bool, optional
+            Whether to show parameter value titles. Default is True.
+        quantiles : list, optional
+            Quantiles for title display. Default is [0.16, 0.5, 0.84].
+        **kwargs
+            Additional arguments passed to corner.corner().
+        
+        Returns
+        -------
+        figure : matplotlib.figure.Figure
+            The corner plot figure.
+        """
         if corner is None:
             raise ImportError("Please install 'corner' to use plot_corner.")
         if self.samples is None:
             raise RuntimeError("Run .run_mcmc() first.")
 
+        # Set defaults
+        if quantiles is None:
+            quantiles = [0.16, 0.5, 0.84]
+        
         # Show BestFit truth lines
         if self.mcmc_labels:
             truths = [self.minuit.values[p] for p in self.mcmc_labels]
             kwargs.setdefault('truths', truths)
             kwargs.setdefault('labels', self.mcmc_labels)
+        
+        kwargs.setdefault('show_titles', show_titles)
+        kwargs.setdefault('quantiles', quantiles)
+        kwargs.setdefault('title_kwargs', {"fontsize": 10})
+        
+        fig = corner.corner(self.samples, **kwargs)
+        
+        # Add annotation if GLS was used
+        if self.cov_inv is not None:
+            fig.text(0.95, 0.95, "GLS fit", ha='right', va='top', 
+                    fontsize=10, style='italic', transform=fig.transFigure)
+        
+        return fig
 
-        return corner.corner(self.samples, **kwargs)
+    def plot_fit_band(self, ax=None, num_points=200, n_samples=100, alpha=0.3, **kwargs):
+        """
+        Plot the fit with uncertainty band from MCMC samples.
+        
+        Parameters
+        ----------
+        ax : matplotlib.axes.Axes, optional
+            Axes to plot on. If None, creates new figure.
+        num_points : int, optional
+            Number of points for model curve. Default is 200.
+        n_samples : int, optional
+            Number of MCMC samples to use for band. Default is 100.
+        alpha : float, optional
+            Alpha transparency for uncertainty band. Default is 0.3.
+        **kwargs
+            Additional arguments passed to ax.fill_between().
+        
+        Returns
+        -------
+        ax : matplotlib.axes.Axes
+            The axes with the plot.
+        """
+        if self.samples is None:
+            raise RuntimeError("Run .run_mcmc() first.")
+        
+        if ax is None:
+            fig, ax = plt.subplots()
+        
+        # Generate x values for plotting
+        x_plot = np.linspace(np.min(self.x), np.max(self.x), num_points)
+        
+        # Get random subset of samples
+        n_total = len(self.samples)
+        indices = np.random.choice(n_total, size=min(n_samples, n_total), replace=False)
+        
+        # Fixed parameters
+        fixed_params = {p: self.minuit.values[p] for p in self.minuit.parameters 
+                        if self.minuit.fixed[p]}
+        all_param_names = list(self.minuit.parameters)
+        
+        # Compute model curves for samples
+        y_samples = []
+        for idx in indices:
+            sample = self.samples[idx]
+            current_params = fixed_params.copy()
+            for name, val in zip(self.mcmc_labels, sample):
+                current_params[name] = val
+            args = [current_params[p] for p in all_param_names]
+            y_samples.append(self.model(x_plot, *args))
+        
+        y_samples = np.array(y_samples)
+        
+        # Compute percentiles
+        y_lower = np.percentile(y_samples, 16, axis=0)
+        y_median = np.percentile(y_samples, 50, axis=0)
+        y_upper = np.percentile(y_samples, 84, axis=0)
+        
+        # Plot data
+        ax.errorbar(self.x, self.y, yerr=self.dy if self.has_dy else None,
+                    fmt='.', color='black', label='Data', zorder=2)
+        
+        # Plot best fit
+        y_best = self.model(x_plot, **self.params)
+        ax.plot(x_plot, y_best, color='red', label='Best fit', zorder=3)
+        
+        # Plot uncertainty band
+        band_color = kwargs.pop('color', 'blue')
+        ax.fill_between(x_plot, y_lower, y_upper, alpha=alpha, color=band_color,
+                       label='68% credible', zorder=1, **kwargs)
+        
+        if self.x_label:
+            ax.set_xlabel(self.x_label)
+        if self.y_label:
+            ax.set_ylabel(self.y_label)
+        ax.legend()
+        
+        return ax
 
-def fit_series(series, model, x_range=None, sigma=None,
-               p0=None, limits=None, fixed=None, **kwargs):
+def fit_series(series, model, x_range=None, sigma=None, cov=None,
+               cost_function=None, p0=None, limits=None, fixed=None, **kwargs):
     """
     Fit a Series object using iminuit.
     Supports real and complex valued Series (simultaneous Re/Im fit).
+    
+    Parameters
+    ----------
+    series : Series
+        Data series to fit.
+    model : callable or str
+        Model function or name (e.g., "gaussian", "power_law").
+    x_range : tuple, optional
+        (x_min, x_max) to crop data before fitting.
+    sigma : array-like or scalar, optional
+        Per-point error estimates. Ignored if `cov` or `cost_function` is provided.
+    cov : BifrequencyMap or 2D ndarray, optional
+        Covariance matrix for Generalized Least Squares (GLS) fitting.
+        If provided, overrides `sigma` and uses GLS χ² minimization.
+        Ignored if `cost_function` is provided.
+    cost_function : callable, optional
+        User-defined cost function for Minuit. If provided, takes priority over
+        `sigma`, `cov`, and automatic cost function selection.
+        Must be callable with signature `cost_function(*params) -> float`.
+        Should have `errordef` attribute (default: 1.0 for least squares).
+        Parameter names are extracted via `iminuit.util.describe()`.
+    p0 : dict or list, optional
+        Initial parameter values.
+    limits : dict, optional
+        Parameter limits, e.g., {"A": (0, 100)}.
+    fixed : list, optional
+        List of parameter names to fix during fit.
+    **kwargs
+        Additional arguments passed to Minuit.
+    
+    Returns
+    -------
+    FitResult
+        Object containing fit results, parameters, and plotting methods.
     """
     # 0. モデルの解決
     if isinstance(model, str):
@@ -627,7 +857,60 @@ def fit_series(series, model, x_range=None, sigma=None,
     is_complex = np.iscomplexobj(y)
 
     # 2. Cost Function
-    if is_complex:
+    # Priority: cost_function > cov > sigma > default
+    cov_inv_for_result = None  # Will be set if GLS is used
+    
+    if cost_function is not None:
+        # User-provided cost function takes highest priority
+        cost = cost_function
+        # Try to extract cov_inv from cost function if it's a GLS
+        if hasattr(cost_function, 'cov_inv'):
+            cov_inv_for_result = cost_function.cov_inv
+    elif cov is not None:
+        # GLS mode: use covariance matrix
+        if is_complex:
+            raise NotImplementedError(
+                "GLS fitting is not yet supported for complex data. "
+                "Please use sigma instead."
+            )
+        
+        from .gls import GeneralizedLeastSquares
+        
+        # Handle BifrequencyMap or 2D ndarray
+        cov_arr = None
+        cov_inv = None
+        
+        # Check if cov is a BifrequencyMap (duck typing to avoid import issues)
+        if hasattr(cov, 'inverse') and hasattr(cov, 'value'):
+            # BifrequencyMap: get inverse and extract value
+            inv_map = cov.inverse()
+            cov_inv = np.asarray(inv_map.value)
+            cov_arr = np.asarray(cov.value)
+        else:
+            # Assume 2D ndarray covariance
+            cov_arr = np.asarray(cov)
+            if cov_arr.ndim != 2:
+                raise ValueError(f"cov must be a 2D array, got {cov_arr.ndim}D")
+            cov_inv = np.linalg.pinv(cov_arr)
+        
+        # Check dimension matches
+        n = len(y)
+        if cov_inv.shape != (n, n):
+            raise ValueError(
+                f"Covariance matrix shape {cov_arr.shape} does not match "
+                f"data length {n}. Expected ({n}, {n})."
+            )
+        
+        # Generate dy from diagonal of covariance for plotting error bars
+        diag_cov = np.diag(cov_arr)
+        # Handle potential negative values from numerical issues
+        dy = np.sqrt(np.maximum(diag_cov, 0))
+        sigma_for_result = dy
+        sigma_full_for_plot = None  # TODO: crop to full range if needed
+        
+        cost = GeneralizedLeastSquares(x, y, cov_inv, model)
+        cov_inv_for_result = cov_inv  # Save for MCMC
+    elif is_complex:
         cost = ComplexLeastSquares(x, y, dy, model)
     else:
         cost = RealLeastSquares(x, y, dy, model)
@@ -688,4 +971,5 @@ def fit_series(series, model, x_range=None, sigma=None,
         y_data=y_full,
         dy_data=sigma_full_for_plot,
         x_fit_range=x_range,
+        cov_inv=cov_inv_for_result,
     )

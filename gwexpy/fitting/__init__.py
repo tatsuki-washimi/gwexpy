@@ -7,8 +7,17 @@ from gwpy.types import Series
 
 if TYPE_CHECKING:
     from .core import FitResult, fit_series
+    from .gls import GeneralizedLeastSquares
+    from .highlevel import fit_bootstrap_spectrum
 
-__all__ = ["fit_series", "FitResult", "enable_series_fit", "enable_fitting_monkeypatch"]
+__all__ = [
+    "fit_series",
+    "FitResult",
+    "GeneralizedLeastSquares",
+    "fit_bootstrap_spectrum",
+    "enable_series_fit",
+    "enable_fitting_monkeypatch",
+]
 
 
 def _lazy_series_fit(self: Series, *args: Any, **kwargs: Any) -> Any:
@@ -45,6 +54,22 @@ def __getattr__(name: str) -> Any:
                 "gwexpy.fitting requires optional dependencies (e.g. iminuit) and a working numba setup."
             ) from exc
         return fit_series if name == "fit_series" else FitResult
+    if name == "GeneralizedLeastSquares":
+        try:
+            from .gls import GeneralizedLeastSquares
+        except Exception as exc:  # pragma: no cover
+            raise ImportError(
+                "gwexpy.fitting requires optional dependencies (e.g. iminuit)."
+            ) from exc
+        return GeneralizedLeastSquares
+    if name == "fit_bootstrap_spectrum":
+        try:
+            from .highlevel import fit_bootstrap_spectrum
+        except Exception as exc:  # pragma: no cover
+            raise ImportError(
+                "gwexpy.fitting.highlevel requires optional dependencies."
+            ) from exc
+        return fit_bootstrap_spectrum
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 

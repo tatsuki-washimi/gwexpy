@@ -267,19 +267,41 @@ except ImportError:
 Supported built-in models: `gaussian` (or `gaus`), `exponential` (or `exp`), `landau`, `power_law`, `damped_oscillation`, and polynomials (e.g., `pol1`, `pol2`).
 
 ```python
-from gwexpy.fitting import enable_fitting_monkeypatch
+from gwexpy.fitting import enable_fitting_monkeypatch, fit_series
 enable_fitting_monkeypatch()
 
-# Fit a TimeSeries to a model
-# result = ts.fit('gaussian', p0={'A': 10, 'mu': 5, 'sigma': 1})
-# result = ts.fit('damped_oscillation', p0={'A': 1, 'tau': 0.1, 'f': 50})
-# print(result.params)
-# result.plot()
+# Basic fitting
+result = ts.fit('gaussian', p0={'A': 10, 'mu': 5, 'sigma': 1})
+print(result.params)
+result.plot()
+
+# GLS fitting with covariance matrix
+result = fit_series(fs, "power_law", cov=covariance_matrix, p0={"A": 10, "alpha": -1.5})
 
 # MCMC Analysis (requires emcee & corner)
-# result_mcmc = ts.fit('gaussian', method='mcmc', nwalkers=32, nsteps=1000)
-# result_mcmc.plot_corner()
+result.run_mcmc(n_steps=5000, burn_in=500)
+print(result.parameter_intervals)  # 16th, 50th, 84th percentiles
+result.plot_corner()
+result.plot_fit_band()  # Fit with 68% credible band
+```
 
+#### Integrated Bootstrap Pipeline
+
+For spectral analysis with bootstrap resampling, GLS fitting, and MCMC in one call:
+
+```python
+from gwexpy.fitting import fit_bootstrap_spectrum
+
+result = fit_bootstrap_spectrum(
+    spectrogram,
+    model_fn=lambda f, A, alpha: A * f**alpha,
+    freq_range=(5, 50),
+    rebin_width=0.5,
+    block_size=4,
+    initial_params={"A": 10, "alpha": -1.5},
+    run_mcmc=True,
+)
+# Result includes: PSD, covariance, best-fit params, MCMC samples
 ```
 
 ### 7. Torch Dataset Helper
