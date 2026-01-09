@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .bifrequencymap import BifrequencyMap
 from .collections import (
     FrequencySeriesBaseDict,
     FrequencySeriesBaseList,
@@ -10,6 +11,7 @@ from .frequencyseries import FrequencySeries, SeriesType
 from .matrix import FrequencySeriesMatrix
 
 __all__ = [
+    "BifrequencyMap",
     "FrequencySeries",
     "SeriesType",
     "FrequencySeriesMatrix",
