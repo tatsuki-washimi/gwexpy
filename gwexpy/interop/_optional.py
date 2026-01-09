@@ -56,32 +56,41 @@ def require_optional(name: str) -> Any:
         pkg_name = _OPTIONAL_DEPENDENCIES[name]
 
     # Map package name to help message for installation
+    # Aligned with pyproject.toml [project.optional-dependencies]
     _EXTRA_MAP = {
-        "torch": "torch",
+        # interop: Deep Learning & Big Data frameworks
+        "torch": "interop",
         "torchaudio": "audio",
-        "tensorflow": "tensorflow",
-        "jax": "jax",
-        "dask": "dask",
-        "zarr": "zarr",
-        "polars": "polars",
-        "xarray": "data",
-        "h5py": "data",
-        "netCDF4": "data",
+        "tensorflow": "interop",
+        "jax": "interop",
+        "dask": "interop",
+        "zarr": "interop",
+        "cupy": "interop",
+        "xarray": "interop",
+        # stats: Statistical analysis
+        "polars": "stats",
+        "statsmodels": "stats",
+        # fitting: Curve fitting and MCMC
+        "iminuit": "fitting",
+        # audio: Audio processing
         "librosa": "audio",
         "pydub": "audio",
+        # geophysics: Earth science
         "obspy": "geophysics",
         "mth5": "geophysics",
+        "netCDF4": "geophysics",
+        # bio: Bioscience
         "mne": "bio",
         "neo": "bio",
+        # control: Control systems
         "control": "control",
-        "iminuit": "stats",
-        "statsmodels": "stats",
+        # analysis: Signal analysis
         "PyEMD": "analysis",
-        "hurst": "analysis",
         "pywt": "analysis",
+        # gw: Gravitational wave specific
         "dttxml": "gw",
         "gwinc": "gw",
-        "joblib": "analysis",
+        "joblib": "stats",
     }
 
     try:

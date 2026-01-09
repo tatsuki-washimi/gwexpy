@@ -73,12 +73,20 @@ class FastCoherenceEngine:
             raise ValueError("overlap must be smaller than fftlength")
 
         self._window = np.hanning(self.nperseg).astype(float)
+        # Scaling factor to match scipy.signal.welch (scaling='density')
+        # - 1/_window_power: Normalizae for window energy loss
+        # - 2.0: Compensate for one-sided RFFT energy (excluding DC/Nyquist ideally, 
+        #        but 2.0 is the standard approximation for density scaling)
+        # - 1/sample_rate: Convert to V^2/Hz (Power Spectral Density)
+        self._window_power = np.sum(self._window ** 2)
+        self._scale = 2.0 / (self.sample_rate * self._window_power) if self.sample_rate > 0 else 1.0
+
         target_array = np.asarray(target_data.value, dtype=float)
         self._target_len = len(target_array)
         segments = self._segment_array(target_array, self.nperseg, self.noverlap)
         windowed = segments * self._window[None, :]
         self._target_fft = np.fft.rfft(windowed, axis=1)
-        self._target_psd = np.mean(np.abs(self._target_fft) ** 2, axis=0)
+        self._target_psd = np.mean(np.abs(self._target_fft) ** 2, axis=0) * self._scale
         self.frequencies = np.fft.rfftfreq(self.nperseg, d=1.0 / self.sample_rate)
 
     @staticmethod
@@ -88,6 +96,8 @@ class FastCoherenceEngine:
             raise ValueError("noverlap must be smaller than nperseg")
         if len(data) < nperseg:
             raise ValueError("data length shorter than fftlength")
+        # Ensure contiguous array to prevent undefined behavior with as_strided
+        data = np.ascontiguousarray(data)
         nseg = 1 + (len(data) - nperseg) // step
         shape = (nseg, nperseg)
         strides = (data.strides[0] * step, data.strides[0])
@@ -105,9 +115,9 @@ class FastCoherenceEngine:
         segments = self._segment_array(aux_array, self.nperseg, self.noverlap)
         windowed = segments * self._window[None, :]
         aux_fft = np.fft.rfft(windowed, axis=1)
-        aux_psd = np.mean(np.abs(aux_fft) ** 2, axis=0)
+        aux_psd = np.mean(np.abs(aux_fft) ** 2, axis=0) * self._scale
 
-        csd = np.mean(self._target_fft * np.conj(aux_fft), axis=0)
+        csd = np.mean(self._target_fft * np.conj(aux_fft), axis=0) * self._scale
         denom = self._target_psd * aux_psd
         coherence = np.zeros_like(denom, dtype=float)
         valid = denom > 0
