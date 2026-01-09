@@ -166,7 +166,7 @@ To install everything at once, use: `pip install ".[all]"`.
 
 ## Usage Examples
 
-### 1. Time Conversion & Auto Series (Example: [intro_time-operations.ipynb](examples/intro_time-operations.ipynb))
+### 1. Time Conversion & Auto Series (Example: [intro_time-operations.ipynb](examples/basic-new-methods/intro_time-operations.ipynb))
 
 ```python
 import numpy as np
@@ -184,7 +184,7 @@ ts = as_series((1419724818 + np.arange(10)) * u.s, unit="h")  # TimeSeries (valu
 fs = as_series(np.arange(5) * u.Hz, unit="mHz")  # FrequencySeries (values in mHz)
 ```
 
-### 2. Interoperability (Deep Learning & Big Data) (Example: [intro_Interop.ipynb](examples/intro_Interop.ipynb))
+### 2. Interoperability (Deep Learning & Big Data) (Example: [intro_Interop.ipynb](examples/basic-new-methods/intro_Interop.ipynb))
 
 gwexpy provides seamless conversion to/from major data science frameworks:
 
@@ -216,7 +216,7 @@ tsd.write("data.root")  # Automatic .root detection for Dictionary/List
 mg = tsd.to_tmultigraph(name="comparison")
 ```
 
-### 3. TimeSeriesMatrix & Decomposition (Example: [intro_TimeSeriesMatrix.ipynb](examples/intro_TimeSeriesMatrix.ipynb))
+### 3. TimeSeriesMatrix & Decomposition (Example: [intro_TimeSeriesMatrix.ipynb](examples/basic-new-methods/intro_TimeSeriesMatrix.ipynb))
 
 ```python
 import numpy as np
@@ -235,7 +235,7 @@ scores, model = mat_clean.pca(n_components=2, return_model=True)
 sources = mat_clean.ica(n_components=2)
 ```
 
-### 4. Peak Finding (Example: [intro_PeakDetection.ipynb](examples/intro_PeakDetection.ipynb))
+### 4. Peak Finding (Example: [intro_PeakDetection.ipynb](examples/basic-new-methods/intro_PeakDetection.ipynb))
 
 ```python
 # Find peaks with physical unit constraints
@@ -247,7 +247,7 @@ peaks, props = s2.find_peaks(
 peaks.plot(style='o')
 ```
 
-### 5. Signal Transforms (STLT: [tutorial_ShortTimeLaplaceTransformation.ipynb](examples/tutorial_ShortTimeLaplaceTransformation.ipynb) & HHT: [tutorial_HHT_Analysis.ipynb](examples/tutorial_HHT_Analysis.ipynb))
+### 5. Signal Transforms (STLT: [tutorial_ShortTimeLaplaceTransformation.ipynb](examples/advanced-methods/tutorial_ShortTimeLaplaceTransformation.ipynb) & HHT: [tutorial_HHT_Analysis.ipynb](examples/advanced-methods/tutorial_HHT_Analysis.ipynb))
 
 ```python
 # Short-Time Laplace Transform
@@ -263,7 +263,7 @@ except ImportError:
     print("Install EMD-signal for HHT")
 ```
 
-### 6. Series Fitting (Example: [intro_Fitting.ipynb](examples/intro_Fitting.ipynb))
+### 6. Series Fitting (Example: [intro_Fitting.ipynb](examples/basic-new-methods/intro_Fitting.ipynb))
 
 `gwexpy` provides a powerful fitting API based on `iminuit`. Note that the `.fit()` method on `TimeSeries` and `FrequencySeries` is **opt-in** to avoid automatic modification of `gwpy` classes.
 
