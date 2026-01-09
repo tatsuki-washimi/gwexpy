@@ -107,6 +107,43 @@ class BifrequencyMap(Array2D):
             name=f"Projected: {self.name} x {input_spectrum.name}"
         )
 
+    def inverse(self, rcond=None) -> "BifrequencyMap":
+        """
+        Calculate the (pseudo-)inverse of the BifrequencyMap.
+        
+        Parameters
+        ----------
+        rcond : float or None
+            Cutoff for small singular values. Same as `np.linalg.pinv`.
+        
+        Returns
+        -------
+        inv_map : BifrequencyMap
+            New BifrequencyMap instance representing the inverse matrix.
+        """
+        from numpy.linalg import pinv
+        inv_value = pinv(self.value, rcond=rcond)
+        
+        # Determine new unit
+        if self.unit is not None and self.unit != u.dimensionless_unscaled:
+             new_unit = 1 / self.unit
+        else:
+             new_unit = u.dimensionless_unscaled
+             
+        # New axes:
+        # The result of pinv(A) has shape (ncols, nrows) where A is (nrows, ncols).
+        # Original: rows=frequency2, cols=frequency1
+        # Inverse: rows=frequency1, cols=frequency2
+        # So new f2 (Y) is old f1, new f1 (X) is old f2.
+        
+        return BifrequencyMap.from_points(
+            inv_value,
+            f2=self.frequency1,
+            f1=self.frequency2,
+            unit=new_unit,
+            name=f"Inverse of {self.name}" if self.name else "Inverse"
+        )
+
     def __repr__(self):
         prefix = super().__repr__()
         return (

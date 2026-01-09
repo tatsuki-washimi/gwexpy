@@ -228,12 +228,12 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         """Convert each item to dask.array. Returns a list."""
         return [s.to_dask(*args, **kwargs) for s in self]
 
-    def bootstrap_asd(self, *args, **kwargs):
+    def bootstrap(self, *args, **kwargs):
         """Estimate robust ASD from each spectrogram in the list (returns FrequencySeriesList)."""
         from gwexpy.frequencyseries import FrequencySeriesList
         new_list = FrequencySeriesList()
         for v in self:
-            new_list.append(v.bootstrap_asd(*args, **kwargs))
+            new_list.append(v.bootstrap(*args, **kwargs))
         return new_list
 
     def radian(self, unwrap: bool = False) -> "SpectrogramList":
@@ -507,12 +507,12 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         """Convert each item to dask.array. Returns a dict."""
         return {k: v.to_dask(*args, **kwargs) for k, v in self.items()}
 
-    def bootstrap_asd(self, *args, **kwargs):
+    def bootstrap(self, *args, **kwargs):
         """Estimate robust ASD from each spectrogram in the dict (returns FrequencySeriesDict)."""
         from gwexpy.frequencyseries import FrequencySeriesDict
         new_dict = FrequencySeriesDict()
         for k, v in self.items():
-            new_dict[k] = v.bootstrap_asd(*args, **kwargs)
+            new_dict[k] = v.bootstrap(*args, **kwargs)
         return new_dict
 
     def radian(self, unwrap: bool = False) -> "SpectrogramDict":
