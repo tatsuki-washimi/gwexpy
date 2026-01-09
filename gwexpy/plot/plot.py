@@ -343,7 +343,33 @@ class Plot(BasePlot):
         kwargs.pop('monitor', None)
         kwargs.pop('show', None)
 
+        # Handle list of labels (which causes ValueError in matplotlib if passed to plot())
+        labels_list = None
+        if 'label' in kwargs and isinstance(kwargs['label'], (list, tuple)):
+            labels_list = kwargs.pop('label')
+
         super().__init__(*final_args, **layout_kwargs, **fig_params, **kwargs)
+
+        # Apply list labels if provided
+        if labels_list:
+             # Iterate over all lines in all axes and assign labels sequentially
+             # This assumes the plotting order matches the label list order
+             line_idx = 0
+             for ax in self.axes:
+                  for line in ax.get_lines():
+                       if line_idx < len(labels_list):
+                            line.set_label(labels_list[line_idx])
+                            line_idx += 1
+                  # If we also have collections (like scatter/pcolormesh), should we label them?
+                  # Plot usually makes lines for 1D. BifrequencyMap diagonal returns FrequencySeries -> Lines.
+             
+             # Re-generate legend if labels were updated
+             if layout_kwargs.get('legend', True):
+                 for ax in self.axes:
+                     # Check if ax has lines with labels
+                     handles, lbls = ax.get_legend_handles_labels()
+                     if lbls:
+                         ax.legend()
 
         # Explicitly apply labels to all axes if they were provided but not applied
         # This fixes an issue where gwpy/matplotlib might only label the last axis or specific columns
