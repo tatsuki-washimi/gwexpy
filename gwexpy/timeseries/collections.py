@@ -1519,3 +1519,16 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
 
     # phase() and angle() are provided by PhaseMethodsMixin
 
+
+def _patch_gwpy_collections() -> None:
+    patches = (
+        (BaseTimeSeriesDict, TimeSeriesDict, ("csd_matrix", "coherence_matrix")),
+        (BaseTimeSeriesList, TimeSeriesList, ("csd_matrix", "coherence_matrix")),
+    )
+    for base_cls, impl_cls, method_names in patches:
+        for name in method_names:
+            if not hasattr(base_cls, name):
+                setattr(base_cls, name, getattr(impl_cls, name))
+
+
+_patch_gwpy_collections()
