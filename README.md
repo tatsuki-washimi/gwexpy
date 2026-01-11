@@ -145,6 +145,7 @@ These packages are not required if you don't use the specific features. You can 
 #### Installation Extras
 
 Required for specific submodules or interpolation features.
+Extras responsibilities: `dev` = test/lint/type tooling, `gui` = Qt runtime, `geophysics` = domain-specific deps.
 
 | Extra Name | Packages |
 | :--- | :--- |

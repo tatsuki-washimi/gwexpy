@@ -31,7 +31,11 @@ jobs:
         run: |
           ls -la tests/run_gui_tests.sh
           which xvfb-run
+          python -c "import PyQt5; print(PyQt5.__file__)"
+          python -c "from qtpy import QtCore; print(QtCore.__version__)"
 
       - name: Run GUI tests
+        env:
+          PYTEST_ARGS: "-q -ra"
         run: |
           ./tests/run_gui_tests.sh

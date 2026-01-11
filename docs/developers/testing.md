@@ -13,6 +13,8 @@ Recommended (installs test tooling and all optional Python extras):
 pip install -e ".[dev,all]"
 ```
 
+Extras responsibilities: `dev` = test/lint/type tooling, `gui` = Qt runtime, `geophysics` = domain-specific deps.
+
 If you prefer to install only the pieces you need, use the explicit extras:
 
 ```bash
