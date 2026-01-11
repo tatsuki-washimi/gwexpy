@@ -17,6 +17,10 @@ dist/
 
 # pytest
 .pytest_cache/
+tests/.qt-runtime/
+tests/.ipython/
+tests/.numba-cache/
+tests/.gmt/
 
 # IDE
 .vscode/
@@ -72,3 +76,13 @@ gwexpy/gui/test-data/*
 
 # GUI reference
 gwexpy/gui/reference*/*
+
+# Local/temporary files
+.github_token
+docs/testing.md
+pytest.ini
+scripts/run_gui_tests.sh
+sitecustomize.py
+tests/.screenshots/
+tests/run_gui_tests.sh~
+tests/unit/

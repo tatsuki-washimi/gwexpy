@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import warnings
 from scipy.signal import get_window
@@ -41,6 +42,26 @@ def _bootstrap_resample_jit(data, all_indices, use_median, ignore_nan):
                     resampled_stats[i, f] = np.nanmean(col)
                 else:
                     resampled_stats[i, f] = np.mean(col)
+    return resampled_stats
+
+
+def _bootstrap_resample_py(data, all_indices, use_median, ignore_nan):
+    n_boot = all_indices.shape[0]
+    n_freq = data.shape[1]
+    resampled_stats = np.zeros((n_boot, n_freq), dtype=data.dtype)
+
+    for i in range(n_boot):
+        indices = all_indices[i]
+        for f in range(n_freq):
+            col = data[indices, f]
+            if use_median:
+                resampled_stats[i, f] = (
+                    np.nanmedian(col) if ignore_nan else np.median(col)
+                )
+            else:
+                resampled_stats[i, f] = (
+                    np.nanmean(col) if ignore_nan else np.mean(col)
+                )
     return resampled_stats
 
 def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
@@ -137,6 +158,7 @@ def bootstrap_spectrogram(
     spectrogram,
     n_boot=1000,
     method="median",
+    average=None,
     ci=0.68,
     window="hann",
     nperseg=None,
@@ -162,6 +184,8 @@ def bootstrap_spectrogram(
     n_boot : int
     method : str
         'median' (default) or 'mean'.
+    average : str, optional
+        Alias for method ('median' or 'mean') for compatibility.
     ci : float
     window : str or array, optional
     nperseg : int, optional
@@ -189,6 +213,9 @@ def bootstrap_spectrogram(
         raise ValueError("n_boot must be >= 1.")
     if not (0 < ci < 1):
         raise ValueError("ci must be between 0 and 1.")
+
+    if average is not None:
+        method = average
 
     avg = method.lower()
     if avg not in {"median", "mean"}:
@@ -272,24 +299,20 @@ def bootstrap_spectrogram(
         # Generate all bootstrap indices at once using NumPy (ensures reproducibility with seed)
         all_indices = np.random.randint(0, n_time, (n_boot, n_time))
 
-    if HAS_NUMBA:
-        resampled_stats = _bootstrap_resample_jit(data, all_indices, use_median, ignore_nan)
+    use_numba = HAS_NUMBA and os.environ.get("NUMBA_DISABLE_JIT", "0") not in ("1", "true", "True")
+    if use_numba:
+        try:
+            resampled_stats = _bootstrap_resample_jit(
+                data, all_indices, use_median, ignore_nan
+            )
+        except Exception:
+            resampled_stats = _bootstrap_resample_py(
+                data, all_indices, use_median, ignore_nan
+            )
     else:
-        # Fallback to pure Python/NumPy implementation
-        resampled_stats = np.zeros((n_boot, n_freq))
-        for i in range(n_boot):
-            indices = all_indices[i]
-            sample = data[indices]
-            if use_median:
-                if ignore_nan:
-                    resampled_stats[i] = np.nanmedian(sample, axis=0)
-                else:
-                    resampled_stats[i] = np.median(sample, axis=0)
-            else:
-                if ignore_nan:
-                    resampled_stats[i] = np.nanmean(sample, axis=0)
-                else:
-                    resampled_stats[i] = np.mean(sample, axis=0)
+        resampled_stats = _bootstrap_resample_py(
+            data, all_indices, use_median, ignore_nan
+        )
 
     if avg == "median":
         if ignore_nan:

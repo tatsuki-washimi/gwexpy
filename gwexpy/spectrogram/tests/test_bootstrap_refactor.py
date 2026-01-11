@@ -26,12 +26,9 @@ def test_spectrogram_bootstrap_method():
     assert bs_mean.name == "TestSpec (Bootstrap mean)"
     assert hasattr(bs_mean, 'error_low')
     
-    # Check that 'average' kwarg raises TypeError (implicit due to not being in signature and not using **kwargs)
-    # OR if it's caught as unknown argument.
-    # The signature is def bootstrap(..., method='median', ...)
-    # So passing average='...' effectively passes it as keyword argument? No, it's not accepted.
-    with pytest.raises(TypeError):
-        spec.bootstrap(average='mean', n_boot=10)
+    # Check that 'average' alias is accepted
+    bs_avg = spec.bootstrap(average='mean', n_boot=10)
+    assert bs_avg.name == "TestSpec (Bootstrap mean)"
 
 def test_collections_bootstrap():
     times = np.arange(10)

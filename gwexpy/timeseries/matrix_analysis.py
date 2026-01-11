@@ -511,7 +511,7 @@ class TimeSeriesMatrixAnalysisMixin:
         N, M, _ = self.shape
         results = []
 
-        if nproc == 1:
+        def _run_serial():
             for i in range(N):
                 for j in range(M):
                     ts = self[i, j]
@@ -519,24 +519,29 @@ class TimeSeriesMatrixAnalysisMixin:
                     results.append({
                         "row": i, "col": j, "channel": ts.name, "score": score
                     })
+        if nproc <= 1:
+            _run_serial()
         else:
-            with ProcessPoolExecutor(max_workers=nproc) as executor:
-                futures = {}
-                for i in range(N):
-                    for j in range(M):
-                        ts = self[i, j]
-                        fut = executor.submit(_calc_correlation_direct, ts, target_timeseries, method)
-                        futures[fut] = (i, j, ts.name)
+            try:
+                with ProcessPoolExecutor(max_workers=nproc) as executor:
+                    futures = {}
+                    for i in range(N):
+                        for j in range(M):
+                            ts = self[i, j]
+                            fut = executor.submit(_calc_correlation_direct, ts, target_timeseries, method)
+                            futures[fut] = (i, j, ts.name)
 
-                for fut in futures:
-                    i, j, name = futures[fut]
-                    try:
-                        score = fut.result()
-                    except Exception:
-                        score = np.nan
-                    results.append({
-                        "row": i, "col": j, "channel": name, "score": score
-                    })
+                    for fut in futures:
+                        i, j, name = futures[fut]
+                        try:
+                            score = fut.result()
+                        except Exception:
+                            score = np.nan
+                        results.append({
+                            "row": i, "col": j, "channel": name, "score": score
+                        })
+            except (OSError, PermissionError, RuntimeError):
+                _run_serial()
 
         df = pd.DataFrame(results)
         df = df.sort_values("score", ascending=False, key=abs).reset_index(drop=True)

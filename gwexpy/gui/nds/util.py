@@ -4,11 +4,6 @@ Utility functions for NDS connectivity.
 
 import time
 
-try:
-    from gpstime import gpsnow
-except ImportError:
-    gpsnow = None
-
 
 def parse_server_string(server):
     """
@@ -42,16 +37,10 @@ def gps_now():
     Falls back to system time converted to GPS epoch if gpstime is unavailable.
     GPS epoch is 1980-01-06 00:00:00 UTC.
     """
-    if gpsnow:
+    try:
+        from gpstime import gpsnow
+
         return float(gpsnow())
-    else:
-        # Fallback: approximated GPS time using unix time
-        # GPS time = Unix time - 315964800 + leap seconds (approx 18s currently)
-        # This is a rough fallback. Accurate conversion requires leap second table.
-        # For display purposes roughly aligning with now, this might suffice if simple.
-        # But better to rely on t0 from NDS data.
-        # Here we just use a simple offset.
-        # Unix 0 = 1970-01-01
-        # GPS 0 = 1980-01-06
-        # Diff = 315964800 seconds
+    except Exception:
+        # Fallback: approximated GPS time using unix time.
         return time.time() - 315964800 + 18
