@@ -1,6 +1,28 @@
+"""gwexpy.noise - Noise generation and modeling.
+
+This module provides tools for generating and modeling noise spectra.
+
+Submodules
+----------
+asd : Functions that return FrequencySeries (ASD)
+wave : Functions that return time-series waveforms (ndarray)
+
+Examples
+--------
+>>> from gwexpy.noise.asd import from_pygwinc
+>>> from gwexpy.noise.wave import from_asd
+>>> 
+>>> asd = from_pygwinc('aLIGO', fmin=4.0, fmax=1024.0, df=0.01)
+>>> noise = from_asd(asd, duration=128, sample_rate=2048)
+"""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
+
+# Import submodules for direct access
+from . import asd
+from . import wave
 
 if TYPE_CHECKING:
     from .gwinc_ import from_pygwinc
@@ -8,10 +30,16 @@ if TYPE_CHECKING:
     from .colored import power_law, white_noise, pink_noise, red_noise
     from .magnetic import schumann_resonance, geomagnetic_background
     from .peaks import lorentzian_line, gaussian_line, voigt_line
+    from .wave import from_asd
 
 __all__ = [
+    # Submodules
+    "asd",
+    "wave",
+    # ASD functions (for backward compatibility)
     "from_pygwinc",
     "from_obspy",
+    "from_asd",
     "power_law",
     "white_noise",
     "pink_noise",
@@ -55,6 +83,9 @@ def __getattr__(name: str) -> Any:
             return gaussian_line
         if name == "voigt_line":
             return voigt_line
+    if name == "from_asd":
+        from .wave import from_asd
+        return from_asd
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
