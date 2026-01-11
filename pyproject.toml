@@ -26,7 +26,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "ruff", "mypy"]
+dev = ["pytest", "pytest-cov", "pytest-qt", "freezegun", "pytest-requests-mock", "ruff", "mypy"]
 gw = [
   "pycbc",
   "nds2-client",
@@ -59,10 +59,12 @@ geophysics = [
 audio = ["librosa", "pydub", "torchaudio"]
 bio = ["mne", "elephant", "neo"]
 interop = [
-  "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "cupy"
+  "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "cupy",
+  "xarray", "quantities"
 ]
 control = ["control"]
-gui = ["PyQt5"]
+gui = ["PyQt5", "pyqtgraph", "qtpy"]
+plot = ["pygmt"]
 analysis = [
     "PyEMD",
     "pywt",
@@ -78,7 +80,9 @@ all = [
     "librosa", "pydub", "torchaudio",
     "mne", "elephant", "neo",
     "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "cupy",
-    "control", "PyQt5",
+    "xarray", "quantities",
+    "control", "PyQt5", "pyqtgraph", "qtpy",
+    "pygmt",
     "PyEMD", "pywt"
 ]
 
