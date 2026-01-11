@@ -135,9 +135,10 @@ The following are only required when using specific analysis, visualization, or 
 | Geophysics | [`obspy`](https://docs.obspy.org/), [`mth5`](https://mth5.readthedocs.io/), [`mtpy`](https://mtpy.readthedocs.io/), [`mt_metadata`](https://pypi.org/project/mt-metadata/), [`netCDF4`](https://unidata.github.io/netcdf4-python/) | Seismic & Geomagnetic data, HDF5-based geophysics formats, NIED Hi-net data |
 | Audio | [`librosa`](https://librosa.org/), [`pydub`](http://pydub.com/), [`torchaudio`](https://pytorch.org/audio/) | Audio signal processing and conversion |
 | Bioscience | [`mne`](https://mne.tools/), [`elephant`](https://elephant.readthedocs.io/), [`neo`](https://neuralensemble.org/neo/) | Biomedical data analysis (EEG/MEG, Neural data) |
-| Deep Learning & Big Data | [`xarray`](https://xarray.pydata.org/), [`zarr`](https://zarr.readthedocs.io/), [`dask`](https://www.dask.org/), [`torch`](https://pytorch.org/), [`tensorflow`](https://www.tensorflow.org/), [`jax`](https://github.com/google/jax), [`cupy`](https://cupy.dev/) | Multidimensional arrays, Distributed computing, DL frameworks, GPU acceleration |
+| Deep Learning & Big Data | [`xarray`](https://xarray.pydata.org/), [`quantities`](https://python-quantities.readthedocs.io/), [`zarr`](https://zarr.readthedocs.io/), [`dask`](https://www.dask.org/), [`torch`](https://pytorch.org/), [`tensorflow`](https://www.tensorflow.org/), [`jax`](https://github.com/google/jax), [`cupy`](https://cupy.dev/) | Multidimensional arrays, Units-aware interop, Distributed computing, DL frameworks, GPU acceleration |
 | Control Theory | [`control`](https://python-control.readthedocs.io/) | Feedback control system analysis |
-| GUI | [`PyQt5`](https://www.riverbankcomputing.com/software/pyqt/) | Experimental GUI tools (`gwexpy.gui`) |
+| Plotting & Mapping | [`pygmt`](https://www.pygmt.org/) | Geographic map plotting (requires GMT runtime) |
+| GUI | [`PyQt5`](https://www.riverbankcomputing.com/software/pyqt/), [`pyqtgraph`](https://pyqtgraph.org/), [`qtpy`](https://pypi.org/project/QtPy/) | Experimental GUI tools (`gwexpy.gui`) |
 
 These packages are not required if you don't use the specific features. You can install all of them at once with `pip install ".[all]"`.
 
@@ -154,11 +155,12 @@ Required for specific submodules or interpolation features.
 | `[geophysics]` | `obspy`, `mth5`, `mtpy`, `mt_metadata`, `netCDF4` |
 | `[audio]` | `librosa`, `pydub`, `torchaudio` |
 | `[bio]` | `mne`, `elephant`, `neo` |
-| `[interop]` | `torch`, `tensorflow`, `jax`, `jaxlib`, `dask`, `zarr`, `cupy` |
+| `[interop]` | `torch`, `tensorflow`, `jax`, `jaxlib`, `dask`, `zarr`, `cupy`, `xarray`, `quantities` |
 | `[control]` | `control` |
-| `[gui]` | `PyQt5` |
+| `[gui]` | `PyQt5`, `pyqtgraph`, `qtpy` |
+| `[plot]` | `pygmt` |
 | `[analysis]` | `PyEMD`, `pywt`, `librosa`, `obspy` |
-| `[dev]` | `pytest`, `pytest-cov`, `ruff`, `mypy` |
+| `[dev]` | `pytest`, `pytest-cov`, `pytest-qt`, `freezegun`, `requests-mock`, `ruff`, `mypy` |
 
 To install everything at once, use: `pip install ".[all]"`.
 
@@ -325,7 +327,7 @@ for batch in loader:
 python -m pytest
 ```
 
-Some tests are skipped if optional dependencies or network access are unavailable.
+Some tests are skipped if optional dependencies or system tools are unavailable. For a full test run (GMT/pygmt, framecpp, Kerberos tooling, GUI stack, etc.), see `docs/developers/testing.md`.
 
 ## Contributing
 
