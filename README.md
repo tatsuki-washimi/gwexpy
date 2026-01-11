@@ -157,7 +157,7 @@ Required for specific submodules or interpolation features.
 | `[bio]` | `mne`, `elephant`, `neo` |
 | `[interop]` | `torch`, `tensorflow`, `jax`, `jaxlib`, `dask`, `zarr`, `cupy`, `xarray`, `quantities` |
 | `[control]` | `control` |
-| `[gui]` | `PyQt5`, `pyqtgraph`, `qtpy` |
+| `[gui]` | `PyQt5`, `pyqtgraph`, `qtpy`, `nds2-client` |
 | `[plot]` | `pygmt` |
 | `[analysis]` | `PyEMD`, `pywt`, `librosa`, `obspy` |
 | `[dev]` | `pytest`, `pytest-cov`, `pytest-qt`, `freezegun`, `requests-mock`, `ruff`, `mypy` |
