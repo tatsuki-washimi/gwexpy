@@ -27,8 +27,9 @@ from ..streaming import SpectralAccumulator
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, enable_preload=True, data_backend=None):
         super().__init__()
+        self._enable_preload = enable_preload
         self.setWindowTitle("pyaggui : a diaggui-like gwexpy GUI-tool")
         self.resize(1100, 850)
 
@@ -64,7 +65,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.is_loading_file = False
 
         # NDS Integration
-        self.nds_cache = NDSDataCache()
+        self.nds_cache = data_backend if data_backend is not None else NDSDataCache()
         self.nds_cache.signal_data.connect(self.on_nds_data)
         self.nds_latest_raw = None  # Stores latest DataBufferDict
         self.data_source = "SIM"  # SIM, FILE, NDS
@@ -75,6 +76,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # Streaming Accumulator
         self.accumulator = SpectralAccumulator()
         self.nds_cache.signal_payload.connect(self.on_stream_payload)
+        if hasattr(self.nds_cache, "signal_error"):
+            self.nds_cache.signal_error.connect(self.on_data_error)
 
         self.input_controls["ds_combo"].currentTextChanged.connect(
             self.on_source_changed
@@ -107,6 +110,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         bot = QtWidgets.QHBoxLayout()
         central.layout().addLayout(bot)
+        self.status_label = QtWidgets.QLabel("")
+        self.status_label.setStyleSheet("color: #A00000;")
+        bot.addWidget(self.status_label)
+        bot.addStretch(1)
         self.btn_start = QtWidgets.QPushButton("Start")
         self.btn_start.setMinimumWidth(120)
         self.btn_start.setStyleSheet("font-weight: bold;")
@@ -118,10 +125,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btn_resume.setMinimumWidth(120)
         self.btn_abort = QtWidgets.QPushButton("Abort")
         self.btn_abort.setMinimumWidth(120)
-        [
-            bot.addWidget(b) or (bot.addStretch(1) if b != self.btn_abort else None)
-            for b in [self.btn_start, self.btn_pause, self.btn_resume, self.btn_abort]
-        ]
+        for b in [self.btn_start, self.btn_pause, self.btn_resume, self.btn_abort]:
+            bot.addWidget(b)
+            if b != self.btn_abort:
+                bot.addStretch(1)
         self.btn_start.clicked.connect(self.start_animation)
         self.btn_pause.clicked.connect(self.pause_animation)
         self.btn_resume.clicked.connect(self.resume_animation)
@@ -160,14 +167,16 @@ class MainWindow(QtWidgets.QMainWindow):
         # Initial sync
         self.on_measurement_channel_changed()
 
-        # Startup NDS Cache Pre-loading (like ndscope)
-        QtCore.QTimer.singleShot(0, self.preload_nds_channels)
-
-        # Trigger update when switching away from Input tab (if settings changed)
-        self.tabs.currentChanged.connect(lambda idx: self.preload_nds_channels())
+        if self._enable_preload:
+            # Startup NDS Cache Pre-loading (like ndscope)
+            QtCore.QTimer.singleShot(0, self.preload_nds_channels)
+            # Trigger update when switching away from Input tab (if settings changed)
+            self.tabs.currentChanged.connect(lambda idx: self.preload_nds_channels())
 
     def preload_nds_channels(self):
         """Fetch NDS channels in background for the default server."""
+        if not self._enable_preload:
+            return
         try:
             # Determine default server/port (Same logic as show_channel_browser)
             ds_mode = self.input_controls["ds_combo"].currentText()
@@ -362,7 +371,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_nds_data(self, buffers):
         self.nds_latest_raw = buffers
 
+    def on_data_error(self, message):
+        logger.warning("Data backend error: %s", message)
+        if hasattr(self, "status_label"):
+            self.status_label.setText(message)
+
     def start_animation(self):
+        if hasattr(self, "status_label"):
+            self.status_label.setText("")
         # Validate Excitation Channels (uniqueness)
         if self.exc_controls and "panels" in self.exc_controls:
             active_names = []
@@ -507,6 +523,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btn_resume.setEnabled(False)
         self.btn_abort.setEnabled(True)
         self.nds_cache.reset()
+        if hasattr(self, "status_label"):
+            self.status_label.setText("")
         self.accumulator.reset() # Reset accumulator
         self.nds_latest_raw = None
         self.meas_start_gps = None  # Reset measurement start
