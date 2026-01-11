@@ -383,7 +383,7 @@ class BifrequencyMap(Array2D):
             If None (default), it is automatically determined based on the resolution 
             of frequency axes (max(df1, df2)).
         absolute : bool, optional
-            If True, calculates statistics along the absolute difference |f2 - f1|.
+            If True, calculates statistics along the absolute difference ``abs(f2 - f1)``.
             Default is False.
         **kwargs
             Additional arguments passed to the statistical function.
@@ -562,7 +562,7 @@ class BifrequencyMap(Array2D):
             - 'f2': Frequency 2.
             - 'diff', 'f2-f1': Frequency 2 - Frequency 1.
             - 'diff_inv', 'f1-f2': Frequency 1 - Frequency 2.
-            - 'abs_diff', '|f2-f1|': |Frequency 2 - Frequency 1|.
+            - 'abs_diff', ``'|f2-f1|'``: absolute value of (Frequency 2 - Frequency 1).
             Default is 'f1'.
         color : str, optional
              The parameter to use for coloring the lines (and defining the slices).

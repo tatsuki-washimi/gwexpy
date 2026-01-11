@@ -77,9 +77,11 @@ def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
     - Percival, D. B., & Walden, A. T., "Spectral Analysis for Physical Applications".
     - Ingram, A. (2019), "Error formulae for the energy-dependent cross-spectrum".
 
-    Formula:
-        factor = sqrt(1 + 2 * sum_{k=1}^{M-1} (1 - k/M) * |rho_window(k * S)|^2)
-        where rho_window is the normalized autocorrelation of the window.
+    Formula::
+
+        factor = sqrt(1 + 2 * sum_{k=1}^{M-1} (1 - k/M) * abs(rho_window(k * S))**2)
+
+    where rho_window is the normalized autocorrelation of the window.
 
     Parameters
     ----------
