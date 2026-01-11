@@ -46,7 +46,7 @@ class GBDHeader:
 def read_timeseriesdict_gbd(
     source,
     *,
-    timezone='UTC',
+    timezone=None,
     channels: Optional[Iterable[str]] = None,
     unit=None,
     epoch=None,
@@ -71,6 +71,8 @@ def read_timeseriesdict_gbd(
     pad : float, optional
         Padding value (unused, accepted for API symmetry).
     """
+    if timezone is None:
+        raise ValueError("timezone is required for GBD files")
     tzinfo = parse_timezone(timezone)
     header, data = _read_gbd(source)
 

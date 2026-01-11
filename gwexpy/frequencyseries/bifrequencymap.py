@@ -122,7 +122,10 @@ class BifrequencyMap(Array2D):
             New BifrequencyMap instance representing the inverse matrix.
         """
         from numpy.linalg import pinv
-        inv_value = pinv(self.value, rcond=rcond)
+        if rcond is None:
+            inv_value = pinv(self.value)
+        else:
+            inv_value = pinv(self.value, rcond=rcond)
         
         # Determine new unit
         if self.unit is not None and self.unit != u.dimensionless_unscaled:

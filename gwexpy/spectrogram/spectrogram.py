@@ -21,6 +21,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         self,
         n_boot=1000,
         method="median",
+        average=None,
         ci=0.68,
         window="hann",
         nperseg=None,
@@ -37,10 +38,43 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         """
         from gwexpy.spectral import bootstrap_spectrogram
 
+        if average is not None:
+            method = average
+
         return bootstrap_spectrogram(
             self,
             n_boot=n_boot,
             method=method,
+            average=None,
+            ci=ci,
+            window=window,
+            nperseg=nperseg,
+            noverlap=noverlap,
+            block_size=block_size,
+            rebin_width=rebin_width,
+            return_map=return_map,
+            ignore_nan=ignore_nan,
+        )
+
+    def bootstrap_asd(
+        self,
+        n_boot=1000,
+        average="median",
+        ci=0.68,
+        window="hann",
+        nperseg=None,
+        noverlap=None,
+        block_size=None,
+        rebin_width=None,
+        return_map=False,
+        ignore_nan=True,
+    ):
+        """
+        Convenience wrapper for bootstrap ASD estimation.
+        """
+        return self.bootstrap(
+            n_boot=n_boot,
+            method=average,
             ci=ci,
             window=window,
             nperseg=nperseg,
