@@ -166,3 +166,31 @@ def pytest_runtest_makereport(item, call):
         pixmap.save(str(path))
     except Exception:
         return
+
+
+@pytest.fixture(autouse=True)
+def _cleanup_qt_widgets(request):
+    yield
+
+    path_str = str(request.fspath)
+    if "tests/gui" not in path_str and "tests/e2e" not in path_str:
+        return
+
+    try:
+        from PyQt5 import QtCore, QtWidgets
+    except Exception:
+        return
+
+    app = QtWidgets.QApplication.instance()
+    if app is None:
+        return
+
+    for widget in app.topLevelWidgets():
+        try:
+            widget.close()
+        except Exception:
+            continue
+
+    app.processEvents()
+    QtCore.QCoreApplication.sendPostedEvents(None, QtCore.QEvent.DeferredDelete)
+    app.processEvents()
