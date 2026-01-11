@@ -5,21 +5,24 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Union
 
 import numpy as np
+from astropy import units as u
 
 if TYPE_CHECKING:
     from numpy.random import Generator
 
     from ..frequencyseries import FrequencySeries
+    from ..timeseries import TimeSeries
 
 
 def from_asd(
     asd: "FrequencySeries",
     duration: float,
     sample_rate: float,
+    t0: float = 0.0,
     rng: Union["Generator", None] = None,
-) -> np.ndarray:
+) -> "TimeSeries":
     """
-    Generate colored noise time-series from an ASD (Amplitude Spectral Density).
+    Generate colored noise TimeSeries from an ASD (Amplitude Spectral Density).
 
     Uses FFT-based colored noise synthesis to produce a time-series with the
     spectral characteristics defined by the input ASD.
@@ -32,20 +35,22 @@ def from_asd(
         Duration of the output time-series in seconds.
     sample_rate : float
         Sample rate of the output time-series in Hz.
+    t0 : float, optional
+        Start time of the output TimeSeries.
     rng : numpy.random.Generator, optional
         Random number generator instance. If None, a new default generator
         is created.
 
     Returns
     -------
-    np.ndarray
-        The generated noise time-series as a numpy array.
+    TimeSeries
+        The generated noise time-series as a gwexpy TimeSeries.
 
     Examples
     --------
     >>> from gwexpy.noise import from_pygwinc, from_asd
     >>> asd = from_pygwinc('aLIGO', fmin=4.0, fmax=1024.0, df=0.01)
-    >>> noise = from_asd(asd, duration=128, sample_rate=2048)
+    >>> noise = from_asd(asd, duration=128, sample_rate=2048, t0=0)
     """
     if rng is None:
         rng = np.random.default_rng()
@@ -79,4 +84,25 @@ def from_asd(
     # Inverse FFT to get time-series
     noise = np.fft.irfft(fft_coeffs, n=n_samples)
 
-    return noise
+    unit = getattr(asd, "unit", None)
+    ts_unit = None
+    if unit is not None:
+        try:
+            unit = u.Unit(unit)
+            ts_unit = unit * (u.Hz ** 0.5)
+        except Exception:
+            ts_unit = unit
+
+    name = getattr(asd, "name", None)
+    channel = getattr(asd, "channel", None)
+
+    from ..timeseries import TimeSeries
+
+    return TimeSeries(
+        noise,
+        sample_rate=sample_rate,
+        t0=t0,
+        unit=ts_unit,
+        name=name,
+        channel=channel,
+    )

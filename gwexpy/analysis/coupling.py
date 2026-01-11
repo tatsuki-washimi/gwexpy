@@ -10,7 +10,7 @@ Estimates the coupling function (CF) with flexible threshold strategies:
 import numpy as np
 import warnings
 from abc import ABC, abstractmethod
-from typing import Optional, Union, Dict
+from typing import Optional, Union, Dict, Tuple
 
 from ..timeseries import TimeSeries, TimeSeriesDict
 from ..frequencyseries import FrequencySeries
@@ -39,6 +39,12 @@ class ThresholdStrategy(ABC):
         """
         pass
 
+    @abstractmethod
+    def threshold(self, psd_inj: FrequencySeries, psd_bkg: FrequencySeries,
+                  raw_bkg: Optional[TimeSeries] = None, **kwargs) -> np.ndarray:
+        """Return the PSD threshold values used by this strategy."""
+        pass
+
 class RatioThreshold(ThresholdStrategy):
     """
     Checks if P_inj > ratio * P_bkg_mean.
@@ -49,6 +55,9 @@ class RatioThreshold(ThresholdStrategy):
 
     def check(self, psd_inj, psd_bkg, **kwargs):
         return psd_inj.value > (psd_bkg.value * self.ratio)
+
+    def threshold(self, psd_inj, psd_bkg, **kwargs):
+        return psd_bkg.value * self.ratio
 
 class SigmaThreshold(ThresholdStrategy):
     """
@@ -64,6 +73,12 @@ class SigmaThreshold(ThresholdStrategy):
 
         factor = 1.0 + (self.sigma / np.sqrt(n_avg))
         return psd_inj.value > (psd_bkg.value * factor)
+
+    def threshold(self, psd_inj, psd_bkg, n_avg=1.0, **kwargs):
+        if n_avg <= 0:
+            return psd_bkg.value
+        factor = 1.0 + (self.sigma / np.sqrt(n_avg))
+        return psd_bkg.value * factor
 
 class PercentileThreshold(ThresholdStrategy):
     """
@@ -85,6 +100,10 @@ class PercentileThreshold(ThresholdStrategy):
         self.factor = factor
 
     def check(self, psd_inj, psd_bkg, raw_bkg=None, fftlength=None, overlap=None, **kwargs):
+        threshold = self.threshold(psd_inj, psd_bkg, raw_bkg=raw_bkg, fftlength=fftlength, overlap=overlap, **kwargs)
+        return psd_inj.value > threshold
+
+    def threshold(self, psd_inj, psd_bkg, raw_bkg=None, fftlength=None, overlap=None, **kwargs):
         if raw_bkg is None or fftlength is None:
             raise ValueError("PercentileThreshold requires 'raw_bkg' time series and 'fftlength' to calculate distributions.")
 
@@ -105,8 +124,7 @@ class PercentileThreshold(ThresholdStrategy):
         # Apply factor
         threshold = p_bkg_values.value * self.factor
 
-        # Determine excess
-        return psd_inj.value > threshold
+        return threshold
 
 
 # --- Result Class ---
@@ -348,7 +366,8 @@ def _process_single_target(
     threshold_target,
     check_kwargs,
     fftlength,
-    overlap
+    overlap,
+    freq_mask
 ):
     """
     Process a single target channel.
@@ -374,6 +393,8 @@ def _process_single_target(
 
     # --- Compute CF ---
     valid_mask = mask_wit & mask_tgt & (delta_wit > 0) & (delta_tgt > 0)
+    if freq_mask is not None:
+        valid_mask = valid_mask & freq_mask
 
     cf_values = np.full_like(delta_wit, np.nan)
 
@@ -395,10 +416,28 @@ def _process_single_target(
 
     # --- Calculate Upper Limit (UL) ---
     mask_ul = mask_wit & (~mask_tgt) & (delta_wit > 0)
+    if freq_mask is not None:
+        mask_ul = mask_ul & freq_mask
+
+    try:
+        psd_tgt_threshold = threshold_target.threshold(
+            psd_tgt_inj, psd_tgt_bkg,
+            raw_bkg=ts_tgt_bkg,
+            **check_kwargs
+        )
+    except AttributeError:
+        psd_tgt_threshold = psd_tgt_bkg.value
+
+    if hasattr(psd_tgt_threshold, "value"):
+        psd_tgt_threshold = psd_tgt_threshold.value
+
+    delta_thr = psd_tgt_threshold - psd_tgt_bkg.value
+    mask_ul = mask_ul & (delta_thr > 0)
+
     ul_values = np.full_like(delta_wit, np.nan)
 
     with np.errstate(divide='ignore', invalid='ignore'):
-        sq_ul = psd_tgt_bkg.value / delta_wit
+        sq_ul = delta_thr / delta_wit
         ul_values[mask_ul] = np.sqrt(sq_ul[mask_ul])
 
     cf_ul = FrequencySeries(
@@ -439,6 +478,7 @@ class CouplingFunctionAnalysis:
         data_bkg: TimeSeriesDict,
         fftlength: float,
         witness: Optional[str] = None,
+        frange: Optional[Tuple[float, float]] = None,
         overlap: float = 0,
         threshold_witness: ThresholdStrategy = RatioThreshold(25.0),
         threshold_target: ThresholdStrategy = RatioThreshold(4.0),
@@ -459,6 +499,9 @@ class CouplingFunctionAnalysis:
         witness : str, optional
             The name (key) of the witness channel.
             If None, the FIRST channel in `data_inj` is used.
+        frange : tuple of float, optional
+            Frequency range (fmin, fmax) to evaluate CF and CF upper limit.
+            Values outside the range are set to NaN.
         overlap : float, optional
             Overlap in seconds (default 0).
         threshold_witness : ThresholdStrategy
@@ -514,6 +557,25 @@ class CouplingFunctionAnalysis:
         psd_wit_inj = ts_wit_inj.psd(**psd_kwargs)
         psd_wit_bkg = ts_wit_bkg.psd(**psd_kwargs)
 
+        # Frequency mask for CF evaluation
+        freq_mask = None
+        if frange is not None:
+            if len(frange) != 2:
+                raise ValueError("frange must be a tuple of (fmin, fmax)")
+            fmin, fmax = frange
+            if fmin is None:
+                fmin_val = -np.inf
+            else:
+                fmin_val = float(getattr(fmin, "to_value", lambda _: fmin)("Hz")) if hasattr(fmin, "to_value") else float(fmin)
+            if fmax is None:
+                fmax_val = np.inf
+            else:
+                fmax_val = float(getattr(fmax, "to_value", lambda _: fmax)("Hz")) if hasattr(fmax, "to_value") else float(fmax)
+            if fmin_val > fmax_val:
+                raise ValueError("frange must satisfy fmin <= fmax")
+            freqs = psd_wit_inj.xindex.value
+            freq_mask = (freqs >= fmin_val) & (freqs <= fmax_val)
+
         # Check Witness Excess
         # Note: We pass raw_bkg in case PercentileThreshold is used
         mask_wit = threshold_witness.check(
@@ -563,7 +625,7 @@ class CouplingFunctionAnalysis:
                     psd_kwargs,
                     psd_wit_inj, psd_wit_bkg, mask_wit, delta_wit,
                     witness_key, ts_wit_inj, ts_wit_bkg,
-                    threshold_target, check_kwargs, fftlength, overlap
+                    threshold_target, check_kwargs, fftlength, overlap, freq_mask
                 )
                 if res:
                     results[res[0]] = res[1]
@@ -577,7 +639,7 @@ class CouplingFunctionAnalysis:
                     psd_kwargs,
                     psd_wit_inj, psd_wit_bkg, mask_wit, delta_wit,
                     witness_key, ts_wit_inj, ts_wit_bkg,
-                    threshold_target, check_kwargs, fftlength, overlap
+                    threshold_target, check_kwargs, fftlength, overlap, freq_mask
                 ) for tgt_key in target_keys if tgt_key in data_bkg
             )
 
@@ -597,12 +659,20 @@ def estimate_coupling(
     data_bkg: TimeSeriesDict,
     fftlength: float,
     witness: Optional[str] = None,
+    frange: Optional[Tuple[float, float]] = None,
     threshold_witness: Union[ThresholdStrategy, float] = 25.0,
     threshold_target: Union[ThresholdStrategy, float] = 4.0,
     n_jobs: Optional[int] = None,
     **kwargs
 ) -> Union[CouplingResult, Dict[str, CouplingResult]]:
-    """Helper function to estimate CF."""
+    """Helper function to estimate CF.
+
+    Parameters
+    ----------
+    frange : tuple of float, optional
+        Frequency range (fmin, fmax) to evaluate CF and CF upper limit.
+        Values outside the range are set to NaN.
+    """
 
     def _ensure_strategy(val):
         if isinstance(val, (int, float)):
@@ -616,6 +686,7 @@ def estimate_coupling(
     return analysis.compute(
         data_inj, data_bkg, fftlength,
         witness=witness,
+        frange=frange,
         threshold_witness=tw,
         threshold_target=tt,
         n_jobs=n_jobs,
