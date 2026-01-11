@@ -89,8 +89,14 @@ Bruco computes Top-N coherence per frequency bin and can be tuned for large chan
 ## Installation
 
 ```bash
-# Standard installation
+# From a local checkout
 pip install .
+
+# From GitHub (no PyPI release)
+pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+
+# Editable install for development
+pip install -e ".[dev]"
 
 # Install with ALL optional dependencies (Recommended)
 pip install ".[all]"
@@ -105,11 +111,13 @@ pip install ".[audio]"       # Audio (librosa, pydub, etc.)
 pip install ".[bio]"         # Bioscience (mne, neo, elephant)
 pip install ".[interop]"     # Deep Learning & Big Data (torch, jax, dask, etc.)
 pip install ".[control]"     # Control Theory
+pip install ".[plot]"        # Plotting & mapping (pygmt)
+pip install ".[analysis]"    # Transforms & time-frequency analysis
 pip install ".[gui]"         # Experimental GUI
 ```
 
 > [!NOTE]
-> `gwexpy`コマンドは現在プレースホルダであり、主要な機能はPython APIを通じて提供されます。将来的にはサブコマンドが実装される予定です。
+> `gwexpy`コマンドは現在プレースホルダであり、主要な機能はPython APIを通じて提供されます。将来的にはサブコマンドが実装される予定です。`gwexpy.gui` は `.[gui]` をインストールすると起動できます。
 
 ### Dependencies
 

@@ -26,3 +26,21 @@ Working with collections:
 
    matrix = tsd.to_matrix()
    print(matrix.shape)
+
+Time utilities and auto series
+------------------------------
+
+.. code-block:: python
+
+   import numpy as np
+   from astropy import units as u
+   import pandas as pd
+   from gwexpy import as_series
+   from gwexpy.time import to_gps, from_gps
+
+   times = pd.to_datetime(["2025-01-01 00:00:00", "2025-01-01 00:00:01"])
+   gps = to_gps(times)
+   iso = from_gps(gps)
+
+   ts_axis = as_series((1419724818 + np.arange(10)) * u.s, unit="h")
+   fs_axis = as_series(np.arange(5) * u.Hz, unit="mHz")
