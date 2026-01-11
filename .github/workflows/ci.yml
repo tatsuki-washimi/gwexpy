@@ -20,12 +20,17 @@ jobs:
       - name: Install system dependencies (Xvfb)
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb
+          sudo apt-get install -y xvfb xauth
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e .
+
+      - name: Diagnostics
+        run: |
+          ls -la tests/run_gui_tests.sh
+          which xvfb-run
 
       - name: Run GUI tests
         run: |
