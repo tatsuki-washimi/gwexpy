@@ -1544,4 +1544,5 @@ class GraphPanel(QtWidgets.QFrame):
             "range_updater": self.update_range_logic,
             "units": {"display_y": self.display_y_combo},
             "panel": self,
+            "plot": self.target_plot,
         }
