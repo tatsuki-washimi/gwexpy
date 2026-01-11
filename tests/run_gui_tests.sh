@@ -11,4 +11,4 @@ fi
 
 xvfb-run -a -s "-screen 0 1920x1080x24" \
   env PYTHONFAULTHANDLER=1 PYTHONUNBUFFERED=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
-  python -u -m pytest -p pytestqt.plugin -q tests/gui tests/e2e
+  python -u -m pytest -p pytestqt.plugin ${PYTEST_ARGS:--q} tests/gui tests/e2e
