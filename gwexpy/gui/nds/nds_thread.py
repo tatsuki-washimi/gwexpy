@@ -3,8 +3,20 @@ NDS Thread for asynchronous data fetching.
 Adapted from reference_ndscope.
 """
 
-import nds2
+try:
+    import nds2
+    _NDS2_IMPORT_ERROR = None
+except Exception as exc:  # pragma: no cover - depends on optional dependency
+    nds2 = None
+    _NDS2_IMPORT_ERROR = exc
 from qtpy import QtCore
+
+
+def _nds2_missing_message() -> str:
+    base = "nds2 is required for NDS connections. Install nds2-client via conda-forge."
+    if _NDS2_IMPORT_ERROR is None:
+        return base
+    return f"{base} ({_NDS2_IMPORT_ERROR})"
 
 
 class NDSThread(QtCore.QThread):
@@ -21,6 +33,9 @@ class NDSThread(QtCore.QThread):
         self.conn = None
 
     def run(self):
+        if nds2 is None:
+            print(f"NDSThread Error: {_nds2_missing_message()}")
+            return
         try:
             self.conn = nds2.connection(self.server, self.port)
             # Phase 1: RAW Online
@@ -69,6 +84,9 @@ class ChannelListWorker(QtCore.QThread):
         self.pattern = pattern
 
     def run(self):
+        if nds2 is None:
+            self.finished.emit([], _nds2_missing_message())
+            return
         try:
             conn = nds2.connection(self.server, self.port)
             # Find channels with details
@@ -96,4 +114,3 @@ class ChannelListWorker(QtCore.QThread):
 
         except Exception as e:
             self.finished.emit([], str(e))
-
