@@ -9,4 +9,5 @@ API Reference
    spectrogram
    spectral
    analysis
+   noise
    types
