@@ -23,6 +23,38 @@ def _get_series_list_and_names(collection):
     else:
         raise TypeError(f"Unsupported collection type: {type(collection)}")
 
+def _normalize_dt_seconds(dt, method_name):
+    if dt is None:
+        raise ValueError(f"{method_name} requires TimeSeries with dt set")
+    if isinstance(dt, u.Quantity):
+        unit = dt.unit
+        if unit is None or unit == u.dimensionless_unscaled or getattr(unit, "physical_type", None) == "dimensionless":
+            return float(np.asarray(dt.value).flat[0])
+        try:
+            return float(dt.to(u.s).value)
+        except u.UnitConversionError as exc:
+            raise ValueError(f"{method_name} requires dt with time units") from exc
+    try:
+        return float(dt)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{method_name} requires numeric dt") from exc
+
+def _validate_dt_and_fftlength(series_rows, series_cols, fftlength, method_name):
+    if fftlength is None:
+        raise ValueError(f"{method_name} requires fftlength")
+    if not series_rows and not series_cols:
+        return
+    series_all = list(series_rows) + list(series_cols)
+    ref_dt = None
+    for ts in series_all:
+        dt = getattr(ts, "dt", None)
+        dt_sec = _normalize_dt_seconds(dt, method_name)
+        if ref_dt is None:
+            ref_dt = dt_sec
+            continue
+        if not np.isclose(dt_sec, ref_dt, rtol=1e-12, atol=0.0):
+            raise ValueError(f"{method_name} requires common dt; mismatch in dt")
+
 def csd_matrix_from_collection(
     collection,
     other=None,
