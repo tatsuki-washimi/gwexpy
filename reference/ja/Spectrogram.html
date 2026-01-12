@@ -1,0 +1,371 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spectrogram &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Spectrogram</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/ja/Spectrogram.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="spectrogram">
+<h1>Spectrogram<a class="headerlink" href="#spectrogram" title="Link to this heading"></a></h1>
+<p><strong>継承元:</strong> Spectrogram</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwpy.spectrogram.Spectrogram</span></code> を拡張し、追加の相互運用（interop）メソッドを提供します。</p>
+<section id="id1">
+<h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="t">
+<h3><code class="docutils literal notranslate"><span class="pre">T</span></code><a class="headerlink" href="#t" title="Link to this heading"></a></h3>
+<p>転置された配列のビュー。<code class="docutils literal notranslate"><span class="pre">self.transpose()</span></code> と同じです。</p>
+</section>
+<section id="abs">
+<h3><code class="docutils literal notranslate"><span class="pre">abs</span></code><a class="headerlink" href="#abs" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>要素ごとの絶対値を計算します。複素入力の場合、振幅を返します。</p>
+</section>
+<section id="append">
+<h3><code class="docutils literal notranslate"><span class="pre">append</span></code><a class="headerlink" href="#append" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>現在のシリーズの末尾に別のシリーズを接続します。</p>
+</section>
+<section id="bootstrap-asd">
+<h3><code class="docutils literal notranslate"><span class="pre">bootstrap_asd</span></code><a class="headerlink" href="#bootstrap-asd" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstrap_asd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_boot</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;median&#39;</span><span class="p">,</span> <span class="n">ci</span><span class="o">=</span><span class="mf">0.68</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hann&#39;</span><span class="p">,</span> <span class="n">nperseg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">noverlap</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ブートストラップ再サンプリングを用いて、このスペクトログラムからロバストな ASD（振幅スペクトル密度）を推定します。
+<code class="docutils literal notranslate"><span class="pre">gwexpy.spectral.bootstrap_spectrogram</span></code> のラッパーです。</p>
+</section>
+<section id="channel">
+<h3><code class="docutils literal notranslate"><span class="pre">channel</span></code><a class="headerlink" href="#channel" title="Link to this heading"></a></h3>
+<p>データに関連付けられた観測チャンネル。</p>
+</section>
+<section id="copy">
+<h3><code class="docutils literal notranslate"><span class="pre">copy</span></code><a class="headerlink" href="#copy" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>配列のコピーを返します。</p>
+</section>
+<section id="crop">
+<h3><code class="docutils literal notranslate"><span class="pre">crop</span></code><a class="headerlink" href="#crop" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>指定された x 軸（時間軸）の範囲にシリーズを切り詰めます。</p>
+</section>
+<section id="crop-frequencies">
+<h3><code class="docutils literal notranslate"><span class="pre">crop_frequencies</span></code><a class="headerlink" href="#crop-frequencies" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crop_frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>指定した周波数範囲でスペクトログラムをクロップします。</p>
+</section>
+<section id="dx">
+<h3><code class="docutils literal notranslate"><span class="pre">dx</span></code><a class="headerlink" href="#dx" title="Link to this heading"></a></h3>
+<p>x 軸（通常は時間軸）のサンプル間隔。</p>
+</section>
+<section id="dy">
+<h3><code class="docutils literal notranslate"><span class="pre">dy</span></code><a class="headerlink" href="#dy" title="Link to this heading"></a></h3>
+<p>y 軸（通常は周波数軸）のサンプル間隔。</p>
+</section>
+<section id="filter">
+<h3><code class="docutils literal notranslate"><span class="pre">filter</span></code><a class="headerlink" href="#filter" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">filt</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>この <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> に指定されたフィルタを適用します。</p>
+</section>
+<section id="from-quantities">
+<h3><code class="docutils literal notranslate"><span class="pre">from_quantities</span></code><a class="headerlink" href="#from-quantities" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">from_quantities</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>quantities.Quantity から Spectrogram を作成します。</p>
+</section>
+<section id="from-root">
+<h3><code class="docutils literal notranslate"><span class="pre">from_root</span></code><a class="headerlink" href="#from-root" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">from_root</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">return_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ROOT の TH2D から Spectrogram を作成します。</p>
+</section>
+<section id="from-spectra">
+<h3><code class="docutils literal notranslate"><span class="pre">from_spectra</span></code><a class="headerlink" href="#from-spectra" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">from_spectra</span><span class="p">(</span><span class="o">*</span><span class="n">spectra</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>スペクトル（FrequencySeries）のリストから新しい <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> を構築します。</p>
+</section>
+<section id="imshow">
+<h3><code class="docutils literal notranslate"><span class="pre">imshow</span></code><a class="headerlink" href="#imshow" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>imshow を使用してプロットします。<em>(gwpy から継承)</em></p>
+</section>
+<section id="inject">
+<h3><code class="docutils literal notranslate"><span class="pre">inject</span></code><a class="headerlink" href="#inject" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>共通する x 軸の値に沿って、互換性のある 2 つのシリーズを加算します。</p>
+</section>
+<section id="median">
+<h3><code class="docutils literal notranslate"><span class="pre">median</span></code><a class="headerlink" href="#median" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>指定された軸方向にメディアン（中央値）を計算します。</p>
+</section>
+<section id="name">
+<h3><code class="docutils literal notranslate"><span class="pre">name</span></code><a class="headerlink" href="#name" title="Link to this heading"></a></h3>
+<p>データセットの名称。</p>
+</section>
+<section id="pad">
+<h3><code class="docutils literal notranslate"><span class="pre">pad</span></code><a class="headerlink" href="#pad" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>シリーズを新しいサイズにパディングします。</p>
+</section>
+<section id="pcolormesh">
+<h3><code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code><a class="headerlink" href="#pcolormesh" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pcolormesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>pcolormesh を使用してプロットします。<em>(gwpy から継承)</em></p>
+</section>
+<section id="percentile">
+<h3><code class="docutils literal notranslate"><span class="pre">percentile</span></code><a class="headerlink" href="#percentile" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">percentile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">percentile</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>この <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> の指定されたスペクトル・パーセンタイルを計算し、<code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> として返します。</p>
+</section>
+<section id="plot">
+<h3><code class="docutils literal notranslate"><span class="pre">plot</span></code><a class="headerlink" href="#plot" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;pcolormesh&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">xscale</span><span class="o">=</span><span class="s1">&#39;auto-gps&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>この <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> のデータをプロットします。</p>
+</section>
+<section id="prepend">
+<h3><code class="docutils literal notranslate"><span class="pre">prepend</span></code><a class="headerlink" href="#prepend" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>現在のシリーズの先頭に別のシリーズを接続します。</p>
+</section>
+<section id="ratio">
+<h3><code class="docutils literal notranslate"><span class="pre">ratio</span></code><a class="headerlink" href="#ratio" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>リファレンスと比較したスペクトログラムの比率を計算します。
+<code class="docutils literal notranslate"><span class="pre">operand</span></code> には ‘mean’, ‘median’, または特定の <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> を指定できます。</p>
+</section>
+<section id="read">
+<h3><code class="docutils literal notranslate"><span class="pre">read</span></code><a class="headerlink" href="#read" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">read</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ファイルから Spectrogram を読み込みます。</p>
+</section>
+<section id="shift">
+<h3><code class="docutils literal notranslate"><span class="pre">shift</span></code><a class="headerlink" href="#shift" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>x 軸方向に <code class="docutils literal notranslate"><span class="pre">delta</span></code> だけシリーズをシフトします。インプレースで動作します。</p>
+</section>
+<section id="to-quantities">
+<h3><code class="docutils literal notranslate"><span class="pre">to_quantities</span></code><a class="headerlink" href="#to-quantities" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_quantities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>quantities.Quantity (Elephant/Neo互換) に変換します。</p>
+</section>
+<section id="to-th2d">
+<h3><code class="docutils literal notranslate"><span class="pre">to_th2d</span></code><a class="headerlink" href="#to-th2d" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_th2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ROOT の TH2D に変換します。</p>
+</section>
+<section id="to-torch">
+<h3><code class="docutils literal notranslate"><span class="pre">to_torch</span></code><a class="headerlink" href="#to-torch" title="Link to this heading"></a></h3>
+<p>スペクトログラム（または SpectrogramList/Dict の各要素）を PyTorch テンソルに変換します。</p>
+</section>
+<section id="to-cupy">
+<h3><code class="docutils literal notranslate"><span class="pre">to_cupy</span></code><a class="headerlink" href="#to-cupy" title="Link to this heading"></a></h3>
+<p>スペクトログラム（または SpectrogramList/Dict の各要素）を CuPy 配列に変換します。</p>
+</section>
+<section id="to-matrix">
+<h3><code class="docutils literal notranslate"><span class="pre">to_matrix</span></code><a class="headerlink" href="#to-matrix" title="Link to this heading"></a></h3>
+<p>SpectrogramList または SpectrogramDict を <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> に変換します。</p>
+</section>
+<section id="unit">
+<h3><code class="docutils literal notranslate"><span class="pre">unit</span></code><a class="headerlink" href="#unit" title="Link to this heading"></a></h3>
+<p>データの物理単位。</p>
+</section>
+<section id="update">
+<h3><code class="docutils literal notranslate"><span class="pre">update</span></code><a class="headerlink" href="#update" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>新しいデータを末尾に追加し、同量のデータを先頭から削除して、シリーズを更新します。</p>
+</section>
+<section id="value-at">
+<h3><code class="docutils literal notranslate"><span class="pre">value_at</span></code><a class="headerlink" href="#value-at" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">value_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>指定した (x, y) 座標におけるシリーズの値を返します。</p>
+</section>
+<section id="variance">
+<h3><code class="docutils literal notranslate"><span class="pre">variance</span></code><a class="headerlink" href="#variance" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">variance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>この <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> の <code class="docutils literal notranslate"><span class="pre">SpectralVariance</span></code>（スペクトル分散）を計算します。</p>
+</section>
+<section id="write">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Spectrogram をファイルに書き出します。</p>
+</section>
+<section id="x0-xindex-xspan-xunit">
+<h3><code class="docutils literal notranslate"><span class="pre">x0</span></code>, <code class="docutils literal notranslate"><span class="pre">xindex</span></code>, <code class="docutils literal notranslate"><span class="pre">xspan</span></code>, <code class="docutils literal notranslate"><span class="pre">xunit</span></code><a class="headerlink" href="#x0-xindex-xspan-xunit" title="Link to this heading"></a></h3>
+<p>x 軸（時間軸）の開始点、座標配列、範囲、単位。</p>
+</section>
+<section id="y0-yindex-yspan-yunit">
+<h3><code class="docutils literal notranslate"><span class="pre">y0</span></code>, <code class="docutils literal notranslate"><span class="pre">yindex</span></code>, <code class="docutils literal notranslate"><span class="pre">yspan</span></code>, <code class="docutils literal notranslate"><span class="pre">yunit</span></code><a class="headerlink" href="#y0-yindex-yspan-yunit" title="Link to this heading"></a></h3>
+<p>y 軸（周波数軸）の開始点、座標配列、範囲、単位。</p>
+</section>
+<section id="zip">
+<h3><code class="docutils literal notranslate"><span class="pre">zip</span></code><a class="headerlink" href="#zip" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">xindex</span></code> と <code class="docutils literal notranslate"><span class="pre">value</span></code> 配列をスタックします。</p>
+</section>
+<section id="zpk">
+<h3><code class="docutils literal notranslate"><span class="pre">zpk</span></code><a class="headerlink" href="#zpk" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">zpk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">poles</span><span class="p">,</span> <span class="n">gain</span><span class="p">,</span> <span class="n">analog</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>零点・極・ゲイン（ZPK）フィルタを適用します。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

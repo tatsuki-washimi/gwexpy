@@ -1,0 +1,641 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.fitting &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="SeriesMatrix" href="SeriesMatrix.html" />
+    <link rel="prev" title="ICATransform" href="ICATransform.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Detailed Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesList.html">TimeSeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeries.html">FrequencySeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesDict.html">FrequencySeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesList.html">FrequencySeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesMatrix.html">FrequencySeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramDict.html">SpectrogramDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramList.html">SpectrogramList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramMatrix.html">SpectrogramMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Array2D.html">Array2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plot.html">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Noise.html">Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Transform.html">Transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImputeTransform.html">ImputeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StandardizeTransform.html">StandardizeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WhitenTransform.html">WhitenTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PCATransform.html">PCATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">gwexpy.fitting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">概要</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">クラス・関数一覧</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">メイン関数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">クラス</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-series">fit_series</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">パラメータ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">戻り値</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">使用例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-bootstrap-spectrum">fit_bootstrap_spectrum</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id8">パラメータ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">戻り値</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">使用例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#fitresult">FitResult</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id11">プロパティ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">メソッド</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id13">使用例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#generalizedleastsquares">GeneralizedLeastSquares</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id14">使用例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">組み込みモデル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">依存関係</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Detailed Reference</a></li>
+      <li class="breadcrumb-item active">gwexpy.fitting</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/en/fitting.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gwexpy-fitting">
+<h1>gwexpy.fitting<a class="headerlink" href="#gwexpy-fitting" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code> モジュールは、iminuit を使用した高度なフィッティング機能を提供します。</p>
+<section id="id1">
+<h2>概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>最小二乗フィッティング</strong>: 実数・複素数データ対応</p></li>
+<li><p><strong>GLS (一般化最小二乗法)</strong>: 共分散行列を考慮したフィッティング</p></li>
+<li><p><strong>MCMC</strong>: emcee を使ったベイズ推定</p></li>
+<li><p><strong>統合パイプライン</strong>: ブートストラップ → GLS → MCMC のワンライナー API</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id2">
+<h2>クラス・関数一覧<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>メイン関数<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>名前</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fit_series()</span></code></p></td>
+<td><p>Series オブジェクトのフィッティング</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fit_bootstrap_spectrum()</span></code></p></td>
+<td><p>統合スペクトル解析パイプライン</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id4">
+<h3>クラス<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>名前</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FitResult</span></code></p></td>
+<td><p>フィット結果を格納するクラス</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GeneralizedLeastSquares</span></code></p></td>
+<td><p>GLS コスト関数クラス</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RealLeastSquares</span></code></p></td>
+<td><p>実数データ用コスト関数</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ComplexLeastSquares</span></code></p></td>
+<td><p>複素数データ用コスト関数</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="fit-series">
+<h2>fit_series<a class="headerlink" href="#fit-series" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fit_series</span><span class="p">(</span>
+    <span class="n">series</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">x_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cov</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cost_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">p0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">limits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fixed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<section id="id5">
+<h3>パラメータ<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>名前</p></th>
+<th class="head"><p>型</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">series</span></code></p></td>
+<td><p>Series</p></td>
+<td><p>フィットするデータ</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">model</span></code></p></td>
+<td><p>callable / str</p></td>
+<td><p>モデル関数または名前 (“gaussian”, “power_law” など)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">x_range</span></code></p></td>
+<td><p>tuple</p></td>
+<td><p>フィット範囲 (xmin, xmax)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sigma</span></code></p></td>
+<td><p>array / scalar</p></td>
+<td><p>誤差（<code class="docutils literal notranslate"><span class="pre">cov</span></code> が指定されると無視）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cov</span></code></p></td>
+<td><p>BifrequencyMap / ndarray</p></td>
+<td><p>共分散行列（GLS 用）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cost_function</span></code></p></td>
+<td><p>callable</p></td>
+<td><p>カスタムコスト関数（最優先）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">p0</span></code></p></td>
+<td><p>dict / list</p></td>
+<td><p>初期パラメータ値</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">limits</span></code></p></td>
+<td><p>dict</p></td>
+<td><p>パラメータ制限 {“A”: (0, 100)}</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fixed</span></code></p></td>
+<td><p>list</p></td>
+<td><p>固定するパラメータ名</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id6">
+<h3>戻り値<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">FitResult</span></code> オブジェクト</p>
+</section>
+<section id="id7">
+<h3>使用例<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_series</span>
+
+<span class="c1"># データ準備</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">)</span>
+
+<span class="c1"># 基本的なフィット</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">fit_series</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;power_law&quot;</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">})</span>
+
+<span class="c1"># GLS フィット（共分散行列を使用）</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">fit_series</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;power_law&quot;</span><span class="p">,</span> <span class="n">cov</span><span class="o">=</span><span class="n">covariance_matrix</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">})</span>
+
+<span class="c1"># 結果確認</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="fit-bootstrap-spectrum">
+<h2>fit_bootstrap_spectrum<a class="headerlink" href="#fit-bootstrap-spectrum" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fit_bootstrap_spectrum</span><span class="p">(</span>
+    <span class="n">data_or_spectrogram</span><span class="p">,</span>
+    <span class="n">model_fn</span><span class="p">,</span>
+    <span class="n">freq_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">,</span>
+    <span class="n">rebin_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">block_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ci</span><span class="o">=</span><span class="mf">0.68</span><span class="p">,</span>
+    <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+    <span class="n">nperseg</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">noverlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">n_boot</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">initial_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fixed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">run_mcmc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">mcmc_walkers</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">mcmc_steps</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span>
+    <span class="n">mcmc_burn_in</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+    <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<section id="id8">
+<h3>パラメータ<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>名前</p></th>
+<th class="head"><p>型</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">data_or_spectrogram</span></code></p></td>
+<td><p>TimeSeries / Spectrogram</p></td>
+<td><p>入力データ</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">model_fn</span></code></p></td>
+<td><p>callable</p></td>
+<td><p>モデル関数 <code class="docutils literal notranslate"><span class="pre">model(f,</span> <span class="pre">*params)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">freq_range</span></code></p></td>
+<td><p>tuple</p></td>
+<td><p>フィット周波数範囲</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">method</span></code></p></td>
+<td><p>str</p></td>
+<td><p>ブートストラップ平均化方法 (“median” / “mean”)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rebin_width</span></code></p></td>
+<td><p>float</p></td>
+<td><p>周波数リビン幅 (Hz)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">block_size</span></code></p></td>
+<td><p>int</p></td>
+<td><p>ブロックブートストラップのブロックサイズ</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">n_boot</span></code></p></td>
+<td><p>int</p></td>
+<td><p>ブートストラップ回数</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">initial_params</span></code></p></td>
+<td><p>dict</p></td>
+<td><p>初期パラメータ</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bounds</span></code></p></td>
+<td><p>dict</p></td>
+<td><p>パラメータ制限</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">run_mcmc</span></code></p></td>
+<td><p>bool</p></td>
+<td><p>MCMC を実行するか</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mcmc_steps</span></code></p></td>
+<td><p>int</p></td>
+<td><p>MCMC ステップ数</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">plot</span></code></p></td>
+<td><p>bool</p></td>
+<td><p>結果をプロットするか</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id9">
+<h3>戻り値<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">FitResult</span></code> オブジェクト（追加属性付き）:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">psd</span></code>: ブートストラップ PSD</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cov</span></code>: 共分散 BifrequencyMap</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bootstrap_method</span></code>: 使用した平均化方法</p></li>
+</ul>
+</section>
+<section id="id10">
+<h3>使用例<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_bootstrap_spectrum</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">power_law</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">A</span> <span class="o">*</span> <span class="n">f</span><span class="o">**</span><span class="n">alpha</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">fit_bootstrap_spectrum</span><span class="p">(</span>
+    <span class="n">spectrogram</span><span class="p">,</span>
+    <span class="n">model_fn</span><span class="o">=</span><span class="n">power_law</span><span class="p">,</span>
+    <span class="n">freq_range</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+    <span class="n">rebin_width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">block_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">initial_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">},</span>
+    <span class="n">run_mcmc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">mcmc_steps</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># 結果</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">parameter_intervals</span><span class="p">)</span>  <span class="c1"># MCMC 信頼区間</span>
+<span class="n">result</span><span class="o">.</span><span class="n">plot_corner</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="fitresult">
+<h2>FitResult<a class="headerlink" href="#fitresult" title="Link to this heading"></a></h2>
+<p>フィット結果を格納するクラス。</p>
+<section id="id11">
+<h3>プロパティ<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>名前</p></th>
+<th class="head"><p>型</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">params</span></code></p></td>
+<td><p>dict</p></td>
+<td><p>ベストフィットパラメータ</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">errors</span></code></p></td>
+<td><p>dict</p></td>
+<td><p>パラメータ誤差</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">chi2</span></code></p></td>
+<td><p>float</p></td>
+<td><p>χ² 値</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ndof</span></code></p></td>
+<td><p>int</p></td>
+<td><p>自由度</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">reduced_chi2</span></code></p></td>
+<td><p>float</p></td>
+<td><p>換算 χ²</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cov_inv</span></code></p></td>
+<td><p>ndarray</p></td>
+<td><p>GLS 共分散逆行列</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">parameter_intervals</span></code></p></td>
+<td><p>dict</p></td>
+<td><p>MCMC パーセンタイル (16, 50, 84)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mcmc_chain</span></code></p></td>
+<td><p>ndarray</p></td>
+<td><p>フル MCMC チェーン</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">samples</span></code></p></td>
+<td><p>ndarray</p></td>
+<td><p>MCMC サンプル（バーンイン後）</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id12">
+<h3>メソッド<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>名前</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">plot()</span></code></p></td>
+<td><p>データとフィット曲線をプロット</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">bode_plot()</span></code></p></td>
+<td><p>ボード線図（複素数データ用）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">run_mcmc()</span></code></p></td>
+<td><p>MCMC を実行</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">plot_corner()</span></code></p></td>
+<td><p>コーナープロット</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">plot_fit_band()</span></code></p></td>
+<td><p>信頼帯付きフィットプロット</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id13">
+<h3>使用例<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">fit_series</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;power_law&quot;</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">})</span>
+
+<span class="c1"># 基本情報</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>  <span class="c1"># Minuit の出力</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;χ²/dof = </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">reduced_chi2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># プロット</span>
+<span class="n">result</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+<span class="c1"># MCMC</span>
+<span class="n">result</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">n_steps</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">burn_in</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">parameter_intervals</span><span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">plot_corner</span><span class="p">()</span>
+<span class="n">result</span><span class="o">.</span><span class="n">plot_fit_band</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="generalizedleastsquares">
+<h2>GeneralizedLeastSquares<a class="headerlink" href="#generalizedleastsquares" title="Link to this heading"></a></h2>
+<p>共分散逆行列を使った GLS コスト関数。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">GeneralizedLeastSquares</span><span class="p">:</span>
+    <span class="n">errordef</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Minuit.LEAST_SQUARES</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cov_inv</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="o">...</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="c1"># χ² = r.T @ cov_inv @ r</span>
+        <span class="o">...</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ndata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<section id="id14">
+<h3>使用例<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeneralizedLeastSquares</span><span class="p">,</span> <span class="n">fit_series</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">iminuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Minuit</span>
+
+<span class="c1"># 直接使用</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">linear</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="n">gls</span> <span class="o">=</span> <span class="n">GeneralizedLeastSquares</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cov_inv</span><span class="p">,</span> <span class="n">linear</span><span class="p">)</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">Minuit</span><span class="p">(</span><span class="n">gls</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">migrad</span><span class="p">()</span>
+
+<span class="c1"># fit_series 経由</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">fit_series</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">linear</span><span class="p">,</span> <span class="n">cost_function</span><span class="o">=</span><span class="n">gls</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id15">
+<h2>組み込みモデル<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy.fitting.models</span></code> で利用可能なモデル：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>名前</p></th>
+<th class="head"><p>数式</p></th>
+<th class="head"><p>パラメータ</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gaussian</span></code> / <code class="docutils literal notranslate"><span class="pre">gaus</span></code></p></td>
+<td><p>A * exp(-(x-μ)²/(2σ²))</p></td>
+<td><p>A, mu, sigma</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">power_law</span></code></p></td>
+<td><p>A * x^α</p></td>
+<td><p>A, alpha</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">damped_oscillation</span></code></p></td>
+<td><p>A <em>exp(-t/τ)</em> cos(2πft + φ)</p></td>
+<td><p>A, tau, f, phi</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pol0</span></code> ~ <code class="docutils literal notranslate"><span class="pre">pol9</span></code></p></td>
+<td><p>c₀ + c₁x + c₂x² + …</p></td>
+<td><p>p0, p1, …</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lorentzian</span></code></p></td>
+<td><p>A / ((x-x₀)² + γ²)</p></td>
+<td><p>A, x0, gamma</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">exponential</span></code></p></td>
+<td><p>A * exp(-x/τ)</p></td>
+<td><p>A, tau</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<hr class="docutils" />
+<section id="id16">
+<h2>依存関係<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">iminuit</span></code>: 必須</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">emcee</span></code>: MCMC 機能に必要</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">corner</span></code>: コーナープロットに必要</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ICATransform.html" class="btn btn-neutral float-left" title="ICATransform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="SeriesMatrix.html" class="btn btn-neutral float-right" title="SeriesMatrix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

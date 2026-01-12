@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpectrogramDict &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="SpectrogramList" href="SpectrogramList.html" />
+    <link rel="prev" title="Spectrogram" href="Spectrogram.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Detailed Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesList.html">TimeSeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeries.html">FrequencySeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesDict.html">FrequencySeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesList.html">FrequencySeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesMatrix.html">FrequencySeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SpectrogramDict</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#methods">Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#init"><code class="docutils literal notranslate"><span class="pre">__init__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#angle"><code class="docutils literal notranslate"><span class="pre">angle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bootstrap-asd"><code class="docutils literal notranslate"><span class="pre">bootstrap_asd</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#crop"><code class="docutils literal notranslate"><span class="pre">crop</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#parameters">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#returns">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#crop-frequencies"><code class="docutils literal notranslate"><span class="pre">crop_frequencies</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#degree"><code class="docutils literal notranslate"><span class="pre">degree</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#interpolate"><code class="docutils literal notranslate"><span class="pre">interpolate</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#phase"><code class="docutils literal notranslate"><span class="pre">phase</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#plot"><code class="docutils literal notranslate"><span class="pre">plot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plot-summary"><code class="docutils literal notranslate"><span class="pre">plot_summary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#radian"><code class="docutils literal notranslate"><span class="pre">radian</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#read"><code class="docutils literal notranslate"><span class="pre">read</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rebin"><code class="docutils literal notranslate"><span class="pre">rebin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#to-cupy"><code class="docutils literal notranslate"><span class="pre">to_cupy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#to-dask"><code class="docutils literal notranslate"><span class="pre">to_dask</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#to-jax"><code class="docutils literal notranslate"><span class="pre">to_jax</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#to-matrix"><code class="docutils literal notranslate"><span class="pre">to_matrix</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#to-tensorflow"><code class="docutils literal notranslate"><span class="pre">to_tensorflow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#to-torch"><code class="docutils literal notranslate"><span class="pre">to_torch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#update"><code class="docutils literal notranslate"><span class="pre">update</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#write"><code class="docutils literal notranslate"><span class="pre">write</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramList.html">SpectrogramList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramMatrix.html">SpectrogramMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Array2D.html">Array2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plot.html">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Noise.html">Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Transform.html">Transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImputeTransform.html">ImputeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StandardizeTransform.html">StandardizeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WhitenTransform.html">WhitenTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PCATransform.html">PCATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting.html">gwexpy.fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Detailed Reference</a></li>
+      <li class="breadcrumb-item active">SpectrogramDict</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/en/SpectrogramDict.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="spectrogramdict">
+<h1>SpectrogramDict<a class="headerlink" href="#spectrogramdict" title="Link to this heading"></a></h1>
+<p><strong>Inherits from:</strong> PhaseMethodsMixin, UserDict</p>
+<p>Dictionary of Spectrogram objects.</p>
+<p>.. note::
+Spectrogram objects can be very large in memory.
+Use <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code> where possible to update container in-place.</p>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
+<section id="init">
+<h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<p><em>(Inherited from <code class="docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>)</em></p>
+</section>
+<section id="angle">
+<h3><code class="docutils literal notranslate"><span class="pre">angle</span></code><a class="headerlink" href="#angle" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">deg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+</pre></div>
+</div>
+<p>Alias for <code class="docutils literal notranslate"><span class="pre">phase(unwrap=unwrap,</span> <span class="pre">deg=deg)</span></code>.</p>
+</section>
+<section id="bootstrap-asd">
+<h3><code class="docutils literal notranslate"><span class="pre">bootstrap_asd</span></code><a class="headerlink" href="#bootstrap-asd" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstrap_asd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Estimate robust ASD from each spectrogram in the dict (returns FrequencySeriesDict).</p>
+</section>
+<section id="crop">
+<h3><code class="docutils literal notranslate"><span class="pre">crop</span></code><a class="headerlink" href="#crop" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Crop each spectrogram in time.</p>
+</section>
+</section>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<p>t0, t1 : float
+Start and end times.
+inplace : bool, optional
+If True, modify in place.</p>
+</section>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
+<p>SpectrogramDict</p>
+<section id="crop-frequencies">
+<h3><code class="docutils literal notranslate"><span class="pre">crop_frequencies</span></code><a class="headerlink" href="#crop-frequencies" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crop_frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Crop each spectrogram in frequency.</p>
+</section>
+</section>
+<section id="id1">
+<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>f0, f1 : float or Quantity
+Start and end frequencies.
+inplace : bool, optional
+If True, modify in place.</p>
+</section>
+<section id="id2">
+<h2>Returns<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>SpectrogramDict</p>
+<section id="degree">
+<h3><code class="docutils literal notranslate"><span class="pre">degree</span></code><a class="headerlink" href="#degree" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;&#39;SpectrogramDict&#39;&quot;</span>
+</pre></div>
+</div>
+<p>Compute phase (in degrees) of each spectrogram.</p>
+</section>
+<section id="interpolate">
+<h3><code class="docutils literal notranslate"><span class="pre">interpolate</span></code><a class="headerlink" href="#interpolate" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Interpolate each spectrogram to new resolution.</p>
+</section>
+</section>
+<section id="id3">
+<h2>Parameters<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>dt : float
+New time resolution.
+df : float
+New frequency resolution.
+inplace : bool, optional
+If True, modify in place.</p>
+</section>
+<section id="id4">
+<h2>Returns<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>SpectrogramDict</p>
+<section id="phase">
+<h3><code class="docutils literal notranslate"><span class="pre">phase</span></code><a class="headerlink" href="#phase" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">deg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+</pre></div>
+</div>
+<p>Calculate the phase of the data.</p>
+</section>
+</section>
+<section id="id5">
+<h2>Parameters<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>unwrap : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>, unwrap the phase to remove discontinuities.
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.
+deg : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>, return the phase in degrees.
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code> (radians).
+**kwargs
+Additional arguments passed to the underlying calculation.</p>
+</section>
+<section id="id6">
+<h2>Returns<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Series</span></code> or <code class="docutils literal notranslate"><span class="pre">Matrix</span></code> or <code class="docutils literal notranslate"><span class="pre">Collection</span></code>
+The phase of the data.</p>
+<section id="plot">
+<h3><code class="docutils literal notranslate"><span class="pre">plot</span></code><a class="headerlink" href="#plot" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Plot all spectrograms stacked vertically.</p>
+</section>
+<section id="plot-summary">
+<h3><code class="docutils literal notranslate"><span class="pre">plot_summary</span></code><a class="headerlink" href="#plot-summary" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Plot Dictionary as side-by-side Spectrograms and percentile summaries.</p>
+</section>
+<section id="radian">
+<h3><code class="docutils literal notranslate"><span class="pre">radian</span></code><a class="headerlink" href="#radian" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;&#39;SpectrogramDict&#39;&quot;</span>
+</pre></div>
+</div>
+<p>Compute phase (in radians) of each spectrogram.</p>
+</section>
+<section id="read">
+<h3><code class="docutils literal notranslate"><span class="pre">read</span></code><a class="headerlink" href="#read" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read dictionary from HDF5 file keys -&gt; dict keys.</p>
+</section>
+<section id="rebin">
+<h3><code class="docutils literal notranslate"><span class="pre">rebin</span></code><a class="headerlink" href="#rebin" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Rebin each spectrogram to new time/frequency resolution.</p>
+</section>
+</section>
+<section id="id7">
+<h2>Parameters<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p>dt : float
+New time bin size.
+df : float
+New frequency bin size.
+inplace : bool, optional
+If True, modify in place.</p>
+</section>
+<section id="id8">
+<h2>Returns<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p>SpectrogramDict</p>
+<section id="to-cupy">
+<h3><code class="docutils literal notranslate"><span class="pre">to_cupy</span></code><a class="headerlink" href="#to-cupy" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_cupy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;dict&#39;</span>
+</pre></div>
+</div>
+<p>Convert each item to cupy.ndarray. Returns a dict.</p>
+</section>
+<section id="to-dask">
+<h3><code class="docutils literal notranslate"><span class="pre">to_dask</span></code><a class="headerlink" href="#to-dask" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_dask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;dict&#39;</span>
+</pre></div>
+</div>
+<p>Convert each item to dask.array. Returns a dict.</p>
+</section>
+<section id="to-jax">
+<h3><code class="docutils literal notranslate"><span class="pre">to_jax</span></code><a class="headerlink" href="#to-jax" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_jax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;dict&#39;</span>
+</pre></div>
+</div>
+<p>Convert each item to jax.Array. Returns a dict.</p>
+</section>
+<section id="to-matrix">
+<h3><code class="docutils literal notranslate"><span class="pre">to_matrix</span></code><a class="headerlink" href="#to-matrix" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Convert to SpectrogramMatrix.</p>
+</section>
+</section>
+<section id="id9">
+<h2>Returns<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p>SpectrogramMatrix
+3D array of (N, Time, Freq).</p>
+<section id="to-tensorflow">
+<h3><code class="docutils literal notranslate"><span class="pre">to_tensorflow</span></code><a class="headerlink" href="#to-tensorflow" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_tensorflow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;dict&#39;</span>
+</pre></div>
+</div>
+<p>Convert each item to tensorflow.Tensor. Returns a dict.</p>
+</section>
+<section id="to-torch">
+<h3><code class="docutils literal notranslate"><span class="pre">to_torch</span></code><a class="headerlink" href="#to-torch" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;dict&#39;</span>
+</pre></div>
+</div>
+<p>Convert each item to torch.Tensor. Returns a dict.</p>
+</section>
+<section id="update">
+<h3><code class="docutils literal notranslate"><span class="pre">update</span></code><a class="headerlink" href="#update" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>D.update([E, ]**F) -&gt; None.  Update D from mapping/iterable E and F.
+If E present and has a .keys() method, does:     for k in E: D[k] = E[k]
+If E present and lacks .keys() method, does:     for (k, v) in E: D[k] = v
+In either case, this is followed by: for k, v in F.items(): D[k] = v</p>
+<p><em>(Inherited from <code class="docutils literal notranslate"><span class="pre">UserDict</span></code>)</em></p>
+</section>
+<section id="write">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Write dictionary to file.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Spectrogram.html" class="btn btn-neutral float-left" title="Spectrogram" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="SpectrogramList.html" class="btn btn-neutral float-right" title="SpectrogramList" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TimeSeries &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">TimeSeries</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/ja/TimeSeries.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="timeseries">
+<h1>TimeSeries<a class="headerlink" href="#timeseries" title="Link to this heading"></a></h1>
+<p><strong>継承元:</strong> TimeSeriesInteropMixin, TimeSeriesAnalysisMixin, TimeSeriesResamplingMixin, TimeSeriesSignalMixin, TimeSeriesSpectralMixin, gwpy.timeseries.TimeSeries</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の全機能を備えた、拡張された TimeSeries クラスです。
+GWpy の TimeSeries と完全な互換性を持ちつつ、以下の機能を追加・統合しています。</p>
+<ul class="simple">
+<li><p><strong>信号処理</strong>: 解析信号 (hilbert), 周波数復調 (demodulate), 相互相関 (correlate) など。</p></li>
+<li><p><strong>スペクトル変換</strong>: FFT, PSD, ASD, CWT (連続ウェーブレット変換), STLT (短時間ラプラス変換), DCT (離散コサイン変換) など。</p></li>
+<li><p><strong>データ分析</strong>: 欠損値補完 (impute), 標準化 (standardize), 移動平均などのローリング統計 (rolling_*) など。</p></li>
+<li><p><strong>相互運用性</strong>: PyTorch, TensorFlow, JAX, pandas, xarray, MNE, ObsPy などの他ライブラリへの変換。</p></li>
+</ul>
+<section id="id1">
+<h2>主要メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="abs">
+<h3><code class="docutils literal notranslate"><span class="pre">abs</span></code><a class="headerlink" href="#abs" title="Link to this heading"></a></h3>
+<p>要素ごとの絶対値を計算します。</p>
+</section>
+<section id="asd-psd">
+<h3><code class="docutils literal notranslate"><span class="pre">asd</span></code>, <code class="docutils literal notranslate"><span class="pre">psd</span></code><a class="headerlink" href="#asd-psd" title="Link to this heading"></a></h3>
+<p>ASD（振幅スペクトル密度）または PSD（パワースペクトル密度）を計算します。</p>
+</section>
+<section id="asfreq">
+<h3><code class="docutils literal notranslate"><span class="pre">asfreq</span></code><a class="headerlink" href="#asfreq" title="Link to this heading"></a></h3>
+<p>指定された時間間隔やルール（’1s’ など）に基づいて、シリーズを補間せずに再サンプリング（リインデックス）します。補間が必要な場合は <code class="docutils literal notranslate"><span class="pre">resample</span></code> を使用します。</p>
+</section>
+<section id="bandpass-highpass-lowpass-notch">
+<h3><code class="docutils literal notranslate"><span class="pre">bandpass</span></code>, <code class="docutils literal notranslate"><span class="pre">highpass</span></code>, <code class="docutils literal notranslate"><span class="pre">lowpass</span></code>, <code class="docutils literal notranslate"><span class="pre">notch</span></code><a class="headerlink" href="#bandpass-highpass-lowpass-notch" title="Link to this heading"></a></h3>
+<p>各種フィルタ（バンドパス、ハイパス、ローパス、ノッチフィルタ）を適用します。</p>
+</section>
+<section id="cepstrum">
+<h3><code class="docutils literal notranslate"><span class="pre">cepstrum</span></code><a class="headerlink" href="#cepstrum" title="Link to this heading"></a></h3>
+<p>ケプストラムを計算します。</p>
+</section>
+<section id="coherence-coherence-spectrogram">
+<h3><code class="docutils literal notranslate"><span class="pre">coherence</span></code>, <code class="docutils literal notranslate"><span class="pre">coherence_spectrogram</span></code><a class="headerlink" href="#coherence-coherence-spectrogram" title="Link to this heading"></a></h3>
+<p>他の信号とのコヒーレンス、またはコヒーレンス・スペクトログラムを計算します。</p>
+</section>
+<section id="convolve">
+<h3><code class="docutils literal notranslate"><span class="pre">convolve</span></code><a class="headerlink" href="#convolve" title="Link to this heading"></a></h3>
+<p>FIR フィルタとの畳み込み（overlap-save 法）を行います。</p>
+</section>
+<section id="correlate">
+<h3><code class="docutils literal notranslate"><span class="pre">correlate</span></code><a class="headerlink" href="#correlate" title="Link to this heading"></a></h3>
+<p>他の信号との相互相関（SNR タイムシリーズ）を計算します。</p>
+</section>
+<section id="crop">
+<h3><code class="docutils literal notranslate"><span class="pre">crop</span></code><a class="headerlink" href="#crop" title="Link to this heading"></a></h3>
+<p>指定した GPS 時刻の範囲で信号を切り抜きます。</p>
+</section>
+<section id="cwt">
+<h3><code class="docutils literal notranslate"><span class="pre">cwt</span></code><a class="headerlink" href="#cwt" title="Link to this heading"></a></h3>
+<p>連続ウェーブレット変換 (CWT) を計算します。</p>
+</section>
+<section id="stlt">
+<h3><code class="docutils literal notranslate"><span class="pre">stlt</span></code><a class="headerlink" href="#stlt" title="Link to this heading"></a></h3>
+<p>短時間ラプラス変換 (STLT) を計算します。
+(Time, Sigma, Frequency) の3次元データ (<code class="docutils literal notranslate"><span class="pre">LaplaceGram</span></code>) を返します。</p>
+</section>
+<section id="dct">
+<h3><code class="docutils literal notranslate"><span class="pre">dct</span></code><a class="headerlink" href="#dct" title="Link to this heading"></a></h3>
+<p>離散コサイン変換 (DCT) を計算します。</p>
+</section>
+<section id="degree">
+<h3><code class="docutils literal notranslate"><span class="pre">degree</span></code><a class="headerlink" href="#degree" title="Link to this heading"></a></h3>
+<p>位相（偏角）を「度 (degree)」単位で計算します。<code class="docutils literal notranslate"><span class="pre">np.angle(deg=True)</span></code> を使用します。</p>
+</section>
+<section id="demodulate">
+<h3><code class="docutils literal notranslate"><span class="pre">demodulate</span></code><a class="headerlink" href="#demodulate" title="Link to this heading"></a></h3>
+<p>指定した周波数で信号を復調し、振幅と位相のトレンドを取得します。</p>
+</section>
+<section id="detrend">
+<h3><code class="docutils literal notranslate"><span class="pre">detrend</span></code><a class="headerlink" href="#detrend" title="Link to this heading"></a></h3>
+<p>トレンド除去（平均値や線形成分の除去）を行います。</p>
+</section>
+<section id="fft-ifft">
+<h3><code class="docutils literal notranslate"><span class="pre">fft</span></code>, <code class="docutils literal notranslate"><span class="pre">ifft</span></code><a class="headerlink" href="#fft-ifft" title="Link to this heading"></a></h3>
+<p>高速フーリエ変換 (FFT) および逆 FFT を実行します。</p>
+</section>
+<section id="emd">
+<h3><code class="docutils literal notranslate"><span class="pre">emd</span></code><a class="headerlink" href="#emd" title="Link to this heading"></a></h3>
+<p>経験的モード分解 (Empirical Mode Decomposition) を行い、固有モード関数 (IMF) を抽出します。</p>
+</section>
+<section id="hht">
+<h3><code class="docutils literal notranslate"><span class="pre">hht</span></code><a class="headerlink" href="#hht" title="Link to this heading"></a></h3>
+<p>ヒルベルト・ファン変換 (Hilbert-Huang Transform) を計算します。分析結果として、各 IMF のヒルベルト・スペクトルを取得できます。</p>
+</section>
+<section id="filter-filterba">
+<h3><code class="docutils literal notranslate"><span class="pre">filter</span></code>, <code class="docutils literal notranslate"><span class="pre">filterba</span></code><a class="headerlink" href="#filter-filterba" title="Link to this heading"></a></h3>
+<p>一般的なデジタルフィルタ、または [b, a] 係数によるフィルタを適用します。</p>
+</section>
+<section id="find-peaks">
+<h3><code class="docutils literal notranslate"><span class="pre">find_peaks</span></code><a class="headerlink" href="#find-peaks" title="Link to this heading"></a></h3>
+<p>信号内のピークを検出します。<code class="docutils literal notranslate"><span class="pre">method</span></code> (‘amplitude’, ‘power’, ‘db’ 等) による閾値判定が可能です。(戻り値: ピークを含む <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> とプロパティの辞書)</p>
+</section>
+<section id="fit">
+<h3><code class="docutils literal notranslate"><span class="pre">fit</span></code><a class="headerlink" href="#fit" title="Link to this heading"></a></h3>
+<p>モデル関数へのフィッティングを行います（最小二乗法またはMCMC）。</p>
+</section>
+<section id="arima-ar-ma-arma">
+<h3><code class="docutils literal notranslate"><span class="pre">arima</span></code>, <code class="docutils literal notranslate"><span class="pre">ar</span></code>, <code class="docutils literal notranslate"><span class="pre">ma</span></code>, <code class="docutils literal notranslate"><span class="pre">arma</span></code><a class="headerlink" href="#arima-ar-ma-arma" title="Link to this heading"></a></h3>
+<p>ARIMA（自己回帰移動平均）モデルなどの時系列モデルを適合させます。予測 (forecast) や残差分析が可能です。</p>
+</section>
+<section id="gate">
+<h3><code class="docutils literal notranslate"><span class="pre">gate</span></code><a class="headerlink" href="#gate" title="Link to this heading"></a></h3>
+<p>指定した閾値に基づいて信号にゲート（ゼロ埋めやウィンドウ適用）をかけます。</p>
+</section>
+<section id="heterodyne">
+<h3><code class="docutils literal notranslate"><span class="pre">heterodyne</span></code><a class="headerlink" href="#heterodyne" title="Link to this heading"></a></h3>
+<p>ヘテロダイン検波（デジタル復調）を行います。</p>
+</section>
+<section id="hilbert">
+<h3><code class="docutils literal notranslate"><span class="pre">hilbert</span></code><a class="headerlink" href="#hilbert" title="Link to this heading"></a></h3>
+<p>解析信号（ヒルベルト変換）を計算し、複素数形式の信号を返します。</p>
+</section>
+<section id="lock-in">
+<h3><code class="docutils literal notranslate"><span class="pre">lock_in</span></code><a class="headerlink" href="#lock-in" title="Link to this heading"></a></h3>
+<p>ロックインアンプ方式による復調と平均化を行います。</p>
+</section>
+<section id="mix-down-baseband">
+<h3><code class="docutils literal notranslate"><span class="pre">mix_down</span></code>, <code class="docutils literal notranslate"><span class="pre">baseband</span></code><a class="headerlink" href="#mix-down-baseband" title="Link to this heading"></a></h3>
+<p>信号の周波数シフト（複素復調）を行い、ベースバンド信号を取得します。</p>
+</section>
+<section id="histogram">
+<h3><code class="docutils literal notranslate"><span class="pre">histogram</span></code><a class="headerlink" href="#histogram" title="Link to this heading"></a></h3>
+<p>データの値のヒストグラムを計算します。</p>
+</section>
+<section id="hurst-local-hurst">
+<h3><code class="docutils literal notranslate"><span class="pre">hurst</span></code>, <code class="docutils literal notranslate"><span class="pre">local_hurst</span></code><a class="headerlink" href="#hurst-local-hurst" title="Link to this heading"></a></h3>
+<p>ハースト指数を計算します。時系列の長期記憶性や自己相関の強さを評価します。<code class="docutils literal notranslate"><span class="pre">local_hurst</span></code> は時間変化するハースト指数を推定します。</p>
+</section>
+<section id="impute">
+<h3><code class="docutils literal notranslate"><span class="pre">impute</span></code><a class="headerlink" href="#impute" title="Link to this heading"></a></h3>
+<p>NaN などの欠損値を補完します。</p>
+</section>
+<section id="interpolate">
+<h3><code class="docutils literal notranslate"><span class="pre">interpolate</span></code><a class="headerlink" href="#interpolate" title="Link to this heading"></a></h3>
+<p>指定したサンプリングレートへ補間します。</p>
+</section>
+<section id="radian">
+<h3><code class="docutils literal notranslate"><span class="pre">radian</span></code><a class="headerlink" href="#radian" title="Link to this heading"></a></h3>
+<p>位相（偏角）を「ラジアン (radian)」単位で計算します。<code class="docutils literal notranslate"><span class="pre">np.angle</span></code> を使用します。</p>
+</section>
+<section id="resample">
+<h3><code class="docutils literal notranslate"><span class="pre">resample</span></code><a class="headerlink" href="#resample" title="Link to this heading"></a></h3>
+<p>信号処理的な再サンプリング、または時間軸のリサンプリングを行います。</p>
+</section>
+<section id="rms-std-mean-median">
+<h3><code class="docutils literal notranslate"><span class="pre">rms</span></code>, <code class="docutils literal notranslate"><span class="pre">std</span></code>, <code class="docutils literal notranslate"><span class="pre">mean</span></code>, <code class="docutils literal notranslate"><span class="pre">median</span></code><a class="headerlink" href="#rms-std-mean-median" title="Link to this heading"></a></h3>
+<p>各種統計量（実効値、標準偏差、平均、中央値）を計算します。</p>
+</section>
+<section id="rolling-mean-rolling">
+<h3><code class="docutils literal notranslate"><span class="pre">rolling_mean</span></code> (他 <code class="docutils literal notranslate"><span class="pre">rolling_*</span></code>)<a class="headerlink" href="#rolling-mean-rolling" title="Link to this heading"></a></h3>
+<p>移動窓を用いた統計計算（平均、中央値、標準偏差、最大値、最小値）を行います。</p>
+</section>
+<section id="smooth">
+<h3><code class="docutils literal notranslate"><span class="pre">smooth</span></code><a class="headerlink" href="#smooth" title="Link to this heading"></a></h3>
+<p>データを平滑化します。Boxcar (移動平均), Hanning, Gaussian などの窓関数を利用可能です。</p>
+</section>
+<section id="spectrogram">
+<h3><code class="docutils literal notranslate"><span class="pre">spectrogram</span></code><a class="headerlink" href="#spectrogram" title="Link to this heading"></a></h3>
+<p>スペクトログラムを計算します。</p>
+</section>
+<section id="standardize">
+<h3><code class="docutils literal notranslate"><span class="pre">standardize</span></code><a class="headerlink" href="#standardize" title="Link to this heading"></a></h3>
+<p>データを標準化（z-score など）します。</p>
+</section>
+<section id="to-torch-to-tensorflow-to-jax-to-cupy">
+<h3><code class="docutils literal notranslate"><span class="pre">to_torch</span></code>, <code class="docutils literal notranslate"><span class="pre">to_tensorflow</span></code>, <code class="docutils literal notranslate"><span class="pre">to_jax</span></code>, <code class="docutils literal notranslate"><span class="pre">to_cupy</span></code><a class="headerlink" href="#to-torch-to-tensorflow-to-jax-to-cupy" title="Link to this heading"></a></h3>
+<p>各種ディープラーニング・数値計算フレームワークのテンソル/配列に変換します。</p>
+</section>
+<section id="to-pandas-to-xarray-to-polars">
+<h3><code class="docutils literal notranslate"><span class="pre">to_pandas</span></code>, <code class="docutils literal notranslate"><span class="pre">to_xarray</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars</span></code><a class="headerlink" href="#to-pandas-to-xarray-to-polars" title="Link to this heading"></a></h3>
+<p>データ分析ライブラリの DataFrame や DataArray に変換します。</p>
+</section>
+<section id="to-mne-to-obspy-to-neo-to-simpeg">
+<h3><code class="docutils literal notranslate"><span class="pre">to_mne</span></code>, <code class="docutils literal notranslate"><span class="pre">to_obspy</span></code>, <code class="docutils literal notranslate"><span class="pre">to_neo</span></code>, <code class="docutils literal notranslate"><span class="pre">to_simpeg</span></code><a class="headerlink" href="#to-mne-to-obspy-to-neo-to-simpeg" title="Link to this heading"></a></h3>
+<p>脳磁計/脳波計 (MNE)、地震学 (ObsPy)、地球物理学 (SimPEG) などの専門分野のデータ型に変換します。</p>
+</section>
+<section id="whiten">
+<h3><code class="docutils literal notranslate"><span class="pre">whiten</span></code><a class="headerlink" href="#whiten" title="Link to this heading"></a></h3>
+<p>信号をホワイトニング（白色化）します。</p>
+</section>
+<section id="transfer-function">
+<h3><code class="docutils literal notranslate"><span class="pre">transfer_function</span></code><a class="headerlink" href="#transfer-function" title="Link to this heading"></a></h3>
+<p>他の信号との間の伝達関数（TF）を推定します。</p>
+</section>
+<section id="write-read">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code>, <code class="docutils literal notranslate"><span class="pre">read</span></code><a class="headerlink" href="#write-read" title="Link to this heading"></a></h3>
+<p>各種フォーマット（GWF, HDF5, WAV, CSV, ROOT など）でファイルの読み書きを行います。</p>
+</section>
+<section id="zpk">
+<h3><code class="docutils literal notranslate"><span class="pre">zpk</span></code><a class="headerlink" href="#zpk" title="Link to this heading"></a></h3>
+<p>零点・極・ゲイン形式でフィルタを適用します。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

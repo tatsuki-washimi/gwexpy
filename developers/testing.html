@@ -1,0 +1,162 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Full Test Environment &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Full Test Environment</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/developers/testing.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="full-test-environment">
+<h1>Full Test Environment<a class="headerlink" href="#full-test-environment" title="Link to this heading"></a></h1>
+<p>This project can run with a minimal dependency set, but the full test suite
+expects optional Python packages and a few system-level tools. Use the
+instructions below to provision a “full” environment that should run all tests
+without skips.</p>
+<section id="python-extras">
+<h2>Python Extras<a class="headerlink" href="#python-extras" title="Link to this heading"></a></h2>
+<p>Recommended (installs test tooling and all optional Python extras):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev,all]&quot;</span>
+</pre></div>
+</div>
+<p>Extras responsibilities: <code class="docutils literal notranslate"><span class="pre">dev</span></code> = test/lint/type tooling, <code class="docutils literal notranslate"><span class="pre">gui</span></code> = Qt runtime, <code class="docutils literal notranslate"><span class="pre">geophysics</span></code> = domain-specific deps.</p>
+<p>If you prefer to install only the pieces you need, use the explicit extras:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev,gw,stats,fitting,astro,geophysics,audio,bio,interop,control,gui,plot,analysis]&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="system-level-dependencies">
+<h2>System-Level Dependencies<a class="headerlink" href="#system-level-dependencies" title="Link to this heading"></a></h2>
+<p>Some tests require tools that are not pure Python packages:</p>
+<ul class="simple">
+<li><p>GMT runtime (for <code class="docutils literal notranslate"><span class="pre">pygmt</span></code>)</p></li>
+<li><p>Framecpp toolchain (for <code class="docutils literal notranslate"><span class="pre">ldas-tools-framecpp</span></code> GWF support)</p></li>
+<li><p>Kerberos CLI tools (<code class="docutils literal notranslate"><span class="pre">kinit</span></code>, <code class="docutils literal notranslate"><span class="pre">klist</span></code>) for authentication workflows</p></li>
+</ul>
+<p>Additional test-only Python tooling used by upstream GWpy tests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">freezegun</span></code> (time-freezing markers for deterministic time tests)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">requests-mock</span></code> (provides the <code class="docutils literal notranslate"><span class="pre">requests_mock</span></code> fixture for HTTP tests)</p></li>
+</ul>
+<p>The exact package names vary by platform. Typical options are:</p>
+<ul class="simple">
+<li><p>Conda-forge: <code class="docutils literal notranslate"><span class="pre">gmt</span></code>, <code class="docutils literal notranslate"><span class="pre">ldas-tools-framecpp</span></code>, <code class="docutils literal notranslate"><span class="pre">python-framel</span></code>, <code class="docutils literal notranslate"><span class="pre">krb5</span></code></p></li>
+<li><p>Debian/Ubuntu: <code class="docutils literal notranslate"><span class="pre">gmt</span></code>, <code class="docutils literal notranslate"><span class="pre">krb5-user</span></code></p></li>
+<li><p>RHEL/CentOS: <code class="docutils literal notranslate"><span class="pre">gmt</span></code>, <code class="docutils literal notranslate"><span class="pre">krb5-workstation</span></code></p></li>
+<li><p>macOS (Homebrew): <code class="docutils literal notranslate"><span class="pre">gmt</span></code>, <code class="docutils literal notranslate"><span class="pre">krb5</span></code></p></li>
+</ul>
+</section>
+<section id="running-the-full-suite">
+<h2>Running the Full Suite<a class="headerlink" href="#running-the-full-suite" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pytest
+</pre></div>
+</div>
+<p>GUI tests are included by default. The test harness sets <code class="docutils literal notranslate"><span class="pre">QT_QPA_PLATFORM=offscreen</span></code>
+to allow headless execution, but you can override it if you need a real display.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

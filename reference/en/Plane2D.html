@@ -1,0 +1,1512 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plane2D &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="TimePlaneTransform" href="TimePlaneTransform.html" />
+    <link rel="prev" title="Array2D" href="Array2D.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Detailed Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesList.html">TimeSeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeries.html">FrequencySeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesDict.html">FrequencySeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesList.html">FrequencySeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesMatrix.html">FrequencySeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramDict.html">SpectrogramDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramList.html">SpectrogramList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramMatrix.html">SpectrogramMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Array2D.html">Array2D</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Plane2D</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#methods">Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#t"><code class="docutils literal notranslate"><span class="pre">T</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#see-also">See Also</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#abs"><code class="docutils literal notranslate"><span class="pre">abs</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#parameters">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#returns">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#append"><code class="docutils literal notranslate"><span class="pre">append</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#axes"><code class="docutils literal notranslate"><span class="pre">axes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#axis"><code class="docutils literal notranslate"><span class="pre">axis</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#raises">Raises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#axis1"><code class="docutils literal notranslate"><span class="pre">axis1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#axis2"><code class="docutils literal notranslate"><span class="pre">axis2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#axis-names"><code class="docutils literal notranslate"><span class="pre">axis_names</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#channel"><code class="docutils literal notranslate"><span class="pre">channel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#copy"><code class="docutils literal notranslate"><span class="pre">copy</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">See also</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#crop"><code class="docutils literal notranslate"><span class="pre">crop</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#diff"><code class="docutils literal notranslate"><span class="pre">diff</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">See also</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dumps"><code class="docutils literal notranslate"><span class="pre">dumps</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id17">Parameters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dx"><code class="docutils literal notranslate"><span class="pre">dx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dy"><code class="docutils literal notranslate"><span class="pre">dy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#epoch"><code class="docutils literal notranslate"><span class="pre">epoch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit"><code class="docutils literal notranslate"><span class="pre">fit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flatten"><code class="docutils literal notranslate"><span class="pre">flatten</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">See also</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#imshow"><code class="docutils literal notranslate"><span class="pre">imshow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inject"><code class="docutils literal notranslate"><span class="pre">inject</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id22">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id23">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id24">Raises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id25">Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#is-compatible"><code class="docutils literal notranslate"><span class="pre">is_compatible</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#is-contiguous"><code class="docutils literal notranslate"><span class="pre">is_contiguous</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id26">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id27">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id28">Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#isel"><code class="docutils literal notranslate"><span class="pre">isel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id29">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id30">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#max"><code class="docutils literal notranslate"><span class="pre">max</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id31">See Also</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mean"><code class="docutils literal notranslate"><span class="pre">mean</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id32">See Also</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#median"><code class="docutils literal notranslate"><span class="pre">median</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id33">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id34">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id35">See Also</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id36">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id37">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#min"><code class="docutils literal notranslate"><span class="pre">min</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id38">See Also</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#name"><code class="docutils literal notranslate"><span class="pre">name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#override-unit"><code class="docutils literal notranslate"><span class="pre">override_unit</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id39">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id40">Raises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pad"><code class="docutils literal notranslate"><span class="pre">pad</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id41">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id42">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id43">See also</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pcolormesh"><code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plot"><code class="docutils literal notranslate"><span class="pre">plot</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id44">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id45">See also</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#prepend"><code class="docutils literal notranslate"><span class="pre">prepend</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id46">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id47">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#read"><code class="docutils literal notranslate"><span class="pre">read</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id48">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id49">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id50">Raises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id51">Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rename-axes"><code class="docutils literal notranslate"><span class="pre">rename_axes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id52">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id53">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rms"><code class="docutils literal notranslate"><span class="pre">rms</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sel"><code class="docutils literal notranslate"><span class="pre">sel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id54">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id55">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#shift"><code class="docutils literal notranslate"><span class="pre">shift</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id56">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id57">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#std"><code class="docutils literal notranslate"><span class="pre">std</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id58">See Also</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#step"><code class="docutils literal notranslate"><span class="pre">step</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#swapaxes"><code class="docutils literal notranslate"><span class="pre">swapaxes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id59">See Also</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tostring"><code class="docutils literal notranslate"><span class="pre">tostring</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id60">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id61">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id62">See also</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id63">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transpose"><code class="docutils literal notranslate"><span class="pre">transpose</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#unit"><code class="docutils literal notranslate"><span class="pre">unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#update"><code class="docutils literal notranslate"><span class="pre">update</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#value-at"><code class="docutils literal notranslate"><span class="pre">value_at</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id64">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id65">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#var"><code class="docutils literal notranslate"><span class="pre">var</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id66">See Also</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#write"><code class="docutils literal notranslate"><span class="pre">write</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id67">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id68">Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#x0"><code class="docutils literal notranslate"><span class="pre">x0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xindex"><code class="docutils literal notranslate"><span class="pre">xindex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xspan"><code class="docutils literal notranslate"><span class="pre">xspan</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xunit"><code class="docutils literal notranslate"><span class="pre">xunit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y0"><code class="docutils literal notranslate"><span class="pre">y0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#yindex"><code class="docutils literal notranslate"><span class="pre">yindex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#yspan"><code class="docutils literal notranslate"><span class="pre">yspan</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#yunit"><code class="docutils literal notranslate"><span class="pre">yunit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zip"><code class="docutils literal notranslate"><span class="pre">zip</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id69">Returns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id70">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plot.html">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Noise.html">Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Transform.html">Transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImputeTransform.html">ImputeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StandardizeTransform.html">StandardizeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WhitenTransform.html">WhitenTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PCATransform.html">PCATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting.html">gwexpy.fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Detailed Reference</a></li>
+      <li class="breadcrumb-item active">Plane2D</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/en/Plane2D.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="plane2d">
+<h1>Plane2D<a class="headerlink" href="#plane2d" title="Link to this heading"></a></h1>
+<p><strong>Inherits from:</strong> Array2D</p>
+<p>2D Array wrapper where the two axes are semantically significant as Axis 1 and Axis 2.</p>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
+<section id="t">
+<h3><code class="docutils literal notranslate"><span class="pre">T</span></code><a class="headerlink" href="#t" title="Link to this heading"></a></h3>
+<p>View of the transposed array.</p>
+<p>Same as <code class="docutils literal notranslate"><span class="pre">self.transpose()</span></code>.</p>
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>a = np.array([[1, 2], [3, 4]])
+a
+array([[1, 2],
+[3, 4]])
+a.T
+array([[1, 3],
+[2, 4]])</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>a = np.array([1, 2, 3, 4])
+a
+array([1, 2, 3, 4])
+a.T
+array([1, 2, 3, 4])</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<p>transpose</p>
+<p><em>(Inherited from <code class="docutils literal notranslate"><span class="pre">Series</span></code>)</em></p>
+<section id="abs">
+<h3><code class="docutils literal notranslate"><span class="pre">abs</span></code><a class="headerlink" href="#abs" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>absolute(x, /, out=None, *, where=True, casting=’same_kind’, order=’K’, dtype=None, subok=True[, signature, extobj])</p>
+<p>Calculate the absolute value element-wise.</p>
+<p><code class="docutils literal notranslate"><span class="pre">np.abs</span></code> is a shorthand for this function.</p>
+</section>
+</section>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<p>x : array_like
+Input array.
+out : ndarray, None, or tuple of ndarray and None, optional
+A location into which the result is stored. If provided, it must have
+a shape that the inputs broadcast to. If not provided or None,
+a freshly-allocated array is returned. A tuple (possible only as a
+keyword argument) must have length equal to the number of outputs.
+where : array_like, optional
+This condition is broadcast over the input. At locations where the
+condition is True, the <code class="docutils literal notranslate"><span class="pre">out</span></code> array will be set to the ufunc result.
+Elsewhere, the <code class="docutils literal notranslate"><span class="pre">out</span></code> array will retain its original value.
+Note that if an uninitialized <code class="docutils literal notranslate"><span class="pre">out</span></code> array is created via the default
+<code class="docutils literal notranslate"><span class="pre">out=None</span></code>, locations within it where the condition is False will
+remain uninitialized.
+**kwargs
+For other keyword-only arguments, see the
+:ref:<code class="docutils literal notranslate"><span class="pre">ufunc</span> <span class="pre">docs</span> <span class="pre">&lt;ufuncs.kwargs&gt;</span></code>.</p>
+</section>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
+<p>absolute : ndarray
+An ndarray containing the absolute value of
+each element in <code class="docutils literal notranslate"><span class="pre">x</span></code>.  For complex input, <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">+</span> <span class="pre">ib</span></code>, the
+absolute value is :math:<code class="docutils literal notranslate"><span class="pre">\sqrt{</span> <span class="pre">a^2</span> <span class="pre">+</span> <span class="pre">b^2</span> <span class="pre">}</span></code>.
+This is a scalar if <code class="docutils literal notranslate"><span class="pre">x</span></code> is a scalar.</p>
+</section>
+<section id="id1">
+<h2>Examples<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>x = np.array([-1.2, 1.2])
+np.absolute(x)
+array([ 1.2,  1.2])
+np.absolute(1.2 + 1j)
+1.5620499351813308</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<p>Plot the function over <code class="docutils literal notranslate"><span class="pre">[-10,</span> <span class="pre">10]</span></code>:</p>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>import matplotlib.pyplot as plt</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>x = np.linspace(start=-10, stop=10, num=101)
+plt.plot(x, np.absolute(x))
+plt.show()</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<p>Plot the function over the complex plane:</p>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>xx = x + 1j * x[:, np.newaxis]
+plt.imshow(np.abs(xx), extent=[-10, 10, -10, 10], cmap=’gray’)
+plt.show()</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">abs</span></code> function can be used as a shorthand for <code class="docutils literal notranslate"><span class="pre">np.absolute</span></code> on
+ndarrays.</p>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>x = np.array([-1.2, 1.2])
+abs(x)
+array([1.2, 1.2])</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<section id="append">
+<h3><code class="docutils literal notranslate"><span class="pre">append</span></code><a class="headerlink" href="#append" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Connect another series onto the end of the current one.</p>
+</section>
+</section>
+<section id="id2">
+<h2>Parameters<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>other : <code class="docutils literal notranslate"><span class="pre">Series</span></code>
+another series of the same type to connect to this one</p>
+<p>inplace : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
+perform operation in-place, modifying current series,
+otherwise copy data and return new series, default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>.. warning::
+
+   `inplace` append bypasses the reference check in
+   `numpy.ndarray.resize`, so be carefully to only use this
+   for arrays that haven&#39;t been sharing their memory!
+</pre></div>
+</div>
+<p>pad : <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional
+value with which to pad discontiguous series,
+by default gaps will result in a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
+<p>gap : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
+action to perform if there’s a gap between the other series
+and this one. One of</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- ``&#39;raise&#39;`` - raise a `ValueError`
+- ``&#39;ignore&#39;`` - remove gap and join data
+- ``&#39;pad&#39;`` - pad gap with zeros
+
+If ``pad`` is given and is not `None`, the default is ``&#39;pad&#39;``,
+otherwise ``&#39;raise&#39;``. If ``gap=&#39;pad&#39;`` is given, the default
+for ``pad`` is ``0``.
+</pre></div>
+</div>
+<p>resize : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
+resize this array to accommodate new data, otherwise shift the
+old data to the left (potentially falling off the start) and
+put the new data in at the end, default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</section>
+<section id="id3">
+<h2>Returns<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>series : <code class="docutils literal notranslate"><span class="pre">Series</span></code>
+a new series containing joined data sets</p>
+<section id="axes">
+<h3><code class="docutils literal notranslate"><span class="pre">axes</span></code><a class="headerlink" href="#axes" title="Link to this heading"></a></h3>
+<p>Tuple of AxisDescriptor objects for each dimension.</p>
+</section>
+</section>
+<section id="id4">
+<h2>Returns<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>tuple of AxisDescriptor
+Each descriptor contains the axis name and index values.</p>
+<p><em>(Inherited from <code class="docutils literal notranslate"><span class="pre">AxisApiMixin</span></code>)</em></p>
+<section id="axis">
+<h3><code class="docutils literal notranslate"><span class="pre">axis</span></code><a class="headerlink" href="#axis" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">axis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">gwexpy</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">AxisDescriptor</span>
+</pre></div>
+</div>
+<p>Get an axis descriptor by index or name.</p>
+</section>
+</section>
+<section id="id5">
+<h2>Parameters<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>key : int or str
+Axis index (0-based) or name.</p>
+</section>
+<section id="id6">
+<h2>Returns<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>AxisDescriptor
+The requested axis descriptor.</p>
+</section>
+<section id="raises">
+<h2>Raises<a class="headerlink" href="#raises" title="Link to this heading"></a></h2>
+<p>KeyError
+If axis name not found.
+TypeError
+If key is not int or str.</p>
+<section id="axis1">
+<h3><code class="docutils literal notranslate"><span class="pre">axis1</span></code><a class="headerlink" href="#axis1" title="Link to this heading"></a></h3>
+<p>First axis descriptor (dimension 0).</p>
+</section>
+<section id="axis2">
+<h3><code class="docutils literal notranslate"><span class="pre">axis2</span></code><a class="headerlink" href="#axis2" title="Link to this heading"></a></h3>
+<p>Second axis descriptor (dimension 1).</p>
+</section>
+<section id="axis-names">
+<h3><code class="docutils literal notranslate"><span class="pre">axis_names</span></code><a class="headerlink" href="#axis-names" title="Link to this heading"></a></h3>
+<p>Names of all axes as a tuple of strings.</p>
+</section>
+</section>
+<section id="id7">
+<h2>Returns<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p>tuple of str
+The name of each axis in order.</p>
+<section id="channel">
+<h3><code class="docutils literal notranslate"><span class="pre">channel</span></code><a class="headerlink" href="#channel" title="Link to this heading"></a></h3>
+<p>Instrumental channel associated with these data</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~gwpy.detector.Channel</span></code></p>
+</section>
+<section id="copy">
+<h3><code class="docutils literal notranslate"><span class="pre">copy</span></code><a class="headerlink" href="#copy" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>a.copy(order=’C’)</p>
+<p>Return a copy of the array.</p>
+</section>
+</section>
+<section id="id8">
+<h2>Parameters<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p>order : {‘C’, ‘F’, ‘A’, ‘K’}, optional
+Controls the memory layout of the copy. ‘C’ means C-order,
+‘F’ means F-order, ‘A’ means ‘F’ if <code class="docutils literal notranslate"><span class="pre">a</span></code> is Fortran contiguous,
+‘C’ otherwise. ‘K’ means match the layout of <code class="docutils literal notranslate"><span class="pre">a</span></code> as closely
+as possible. (Note that this function and :func:<code class="docutils literal notranslate"><span class="pre">numpy.copy</span></code> are very
+similar but have different default values for their order=
+arguments, and this function always passes sub-classes through.)</p>
+</section>
+<section id="id9">
+<h2>See also<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p>numpy.copy : Similar function with different default behavior
+numpy.copyto</p>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<p>This function is the preferred method for creating an array copy.  The
+function :func:<code class="docutils literal notranslate"><span class="pre">numpy.copy</span></code> is similar, but it defaults to using order ‘K’,
+and will not pass sub-classes through by default.</p>
+</section>
+<section id="id10">
+<h2>Examples<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>x = np.array([[1,2,3],[4,5,6]], order=’F’)</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>y = x.copy()</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>x.fill(0)</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>x
+array([[0, 0, 0],
+[0, 0, 0]])</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>y
+array([[1, 2, 3],
+[4, 5, 6]])</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>y.flags[‘C_CONTIGUOUS’]
+True</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<section id="crop">
+<h3><code class="docutils literal notranslate"><span class="pre">crop</span></code><a class="headerlink" href="#crop" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Crop this series to the given x-axis extent.</p>
+</section>
+</section>
+<section id="id11">
+<h2>Parameters<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<p>start : <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional
+Lower limit of x-axis to crop to, defaults to
+:attr:<code class="docutils literal notranslate"><span class="pre">~Series.x0</span></code>.</p>
+<p>end : <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional
+Upper limit of x-axis to crop to, defaults to series end.</p>
+<p>copy : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
+Copy the input data to fresh memory,
+otherwise return a view (default).</p>
+</section>
+<section id="id12">
+<h2>Returns<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<p>series : <code class="docutils literal notranslate"><span class="pre">Series</span></code>
+A new series with a sub-set of the input data.</p>
+</section>
+<section id="id13">
+<h2>Notes<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<p>If either <code class="docutils literal notranslate"><span class="pre">start</span></code> or <code class="docutils literal notranslate"><span class="pre">end</span></code> are outside of the original
+<code class="docutils literal notranslate"><span class="pre">Series</span></code> span, warnings will be printed and the limits will
+be restricted to the :attr:<code class="docutils literal notranslate"><span class="pre">~Series.xspan</span></code>.</p>
+<section id="diff">
+<h3><code class="docutils literal notranslate"><span class="pre">diff</span></code><a class="headerlink" href="#diff" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Calculate the n-th order discrete difference along given axis.</p>
+<p>The first order difference is given by <code class="docutils literal notranslate"><span class="pre">out[n]</span> <span class="pre">=</span> <span class="pre">a[n+1]</span> <span class="pre">-</span> <span class="pre">a[n]</span></code> along
+the given axis, higher order differences are calculated by using <code class="docutils literal notranslate"><span class="pre">diff</span></code>
+recursively.</p>
+</section>
+</section>
+<section id="id14">
+<h2>Parameters<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
+<p>n : int, optional
+The number of times values are differenced.
+axis : int, optional
+The axis along which the difference is taken, default is the
+last axis.</p>
+</section>
+<section id="id15">
+<h2>Returns<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<p>diff : <code class="docutils literal notranslate"><span class="pre">Series</span></code>
+The <code class="docutils literal notranslate"><span class="pre">n</span></code> order differences. The shape of the output is the same
+as the input, except along <code class="docutils literal notranslate"><span class="pre">axis</span></code> where the dimension is
+smaller by <code class="docutils literal notranslate"><span class="pre">n</span></code>.</p>
+</section>
+<section id="id16">
+<h2>See also<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
+<p>numpy.diff
+for documentation on the underlying method</p>
+<section id="dumps">
+<h3><code class="docutils literal notranslate"><span class="pre">dumps</span></code><a class="headerlink" href="#dumps" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>a.dumps()</p>
+<p>Returns the pickle of the array as a string.
+pickle.loads will convert the string back to an array.</p>
+</section>
+</section>
+<section id="id17">
+<h2>Parameters<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
+<p>None</p>
+<section id="dx">
+<h3><code class="docutils literal notranslate"><span class="pre">dx</span></code><a class="headerlink" href="#dx" title="Link to this heading"></a></h3>
+<p>X-axis sample separation</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code> scalar</p>
+</section>
+<section id="dy">
+<h3><code class="docutils literal notranslate"><span class="pre">dy</span></code><a class="headerlink" href="#dy" title="Link to this heading"></a></h3>
+<p>Y-axis sample separation</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code> scalar</p>
+</section>
+<section id="epoch">
+<h3><code class="docutils literal notranslate"><span class="pre">epoch</span></code><a class="headerlink" href="#epoch" title="Link to this heading"></a></h3>
+<p>GPS epoch associated with these data</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~astropy.time.Time</span></code></p>
+</section>
+<section id="fit">
+<h3><code class="docutils literal notranslate"><span class="pre">fit</span></code><a class="headerlink" href="#fit" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s1">&#39;Series&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Any&#39;</span>
+</pre></div>
+</div>
+<p><em>No documentation available.</em></p>
+</section>
+<section id="flatten">
+<h3><code class="docutils literal notranslate"><span class="pre">flatten</span></code><a class="headerlink" href="#flatten" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Return a copy of the array collapsed into one dimension.</p>
+<p>Any index information is removed as part of the flattening,
+and the result is returned as a <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code> array.</p>
+</section>
+</section>
+<section id="id18">
+<h2>Parameters<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<p>order : {‘C’, ‘F’, ‘A’, ‘K’}, optional
+‘C’ means to flatten in row-major (C-style) order.
+‘F’ means to flatten in column-major (Fortran-
+style) order. ‘A’ means to flatten in column-major
+order if <code class="docutils literal notranslate"><span class="pre">a</span></code> is Fortran <em>contiguous</em> in memory,
+row-major order otherwise. ‘K’ means to flatten
+<code class="docutils literal notranslate"><span class="pre">a</span></code> in the order the elements occur in memory.
+The default is ‘C’.</p>
+</section>
+<section id="id19">
+<h2>Returns<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
+<p>y : <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code>
+A copy of the input array, flattened to one dimension.</p>
+</section>
+<section id="id20">
+<h2>See also<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
+<p>ravel : Return a flattened array.
+flat : A 1-D flat iterator over the array.</p>
+</section>
+<section id="id21">
+<h2>Examples<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>a = Array([[1,2], [3,4]], unit=’m’, name=’Test’)
+a.flatten()
+&lt;Quantity [1., 2., 3., 4.] m&gt;</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<section id="imshow">
+<h3><code class="docutils literal notranslate"><span class="pre">imshow</span></code><a class="headerlink" href="#imshow" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Plot this array using matplotlib.axes.Axes.imshow.
+Inherited from gwpy.</p>
+</section>
+<section id="inject">
+<h3><code class="docutils literal notranslate"><span class="pre">inject</span></code><a class="headerlink" href="#inject" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Add two compatible <code class="docutils literal notranslate"><span class="pre">Series</span></code> along their shared x-axis values.</p>
+</section>
+</section>
+<section id="id22">
+<h2>Parameters<a class="headerlink" href="#id22" title="Link to this heading"></a></h2>
+<p>other : <code class="docutils literal notranslate"><span class="pre">Series</span></code>
+a <code class="docutils literal notranslate"><span class="pre">Series</span></code> whose xindex intersects with <code class="docutils literal notranslate"><span class="pre">self.xindex</span></code></p>
+</section>
+<section id="id23">
+<h2>Returns<a class="headerlink" href="#id23" title="Link to this heading"></a></h2>
+<p>out : <code class="docutils literal notranslate"><span class="pre">Series</span></code>
+the sum of <code class="docutils literal notranslate"><span class="pre">self</span></code> and <code class="docutils literal notranslate"><span class="pre">other</span></code> along their shared x-axis values</p>
+</section>
+<section id="id24">
+<h2>Raises<a class="headerlink" href="#id24" title="Link to this heading"></a></h2>
+<p>ValueError
+if <code class="docutils literal notranslate"><span class="pre">self</span></code> and <code class="docutils literal notranslate"><span class="pre">other</span></code> have incompatible units or xindex intervals</p>
+</section>
+<section id="id25">
+<h2>Notes<a class="headerlink" href="#id25" title="Link to this heading"></a></h2>
+<p>If <code class="docutils literal notranslate"><span class="pre">other.xindex</span></code> and <code class="docutils literal notranslate"><span class="pre">self.xindex</span></code> do not intersect, this method will
+return a copy of <code class="docutils literal notranslate"><span class="pre">self</span></code>. If the series have uniformly offset indices,
+this method will raise a warning.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">self.xindex</span></code> is an array of timestamps, and if <code class="docutils literal notranslate"><span class="pre">other.xspan</span></code> is
+not a subset of <code class="docutils literal notranslate"><span class="pre">self.xspan</span></code>, then <code class="docutils literal notranslate"><span class="pre">other</span></code> will be cropped before
+being adding to <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<p>Users who wish to taper or window their <code class="docutils literal notranslate"><span class="pre">Series</span></code> should do so before
+passing it to this method. See :meth:<code class="docutils literal notranslate"><span class="pre">TimeSeries.taper</span></code> and
+:func:<code class="docutils literal notranslate"><span class="pre">~gwpy.signal.window.planck</span></code> for more information.</p>
+<section id="is-compatible">
+<h3><code class="docutils literal notranslate"><span class="pre">is_compatible</span></code><a class="headerlink" href="#is-compatible" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">is_compatible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Check whether this series and other have compatible metadata</p>
+<p>This method tests that the <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">size</span> <span class="pre">&lt;Series.dx&gt;</span></code>, and the
+<code class="docutils literal notranslate"><span class="pre">~Series.unit</span></code> match.</p>
+</section>
+<section id="is-contiguous">
+<h3><code class="docutils literal notranslate"><span class="pre">is_contiguous</span></code><a class="headerlink" href="#is-contiguous" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">is_contiguous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">3.814697265625e-06</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Check whether other is contiguous with self.</p>
+</section>
+</section>
+<section id="id26">
+<h2>Parameters<a class="headerlink" href="#id26" title="Link to this heading"></a></h2>
+<p>other : <code class="docutils literal notranslate"><span class="pre">Series</span></code>, <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>
+another series of the same type to test for contiguity</p>
+<p>tol : <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional
+the numerical tolerance of the test</p>
+</section>
+<section id="id27">
+<h2>Returns<a class="headerlink" href="#id27" title="Link to this heading"></a></h2>
+<p>1
+if <code class="docutils literal notranslate"><span class="pre">other</span></code> is contiguous with this series, i.e. would attach
+seamlessly onto the end
+-1
+if <code class="docutils literal notranslate"><span class="pre">other</span></code> is anti-contiguous with this seires, i.e. would attach
+seamlessly onto the start
+0
+if <code class="docutils literal notranslate"><span class="pre">other</span></code> is completely dis-contiguous with thie series</p>
+</section>
+<section id="id28">
+<h2>Notes<a class="headerlink" href="#id28" title="Link to this heading"></a></h2>
+<p>if a raw <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> is passed as other, with no metadata, then
+the contiguity check will always pass</p>
+<section id="isel">
+<h3><code class="docutils literal notranslate"><span class="pre">isel</span></code><a class="headerlink" href="#isel" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">isel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indexers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Select by integer indices along specified axes.</p>
+</section>
+</section>
+<section id="id29">
+<h2>Parameters<a class="headerlink" href="#id29" title="Link to this heading"></a></h2>
+<p>indexers : dict, optional
+Mapping of axis name/index to integer index or slice.
+**kwargs
+Additional indexers as keyword arguments.</p>
+</section>
+<section id="id30">
+<h2>Returns<a class="headerlink" href="#id30" title="Link to this heading"></a></h2>
+<p>subset
+Sliced array.</p>
+<section id="max">
+<h3><code class="docutils literal notranslate"><span class="pre">max</span></code><a class="headerlink" href="#max" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>a.max(axis=None, out=None, keepdims=False, initial=<no value>, where=True)</p>
+<p>Return the maximum along a given axis.</p>
+<p>Refer to <code class="docutils literal notranslate"><span class="pre">numpy.amax</span></code> for full documentation.</p>
+</section>
+</section>
+<section id="id31">
+<h2>See Also<a class="headerlink" href="#id31" title="Link to this heading"></a></h2>
+<p>numpy.amax : equivalent function</p>
+<p><em>(Inherited from <code class="docutils literal notranslate"><span class="pre">Array2D</span></code>)</em></p>
+<section id="mean">
+<h3><code class="docutils literal notranslate"><span class="pre">mean</span></code><a class="headerlink" href="#mean" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>a.mean(axis=None, dtype=None, out=None, keepdims=False, *, where=True)</p>
+<p>Returns the average of the array elements along given axis.</p>
+<p>Refer to <code class="docutils literal notranslate"><span class="pre">numpy.mean</span></code> for full documentation.</p>
+</section>
+</section>
+<section id="id32">
+<h2>See Also<a class="headerlink" href="#id32" title="Link to this heading"></a></h2>
+<p>numpy.mean : equivalent function</p>
+<p><em>(Inherited from <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>)</em></p>
+<section id="median">
+<h3><code class="docutils literal notranslate"><span class="pre">median</span></code><a class="headerlink" href="#median" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Compute the median along the specified axis.</p>
+<p>Returns the median of the array elements.</p>
+</section>
+</section>
+<section id="id33">
+<h2>Parameters<a class="headerlink" href="#id33" title="Link to this heading"></a></h2>
+<p>a : array_like
+Input array or object that can be converted to an array.
+axis : {int, sequence of int, None}, optional
+Axis or axes along which the medians are computed. The default
+is to compute the median along a flattened version of the array.
+A sequence of axes is supported since version 1.9.0.
+out : ndarray, optional
+Alternative output array in which to place the result. It must
+have the same shape and buffer length as the expected output,
+but the type (of the output) will be cast if necessary.
+overwrite_input : bool, optional
+If True, then allow use of memory of input array <code class="docutils literal notranslate"><span class="pre">a</span></code> for
+calculations. The input array will be modified by the call to
+<code class="docutils literal notranslate"><span class="pre">median</span></code>. This will save memory when you do not need to preserve
+the contents of the input array. Treat the input as undefined,
+but it will probably be fully or partially sorted. Default is
+False. If <code class="docutils literal notranslate"><span class="pre">overwrite_input</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">a</span></code> is not already an
+<code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, an error will be raised.
+keepdims : bool, optional
+If this is set to True, the axes which are reduced are left
+in the result as dimensions with size one. With this option,
+the result will broadcast correctly against the original <code class="docutils literal notranslate"><span class="pre">arr</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>.. versionadded:: 1.9.0
+</pre></div>
+</div>
+</section>
+<section id="id34">
+<h2>Returns<a class="headerlink" href="#id34" title="Link to this heading"></a></h2>
+<p>median : ndarray
+A new array holding the result. If the input contains integers
+or floats smaller than <code class="docutils literal notranslate"><span class="pre">float64</span></code>, then the output data-type is
+<code class="docutils literal notranslate"><span class="pre">np.float64</span></code>.  Otherwise, the data-type of the output is the
+same as that of the input. If <code class="docutils literal notranslate"><span class="pre">out</span></code> is specified, that array is
+returned instead.</p>
+</section>
+<section id="id35">
+<h2>See Also<a class="headerlink" href="#id35" title="Link to this heading"></a></h2>
+<p>mean, percentile</p>
+</section>
+<section id="id36">
+<h2>Notes<a class="headerlink" href="#id36" title="Link to this heading"></a></h2>
+<p>Given a vector <code class="docutils literal notranslate"><span class="pre">V</span></code> of length <code class="docutils literal notranslate"><span class="pre">N</span></code>, the median of <code class="docutils literal notranslate"><span class="pre">V</span></code> is the
+middle value of a sorted copy of <code class="docutils literal notranslate"><span class="pre">V</span></code>, <code class="docutils literal notranslate"><span class="pre">V_sorted</span></code> - i
+e., <code class="docutils literal notranslate"><span class="pre">V_sorted[(N-1)/2]</span></code>, when <code class="docutils literal notranslate"><span class="pre">N</span></code> is odd, and the average of the
+two middle values of <code class="docutils literal notranslate"><span class="pre">V_sorted</span></code> when <code class="docutils literal notranslate"><span class="pre">N</span></code> is even.</p>
+</section>
+<section id="id37">
+<h2>Examples<a class="headerlink" href="#id37" title="Link to this heading"></a></h2>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>a = np.array([[10, 7, 4], [3, 2, 1]])
+a
+array([[10,  7,  4],
+[ 3,  2,  1]])
+np.median(a)
+3.5
+np.median(a, axis=0)
+array([6.5, 4.5, 2.5])
+np.median(a, axis=1)
+array([7.,  2.])
+m = np.median(a, axis=0)
+out = np.zeros_like(m)
+np.median(a, axis=0, out=m)
+array([6.5,  4.5,  2.5])
+m
+array([6.5,  4.5,  2.5])
+b = a.copy()
+np.median(b, axis=1, overwrite_input=True)
+array([7.,  2.])
+assert not np.all(a==b)
+b = a.copy()
+np.median(b, axis=None, overwrite_input=True)
+3.5
+assert not np.all(a==b)</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<p><em>(Inherited from <code class="docutils literal notranslate"><span class="pre">Array2D</span></code>)</em></p>
+<section id="min">
+<h3><code class="docutils literal notranslate"><span class="pre">min</span></code><a class="headerlink" href="#min" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>a.min(axis=None, out=None, keepdims=False, initial=<no value>, where=True)</p>
+<p>Return the minimum along a given axis.</p>
+<p>Refer to <code class="docutils literal notranslate"><span class="pre">numpy.amin</span></code> for full documentation.</p>
+</section>
+</section>
+<section id="id38">
+<h2>See Also<a class="headerlink" href="#id38" title="Link to this heading"></a></h2>
+<p>numpy.amin : equivalent function</p>
+<p><em>(Inherited from <code class="docutils literal notranslate"><span class="pre">Array2D</span></code>)</em></p>
+<section id="name">
+<h3><code class="docutils literal notranslate"><span class="pre">name</span></code><a class="headerlink" href="#name" title="Link to this heading"></a></h3>
+<p>Name for this data set</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">str</span></code></p>
+</section>
+<section id="override-unit">
+<h3><code class="docutils literal notranslate"><span class="pre">override_unit</span></code><a class="headerlink" href="#override-unit" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">override_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">parse_strict</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Forcefully reset the unit of these data</p>
+<p>Use of this method is discouraged in favour of <code class="docutils literal notranslate"><span class="pre">to()</span></code>,
+which performs accurate conversions from one unit to another.
+The method should really only be used when the original unit of the
+array is plain wrong.</p>
+</section>
+</section>
+<section id="id39">
+<h2>Parameters<a class="headerlink" href="#id39" title="Link to this heading"></a></h2>
+<p>unit : <code class="docutils literal notranslate"><span class="pre">~astropy.units.Unit</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>
+the unit to force onto this array
+parse_strict : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
+how to handle errors in the unit parsing, default is to
+raise the underlying exception from <code class="docutils literal notranslate"><span class="pre">astropy.units</span></code></p>
+</section>
+<section id="id40">
+<h2>Raises<a class="headerlink" href="#id40" title="Link to this heading"></a></h2>
+<p>ValueError
+if a <code class="docutils literal notranslate"><span class="pre">str</span></code> cannot be parsed as a valid unit</p>
+<section id="pad">
+<h3><code class="docutils literal notranslate"><span class="pre">pad</span></code><a class="headerlink" href="#pad" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Pad this series to a new size</p>
+</section>
+</section>
+<section id="id41">
+<h2>Parameters<a class="headerlink" href="#id41" title="Link to this heading"></a></h2>
+<p>pad_width : <code class="docutils literal notranslate"><span class="pre">int</span></code>, pair of <code class="docutils literal notranslate"><span class="pre">ints</span></code>
+number of samples by which to pad each end of the array;
+given a single <code class="docutils literal notranslate"><span class="pre">int</span></code> to pad both ends by the same amount,
+or a (before, after) <code class="docutils literal notranslate"><span class="pre">tuple</span></code> for assymetric padding</p>
+<p>**kwargs
+see :meth:<code class="docutils literal notranslate"><span class="pre">numpy.pad</span></code> for kwarg documentation</p>
+</section>
+<section id="id42">
+<h2>Returns<a class="headerlink" href="#id42" title="Link to this heading"></a></h2>
+<p>series : <code class="docutils literal notranslate"><span class="pre">Series</span></code>
+the padded version of the input</p>
+</section>
+<section id="id43">
+<h2>See also<a class="headerlink" href="#id43" title="Link to this heading"></a></h2>
+<p>numpy.pad
+for details on the underlying functionality</p>
+<section id="pcolormesh">
+<h3><code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code><a class="headerlink" href="#pcolormesh" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pcolormesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Plot this array using matplotlib.axes.Axes.pcolormesh.
+Inherited from gwpy.</p>
+</section>
+<section id="plot">
+<h3><code class="docutils literal notranslate"><span class="pre">plot</span></code><a class="headerlink" href="#plot" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;imshow&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Plot the data for this series</p>
+</section>
+</section>
+<section id="id44">
+<h2>Returns<a class="headerlink" href="#id44" title="Link to this heading"></a></h2>
+<p>figure : <code class="docutils literal notranslate"><span class="pre">~matplotlib.figure.Figure</span></code>
+the newly created figure, with populated Axes.</p>
+</section>
+<section id="id45">
+<h2>See also<a class="headerlink" href="#id45" title="Link to this heading"></a></h2>
+<p>matplotlib.pyplot.figure
+for documentation of keyword arguments used to create the
+figure
+matplotlib.figure.Figure.add_subplot
+for documentation of keyword arguments used to create the
+axes
+matplotlib.axes.Axes.plot
+for documentation of keyword arguments used in rendering the data</p>
+<p><em>(Inherited from <code class="docutils literal notranslate"><span class="pre">Series</span></code>)</em></p>
+<section id="prepend">
+<h3><code class="docutils literal notranslate"><span class="pre">prepend</span></code><a class="headerlink" href="#prepend" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Connect another series onto the start of the current one.</p>
+</section>
+</section>
+<section id="id46">
+<h2>Parameters<a class="headerlink" href="#id46" title="Link to this heading"></a></h2>
+<p>other : <code class="docutils literal notranslate"><span class="pre">Series</span></code>
+another series of the same type as this one</p>
+<p>inplace : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
+perform operation in-place, modifying current series,
+otherwise copy data and return new series, default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>.. warning::
+
+   `inplace` prepend bypasses the reference check in
+   `numpy.ndarray.resize`, so be carefully to only use this
+   for arrays that haven&#39;t been sharing their memory!
+</pre></div>
+</div>
+<p>pad : <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional
+value with which to pad discontiguous series,
+by default gaps will result in a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
+<p>gap : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
+action to perform if there’s a gap between the other series
+and this one. One of</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- ``&#39;raise&#39;`` - raise a `ValueError`
+- ``&#39;ignore&#39;`` - remove gap and join data
+- ``&#39;pad&#39;`` - pad gap with zeros
+
+If `pad` is given and is not `None`, the default is ``&#39;pad&#39;``,
+otherwise ``&#39;raise&#39;``.
+</pre></div>
+</div>
+<p>resize : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
+resize this array to accommodate new data, otherwise shift the
+old data to the left (potentially falling off the start) and
+put the new data in at the end, default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</section>
+<section id="id47">
+<h2>Returns<a class="headerlink" href="#id47" title="Link to this heading"></a></h2>
+<p>series : <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>
+time-series containing joined data sets</p>
+<section id="read">
+<h3><code class="docutils literal notranslate"><span class="pre">read</span></code><a class="headerlink" href="#read" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">read</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read data into a <code class="docutils literal notranslate"><span class="pre">Series</span></code></p>
+<p>Arguments and keywords depend on the output format, see the
+online documentation for full details for each format, the
+parameters below are common to most formats.</p>
+</section>
+</section>
+<section id="id48">
+<h2>Parameters<a class="headerlink" href="#id48" title="Link to this heading"></a></h2>
+<p>source : <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code>
+Source of data, any of the following:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- `str` path of single data file,
+- `str` path of LAL-format cache file,
+- `list` of paths.
+</pre></div>
+</div>
+<p>*args
+Other arguments are (in general) specific to the given
+<code class="docutils literal notranslate"><span class="pre">format</span></code>.</p>
+<p>format : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
+Source format identifier. If not given, the format will be
+detected if possible. See below for list of acceptable
+formats.</p>
+<p>**kwargs
+Other keywords are (in general) specific to the given <code class="docutils literal notranslate"><span class="pre">format</span></code>.</p>
+</section>
+<section id="id49">
+<h2>Returns<a class="headerlink" href="#id49" title="Link to this heading"></a></h2>
+<p>data : <code class="docutils literal notranslate"><span class="pre">Series</span></code></p>
+</section>
+<section id="id50">
+<h2>Raises<a class="headerlink" href="#id50" title="Link to this heading"></a></h2>
+<p>IndexError
+if <code class="docutils literal notranslate"><span class="pre">source</span></code> is an empty list</p>
+</section>
+<section id="id51">
+<h2>Notes<a class="headerlink" href="#id51" title="Link to this heading"></a></h2>
+<section id="rename-axes">
+<h3><code class="docutils literal notranslate"><span class="pre">rename_axes</span></code><a class="headerlink" href="#rename-axes" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rename_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Rename axes using a mapping of old names to new names.</p>
+</section>
+</section>
+<section id="id52">
+<h2>Parameters<a class="headerlink" href="#id52" title="Link to this heading"></a></h2>
+<p>mapping : dict
+Mapping from old axis names to new names.
+inplace : bool, optional
+If True, modify in place. Otherwise return a copy.</p>
+</section>
+<section id="id53">
+<h2>Returns<a class="headerlink" href="#id53" title="Link to this heading"></a></h2>
+<p>self or copy</p>
+<section id="rms">
+<h3><code class="docutils literal notranslate"><span class="pre">rms</span></code><a class="headerlink" href="#rms" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><em>No documentation available.</em></p>
+</section>
+<section id="sel">
+<h3><code class="docutils literal notranslate"><span class="pre">sel</span></code><a class="headerlink" href="#sel" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indexers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Select by coordinate values along specified axes.</p>
+</section>
+</section>
+<section id="id54">
+<h2>Parameters<a class="headerlink" href="#id54" title="Link to this heading"></a></h2>
+<p>indexers : dict, optional
+Mapping of axis name to coordinate value or slice.
+method : str, optional
+Selection method: ‘nearest’ (default).
+**kwargs
+Additional indexers as keyword arguments.</p>
+</section>
+<section id="id55">
+<h2>Returns<a class="headerlink" href="#id55" title="Link to this heading"></a></h2>
+<p>subset
+Sliced array at nearest coordinate values.</p>
+<section id="shift">
+<h3><code class="docutils literal notranslate"><span class="pre">shift</span></code><a class="headerlink" href="#shift" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Shift this <code class="docutils literal notranslate"><span class="pre">Series</span></code> forward on the X-axis by <code class="docutils literal notranslate"><span class="pre">delta</span></code></p>
+<p>This modifies the series in-place.</p>
+</section>
+</section>
+<section id="id56">
+<h2>Parameters<a class="headerlink" href="#id56" title="Link to this heading"></a></h2>
+<p>delta : <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>
+The amount by which to shift (in x-axis units if <code class="docutils literal notranslate"><span class="pre">float</span></code>), give
+a negative value to shift backwards in time</p>
+</section>
+<section id="id57">
+<h2>Examples<a class="headerlink" href="#id57" title="Link to this heading"></a></h2>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>from gwpy.types import Series
+a = Series([1, 2, 3, 4, 5], x0=0, dx=1, xunit=’m’)
+print(a.x0)
+0.0 m
+a.shift(5)
+print(a.x0)
+5.0 m
+a.shift(‘-1 km’)
+-995.0 m</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<section id="std">
+<h3><code class="docutils literal notranslate"><span class="pre">std</span></code><a class="headerlink" href="#std" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>a.std(axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True)</p>
+<p>Returns the standard deviation of the array elements along given axis.</p>
+<p>Refer to <code class="docutils literal notranslate"><span class="pre">numpy.std</span></code> for full documentation.</p>
+</section>
+</section>
+<section id="id58">
+<h2>See Also<a class="headerlink" href="#id58" title="Link to this heading"></a></h2>
+<p>numpy.std : equivalent function</p>
+<p><em>(Inherited from <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>)</em></p>
+<section id="step">
+<h3><code class="docutils literal notranslate"><span class="pre">step</span></code><a class="headerlink" href="#step" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Create a step plot of this series</p>
+</section>
+<section id="swapaxes">
+<h3><code class="docutils literal notranslate"><span class="pre">swapaxes</span></code><a class="headerlink" href="#swapaxes" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">swapaxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>a.swapaxes(axis1, axis2)</p>
+<p>Return a view of the array with <code class="docutils literal notranslate"><span class="pre">axis1</span></code> and <code class="docutils literal notranslate"><span class="pre">axis2</span></code> interchanged.</p>
+<p>Refer to <code class="docutils literal notranslate"><span class="pre">numpy.swapaxes</span></code> for full documentation.</p>
+</section>
+</section>
+<section id="id59">
+<h2>See Also<a class="headerlink" href="#id59" title="Link to this heading"></a></h2>
+<p>numpy.swapaxes : equivalent function</p>
+<p><em>(Inherited from <code class="docutils literal notranslate"><span class="pre">Array2D</span></code>)</em></p>
+<section id="tostring">
+<h3><code class="docutils literal notranslate"><span class="pre">tostring</span></code><a class="headerlink" href="#tostring" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tostring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>a.tobytes(order=’C’)</p>
+<p>Construct Python bytes containing the raw data bytes in the array.</p>
+<p>Constructs Python bytes showing a copy of the raw contents of
+data memory. The bytes object is produced in C-order by default.
+This behavior is controlled by the <code class="docutils literal notranslate"><span class="pre">order</span></code> parameter.</p>
+<p>.. versionadded:: 1.9.0</p>
+</section>
+</section>
+<section id="id60">
+<h2>Parameters<a class="headerlink" href="#id60" title="Link to this heading"></a></h2>
+<p>order : {‘C’, ‘F’, ‘A’}, optional
+Controls the memory layout of the bytes object. ‘C’ means C-order,
+‘F’ means F-order, ‘A’ (short for <em>Any</em>) means ‘F’ if <code class="docutils literal notranslate"><span class="pre">a</span></code> is
+Fortran contiguous, ‘C’ otherwise. Default is ‘C’.</p>
+</section>
+<section id="id61">
+<h2>Returns<a class="headerlink" href="#id61" title="Link to this heading"></a></h2>
+<p>s : bytes
+Python bytes exhibiting a copy of <code class="docutils literal notranslate"><span class="pre">a</span></code>’s raw data.</p>
+</section>
+<section id="id62">
+<h2>See also<a class="headerlink" href="#id62" title="Link to this heading"></a></h2>
+<p>frombuffer
+Inverse of this operation, construct a 1-dimensional array from Python
+bytes.</p>
+</section>
+<section id="id63">
+<h2>Examples<a class="headerlink" href="#id63" title="Link to this heading"></a></h2>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>x = np.array([[0, 1], [2, 3]], dtype=’&lt;u2’)
+x.tobytes()
+b’\x00\x00\x01\x00\x02\x00\x03\x00’
+x.tobytes(‘C’) == x.tobytes()
+True
+x.tobytes(‘F’)
+b’\x00\x00\x02\x00\x01\x00\x03\x00’</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<section id="transpose">
+<h3><code class="docutils literal notranslate"><span class="pre">transpose</span></code><a class="headerlink" href="#transpose" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">axes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Permute the dimensions of an array.</p>
+</section>
+<section id="unit">
+<h3><code class="docutils literal notranslate"><span class="pre">unit</span></code><a class="headerlink" href="#unit" title="Link to this heading"></a></h3>
+<p>The physical unit of these data</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~astropy.units.UnitBase</span></code></p>
+</section>
+<section id="update">
+<h3><code class="docutils literal notranslate"><span class="pre">update</span></code><a class="headerlink" href="#update" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Update this series by appending new data from an other
+and dropping the same amount of data off the start.</p>
+<p>This is a convenience method that just calls <code class="docutils literal notranslate"><span class="pre">~Series.append</span></code> with
+<code class="docutils literal notranslate"><span class="pre">resize=False</span></code>.</p>
+</section>
+<section id="value-at">
+<h3><code class="docutils literal notranslate"><span class="pre">value_at</span></code><a class="headerlink" href="#value-at" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">value_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Return the value of this <code class="docutils literal notranslate"><span class="pre">Series</span></code> at the given <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y)</span></code> coordinates</p>
+</section>
+</section>
+<section id="id64">
+<h2>Parameters<a class="headerlink" href="#id64" title="Link to this heading"></a></h2>
+<p>x : <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code>
+the <code class="docutils literal notranslate"><span class="pre">xindex</span></code> value at which to search
+x : <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code>
+the <code class="docutils literal notranslate"><span class="pre">yindex</span></code> value at which to search</p>
+</section>
+<section id="id65">
+<h2>Returns<a class="headerlink" href="#id65" title="Link to this heading"></a></h2>
+<p>z : <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code>
+the value of this Series at the given coordinates</p>
+<section id="var">
+<h3><code class="docutils literal notranslate"><span class="pre">var</span></code><a class="headerlink" href="#var" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>a.var(axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True)</p>
+<p>Returns the variance of the array elements, along given axis.</p>
+<p>Refer to <code class="docutils literal notranslate"><span class="pre">numpy.var</span></code> for full documentation.</p>
+</section>
+</section>
+<section id="id66">
+<h2>See Also<a class="headerlink" href="#id66" title="Link to this heading"></a></h2>
+<p>numpy.var : equivalent function</p>
+<p><em>(Inherited from <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>)</em></p>
+<section id="write">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Write this <code class="docutils literal notranslate"><span class="pre">Series</span></code> to a file</p>
+<p>Arguments and keywords depend on the output format, see the
+online documentation for full details for each format, the
+parameters below are common to most formats.</p>
+</section>
+</section>
+<section id="id67">
+<h2>Parameters<a class="headerlink" href="#id67" title="Link to this heading"></a></h2>
+<p>target : <code class="docutils literal notranslate"><span class="pre">str</span></code>
+output filename</p>
+<p>format : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
+output format identifier. If not given, the format will be
+detected if possible. See below for list of acceptable
+formats.</p>
+</section>
+<section id="id68">
+<h2>Notes<a class="headerlink" href="#id68" title="Link to this heading"></a></h2>
+<section id="x0">
+<h3><code class="docutils literal notranslate"><span class="pre">x0</span></code><a class="headerlink" href="#x0" title="Link to this heading"></a></h3>
+<p>X-axis coordinate of the first data point</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code> scalar</p>
+</section>
+<section id="xindex">
+<h3><code class="docutils literal notranslate"><span class="pre">xindex</span></code><a class="headerlink" href="#xindex" title="Link to this heading"></a></h3>
+<p>Positions of the data on the x-axis</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code> array</p>
+</section>
+<section id="xspan">
+<h3><code class="docutils literal notranslate"><span class="pre">xspan</span></code><a class="headerlink" href="#xspan" title="Link to this heading"></a></h3>
+<p>X-axis [low, high) segment encompassed by these data</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~gwpy.segments.Segment</span></code></p>
+</section>
+<section id="xunit">
+<h3><code class="docutils literal notranslate"><span class="pre">xunit</span></code><a class="headerlink" href="#xunit" title="Link to this heading"></a></h3>
+<p>Unit of x-axis index</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~astropy.units.Unit</span></code></p>
+</section>
+<section id="y0">
+<h3><code class="docutils literal notranslate"><span class="pre">y0</span></code><a class="headerlink" href="#y0" title="Link to this heading"></a></h3>
+<p>Y-axis coordinate of the first data point</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code> scalar</p>
+</section>
+<section id="yindex">
+<h3><code class="docutils literal notranslate"><span class="pre">yindex</span></code><a class="headerlink" href="#yindex" title="Link to this heading"></a></h3>
+<p>Positions of the data on the y-axis</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code> array</p>
+</section>
+<section id="yspan">
+<h3><code class="docutils literal notranslate"><span class="pre">yspan</span></code><a class="headerlink" href="#yspan" title="Link to this heading"></a></h3>
+<p>Y-axis [low, high) segment encompassed by these data</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~gwpy.segments.Segment</span></code></p>
+</section>
+<section id="yunit">
+<h3><code class="docutils literal notranslate"><span class="pre">yunit</span></code><a class="headerlink" href="#yunit" title="Link to this heading"></a></h3>
+<p>Unit of Y-axis index</p>
+<p>:type: <code class="docutils literal notranslate"><span class="pre">~astropy.units.Unit</span></code></p>
+</section>
+<section id="zip">
+<h3><code class="docutils literal notranslate"><span class="pre">zip</span></code><a class="headerlink" href="#zip" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Zip the <code class="docutils literal notranslate"><span class="pre">xindex</span></code> and <code class="docutils literal notranslate"><span class="pre">value</span></code> arrays of this <code class="docutils literal notranslate"><span class="pre">Series</span></code></p>
+</section>
+</section>
+<section id="id69">
+<h2>Returns<a class="headerlink" href="#id69" title="Link to this heading"></a></h2>
+<p>stacked : 2-d <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>
+The array formed by stacking the the <code class="docutils literal notranslate"><span class="pre">xindex</span></code> and <code class="docutils literal notranslate"><span class="pre">value</span></code> of this
+series</p>
+</section>
+<section id="id70">
+<h2>Examples<a class="headerlink" href="#id70" title="Link to this heading"></a></h2>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>a = Series([0, 2, 4, 6, 8], xindex=[-5, -4, -3, -2, -1])
+a.zip()
+array([[-5.,  0.],
+[-4.,  2.],
+[-3.,  4.],
+[-2.,  6.],
+[-1.,  8.]])</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Array2D.html" class="btn btn-neutral float-left" title="Array2D" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="TimePlaneTransform.html" class="btn btn-neutral float-right" title="TimePlaneTransform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,159 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpectrogramMatrix リファクタリングレポート &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">SpectrogramMatrix リファクタリングレポート</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/developers/reports/SPECTROGRAM_MATRIX_REFACTOR_REPORT.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="spectrogrammatrix">
+<h1>SpectrogramMatrix リファクタリングレポート<a class="headerlink" href="#spectrogrammatrix" title="Link to this heading"></a></h1>
+<section id="id1">
+<h2>概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> クラスを <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> ベースにリファクタリングし、多次元構造 (3D/4D) のサポートと解析機能を強化しました。</p>
+</section>
+<section id="id2">
+<h2>主な変更点<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>継承構造の変更</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> を継承し、共通の行列操作機能を利用可能にしました。</p></li>
+<li><p>Mixin (<code class="docutils literal notranslate"><span class="pre">SpectrogramMatrixCoreMixin</span></code>, <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrixAnalysisMixin</span></code>) を導入。</p></li>
+</ul>
+</li>
+<li><p><strong>3D/4D データ構造のサポート</strong></p>
+<ul class="simple">
+<li><p>3D: <code class="docutils literal notranslate"><span class="pre">(Batch,</span> <span class="pre">Time,</span> <span class="pre">Freq)</span></code></p></li>
+<li><p>4D: <code class="docutils literal notranslate"><span class="pre">(Row,</span> <span class="pre">Col,</span> <span class="pre">Time,</span> <span class="pre">Freq)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_compatible</span></code> 等の検証ロジックをオーバーライドし、メタデータ行列 <code class="docutils literal notranslate"><span class="pre">(Row,</span> <span class="pre">Col)</span></code> とデータテンソルの整合性を確保。</p></li>
+</ul>
+</li>
+<li><p><strong>機能追加</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">append</span></code>, <code class="docutils literal notranslate"><span class="pre">crop</span></code>, <code class="docutils literal notranslate"><span class="pre">pad</span></code>, <code class="docutils literal notranslate"><span class="pre">interpolate</span></code> 等の解析メソッド。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">to_series_1Dlist</span></code>, <code class="docutils literal notranslate"><span class="pre">to_series_2Dlist</span></code> 等の変換メソッド。</p></li>
+<li><p>算術演算における <code class="docutils literal notranslate"><span class="pre">Unit</span></code> (単位) の正しい伝播。</p></li>
+</ul>
+</li>
+<li><p><strong>テスト強化</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_spectrogram_matrix_features.py</span></code>: 主要機能の網羅的テスト。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_sgm_extra.py</span></code>: エッジケース、Plotting、構造操作のテスト。</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="id3">
+<h2>今後の課題<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Pickle / HDF5 Support</strong>: <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> プロパティの復元に関する既知の問題（現在は <code class="docutils literal notranslate"><span class="pre">xfail</span></code>）。</p></li>
+<li><p><strong>Transpose</strong>: 軸の意味が変わる操作に対するより良いサポート。</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
