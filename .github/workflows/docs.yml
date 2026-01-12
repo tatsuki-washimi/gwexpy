@@ -33,13 +33,34 @@ jobs:
       - name: Install dependencies
         shell: bash -l {0}
         run: |
-          conda install -y "scipy<1.14" pandas matplotlib h5py gwpy nds2-client lalsuite framel sphinx sphinx_rtd_theme myst-parser
+          conda install -y "scipy<1.14" pandas matplotlib h5py gwpy nds2-client lalsuite framel \
+            sphinx sphinx_rtd_theme myst-parser polib
+          pip install google-generativeai sphinx-intl
           pip install --no-deps .
 
-      - name: Build documentation
+      - name: Extract messages and Update catalogs
         shell: bash -l {0}
         run: |
-          sphinx-build -v -b html docs docs/_build/html
+          sphinx-build -M gettext docs docs/_build
+          sphinx-intl update -p docs/_build/gettext -l ja
+
+      - name: Auto-translate with Gemini
+        shell: bash -l {0}
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python docs/translate_po.py
+
+      - name: Build documentation (Multilingual)
+        shell: bash -l {0}
+        run: |
+          # Build English version
+          sphinx-build -b html docs docs/_build/html/en
+          # Build Japanese version
+          sphinx-build -D language=ja -b html docs docs/_build/html/ja
+          
+          # Create landing page to redirect to /en/
+          echo '<html><head><meta http-equiv="refresh" content="0; url=en/index.html"></head></html>' > docs/_build/html/index.html
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'

@@ -19,9 +19,11 @@ extensions = [
 autosummary_generate = True
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "reference/ja"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 language = "en"
+locale_dirs = ["locales/"]
+gettext_compact = False
 
 html_theme = "sphinx_rtd_theme"
 
