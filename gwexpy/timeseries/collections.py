@@ -226,12 +226,20 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         hermitian : bool, optional
             If True, exploit Hermitian symmetry (default True).
         include_diagonal : bool, optional
-            Whether to include diagonal elements (default True).
+            Must be True for CSD matrices; False raises ValueError because the
+            diagonal is always the PSD.
 
         Returns
         -------
         FrequencySeriesMatrix
             The CSD matrix.
+
+        Notes
+        -----
+        The diagonal of a self-CSD matrix is always computed as the PSD. Any
+        uncomputed elements are represented as complex NaN. The frequency axis
+        is taken from the first computed element without alignment/truncation;
+        dt and fftlength consistency is enforced before computation.
         """
         return csd_matrix_from_collection(
             self, other,
@@ -264,6 +272,15 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         -------
         FrequencySeriesMatrix
             The coherence matrix.
+
+        Notes
+        -----
+        If include_diagonal is True and diagonal_value is not None, the
+        diagonal is filled with that value without computation. If
+        diagonal_value is None, the diagonal coherence is computed. Uncomputed
+        elements are represented as NaN. The frequency axis is taken from the
+        first computed element without alignment/truncation; dt and fftlength
+        consistency is enforced before computation.
         """
         return coherence_matrix_from_collection(
             self, other,
@@ -842,11 +859,19 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         hermitian : bool, default=True
             If True and other is None, compute only upper triangle and conjugate fill lower.
         include_diagonal : bool, default=True
-            Whether to compute diagonal elements.
+            Must be True for CSD matrices; False raises ValueError because the
+            diagonal is always the PSD.
 
         Returns
         -------
         FrequencySeriesMatrix
+
+        Notes
+        -----
+        The diagonal of a self-CSD matrix is always computed as the PSD. Any
+        uncomputed elements are represented as complex NaN. The frequency axis
+        is taken from the first computed element without alignment/truncation;
+        dt and fftlength consistency is enforced before computation.
         """
         return csd_matrix_from_collection(
             self, other,
@@ -875,6 +900,15 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         Returns
         -------
         FrequencySeriesMatrix
+
+        Notes
+        -----
+        If include_diagonal is True and diagonal_value is not None, the
+        diagonal is filled with that value without computation. If
+        diagonal_value is None, the diagonal coherence is computed. Uncomputed
+        elements are represented as NaN. The frequency axis is taken from the
+        first computed element without alignment/truncation; dt and fftlength
+        consistency is enforced before computation.
         """
         return coherence_matrix_from_collection(
             self, other,
