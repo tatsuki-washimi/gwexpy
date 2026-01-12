@@ -42,7 +42,7 @@ jobs:
         shell: bash -l {0}
         run: |
           sphinx-build -M gettext docs docs/_build
-          sphinx-intl update -c docs/conf.py -p docs/_build/gettext -l ja
+          sphinx-intl update -p docs/_build/gettext -l ja -d docs/locales
 
       - name: Auto-translate with Gemini
         shell: bash -l {0}
