@@ -54,9 +54,9 @@ jobs:
       - name: Build documentation (Multilingual)
         shell: bash -l {0}
         run: |
-          # Build English version
-          sphinx-build -b html docs docs/_build/html/en
-          # Build Japanese version
+          # Build English version (Exclude manual Japanese pages)
+          sphinx-build -D "exclude_patterns=_build,Thumbs.db,.DS_Store,reference/ja" -b html docs docs/_build/html/en
+          # Build Japanese version (Include all)
           sphinx-build -D language=ja -b html docs docs/_build/html/ja
           
           # Create landing page to redirect to /en/
