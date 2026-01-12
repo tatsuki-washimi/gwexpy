@@ -105,6 +105,51 @@ class TestTimeSeriesExtensions:
         # All frequency bins should have the constant gain
         np.testing.assert_allclose(np.abs(tf.value), gain, rtol=1e-10)
 
+    def test_transfer_function_transient_zero_zero_nan(self):
+        n_samples = 128
+        data_in = np.zeros(n_samples)
+        data_out = np.zeros(n_samples)
+
+        ts_in = TimeSeries(data_in, sample_rate=64.0)
+        ts_out = TimeSeries(data_out, sample_rate=64.0)
+
+        tf = ts_in.transfer_function(ts_out, mode="transient")
+        assert np.iscomplexobj(tf.value)
+        assert np.isnan(tf.value.real).all()
+        assert np.isnan(tf.value.imag).all()
+
+    def test_transfer_function_transient_signed_inf(self):
+        n_samples = 128
+        data_in = np.zeros(n_samples)
+
+        ts_in = TimeSeries(data_in, sample_rate=64.0)
+
+        data_out_pos = np.ones(n_samples)
+        ts_out_pos = TimeSeries(data_out_pos, sample_rate=64.0)
+        tf_pos = ts_in.transfer_function(ts_out_pos, mode="transient")
+        assert np.isposinf(tf_pos.value[0].real)
+
+        data_out_neg = -np.ones(n_samples)
+        ts_out_neg = TimeSeries(data_out_neg, sample_rate=64.0)
+        tf_neg = ts_in.transfer_function(ts_out_neg, mode="transient")
+        assert np.isneginf(tf_neg.value[0].real)
+
+    def test_transfer_function_transient_complex_phase_inf(self):
+        n_samples = 128
+        data_in = np.zeros(n_samples, dtype=complex)
+        data_out = np.full(n_samples, 1.0 + 1.0j, dtype=complex)
+
+        try:
+            ts_in = TimeSeries(data_in, sample_rate=64.0)
+            ts_out = TimeSeries(data_out, sample_rate=64.0)
+            tf = ts_in.transfer_function(ts_out, mode="transient")
+        except (TypeError, ValueError) as exc:
+            pytest.skip(f"Complex transient FFT not supported: {exc}")
+
+        fy = ts_out.fft(mode="transient")
+        expected = (np.inf + 0j) * np.exp(1j * np.angle(fy.value[0]))
+        np.testing.assert_allclose(tf.value[0], expected)
+
     def test_transfer_function_backward_compat(self):
         """Verify deprecated 'method' parameter still works with warning."""
         import warnings
@@ -155,6 +200,16 @@ class TestTimeSeriesExtensions:
             # FFT size 500.
             assert len(tf) == 251
 
+        # No overlap with align="intersection"
+        ts3 = TimeSeries(np.zeros(10), dt=1.0, t0=0)
+        ts4 = TimeSeries(np.zeros(10), dt=1.0, t0=100)
+        with pytest.raises(ValueError, match="No comparison overlap"):
+            ts3.transfer_function(ts4, mode="transient", align="intersection")
+
+        # Invalid align
+        with pytest.raises(ValueError, match="align must be"):
+            ts1.transfer_function(ts2, mode="transient", align="invalid")
+
     def test_fft_other_length(self):
          ts = TimeSeries(np.ones(10), dt=1.0)
          # other_length=10 -> target= 10 + 10 - 1 = 19
@@ -163,4 +218,3 @@ class TestTimeSeriesExtensions:
          # rfftfreq(19) -> 10 points
          assert len(fs) == 10
          assert fs.df.value == pytest.approx(1.0/19.0)
-
