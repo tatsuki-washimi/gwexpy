@@ -35,7 +35,8 @@ jobs:
         run: |
           conda install -y "scipy<1.14" pandas matplotlib h5py gwpy nds2-client lalsuite framel \
             sphinx sphinx_rtd_theme myst-parser polib
-          pip install google-generativeai sphinx-intl
+          pip install --upgrade google-generativeai
+          pip install sphinx-intl
           pip install --no-deps .
 
       - name: Extract messages and Update catalogs
