@@ -102,6 +102,11 @@ def align_timeseries_collection(
     """
     Align a collection of TimeSeries to a common time axis.
 
+    All time spans are treated as semi-open intervals [start, end) (end exclusive).
+    The common time grid uses ``n_samples = ceil((end - start) / dt)``, so samples
+    are generated at ``start + k * dt`` for ``k = 0..n_samples-1`` and never
+    include the end point, consistent with [start, end).
+
     Parameters
     ----------
     series_list : list of TimeSeries
@@ -124,6 +129,13 @@ def align_timeseries_collection(
         Common time axis (Time array).
     meta : dict
         Metadata including 'dt', 'epoch', 'channel_names', etc.
+
+    Notes
+    -----
+    - ``how="intersection"`` computes the semi-open intersection of spans and
+      raises ``ValueError`` if the intersection is empty.
+    - ``how="union"`` spans the semi-open union of all series and uses
+      ``fill_value`` outside each series' coverage.
     """
     if not series_list:
         raise ValueError("No timeseries provided to align.")
@@ -315,8 +327,8 @@ def align_timeseries_collection(
     if how == "intersection":
         common_t0 = float_max(starts)
         common_end = float_min(ends)
-        # Numerical tolerance for "empty" intersection
-        if common_end < common_t0 and not np.isclose(common_end, common_t0):
+        # Semi-open intersection is empty when end <= start.
+        if common_end <= common_t0:
              raise ValueError(f"No overlap found. common_t0={common_t0}, common_end={common_end}")
     elif how == "union":
         common_t0 = float_min(starts)
