@@ -33,8 +33,7 @@ jobs:
       - name: Install dependencies
         shell: bash -l {0}
         run: |
-          conda install -y gwpy nds2-client lalsuite framel
-          pip install -r docs/requirements.txt
+          conda install -y gwpy nds2-client lalsuite framel sphinx sphinx_rtd_theme myst-parser
           pip install --no-deps .
 
       - name: Build documentation
