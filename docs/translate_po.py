@@ -30,6 +30,7 @@ def main():
         sys.exit(1)
 
     genai.configure(api_key=api_key)
+    # Using gemini-1.5-flash as it is the most standard for this task
     model = genai.GenerativeModel('gemini-1.5-flash')
 
     po_dir = "docs/locales/ja/LC_MESSAGES"
