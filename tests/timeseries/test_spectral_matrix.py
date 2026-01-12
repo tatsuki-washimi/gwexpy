@@ -1,5 +1,6 @@
 
 import numpy as np
+import pytest
 from astropy import units as u
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
 from gwexpy.frequencyseries import FrequencySeriesMatrix
@@ -21,11 +22,10 @@ def test_csd_matrix_dict():
     assert isinstance(csd_mat, FrequencySeriesMatrix)
     assert csd_mat.shape == (2, 2, len(csd_mat.frequencies))
 
-    # Check diagonal (PSD)
-    # C_aa should be positive real
+    # Check diagonal (PSD) and off-diagonal (CSD)
     c_aa = csd_mat['a', 'a']
-    assert np.all(c_aa.value.real >= 0)
-    assert np.allclose(c_aa.value.imag, 0, atol=1e-10)
+    ref_psd = tsd['a'].psd(fftlength=0.5, overlap=0)
+    np.testing.assert_allclose(c_aa.value, ref_psd.value, atol=1e-10)
 
     # Check off-diagonal and hermitian
     # C_ab should be conjugate of C_ba
@@ -33,6 +33,8 @@ def test_csd_matrix_dict():
     c_ba = csd_mat['b', 'a']
     # The helper fills C_ba = conj(C_ab) if hermitian=True
     np.testing.assert_allclose(c_ab.value, c_ba.value.conj(), atol=1e-10)
+    ref_csd = tsd['a'].csd(tsd['b'], fftlength=0.5, overlap=0)
+    np.testing.assert_allclose(c_ab.value, ref_csd.value, atol=1e-10)
 
 def test_coherence_matrix_list():
     t = np.linspace(0, 1, 1000) * u.s
@@ -86,12 +88,52 @@ def test_diagonal_options():
     # Fix: TimeSeriesList init
     tsl = TimeSeriesList(TimeSeries(s, times=t))
 
-    # CSD without diagonal
-    mat = tsl.csd_matrix(include_diagonal=False, fftlength=0.5)
-    # Should be 0? Helper logic says set to 0.
-    assert np.all(mat[0, 0].value == 0)
+    # CSD without diagonal is not allowed
+    with pytest.raises(ValueError):
+        tsl.csd_matrix(include_diagonal=False, fftlength=0.5)
 
     # Coherence with computed diagonal (should be 1)
     mat_coh = tsl.coherence_matrix(include_diagonal=True, diagonal_value=None, fftlength=0.5)
     # Coherence of self is 1.
     np.testing.assert_allclose(mat_coh[0, 0].value, 1.0, atol=1e-5)
+    ref_coh = tsl[0].coherence(tsl[0], fftlength=0.5)
+    np.testing.assert_allclose(mat_coh[0, 0].value, ref_coh.value, atol=1e-5)
+
+def test_dt_mismatch_raises():
+    t1 = np.arange(0, 1, 0.01) * u.s
+    t2 = np.arange(0, 0.1, 0.001) * u.s
+    tsd = TimeSeriesDict({
+        "a": TimeSeries(np.random.randn(len(t1)), times=t1),
+        "b": TimeSeries(np.random.randn(len(t2)), times=t2),
+    })
+    with pytest.raises(ValueError):
+        tsd.csd_matrix(fftlength=0.1, overlap=0)
+    with pytest.raises(ValueError):
+        tsd.coherence_matrix(fftlength=0.1, overlap=0)
+
+def test_dt_mismatch_between_collections_raises():
+    t1 = np.arange(0, 1, 0.01) * u.s
+    t2 = np.arange(0, 1, 0.02) * u.s
+    tsd1 = TimeSeriesDict({"a": TimeSeries(np.random.randn(len(t1)), times=t1)})
+    tsd2 = TimeSeriesDict({"b": TimeSeries(np.random.randn(len(t2)), times=t2)})
+    with pytest.raises(ValueError):
+        tsd1.csd_matrix(tsd2, fftlength=0.2, overlap=0)
+    with pytest.raises(ValueError):
+        tsd1.coherence_matrix(tsd2, fftlength=0.2, overlap=0)
+
+def test_fftlength_required():
+    t = np.arange(0, 1, 0.01) * u.s
+    tsd = TimeSeriesDict({"a": TimeSeries(np.random.randn(len(t)), times=t)})
+    with pytest.raises(ValueError):
+        tsd.csd_matrix(fftlength=None)
+    with pytest.raises(ValueError):
+        tsd.coherence_matrix(fftlength=None)
+
+def test_coherence_diagonal_nan_when_excluded():
+    t = np.arange(0, 1, 0.01) * u.s
+    ts1 = TimeSeries(np.random.randn(len(t)), times=t, name="ts1")
+    ts2 = TimeSeries(np.random.randn(len(t)), times=t, name="ts2")
+    tsl = TimeSeriesList(ts1, ts2)
+    mat = tsl.coherence_matrix(fftlength=0.2, overlap=0.1, include_diagonal=False)
+    assert np.all(np.isnan(mat[0, 0].value))
+    assert np.all(np.isnan(mat[1, 1].value))
