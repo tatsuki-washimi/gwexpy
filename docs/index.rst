@@ -18,6 +18,12 @@ analysis utilities for time and frequency series.
    api/index
 
 .. toctree::
+   :maxdepth: 2
+   :caption: Detailed Reference
+
+   reference/en/index
+
+.. toctree::
    :maxdepth: 1
    :caption: Tutorials
 
