@@ -21,7 +21,20 @@ autosummary_generate = True
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
+language = "en"
+locale_dirs = ["locales/"]
+gettext_compact = False
+
 html_theme = "sphinx_rtd_theme"
+html_context = {
+    "display_github": True,
+    "github_user": "tatsuki-washimi",
+    "github_repo": "gwexpy",
+    "github_version": "main",
+    "conf_py_path": "/docs/",
+    "current_language": language,
+    "languages": [("en", "/gwexpy/en/"), ("ja", "/gwexpy/ja/")],
+}
 
 autodoc_mock_imports = [
     "pycbc",
