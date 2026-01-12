@@ -59,7 +59,8 @@ class TestTimeSeriesExtensions:
 
     def test_transfer_function_steady_gwpy_match(self):
         """Verify steady mode matches GWpy transfer_function exactly."""
-        from gwpy.timeseries import TimeSeries as GwpyTimeSeries
+        gwpy_ts = pytest.importorskip("gwpy.timeseries")
+        GwpyTimeSeries = gwpy_ts.TimeSeries
 
         np.random.seed(42)
         data1 = np.random.randn(1024)
@@ -73,7 +74,18 @@ class TestTimeSeriesExtensions:
         tf_gwex = gwex_ts1.transfer_function(gwex_ts2, mode="steady", fftlength=1.0, overlap=0)
         tf_gwpy = gwpy_ts1.transfer_function(gwpy_ts2, fftlength=1.0, overlap=0)
 
+        np.testing.assert_allclose(tf_gwex.frequencies.value, tf_gwpy.frequencies.value, rtol=1e-12)
         np.testing.assert_allclose(tf_gwex.value, tf_gwpy.value, rtol=1e-10)
+
+    def test_transfer_function_steady_zero_series_nan(self):
+        data = np.zeros(1024)
+        ts1 = TimeSeries(data, sample_rate=64.0)
+        ts2 = TimeSeries(data, sample_rate=64.0)
+
+        tf = ts1.transfer_function(ts2, mode="steady", fftlength=1.0, overlap=0)
+        assert np.iscomplexobj(tf.value)
+        assert np.isnan(tf.value.real).all()
+        assert np.isnan(tf.value.imag).all()
 
     def test_transfer_function_transient_known_gain(self):
         """Verify transient mode with known constant gain using impulse input."""
