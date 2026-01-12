@@ -30,7 +30,7 @@ def test_align_intersection():
     ts1 = TimeSeries([1, 2, 3, 4], t0=0, dt=1, name="ts1") # 0..3
     ts2 = TimeSeries([10, 20, 30], t0=1, dt=1, name="ts2") # 1..3
 
-    # Intersection: [1, 3] overlap (inclusive) -> times [1, 2, 3] -> 3 samples
+    # Intersection: [1, 4) overlap -> times [1, 2, 3] -> 3 samples
     mat, times, meta = align_timeseries_collection([ts1, ts2], how="intersection")
 
     assert mat.shape == (3, 2)
