@@ -23,18 +23,6 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "sphinx_rtd_theme"
 
 autodoc_mock_imports = [
-    "numpy",
-    "scipy",
-    "matplotlib",
-    "astropy",
-    "pandas",
-    "h5py",
-    "gwpy",
-    "gwosc",
-    "gwdatafind",
-    "ligotimegps",
-    "dqsegdb2",
-    "lalsuite",
     "pycbc",
     "nds2",
     "framel",
