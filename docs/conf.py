@@ -13,6 +13,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
+    "myst_parser",
 ]
 
 autosummary_generate = True
@@ -24,8 +25,6 @@ html_theme = "sphinx_rtd_theme"
 
 autodoc_mock_imports = [
     "pycbc",
-    "nds2",
-    "framel",
     "gwinc",
     "polars",
     "sklearn",
@@ -64,3 +63,8 @@ autodoc_mock_imports = [
     "PyEMD",
     "pywt",
 ]
+
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
