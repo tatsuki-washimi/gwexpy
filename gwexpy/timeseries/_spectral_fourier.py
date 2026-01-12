@@ -172,8 +172,18 @@ class TimeSeriesSpectralFourierMixin:
                 target_nfft = target_len
 
         dft = np.fft.rfft(x, n=target_nfft) / target_nfft
-        if dft.shape[0] > 1:
-            dft[1:] *= 2.0
+        n_freq = dft.shape[0]
+        if n_freq > 1:
+            # One-sided spectrum amplitude correction:
+            # - DC (index 0): no correction (unique)
+            # - Nyquist (last index, even-length only): no correction (unique)
+            # - Other frequencies: multiply by 2 (positive + negative pair)
+            if target_nfft % 2 == 0:
+                # Even length: DC=0 and Nyquist=n_freq-1 are unique
+                dft[1:-1] *= 2.0
+            else:
+                # Odd length: only DC=0 is unique (no Nyquist)
+                dft[1:] *= 2.0
 
         from gwexpy.frequencyseries import FrequencySeries
         fs = FrequencySeries(
