@@ -50,6 +50,8 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
+          echo "Checking for .po files..."
+          ls -R docs/locales || echo "docs/locales not found"
           python docs/translate_po.py
 
       - name: Build documentation (Multilingual)
