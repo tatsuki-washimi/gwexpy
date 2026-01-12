@@ -510,6 +510,20 @@ def _impute_1d(val_1d, x, method, has_gap_constraint, gap_threshold, limit=None)
 def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None, **kwargs):
     """
     Impute missing values in a TimeSeries or array. Supports multi-dimensional data.
+
+    Notes
+    -----
+    - ``method="interpolate"`` is normalized to ``"linear"``.
+    - ``axis="time"`` is treated as ``axis=-1``.
+    - ``limit`` caps the number of consecutive NaNs that are filled; any
+      positions beyond ``limit`` in a run are reverted back to NaN.
+    - ``max_gap`` sets a threshold on the spacing between valid samples: after
+      interpolation, any interior region between valid points with a gap larger
+      than ``max_gap`` is reverted to NaN, and leading/trailing extrapolated
+      regions are also reverted to NaN.
+    - When a ``TimeSeries`` is provided, metadata (times/t0/dt/name/unit/channel)
+      are preserved. If imputation promotes integer data to float, a new
+      ``TimeSeries`` is constructed with the same metadata.
     """
     if hasattr(ts, 'value'):
         val = ts.value.copy()
