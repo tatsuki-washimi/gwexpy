@@ -685,6 +685,59 @@ def impute_timeseries(ts, *, method="linear", limit=None, axis=-1, max_gap=None,
 def standardize_timeseries(ts, *, method="zscore", ddof=0, robust=None):
     """
     Standardize a TimeSeries.
+
+    This function standardizes the input time series data by removing the
+    location (mean or median) and scaling by a dispersion measure (standard
+    deviation or MAD), resulting in a dimensionless output.
+
+    Parameters
+    ----------
+    ts : TimeSeries
+        Input time series.
+    method : str, optional
+        Standardization method. Default is ``'zscore'``.
+
+        - ``'zscore'``: Subtract the mean (`nanmean`) and divide by the
+          standard deviation (`nanstd` with ``ddof``).
+        - ``'robust'``: Subtract the median (`nanmedian`) and divide by
+          the scale defined as ``1.4826 * MAD``, where MAD is the median
+          absolute deviation from the median.
+
+    ddof : int, optional
+        Delta degrees of freedom for standard deviation calculation when
+        ``method='zscore'``. Default is 0.
+    robust : bool or None, optional
+        If True, forces ``method='robust'``. Deprecated; prefer using
+        ``method='robust'`` directly.
+
+    Returns
+    -------
+    standardized_ts : TimeSeries
+        Standardized time series. The unit is always ``dimensionless_unscaled``.
+        All metadata (``t0``, ``dt``, ``times``, ``name``, ``channel``) are
+        preserved from the original series.
+    model : StandardizationModel
+        Model object containing the location (``mean``) and scale parameters.
+        Can be used to inverse-transform back to original scale.
+
+    Notes
+    -----
+    - NaN values are ignored during computation and remain NaN in the output.
+    - If the scale (std or MAD) is zero (e.g., constant series), scale is set
+      to 1.0 to avoid division by zero, resulting in an all-zero output.
+      A warning is emitted in this case.
+    - For ``method='zscore'``: ``standardized = (x - nanmean(x)) / nanstd(x, ddof)``
+    - For ``method='robust'``: ``standardized = (x - nanmedian(x)) / (1.4826 * MAD)``
+    - Output unit is always ``u.dimensionless_unscaled`` regardless of input unit.
+    - Integer input dtypes are promoted to float64.
+
+    Examples
+    --------
+    >>> from gwexpy.timeseries import TimeSeries
+    >>> from gwexpy.timeseries.preprocess import standardize_timeseries
+    >>> ts = TimeSeries([1, 2, 3, 4, 5], dt=1)
+    >>> ts_std, model = standardize_timeseries(ts, method='zscore')
+    >>> print(ts_std.unit)  # dimensionless
     """
     if robust is True:
         method = "robust"
@@ -707,37 +760,28 @@ def standardize_timeseries(ts, *, method="zscore", ddof=0, robust=None):
         raise ValueError(f"Unknown standardization method '{method}'. "
                          f"Supported methods are 'zscore', 'robust'.")
 
-    # Handle dtype. If input is integer, standardization (float) will be trucated if copied directly.
-    # Check if value dtype is integer-like
+    # Handle dtype. If input is integer, standardization results require float.
     if np.issubdtype(ts.value.dtype, np.integer):
-         # Create a new TimeSeries with float data
-         # We can't change dtype of existing one in-place easily if we want to return new object.
-         # TimeSeries(data, ...) constructor
-         val_float = ts.value.astype("float64")
-         # We construct new_ts manually to preserve metadata
-         new_ts = ts.__class__(
-             val_float,
-             t0=ts.t0,
-             dt=ts.dt,
-             name=ts.name,
-             unit=ts.unit, # Inherit unit or make dimensionless? Standardization makes it dimensionless usually.
-             channel=getattr(ts, 'channel', None)
-         )
-         # If standardized, unit becomes dimensionless technically (sigma units).
-         # Unless we keep original unit?
-         # Gwpy might complain if unit mismatch?
-         # Standard score is dimensionless.
-         new_ts.unit = u.dimensionless_unscaled
+        val_float = ts.value.astype("float64")
+        new_ts = ts.__class__(
+            val_float,
+            t0=ts.t0,
+            dt=ts.dt,
+            name=ts.name,
+            unit=u.dimensionless_unscaled,
+            channel=getattr(ts, 'channel', None)
+        )
     else:
-         new_ts = ts.copy()
-         # Should we force dimensionless unit?
-         if hasattr(new_ts, 'override_unit'):
-             new_ts.override_unit(u.dimensionless_unscaled)
-         else:
-             try:
-                 new_ts.unit = u.dimensionless_unscaled
-             except AttributeError:
-                 pass
+        new_ts = ts.copy()
+
+    # Always set unit to dimensionless
+    if hasattr(new_ts, 'override_unit'):
+        new_ts.override_unit(u.dimensionless_unscaled)
+    else:
+        try:
+            new_ts.unit = u.dimensionless_unscaled
+        except AttributeError:
+            pass
 
     new_ts.value[:] = (val - med) / scale
 
@@ -747,119 +791,277 @@ def standardize_timeseries(ts, *, method="zscore", ddof=0, robust=None):
 def standardize_matrix(matrix, *, axis="time", method="zscore", ddof=0, robust=None):
     """
     Standardize a TimeSeriesMatrix.
+
+    This function standardizes the input matrix data by removing the location
+    (mean or median) and scaling by a dispersion measure (standard deviation
+    or MAD), resulting in a dimensionless output.
+
+    Parameters
+    ----------
+    matrix : TimeSeriesMatrix
+        Input time series matrix with shape ``(n_rows, n_cols, n_time)`` or
+        ``(n_channels, n_time)``.
+    axis : str
+        Axis along which to standardize. Must be one of:
+
+        - ``'time'``: Standardize along the time axis (last axis). Each
+          channel/element is standardized independently over time.
+        - ``'channel'``: Standardize along the channel axes ``(0, 1)`` or
+          ``(0,)`` for 2D. Each time sample is standardized independently
+          across all channels.
+
+        Any other value raises ``ValueError``.
+
+    method : str, optional
+        Standardization method. Default is ``'zscore'``.
+
+        - ``'zscore'``: Subtract the mean (`nanmean`) and divide by the
+          standard deviation (`nanstd` with ``ddof``).
+        - ``'robust'``: Subtract the median (`nanmedian`) and divide by
+          the scale defined as ``1.4826 * MAD``, where MAD is the median
+          absolute deviation from the median.
+
+    ddof : int, optional
+        Delta degrees of freedom for standard deviation calculation when
+        ``method='zscore'``. Default is 0.
+    robust : bool or None, optional
+        If True, forces ``method='robust'``. Deprecated; prefer using
+        ``method='robust'`` directly.
+
+    Returns
+    -------
+    standardized_matrix : TimeSeriesMatrix
+        Standardized matrix. The unit is always ``dimensionless_unscaled``.
+        Metadata (``t0``, ``dt``, ``channel_names``) are preserved.
+
+    Notes
+    -----
+    - NaN values are ignored during computation and remain NaN in the output.
+    - If the scale (std or MAD) is zero for any slice, scale is set to 1.0
+      to avoid division by zero.
+    - For ``method='zscore'``: ``standardized = (x - nanmean) / nanstd``
+    - For ``method='robust'``: ``standardized = (x - nanmedian) / (1.4826 * MAD)``
+    - Output unit is always ``dimensionless_unscaled`` regardless of input unit.
+
+    Raises
+    ------
+    ValueError
+        If ``axis`` is not ``'time'`` or ``'channel'``.
+        If ``method`` is not ``'zscore'`` or ``'robust'``.
+
+    Examples
+    --------
+    >>> from gwexpy.timeseries import TimeSeriesMatrix
+    >>> from gwexpy.timeseries.preprocess import standardize_matrix
+    >>> mat = TimeSeriesMatrix(np.random.randn(2, 3, 100), dt=0.01)
+    >>> mat_std = standardize_matrix(mat, axis='time')
     """
+    # Validate axis strictly
+    if axis not in ("time", "channel"):
+        raise ValueError(
+            f"axis must be 'time' or 'channel', got '{axis}'. "
+            f"Use axis='time' to standardize each channel over time, or "
+            f"axis='channel' to standardize each time sample across channels."
+        )
+
     if robust is True:
         method = "robust"
-    val = matrix.value.copy()
-    # TimeSeriesMatrix layout: (channels, time) usually, or (rows, cols, time).
-    # Time is always the last axis (-1).
-    # "time" axis -> operating along time axis (normalize each channel).
-    # "channel" axis -> operating along channel axis (normalize each sample).
 
-    np_axis = -1 if axis == "time" else (0, 1) # Standardize across all dimensions
+    if method not in ("zscore", "robust"):
+        raise ValueError(f"Unknown standardization method '{method}'. "
+                         f"Supported methods are 'zscore', 'robust'.")
+
+    val = matrix.value.copy()
+
+    # TimeSeriesMatrix layout: (rows, cols, time) or (channels, time).
+    # Time is always the last axis (-1).
+    # "time" -> operate along time axis (normalize each channel independently)
+    # "channel" -> operate along all non-time axes (normalize each time sample)
+    if axis == "time":
+        np_axis = -1
+    else:  # axis == "channel"
+        # For 3D: (0, 1), for 2D: (0,)
+        np_axis = tuple(range(val.ndim - 1)) if val.ndim > 1 else 0
 
     if method == "robust":
         med = np.nanmedian(val, axis=np_axis, keepdims=True)
         mad = np.nanmedian(np.abs(val - med), axis=np_axis, keepdims=True)
         scale = 1.4826 * mad
-    else:
+    else:  # zscore
         med = np.nanmean(val, axis=np_axis, keepdims=True)
         scale = np.nanstd(val, axis=np_axis, ddof=ddof, keepdims=True)
 
-    scale[scale == 0] = 1.0
+    scale = np.where(scale == 0, 1.0, scale)
 
-    # We return a new matrix with same metadata.
+    # Create new matrix with same metadata
     if np.issubdtype(matrix.value.dtype, np.integer):
-         val_float = matrix.value.astype("float64")
-         # Reconstruct using new numpy array
-         new_mat = matrix.__class__(
-             val_float,
-             t0=matrix.t0,
-             dt=matrix.dt
-         )
-         # Copy other meta?
-         if hasattr(new_mat, 'channel_names'):
-              new_mat.channel_names = getattr(matrix, 'channel_names', None)
+        val_float = matrix.value.astype("float64")
+        new_mat = matrix.__class__(
+            val_float,
+            t0=matrix.t0,
+            dt=matrix.dt
+        )
+        if hasattr(matrix, 'channel_names'):
+            try:
+                new_mat.channel_names = getattr(matrix, 'channel_names', None)
+            except AttributeError:
+                pass
     else:
-         new_mat = matrix.copy()
+        new_mat = matrix.copy()
 
     # Update values
     new_mat.value[:] = (val - med) / scale
 
-    # Standardize result is dimensionless?
-    # Usually yes. But SeriesMatrix doesn't handle units uniformly yet,
-    # so we simply return the standardized matrix.
+    # Set unit to dimensionless
+    if hasattr(new_mat, 'unit'):
+        try:
+            new_mat.unit = u.dimensionless_unscaled
+        except AttributeError:
+            pass
+
     return new_mat
 
 def whiten_matrix(matrix, *, method="pca", eps=1e-12, n_components=None):
     """
-    Whiten a TimeSeriesMatrix.
+    Whiten a TimeSeriesMatrix using PCA or ZCA whitening.
+
+    Whitening transforms the data so that the covariance matrix becomes the
+    identity matrix. This is useful for decorrelating features before machine
+    learning or for visualization.
+
+    Parameters
+    ----------
+    matrix : TimeSeriesMatrix
+        Input time series matrix with shape ``(n_rows, n_cols, n_time)`` or
+        ``(n_channels, n_time)``. The last axis is assumed to be time.
+    method : str, optional
+        Whitening method. Default is ``'pca'``.
+
+        - ``'pca'``: PCA whitening, where ``W = D^{-1/2} @ U^T``.
+          The output is in the principal component space and always has
+          a flattened shape ``(n_features, 1, n_time)`` or
+          ``(n_components, 1, n_time)`` if dimensionality is reduced.
+        - ``'zca'``: ZCA (Zero-phase Component Analysis) whitening, where
+          ``W = U @ D^{-1/2} @ U^T``. When ``n_components=None``, the output
+          retains the original shape ``(n_rows, n_cols, n_time)``. When
+          ``n_components`` is specified, the output is flattened to
+          ``(n_components, 1, n_time)``.
+
+    eps : float, optional
+        Small constant added to eigenvalues for numerical stability
+        (prevents division by zero). Default is ``1e-12``.
+    n_components : int or None, optional
+        Number of components to keep. If None (default), all components are
+        retained.
+
+    Returns
+    -------
+    whitened_matrix : TimeSeriesMatrix
+        Whitened matrix. The unit is always ``dimensionless_unscaled``.
+
+        - For PCA: Always ``(n_features, 1, n_time)`` or ``(n_components, 1, n_time)``.
+        - For ZCA with ``n_components=None``: Same shape as input.
+        - For ZCA with ``n_components`` specified: ``(n_components, 1, n_time)``.
+
+    model : WhiteningModel
+        Model object containing the mean and whitening matrix ``W``.
+        Can be used to inverse-transform back to original space.
+
+    Notes
+    -----
+    - The input matrix is flattened to ``(n_time, n_features)`` where
+      ``n_features = n_rows * n_cols`` for computation.
+    - Covariance is computed as ``cov(X_centered)``, then SVD is applied:
+      ``U, S, Vt = svd(cov)``.
+    - Regularization via ``eps`` ensures stability when eigenvalues are small:
+      ``D^{-1/2} = diag(1 / sqrt(S + eps))``.
+    - Output unit is always ``dimensionless_unscaled``.
+    - After whitening, ``cov(X_whitened) ≈ I`` (identity matrix).
+
+    Raises
+    ------
+    ValueError
+        If ``method`` is not ``'pca'`` or ``'zca'``.
+
+    Examples
+    --------
+    >>> from gwexpy.timeseries import TimeSeriesMatrix
+    >>> from gwexpy.timeseries.preprocess import whiten_matrix
+    >>> mat = TimeSeriesMatrix(np.random.randn(2, 3, 100), dt=0.01)
+    >>> mat_w, model = whiten_matrix(mat, method='pca')
+    >>> # PCA output is flattened
+    >>> print(mat_w.shape)  # (6, 1, 100)
     """
-    # Matrix value is 3D (rows, cols, time) usually.
+    if method not in ("pca", "zca"):
+        raise ValueError(f"method must be 'pca' or 'zca', got '{method}'")
+
+    # Store original shape for ZCA reshape
+    original_shape = matrix.shape  # e.g., (n_rows, n_cols, n_time)
+    n_time = original_shape[-1]
+    n_features = int(np.prod(original_shape[:-1]))
+
     # Reshape to (features, time) -> (time, features)
-    X_features = matrix.value.reshape(-1, matrix.shape[-1])
-    X_T = X_features.T # (time, features)
+    X_features = matrix.value.reshape(-1, n_time)
+    X_T = X_features.T  # (time, features)
 
     mean = np.mean(X_T, axis=0)
     X_centered = X_T - mean
 
-    cov = np.cov(X_centered, rowvar=False)
-    # ... SVD logic ...
+    # Handle 1D case (single feature)
+    if n_features == 1:
+        cov = np.array([[np.var(X_centered)]])
+    else:
+        cov = np.cov(X_centered, rowvar=False)
+        if cov.ndim == 0:
+            cov = np.array([[cov]])
+
     U, S, Vt = np.linalg.svd(cov)
 
     S_inv_sqrt = np.diag(1.0 / np.sqrt(S + eps))
 
     if method == "pca":
         W = S_inv_sqrt @ U.T
-    elif method == "zca":
+    else:  # zca
         W = U @ S_inv_sqrt @ U.T
-    else:
-        raise ValueError("method must be 'pca' or 'zca'")
 
+    # Apply dimensionality reduction
     if n_components is not None:
         if method == "zca":
-             warnings.warn("n_components ignores channel mapping for ZCA if reduced.")
+            warnings.warn(
+                "n_components with ZCA whitening produces flattened output; "
+                "original spatial structure is lost."
+            )
         W = W[:n_components, :]
+        output_features = n_components
+    else:
+        output_features = n_features
 
-    X_whitened = X_centered @ W.T
-
-    # result X_whitened is (time, components)
-    # create new matrix with (components, 1, time)
+    X_whitened = X_centered @ W.T  # (time, output_features)
 
     cls = matrix.__class__
 
-    try:
-        if X_whitened.shape[1] != X_features.shape[0]: # Check against original features count
-            # Dimension reduced
-            new_data = X_whitened.T[:, None, :] # (components, 1, time)
-
-            new_mat = cls(
-                new_data,
-                t0=matrix.t0,
-                dt=matrix.dt,
-            )
+    # Determine output shape based on method and n_components
+    if method == "pca":
+        # PCA always produces flattened output: (features, 1, time)
+        new_data = X_whitened.T[:, None, :]  # (output_features, 1, time)
+        new_mat = cls(new_data, t0=matrix.t0, dt=matrix.dt)
+    else:  # zca
+        if n_components is None:
+            # ZCA with full components: reshape to original shape
+            new_val = X_whitened.T.reshape(original_shape)
+            new_mat = matrix.copy()
+            new_mat.value[:] = new_val
         else:
-             # Dimension preserved - reshape back to original shape if possible
-             # But whitening mixes features, so (rows, cols) structure is lost/scrambled?
-             # PCA/ZCA usually destroys spatial structure unless ZCA implicitly preserves it.
-             # If ZCA: map back to (rows, cols)?
-             # For safety, we flatten to (features, 1, time) or reuse shape if ZCA.
-             if method == "zca":
-                 new_val = X_whitened.T.reshape(matrix.shape)
-                 new_mat = matrix.copy()
-                 new_mat.value[:] = new_val
-             else:
-                 new_mat = matrix.copy()
-                 # If shapes match features
-                 # Flatten usage
-                 pass
-                 # Actually, better return flattened structure if whitening mixed them.
-                 new_data = X_whitened.T[:, None, :]
-                 new_mat = cls(new_data, t0=matrix.t0, dt=matrix.dt)
+            # ZCA with dimensionality reduction: flattened output
+            new_data = X_whitened.T[:, None, :]  # (n_components, 1, time)
+            new_mat = cls(new_data, t0=matrix.t0, dt=matrix.dt)
 
-    except (IndexError, ValueError):
-         new_data = X_whitened.T[:, None, :]
-         new_mat = cls(new_data, t0=matrix.t0, dt=matrix.dt)
+    # Set unit to dimensionless
+    if hasattr(new_mat, 'unit'):
+        try:
+            new_mat.unit = u.dimensionless_unscaled
+        except AttributeError:
+            pass
 
     model = WhiteningModel(mean, W)
     return new_mat, model
