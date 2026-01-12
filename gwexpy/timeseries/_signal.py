@@ -653,6 +653,12 @@ class TimeSeriesSignalMixin:
             averaging would obscure the instantaneous transfer characteristics.
             Employs the corrected transient FFT with proper DC/Nyquist handling.
 
+        **division semantics (steady/transient)**:
+            - den == 0, num == 0 -> NaN (real: np.nan, complex: np.nan + 1j*np.nan)
+            - den == 0, num > 0 -> +inf (complex dtype: np.inf + 0j)
+            - den == 0, num < 0 -> -inf (complex dtype: -np.inf + 0j)
+            - den == 0, complex num (imag != 0) -> inf * exp(1j * angle(num))
+
         Examples
         --------
         Steady-state transfer function (GWpy-compatible)::
@@ -686,6 +692,64 @@ class TimeSeriesSignalMixin:
         if mode not in ("steady", "transient"):
             raise ValueError(f"mode must be 'steady' or 'transient', got: {mode}")
 
+        def _divide_with_special_rules(num_series: Any, den_series: Any) -> Any:
+            size = min(num_series.size, den_series.size)
+            num = num_series[:size]
+            den = den_series[:size]
+
+            num_vals = np.asarray(num.value)
+            den_vals = np.asarray(den.value)
+            out_dtype = np.result_type(num_vals, den_vals)
+            out_vals = np.empty_like(num_vals, dtype=out_dtype)
+
+            den_zero = den_vals == 0
+            np.divide(num_vals, den_vals, out=out_vals, where=~den_zero)
+
+            if np.any(den_zero):
+                num_zero = num_vals == 0
+                zero_zero = den_zero & num_zero
+                if np.any(zero_zero):
+                    if np.iscomplexobj(out_vals):
+                        out_vals[zero_zero] = np.nan + 1j * np.nan
+                    else:
+                        out_vals[zero_zero] = np.nan
+
+                num_nonzero = den_zero & ~num_zero
+                if np.any(num_nonzero):
+                    num_real = np.isreal(num_vals)
+                    real_mask = num_nonzero & num_real
+                    if np.any(real_mask):
+                        signs = np.sign(np.real(num_vals[real_mask]))
+                        out_vals[real_mask] = signs * np.inf
+
+                    complex_mask = num_nonzero & ~num_real
+                    if np.any(complex_mask):
+                        out_vals[complex_mask] = (np.inf + 0j) * np.exp(
+                            1j * np.angle(num_vals[complex_mask])
+                        )
+
+            unit = None
+            num_unit = getattr(num, "unit", None)
+            den_unit = getattr(den, "unit", None)
+            try:
+                if num_unit is not None and den_unit is not None:
+                    unit = num_unit / den_unit
+                elif num_unit is not None:
+                    unit = num_unit
+                elif den_unit is not None:
+                    unit = 1 / den_unit
+            except Exception:
+                unit = None
+
+            return num.__class__(
+                out_vals,
+                frequencies=num.frequencies,
+                unit=unit,
+                name=num.name,
+                channel=num.channel,
+                epoch=num.epoch,
+            )
+
         if mode == "steady":
             # GWpy-compatible: CSD / PSD estimator
             csd = self.csd(
@@ -703,8 +767,7 @@ class TimeSeriesSignalMixin:
                 average=average,
                 **kwargs,
             )
-            size = min(csd.size, psd.size)
-            tf = csd[:size] / psd[:size]
+            tf = _divide_with_special_rules(csd, psd)
             if other.name and self.name:
                 tf.name = f"{other.name} / {self.name}"
             return tf
@@ -761,9 +824,7 @@ class TimeSeriesSignalMixin:
             fx = a.fft(**kw)
             fy = b.fft(**kw)
 
-            fsize = min(fx.size, fy.size)
-
-            tf = fy[:fsize] / fx[:fsize]
+            tf = _divide_with_special_rules(fy, fx)
 
             if b.name and a.name:
                 tf.name = f"{b.name} / {a.name}"
