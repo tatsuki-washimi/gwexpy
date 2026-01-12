@@ -45,10 +45,15 @@ def main():
             
             modified = False
             for entry in po:
-                if not entry.msgstr and entry.msgid:
+                # Translate if msgstr is empty OR if the entry is marked as 'fuzzy'
+                should_translate = not entry.msgstr or 'fuzzy' in entry.flags
+                
+                if should_translate and entry.msgid:
                     translated = translate_text(model, entry.msgid)
                     if translated:
                         entry.msgstr = translated
+                        if 'fuzzy' in entry.flags:
+                            entry.flags.remove('fuzzy') # Clear fuzzy flag after translation
                         modified = True
                         print(f"  Translated: {entry.msgid[:30]}... -> {translated[:30]}...")
                         time.sleep(1) # Rate limit protection
