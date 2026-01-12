@@ -1,0 +1,216 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STLT (Short-Time Laplace Transform) 実装計画 &mdash; gwexpy  ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">STLT (Short-Time Laplace Transform) 実装計画</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/developers/plans/stlt_implementation_plan.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="stlt-short-time-laplace-transform">
+<h1>STLT (Short-Time Laplace Transform) 実装計画<a class="headerlink" href="#stlt-short-time-laplace-transform" title="Link to this heading"></a></h1>
+<section id="id1">
+<h2>1. 概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>現在の <code class="docutils literal notranslate"><span class="pre">TimeSeries.stlt()</span></code> 実装は、STFTの振幅の外積（Magnitude Outer Product）を計算しており、Short-Time Laplace Transform (STLT) の定義（実部軸 $\sigma$ を持つ）を満たしていません。
+本計画では、真のSTLTを実装し、出力として $\sigma$ (Laplace real part) と周波数軸を持つ3次元データ構造を提供します。</p>
+</section>
+<section id="id2">
+<h2>2. 現状分析<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>場所</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/_resampling.py</span></code> (ライン 634-717)</p></li>
+<li><p><strong>問題点</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform</span></code> を返すが、内容は <code class="docutils literal notranslate"><span class="pre">(Time,</span> <span class="pre">Freq,</span> <span class="pre">Freq)</span></code> のテンソル（振幅積）である。</p></li>
+<li><p>$\sigma$ 軸が存在しない。</p></li>
+<li><p>スペクトル変換メソッドであるにも関わらず、<code class="docutils literal notranslate"><span class="pre">_resampling.py</span></code> (ResamplingMixin) に配置されている（構造的な不整合）。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id3">
+<h2>3. デザイン提案<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>3.1 移動と配置<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">stlt</span></code> メソッドはスペクトル変換の一種であるため、<code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/_spectral_special.py</span></code> (<code class="docutils literal notranslate"><span class="pre">TimeSeriesSpectralSpecialMixin</span></code>) に移動します。
+<code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/_resampling.py</span></code> からは削除します（または、後方互換性のために deprecation warning を出して新しいメソッドを呼ぶラッパーとして残します。ここでは「Minimal API Breakage」を目指すため、既存のインポート構造を維持しつつ、正しいMixinメソッドが優先されるようにします）。
+※ <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスは <code class="docutils literal notranslate"><span class="pre">TimeSeriesResamplingMixin</span></code> と <code class="docutils literal notranslate"><span class="pre">TimeSeriesSpectralMixin</span></code> の両方を継承していますが、 <code class="docutils literal notranslate"><span class="pre">_resampling.py</span></code> から削除し <code class="docutils literal notranslate"><span class="pre">_spectral_special.py</span></code> に移動することで、より適切なモジュール構成になります。</p>
+</section>
+<section id="id5">
+<h3>3.2 メソッドシグネチャ<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">stlt</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">stride</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Quantity</span><span class="p">,</span>
+    <span class="n">window</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Quantity</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Quantity</span> <span class="o">|</span> <span class="n">Sequence</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">frequencies</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span> <span class="o">|</span> <span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimePlaneTransform</span><span class="p">:</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>sigma</strong>: ラプラス変数の実部 $s = \sigma + j\omega$。スカラーまたは配列を受け付ける。デフォルトは 0 (STFTと等価)。</p></li>
+<li><p><strong>stride, window</strong>: 時間単位での指定（文字列 '1s' 等も可）。</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>3.3 実装ロジック<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p>各時間チャンク（ウィンドウ）に対して以下を計算します：
+$$ X(t, \sigma, f) = \sum_{n} x[n] \cdot w[n] \cdot e^{-\sigma t_{rel}[n]} \cdot e^{-j 2\pi f t_{rel}[n]} $$
+ここで $t_{rel}$ はウィンドウ内の相対時間です。</p>
+<ol class="arabic simple">
+<li><p><strong>チャンク分割</strong>: 指定された <code class="docutils literal notranslate"><span class="pre">stride</span></code>, <code class="docutils literal notranslate"><span class="pre">window</span></code> に基づきデータを切り出し。</p></li>
+<li><p><strong>重み付け</strong>: 各 $\sigma$ に対して、指数減衰窓 $e^{-\sigma t}$ を適用。</p></li>
+<li><p><strong>FFT</strong>: 重み付けされたデータに対してFFTを実行。 $\sigma=0$ の場合は通常のSTFTとなります。</p></li>
+<li><p><strong>出力</strong>: (Time, Sigma, Frequency) の3次元配列。</p></li>
+</ol>
+</section>
+<section id="id7">
+<h3>3.4 コンテナクラス<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p>既存の <code class="docutils literal notranslate"><span class="pre">TimePlaneTransform</span></code> を再利用します。</p>
+<ul class="simple">
+<li><p><strong>データ構造</strong>: <code class="docutils literal notranslate"><span class="pre">Array3D</span></code> を内部で使用し、軸名を <code class="docutils literal notranslate"><span class="pre">[&quot;time&quot;,</span> <span class="pre">&quot;sigma&quot;,</span> <span class="pre">&quot;frequency&quot;]</span></code> と明示的に設定します。</p></li>
+<li><p><strong>理由</strong>: 新しいクラス (<code class="docutils literal notranslate"><span class="pre">LaplaceGram</span></code> 等) を導入するよりも、既存の汎用コンテナを活用する方が変更が最小限で済むため。</p></li>
+</ul>
+</section>
+</section>
+<section id="id8">
+<h2>4. 作業手順<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/_spectral_special.py</span></code> の修正</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stlt</span></code> メソッドを実装します。内部で <code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code> のロジックを参考にするか、または独自のウィンドウ処理ループを実装します（複数の $\sigma$ に対応するため、カスタムループまたは <code class="docutils literal notranslate"><span class="pre">np.lib.stride_tricks.sliding_window_view</span></code> + <code class="docutils literal notranslate"><span class="pre">rfft</span></code> のベクトル化計算が推奨されます）。</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/_resampling.py</span></code> の修正</strong>:</p>
+<ul class="simple">
+<li><p>既存の <code class="docutils literal notranslate"><span class="pre">stlt</span></code> 実装を削除します。</p></li>
+</ul>
+</li>
+<li><p><strong>テストの更新 (<code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/tests/test_p1_delivery.py</span></code>)</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_stlt_basic</span></code> を更新し、戻り値の形状が <code class="docutils literal notranslate"><span class="pre">(Time,</span> <span class="pre">1,</span> <span class="pre">Freq)</span></code> (sigma=0 scalarの場合) または <code class="docutils literal notranslate"><span class="pre">(Time,</span> <span class="pre">N_sigma,</span> <span class="pre">Freq)</span></code> であることを検証するように変更します。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kind=&quot;stlt&quot;</span></code> とメタデータを確認します。</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="id9">
+<h2>5. 懸念点と対応<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>パフォーマンス</strong>: 多くの $\sigma$ を指定すると計算量が増大します（FFT回数 = チャンク数 $\times$ sigma数）。</p>
+<ul>
+<li><p>-&gt; ドキュメントで注意喚起を行い、デフォルトは <code class="docutils literal notranslate"><span class="pre">sigma=0</span></code> とします。</p></li>
+</ul>
+</li>
+<li><p><strong>メモリ</strong>: 3次元配列は大きくなりやすいため、<code class="docutils literal notranslate"><span class="pre">TimePlaneTransform</span></code> は生成後に不要なデータを保持しないようにします。</p></li>
+</ul>
+<p>以上</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

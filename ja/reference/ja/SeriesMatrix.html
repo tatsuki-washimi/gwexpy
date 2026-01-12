@@ -1,0 +1,622 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SeriesMatrix &mdash; gwexpy  ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">SeriesMatrix</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/ja/SeriesMatrix.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="seriesmatrix">
+<h1>SeriesMatrix<a class="headerlink" href="#seriesmatrix" title="Link to this heading"></a></h1>
+<p><strong>継承元:</strong> SeriesMatrixOps, ndarray</p>
+<section id="id1">
+<h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="metadatamatrix">
+<h3><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix</span></code><a class="headerlink" href="#metadatamatrix" title="Link to this heading"></a></h3>
+<p>各要素のメタデータを含むメタデータ行列。</p>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>MetaDataMatrix</strong>
+各 (row, col) 要素に対応する MetaData オブジェクトの 2D 行列。</p></li>
+</ul>
+</section>
+<section id="n-samples">
+<h3><code class="docutils literal notranslate"><span class="pre">N_samples</span></code><a class="headerlink" href="#n-samples" title="Link to this heading"></a></h3>
+<p>x軸方向のサンプル数。</p>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>int</strong>
+サンプル軸の長さ（行列の3次元目）。</p></li>
+</ul>
+</section>
+<section id="t">
+<h3><code class="docutils literal notranslate"><span class="pre">T</span></code><a class="headerlink" href="#t" title="Link to this heading"></a></h3>
+<p>転置された配列のビュー。</p>
+<p><code class="docutils literal notranslate"><span class="pre">self.transpose()</span></code> と同じです。</p>
+<p><em>( <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> から継承)</em></p>
+</section>
+<section id="abs">
+<h3><code class="docutils literal notranslate"><span class="pre">abs</span></code><a class="headerlink" href="#abs" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>要素ごとの絶対値を計算します。
+複素数行列の場合、絶対値（振幅）を返します。</p>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>SeriesMatrix</strong>
+実数値の絶対値を持つ新しい行列。</p></li>
+</ul>
+</section>
+<section id="angle">
+<h3><code class="docutils literal notranslate"><span class="pre">angle</span></code><a class="headerlink" href="#angle" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>要素ごとの位相角を計算します。
+複素数行列の場合、位相角（偏角）を返します。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>deg</strong> : bool, オプション
+True の場合、角度を度（degrees）で返します。デフォルトはラジアン（radians）。</p></li>
+</ul>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>SeriesMatrix</strong>
+位相角を持つ新しい行列。単位は度またはラジアンに設定されます。</p></li>
+</ul>
+</section>
+<section id="append">
+<h3><code class="docutils literal notranslate"><span class="pre">append</span></code><a class="headerlink" href="#append" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>サンプル軸方向に別の行列を追加（連結）します。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>other</strong> : SeriesMatrix
+追加する行列。互換性のある行/列構造を持っている必要があります。</p></li>
+<li><p><strong>inplace</strong> : bool, オプション
+True（デフォルト）の場合、この行列をインプレースで変更します。</p></li>
+<li><p><strong>pad</strong> : float または None, オプション
+ギャップを埋めるためのパディング値。None の場合、ギャップがあるとエラーになります。</p></li>
+<li><p><strong>gap</strong> : str, float, または None, オプション
+ギャップの処理：'raise'（エラー）、'pad'（指定値で埋める）、'ignore'（単純な連結）、または数値による許容誤差。</p></li>
+<li><p><strong>resize</strong> : bool, オプション
+True（デフォルト）の場合、行列のサイズ拡張を許可します。False の場合、先頭を削ることで元の長さを維持します。</p></li>
+</ul>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>SeriesMatrix</strong>
+連結された行列（inplace=True の場合は self）。</p></li>
+</ul>
+</section>
+<section id="append-exact">
+<h3><code class="docutils literal notranslate"><span class="pre">append_exact</span></code><a class="headerlink" href="#append-exact" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">append_exact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">3.814697265625e-06</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>厳密な連続性チェックを行いつつ、別の行列を追加します。
+行列間のギャップに対して許容誤差チェックを行い、サンプル単位で厳密に連結します。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>other</strong> : SeriesMatrix
+追加する行列。</p></li>
+<li><p><strong>inplace</strong> : bool, オプション
+True の場合、この行列をインプレースで変更します。デフォルトは False。</p></li>
+<li><p><strong>tol</strong> : float, オプション
+連続性チェックの許容誤差（デフォルト：1/2^18 ≈ 3.8e-6）。</p></li>
+</ul>
+</section>
+<section id="astype">
+<h3><code class="docutils literal notranslate"><span class="pre">astype</span></code><a class="headerlink" href="#astype" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>行列データを指定された型にキャストします。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>dtype</strong> : str または numpy.dtype
+ターゲットのデータ型。</p></li>
+<li><p><strong>copy</strong> : bool, オプション
+True（デフォルト）の場合、型が変わらない場合でもコピーを返します。</p></li>
+</ul>
+</section>
+<section id="channels">
+<h3><code class="docutils literal notranslate"><span class="pre">channels</span></code><a class="headerlink" href="#channels" title="Link to this heading"></a></h3>
+<p>各行列要素のチャンネル識別子の 2D 配列。</p>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>numpy.ndarray</strong>
+チャンネル名または Channel オブジェクトの 2D オブジェクト配列。</p></li>
+</ul>
+</section>
+<section id="col-index">
+<h3><code class="docutils literal notranslate"><span class="pre">col_index</span></code><a class="headerlink" href="#col-index" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">col_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</pre></div>
+</div>
+<p>列キーに対応する整数インデックスを取得します。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>key</strong> : Any
+検索する列キー。</p></li>
+</ul>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>int</strong>
+列の 0 から始まるインデックス。</p></li>
+</ul>
+</section>
+<section id="col-keys">
+<h3><code class="docutils literal notranslate"><span class="pre">col_keys</span></code><a class="headerlink" href="#col-keys" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">col_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>すべての列のキー（ラベル）を取得します。</p>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>tuple</strong>
+列キーのタプル（順序通り）。</p></li>
+</ul>
+</section>
+<section id="copy">
+<h3><code class="docutils literal notranslate"><span class="pre">copy</span></code><a class="headerlink" href="#copy" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>この行列のディープコピーを作成します。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>order</strong> : {'C', 'F', 'A', 'K'}, オプション
+コピーのメモリレイアウト。デフォルトは 'C'（行優先）。</p></li>
+</ul>
+</section>
+<section id="crop">
+<h3><code class="docutils literal notranslate"><span class="pre">crop</span></code><a class="headerlink" href="#crop" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>指定された範囲のサンプル軸で行列を切り抜きます。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>start, end</strong> : float, Quantity, または None
+切り抜きの開始/終了値。None の場合、端まで含まれます。</p></li>
+<li><p><strong>copy</strong> : bool, オプション
+True の場合、データのコピーを返します。それ以外の場合はビューを返します。</p></li>
+</ul>
+</section>
+<section id="dagger">
+<h3><code class="docutils literal notranslate"><span class="pre">dagger</span></code><a class="headerlink" href="#dagger" title="Link to this heading"></a></h3>
+<p>行列の随伴行列（エルミート共役）。
+転置行列の複素共役を返します。行列表記では A† と記されます。</p>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>SeriesMatrix</strong>
+この行列のエルミート共役。</p></li>
+</ul>
+</section>
+<section id="det">
+<h3><code class="docutils literal notranslate"><span class="pre">det</span></code><a class="headerlink" href="#det" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">det</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>各サンプル点における行列の行列式を計算します。</p>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>Series</strong>
+行列式の値を含む Series。</p></li>
+</ul>
+</section>
+<section id="diagonal">
+<h3><code class="docutils literal notranslate"><span class="pre">diagonal</span></code><a class="headerlink" href="#diagonal" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">diagonal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;list&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>行列から対角要素を抽出します。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>output</strong> : {'list', 'vector', 'matrix'}, オプション</p>
+<ul>
+<li><p>'list': Series のリストを返す（デフォルト）</p></li>
+<li><p>'vector': 列ベクトル（n x 1 行列）として返す</p></li>
+<li><p>'matrix': 対角成分以外をゼロにしたフル行列を返す</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="diff">
+<h3><code class="docutils literal notranslate"><span class="pre">diff</span></code><a class="headerlink" href="#diff" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>サンプル軸方向に n 次の離散差分を計算します。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>n</strong> : int, オプション
+差分の回数。デフォルトは 1。</p></li>
+<li><p><strong>axis</strong> : int, オプション
+2（サンプル軸）である必要があります。</p></li>
+</ul>
+</section>
+<section id="duration">
+<h3><code class="docutils literal notranslate"><span class="pre">duration</span></code><a class="headerlink" href="#duration" title="Link to this heading"></a></h3>
+<p>サンプルがカバーする全期間。</p>
+</section>
+<section id="dx">
+<h3><code class="docutils literal notranslate"><span class="pre">dx</span></code><a class="headerlink" href="#dx" title="Link to this heading"></a></h3>
+<p>x軸上のサンプル間のステップサイズ（間隔）。
+等間隔サンプリングの場合、連続するサンプル間の一定の間隔です。タイムシリーズの場合、<code class="docutils literal notranslate"><span class="pre">1/sample_rate</span></code> に相当します。</p>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>dx</strong> : <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code>
+適切な単位を持つサンプル間隔。</p></li>
+</ul>
+</section>
+<section id="get-index">
+<h3><code class="docutils literal notranslate"><span class="pre">get_index</span></code><a class="headerlink" href="#get-index" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_row</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">key_col</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>指定されたキーに対応する (row, col) の整数インデックスを取得します。</p>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>tuple of int</strong>
+(row_index, col_index) のタプル。</p></li>
+</ul>
+</section>
+<section id="imag">
+<h3><code class="docutils literal notranslate"><span class="pre">imag</span></code><a class="headerlink" href="#imag" title="Link to this heading"></a></h3>
+<p>行列の虚部。
+複素数行列の場合、虚数成分のみを返します。実数行列の場合はゼロを返します。</p>
+</section>
+<section id="inv">
+<h3><code class="docutils literal notranslate"><span class="pre">inv</span></code><a class="headerlink" href="#inv" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">swap_rowcol</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>各サンプル点における逆行列を計算します。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>swap_rowcol</strong> : bool, オプション
+True（デフォルト）の場合、結果の行/列ラベルを入れ替えます。</p></li>
+</ul>
+</section>
+<section id="is-compatible">
+<h3><code class="docutils literal notranslate"><span class="pre">is_compatible</span></code><a class="headerlink" href="#is-compatible" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">is_compatible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</pre></div>
+</div>
+<p>互換性チェック。</p>
+</section>
+<section id="is-compatible-exact">
+<h3><code class="docutils literal notranslate"><span class="pre">is_compatible_exact</span></code><a class="headerlink" href="#is-compatible-exact" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">is_compatible_exact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>別の行列との厳密な互換性をチェックします。
+同一の形状、xindex の値、行/列キー、および要素の単位を必要とします。</p>
+</section>
+<section id="is-contiguous">
+<h3><code class="docutils literal notranslate"><span class="pre">is_contiguous</span></code><a class="headerlink" href="#is-contiguous" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">is_contiguous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">3.814697265625e-06</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>この行列が別の行列と連続しているかをチェックします（gwpy ライクなセマンティクス）。</p>
+</section>
+<section id="is-contiguous-exact">
+<h3><code class="docutils literal notranslate"><span class="pre">is_contiguous_exact</span></code><a class="headerlink" href="#is-contiguous-exact" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">is_contiguous_exact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">3.814697265625e-06</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>厳密な形状一致を含めて連続性をチェックします。</p>
+</section>
+<section id="keys">
+<h3><code class="docutils literal notranslate"><span class="pre">keys</span></code><a class="headerlink" href="#keys" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>行と列の両方のキーを取得します。</p>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>tuple</strong>
+(row_keys, col_keys) の 2 要素タプル。</p></li>
+</ul>
+</section>
+<section id="loc">
+<h3><code class="docutils literal notranslate"><span class="pre">loc</span></code><a class="headerlink" href="#loc" title="Link to this heading"></a></h3>
+<p>ラベルベースのインデクサ。
+pandas の <code class="docutils literal notranslate"><span class="pre">.loc</span></code> のように、行/列キーを使用してデータ配列の値に直接アクセス（取得/設定）できます。</p>
+<p><strong>例:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">new_values</span>  <span class="c1"># 行 0, 列 1 の全サンプルを設定</span>
+<span class="n">vals</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;chA&#39;</span><span class="p">,</span> <span class="s1">&#39;chB&#39;</span><span class="p">,</span> <span class="p">:]</span> <span class="c1"># チャンネル名でアクセス</span>
+</pre></div>
+</div>
+</section>
+<section id="names">
+<h3><code class="docutils literal notranslate"><span class="pre">names</span></code><a class="headerlink" href="#names" title="Link to this heading"></a></h3>
+<p>各行列要素の名称の 2D 配列。</p>
+</section>
+<section id="pad">
+<h3><code class="docutils literal notranslate"><span class="pre">pad</span></code><a class="headerlink" href="#pad" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>行列のサンプル軸をパディングします。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>pad_width</strong> : int または (int, int) のタプル
+パディングするサンプル数。</p></li>
+</ul>
+</section>
+<section id="plot">
+<h3><code class="docutils literal notranslate"><span class="pre">plot</span></code><a class="headerlink" href="#plot" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy.plot.Plot</span></code> を使用してこの SeriesMatrix をプロットします。</p>
+</section>
+<section id="prepend">
+<h3><code class="docutils literal notranslate"><span class="pre">prepend</span></code><a class="headerlink" href="#prepend" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>サンプル軸の先頭に別の行列を追加します。</p>
+</section>
+<section id="read">
+<h3><code class="docutils literal notranslate"><span class="pre">read</span></code><a class="headerlink" href="#read" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">read</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ファイルから SeriesMatrix を読み込みます。</p>
+<p><strong>主なサポート形式:</strong>
+<code class="docutils literal notranslate"><span class="pre">dttxml</span></code>, <code class="docutils literal notranslate"><span class="pre">gbd</span></code>, <code class="docutils literal notranslate"><span class="pre">gse2</span></code>, <code class="docutils literal notranslate"><span class="pre">knet</span></code>, <code class="docutils literal notranslate"><span class="pre">li</span></code>, <code class="docutils literal notranslate"><span class="pre">lsf</span></code>, <code class="docutils literal notranslate"><span class="pre">sac</span></code>, <code class="docutils literal notranslate"><span class="pre">win32</span></code> など。</p>
+</section>
+<section id="real">
+<h3><code class="docutils literal notranslate"><span class="pre">real</span></code><a class="headerlink" href="#real" title="Link to this heading"></a></h3>
+<p>行列の実部。</p>
+</section>
+<section id="row-index">
+<h3><code class="docutils literal notranslate"><span class="pre">row_index</span></code><a class="headerlink" href="#row-index" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">row_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</pre></div>
+</div>
+<p>行キーに対応する整数インデックスを取得します。</p>
+</section>
+<section id="row-keys">
+<h3><code class="docutils literal notranslate"><span class="pre">row_keys</span></code><a class="headerlink" href="#row-keys" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">row_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>すべての行のキーを取得します。</p>
+</section>
+<section id="schur">
+<h3><code class="docutils literal notranslate"><span class="pre">schur</span></code><a class="headerlink" href="#schur" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">schur</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keep_rows</span><span class="p">,</span> <span class="n">keep_cols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eliminate_rows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eliminate_cols</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ブロック行列の Schur 相補行列（シューア相補、シューア・コンプレメント）を計算します。
+計算式： A - B &#64; D^(-1) &#64; C</p>
+</section>
+<section id="shape3d">
+<h3><code class="docutils literal notranslate"><span class="pre">shape3D</span></code><a class="headerlink" href="#shape3d" title="Link to this heading"></a></h3>
+<p>行列の形状を (n_rows, n_cols, n_samples) のタプルで返します。</p>
+</section>
+<section id="shift">
+<h3><code class="docutils literal notranslate"><span class="pre">shift</span></code><a class="headerlink" href="#shift" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>サンプル軸を定数オフセットでシフトします（インプレース操作）。</p>
+</section>
+<section id="step">
+<h3><code class="docutils literal notranslate"><span class="pre">step</span></code><a class="headerlink" href="#step" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>行列を階段関数としてプロットします。</p>
+</section>
+<section id="submatrix">
+<h3><code class="docutils literal notranslate"><span class="pre">submatrix</span></code><a class="headerlink" href="#submatrix" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">submatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_keys</span><span class="p">,</span> <span class="n">col_keys</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>特定の行と列を選択して部分行列を抽出します。</p>
+</section>
+<section id="to-hdf5">
+<h3><code class="docutils literal notranslate"><span class="pre">to_hdf5</span></code><a class="headerlink" href="#to-hdf5" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>行列を HDF5 ファイルに書き出します。</p>
+</section>
+<section id="to-pandas">
+<h3><code class="docutils literal notranslate"><span class="pre">to_pandas</span></code><a class="headerlink" href="#to-pandas" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;wide&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>行列を pandas DataFrame に変換します。
+<code class="docutils literal notranslate"><span class="pre">wide</span></code> 形式（行-列の組み合わせごとに列を作成）または <code class="docutils literal notranslate"><span class="pre">long</span></code> 形式（tidy データ）を選択可能です。</p>
+</section>
+<section id="to-series-1dlist">
+<h3><code class="docutils literal notranslate"><span class="pre">to_series_1Dlist</span></code><a class="headerlink" href="#to-series-1dlist" title="Link to this heading"></a></h3>
+<p>行列を Series オブジェクトのフラットな 1D リストに変換します。</p>
+</section>
+<section id="to-series-2dlist">
+<h3><code class="docutils literal notranslate"><span class="pre">to_series_2Dlist</span></code><a class="headerlink" href="#to-series-2dlist" title="Link to this heading"></a></h3>
+<p>行列を Series オブジェクトの 2D ネストリストに変換します。</p>
+</section>
+<section id="trace">
+<h3><code class="docutils literal notranslate"><span class="pre">trace</span></code><a class="headerlink" href="#trace" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>行列のトレース（対角要素の和）を各サンプル点について計算します。</p>
+</section>
+<section id="transpose">
+<h3><code class="docutils literal notranslate"><span class="pre">transpose</span></code><a class="headerlink" href="#transpose" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>軸を入れ替えた配列のビューを返します（numpy.transpose と同様）。</p>
+<p><em>( <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> から継承)</em></p>
+</section>
+<section id="units">
+<h3><code class="docutils literal notranslate"><span class="pre">units</span></code><a class="headerlink" href="#units" title="Link to this heading"></a></h3>
+<p>各行列要素の単位の 2D 配列（astropy.units.Unit）。</p>
+</section>
+<section id="update">
+<h3><code class="docutils literal notranslate"><span class="pre">update</span></code><a class="headerlink" href="#update" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>サイズを変更せずに（ローリングバッファ方式で）行列を更新します。
+<code class="docutils literal notranslate"><span class="pre">other</span></code> を追加し、元の長さを維持するために先頭をカットします。</p>
+</section>
+<section id="value">
+<h3><code class="docutils literal notranslate"><span class="pre">value</span></code><a class="headerlink" href="#value" title="Link to this heading"></a></h3>
+<p>基となるデータ値の numpy 配列 (3D)。</p>
+</section>
+<section id="value-at">
+<h3><code class="docutils literal notranslate"><span class="pre">value_at</span></code><a class="headerlink" href="#value-at" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">value_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>特定の x 軸位置における行列値を取得します。</p>
+</section>
+<section id="write">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>行列をファイル（HDF5, CSV, Parquet）に書き出します。</p>
+</section>
+<section id="x0">
+<h3><code class="docutils literal notranslate"><span class="pre">x0</span></code><a class="headerlink" href="#x0" title="Link to this heading"></a></h3>
+<p>サンプル軸の開始値。</p>
+</section>
+<section id="xarray">
+<h3><code class="docutils literal notranslate"><span class="pre">xarray</span></code><a class="headerlink" href="#xarray" title="Link to this heading"></a></h3>
+<p>サンプル軸の値の配列を返します。</p>
+</section>
+<section id="xindex">
+<h3><code class="docutils literal notranslate"><span class="pre">xindex</span></code><a class="headerlink" href="#xindex" title="Link to this heading"></a></h3>
+<p>サンプル軸のインデックス配列（時間や周波数）。</p>
+</section>
+<section id="xspan">
+<h3><code class="docutils literal notranslate"><span class="pre">xspan</span></code><a class="headerlink" href="#xspan" title="Link to this heading"></a></h3>
+<p>サンプル軸の全範囲を (start, end) のタプルで返します。</p>
+</section>
+<section id="xunit">
+<h3><code class="docutils literal notranslate"><span class="pre">xunit</span></code><a class="headerlink" href="#xunit" title="Link to this heading"></a></h3>
+<p>サンプル軸の物理単位。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

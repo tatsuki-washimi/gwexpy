@@ -1,0 +1,192 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TimeSeriesList &mdash; gwexpy  ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">TimeSeriesList</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/ja/TimeSeriesList.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="timeserieslist">
+<h1>TimeSeriesList<a class="headerlink" href="#timeserieslist" title="Link to this heading"></a></h1>
+<p><strong>継承元:</strong> UserList</p>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> オブジェクトのリストです。</p>
+<section id="id1">
+<h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="init">
+<h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initlist</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>TimeSeriesList を初期化します。</p>
+</section>
+<section id="asd">
+<h3><code class="docutils literal notranslate"><span class="pre">asd</span></code><a class="headerlink" href="#asd" title="Link to this heading"></a></h3>
+<p>各要素の ASD（振幅スペクトル密度）を計算し、FrequencySeriesList を返します。</p>
+</section>
+<section id="bandpass-highpass-lowpass">
+<h3><code class="docutils literal notranslate"><span class="pre">bandpass</span></code>, <code class="docutils literal notranslate"><span class="pre">highpass</span></code>, <code class="docutils literal notranslate"><span class="pre">lowpass</span></code><a class="headerlink" href="#bandpass-highpass-lowpass" title="Link to this heading"></a></h3>
+<p>各要素にフィルタを適用します。</p>
+</section>
+<section id="crop">
+<h3><code class="docutils literal notranslate"><span class="pre">crop</span></code><a class="headerlink" href="#crop" title="Link to this heading"></a></h3>
+<p>各要素を特定の時間範囲で切り抜きます。</p>
+</section>
+<section id="detrend-whiten">
+<h3><code class="docutils literal notranslate"><span class="pre">detrend</span></code>, <code class="docutils literal notranslate"><span class="pre">whiten</span></code><a class="headerlink" href="#detrend-whiten" title="Link to this heading"></a></h3>
+<p>各要素のトレンド除去およびホワイトニング。</p>
+</section>
+<section id="fft">
+<h3><code class="docutils literal notranslate"><span class="pre">fft</span></code><a class="headerlink" href="#fft" title="Link to this heading"></a></h3>
+<p>各要素の FFT を計算し、FrequencySeriesList を返します。</p>
+</section>
+<section id="impute">
+<h3><code class="docutils literal notranslate"><span class="pre">impute</span></code><a class="headerlink" href="#impute" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">impute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span> <span class="o">=</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">overlap</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Any&#39;</span>
+</pre></div>
+</div>
+<p>欠損値（NaN）を指定された手法で補完します。</p>
+</section>
+<section id="join">
+<h3><code class="docutils literal notranslate"><span class="pre">join</span></code><a class="headerlink" href="#join" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>リスト内の TimeSeries を 1 つの TimeSeries に結合します。</p>
+</section>
+<section id="plot">
+<h3><code class="docutils literal notranslate"><span class="pre">plot</span></code><a class="headerlink" href="#plot" title="Link to this heading"></a></h3>
+<p>すべてのシリーズを垂直に並べてプロットします。</p>
+</section>
+<section id="read">
+<h3><code class="docutils literal notranslate"><span class="pre">read</span></code><a class="headerlink" href="#read" title="Link to this heading"></a></h3>
+<p>ファイルから TimeSeries のリストを読み込みます。</p>
+</section>
+<section id="resample">
+<h3><code class="docutils literal notranslate"><span class="pre">resample</span></code><a class="headerlink" href="#resample" title="Link to this heading"></a></h3>
+<p>各要素を再サンプリングします。</p>
+</section>
+<section id="spectrogram">
+<h3><code class="docutils literal notranslate"><span class="pre">spectrogram</span></code><a class="headerlink" href="#spectrogram" title="Link to this heading"></a></h3>
+<p>各要素のスペクトログラムを計算し、SpectrogramList を返します。</p>
+</section>
+<section id="to-matrix">
+<h3><code class="docutils literal notranslate"><span class="pre">to_matrix</span></code><a class="headerlink" href="#to-matrix" title="Link to this heading"></a></h3>
+<p>リストを TimeSeriesMatrix に変換します。</p>
+</section>
+<section id="to-tmultigraph">
+<h3><code class="docutils literal notranslate"><span class="pre">to_tmultigraph</span></code><a class="headerlink" href="#to-tmultigraph" title="Link to this heading"></a></h3>
+<p>ROOT の TMultiGraph オブジェクトに変換します。</p>
+</section>
+<section id="write">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
+<p>リストをファイル（HDF5 など）に書き出します。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

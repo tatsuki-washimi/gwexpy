@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TimePlaneTransform &mdash; gwexpy  ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="Plot" href="Plot.html" />
+    <link rel="prev" title="Plane2D" href="Plane2D.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Detailed Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesList.html">TimeSeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeries.html">FrequencySeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesDict.html">FrequencySeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesList.html">FrequencySeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesMatrix.html">FrequencySeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramDict.html">SpectrogramDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramList.html">SpectrogramList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramMatrix.html">SpectrogramMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Array2D.html">Array2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">TimePlaneTransform</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#methods">Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#init"><code class="docutils literal notranslate"><span class="pre">__init__</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#parameters">Parameters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#at-sigma"><code class="docutils literal notranslate"><span class="pre">at_sigma</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#at-time"><code class="docutils literal notranslate"><span class="pre">at_time</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#returns">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#axes"><code class="docutils literal notranslate"><span class="pre">axes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#axis1"><code class="docutils literal notranslate"><span class="pre">axis1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#axis2"><code class="docutils literal notranslate"><span class="pre">axis2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kind"><code class="docutils literal notranslate"><span class="pre">kind</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#meta"><code class="docutils literal notranslate"><span class="pre">meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ndim"><code class="docutils literal notranslate"><span class="pre">ndim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plane"><code class="docutils literal notranslate"><span class="pre">plane</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Returns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#shape"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#times"><code class="docutils literal notranslate"><span class="pre">times</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#to-array3d"><code class="docutils literal notranslate"><span class="pre">to_array3d</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#unit"><code class="docutils literal notranslate"><span class="pre">unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#value"><code class="docutils literal notranslate"><span class="pre">value</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Plot.html">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Noise.html">Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Transform.html">Transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImputeTransform.html">ImputeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StandardizeTransform.html">StandardizeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WhitenTransform.html">WhitenTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PCATransform.html">PCATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting.html">gwexpy.fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Detailed Reference</a></li>
+      <li class="breadcrumb-item active">TimePlaneTransform</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/en/TimePlaneTransform.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="timeplanetransform">
+<h1>TimePlaneTransform<a class="headerlink" href="#timeplanetransform" title="Link to this heading"></a></h1>
+<p><strong>Inherits from:</strong> object</p>
+<p>A container for 3D data with a preferred (time, axis1, axis2) structure,
+commonly produced by time-frequency or similar transforms.</p>
+<p>This class wraps an Array3D to enforce semantic structure:</p>
+<ul class="simple">
+<li><p>Axis 0 is &quot;time&quot;</p></li>
+<li><p>Axis 1 and 2 are symmetric spatial/frequency dimensions.</p></li>
+</ul>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
+<section id="init">
+<h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data3d</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;custom&#39;</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Initialize a TimePlaneTransform.</p>
+</section>
+</section>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<p>data3d : Array3D or tuple
+The underlying 3D data.
+Preferred: an <code class="docutils literal notranslate"><span class="pre">Array3D</span></code> instance.
+Supported tuple format: (value, time_axis, axis1, axis2, unit/metadata).
+kind : str, optional
+A string describing the type of transform (e.g., &quot;stlt&quot;, &quot;bispectrum&quot;). Default is &quot;custom&quot;.
+meta : dict, optional
+Additional metadata dictionary. Default is None (stored as empty dict).</p>
+<section id="at-sigma">
+<h3><code class="docutils literal notranslate"><span class="pre">at_sigma</span></code><a class="headerlink" href="#at-sigma" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">at_sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Extract a 2D plane (Spectrogram-like) at a specific sigma index (if axis1 is sigma)
+or value.</p>
+<p>This assumes axis 1 is sigma.</p>
+</section>
+<section id="at-time">
+<h3><code class="docutils literal notranslate"><span class="pre">at_time</span></code><a class="headerlink" href="#at-time" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">at_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Extract a Plane2D at the specific time <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p>
+</section>
+</section>
+<section id="id1">
+<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>t : Quantity or float
+Time value. If float, assumed to be in the unit of the time axis.
+method : str, optional
+&quot;nearest&quot; (default). Future versions may support interpolation.</p>
+</section>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
+<p>Plane2D</p>
+<section id="axes">
+<h3><code class="docutils literal notranslate"><span class="pre">axes</span></code><a class="headerlink" href="#axes" title="Link to this heading"></a></h3>
+<p>Return the 3 AxisDescriptors: (time, axis1, axis2).</p>
+</section>
+<section id="axis1">
+<h3><code class="docutils literal notranslate"><span class="pre">axis1</span></code><a class="headerlink" href="#axis1" title="Link to this heading"></a></h3>
+<p>AxisDescriptor for the first symmetric axis (axis 1).</p>
+</section>
+<section id="axis2">
+<h3><code class="docutils literal notranslate"><span class="pre">axis2</span></code><a class="headerlink" href="#axis2" title="Link to this heading"></a></h3>
+<p>AxisDescriptor for the second symmetric axis (axis 2).</p>
+</section>
+<section id="kind">
+<h3><code class="docutils literal notranslate"><span class="pre">kind</span></code><a class="headerlink" href="#kind" title="Link to this heading"></a></h3>
+<p>String describing the type of transform (e.g., 'stlt', 'bispectrum').</p>
+</section>
+<section id="meta">
+<h3><code class="docutils literal notranslate"><span class="pre">meta</span></code><a class="headerlink" href="#meta" title="Link to this heading"></a></h3>
+<p>Additional metadata dictionary.</p>
+</section>
+<section id="ndim">
+<h3><code class="docutils literal notranslate"><span class="pre">ndim</span></code><a class="headerlink" href="#ndim" title="Link to this heading"></a></h3>
+<p>Number of dimensions (always 3).</p>
+</section>
+<section id="plane">
+<h3><code class="docutils literal notranslate"><span class="pre">plane</span></code><a class="headerlink" href="#plane" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plane</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drop_axis</span><span class="p">,</span> <span class="n">drop_index</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Extract a 2D plane by slicing at a specific index along one axis.</p>
+</section>
+</section>
+<section id="id2">
+<h2>Parameters<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>drop_axis : int or str
+The axis to slice along (remove).
+drop_index : int
+Integer index to select along <code class="docutils literal notranslate"><span class="pre">drop_axis</span></code>.
+axis1 : str or int, optional
+The generic axis 1 for the resulting Plane2D.
+axis2 : str or int, optional
+The generic axis 2 for the resulting Plane2D.</p>
+</section>
+<section id="id3">
+<h2>Returns<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>Plane2D</p>
+<section id="shape">
+<h3><code class="docutils literal notranslate"><span class="pre">shape</span></code><a class="headerlink" href="#shape" title="Link to this heading"></a></h3>
+<p>Shape of the 3D data array (time, axis1, axis2).</p>
+</section>
+<section id="times">
+<h3><code class="docutils literal notranslate"><span class="pre">times</span></code><a class="headerlink" href="#times" title="Link to this heading"></a></h3>
+<p>Coordinate array of the time axis (axis 0).</p>
+</section>
+<section id="to-array3d">
+<h3><code class="docutils literal notranslate"><span class="pre">to_array3d</span></code><a class="headerlink" href="#to-array3d" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_array3d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Return the underlying Array3D object (advanced usage).</p>
+</section>
+<section id="unit">
+<h3><code class="docutils literal notranslate"><span class="pre">unit</span></code><a class="headerlink" href="#unit" title="Link to this heading"></a></h3>
+<p>Physical unit of the data values.</p>
+</section>
+<section id="value">
+<h3><code class="docutils literal notranslate"><span class="pre">value</span></code><a class="headerlink" href="#value" title="Link to this heading"></a></h3>
+<p>The underlying data values as numpy array.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Plane2D.html" class="btn btn-neutral float-left" title="Plane2D" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Plot.html" class="btn btn-neutral float-right" title="Plot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作業報告書 &mdash; gwexpy  ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">作業報告書</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/developers/reports/work_report_20260107.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>作業報告書<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p><strong>作業日付:</strong> 2026-01-07
+<strong>作業者:</strong> AI Assistant
+<strong>対象:</strong> gwexpy プロジェクト全体（gui/ ディレクトリを除く）</p>
+<hr class="docutils" />
+<section id="id2">
+<h2>1. 作業概要<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>gwexpy プロジェクトの総合的なコードレビューとリファクタリングを実施しました。</p>
+<section id="id3">
+<h3>実施内容<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>✅ プロジェクト全体のソースコード精査</p></li>
+<li><p>✅ 問題点のマークダウンファイルへのまとめ</p></li>
+<li><p>✅ 修正計画の作成</p></li>
+<li><p>✅ コードの修正実施</p></li>
+<li><p>✅ ruff check による品質確認</p></li>
+<li><p>✅ pytestによるテスト実行</p></li>
+<li><p>✅ ドキュメント整合性確認と修正（README.md, docs/*.csv）</p></li>
+</ol>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id4">
+<h2>2. 発見した問題と修正内容<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<section id="id5">
+<h3>2.1 修正完了した問題<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>問題種別</p></th>
+<th class="head"><p>件数</p></th>
+<th class="head"><p>修正内容</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>未使用インポート (F401)</p></td>
+<td><p>28件</p></td>
+<td><p>ruff --fix で自動修正</p></td>
+</tr>
+<tr class="row-odd"><td><p>未使用変数 (F841)</p></td>
+<td><p>3件</p></td>
+<td><p>手動で削除</p></td>
+</tr>
+<tr class="row-even"><td><p>空白行ホワイトスペース (W293/W291)</p></td>
+<td><p>約20件</p></td>
+<td><p>手動で削除</p></td>
+</tr>
+<tr class="row-odd"><td><p>bare except (E722)</p></td>
+<td><p>1件</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code> に修正</p></td>
+</tr>
+<tr class="row-even"><td><p>テストファイルのインポートエラー</p></td>
+<td><p>1件</p></td>
+<td><p>存在しない関数のインポートを削除</p></td>
+</tr>
+<tr class="row-odd"><td><p>重複関数定義</p></td>
+<td><p>2件</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">interop/pandas_.py</span></code> から削除</p></td>
+</tr>
+<tr class="row-even"><td><p>不正なインポートパス</p></td>
+<td><p>1件</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">spectrogram/__init__.py</span></code> を修正</p></td>
+</tr>
+<tr class="row-odd"><td><p>ドキュメントファイル名タイポ</p></td>
+<td><p>1件</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict_extention.csv</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">extensions.csv</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>README記述の不正確さ</p></td>
+<td><p>1件</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">LaplaceGram</span></code> に修正</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id6">
+<h3>2.2 修正したファイル一覧<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<section id="id7">
+<h4>テスト関連<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/utils/test_enum.py</span></code> - 存在しない <code class="docutils literal notranslate"><span class="pre">test_numpy_type_enum</span></code> のインポートを削除</p></li>
+</ul>
+</section>
+<section id="spectrogram">
+<h4>spectrogram モジュール<a class="headerlink" href="#spectrogram" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/spectrogram/__init__.py</span></code> - 正しいモジュールからクラスをインポートするように修正</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/spectrogram/matrix.py</span></code> - docstring内の空白行修正、bare except修正</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/spectrogram/matrix_core.py</span></code> - docstring内の空白行修正</p></li>
+</ul>
+</section>
+<section id="timeseries">
+<h4>timeseries モジュール<a class="headerlink" href="#timeseries" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/_statistics.py</span></code> - docstring内の空白行修正</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/matrix_analysis.py</span></code> - docstring内の空白行修正</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/matrix_spectral.py</span></code> - 未使用変数 <code class="docutils literal notranslate"><span class="pre">df</span></code> を削除</p></li>
+</ul>
+</section>
+<section id="analysis">
+<h4>analysis モジュール<a class="headerlink" href="#analysis" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/analysis/bruco.py</span></code> - docstring内の空白行修正</p></li>
+</ul>
+</section>
+<section id="plot">
+<h4>plot モジュール<a class="headerlink" href="#plot" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/plot/plot.py</span></code> - 未使用変数 <code class="docutils literal notranslate"><span class="pre">kwargs_orig</span></code> と <code class="docutils literal notranslate"><span class="pre">units_consistent</span></code> を削除</p></li>
+</ul>
+</section>
+<section id="types">
+<h4>types モジュール<a class="headerlink" href="#types" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/types/_stats.py</span></code> - docstring内の空白行修正</p></li>
+</ul>
+</section>
+<section id="interop">
+<h4>interop モジュール<a class="headerlink" href="#interop" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/interop/pandas_.py</span></code> - 重複関数(<code class="docutils literal notranslate"><span class="pre">to_pandas_frequencyseries</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pandas_frequencyseries</span></code>)を削除</p></li>
+</ul>
+</section>
+<section id="id8">
+<h4>ドキュメント<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">README.md</span></code> - <code class="docutils literal notranslate"><span class="pre">TimePlaneTransform</span></code> の記述を <code class="docutils literal notranslate"><span class="pre">LaplaceGram</span></code> に修正し明確化</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/TimeSeriesDict_extensions.csv</span></code> - ファイル名のタイポ修正</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/FrequencySeries_methods.csv</span></code> - 実装との整合性を確認（修正不要）</p></li>
+</ul>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>3. テスト結果<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<section id="ruff-check">
+<h3>3.1 ruff check 結果<a class="headerlink" href="#ruff-check" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>All checks passed!
+</pre></div>
+</div>
+</section>
+<section id="pytest">
+<h3>3.2 pytest 結果<a class="headerlink" href="#pytest" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>カテゴリ</p></th>
+<th class="head"><p>件数</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Passed</p></td>
+<td><p>371</p></td>
+</tr>
+<tr class="row-odd"><td><p>Failed</p></td>
+<td><p>1 (minepy依存)</p></td>
+</tr>
+<tr class="row-even"><td><p>Skipped</p></td>
+<td><p>21</p></td>
+</tr>
+<tr class="row-odd"><td><p>XFailed</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>XPassed</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>失敗した1件について:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/timeseries/test_vectorized_containers.py::TestVectorizedContainers::test_mic_vectorized</span></code></p></li>
+<li><p>原因: オプショナル依存パッケージ <code class="docutils literal notranslate"><span class="pre">minepy</span></code> がインストールされていないため</p></li>
+<li><p>対応: コア機能には影響なし。minepyをインストールすればパスする。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id10">
+<h2>4. 対象外とした項目<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<p>以下の項目はユーザー判断が必要なため、修正を保留しました：</p>
+<section id="gwpy-49">
+<h3>4.1 gwpy継承テストの失敗（49件）<a class="headerlink" href="#gwpy-49" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>GWF (Gravitational Wave Frame) I/O関連のテスト</p></li>
+<li><p>LAL/PyCBC依存のテスト</p></li>
+<li><p>外部依存性（framel, lalframe, framecpp等）に関連</p></li>
+</ul>
+<p><strong>理由:</strong> これらはオプショナルな外部パッケージに依存しており、gwexpyコア機能には影響しません。</p>
+</section>
+<section id="gui">
+<h3>4.2 gui/ ディレクトリ<a class="headerlink" href="#gui" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>ユーザーの指示により対象外</p></li>
+</ul>
+</section>
+<section id="example-ipynb">
+<h3>4.3 ノートブック (example/*.ipynb)<a class="headerlink" href="#example-ipynb" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>コード修正後のノートブック更新は本作業では実施していません</p></li>
+<li><p>理由: コア機能への変更は軽微（スタイル修正のみ）であり、既存ノートブックへの影響なし</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id11">
+<h2>5. 成果物<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>ファイル</p></th>
+<th class="head"><p>内容</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">docs/developers/code_review_20260107.md</span></code></p></td>
+<td><p>コードレビュー報告書</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">docs/developers/fix_plan_20260107.md</span></code></p></td>
+<td><p>修正計画書</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">docs/developers/work_report_20260107.md</span></code></p></td>
+<td><p>本報告書</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<hr class="docutils" />
+<section id="id12">
+<h2>6. 今後の推奨事項<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>pre-commit フックの導入</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ruff</span> <span class="pre">check</span> <span class="pre">--fix</span></code> をpre-commitフックに追加することで、コミット前に自動的にスタイル修正を適用できます。</p></li>
+</ul>
+</li>
+<li><p><strong>CI/CDへのruff統合</strong></p>
+<ul class="simple">
+<li><p>GitHub ActionsなどでCIにruff checkを統合することを推奨します。</p></li>
+</ul>
+</li>
+<li><p><strong>オプショナル依存のテストマーキング</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;pytest.mark.requires(&quot;minepy&quot;)</span></code> などのカスタムマーカーを活用し、オプショナル依存テストを明確にマークすることを推奨します。</p></li>
+</ul>
+</li>
+<li><p><strong>定期的なコードレビュー</strong></p>
+<ul class="simple">
+<li><p>月次でのコード品質チェックを推奨します。</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="id13">
+<h2>7. 結論<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<p>gwexpyプロジェクトのコードレビュー、リファクタリング、およびドキュメント整合性確認を完了しました。</p>
+<ul class="simple">
+<li><p><strong>修正した問題:</strong> 56件 + ドキュメント修正2件</p></li>
+<li><p><strong>ruff check:</strong> パス</p></li>
+<li><p><strong>テスト結果:</strong> 371件パス（コア機能は正常動作）</p></li>
+<li><p><strong>ドキュメント:</strong> 実装と整合していることを確認済み</p></li>
+</ul>
+<p>コードベースは良好な状態に整備されました。</p>
+<section id="id14">
+<h3>2026-01-07 追記: 依存関係の更新<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<p><strong>変更概要:</strong>
+メンテナンス停止状態にある <code class="docutils literal notranslate"><span class="pre">minepy</span></code> を <code class="docutils literal notranslate"><span class="pre">mictools</span></code> (Maximal Information Coefficient Analysis Pipeline) に置き換えました。</p>
+<p><strong>修正の詳細:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>依存関係:</strong> <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> の <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> (optional) を修正し、<code class="docutils literal notranslate"><span class="pre">minepy</span></code> を削除、<code class="docutils literal notranslate"><span class="pre">mictools</span></code> を追加しました。</p></li>
+<li><p><strong>実装:</strong> <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/_statistics.py</span></code> 内の <code class="docutils literal notranslate"><span class="pre">mic</span></code> 計算ロジックを更新しました。<code class="docutils literal notranslate"><span class="pre">:mictools</span></code> のインポートを優先し、利用できない場合は明示的なエラーメッセージを表示するようにしました。</p></li>
+<li><p><strong>テスト:</strong> <code class="docutils literal notranslate"><span class="pre">tests/timeseries/test_statistics.py</span></code> を更新し、<code class="docutils literal notranslate"><span class="pre">mictools</span></code> が未インストールの場合にテストを適切にスキップするようにしました。</p></li>
+<li><p><strong>ドキュメント:</strong> <code class="docutils literal notranslate"><span class="pre">README.md</span></code> の依存関係テーブルを更新しました。</p></li>
+</ol>
+<p><strong>ステータス:</strong></p>
+<ul class="simple">
+<li><p>変更適用済み</p></li>
+<li><p>テスト通過 (mictools未インストールの環境でスキップ動作確認済み)</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

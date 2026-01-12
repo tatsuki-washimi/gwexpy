@@ -1,0 +1,165 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plane2D &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Plane2D</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/ja/Plane2D.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="plane2d">
+<h1>Plane2D<a class="headerlink" href="#plane2d" title="Link to this heading"></a></h1>
+<p><strong>継承元:</strong> Array2D</p>
+<p><code class="docutils literal notranslate"><span class="pre">Array2D</span></code> を拡張し、より具体的な平面データを扱うためのクラスです。通常、TimePlaneTransform から抽出されたデータを保持します。</p>
+<section id="id1">
+<h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="axis1">
+<h3><code class="docutils literal notranslate"><span class="pre">axis1</span></code><a class="headerlink" href="#axis1" title="Link to this heading"></a></h3>
+<p>第1軸（通常は空間または周波数軸）の AxisDescriptor。</p>
+</section>
+<section id="axis2">
+<h3><code class="docutils literal notranslate"><span class="pre">axis2</span></code><a class="headerlink" href="#axis2" title="Link to this heading"></a></h3>
+<p>第2軸（通常は空間または周波数軸）の AxisDescriptor。</p>
+</section>
+<section id="imshow-pcolormesh">
+<h3><code class="docutils literal notranslate"><span class="pre">imshow</span></code>, <code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code><a class="headerlink" href="#imshow-pcolormesh" title="Link to this heading"></a></h3>
+<p>matplotlib を使用したプロット。<em>(Array2D から継承)</em></p>
+</section>
+<section id="plot">
+<h3><code class="docutils literal notranslate"><span class="pre">plot</span></code><a class="headerlink" href="#plot" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;imshow&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>平面データをプロットします。</p>
+</section>
+<section id="rename-axes">
+<h3><code class="docutils literal notranslate"><span class="pre">rename_axes</span></code><a class="headerlink" href="#rename-axes" title="Link to this heading"></a></h3>
+<p>軸の名前を変更します。</p>
+</section>
+<section id="swapaxes">
+<h3><code class="docutils literal notranslate"><span class="pre">swapaxes</span></code><a class="headerlink" href="#swapaxes" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">swapaxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>2つの軸を入れ替えます。AxisDescriptor も適切に更新されます。</p>
+</section>
+<section id="transpose">
+<h3><code class="docutils literal notranslate"><span class="pre">transpose</span></code><a class="headerlink" href="#transpose" title="Link to this heading"></a></h3>
+<p>配列の次元を転置します。</p>
+</section>
+<section id="x0-xindex-xspan-xunit">
+<h3><code class="docutils literal notranslate"><span class="pre">x0</span></code>, <code class="docutils literal notranslate"><span class="pre">xindex</span></code>, <code class="docutils literal notranslate"><span class="pre">xspan</span></code>, <code class="docutils literal notranslate"><span class="pre">xunit</span></code><a class="headerlink" href="#x0-xindex-xspan-xunit" title="Link to this heading"></a></h3>
+<p>x 軸（第1軸）のプロパティ。</p>
+</section>
+<section id="y0-yindex-yspan-yunit">
+<h3><code class="docutils literal notranslate"><span class="pre">y0</span></code>, <code class="docutils literal notranslate"><span class="pre">yindex</span></code>, <code class="docutils literal notranslate"><span class="pre">yspan</span></code>, <code class="docutils literal notranslate"><span class="pre">yunit</span></code><a class="headerlink" href="#y0-yindex-yspan-yunit" title="Link to this heading"></a></h3>
+<p>y 軸（第2軸）のプロパティ。</p>
+<p><em>(その他のメソッドは Array2D から継承されます)</em></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

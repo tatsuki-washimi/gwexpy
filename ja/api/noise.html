@@ -1,0 +1,464 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noise &mdash; gwexpy  ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=4755f45a"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="Types" href="types.html" />
+    <link rel="prev" title="Analysis" href="analysis.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="timeseries.html">Time Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html">Frequency Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">Analysis</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Noise</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.noise.from_asd"><code class="docutils literal notranslate"><span class="pre">from_asd()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.noise.from_obspy"><code class="docutils literal notranslate"><span class="pre">from_obspy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.noise.from_pygwinc"><code class="docutils literal notranslate"><span class="pre">from_pygwinc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.noise.gaussian_line"><code class="docutils literal notranslate"><span class="pre">gaussian_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.noise.geomagnetic_background"><code class="docutils literal notranslate"><span class="pre">geomagnetic_background()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.noise.lorentzian_line"><code class="docutils literal notranslate"><span class="pre">lorentzian_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.noise.pink_noise"><code class="docutils literal notranslate"><span class="pre">pink_noise()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.noise.power_law"><code class="docutils literal notranslate"><span class="pre">power_law()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.noise.red_noise"><code class="docutils literal notranslate"><span class="pre">red_noise()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.noise.schumann_resonance"><code class="docutils literal notranslate"><span class="pre">schumann_resonance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.noise.voigt_line"><code class="docutils literal notranslate"><span class="pre">voigt_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.noise.white_noise"><code class="docutils literal notranslate"><span class="pre">white_noise()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-gwexpy.noise.asd">ASD</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.noise.asd.from_obspy"><code class="docutils literal notranslate"><span class="pre">from_obspy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.noise.asd.from_pygwinc"><code class="docutils literal notranslate"><span class="pre">from_pygwinc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.noise.asd.gaussian_line"><code class="docutils literal notranslate"><span class="pre">gaussian_line()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.noise.asd.geomagnetic_background"><code class="docutils literal notranslate"><span class="pre">geomagnetic_background()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.noise.asd.lorentzian_line"><code class="docutils literal notranslate"><span class="pre">lorentzian_line()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.noise.asd.pink_noise"><code class="docutils literal notranslate"><span class="pre">pink_noise()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.noise.asd.power_law"><code class="docutils literal notranslate"><span class="pre">power_law()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.noise.asd.red_noise"><code class="docutils literal notranslate"><span class="pre">red_noise()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.noise.asd.schumann_resonance"><code class="docutils literal notranslate"><span class="pre">schumann_resonance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.noise.asd.voigt_line"><code class="docutils literal notranslate"><span class="pre">voigt_line()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.noise.asd.white_noise"><code class="docutils literal notranslate"><span class="pre">white_noise()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#waveform">Waveform</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="types.html">Types</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Noise</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/noise.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gwexpy.noise">
+<span id="noise"></span><h1>Noise<a class="headerlink" href="#module-gwexpy.noise" title="Link to this heading"></a></h1>
+<p>gwexpy.noise - Noise generation and modeling.</p>
+<p>This module provides tools for generating and modeling noise spectra.</p>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<p>asd : Functions that return FrequencySeries (ASD)
+wave : Functions that return time-series waveforms (ndarray)</p>
+<p class="rubric">サンプル</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.asd</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pygwinc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_asd</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">asd</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s1">&#39;aLIGO&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mf">1024.0</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span> <span class="o">=</span> <span class="n">from_asd</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.from_asd">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">from_asd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Generator'</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/wave.html#from_asd"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.from_asd" title="Link to this definition"></a></dt>
+<dd><p>Generate colored noise TimeSeries from an ASD (Amplitude Spectral Density).</p>
+<p>Uses FFT-based colored noise synthesis to produce a time-series with the
+spectral characteristics defined by the input ASD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>asd</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- The amplitude spectral density defining the noise spectrum.</p></li>
+<li><p><strong>duration</strong> (<em>float</em>) -- Duration of the output time-series in seconds.</p></li>
+<li><p><strong>sample_rate</strong> (<em>float</em>) -- Sample rate of the output time-series in Hz.</p></li>
+<li><p><strong>t0</strong> (<em>float</em><em>, </em><em>optional</em>) -- Start time of the output TimeSeries.</p></li>
+<li><p><strong>rng</strong> (<em>numpy.random.Generator</em><em>, </em><em>optional</em>) -- Random number generator instance. If None, a new default generator
+is created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p>The generated noise time-series as a gwexpy TimeSeries.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a></p>
+</dd>
+</dl>
+<p class="rubric">サンプル</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pygwinc</span><span class="p">,</span> <span class="n">from_asd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">asd</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s1">&#39;aLIGO&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mf">1024.0</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span> <span class="o">=</span> <span class="n">from_asd</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.from_obspy">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">from_obspy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Unit</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/obspy_.html#from_obspy"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.from_obspy" title="Link to this definition"></a></dt>
+<dd><p>Get standard noise models from ObsPy.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.from_pygwinc">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">from_pygwinc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/gwinc_.html#from_pygwinc"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.from_pygwinc" title="Link to this definition"></a></dt>
+<dd><p>Get detector noise ASD from pygwinc.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.gaussian_line">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">gaussian_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/peaks.html#gaussian_line"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.gaussian_line" title="Link to this definition"></a></dt>
+<dd><p>Generate a Gaussian peak (ASD).
+Formula: ASD(f) = A * exp( - (f-f0)^2 / (2*sigma^2) )</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.geomagnetic_background">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">geomagnetic_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude_1hz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-11</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exponent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/magnetic.html#geomagnetic_background"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.geomagnetic_background" title="Link to this definition"></a></dt>
+<dd><p>Generate 1/f^alpha magnetic background noise.
+Wrapper for colored.power_law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>amplitude_1hz</strong> (<em>float</em>) -- Amplitude at 1Hz, typically in pT/rtHz (default 10e-12 = 10pT).
+Note: The user provided example says 10e-12 (10pT), assumed unit of result.
+However, if user passes unit='pT...', amplitude should be consistent.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.lorentzian_line">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">lorentzian_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/peaks.html#lorentzian_line"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.lorentzian_line" title="Link to this definition"></a></dt>
+<dd><p>Generate a Lorentzian peak (ASD).
+Formula: ASD(f) = A * gamma / sqrt( (f-f0)^2 + gamma^2 )</p>
+<p>This profile peaks at 'amplitude' when f = f0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f0</strong> (<em>float</em>) -- Center frequency.</p></li>
+<li><p><strong>amplitude</strong> (<em>float</em><em> or </em><em>Quantity</em>) -- Peak ASD value.</p></li>
+<li><p><strong>Q</strong> (<em>float</em><em>, </em><em>optional</em>) -- Quality factor. gamma = f0 / (2*Q). Either Q or gamma must be provided.</p></li>
+<li><p><strong>gamma</strong> (<em>float</em><em>, </em><em>optional</em>) -- HWHM (Half Width at Half Maximum).</p></li>
+<li><p><strong>frequencies</strong> (<em>array-like</em><em>, </em><em>optional</em>) -- Target frequency array.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.pink_noise">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">pink_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/colored.html#pink_noise"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.pink_noise" title="Link to this definition"></a></dt>
+<dd><p>Generate Pink noise ASD (~ f^-0.5).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.power_law">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">power_law</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exponent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/colored.html#power_law"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.power_law" title="Link to this definition"></a></dt>
+<dd><p>Generate an ASD FrequencySeries following a power law.
+ASD(f) = amplitude * (f / f_ref) ** (-exponent)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.red_noise">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">red_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/colored.html#red_noise"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.red_noise" title="Link to this definition"></a></dt>
+<dd><p>Generate Red (Brownian) noise ASD (~ f^-1).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.schumann_resonance">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">schumann_resonance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/magnetic.html#schumann_resonance"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.schumann_resonance" title="Link to this definition"></a></dt>
+<dd><p>Generate Schumann Resonance ASD by combining Lorentzians in PSD space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequencies</strong> (<em>array-like</em><em>, </em><em>optional</em>) -- Target frequency array.</p></li>
+<li><p><strong>modes</strong> (<em>list</em><em> of </em><em>tuples</em><em>, </em><em>optional</em>) -- (f0, Q, amplitude_asd in pT/rtHz).
+If None, uses defaults from observation.</p></li>
+<li><p><strong>amplitude_scale</strong> (<em>float</em>) -- Scaling factor for amplitude.</p></li>
+<li><p><strong>**kwargs</strong> -- Additional arguments for FrequencySeries.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.voigt_line">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">voigt_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/peaks.html#voigt_line"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.voigt_line" title="Link to this definition"></a></dt>
+<dd><p>Generate a Voigt peak (ASD) using Faddeeva function.
+Normalized to have peak value = 'amplitude'.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.white_noise">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">white_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/colored.html#white_noise"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.white_noise" title="Link to this definition"></a></dt>
+<dd><p>Generate White noise ASD (~ f^0).</p>
+</dd></dl>
+
+<section id="module-gwexpy.noise.asd">
+<span id="asd"></span><h2>ASD<a class="headerlink" href="#module-gwexpy.noise.asd" title="Link to this heading"></a></h2>
+<p>gwexpy.noise.asd - Functions that generate ASD (Amplitude Spectral Density).</p>
+<p>This module provides convenient access to ASD-generating functions.
+All functions in this module return FrequencySeries objects.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.asd.from_obspy">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.asd.</span></span><span class="sig-name descname"><span class="pre">from_obspy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Unit</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/obspy_.html#from_obspy"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.asd.from_obspy" title="Link to this definition"></a></dt>
+<dd><p>Get standard noise models from ObsPy.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.asd.from_pygwinc">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.asd.</span></span><span class="sig-name descname"><span class="pre">from_pygwinc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/gwinc_.html#from_pygwinc"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.asd.from_pygwinc" title="Link to this definition"></a></dt>
+<dd><p>Get detector noise ASD from pygwinc.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.asd.gaussian_line">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.asd.</span></span><span class="sig-name descname"><span class="pre">gaussian_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/peaks.html#gaussian_line"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.asd.gaussian_line" title="Link to this definition"></a></dt>
+<dd><p>Generate a Gaussian peak (ASD).
+Formula: ASD(f) = A * exp( - (f-f0)^2 / (2*sigma^2) )</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.asd.geomagnetic_background">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.asd.</span></span><span class="sig-name descname"><span class="pre">geomagnetic_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude_1hz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-11</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exponent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/magnetic.html#geomagnetic_background"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.asd.geomagnetic_background" title="Link to this definition"></a></dt>
+<dd><p>Generate 1/f^alpha magnetic background noise.
+Wrapper for colored.power_law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>amplitude_1hz</strong> (<em>float</em>) -- Amplitude at 1Hz, typically in pT/rtHz (default 10e-12 = 10pT).
+Note: The user provided example says 10e-12 (10pT), assumed unit of result.
+However, if user passes unit='pT...', amplitude should be consistent.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.asd.lorentzian_line">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.asd.</span></span><span class="sig-name descname"><span class="pre">lorentzian_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/peaks.html#lorentzian_line"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.asd.lorentzian_line" title="Link to this definition"></a></dt>
+<dd><p>Generate a Lorentzian peak (ASD).
+Formula: ASD(f) = A * gamma / sqrt( (f-f0)^2 + gamma^2 )</p>
+<p>This profile peaks at 'amplitude' when f = f0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f0</strong> (<em>float</em>) -- Center frequency.</p></li>
+<li><p><strong>amplitude</strong> (<em>float</em><em> or </em><em>Quantity</em>) -- Peak ASD value.</p></li>
+<li><p><strong>Q</strong> (<em>float</em><em>, </em><em>optional</em>) -- Quality factor. gamma = f0 / (2*Q). Either Q or gamma must be provided.</p></li>
+<li><p><strong>gamma</strong> (<em>float</em><em>, </em><em>optional</em>) -- HWHM (Half Width at Half Maximum).</p></li>
+<li><p><strong>frequencies</strong> (<em>array-like</em><em>, </em><em>optional</em>) -- Target frequency array.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.asd.pink_noise">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.asd.</span></span><span class="sig-name descname"><span class="pre">pink_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/colored.html#pink_noise"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.asd.pink_noise" title="Link to this definition"></a></dt>
+<dd><p>Generate Pink noise ASD (~ f^-0.5).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.asd.power_law">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.asd.</span></span><span class="sig-name descname"><span class="pre">power_law</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exponent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/colored.html#power_law"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.asd.power_law" title="Link to this definition"></a></dt>
+<dd><p>Generate an ASD FrequencySeries following a power law.
+ASD(f) = amplitude * (f / f_ref) ** (-exponent)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.asd.red_noise">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.asd.</span></span><span class="sig-name descname"><span class="pre">red_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/colored.html#red_noise"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.asd.red_noise" title="Link to this definition"></a></dt>
+<dd><p>Generate Red (Brownian) noise ASD (~ f^-1).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.asd.schumann_resonance">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.asd.</span></span><span class="sig-name descname"><span class="pre">schumann_resonance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/magnetic.html#schumann_resonance"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.asd.schumann_resonance" title="Link to this definition"></a></dt>
+<dd><p>Generate Schumann Resonance ASD by combining Lorentzians in PSD space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequencies</strong> (<em>array-like</em><em>, </em><em>optional</em>) -- Target frequency array.</p></li>
+<li><p><strong>modes</strong> (<em>list</em><em> of </em><em>tuples</em><em>, </em><em>optional</em>) -- (f0, Q, amplitude_asd in pT/rtHz).
+If None, uses defaults from observation.</p></li>
+<li><p><strong>amplitude_scale</strong> (<em>float</em>) -- Scaling factor for amplitude.</p></li>
+<li><p><strong>**kwargs</strong> -- Additional arguments for FrequencySeries.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.asd.voigt_line">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.asd.</span></span><span class="sig-name descname"><span class="pre">voigt_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/peaks.html#voigt_line"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.asd.voigt_line" title="Link to this definition"></a></dt>
+<dd><p>Generate a Voigt peak (ASD) using Faddeeva function.
+Normalized to have peak value = 'amplitude'.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.asd.white_noise">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.asd.</span></span><span class="sig-name descname"><span class="pre">white_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/colored.html#white_noise"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.asd.white_noise" title="Link to this definition"></a></dt>
+<dd><p>Generate White noise ASD (~ f^0).</p>
+</dd></dl>
+
+</section>
+<section id="waveform">
+<h2>Waveform<a class="headerlink" href="#waveform" title="Link to this heading"></a></h2>
+<section id="notes">
+<h3>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">from_asd</span></code> returns a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> (not a NumPy array). The output
+inherits <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">channel</span></code> from the input ASD and uses
+<code class="docutils literal notranslate"><span class="pre">unit</span> <span class="pre">*</span> <span class="pre">sqrt(Hz)</span></code> as the time-domain unit. Use the <code class="docutils literal notranslate"><span class="pre">t0</span></code> argument
+to set the start time.</p>
+<p id="module-gwexpy.noise.wave">gwexpy.noise.wavegen - Generate time-series waveforms from spectral data.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.noise.wave.from_asd">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.wave.</span></span><span class="sig-name descname"><span class="pre">from_asd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Generator'</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/noise/wave.html#from_asd"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.noise.wave.from_asd" title="Link to this definition"></a></dt>
+<dd><p>Generate colored noise TimeSeries from an ASD (Amplitude Spectral Density).</p>
+<p>Uses FFT-based colored noise synthesis to produce a time-series with the
+spectral characteristics defined by the input ASD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>asd</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- The amplitude spectral density defining the noise spectrum.</p></li>
+<li><p><strong>duration</strong> (<em>float</em>) -- Duration of the output time-series in seconds.</p></li>
+<li><p><strong>sample_rate</strong> (<em>float</em>) -- Sample rate of the output time-series in Hz.</p></li>
+<li><p><strong>t0</strong> (<em>float</em><em>, </em><em>optional</em>) -- Start time of the output TimeSeries.</p></li>
+<li><p><strong>rng</strong> (<em>numpy.random.Generator</em><em>, </em><em>optional</em>) -- Random number generator instance. If None, a new default generator
+is created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p>The generated noise time-series as a gwexpy TimeSeries.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a></p>
+</dd>
+</dl>
+<p class="rubric">サンプル</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pygwinc</span><span class="p">,</span> <span class="n">from_asd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">asd</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s1">&#39;aLIGO&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mf">1024.0</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span> <span class="o">=</span> <span class="n">from_asd</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="analysis.html" class="btn btn-neutral float-left" title="Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="types.html" class="btn btn-neutral float-right" title="Types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,518 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.timeseries.timeseries &mdash; gwexpy  ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">モジュールコード</a></li>
+      <li class="breadcrumb-item active">gwexpy.timeseries.timeseries</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>gwexpy.timeseries.timeseries のソースコード</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">gwexpy.timeseries.timeseries - Extended TimeSeries class</span>
+
+<span class="sd">This module provides the main TimeSeries class for gwexpy, which extends</span>
+<span class="sd">gwpy&#39;s TimeSeries with additional functionality.</span>
+
+<span class="sd">The implementation is modularized across several files:</span>
+<span class="sd">- _core.py: Core class definition and basic operations</span>
+<span class="sd">- _spectral.py: Spectral transforms (FFT, CWT, etc.)</span>
+<span class="sd">- _timeseries_legacy.py: Remaining methods (signal, resampling, analysis, interop)</span>
+
+<span class="sd">This module integrates all Mixins into a single TimeSeries class.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="c1"># Import Mixins</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesSpectralMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesSignalMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._resampling</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesResamplingMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesAnalysisMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesInteropMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">StatisticsMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">FittingMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RegularityMixin</span><span class="p">,</span>
+    <span class="n">PhaseMethodsMixin</span><span class="p">,</span>
+    <span class="n">SignalAnalysisMixin</span>
+<span class="p">)</span>
+
+<span class="c1"># Import legacy for remaining methods</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._timeseries_legacy</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span> <span class="k">as</span> <span class="n">_LegacyTimeSeries</span>
+
+
+<div class="viewcode-block" id="TimeSeries">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries">[ドキュメント]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeSeries</span><span class="p">(</span>
+    <span class="n">TimeSeriesInteropMixin</span><span class="p">,</span>    <span class="c1"># Interoperability (highest priority)</span>
+    <span class="n">TimeSeriesAnalysisMixin</span><span class="p">,</span>   <span class="c1"># Analysis</span>
+    <span class="n">TimeSeriesResamplingMixin</span><span class="p">,</span> <span class="c1"># Resampling</span>
+    <span class="n">TimeSeriesSignalMixin</span><span class="p">,</span>     <span class="c1"># Signal processing</span>
+    <span class="n">SignalAnalysisMixin</span><span class="p">,</span>       <span class="c1"># Generic Signal Analysis (smooth, find_peaks)</span>
+    <span class="n">TimeSeriesSpectralMixin</span><span class="p">,</span>   <span class="c1"># Spectral transforms</span>
+    <span class="n">StatisticsMixin</span><span class="p">,</span>           <span class="c1"># Statistical analysis &amp; correlation</span>
+    <span class="n">FittingMixin</span><span class="p">,</span>              <span class="c1"># Fitting functionality</span>
+    <span class="n">PhaseMethodsMixin</span><span class="p">,</span>         <span class="c1"># Phase/Angle methods (radian, degree, phase, angle)</span>
+    <span class="n">RegularityMixin</span><span class="p">,</span>           <span class="c1"># Regularity checking (is_regular, _check_regular)</span>
+    <span class="n">_LegacyTimeSeries</span><span class="p">,</span>         <span class="c1"># All legacy methods including BaseTimeSeries</span>
+<span class="p">):</span>
+
+
+
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extended TimeSeries with all gwexpy functionality.</span>
+
+<span class="sd">    This class combines functionality from multiple modules:</span>
+<span class="sd">    - Core operations: is_regular, _check_regular, tail, crop, append, find_peaks</span>
+<span class="sd">    - Spectral transforms: fft, psd, cwt, laplace, etc.</span>
+<span class="sd">    - Signal processing: hilbert, mix_down, xcorr, etc.</span>
+<span class="sd">    - Analysis: impute, standardize, rolling_*, etc.</span>
+<span class="sd">    - Interoperability: to_pandas, to_torch, to_xarray, etc.</span>
+
+<span class="sd">    Inherits from gwpy.timeseries.TimeSeries for full compatibility.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_meta_for_constructor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper for SignalAnalysisMixin to reconstruct object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;t0&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span>
+            <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="TimeSeries.plot">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.plot">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot this TimeSeries. Delegates to gwexpy.plot.Plot.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+        <span class="k">return</span> <span class="n">Plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_coerce_t0_gps</span>
+
+        <span class="n">should_coerce</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">xunit</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;xunit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xunit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">should_coerce</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">xunit</span><span class="p">)</span><span class="o">.</span><span class="n">is_equivalent</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                <span class="n">should_coerce</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">):</span>
+                <span class="n">phys</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="s2">&quot;physical_type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">unit</span> <span class="o">!=</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span> <span class="ow">and</span> <span class="n">phys</span> <span class="o">!=</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
+                    <span class="n">should_coerce</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">should_coerce</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;t0&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;t0&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;t0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_coerce_t0_gps</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;t0&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">&quot;epoch&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;epoch&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;epoch&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_coerce_t0_gps</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;epoch&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c1"># ===============================</span>
+    <span class="c1"># Override methods from _core.py</span>
+    <span class="c1"># (These take precedence over _LegacyTimeSeries versions)</span>
+    <span class="c1"># ===============================</span>
+
+<div class="viewcode-block" id="TimeSeries.tail">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.tail">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the last `n` samples of this series.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[:</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">:]</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.crop">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.crop">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Crop this series to the given GPS start and end times.</span>
+<span class="sd">        Accepts any time format supported by gwexpy.time.to_gps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+             <span class="n">start</span> <span class="o">=</span> <span class="n">to_gps</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                 <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+             <span class="n">start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+             <span class="n">end</span> <span class="o">=</span> <span class="n">to_gps</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                 <span class="n">end</span> <span class="o">=</span> <span class="n">end</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+             <span class="n">end</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span> <span class="k">as</span> <span class="n">BaseTimeSeries</span>
+        <span class="k">return</span> <span class="n">BaseTimeSeries</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.append">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.append">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">pad</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">gap</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">resize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Append another TimeSeries (GWpy-compatible), returning gwexpy TimeSeries.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span> <span class="k">as</span> <span class="n">BaseTimeSeries</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">BaseTimeSeries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="n">inplace</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">pad</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="n">gap</span><span class="p">,</span> <span class="n">resize</span><span class="o">=</span><span class="n">resize</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">res</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">times</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.find_peaks">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.find_peaks">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_peaks</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">height</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">distance</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prominence</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">width</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">wlen</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rel_height</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">plateau_size</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find peaks in the TimeSeries.</span>
+
+<span class="sd">        Wraps `scipy.signal.find_peaks`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        peaks : `TimeSeries`</span>
+<span class="sd">            A new TimeSeries containing only the peak values, indexed by their times.</span>
+<span class="sd">        props : `dict`</span>
+<span class="sd">            Dictionary of peak properties returned by `scipy.signal.find_peaks`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_peaks</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_to_val</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+                  <span class="k">if</span> <span class="n">unit</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">):</span>
+                      <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+                  <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">value</span>
+             <span class="k">return</span> <span class="n">x</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="n">_to_val</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">_to_val</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">_to_val</span><span class="p">(</span><span class="n">prominence</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">distance</span>
+        <span class="n">wid</span> <span class="o">=</span> <span class="n">width</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+             <span class="n">fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">):</span>
+                  <span class="n">dist</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+
+             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iterable</span><span class="p">(</span><span class="n">wid</span><span class="p">):</span>
+                  <span class="n">new_wid</span> <span class="o">=</span> <span class="p">[]</span>
+                  <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">wid</span><span class="p">:</span>
+                       <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">):</span>
+                            <span class="n">new_wid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+                       <span class="k">else</span><span class="p">:</span>
+                            <span class="n">new_wid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+                  <span class="n">wid</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">new_wid</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wid</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">new_wid</span>
+             <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">wid</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">):</span>
+                  <span class="n">wid</span> <span class="o">=</span> <span class="n">wid</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">fs</span>
+
+        <span class="n">peaks_indices</span><span class="p">,</span> <span class="n">props</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span>
+             <span class="n">val</span><span class="p">,</span>
+             <span class="n">height</span><span class="o">=</span><span class="n">h</span><span class="p">,</span>
+             <span class="n">threshold</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
+             <span class="n">distance</span><span class="o">=</span><span class="n">dist</span><span class="p">,</span>
+             <span class="n">prominence</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
+             <span class="n">width</span><span class="o">=</span><span class="n">wid</span><span class="p">,</span>
+             <span class="n">wlen</span><span class="o">=</span><span class="n">wlen</span><span class="p">,</span>
+             <span class="n">rel_height</span><span class="o">=</span><span class="n">rel_height</span><span class="p">,</span>
+             <span class="n">plateau_size</span><span class="o">=</span><span class="n">plateau_size</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">peaks_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">([],</span> <span class="n">times</span><span class="o">=</span><span class="p">[],</span> <span class="n">unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">),</span> <span class="n">props</span>
+
+        <span class="n">peak_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="n">peaks_indices</span><span class="p">]</span>
+        <span class="n">peak_vals</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="n">peaks_indices</span><span class="p">]</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+             <span class="n">peak_vals</span><span class="p">,</span>
+             <span class="n">times</span><span class="o">=</span><span class="n">peak_times</span><span class="p">,</span>
+             <span class="n">unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+             <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_peaks&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="s2">&quot;peaks&quot;</span><span class="p">,</span>
+             <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">props</span></div>
+
+
+
+<div class="viewcode-block" id="TimeSeries.to_simpeg">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.to_simpeg">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_simpeg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rx_type</span><span class="o">=</span><span class="s2">&quot;PointElectricField&quot;</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert to SimPEG Data object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        location : array_like, optional</span>
+<span class="sd">            Rx location (x, y, z). Default is [0, 0, 0].</span>
+<span class="sd">        rx_type : str, optional</span>
+<span class="sd">            Receiver class name. Default &quot;PointElectricField&quot;.</span>
+<span class="sd">        orientation : str, optional</span>
+<span class="sd">            Receiver orientation (&#39;x&#39;, &#39;y&#39;, &#39;z&#39;). Default &#39;x&#39;.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        simpeg.data.Data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_simpeg</span>
+        <span class="k">return</span> <span class="n">to_simpeg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span> <span class="n">rx_type</span><span class="o">=</span><span class="n">rx_type</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="n">orientation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.from_simpeg">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.from_simpeg">[ドキュメント]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_simpeg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create TimeSeries from SimPEG Data object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data_obj : simpeg.data.Data</span>
+<span class="sd">            Input SimPEG Data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        TimeSeries</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_simpeg</span>
+        <span class="k">return</span> <span class="n">from_simpeg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.from_control">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.from_control">[ドキュメント]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_control</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create TimeSeries from python-control TimeResponseData.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        response : control.TimeResponseData</span>
+<span class="sd">            The simulation result from python-control.</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            Additional arguments passed to the constructor.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        TimeSeries or TimeSeriesDict</span>
+<span class="sd">            The converted time-domain data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_control_response</span>
+        <span class="k">return</span> <span class="n">from_control_response</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1"># ARIMA / Modeling Methods</span>
+    <span class="c1"># =========================================================================</span>
+
+<div class="viewcode-block" id="TimeSeries.arima">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.arima">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">arima</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">order</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">seasonal_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">auto</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fit an ARIMA or SARIMAX model to this TimeSeries.</span>
+
+<span class="sd">        This method wraps `statsmodels.tsa.arima.model.ARIMA` (or SARIMAX).</span>
+<span class="sd">        If `auto=True`, it uses `pmdarima` to automatically find the best parameters.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        order : tuple, default=(1, 0, 0)</span>
+<span class="sd">            The (p,d,q) order of the model.</span>
+<span class="sd">        seasonal_order : tuple, optional</span>
+<span class="sd">            The (P,D,Q,s) seasonal order.</span>
+<span class="sd">        auto : bool, default=False</span>
+<span class="sd">            If True, perform Auto-ARIMA search (requires pmdarima).</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Additional arguments passed to `fit_arima`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ArimaResult</span>
+<span class="sd">            Object containing the fitted model, with methods .predict(), .forecast(), .plot().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.arima</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_arima</span>
+        <span class="k">return</span> <span class="n">fit_arima</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">seasonal_order</span><span class="o">=</span><span class="n">seasonal_order</span><span class="p">,</span> <span class="n">auto</span><span class="o">=</span><span class="n">auto</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.ar">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.ar">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fit an AutoRegressive AR(p) model.</span>
+<span class="sd">        Shortcut for .arima(order=(p, 0, 0)).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arima</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.ma">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.ma">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fit a Moving Average MA(q) model.</span>
+<span class="sd">        Shortcut for .arima(order=(0, 0, q)).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arima</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.arma">
+<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.arma">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">arma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fit an ARMA(p, q) model.</span>
+<span class="sd">        Shortcut for .arima(order=(p, 0, q)).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arima</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

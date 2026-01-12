@@ -1,0 +1,518 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.types.time_plane_transform &mdash; gwexpy  ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">モジュールコード</a></li>
+      <li class="breadcrumb-item active">gwexpy.types.time_plane_transform</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>gwexpy.types.time_plane_transform のソースコード</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">dimensionless_unscaled</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.array3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array3D</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;TimePlaneTransform&quot;</span><span class="p">,</span> <span class="s2">&quot;LaplaceGram&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="TimePlaneTransform">
+<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.TimePlaneTransform">[ドキュメント]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimePlaneTransform</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A container for 3D data with a preferred (time, axis1, axis2) structure,</span>
+<span class="sd">    commonly produced by time-frequency or similar transforms.</span>
+
+<span class="sd">    This class wraps an Array3D to enforce semantic structure:</span>
+<span class="sd">    - Axis 0 is &quot;time&quot;</span>
+<span class="sd">    - Axis 1 and 2 are symmetric spatial/frequency dimensions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data3d</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a TimePlaneTransform.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data3d : Array3D or tuple</span>
+<span class="sd">            The underlying 3D data.</span>
+<span class="sd">            Preferred: an `Array3D` instance.</span>
+<span class="sd">            Supported tuple format: (value, time_axis, axis1, axis2, unit/metadata).</span>
+<span class="sd">        kind : str, optional</span>
+<span class="sd">            A string describing the type of transform (e.g., &quot;stlt&quot;, &quot;bispectrum&quot;). Default is &quot;custom&quot;.</span>
+<span class="sd">        meta : dict, optional</span>
+<span class="sd">            Additional metadata dictionary. Default is None (stored as empty dict).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kind</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span> <span class="o">=</span> <span class="n">meta</span> <span class="k">if</span> <span class="n">meta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data3d</span><span class="p">,</span> <span class="n">Array3D</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data3d</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data3d</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="c1"># (value, time_axis, axis1, axis2, unit/metadata)</span>
+            <span class="c1"># unpack loosely</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data3d</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="n">val</span><span class="p">,</span> <span class="n">t_ax</span><span class="p">,</span> <span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">,</span> <span class="n">u_or_m</span> <span class="o">=</span> <span class="n">data3d</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="n">u_or_m</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">u_or_m</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">extra_meta</span> <span class="o">=</span> <span class="n">u_or_m</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">u_or_m</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">data3d</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">val</span><span class="p">,</span> <span class="n">t_ax</span><span class="p">,</span> <span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span> <span class="o">=</span> <span class="n">data3d</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">extra_meta</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">else</span><span class="p">:</span>
+                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Tuple data3d must be length 4 or 5: (value, time, ax1, ax2, [unit/meta])&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Construct names from provided axes objects if possible, else defaults.</span>
+            <span class="c1"># But the tuple typically provides coordinates (Quantity/array), not AxisDescriptor.</span>
+            <span class="c1"># We assign default names &quot;time&quot;, &quot;axis1&quot;, &quot;axis2&quot; unless user provided descriptors (unlikely/simple case).</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">Array3D</span><span class="p">(</span>
+                <span class="n">val</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+                <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;axis1&quot;</span><span class="p">,</span> <span class="s2">&quot;axis2&quot;</span><span class="p">],</span>
+                <span class="n">axis0</span><span class="o">=</span><span class="n">t_ax</span><span class="p">,</span>
+                <span class="n">axis1</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span>
+                <span class="n">axis2</span><span class="o">=</span><span class="n">ax2</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">extra_meta</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;data3d must be an Array3D or a tuple.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validation</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TimePlaneTransform requires 3D data, got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;String describing the type of transform (e.g., &#39;stlt&#39;, &#39;bispectrum&#39;).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kind</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">meta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Additional metadata dictionary.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The underlying data values as numpy array.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shape of the 3D data array (time, axis1, axis2).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of dimensions (always 3).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">ndim</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Physical unit of the data values.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">unit</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">axes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the 3 AxisDescriptors: (time, axis1, axis2).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">axes</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">times</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Coordinate array of the time axis (axis 0).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">axis1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;AxisDescriptor for the first symmetric axis (axis 1).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">axis2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;AxisDescriptor for the second symmetric axis (axis 2).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_axis_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resolve axis key (int or str) to integer index (0, 1, 2).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">+=</span> <span class="mi">3</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">key</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis index </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> out of range (0-2)&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">key</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># Check names</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">ax</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">key</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">i</span>
+            <span class="c1"># Special case: &quot;time&quot; always maps to 0 if not explicitly named something else?</span>
+            <span class="c1"># User said: &quot;axis0 name should be time by convention, but do not enforce... match against axes[i].name&quot;</span>
+            <span class="c1"># But &quot;TimePlaneTransform is user-facing&quot;, so &#39;time&#39; alias for axis 0 is reasonable if not conflicting?</span>
+            <span class="c1"># User instruction: &quot;if str: match against axes[i].name; else raise KeyError&quot;</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No axis named &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; found. Axes are: </span><span class="si">{</span><span class="p">[</span><span class="n">ax</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">ax</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid axis key type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TimePlaneTransform.plane">
+<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.TimePlaneTransform.plane">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plane</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drop_axis</span><span class="p">,</span> <span class="n">drop_index</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract a 2D plane by slicing at a specific index along one axis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        drop_axis : int or str</span>
+<span class="sd">            The axis to slice along (remove).</span>
+<span class="sd">        drop_index : int</span>
+<span class="sd">            Integer index to select along `drop_axis`.</span>
+<span class="sd">        axis1 : str or int, optional</span>
+<span class="sd">            The generic axis 1 for the resulting Plane2D.</span>
+<span class="sd">        axis2 : str or int, optional</span>
+<span class="sd">            The generic axis 2 for the resulting Plane2D.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Plane2D</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Resolve drop_axis to int to pass to Array3D (or let Array3D handle it if it handles names)</span>
+        <span class="c1"># Array3D.plane is internal-ish? No, public. It calls _get_axis_index.</span>
+        <span class="c1"># However, we want to support standard &quot;time&quot; referencing even if underlying axis is named &quot;t&quot;.</span>
+        <span class="c1"># But for now let&#39;s stick to strict name matching or int, via self._axis_id if we want full control.</span>
+        <span class="c1"># But Array3D.plane() signature is `plane(drop_axis, drop_index, *, axis1=None, axis2=None)`</span>
+        <span class="c1"># If we pass strings to Array3D.plane, it uses its own valid names.</span>
+        <span class="c1"># If we use `_axis_id` here, we get an int, which is safe to pass to Array3D.plane.</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axis_id</span><span class="p">(</span><span class="n">drop_axis</span><span class="p">)</span>
+
+        <span class="c1"># If axis1/axis2 args are provided, they might be strings referring to names in THIS object.</span>
+        <span class="c1"># Array3D.plane expects names or ints.</span>
+
+        <span class="c1"># We delegate.</span>
+        <span class="c1"># Note: Array3D.plane expects drop_index to be int/slice? Spec says &quot;drop_index: int (isel-style)&quot;.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">drop_index</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">axis2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimePlaneTransform.at_time">
+<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.TimePlaneTransform.at_time">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract a Plane2D at the specific time `t`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        t : Quantity or float</span>
+<span class="sd">            Time value. If float, assumed to be in the unit of the time axis.</span>
+<span class="sd">        method : str, optional</span>
+<span class="sd">            &quot;nearest&quot; (default). Future versions may support interpolation.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Plane2D</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 1. Resolve time index</span>
+        <span class="n">time_ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Access index quantity directly locally to perform interpolation logic</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">time_ax</span><span class="o">.</span><span class="n">index</span>
+
+        <span class="c1"># Ensure t is comparable (value check)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">times</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+             <span class="n">t_val</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+             <span class="n">times_val</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">):</span> <span class="c1"># t is Quantity, times might be dimensionless</span>
+             <span class="n">t_val</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">value</span>
+             <span class="n">times_val</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">times</span>
+        <span class="k">else</span><span class="p">:</span>
+             <span class="n">t_val</span> <span class="o">=</span> <span class="n">t</span>
+             <span class="n">times_val</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">times</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;nearest&quot;</span><span class="p">:</span>
+            <span class="c1"># idx = time_ax.iloc_nearest(t)</span>
+            <span class="c1"># Use direct numpy for consistency with linear logic if desired, but reuse existing if reliable.</span>
+            <span class="c1"># Assuming axis class works, but let&#39;s be robust:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">times_val</span> <span class="o">-</span> <span class="n">t_val</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+            <span class="c1"># Find insertion point</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">times_val</span><span class="p">,</span> <span class="n">t_val</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Clamp to boundaries</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">times_val</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">times_val</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">idx_next</span> <span class="o">=</span> <span class="n">i</span>
+
+            <span class="n">t_prev</span> <span class="o">=</span> <span class="n">times_val</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">]</span>
+            <span class="n">t_next</span> <span class="o">=</span> <span class="n">times_val</span><span class="p">[</span><span class="n">idx_next</span><span class="p">]</span>
+
+            <span class="c1"># Check for zero duration interval (duplicates)</span>
+            <span class="n">denom</span> <span class="o">=</span> <span class="n">t_next</span> <span class="o">-</span> <span class="n">t_prev</span>
+            <span class="k">if</span> <span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx_prev</span><span class="p">)</span>
+
+            <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_val</span> <span class="o">-</span> <span class="n">t_prev</span><span class="p">)</span> <span class="o">/</span> <span class="n">denom</span>
+
+            <span class="n">p_prev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx_prev</span><span class="p">)</span>
+            <span class="n">p_next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx_next</span><span class="p">)</span>
+
+            <span class="c1"># Interpolate values</span>
+            <span class="c1"># Plane2D should expose .value? Checked file_view earlier, doesn&#39;t explicitly show Plane2D def but usage implies it.</span>
+            <span class="c1"># TimePlaneTransform.value uses self._data.value.</span>
+            <span class="c1"># We assume p_prev.value is accessible (standard gwexpy object).</span>
+
+            <span class="n">val_interp</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_prev</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">p_next</span><span class="o">.</span><span class="n">value</span>
+
+            <span class="c1"># Construct new Plane2D</span>
+            <span class="c1"># Plane2D(data, axis1_name=..., axis2_name=..., yindex=..., xindex=...)</span>
+            <span class="c1"># Plane2D axis1 -&gt; Array2D axis0 (yindex)</span>
+            <span class="c1"># Plane2D axis2 -&gt; Array2D axis1 (xindex)</span>
+
+            <span class="k">return</span> <span class="n">p_prev</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+                <span class="n">val_interp</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="n">p_prev</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+                <span class="n">axis1_name</span><span class="o">=</span><span class="n">p_prev</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">axis2_name</span><span class="o">=</span><span class="n">p_prev</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">yindex</span><span class="o">=</span><span class="n">p_prev</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">xindex</span><span class="o">=</span><span class="n">p_prev</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">index</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Method &#39;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&#39; not implemented. Supported: &#39;nearest&#39;, &#39;linear&#39;.&quot;</span><span class="p">)</span></div>
+
+
+        <span class="c1"># 2. Slice (nearest case handled above)</span>
+        <span class="c1"># return self.plane(0, idx)</span>
+
+<div class="viewcode-block" id="TimePlaneTransform.at_sigma">
+<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.TimePlaneTransform.at_sigma">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract a 2D plane (Spectrogram-like) at a specific sigma index (if axis1 is sigma)</span>
+<span class="sd">        or value.</span>
+
+<span class="sd">        This assumes axis 1 is sigma.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If sigma is an index (int)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;axis1&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;sigma&quot;</span><span class="p">:</span>
+             <span class="c1"># We can try to match value if needed, but strict index for now?</span>
+             <span class="c1"># User requested `.at_sigma(sigma)` which implies value lookup potentially.</span>
+             <span class="c1"># Similar to at_time logic.</span>
+             <span class="c1"># Let&#39;s assume simplest implementation: nearest lookup or index.</span>
+
+             <span class="n">sigma_ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">index</span>
+             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sigma_ax</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">sigma</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">sigma_ax</span><span class="p">)):</span>
+                 <span class="c1"># It might be an index</span>
+                 <span class="c1"># But if sigma is 0.0 (float), it&#39;s a value.</span>
+                 <span class="k">pass</span>
+
+             <span class="c1"># Implementation of value lookup</span>
+             <span class="n">s_val</span> <span class="o">=</span> <span class="n">sigma</span>
+             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+                  <span class="n">s_val</span> <span class="o">=</span> <span class="n">sigma</span><span class="o">.</span><span class="n">value</span>
+
+             <span class="n">ax_val</span> <span class="o">=</span> <span class="n">sigma_ax</span>
+             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sigma_ax</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+                  <span class="n">ax_val</span> <span class="o">=</span> <span class="n">sigma_ax</span><span class="o">.</span><span class="n">value</span>
+
+             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s_val</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">s_val</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s_val</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">ax_val</span><span class="p">)):</span>
+                  <span class="c1"># Ambiguous if values are integers. Assume value first?</span>
+                  <span class="c1"># But typically sigma is float.</span>
+                  <span class="k">pass</span>
+
+             <span class="c1"># Nearest neighbor</span>
+             <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ax_val</span> <span class="o">-</span> <span class="n">s_val</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;This transform does not appear to have &#39;sigma&#39; as axis 1.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimePlaneTransform.to_array3d">
+<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.TimePlaneTransform.to_array3d">[ドキュメント]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_array3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the underlying Array3D object (advanced usage).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LaplaceGram</span><span class="p">(</span><span class="n">TimePlaneTransform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    3D container for Short-Time Laplace Transform data.</span>
+<span class="sd">    Structure: (time, sigma, frequency).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data3d</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Enforce axis names if Array3D is created here?</span>
+        <span class="c1"># User passes constructed Array3D usually.</span>
+        <span class="c1"># Just ensure base init works.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data3d</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;sigma&quot;</span><span class="p">:</span>
+             <span class="c1"># Try to rename if generic</span>
+             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;axis1&quot;</span><span class="p">:</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">_set_axis_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;frequency&quot;</span><span class="p">:</span>
+             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;axis2&quot;</span><span class="p">:</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">_set_axis_name</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;frequency&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sigmas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The sigma (Re[s]) axis index.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The frequency axis index.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_per_sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-30</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normalize the magnitude of the transform along the frequency axis (last axis).</span>
+<span class="sd">        Each (time, sigma) slice is normalized such that the sum over frequency bins is 1.</span>
+<span class="sd">        This helps in identifying poles by equalizing the energy contribution across different damping values.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        eps : float, optional</span>
+<span class="sd">            Small value to avoid division by zero. Default is 1e-30.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        LaplaceGram</span>
+<span class="sd">            A new LaplaceGram instance containing the normalized magnitude.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Calculate magnitude</span>
+        <span class="n">mag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># Sum over frequency axis (axis 2 / -1)</span>
+        <span class="n">denom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mag</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">denom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
+
+        <span class="c1"># Normalize</span>
+        <span class="n">norm_data</span> <span class="o">=</span> <span class="n">mag</span> <span class="o">/</span> <span class="n">denom</span>
+
+        <span class="c1"># Create new Array3D for the result</span>
+        <span class="c1"># Normalized data is effectively a probability distribution or shape profile, so dimensionless</span>
+        <span class="n">new_data</span> <span class="o">=</span> <span class="n">Array3D</span><span class="p">(</span>
+            <span class="n">norm_data</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">dimensionless_unscaled</span><span class="p">,</span>
+            <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+            <span class="n">axis0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
+            <span class="n">axis1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+            <span class="n">axis2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">index</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Return wrapped in LaplaceGram</span>
+        <span class="k">return</span> <span class="n">LaplaceGram</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

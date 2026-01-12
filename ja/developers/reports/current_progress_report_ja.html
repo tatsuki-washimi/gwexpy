@@ -1,0 +1,178 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LIGO DTT diaggui 模倣 GUI (pyaggui) 進捗レポート &mdash; gwexpy  ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">LIGO DTT diaggui 模倣 GUI (pyaggui) 進捗レポート</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/developers/reports/current_progress_report_ja.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ligo-dtt-diaggui-gui-pyaggui">
+<h1>LIGO DTT diaggui 模倣 GUI (pyaggui) 進捗レポート<a class="headerlink" href="#ligo-dtt-diaggui-gui-pyaggui" title="Link to this heading"></a></h1>
+<section id="id1">
+<h2>1. 概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy/gui/pyaggui.py</span></code> を中心としたGUIアプリケーションは、LIGOの診断ツール &quot;DTT (Diagnostic Test Tools)&quot; の <code class="docutils literal notranslate"><span class="pre">diaggui</span></code> のインターフェースを忠実に再現しようとしています。
+現在、基本的なUIフレームワークの構築が完了し、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> (および <code class="docutils literal notranslate"><span class="pre">gwpy</span></code>) をバックエンドとしたスペクトル解析機能の一部が動作するプロトタイプ段階です。</p>
+</section>
+<section id="id2">
+<h2>2. 実装済み機能<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="ui">
+<h3>2.1 UI / レイアウト<a class="headerlink" href="#ui" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>メイン構造</strong>: Input, Measurement, Excitation, Result の4タブ構成が再現されています。</p></li>
+<li><p><strong>Resultタブ</strong>:</p>
+<ul>
+<li><p><strong>2段構成のタブコントロール</strong>: DTT特有の、「Result」画面左側にある操作パネルが、2段組みのタブ（Row 1: Style, X-axis... / Row 2: Traces, Range...）として実装されています。</p></li>
+<li><p><strong>グラフ表示</strong>: 上下に2つの <code class="docutils literal notranslate"><span class="pre">pyqtgraph</span></code> プロットウィジェット（Graph 1, Graph 2）が配置され、それぞれ独立して制御可能です。</p></li>
+<li><p><strong>トレース制御</strong>: 8本（0-7）のトレースごとに、Channel A/Bの選択、線の色・スタイル・太さ、シンボル、バーグラフの切り替えが可能です。</p></li>
+<li><p><strong>軸制御</strong>: X軸・Y軸それぞれの リニア/対数 切り替え、Auto/Manual レンジ設定が実装されています。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="engine">
+<h3>2.2 バックエンド (Engine)<a class="headerlink" href="#engine" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>スペクトル解析</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy.timeseries.TimeSeries</span></code> を使用し、以下の計算が実装されています。</p>
+<ul>
+<li><p>Time Series (時系列)</p></li>
+<li><p>Amplitude Spectral Density (ASD)</p></li>
+<li><p>Cross Spectral Density (CSD)</p></li>
+<li><p>Coherence / Squared Coherence</p></li>
+<li><p>Transfer Function</p></li>
+</ul>
+</li>
+<li><p><strong>データソース</strong>: 現在は <code class="docutils literal notranslate"><span class="pre">update_graphs</span></code> 内でサイン波、ノイズ、ビート信号などのダミーデータをリアルタイム生成し、それを解析して表示しています。</p></li>
+</ul>
+</section>
+</section>
+<section id="id3">
+<h2>3. 未実装・課題・次のステップ<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>3.1 機能面<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Spectrogram (スペクトログラム)</strong>: UI上の選択肢にはありますが、バックエンド (<code class="docutils literal notranslate"><span class="pre">engine.py</span></code>) が <code class="docutils literal notranslate"><span class="pre">None</span></code> を返すため、まだ描画されません。</p></li>
+<li><p><strong>ファイル I/O</strong>: Import/Export/Save/Restore ボタンは配置されていますが、実際のファイル読み書き処理は実装されていません。</p></li>
+<li><p><strong>単位 (Units) / カーソル (Cursor)</strong>: UIは存在しますが、ロジック（単位変換やカーソル値の読み取り・表示）はまだ完全に統合されていないか、プレースホルダーです。</p></li>
+<li><p><strong>Measurement 設定</strong>: Window関数や平均化タイプの設定UIはあり、Engineにパラメータとしては渡されていますが、すべての設定が厳密に反映されているかの検証が必要です（特にOverlapの単位処理など）。</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>3.2 構造面<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>データフロー</strong>: 現在はGUIスレッド内でデータ生成を行っていますが、将来的には外部入力や別スレッドでのデータ取得が必要になる可能性があります。</p></li>
+</ul>
+</section>
+</section>
+<section id="id6">
+<h2>4. 結論<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>UIの再現度は非常に高く、DTTユーザーにとって馴染み深い操作感が構築されています。
+次の主要なマイルストーンは、<strong>スペクトログラムの実装</strong> と <strong>実データ（またはファイル）からの読み込み機能</strong> の追加となるでしょう。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,251 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TimePlaneTransform / LaplaceGram &mdash; gwexpy  ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">TimePlaneTransform / LaplaceGram</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/ja/TimePlaneTransform.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="timeplanetransform-laplacegram">
+<h1>TimePlaneTransform / LaplaceGram<a class="headerlink" href="#timeplanetransform-laplacegram" title="Link to this heading"></a></h1>
+<p><strong>継承元:</strong> object</p>
+<p>時間-周波数変換などの手法によって生成される、(time, axis1, axis2) 構造を持つ 3D データを保持するためのコンテナです。</p>
+<p>このクラスは Array3D をラップし、以下のセマンティック構造を強制します：</p>
+<ul class="simple">
+<li><p>軸 0 : &quot;time&quot; (時間)</p></li>
+<li><p>軸 1, 2 : 対称的な空間または周波数の次元</p></li>
+</ul>
+<p><strong>LaplaceGram</strong> は STLT (短時間ラプラス変換) 用の特殊な TimePlaneTransform であり、
+軸 1 は &quot;sigma&quot; (実部 s)、軸 2 は &quot;frequency&quot; (周波数) となります。</p>
+<section id="id1">
+<h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="init">
+<h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data3d</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;custom&#39;</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>TimePlaneTransform を初期化します。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>data3d</strong> : Array3D または tuple
+基となる 3D データ。<code class="docutils literal notranslate"><span class="pre">Array3D</span></code> インスタンスを推奨します。
+タプル形式もサポート：(value, time_axis, axis1, axis2, unit/metadata)。</p></li>
+<li><p><strong>kind</strong> : str, オプション
+変換の種類を示す文字列（例: &quot;stlt&quot;, &quot;bispectrum&quot;）。デフォルトは &quot;custom&quot;。</p></li>
+<li><p><strong>meta</strong> : dict, オプション
+追加のメタデータディクショナリ。デフォルトは None（空の辞書として保存）。</p></li>
+</ul>
+</section>
+<section id="at-sigma">
+<h3><code class="docutils literal notranslate"><span class="pre">at_sigma</span></code><a class="headerlink" href="#at-sigma" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">at_sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>特定の sigma インデックスまたは値における 2D 平面 (スペクトログラム風) を抽出します。
+(軸1が &quot;sigma&quot; である場合、例えば <code class="docutils literal notranslate"><span class="pre">LaplaceGram</span></code> で利用可能)。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>sigma</strong> : float または int
+Sigma の値またはインデックス。</p></li>
+</ul>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>Plane2D</strong> (スペクトログラム風)</p></li>
+</ul>
+</section>
+<section id="at-time">
+<h3><code class="docutils literal notranslate"><span class="pre">at_time</span></code><a class="headerlink" href="#at-time" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">at_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>特定の時間 <code class="docutils literal notranslate"><span class="pre">t</span></code> における Plane2D を抽出します。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>t</strong> : Quantity または float
+時間。float の場合、時間軸の単位であるとみなされます。</p></li>
+<li><p><strong>method</strong> : str, オプション
+&quot;nearest&quot; (デフォルト)。将来のバージョンで補間をサポートする可能性があります。</p></li>
+</ul>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>Plane2D</strong></p></li>
+</ul>
+</section>
+<section id="axes">
+<h3><code class="docutils literal notranslate"><span class="pre">axes</span></code><a class="headerlink" href="#axes" title="Link to this heading"></a></h3>
+<p>3つの AxisDescriptor (time, axis1, axis2) を返します。</p>
+</section>
+<section id="axis1">
+<h3><code class="docutils literal notranslate"><span class="pre">axis1</span></code><a class="headerlink" href="#axis1" title="Link to this heading"></a></h3>
+<p>第1の対称軸 (axis 1) の AxisDescriptor。</p>
+</section>
+<section id="axis2">
+<h3><code class="docutils literal notranslate"><span class="pre">axis2</span></code><a class="headerlink" href="#axis2" title="Link to this heading"></a></h3>
+<p>第2の対称軸 (axis 2) の AxisDescriptor。</p>
+</section>
+<section id="kind">
+<h3><code class="docutils literal notranslate"><span class="pre">kind</span></code><a class="headerlink" href="#kind" title="Link to this heading"></a></h3>
+<p>変換の種類を示す文字列（'stlt', 'bispectrum' など）。</p>
+</section>
+<section id="meta">
+<h3><code class="docutils literal notranslate"><span class="pre">meta</span></code><a class="headerlink" href="#meta" title="Link to this heading"></a></h3>
+<p>追加のメタデータディクショナリ。</p>
+</section>
+<section id="ndim">
+<h3><code class="docutils literal notranslate"><span class="pre">ndim</span></code><a class="headerlink" href="#ndim" title="Link to this heading"></a></h3>
+<p>次元数（常に 3）。</p>
+</section>
+<section id="plane">
+<h3><code class="docutils literal notranslate"><span class="pre">plane</span></code><a class="headerlink" href="#plane" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plane</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drop_axis</span><span class="p">,</span> <span class="n">drop_index</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>特定の軸に沿ったインデックスでスライスし、2D 平面を抽出します。</p>
+<p><strong>パラメータ:</strong></p>
+<ul class="simple">
+<li><p><strong>drop_axis</strong> : int または str
+スライス（削除）する軸。</p></li>
+<li><p><strong>drop_index</strong> : int
+<code class="docutils literal notranslate"><span class="pre">drop_axis</span></code> に沿って選択する整数のインデックス。</p></li>
+<li><p><strong>axis1</strong> : str または int, オプション
+生成される Plane2D の軸1の名称またはインデックス。</p></li>
+<li><p><strong>axis2</strong> : str または int, オプション
+生成される Plane2D の軸2の名称またはインデックス。</p></li>
+</ul>
+<p><strong>戻り値:</strong></p>
+<ul class="simple">
+<li><p><strong>Plane2D</strong></p></li>
+</ul>
+</section>
+<section id="shape">
+<h3><code class="docutils literal notranslate"><span class="pre">shape</span></code><a class="headerlink" href="#shape" title="Link to this heading"></a></h3>
+<p>3D データ配列の形状 (time, axis1, axis2)。</p>
+</section>
+<section id="times">
+<h3><code class="docutils literal notranslate"><span class="pre">times</span></code><a class="headerlink" href="#times" title="Link to this heading"></a></h3>
+<p>時間軸（軸 0）の座標配列。</p>
+</section>
+<section id="to-array3d">
+<h3><code class="docutils literal notranslate"><span class="pre">to_array3d</span></code><a class="headerlink" href="#to-array3d" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_array3d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>基となる Array3D オブジェクトを返します（高度な用途向け）。</p>
+</section>
+<section id="unit">
+<h3><code class="docutils literal notranslate"><span class="pre">unit</span></code><a class="headerlink" href="#unit" title="Link to this heading"></a></h3>
+<p>データ値の物理単位。</p>
+</section>
+<section id="value">
+<h3><code class="docutils literal notranslate"><span class="pre">value</span></code><a class="headerlink" href="#value" title="Link to this heading"></a></h3>
+<p>基となるデータ値を numpy 配列として返します。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

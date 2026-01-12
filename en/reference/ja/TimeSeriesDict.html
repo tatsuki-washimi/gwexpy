@@ -1,0 +1,201 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TimeSeriesDict &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">TimeSeriesDict</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/ja/TimeSeriesDict.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="timeseriesdict">
+<h1>TimeSeriesDict<a class="headerlink" href="#timeseriesdict" title="Link to this heading"></a></h1>
+<p><strong>継承元:</strong> TimeSeriesDict</p>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> オブジェクトをチャンネル名をキーとして保持するマッピングコンテナです。</p>
+<section id="id1">
+<h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="abs-angle">
+<h3><code class="docutils literal notranslate"><span class="pre">abs</span></code>, <code class="docutils literal notranslate"><span class="pre">angle</span></code><a class="headerlink" href="#abs-angle" title="Link to this heading"></a></h3>
+<p>各要素の絶対値と位相角。</p>
+</section>
+<section id="append">
+<h3><code class="docutils literal notranslate"><span class="pre">append</span></code><a class="headerlink" href="#append" title="Link to this heading"></a></h3>
+<p>各要素の末尾にデータを追加します（インプレース）。</p>
+</section>
+<section id="asd">
+<h3><code class="docutils literal notranslate"><span class="pre">asd</span></code><a class="headerlink" href="#asd" title="Link to this heading"></a></h3>
+<p>各要素の ASD（振幅スペクトル密度）を計算し、FrequencySeriesDict を返します。</p>
+</section>
+<section id="bandpass-highpass-lowpass-notch-zpk">
+<h3><code class="docutils literal notranslate"><span class="pre">bandpass</span></code>, <code class="docutils literal notranslate"><span class="pre">highpass</span></code>, <code class="docutils literal notranslate"><span class="pre">lowpass</span></code>, <code class="docutils literal notranslate"><span class="pre">notch</span></code>, <code class="docutils literal notranslate"><span class="pre">zpk</span></code><a class="headerlink" href="#bandpass-highpass-lowpass-notch-zpk" title="Link to this heading"></a></h3>
+<p>各要素に指定されたフィルタを適用します。</p>
+</section>
+<section id="crop">
+<h3><code class="docutils literal notranslate"><span class="pre">crop</span></code><a class="headerlink" href="#crop" title="Link to this heading"></a></h3>
+<p>各要素を特定の時間範囲で切り抜きます。</p>
+</section>
+<section id="detrend-whiten">
+<h3><code class="docutils literal notranslate"><span class="pre">detrend</span></code>, <code class="docutils literal notranslate"><span class="pre">whiten</span></code><a class="headerlink" href="#detrend-whiten" title="Link to this heading"></a></h3>
+<p>各要素のトレンド除去およびホワイトニング。</p>
+</section>
+<section id="fft">
+<h3><code class="docutils literal notranslate"><span class="pre">fft</span></code><a class="headerlink" href="#fft" title="Link to this heading"></a></h3>
+<p>各要素の FFT を計算し、FrequencySeriesDict を返します。</p>
+</section>
+<section id="impute">
+<h3><code class="docutils literal notranslate"><span class="pre">impute</span></code><a class="headerlink" href="#impute" title="Link to this heading"></a></h3>
+<p>欠損値（NaN）の補完。</p>
+</section>
+<section id="pca">
+<h3><code class="docutils literal notranslate"><span class="pre">pca</span></code><a class="headerlink" href="#pca" title="Link to this heading"></a></h3>
+<p>チャンネル間で PCA 分解を実行します。</p>
+</section>
+<section id="plot-step">
+<h3><code class="docutils literal notranslate"><span class="pre">plot</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code><a class="headerlink" href="#plot-step" title="Link to this heading"></a></h3>
+<p>プロットまたは階段グラフを作成します。チャンネル名がデフォルトの凡例（label）として使用されます。</p>
+</section>
+<section id="psd-spectrogram-q-transform">
+<h3><code class="docutils literal notranslate"><span class="pre">psd</span></code>, <code class="docutils literal notranslate"><span class="pre">spectrogram</span></code>, <code class="docutils literal notranslate"><span class="pre">q_transform</span></code><a class="headerlink" href="#psd-spectrogram-q-transform" title="Link to this heading"></a></h3>
+<p>各要素の PSD、スペクトログラム、または Q 変換を計算し、対応する Dict クラス（FrequencySeriesDict, SpectrogramDict）を返します。</p>
+</section>
+<section id="read">
+<h3><code class="docutils literal notranslate"><span class="pre">read</span></code><a class="headerlink" href="#read" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">read</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>指定されたソースから複数のチャンネルを読み込み TimeSeriesDict を返します。</p>
+</section>
+<section id="resample">
+<h3><code class="docutils literal notranslate"><span class="pre">resample</span></code><a class="headerlink" href="#resample" title="Link to this heading"></a></h3>
+<p>各要素を再サンプリングします。インプレース操作です。</p>
+</section>
+<section id="rms-std">
+<h3><code class="docutils literal notranslate"><span class="pre">rms</span></code>, <code class="docutils literal notranslate"><span class="pre">std</span></code><a class="headerlink" href="#rms-std" title="Link to this heading"></a></h3>
+<p>各要素の RMS または標準偏差を計算し、pandas.Series を返します。</p>
+</section>
+<section id="rolling-mean-rolling-median-rolling-std-rolling-min-rolling-max">
+<h3><code class="docutils literal notranslate"><span class="pre">rolling_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">rolling_median</span></code>, <code class="docutils literal notranslate"><span class="pre">rolling_std</span></code>, <code class="docutils literal notranslate"><span class="pre">rolling_min</span></code>, <code class="docutils literal notranslate"><span class="pre">rolling_max</span></code><a class="headerlink" href="#rolling-mean-rolling-median-rolling-std-rolling-min-rolling-max" title="Link to this heading"></a></h3>
+<p>各要素に移動窓計算（ローリング統計）を適用します。</p>
+</section>
+<section id="to-matrix">
+<h3><code class="docutils literal notranslate"><span class="pre">to_matrix</span></code><a class="headerlink" href="#to-matrix" title="Link to this heading"></a></h3>
+<p>この辞書を TimeSeriesMatrix に変換します（時間アライメントが自動的に行われます）。</p>
+</section>
+<section id="to-pandas-to-polars">
+<h3><code class="docutils literal notranslate"><span class="pre">to_pandas</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars</span></code><a class="headerlink" href="#to-pandas-to-polars" title="Link to this heading"></a></h3>
+<p>各ライブラリの DataFrame に変換します。</p>
+</section>
+<section id="to-tmultigraph">
+<h3><code class="docutils literal notranslate"><span class="pre">to_tmultigraph</span></code><a class="headerlink" href="#to-tmultigraph" title="Link to this heading"></a></h3>
+<p>ROOT の TMultiGraph オブジェクトに変換します。</p>
+</section>
+<section id="write">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
+<p>TimeSeriesDict をファイル（GWF, HDF5 など）に書き出します。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,446 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TimeSeries Refactoring Plan &mdash; gwexpy  ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">TimeSeries Refactoring Plan</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/developers/plans/REFACTORING_PLAN.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="timeseries-refactoring-plan">
+<h1>TimeSeries Refactoring Plan<a class="headerlink" href="#timeseries-refactoring-plan" title="Link to this heading"></a></h1>
+<section id="id1">
+<h2>目的<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">timeseries.py</span></code> (3147行) を保守性・可読性向上のため、物理的な処理内容に基づいて複数のモジュールに分割する。</p>
+</section>
+<section id="id2">
+<h2>分割方針<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>原則<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>物理的な処理内容で分ける</strong> - 機能的な凝集度を最大化</p></li>
+<li><p><strong>循環参照を避ける</strong> - 依存関係は一方向に保つ</p></li>
+<li><p><strong>後方互換性を維持</strong> - ユーザーコードの変更不要</p></li>
+<li><p><strong>段階的移行</strong> - 各モジュールを独立してテスト可能</p></li>
+</ol>
+</section>
+<section id="id4">
+<h3>モジュール構成<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>gwexpy/timeseries/
+├── __init__.py              # 公開API（TimeSeries等をエクスポート）
+├── timeseries.py            # 【削除予定】現行の巨大ファイル
+├── timeseries_backup.py     # バックアップ
+├── _core.py                 # ★ コアクラス定義・基本操作
+├── _resampling.py           # ★ リサンプリング関連
+├── _signal.py               # ★ 信号処理（Hilbert, 位相等）
+├── _spectral.py             # ★ スペクトル変換（FFT, CWT等）
+├── _analysis.py             # ★ 統計・分析（impute, rolling等）
+├── _interop.py              # ★ 相互運用性（pandas, torch等）
+└── tests/
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id5">
+<h2>詳細分割計画<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<section id="core-py">
+<h3>1. <code class="docutils literal notranslate"><span class="pre">_core.py</span></code> - コアクラス定義・基本操作<a class="headerlink" href="#core-py" title="Link to this heading"></a></h3>
+<p><strong>目的</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスの骨格と、最も基本的な操作</p>
+<p><strong>含むメソッド</strong>:</p>
+<ul class="simple">
+<li><p>クラス定義、<code class="docutils literal notranslate"><span class="pre">__init__</span></code>（gwpy.TimeSeries を継承）</p></li>
+<li><p>プロパティ: <code class="docutils literal notranslate"><span class="pre">is_regular</span></code>, <code class="docutils literal notranslate"><span class="pre">_check_regular</span></code></p></li>
+<li><p>基本操作: <code class="docutils literal notranslate"><span class="pre">tail()</span></code>, <code class="docutils literal notranslate"><span class="pre">crop()</span></code>, <code class="docutils literal notranslate"><span class="pre">append()</span></code></p></li>
+<li><p>ユーティリティ: <code class="docutils literal notranslate"><span class="pre">find_peaks()</span></code></p></li>
+</ul>
+<p><strong>依存</strong>: numpy, astropy, gwpy のみ</p>
+<p><strong>推定行数</strong>: ~300行</p>
+</section>
+<hr class="docutils" />
+<section id="resampling-py">
+<h3>2. <code class="docutils literal notranslate"><span class="pre">_resampling.py</span></code> - リサンプリング・時間軸操作<a class="headerlink" href="#resampling-py" title="Link to this heading"></a></h3>
+<p><strong>目的</strong>: 時間軸の再編成に関する全処理</p>
+<p><strong>含むメソッド</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">asfreq(rule,</span> <span class="pre">method,</span> <span class="pre">fill_value,</span> <span class="pre">...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">resample(rate,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_resample_time_bin(...)</span></code> (内部ヘルパー)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stlt(stride,</span> <span class="pre">window,</span> <span class="pre">...)</span></code> (Short-Time Laplace Transform)</p>
+<ul>
+<li><p><strong>現状の注意</strong>: 現在の実装は STFT の振幅外積（3D表示）のみを行っており、数学的なラプラス変換（$\sigma$ による複素周波数）は未実装。将来的な課題として保留。</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>依存</strong>: <code class="docutils literal notranslate"><span class="pre">_core.TimeSeries</span></code>, pandas-like time rules</p>
+<p><strong>推定行数</strong>: ~500行</p>
+</section>
+<hr class="docutils" />
+<section id="signal-py">
+<h3>3. <code class="docutils literal notranslate"><span class="pre">_signal.py</span></code> - 信号処理<a class="headerlink" href="#signal-py" title="Link to this heading"></a></h3>
+<p><strong>目的</strong>: 時間領域での信号変換・解析</p>
+<p><strong>含むメソッド</strong>:</p>
+<ul class="simple">
+<li><p>Hilbert変換系:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">analytic_signal()</span></code>, <code class="docutils literal notranslate"><span class="pre">hilbert()</span></code>, <code class="docutils literal notranslate"><span class="pre">envelope()</span></code></p></li>
+</ul>
+</li>
+<li><p>位相・周波数系:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">instantaneous_phase()</span></code>, <code class="docutils literal notranslate"><span class="pre">unwrap_phase()</span></code>, <code class="docutils literal notranslate"><span class="pre">instantaneous_frequency()</span></code></p></li>
+</ul>
+</li>
+<li><p>時間領域ミキシング:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">_build_phase_series()</span></code> (内部)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mix_down()</span></code>, <code class="docutils literal notranslate"><span class="pre">baseband()</span></code>, <code class="docutils literal notranslate"><span class="pre">lock_in()</span></code></p></li>
+</ul>
+</li>
+<li><p>高度な解析:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">hilbert_analysis()</span></code>, <code class="docutils literal notranslate"><span class="pre">transfer_function()</span></code>, <code class="docutils literal notranslate"><span class="pre">xcorr()</span></code></p></li>
+</ul>
+</li>
+</ul>
+<p><strong>依存</strong>: <code class="docutils literal notranslate"><span class="pre">_core.TimeSeries</span></code>, scipy.signal</p>
+<p><strong>推定行数</strong>: ~600行</p>
+</section>
+<hr class="docutils" />
+<section id="spectral-py">
+<h3>4. <code class="docutils literal notranslate"><span class="pre">_spectral.py</span></code> - スペクトル変換<a class="headerlink" href="#spectral-py" title="Link to this heading"></a></h3>
+<p><strong>目的</strong>: 周波数領域への変換処理</p>
+<p><strong>含むメソッド</strong>:</p>
+<ul class="simple">
+<li><p>FFT系:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">fft()</span></code>, <code class="docutils literal notranslate"><span class="pre">rfft()</span></code>, <code class="docutils literal notranslate"><span class="pre">psd()</span></code>, <code class="docutils literal notranslate"><span class="pre">asd()</span></code>, <code class="docutils literal notranslate"><span class="pre">csd()</span></code>, <code class="docutils literal notranslate"><span class="pre">coherence()</span></code></p></li>
+</ul>
+</li>
+<li><p>その他の変換:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">dct()</span></code>, <code class="docutils literal notranslate"><span class="pre">laplace()</span></code>, <code class="docutils literal notranslate"><span class="pre">cwt()</span></code>, <code class="docutils literal notranslate"><span class="pre">cepstrum()</span></code></p></li>
+</ul>
+</li>
+<li><p>時間周波数解析:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">emd()</span></code>, <code class="docutils literal notranslate"><span class="pre">hht()</span></code></p></li>
+</ul>
+</li>
+<li><p>ヘルパー:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">_prepare_data_for_transform()</span></code></p></li>
+</ul>
+</li>
+</ul>
+<p><strong>依存</strong>: <code class="docutils literal notranslate"><span class="pre">_core.TimeSeries</span></code>, scipy.fft, pywt</p>
+<p><strong>推定行数</strong>: ~800行</p>
+</section>
+<hr class="docutils" />
+<section id="analysis-py">
+<h3>5. <code class="docutils literal notranslate"><span class="pre">_analysis.py</span></code> - 統計・分析<a class="headerlink" href="#analysis-py" title="Link to this heading"></a></h3>
+<p><strong>目的</strong>: 統計処理、前処理、時系列モデリング</p>
+<p><strong>含むメソッド</strong>:</p>
+<ul class="simple">
+<li><p>前処理:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">impute()</span></code>, <code class="docutils literal notranslate"><span class="pre">standardize()</span></code></p></li>
+</ul>
+</li>
+<li><p>時系列モデル:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">fit_arima()</span></code>, <code class="docutils literal notranslate"><span class="pre">hurst()</span></code>, <code class="docutils literal notranslate"><span class="pre">local_hurst()</span></code></p></li>
+</ul>
+</li>
+<li><p>ローリング統計:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">rolling_mean()</span></code>, <code class="docutils literal notranslate"><span class="pre">rolling_std()</span></code>, <code class="docutils literal notranslate"><span class="pre">rolling_median()</span></code>, <code class="docutils literal notranslate"><span class="pre">rolling_min()</span></code>, <code class="docutils literal notranslate"><span class="pre">rolling_max()</span></code></p></li>
+</ul>
+</li>
+</ul>
+<p><strong>依存</strong>: <code class="docutils literal notranslate"><span class="pre">_core.TimeSeries</span></code>, preprocess.py, arima.py, hurst.py, rolling.py</p>
+<p><strong>推定行数</strong>: ~300行</p>
+</section>
+<hr class="docutils" />
+<section id="interop-py">
+<h3>6. <code class="docutils literal notranslate"><span class="pre">_interop.py</span></code> - 相互運用性<a class="headerlink" href="#interop-py" title="Link to this heading"></a></h3>
+<p><strong>目的</strong>: 外部ライブラリとの相互変換</p>
+<p><strong>含むメソッド</strong>:</p>
+<ul class="simple">
+<li><p>pandas: <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pandas()</span></code></p></li>
+<li><p>xarray: <code class="docutils literal notranslate"><span class="pre">to_xarray()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_xarray()</span></code></p></li>
+<li><p>HDF5: <code class="docutils literal notranslate"><span class="pre">to_hdf5_dataset()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_hdf5_dataset()</span></code></p></li>
+<li><p>ObsPy: <code class="docutils literal notranslate"><span class="pre">to_obspy()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_obspy()</span></code></p></li>
+<li><p>SQLite: <code class="docutils literal notranslate"><span class="pre">to_sqlite()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_sqlite()</span></code></p></li>
+<li><p>PyTorch: <code class="docutils literal notranslate"><span class="pre">to_torch()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_torch()</span></code></p></li>
+<li><p>TensorFlow: <code class="docutils literal notranslate"><span class="pre">to_tensorflow()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_tensorflow()</span></code></p></li>
+<li><p>Dask: <code class="docutils literal notranslate"><span class="pre">to_dask()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_dask()</span></code></p></li>
+<li><p>Zarr: <code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_zarr()</span></code></p></li>
+<li><p>NetCDF4: <code class="docutils literal notranslate"><span class="pre">to_netcdf4()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_netcdf4()</span></code></p></li>
+<li><p>JAX: <code class="docutils literal notranslate"><span class="pre">to_jax()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_jax()</span></code></p></li>
+<li><p>CuPy: <code class="docutils literal notranslate"><span class="pre">to_cupy()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_cupy()</span></code></p></li>
+<li><p>librosa: <code class="docutils literal notranslate"><span class="pre">to_librosa()</span></code></p></li>
+<li><p>pydub: <code class="docutils literal notranslate"><span class="pre">to_pydub()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pydub()</span></code></p></li>
+<li><p>astropy: <code class="docutils literal notranslate"><span class="pre">to_astropy_timeseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_astropy_timeseries()</span></code></p></li>
+<li><p>MNE: <code class="docutils literal notranslate"><span class="pre">to_mne()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_mne()</span></code></p></li>
+</ul>
+<p><strong>依存</strong>: <code class="docutils literal notranslate"><span class="pre">_core.TimeSeries</span></code>, 各外部ライブラリ (optional)</p>
+<p><strong>推定行数</strong>: ~600行</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>実装手順<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="phase-1-core">
+<h3>Phase 1: Core の分離 (最優先)<a class="headerlink" href="#phase-1-core" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_core.py</span></code> を作成</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラス定義（空のスタブメソッド含む）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_regular</span></code>, <code class="docutils literal notranslate"><span class="pre">_check_regular</span></code> 実装</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tail</span></code>, <code class="docutils literal notranslate"><span class="pre">crop</span></code>, <code class="docutils literal notranslate"><span class="pre">append</span></code> を移行</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> で <code class="docutils literal notranslate"><span class="pre">_core.TimeSeries</span></code> を <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> としてエクスポート</p></li>
+<li><p>既存テストが通ることを確認</p></li>
+</ol>
+</section>
+<section id="phase-2-spectral">
+<h3>Phase 2: Spectral の分離<a class="headerlink" href="#phase-2-spectral" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_spectral.py</span></code> を作成</p></li>
+<li><p>スペクトル系メソッドを <code class="docutils literal notranslate"><span class="pre">_core.TimeSeries</span></code> に Mixin として追加</p></li>
+<li><p>テスト実行</p></li>
+</ol>
+</section>
+<section id="phase-3-signal-resampling">
+<h3>Phase 3: Signal &amp; Resampling の分離<a class="headerlink" href="#phase-3-signal-resampling" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_signal.py</span></code>, <code class="docutils literal notranslate"><span class="pre">_resampling.py</span></code> を作成</p></li>
+<li><p>各メソッドを Mixin化</p></li>
+</ol>
+</section>
+<section id="phase-4-analysis-interop">
+<h3>Phase 4: Analysis &amp; Interop の分離<a class="headerlink" href="#phase-4-analysis-interop" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_analysis.py</span></code>, <code class="docutils literal notranslate"><span class="pre">_interop.py</span></code> を作成</p></li>
+<li><p>全メソッド移行完了</p></li>
+</ol>
+</section>
+<section id="phase-5">
+<h3>Phase 5: クリーンアップ<a class="headerlink" href="#phase-5" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>元の <code class="docutils literal notranslate"><span class="pre">timeseries.py</span></code> を削除</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timeseries_backup.py</span></code> も削除（リリース前）</p></li>
+<li><p>ドキュメント更新</p></li>
+</ol>
+</section>
+</section>
+<hr class="docutils" />
+<section id="mixin">
+<h2>Mixin パターン<a class="headerlink" href="#mixin" title="Link to this heading"></a></h2>
+<p>各モジュールは、以下のように Mixin として実装:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># _core.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeSeriesCore</span><span class="p">(</span><span class="n">gwpy</span><span class="o">.</span><span class="n">timeseries</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">):</span>
+    \<span class="s2">&quot;</span><span class="se">\&quot;\&quot;</span><span class="s2">Core TimeSeries with basic operations.</span><span class="se">\&quot;\&quot;\&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span> <span class="o">...</span>
+
+<span class="c1"># _spectral.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeSeriesSpectralMixin</span><span class="p">:</span>
+    \<span class="s2">&quot;</span><span class="se">\&quot;\&quot;</span><span class="s2">Spectral transform methods.</span><span class="se">\&quot;\&quot;\&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nfft</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cwt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span> <span class="o">...</span>
+
+<span class="c1"># __init__.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesCore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesSpectralMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesSignalMixin</span>
+<span class="c1"># ... other mixins</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeSeries</span><span class="p">(</span>
+    <span class="n">TimeSeriesCore</span><span class="p">,</span>
+    <span class="n">TimeSeriesSpectralMixin</span><span class="p">,</span>
+    <span class="n">TimeSeriesSignalMixin</span><span class="p">,</span>
+    <span class="c1"># ... other mixins</span>
+<span class="p">):</span>
+    \<span class="s2">&quot;</span><span class="se">\&quot;\&quot;</span>
+    <span class="n">Extended</span> <span class="n">TimeSeries</span> <span class="k">with</span> <span class="nb">all</span> <span class="n">gwexpy</span> <span class="n">functionality</span><span class="o">.</span>
+    \<span class="s2">&quot;</span><span class="se">\&quot;\&quot;</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h2>注意事項<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>循環参照の回避</strong>:</p>
+<ul class="simple">
+<li><p>Mixin は <code class="docutils literal notranslate"><span class="pre">_core.TimeSeries</span></code> を直接インポートしない</p></li>
+<li><p>型ヒントには <code class="docutils literal notranslate"><span class="pre">TYPE_CHECKING</span></code> を活用</p></li>
+</ul>
+</li>
+<li><p><strong>テストの整合性</strong>:</p>
+<ul class="simple">
+<li><p>各 Phase で既存テストが100%通ることを確認</p></li>
+<li><p>新しいテストは各モジュールごとに作成可能</p></li>
+</ul>
+</li>
+<li><p><strong>IDE サポート</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.pyi</span></code> スタブファイルも更新（必要に応じて）</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h2>メトリクス目標<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>項目</p></th>
+<th class="head"><p>現状</p></th>
+<th class="head"><p>目標</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>最大ファイル行数</p></td>
+<td><p>3147</p></td>
+<td><p>&lt; 800</p></td>
+</tr>
+<tr class="row-odd"><td><p>モジュール数</p></td>
+<td><p>1</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-even"><td><p>Cyclomatic complexity</p></td>
+<td><p>不明</p></td>
+<td><p>各関数 &lt; 15</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<hr class="docutils" />
+<section id="issue-pr">
+<h2>関連 Issue / PR<a class="headerlink" href="#issue-pr" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Issue #XXX: Refactor timeseries.py into logical modules</p></li>
+<li><p>PR #YYY: Phase 1 - Core separation</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>承認<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>[ ] プロジェクトリード承認</p></li>
+<li><p>[ ] コードレビュー完了</p></li>
+<li><p>[ ] 全テスト通過</p></li>
+<li><p>[ ] ドキュメント更新完了</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

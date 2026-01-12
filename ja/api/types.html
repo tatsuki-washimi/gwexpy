@@ -1,0 +1,813 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Types &mdash; gwexpy  ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=4755f45a"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="Detailed Reference" href="../reference/en/index.html" />
+    <link rel="prev" title="Noise" href="noise.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="timeseries.html">Time Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html">Frequency Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noise.html">Noise</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.Array"><code class="docutils literal notranslate"><span class="pre">Array</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.Array.axes"><code class="docutils literal notranslate"><span class="pre">Array.axes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.Array.rms"><code class="docutils literal notranslate"><span class="pre">Array.rms()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.Array2D"><code class="docutils literal notranslate"><span class="pre">Array2D</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.Array2D.axes"><code class="docutils literal notranslate"><span class="pre">Array2D.axes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.Array2D.imshow"><code class="docutils literal notranslate"><span class="pre">Array2D.imshow()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.Array2D.pcolormesh"><code class="docutils literal notranslate"><span class="pre">Array2D.pcolormesh()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.Array3D"><code class="docutils literal notranslate"><span class="pre">Array3D</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.Array3D.axes"><code class="docutils literal notranslate"><span class="pre">Array3D.axes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.Array3D.plane"><code class="docutils literal notranslate"><span class="pre">Array3D.plane()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.AxisApiMixin"><code class="docutils literal notranslate"><span class="pre">AxisApiMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisApiMixin.T"><code class="docutils literal notranslate"><span class="pre">AxisApiMixin.T</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisApiMixin.axes"><code class="docutils literal notranslate"><span class="pre">AxisApiMixin.axes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisApiMixin.axis"><code class="docutils literal notranslate"><span class="pre">AxisApiMixin.axis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisApiMixin.axis_names"><code class="docutils literal notranslate"><span class="pre">AxisApiMixin.axis_names</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisApiMixin.isel"><code class="docutils literal notranslate"><span class="pre">AxisApiMixin.isel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisApiMixin.rename_axes"><code class="docutils literal notranslate"><span class="pre">AxisApiMixin.rename_axes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisApiMixin.sel"><code class="docutils literal notranslate"><span class="pre">AxisApiMixin.sel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisApiMixin.swapaxes"><code class="docutils literal notranslate"><span class="pre">AxisApiMixin.swapaxes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisApiMixin.transpose"><code class="docutils literal notranslate"><span class="pre">AxisApiMixin.transpose()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.AxisDescriptor"><code class="docutils literal notranslate"><span class="pre">AxisDescriptor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisDescriptor.delta"><code class="docutils literal notranslate"><span class="pre">AxisDescriptor.delta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisDescriptor.iloc_nearest"><code class="docutils literal notranslate"><span class="pre">AxisDescriptor.iloc_nearest()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisDescriptor.iloc_slice"><code class="docutils literal notranslate"><span class="pre">AxisDescriptor.iloc_slice()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisDescriptor.index"><code class="docutils literal notranslate"><span class="pre">AxisDescriptor.index</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisDescriptor.name"><code class="docutils literal notranslate"><span class="pre">AxisDescriptor.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisDescriptor.regular"><code class="docutils literal notranslate"><span class="pre">AxisDescriptor.regular</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisDescriptor.size"><code class="docutils literal notranslate"><span class="pre">AxisDescriptor.size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisDescriptor.to_value"><code class="docutils literal notranslate"><span class="pre">AxisDescriptor.to_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.AxisDescriptor.unit"><code class="docutils literal notranslate"><span class="pre">AxisDescriptor.unit</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.MetaData"><code class="docutils literal notranslate"><span class="pre">MetaData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaData.as_meta"><code class="docutils literal notranslate"><span class="pre">MetaData.as_meta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaData.channel"><code class="docutils literal notranslate"><span class="pre">MetaData.channel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaData.from_series"><code class="docutils literal notranslate"><span class="pre">MetaData.from_series()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaData.name"><code class="docutils literal notranslate"><span class="pre">MetaData.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaData.unit"><code class="docutils literal notranslate"><span class="pre">MetaData.unit</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.MetaDataDict"><code class="docutils literal notranslate"><span class="pre">MetaDataDict</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataDict.channels"><code class="docutils literal notranslate"><span class="pre">MetaDataDict.channels</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataDict.from_series"><code class="docutils literal notranslate"><span class="pre">MetaDataDict.from_series()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataDict.names"><code class="docutils literal notranslate"><span class="pre">MetaDataDict.names</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataDict.read"><code class="docutils literal notranslate"><span class="pre">MetaDataDict.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataDict.to_dataframe"><code class="docutils literal notranslate"><span class="pre">MetaDataDict.to_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataDict.units"><code class="docutils literal notranslate"><span class="pre">MetaDataDict.units</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataDict.write"><code class="docutils literal notranslate"><span class="pre">MetaDataDict.write()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.MetaDataMatrix"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataMatrix.channels"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.channels</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataMatrix.fill"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.fill()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataMatrix.from_array"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.from_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataMatrix.from_dataframe"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.from_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataMatrix.names"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.names</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataMatrix.read"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataMatrix.to_dataframe"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.to_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataMatrix.units"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.units</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.MetaDataMatrix.write"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.write()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.Plane2D"><code class="docutils literal notranslate"><span class="pre">Plane2D</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.Plane2D.axis1"><code class="docutils literal notranslate"><span class="pre">Plane2D.axis1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.Plane2D.axis2"><code class="docutils literal notranslate"><span class="pre">Plane2D.axis2</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.SeriesMatrix"><code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.at_sigma"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.at_sigma()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.at_time"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.at_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.axes"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.axes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.axis1"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.axis1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.axis2"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.axis2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.kind"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.kind</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.meta"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.ndim"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.ndim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.plane"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.plane()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.shape"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.shape</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.times"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.times</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.to_array3d"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.to_array3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.unit"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.types.TimePlaneTransform.value"><code class="docutils literal notranslate"><span class="pre">TimePlaneTransform.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.as_series"><code class="docutils literal notranslate"><span class="pre">as_series()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.types.coerce_1d_quantity"><code class="docutils literal notranslate"><span class="pre">coerce_1d_quantity()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Types</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/types.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gwexpy.types">
+<span id="types"></span><h1>Types<a class="headerlink" href="#module-gwexpy.types" title="Link to this heading"></a></h1>
+<p>gwexpy.types - Data type definitions and utilities.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.types.Array">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">Array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/array.html#Array"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.Array" title="Link to this definition"></a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#gwexpy.types.AxisApiMixin" title="gwexpy.types.axis_api.AxisApiMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AxisApiMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+<p>N-dimensional array with axis unified API.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.Array.axes">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">axes</span></span><a class="headerlink" href="#gwexpy.types.Array.axes" title="Link to this definition"></a></dt>
+<dd><p>Tuple of AxisDescriptor objects for each dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Each descriptor contains the axis name and index values.</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple of <a class="reference internal" href="#gwexpy.types.AxisDescriptor" title="gwexpy.types.AxisDescriptor">AxisDescriptor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.Array.rms">
+<span class="sig-name descname"><span class="pre">rms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/array.html#Array.rms"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.Array.rms" title="Link to this definition"></a></dt>
+<dd><p>Compute root-mean-square.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.types.Array2D">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">Array2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/array2d.html#Array2D"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.Array2D" title="Link to this definition"></a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#gwexpy.types.AxisApiMixin" title="gwexpy.types.axis_api.AxisApiMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AxisApiMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Array2D</span></code></p>
+<p>2D Array with unified axis API.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.Array2D.axes">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">axes</span></span><a class="headerlink" href="#gwexpy.types.Array2D.axes" title="Link to this definition"></a></dt>
+<dd><p>Tuple of AxisDescriptor objects for each dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Each descriptor contains the axis name and index values.</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple of <a class="reference internal" href="#gwexpy.types.AxisDescriptor" title="gwexpy.types.AxisDescriptor">AxisDescriptor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.Array2D.imshow">
+<span class="sig-name descname"><span class="pre">imshow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/array2d.html#Array2D.imshow"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.Array2D.imshow" title="Link to this definition"></a></dt>
+<dd><p>Plot this array using matplotlib.axes.Axes.imshow.
+Inherited from gwpy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.Array2D.pcolormesh">
+<span class="sig-name descname"><span class="pre">pcolormesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/array2d.html#Array2D.pcolormesh"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.Array2D.pcolormesh" title="Link to this definition"></a></dt>
+<dd><p>Plot this array using matplotlib.axes.Axes.pcolormesh.
+Inherited from gwpy.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.types.Array3D">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">Array3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/array3d.html#Array3D"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.Array3D" title="Link to this definition"></a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#gwexpy.types.Array" title="gwexpy.types.array.Array"><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></a></p>
+<p>3D Array with explicit axis management.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.Array3D.axes">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">axes</span></span><a class="headerlink" href="#gwexpy.types.Array3D.axes" title="Link to this definition"></a></dt>
+<dd><p>Tuple of AxisDescriptor objects for each dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Each descriptor contains the axis name and index values.</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple of <a class="reference internal" href="#gwexpy.types.AxisDescriptor" title="gwexpy.types.AxisDescriptor">AxisDescriptor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.Array3D.plane">
+<span class="sig-name descname"><span class="pre">plane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drop_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_index</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/array3d.html#Array3D.plane"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.Array3D.plane" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.types.AxisApiMixin">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">AxisApiMixin</span></span><a class="reference internal" href="../_modules/gwexpy/types/axis_api.html#AxisApiMixin"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.AxisApiMixin" title="Link to this definition"></a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.AxisApiMixin.T">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">T</span></span><a class="headerlink" href="#gwexpy.types.AxisApiMixin.T" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.AxisApiMixin.axes">
+<em class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">axes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gwexpy.types.AxisDescriptor" title="gwexpy.types.axis.AxisDescriptor"><span class="pre">AxisDescriptor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gwexpy.types.AxisApiMixin.axes" title="Link to this definition"></a></dt>
+<dd><p>Tuple of AxisDescriptor objects for each dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Each descriptor contains the axis name and index values.</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple of <a class="reference internal" href="#gwexpy.types.AxisDescriptor" title="gwexpy.types.AxisDescriptor">AxisDescriptor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.AxisApiMixin.axis">
+<span class="sig-name descname"><span class="pre">axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.types.AxisDescriptor" title="gwexpy.types.axis.AxisDescriptor"><span class="pre">AxisDescriptor</span></a></span></span><a class="reference internal" href="../_modules/gwexpy/types/axis_api.html#AxisApiMixin.axis"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.AxisApiMixin.axis" title="Link to this definition"></a></dt>
+<dd><p>Get an axis descriptor by index or name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em> or </em><em>str</em>) -- Axis index (0-based) or name.</p>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p>The requested axis descriptor.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gwexpy.types.AxisDescriptor" title="gwexpy.types.AxisDescriptor">AxisDescriptor</a></p>
+</dd>
+<dt class="field-even">例外<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>KeyError</strong> -- If axis name not found.</p></li>
+<li><p><strong>TypeError</strong> -- If key is not int or str.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.AxisApiMixin.axis_names">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">axis_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gwexpy.types.AxisApiMixin.axis_names" title="Link to this definition"></a></dt>
+<dd><p>Names of all axes as a tuple of strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The name of each axis in order.</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.AxisApiMixin.isel">
+<span class="sig-name descname"><span class="pre">isel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indexers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/axis_api.html#AxisApiMixin.isel"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.AxisApiMixin.isel" title="Link to this definition"></a></dt>
+<dd><p>Select by integer indices along specified axes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indexers</strong> (<em>dict</em><em>, </em><em>optional</em>) -- Mapping of axis name/index to integer index or slice.</p></li>
+<li><p><strong>**kwargs</strong> -- Additional indexers as keyword arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sliced array.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>subset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.AxisApiMixin.rename_axes">
+<span class="sig-name descname"><span class="pre">rename_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/axis_api.html#AxisApiMixin.rename_axes"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.AxisApiMixin.rename_axes" title="Link to this definition"></a></dt>
+<dd><p>Rename axes using a mapping of old names to new names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mapping</strong> (<em>dict</em>) -- Mapping from old axis names to new names.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, modify in place. Otherwise return a copy.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>self or copy</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.AxisApiMixin.sel">
+<span class="sig-name descname"><span class="pre">sel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indexers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/axis_api.html#AxisApiMixin.sel"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.AxisApiMixin.sel" title="Link to this definition"></a></dt>
+<dd><p>Select by coordinate values along specified axes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indexers</strong> (<em>dict</em><em>, </em><em>optional</em>) -- Mapping of axis name to coordinate value or slice.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) -- Selection method: 'nearest' (default).</p></li>
+<li><p><strong>**kwargs</strong> -- Additional indexers as keyword arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sliced array at nearest coordinate values.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>subset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.AxisApiMixin.swapaxes">
+<span class="sig-name descname"><span class="pre">swapaxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/axis_api.html#AxisApiMixin.swapaxes"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.AxisApiMixin.swapaxes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.AxisApiMixin.transpose">
+<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">axes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/axis_api.html#AxisApiMixin.transpose"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.AxisApiMixin.transpose" title="Link to this definition"></a></dt>
+<dd><p>Permute the dimensions of an array.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.types.AxisDescriptor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">AxisDescriptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">astropy.units.quantity.Quantity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/axis.html#AxisDescriptor"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.AxisDescriptor" title="Link to this definition"></a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.AxisDescriptor.delta">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#gwexpy.types.AxisDescriptor.delta" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.AxisDescriptor.iloc_nearest">
+<span class="sig-name descname"><span class="pre">iloc_nearest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/axis.html#AxisDescriptor.iloc_nearest"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.AxisDescriptor.iloc_nearest" title="Link to this definition"></a></dt>
+<dd><p>Return the integer index nearest to value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.AxisDescriptor.iloc_slice">
+<span class="sig-name descname"><span class="pre">iloc_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">slice</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/axis.html#AxisDescriptor.iloc_slice"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.AxisDescriptor.iloc_slice" title="Link to this definition"></a></dt>
+<dd><p>Convert a coordinate slice (start, stop, step) to an integer slice.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.types.AxisDescriptor.index">
+<span class="sig-name descname"><span class="pre">index</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#gwexpy.types.AxisDescriptor.index" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.types.AxisDescriptor.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#gwexpy.types.AxisDescriptor.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.AxisDescriptor.regular">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">regular</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#gwexpy.types.AxisDescriptor.regular" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.AxisDescriptor.size">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#gwexpy.types.AxisDescriptor.size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.AxisDescriptor.to_value">
+<span class="sig-name descname"><span class="pre">to_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/axis.html#AxisDescriptor.to_value"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.AxisDescriptor.to_value" title="Link to this definition"></a></dt>
+<dd><p>Convert Quantity to axis unit value, or return float if dimensionless/compatible.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.AxisDescriptor.unit">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unit</span></span><a class="headerlink" href="#gwexpy.types.AxisDescriptor.unit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.types.MetaData">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">MetaData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaData"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaData" title="Link to this definition"></a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.MetaData.as_meta">
+<span class="sig-name descname"><span class="pre">as_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaData.as_meta"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaData.as_meta" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.MetaData.channel">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">channel</span></span><a class="headerlink" href="#gwexpy.types.MetaData.channel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.MetaData.from_series">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaData.from_series"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaData.from_series" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.MetaData.name">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#gwexpy.types.MetaData.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.MetaData.unit">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unit</span></span><a class="headerlink" href="#gwexpy.types.MetaData.unit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataDict">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">MetaDataDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#gwexpy.types.MetaDataDict" title="gwexpy.types.metadata.MetaDataDict"><span class="pre">MetaDataDict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'key'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaDataDict"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaDataDict" title="Link to this definition"></a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">OrderedDict</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataDict.channels">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">channels</span></span><a class="headerlink" href="#gwexpy.types.MetaDataDict.channels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataDict.from_series">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaDataDict.from_series"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaDataDict.from_series" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataDict.names">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">names</span></span><a class="headerlink" href="#gwexpy.types.MetaDataDict.names" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataDict.read">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaDataDict.read"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaDataDict.read" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataDict.to_dataframe">
+<span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaDataDict.to_dataframe"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaDataDict.to_dataframe" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataDict.units">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">units</span></span><a class="headerlink" href="#gwexpy.types.MetaDataDict.units" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataDict.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaDataDict.write"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaDataDict.write" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataMatrix">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">MetaDataMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaDataMatrix"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaDataMatrix" title="Link to this definition"></a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataMatrix.channels">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">channels</span></span><a class="headerlink" href="#gwexpy.types.MetaDataMatrix.channels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataMatrix.fill">
+<span class="sig-name descname"><span class="pre">fill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaDataMatrix.fill"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaDataMatrix.fill" title="Link to this definition"></a></dt>
+<dd><p>Fill the matrix with a single MetaData value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#gwexpy.types.MetaData" title="gwexpy.types.MetaData"><em>MetaData</em></a><em>, </em><em>dict</em><em>]</em>) -- MetaData instance used as-is, or mapping passed once to <code class="docutils literal notranslate"><span class="pre">MetaData(**value)</span></code>.</p>
+</dd>
+</dl>
+<p class="rubric">メモ</p>
+<p>Each cell receives an independent MetaData copy to avoid shared references.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataMatrix.from_array">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array2d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaDataMatrix.from_array"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaDataMatrix.from_array" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataMatrix.from_dataframe">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaDataMatrix.from_dataframe"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaDataMatrix.from_dataframe" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataMatrix.names">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">names</span></span><a class="headerlink" href="#gwexpy.types.MetaDataMatrix.names" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataMatrix.read">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaDataMatrix.read"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaDataMatrix.read" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataMatrix.to_dataframe">
+<span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaDataMatrix.to_dataframe"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaDataMatrix.to_dataframe" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataMatrix.units">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">units</span></span><a class="headerlink" href="#gwexpy.types.MetaDataMatrix.units" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.MetaDataMatrix.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/metadata.html#MetaDataMatrix.write"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.MetaDataMatrix.write" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.types.Plane2D">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">Plane2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis1_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'axis1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis2_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'axis2'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/plane2d.html#Plane2D"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.Plane2D" title="Link to this definition"></a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#gwexpy.types.Array2D" title="gwexpy.types.array2d.Array2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">Array2D</span></code></a></p>
+<p>2D Array wrapper where the two axes are semantically significant as Axis 1 and Axis 2.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.Plane2D.axis1">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">axis1</span></span><a class="headerlink" href="#gwexpy.types.Plane2D.axis1" title="Link to this definition"></a></dt>
+<dd><p>First axis descriptor (dimension 0).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.Plane2D.axis2">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">axis2</span></span><a class="headerlink" href="#gwexpy.types.Plane2D.axis2" title="Link to this definition"></a></dt>
+<dd><p>Second axis descriptor (dimension 1).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.types.SeriesMatrix">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">SeriesMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gwexpy.types.MetaDataMatrix" title="gwexpy.types.metadata.MetaDataMatrix"><span class="pre">MetaDataMatrix</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xindex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xunit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/seriesmatrix_base.html#SeriesMatrix"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.SeriesMatrix" title="Link to this definition"></a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">RegularityMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">InteropMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SeriesMatrixCoreMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SeriesMatrixIndexingMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SeriesMatrixIOMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SeriesMatrixMathMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SeriesMatrixAnalysisMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SeriesMatrixStructureMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SeriesMatrixVisualizationMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SeriesMatrixValidationMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">TimePlaneTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data3d</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'custom'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/time_plane_transform.html#TimePlaneTransform"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.TimePlaneTransform" title="Link to this definition"></a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A container for 3D data with a preferred (time, axis1, axis2) structure,
+commonly produced by time-frequency or similar transforms.</p>
+<p>This class wraps an Array3D to enforce semantic structure:
+- Axis 0 is &quot;time&quot;
+- Axis 1 and 2 are symmetric spatial/frequency dimensions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.at_sigma">
+<span class="sig-name descname"><span class="pre">at_sigma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/time_plane_transform.html#TimePlaneTransform.at_sigma"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.at_sigma" title="Link to this definition"></a></dt>
+<dd><p>Extract a 2D plane (Spectrogram-like) at a specific sigma index (if axis1 is sigma)
+or value.</p>
+<p>This assumes axis 1 is sigma.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.at_time">
+<span class="sig-name descname"><span class="pre">at_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/time_plane_transform.html#TimePlaneTransform.at_time"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.at_time" title="Link to this definition"></a></dt>
+<dd><p>Extract a Plane2D at the specific time <cite>t</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>Quantity</em><em> or </em><em>float</em>) -- Time value. If float, assumed to be in the unit of the time axis.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) -- &quot;nearest&quot; (default). Future versions may support interpolation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#gwexpy.types.Plane2D" title="gwexpy.types.Plane2D">Plane2D</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.axes">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">axes</span></span><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.axes" title="Link to this definition"></a></dt>
+<dd><p>(time, axis1, axis2).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Return the 3 AxisDescriptors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.axis1">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">axis1</span></span><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.axis1" title="Link to this definition"></a></dt>
+<dd><p>AxisDescriptor for the first symmetric axis (axis 1).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.axis2">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">axis2</span></span><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.axis2" title="Link to this definition"></a></dt>
+<dd><p>AxisDescriptor for the second symmetric axis (axis 2).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.kind">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kind</span></span><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.kind" title="Link to this definition"></a></dt>
+<dd><p>String describing the type of transform (e.g., 'stlt', 'bispectrum').</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.meta">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">meta</span></span><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.meta" title="Link to this definition"></a></dt>
+<dd><p>Additional metadata dictionary.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.ndim">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.ndim" title="Link to this definition"></a></dt>
+<dd><p>Number of dimensions (always 3).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.plane">
+<span class="sig-name descname"><span class="pre">plane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drop_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_index</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/time_plane_transform.html#TimePlaneTransform.plane"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.plane" title="Link to this definition"></a></dt>
+<dd><p>Extract a 2D plane by slicing at a specific index along one axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>drop_axis</strong> (<em>int</em><em> or </em><em>str</em>) -- The axis to slice along (remove).</p></li>
+<li><p><strong>drop_index</strong> (<em>int</em>) -- Integer index to select along <cite>drop_axis</cite>.</p></li>
+<li><p><strong>axis1</strong> (<em>str</em><em> or </em><em>int</em><em>, </em><em>optional</em>) -- The generic axis 1 for the resulting Plane2D.</p></li>
+<li><p><strong>axis2</strong> (<em>str</em><em> or </em><em>int</em><em>, </em><em>optional</em>) -- The generic axis 2 for the resulting Plane2D.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#gwexpy.types.Plane2D" title="gwexpy.types.Plane2D">Plane2D</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.shape">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.shape" title="Link to this definition"></a></dt>
+<dd><p>Shape of the 3D data array (time, axis1, axis2).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.times">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">times</span></span><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.times" title="Link to this definition"></a></dt>
+<dd><p>Coordinate array of the time axis (axis 0).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.to_array3d">
+<span class="sig-name descname"><span class="pre">to_array3d</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/time_plane_transform.html#TimePlaneTransform.to_array3d"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.to_array3d" title="Link to this definition"></a></dt>
+<dd><p>Return the underlying Array3D object (advanced usage).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.unit">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unit</span></span><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.unit" title="Link to this definition"></a></dt>
+<dd><p>Physical unit of the data values.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.types.TimePlaneTransform.value">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gwexpy.types.TimePlaneTransform.value" title="Link to this definition"></a></dt>
+<dd><p>The underlying data values as numpy array.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.types.as_series">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">as_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/types/series_creator.html#as_series"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.as_series" title="Link to this definition"></a></dt>
+<dd><p>Convert a 1D axis (<code class="docutils literal notranslate"><span class="pre">gwpy.types.index.Index</span></code> or <code class="docutils literal notranslate"><span class="pre">astropy.units.Quantity</span></code>)
+to a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> or <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>.</p>
+<p>The created series is an identity mapping: the series values represent the
+axis values (optionally converted to <code class="docutils literal notranslate"><span class="pre">unit</span></code>), while the series axis is
+taken from the input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> -- 1D <code class="docutils literal notranslate"><span class="pre">gwpy.types.index.Index</span></code> or 1D <code class="docutils literal notranslate"><span class="pre">astropy.units.Quantity</span></code>.</p></li>
+<li><p><strong>unit</strong> -- Optional target unit for the <em>values</em> (not the axis). Must be time-like
+for time axes, and frequency-like (Hz) or angular frequency (rad/s) for
+frequency axes.</p></li>
+<li><p><strong>name</strong> -- Optional series name.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.types.coerce_1d_quantity">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">coerce_1d_quantity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Quantity</span></span></span><a class="reference internal" href="../_modules/gwexpy/types/axis.html#coerce_1d_quantity"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#gwexpy.types.coerce_1d_quantity" title="Link to this definition"></a></dt>
+<dd><p>Ensure input is a 1D Quantity.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="noise.html" class="btn btn-neutral float-left" title="Noise" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../reference/en/index.html" class="btn btn-neutral float-right" title="Detailed Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

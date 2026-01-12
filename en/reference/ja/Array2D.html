@@ -1,0 +1,214 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Array2D &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Array2D</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/ja/Array2D.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="array2d">
+<h1>Array2D<a class="headerlink" href="#array2d" title="Link to this heading"></a></h1>
+<p><strong>継承元:</strong> AxisApiMixin, Array2D</p>
+<p>統合された軸 API を備えた 2次元配列です。</p>
+<section id="id1">
+<h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="t">
+<h3><code class="docutils literal notranslate"><span class="pre">T</span></code><a class="headerlink" href="#t" title="Link to this heading"></a></h3>
+<p>転置された配列のビュー。</p>
+</section>
+<section id="abs">
+<h3><code class="docutils literal notranslate"><span class="pre">abs</span></code><a class="headerlink" href="#abs" title="Link to this heading"></a></h3>
+<p>要素ごとの絶対値。</p>
+</section>
+<section id="append">
+<h3><code class="docutils literal notranslate"><span class="pre">append</span></code><a class="headerlink" href="#append" title="Link to this heading"></a></h3>
+<p>シリーズの末尾に接続します。</p>
+</section>
+<section id="axes">
+<h3><code class="docutils literal notranslate"><span class="pre">axes</span></code><a class="headerlink" href="#axes" title="Link to this heading"></a></h3>
+<p>各次元の AxisDescriptor オブジェクトのタプル。各記述子には軸名とインデックス値が含まれます。</p>
+</section>
+<section id="axis">
+<h3><code class="docutils literal notranslate"><span class="pre">axis</span></code><a class="headerlink" href="#axis" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">axis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">gwexpy</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">AxisDescriptor</span>
+</pre></div>
+</div>
+<p>インデックスまたは名前で軸記述子を取得します。</p>
+</section>
+<section id="axis-names">
+<h3><code class="docutils literal notranslate"><span class="pre">axis_names</span></code><a class="headerlink" href="#axis-names" title="Link to this heading"></a></h3>
+<p>すべての軸の名前のタプル。</p>
+</section>
+<section id="copy-crop-diff">
+<h3><code class="docutils literal notranslate"><span class="pre">copy</span></code>, <code class="docutils literal notranslate"><span class="pre">crop</span></code>, <code class="docutils literal notranslate"><span class="pre">diff</span></code><a class="headerlink" href="#copy-crop-diff" title="Link to this heading"></a></h3>
+<p>コピー、切り抜き、離散差分。</p>
+</section>
+<section id="dx-dy">
+<h3><code class="docutils literal notranslate"><span class="pre">dx</span></code>, <code class="docutils literal notranslate"><span class="pre">dy</span></code><a class="headerlink" href="#dx-dy" title="Link to this heading"></a></h3>
+<p>x 軸および y 軸のサンプル間隔。</p>
+</section>
+<section id="flatten">
+<h3><code class="docutils literal notranslate"><span class="pre">flatten</span></code><a class="headerlink" href="#flatten" title="Link to this heading"></a></h3>
+<p>配列を 1次元に平坦化したコピーを返します。単位情報のみ保持され、インデックス情報は削除されます。</p>
+</section>
+<section id="imshow-pcolormesh">
+<h3><code class="docutils literal notranslate"><span class="pre">imshow</span></code>, <code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code><a class="headerlink" href="#imshow-pcolormesh" title="Link to this heading"></a></h3>
+<p>matplotlib を使用したプロット。<em>(gwpy から継承)</em></p>
+</section>
+<section id="plot">
+<h3><code class="docutils literal notranslate"><span class="pre">plot</span></code><a class="headerlink" href="#plot" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;imshow&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>2次元データをプロットします。</p>
+</section>
+<section id="rename-axes">
+<h3><code class="docutils literal notranslate"><span class="pre">rename_axes</span></code><a class="headerlink" href="#rename-axes" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rename_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>軸の名前を変更します。</p>
+</section>
+<section id="sel">
+<h3><code class="docutils literal notranslate"><span class="pre">sel</span></code><a class="headerlink" href="#sel" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indexers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>軸名と座標値を指定してサンプルを選択します。</p>
+</section>
+<section id="swapaxes">
+<h3><code class="docutils literal notranslate"><span class="pre">swapaxes</span></code><a class="headerlink" href="#swapaxes" title="Link to this heading"></a></h3>
+<p>軸を入れ替えたビューを返します。</p>
+</section>
+<section id="transpose">
+<h3><code class="docutils literal notranslate"><span class="pre">transpose</span></code><a class="headerlink" href="#transpose" title="Link to this heading"></a></h3>
+<p>次元の順序を入れ替えます。</p>
+</section>
+<section id="unit">
+<h3><code class="docutils literal notranslate"><span class="pre">unit</span></code><a class="headerlink" href="#unit" title="Link to this heading"></a></h3>
+<p>データの物理単位。</p>
+</section>
+<section id="value-at">
+<h3><code class="docutils literal notranslate"><span class="pre">value_at</span></code><a class="headerlink" href="#value-at" title="Link to this heading"></a></h3>
+<p>指定した座標 (x, y) における値を返します。</p>
+</section>
+<section id="write-read">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code>, <code class="docutils literal notranslate"><span class="pre">read</span></code><a class="headerlink" href="#write-read" title="Link to this heading"></a></h3>
+<p>ファイルの入出力。</p>
+</section>
+<section id="x0-xindex-xspan-xunit">
+<h3><code class="docutils literal notranslate"><span class="pre">x0</span></code>, <code class="docutils literal notranslate"><span class="pre">xindex</span></code>, <code class="docutils literal notranslate"><span class="pre">xspan</span></code>, <code class="docutils literal notranslate"><span class="pre">xunit</span></code><a class="headerlink" href="#x0-xindex-xspan-xunit" title="Link to this heading"></a></h3>
+<p>x 軸のプロパティ。</p>
+</section>
+<section id="y0-yindex-yspan-yunit">
+<h3><code class="docutils literal notranslate"><span class="pre">y0</span></code>, <code class="docutils literal notranslate"><span class="pre">yindex</span></code>, <code class="docutils literal notranslate"><span class="pre">yspan</span></code>, <code class="docutils literal notranslate"><span class="pre">yunit</span></code><a class="headerlink" href="#y0-yindex-yspan-yunit" title="Link to this heading"></a></h3>
+<p>y 軸のプロパティ。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
