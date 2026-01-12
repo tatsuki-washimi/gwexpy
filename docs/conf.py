@@ -33,7 +33,7 @@ html_context = {
     "github_version": "main",
     "conf_py_path": "/docs/",
     "current_language": language,
-    "languages": [["en", "en"], ["ja", "ja"]],
+    "languages": [("en", "/gwexpy/en/"), ("ja", "/gwexpy/ja/")],
 }
 
 autodoc_mock_imports = [
