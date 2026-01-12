@@ -13,6 +13,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
+    "myst_parser",
 ]
 
 autosummary_generate = True
@@ -21,3 +22,49 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "sphinx_rtd_theme"
+
+autodoc_mock_imports = [
+    "pycbc",
+    "gwinc",
+    "polars",
+    "sklearn",
+    "statsmodels",
+    "pmdarima",
+    "mictools",
+    "dcor",
+    "hurst",
+    "bottleneck",
+    "iminuit",
+    "emcee",
+    "corner",
+    "specutils",
+    "pyspeckit",
+    "obspy",
+    "mth5",
+    "mtpy",
+    "librosa",
+    "pydub",
+    "torchaudio",
+    "mne",
+    "neo",
+    "elephant",
+    "torch",
+    "tensorflow",
+    "jax",
+    "dask",
+    "zarr",
+    "cupy",
+    "xarray",
+    "control",
+    "PyQt5",
+    "pyqtgraph",
+    "qtpy",
+    "pygmt",
+    "PyEMD",
+    "pywt",
+]
+
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
