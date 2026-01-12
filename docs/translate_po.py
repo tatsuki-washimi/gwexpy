@@ -5,20 +5,35 @@ import polib
 import google.generativeai as genai
 
 def translate_text(model, text):
-    if not text.strip():
+    if not text.strip() or len(text) < 2:
         return text
     
-    prompt = f"""
-Translate the following technical documentation string for a Python library 'gwexpy' from English to Japanese.
-Keep technical terms (like class names, function names, parameters) in English unless there's a standard Japanese equivalent.
-Return ONLY the translated text.
+    # Check if it's just a placeholder or technical string
+    if text.startswith(':') and text.endswith(':'):
+        return text
 
-Source English:
+    prompt = f"""
+Translate the following technical documentation string from English to Japanese.
+CRITICAL RULES:
+1. Maintain all technical syntax: keep backticks (``), asterisks (*), and curly braces {{}} EXACTLY as they are.
+2. Do not translate code-like strings or cross-references like :doc:`...` or :ref:`...`.
+3. Use professional, technical Japanese (Desu/Masu style).
+4. If the string contains a signature or path, do not translate it.
+5. Return ONLY the translated Japanese text.
+
+Source:
 {text}
 """
     try:
         response = model.generate_content(prompt)
-        return response.text.strip()
+        translated = response.text.strip()
+        
+        # Basic validation: check backtick count consistency
+        if text.count('`') != translated.count('`'):
+            print(f"  Warning: Backtick count mismatch. Reverting to English for this entry.")
+            return text
+            
+        return translated
     except Exception as e:
         print(f"Error translating: {e}")
         return None
@@ -30,38 +45,52 @@ def main():
         sys.exit(1)
 
     genai.configure(api_key=api_key)
-    # Using gemini-1.5-flash as it is the most standard for this task
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    
+    # Try alternate model names if the first one fails
+    model_name = 'gemini-1.5-flash'
+    try:
+        model = genai.GenerativeModel(model_name)
+        # Test call
+        model.generate_content("Hi")
+    except Exception:
+        model_name = 'models/gemini-1.5-flash'
+        model = genai.GenerativeModel(model_name)
+
+    print(f"Using model: {model_name}")
 
     po_dir = "docs/locales/ja/LC_MESSAGES"
     if not os.path.exists(po_dir):
         print(f"Directory {po_dir} not found")
         return
 
-    for filename in os.listdir(po_dir):
-        if filename.endswith(".po"):
-            filepath = os.path.join(po_dir, filename)
-            print(f"Processing {filepath}...")
-            po = polib.pofile(filepath)
-            
-            modified = False
-            for entry in po:
-                # Translate if msgstr is empty OR if the entry is marked as 'fuzzy'
-                should_translate = not entry.msgstr or 'fuzzy' in entry.flags
+    # Walk through all .po files in subdirectories
+    for root, dirs, files in os.walk(po_dir):
+        for filename in files:
+            if filename.endswith(".po"):
+                filepath = os.path.join(root, filename)
+                print(f"Processing {filepath}...")
+                po = polib.pofile(filepath)
                 
-                if should_translate and entry.msgid:
-                    translated = translate_text(model, entry.msgid)
-                    if translated:
-                        entry.msgstr = translated
-                        if 'fuzzy' in entry.flags:
-                            entry.flags.remove('fuzzy') # Clear fuzzy flag after translation
-                        modified = True
-                        print(f"  Translated: {entry.msgid[:30]}... -> {translated[:30]}...")
-                        time.sleep(1) # Rate limit protection
+                modified = False
+                for entry in po:
+                    # Translate if msgstr is empty OR fuzzy
+                    if (not entry.msgstr or 'fuzzy' in entry.flags) and entry.msgid:
+                        # Skip very short strings or those that look like code
+                        if len(entry.msgid) < 3 or entry.msgid.isnumeric():
+                            continue
+                            
+                        translated = translate_text(model, entry.msgid)
+                        if translated and translated != entry.msgid:
+                            entry.msgstr = translated
+                            if 'fuzzy' in entry.flags:
+                                entry.flags.remove('fuzzy')
+                            modified = True
+                            print(f"  OK: {entry.msgid[:30]}...")
+                            time.sleep(1) # Respect rate limits
 
-            if modified:
-                po.save()
-                print(f"  Saved improvements to {filename}")
+                if modified:
+                    po.save()
+                    print(f"  Saved improvements to {filename}")
 
 if __name__ == "__main__":
     main()
