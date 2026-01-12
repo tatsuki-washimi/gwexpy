@@ -1,0 +1,553 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.spectral.estimation &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.spectral.estimation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.spectral.estimation</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_window</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+
+
+<span class="c1"># Optional Numba import</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">njit</span><span class="p">,</span> <span class="n">prange</span>
+    <span class="n">HAS_NUMBA</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">HAS_NUMBA</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">prange</span> <span class="o">=</span> <span class="nb">range</span>
+    <span class="c1"># Create a dummy njit decorator that just returns the function</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">njit</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">func</span>
+        <span class="k">return</span> <span class="n">decorator</span>
+
+<span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_bootstrap_resample_jit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">all_indices</span><span class="p">,</span> <span class="n">use_median</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="p">):</span>
+    <span class="n">n_boot</span> <span class="o">=</span> <span class="n">all_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n_freq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">resampled_stats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_boot</span><span class="p">,</span> <span class="n">n_freq</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">n_boot</span><span class="p">):</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">all_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># Iterate over frequency bins to save memory (avoid creating full (T, F) sample)</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_freq</span><span class="p">):</span>
+            <span class="c1"># Extract column using fancy indexing</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">indices</span><span class="p">,</span> <span class="n">f</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">use_median</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ignore_nan</span><span class="p">:</span>
+                    <span class="n">resampled_stats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">resampled_stats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span> <span class="c1"># mean</span>
+                <span class="k">if</span> <span class="n">ignore_nan</span><span class="p">:</span>
+                    <span class="n">resampled_stats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">resampled_stats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resampled_stats</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_bootstrap_resample_py</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">all_indices</span><span class="p">,</span> <span class="n">use_median</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="p">):</span>
+    <span class="n">n_boot</span> <span class="o">=</span> <span class="n">all_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n_freq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">resampled_stats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_boot</span><span class="p">,</span> <span class="n">n_freq</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_boot</span><span class="p">):</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">all_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_freq</span><span class="p">):</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">indices</span><span class="p">,</span> <span class="n">f</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">use_median</span><span class="p">:</span>
+                <span class="n">resampled_stats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">if</span> <span class="n">ignore_nan</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">resampled_stats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">if</span> <span class="n">ignore_nan</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+                <span class="p">)</span>
+    <span class="k">return</span> <span class="n">resampled_stats</span>
+
+<div class="viewcode-block" id="calculate_correlation_factor">
+<a class="viewcode-back" href="../../../api/spectral.html#gwexpy.spectral.calculate_correlation_factor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_correlation_factor</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">nperseg</span><span class="p">,</span> <span class="n">noverlap</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the variance inflation factor for Welch&#39;s method with overlap.</span>
+
+<span class="sd">    This computes the correction factor by numerically calculating the normalized</span>
+<span class="sd">    squared autocorrelation of the window function. The correction accounts for</span>
+<span class="sd">    reduced effective degrees of freedom due to correlated (overlapping) segments.</span>
+
+<span class="sd">    References:</span>
+<span class="sd">    - Bendat, J. S., &amp; Piersol, A. G., &quot;Random Data&quot;.</span>
+<span class="sd">    - Percival, D. B., &amp; Walden, A. T., &quot;Spectral Analysis for Physical Applications&quot;.</span>
+<span class="sd">    - Ingram, A. (2019), &quot;Error formulae for the energy-dependent cross-spectrum&quot;.</span>
+
+<span class="sd">    Formula::</span>
+
+<span class="sd">        factor = sqrt(1 + 2 * sum_{k=1}^{M-1} (1 - k/M) * abs(rho_window(k * S))**2)</span>
+
+<span class="sd">    where rho_window is the normalized autocorrelation of the window.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    window : str, tuple, or array_like</span>
+<span class="sd">        Window function used for FFT.</span>
+<span class="sd">    nperseg : int</span>
+<span class="sd">        Length of each segment (N_fft).</span>
+<span class="sd">    noverlap : int</span>
+<span class="sd">        Number of overlapping samples.</span>
+<span class="sd">    n_blocks : int</span>
+<span class="sd">        Number of segments available for averaging.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Multiplicative correction factor for the standard error.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">window</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">nperseg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">noverlap</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">n_blocks</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="n">win_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">win_array</span><span class="p">)</span> <span class="o">!=</span> <span class="n">nperseg</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mf">1.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">win_array</span> <span class="o">=</span> <span class="n">get_window</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">nperseg</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not generate window &#39;</span><span class="si">{</span><span class="n">window</span><span class="si">}</span><span class="s2">&#39;. Assuming independent segments (factor=1.0).&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+
+    <span class="n">step</span> <span class="o">=</span> <span class="n">nperseg</span> <span class="o">-</span> <span class="n">noverlap</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+
+    <span class="n">energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">win_array</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">energy</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+
+    <span class="n">rho_sq_weighted_sum</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">max_lag</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">nperseg</span> <span class="o">/</span> <span class="n">step</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_blocks</span><span class="p">,</span> <span class="n">max_lag</span><span class="p">)):</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="n">step</span>
+        <span class="k">if</span> <span class="n">shift</span> <span class="o">&gt;=</span> <span class="n">nperseg</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="n">autocorr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">win_array</span><span class="p">[:</span><span class="o">-</span><span class="n">shift</span><span class="p">]</span> <span class="o">*</span> <span class="n">win_array</span><span class="p">[</span><span class="n">shift</span><span class="p">:])</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="n">autocorr</span> <span class="o">/</span> <span class="n">energy</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">k</span> <span class="o">/</span> <span class="n">n_blocks</span><span class="p">)</span>
+        <span class="n">rho_sq_weighted_sum</span> <span class="o">+=</span> <span class="n">weight</span> <span class="o">*</span> <span class="p">(</span><span class="n">rho</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">vif</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">rho_sq_weighted_sum</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vif</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_overlap_ratio</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Infer overlap ratio from spectrogram metadata.&quot;&quot;&quot;</span>
+    <span class="n">stride</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">resolution</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stride</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">stride_val</span> <span class="o">=</span> <span class="n">stride</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">resolution</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">stride_val</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">duration</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">duration</span> <span class="o">/</span> <span class="n">stride_val</span>
+
+
+<div class="viewcode-block" id="bootstrap_spectrogram">
+<a class="viewcode-back" href="../../../api/spectral.html#gwexpy.spectral.bootstrap_spectrogram">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bootstrap_spectrogram</span><span class="p">(</span>
+    <span class="n">spectrogram</span><span class="p">,</span>
+    <span class="n">n_boot</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">,</span>
+    <span class="n">average</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ci</span><span class="o">=</span><span class="mf">0.68</span><span class="p">,</span>
+    <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+    <span class="n">nperseg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">noverlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">block_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">rebin_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_map</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate robust ASD from a spectrogram using bootstrap resampling.</span>
+
+<span class="sd">    Error bars are corrected for correlation between overlapping segments</span>
+<span class="sd">    based on the window function&#39;s autocorrelation.</span>
+
+<span class="sd">    Performance Note:</span>
+<span class="sd">    This function utilizes Numba for JIT compilation and parallelization</span>
+<span class="sd">    if available, significantly accelerating the resampling process.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spectrogram : gwpy.spectrogram.Spectrogram</span>
+<span class="sd">    n_boot : int</span>
+<span class="sd">    method : str</span>
+<span class="sd">        &#39;median&#39; (default) or &#39;mean&#39;.</span>
+<span class="sd">    average : str, optional</span>
+<span class="sd">        Alias for method (&#39;median&#39; or &#39;mean&#39;) for compatibility.</span>
+<span class="sd">    ci : float</span>
+<span class="sd">    window : str or array, optional</span>
+<span class="sd">    nperseg : int, optional</span>
+<span class="sd">    noverlap : int, optional</span>
+<span class="sd">    block_size : int, optional</span>
+<span class="sd">        Size of blocks for block bootstrap. If None, perform standard bootstrap.</span>
+<span class="sd">    rebin_width : float, optional</span>
+<span class="sd">        Width to rebin frequencies (in Hz) before bootstrapping.</span>
+<span class="sd">    return_map : bool, optional</span>
+<span class="sd">        If True, return a BifrequencyMap of the covariance.</span>
+<span class="sd">    ignore_nan : bool, optional</span>
+<span class="sd">        If True, ignore NaNs during bootstrap averaging. Default is True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FrequencySeries or (FrequencySeries, BifrequencyMap)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">frequencies</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">n_time</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">n_time</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Spectrogram must have at least 2 time bins.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_boot</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_boot must be &gt;= 1.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">ci</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ci must be between 0 and 1.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">average</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="n">average</span>
+
+    <span class="n">avg</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">avg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;method must be &#39;median&#39; or &#39;mean&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 1. Frequency Rebinning</span>
+    <span class="k">if</span> <span class="n">rebin_width</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">rebin_width</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">df</span>
+        <span class="n">bin_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rebin_width</span> <span class="o">/</span> <span class="n">df</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">bin_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">n_freq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># Truncate to multiple of bin_size</span>
+            <span class="n">n_freq_new</span> <span class="o">=</span> <span class="n">n_freq</span> <span class="o">//</span> <span class="n">bin_size</span>
+            <span class="k">if</span> <span class="n">n_freq_new</span> <span class="o">*</span> <span class="n">bin_size</span> <span class="o">!=</span> <span class="n">n_freq</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="p">:</span><span class="n">n_freq_new</span> <span class="o">*</span> <span class="n">bin_size</span><span class="p">]</span>
+                <span class="n">frequencies</span> <span class="o">=</span> <span class="n">frequencies</span><span class="p">[:</span><span class="n">n_freq_new</span> <span class="o">*</span> <span class="n">bin_size</span><span class="p">]</span>
+            
+            <span class="c1"># Rebin: reshape and mean</span>
+            <span class="c1"># (Time, Freq) -&gt; (Time, FreqNew, BinSize) -&gt; mean(axis=2)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n_time</span><span class="p">,</span> <span class="n">n_freq_new</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ignore_nan</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                
+            <span class="c1"># Update frequency axis (centers)</span>
+            <span class="n">frequencies</span> <span class="o">=</span> <span class="n">frequencies</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n_freq_new</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span>
+            <span class="n">frequencies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            
+    <span class="c1"># Update n_freq after potentially rebinning/truncating</span>
+    <span class="n">n_freq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">use_median</span> <span class="o">=</span> <span class="p">(</span><span class="n">avg</span> <span class="o">==</span> <span class="s2">&quot;median&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 2. Block Bootstrap</span>
+    <span class="k">if</span> <span class="n">block_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">block_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">block_size</span> <span class="o">&gt;=</span> <span class="n">n_time</span><span class="p">:</span>
+             <span class="c1"># Just one block? or simple bootstrap of blocks?</span>
+             <span class="c1"># If block size is entire duration, only 1 possible block.</span>
+             <span class="c1"># Assume user knows what they are doing, but warn?</span>
+             <span class="k">pass</span>
+             
+        <span class="c1"># Create list of all possible start indices for blocks</span>
+        <span class="c1"># Overlapping blocks? Moving block bootstrap usually allows overlapping.</span>
+        <span class="c1"># &quot;Circular block bootstrap&quot; vs &quot;Moving block bootstrap&quot;.</span>
+        <span class="c1"># Let&#39;s assume standard moving block bootstrap: blocks can start at any index i where i+block &lt;= n</span>
+        <span class="n">num_possible_blocks</span> <span class="o">=</span> <span class="n">n_time</span> <span class="o">-</span> <span class="n">block_size</span> <span class="o">+</span> <span class="mi">1</span>
+        
+        <span class="c1"># We need to construct a sample of length n_time (approx)</span>
+        <span class="n">num_blocks_needed</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_time</span> <span class="o">/</span> <span class="n">block_size</span><span class="p">))</span>
+        
+        <span class="c1"># Randomly choose start indices</span>
+        <span class="n">start_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_possible_blocks</span><span class="p">,</span> <span class="p">(</span><span class="n">n_boot</span><span class="p">,</span> <span class="n">num_blocks_needed</span><span class="p">))</span>
+        
+        <span class="c1"># Construct full indices</span>
+        <span class="c1"># This is tricky to do fully vectorized for all_indices shaped (n_boot, n_time)</span>
+        <span class="c1"># because the last block might be truncated.</span>
+        <span class="c1"># But we can pre-allocate.</span>
+        
+        <span class="n">all_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_boot</span><span class="p">,</span> <span class="n">n_time</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        
+        <span class="c1"># Vectorized block expansion is complex, let&#39;s do semi-vectorized.</span>
+        <span class="c1"># Or construct a large array of shape (n_boot, num_blocks_needed * block_size)</span>
+        <span class="c1"># taking care of wrapping? No wrapping for Moving Block.</span>
+        
+        <span class="c1"># Let&#39;s create an template of offsets: [0, 1, ..., block_size-1]</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">block_size</span><span class="p">)</span>
+        
+        <span class="c1"># shape: (n_boot, num_blocks_needed, block_size)</span>
+        <span class="c1"># block_starts: (n_boot, num_blocks_needed, 1)</span>
+        <span class="n">block_indices</span> <span class="o">=</span> <span class="n">start_indices</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">+</span> <span class="n">offsets</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+        
+        <span class="c1"># Flatten to (n_boot, num_blocks_needed * block_size)</span>
+        <span class="n">flat_indices</span> <span class="o">=</span> <span class="n">block_indices</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n_boot</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1"># Truncate to n_time</span>
+        <span class="n">all_indices</span> <span class="o">=</span> <span class="n">flat_indices</span><span class="p">[:,</span> <span class="p">:</span><span class="n">n_time</span><span class="p">]</span>
+        
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Generate all bootstrap indices at once using NumPy (ensures reproducibility with seed)</span>
+        <span class="n">all_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_time</span><span class="p">,</span> <span class="p">(</span><span class="n">n_boot</span><span class="p">,</span> <span class="n">n_time</span><span class="p">))</span>
+
+    <span class="n">use_numba</span> <span class="o">=</span> <span class="n">HAS_NUMBA</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NUMBA_DISABLE_JIT&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;True&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">use_numba</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">resampled_stats</span> <span class="o">=</span> <span class="n">_bootstrap_resample_jit</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">,</span> <span class="n">all_indices</span><span class="p">,</span> <span class="n">use_median</span><span class="p">,</span> <span class="n">ignore_nan</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">resampled_stats</span> <span class="o">=</span> <span class="n">_bootstrap_resample_py</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">,</span> <span class="n">all_indices</span><span class="p">,</span> <span class="n">use_median</span><span class="p">,</span> <span class="n">ignore_nan</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">resampled_stats</span> <span class="o">=</span> <span class="n">_bootstrap_resample_py</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">all_indices</span><span class="p">,</span> <span class="n">use_median</span><span class="p">,</span> <span class="n">ignore_nan</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">avg</span> <span class="o">==</span> <span class="s2">&quot;median&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ignore_nan</span><span class="p">:</span>
+            <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">resampled_stats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">resampled_stats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ignore_nan</span><span class="p">:</span>
+            <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">resampled_stats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">resampled_stats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ci</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">ignore_nan</span><span class="p">:</span>
+        <span class="n">p_low</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">resampled_stats</span><span class="p">,</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">p_high</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">resampled_stats</span><span class="p">,</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">p_low</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">resampled_stats</span><span class="p">,</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">p_high</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">resampled_stats</span><span class="p">,</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">err_low</span> <span class="o">=</span> <span class="n">center</span> <span class="o">-</span> <span class="n">p_low</span>
+    <span class="n">err_high</span> <span class="o">=</span> <span class="n">p_high</span> <span class="o">-</span> <span class="n">center</span>
+
+    <span class="c1"># Overlap Ratio Correction (not applied if block bootstrap is used? </span>
+    <span class="c1"># Block bootstrap accounts for serial correlation implicitly if block size is large enough.</span>
+    <span class="c1"># But calculate_correlation_factor corrects for OVERLAP of FFTs in Welch.</span>
+    <span class="c1"># If we are resampling blocks of overlapping segments, do we still need it?</span>
+    <span class="c1"># Generally, bootstrap on dependent data should capture variance correctly if blocks are long enough.</span>
+    <span class="c1"># If block_size is used, we might treat factor as 1.0 or let it apply?</span>
+    <span class="c1"># Standard practice: If block bootstrap is used, it should capture the variance.</span>
+    <span class="c1"># But usually factor &gt; 1 only if N_effective &lt; N_actual. </span>
+    <span class="c1"># With block bootstrap, we resample N_actual points. The variance of the mean of dependent vars</span>
+    <span class="c1"># is captured by the block structure.</span>
+    <span class="c1"># However, individual segments in Welch are correlated.</span>
+    <span class="c1"># Let&#39;s err on side of caution: If block_size is specified, we assume it handles correlation -&gt; factor=1.</span>
+    <span class="c1"># If not, we use the analytical correction.</span>
+    
+    <span class="k">if</span> <span class="n">block_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">block_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">overlap_ratio</span> <span class="o">=</span> <span class="n">_infer_overlap_ratio</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">)</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="k">if</span> <span class="n">nperseg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">overlap_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">overlap_ratio</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">dummy_step</span> <span class="o">=</span> <span class="mi">100</span>
+                <span class="n">dummy_nperseg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">dummy_step</span> <span class="o">*</span> <span class="n">overlap_ratio</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">dummy_nperseg</span> <span class="o">&gt;</span> <span class="n">dummy_step</span><span class="p">:</span>
+                    <span class="n">dummy_noverlap</span> <span class="o">=</span> <span class="n">dummy_nperseg</span> <span class="o">-</span> <span class="n">dummy_step</span>
+                    <span class="n">factor</span> <span class="o">=</span> <span class="n">calculate_correlation_factor</span><span class="p">(</span>
+                        <span class="n">window</span><span class="p">,</span> <span class="n">dummy_nperseg</span><span class="p">,</span> <span class="n">dummy_noverlap</span><span class="p">,</span> <span class="n">n_time</span>
+                    <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">noverlap</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">overlap_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">overlap_ratio</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">inferred_noverlap</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nperseg</span> <span class="o">-</span> <span class="p">(</span><span class="n">nperseg</span> <span class="o">/</span> <span class="n">overlap_ratio</span><span class="p">)))</span>
+                <span class="n">noverlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inferred_noverlap</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">noverlap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">noverlap</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="n">calculate_correlation_factor</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">nperseg</span><span class="p">,</span> <span class="n">noverlap</span><span class="p">,</span> <span class="n">n_time</span><span class="p">)</span>
+
+    <span class="n">err_low</span> <span class="o">*=</span> <span class="n">factor</span>
+    <span class="n">err_high</span> <span class="o">*=</span> <span class="n">factor</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (Bootstrap </span><span class="si">{</span><span class="n">avg</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="c1"># Use re-calculated frequencies</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+    <span class="n">out_freqs</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+    
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+        <span class="n">center</span><span class="p">,</span>
+        <span class="n">frequencies</span><span class="o">=</span><span class="n">out_freqs</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">error_low</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+        <span class="n">err_low</span><span class="p">,</span>
+        <span class="n">frequencies</span><span class="o">=</span><span class="n">out_freqs</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Error Low&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">error_high</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+        <span class="n">err_high</span><span class="p">,</span>
+        <span class="n">frequencies</span><span class="o">=</span><span class="n">out_freqs</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Error High&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="c1"># Fixed Error High name</span>
+    
+    <span class="k">if</span> <span class="n">return_map</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">BifrequencyMap</span>
+        <span class="k">if</span> <span class="n">ignore_nan</span><span class="p">:</span>
+             <span class="c1"># masked covariance? np.cov doesn&#39;t support nan directly well in all versions</span>
+             <span class="c1"># Use pandas or manual? Or just mask?</span>
+             <span class="c1"># Simple approach: nan -&gt; mean (impute) or just let np.cov handle if recent enough?</span>
+             <span class="c1"># np.cov does NOT handle NaNs.</span>
+             <span class="c1"># If robust is needed, maybe skip map or warning?</span>
+             <span class="c1"># Hack: zero-fill or mean-fill for covariance calculation if NaNs exist</span>
+             <span class="c1"># But if ignore_nan=True, we likely have NaNs.</span>
+             <span class="c1"># Let&#39;s fill NaNs with column means for covariance purpose</span>
+             <span class="n">stats_filled</span> <span class="o">=</span> <span class="n">resampled_stats</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+             <span class="n">col_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">stats_filled</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+             <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">stats_filled</span><span class="p">))</span>
+             <span class="n">stats_filled</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">col_mean</span><span class="p">,</span> <span class="n">inds</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+             <span class="n">cov_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">stats_filled</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+             <span class="n">cov_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">resampled_stats</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+             
+        <span class="n">bfm</span> <span class="o">=</span> <span class="n">BifrequencyMap</span><span class="o">.</span><span class="n">from_points</span><span class="p">(</span>
+            <span class="n">cov_matrix</span><span class="p">,</span>
+            <span class="n">f2</span><span class="o">=</span><span class="n">out_freqs</span><span class="p">,</span>
+            <span class="n">f1</span><span class="o">=</span><span class="n">out_freqs</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">unit</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Covariance of </span><span class="si">{</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">fs</span><span class="p">,</span> <span class="n">bfm</span>
+
+    <span class="k">return</span> <span class="n">fs</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
