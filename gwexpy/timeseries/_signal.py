@@ -576,12 +576,13 @@ class TimeSeriesSignalMixin:
     def transfer_function(
         self,
         other: Any,
+        mode: str = "steady",
         fftlength: Optional[float] = None,
         overlap: Optional[float] = None,
         window: Any = "hann",
         average: str = "mean",
         *,
-        method: str = "gwpy",
+        method: Optional[str] = None,  # Deprecated, for backward compatibility
         fft_kwargs: Optional[dict[str, Any]] = None,
         downsample: Optional[float] = None,
         align: str = "intersection",
@@ -590,42 +591,103 @@ class TimeSeriesSignalMixin:
         """
         Compute the transfer function between this TimeSeries and another.
 
+        This TimeSeries (`self`) is the 'A-channel' (reference, denominator),
+        while `other` is the 'B-channel' (test, numerator).
+
         Parameters
         ----------
         other : `TimeSeries`
-            The input TimeSeries.
-        fftlength : `int`, optional
-            Length of the FFT, in seconds (default) or samples.
-        overlap : `int`, optional
-            Overlap between segments, in seconds (default) or samples.
+            The test TimeSeries (numerator).
+        mode : `str`, optional
+            "steady" (default): GWpy-compatible averaged estimator using
+                H(f) = CSD_{A,B}(f) / PSD_A(f)
+                Use for steady-state system identification with noise averaging.
+            "transient": Instantaneous FFT ratio
+                H(f) = FFT_B(f) / FFT_A(f)
+                Use for single-shot transient response analysis.
+        fftlength : `float`, optional
+            Length of the FFT, in seconds. Only used for mode="steady".
+        overlap : `float`, optional
+            Overlap between segments, in seconds. Only used for mode="steady".
         window : `str`, `numpy.ndarray`, optional
-            Window function to apply.
+            Window function to apply (mode="steady" only).
         average : `str`, optional
-            Method to average viewing periods.
+            Method to average segments (mode="steady" only).
         method : `str`, optional
-            "gwpy" or "csd_psd": Use GWpy CSD/PSD estimator.
-            "fft": Use direct FFT ratio (other.fft() / self.fft()).
-            "auto": Use "fft" if fftlength is None, else "gwpy".
+            **Deprecated**: use `mode` instead.
+            For backward compatibility: "gwpy"/"csd_psd" -> mode="steady",
+            "fft" -> mode="transient", "auto" -> auto-select.
+        fft_kwargs : `dict`, optional
+            Additional keyword arguments for FFT (mode="transient" only).
+        downsample : `float`, optional
+            Whether to downsample if sample rates differ (mode="transient" only).
+        align : `str`, optional
+            Alignment method: "intersection" or "none" (mode="transient" only).
 
         Returns
         -------
         out : `FrequencySeries`
             Transfer function.
+
+        Notes
+        -----
+        **steady mode (GWpy-compatible)**:
+            Uses cross-spectral density and power spectral density:
+
+            .. math::
+
+                H(f) = \\frac{\\mathrm{CSD}_{A,B}(f)}{\\mathrm{PSD}_A(f)}
+
+            This is the standard estimator for steady-state system identification,
+            providing noise averaging through overlapped segmented FFTs.
+            Results are numerically identical to GWpy's `transfer_function`.
+
+        **transient mode (gwexpy extension)**:
+            Uses direct FFT ratio without averaging:
+
+            .. math::
+
+                H_{\\mathrm{transient}}(f) = \\frac{\\mathrm{FFT}_B(f)}{\\mathrm{FFT}_A(f)}
+
+            Use this for single-shot transient response analysis where
+            averaging would obscure the instantaneous transfer characteristics.
+            Employs the corrected transient FFT with proper DC/Nyquist handling.
+
+        Examples
+        --------
+        Steady-state transfer function (GWpy-compatible)::
+
+            >>> tf = reference.transfer_function(test, mode="steady", fftlength=1.0)
+
+        Transient transfer function::
+
+            >>> tf = input_signal.transfer_function(output_signal, mode="transient")
         """
         import warnings
 
-        use_fft = False
-        if method in ("gwpy", "csd_psd"):
-            use_fft = False
-        elif method == "fft":
-            use_fft = True
-        elif method == "auto":
-            use_fft = fftlength is None
-        else:
-            raise ValueError(f"Unknown method: {method}")
+        # Handle deprecated 'method' parameter
+        if method is not None:
+            warnings.warn(
+                "The 'method' parameter is deprecated. Use 'mode' instead: "
+                "'gwpy'/'csd_psd' -> mode='steady', 'fft' -> mode='transient'.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            if method in ("gwpy", "csd_psd"):
+                mode = "steady"
+            elif method == "fft":
+                mode = "transient"
+            elif method == "auto":
+                # Auto-select: if fftlength is None, use transient; else steady
+                mode = "transient" if fftlength is None else "steady"
+            else:
+                raise ValueError(f"Unknown method: {method}")
 
-        if not use_fft:
-            # CSD / PSD estimator
+        if mode not in ("steady", "transient"):
+            raise ValueError(f"mode must be 'steady' or 'transient', got: {mode}")
+
+        if mode == "steady":
+            # GWpy-compatible: CSD / PSD estimator
             csd = self.csd(
                 other,
                 fftlength=fftlength,
@@ -642,11 +704,15 @@ class TimeSeriesSignalMixin:
                 **kwargs,
             )
             size = min(csd.size, psd.size)
-            return csd[:size] / psd[:size]
+            tf = csd[:size] / psd[:size]
+            if other.name and self.name:
+                tf.name = f"{other.name} / {self.name}"
+            return tf
 
-        else:
-            # FFT Ratio
+        else:  # mode == "transient"
+            # FFT Ratio using transient FFT
             kw = dict(fft_kwargs) if fft_kwargs is not None else {}
+            kw.setdefault("mode", "transient")
 
             a = self
             b = other
@@ -691,7 +757,7 @@ class TimeSeriesSignalMixin:
             if b.size != size:
                 b = b[:size]
 
-            # 4. FFTs
+            # 4. FFTs (using transient mode for proper amplitude preservation)
             fx = a.fft(**kw)
             fy = b.fft(**kw)
 

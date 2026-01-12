@@ -57,30 +57,69 @@ class TestTimeSeriesExtensions:
 
         assert nfft >= 101
 
-    def test_transfer_function_auto(self):
+    def test_transfer_function_steady_gwpy_match(self):
+        """Verify steady mode matches GWpy transfer_function exactly."""
+        from gwpy.timeseries import TimeSeries as GwpyTimeSeries
+
+        np.random.seed(42)
+        data1 = np.random.randn(1024)
+        data2 = np.random.randn(1024)
+
+        gwex_ts1 = TimeSeries(data1, sample_rate=64.0)
+        gwex_ts2 = TimeSeries(data2, sample_rate=64.0)
+        gwpy_ts1 = GwpyTimeSeries(data1, sample_rate=64.0)
+        gwpy_ts2 = GwpyTimeSeries(data2, sample_rate=64.0)
+
+        tf_gwex = gwex_ts1.transfer_function(gwex_ts2, mode="steady", fftlength=1.0, overlap=0)
+        tf_gwpy = gwpy_ts1.transfer_function(gwpy_ts2, fftlength=1.0, overlap=0)
+
+        np.testing.assert_allclose(tf_gwex.value, tf_gwpy.value, rtol=1e-10)
+
+    def test_transfer_function_transient_known_gain(self):
+        """Verify transient mode with known constant gain using impulse input."""
+        # Impulse input
+        n_samples = 1000
+        data_in = np.zeros(n_samples)
+        data_in[0] = 1.0
+
+        gain = 2.5
+        data_out = gain * data_in
+
+        ts_in = TimeSeries(data_in, sample_rate=1000.0)
+        ts_out = TimeSeries(data_out, sample_rate=1000.0)
+
+        tf = ts_in.transfer_function(ts_out, mode="transient")
+
+        # All frequency bins should have the constant gain
+        np.testing.assert_allclose(np.abs(tf.value), gain, rtol=1e-10)
+
+    def test_transfer_function_backward_compat(self):
+        """Verify deprecated 'method' parameter still works with warning."""
+        import warnings
+
         np.random.seed(42)
         data1 = np.random.randn(100)
         data2 = np.random.randn(100)
         ts1 = TimeSeries(data1, dt=1.0)
         ts2 = TimeSeries(data2, dt=1.0)
 
-        # fftlength=None -> FFT ratio
-        # method="auto" implies method="fft" when fftlength is None
-        tf_fft = ts1.transfer_function(ts2, method="auto")
+        # method="auto" with fftlength=None should use transient mode
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            tf_fft = ts1.transfer_function(ts2, method="auto")
+            assert any("deprecated" in str(warning.message).lower() for warning in w)
 
-        # Verify it matches manual fft ratio
-        # Note: manual ratio needs checking normalization.
-        # fft() returns normalized by N.
-        # ratio (Y/N) / (X/N) = Y/X. Scale factors cancel out.
-        f1 = ts1.fft()
-        f2 = ts2.fft()
+        # Verify it matches manual transient fft ratio
+        f1 = ts1.fft(mode="transient")
+        f2 = ts2.fft(mode="transient")
         tf_manual = f2 / f1
         np.testing.assert_allclose(tf_fft.value, tf_manual.value)
 
-        # fftlength given -> CSD/PSD (runs usage of welch)
-        # Just check it runs and returns different result or specific size
-        tf_welch = ts1.transfer_function(ts2, method="auto", fftlength=50, overlap=0, window='boxcar')
-        assert len(tf_welch) == 50//2 + 1
+        # method="auto" with fftlength should use steady mode
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            tf_welch = ts1.transfer_function(ts2, method="auto", fftlength=50, overlap=0, window='boxcar')
+            assert len(tf_welch) == 50//2 + 1
 
     def test_transfer_function_mismatch(self):
         # Create TS with different rates
@@ -90,11 +129,11 @@ class TestTimeSeriesExtensions:
 
         # Error on mismatch
         with pytest.raises(ValueError, match="Sample rates differ"):
-            ts1.transfer_function(ts2, method="fft", downsample=False)
+            ts1.transfer_function(ts2, mode="transient", downsample=False)
 
         # Warning and downsample
         with pytest.warns(UserWarning, match="Sample rates differ"):
-            tf = ts1.transfer_function(ts2, method="fft", downsample=None)
+            tf = ts1.transfer_function(ts2, mode="transient", downsample=None)
             # Alignment intersection.
             # ts1 (100Hz, 10s) -> [0, 10s)
             # ts2 (50Hz, 20s) -> [0, 20s)
@@ -112,3 +151,4 @@ class TestTimeSeriesExtensions:
          # rfftfreq(19) -> 10 points
          assert len(fs) == 10
          assert fs.df.value == pytest.approx(1.0/19.0)
+
