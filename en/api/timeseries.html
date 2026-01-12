@@ -682,6 +682,13 @@ Returns a FrequencySeriesDict.</p>
 <dd class="field-odd"><p><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix" title="gwexpy.frequencyseries.FrequencySeriesMatrix">FrequencySeriesMatrix</a></p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>If include_diagonal is True and diagonal_value is not None, the
+diagonal is filled with that value without computation. If
+diagonal_value is None, the diagonal coherence is computed. Uncomputed
+elements are represented as NaN. The frequency axis is taken from the
+first computed element without alignment/truncation; dt and fftlength
+consistency is enforced before computation.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -716,7 +723,8 @@ Returns a new TimeSeriesDict.</p>
 <li><p><strong>overlap</strong> (<em>float</em><em>, </em><em>optional</em>) – Overlap between segments in seconds.</p></li>
 <li><p><strong>window</strong> (<em>str</em><em>, </em><em>optional</em>) – Window function name (default ‘hann’).</p></li>
 <li><p><strong>hermitian</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, exploit Hermitian symmetry (default True).</p></li>
-<li><p><strong>include_diagonal</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include diagonal elements (default True).</p></li>
+<li><p><strong>include_diagonal</strong> (<em>bool</em><em>, </em><em>optional</em>) – Must be True for CSD matrices; False raises ValueError because the
+diagonal is always the PSD.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -726,6 +734,11 @@ Returns a new TimeSeriesDict.</p>
 <dd class="field-odd"><p><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix" title="gwexpy.frequencyseries.FrequencySeriesMatrix">FrequencySeriesMatrix</a></p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The diagonal of a self-CSD matrix is always computed as the PSD. Any
+uncomputed elements are represented as complex NaN. The frequency axis
+is taken from the first computed element without alignment/truncation;
+dt and fftlength consistency is enforced before computation.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1231,6 +1244,13 @@ Returns a FrequencySeriesList.</p>
 <dd class="field-even"><p><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix" title="gwexpy.frequencyseries.FrequencySeriesMatrix">FrequencySeriesMatrix</a></p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>If include_diagonal is True and diagonal_value is not None, the
+diagonal is filled with that value without computation. If
+diagonal_value is None, the diagonal coherence is computed. Uncomputed
+elements are represented as NaN. The frequency axis is taken from the
+first computed element without alignment/truncation; dt and fftlength
+consistency is enforced before computation.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1265,13 +1285,19 @@ Returns a new TimeSeriesList.</p>
 <li><p><strong>overlap</strong> – See TimeSeries.csd() arguments.</p></li>
 <li><p><strong>window</strong> – See TimeSeries.csd() arguments.</p></li>
 <li><p><strong>hermitian</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True and other is None, compute only upper triangle and conjugate fill lower.</p></li>
-<li><p><strong>include_diagonal</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Whether to compute diagonal elements.</p></li>
+<li><p><strong>include_diagonal</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Must be True for CSD matrices; False raises ValueError because the
+diagonal is always the PSD.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix" title="gwexpy.frequencyseries.FrequencySeriesMatrix">FrequencySeriesMatrix</a></p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The diagonal of a self-CSD matrix is always computed as the PSD. Any
+uncomputed elements are represented as complex NaN. The frequency axis
+is taken from the first computed element without alignment/truncation;
+dt and fftlength consistency is enforced before computation.</p>
 </dd></dl>
 
 <dl class="py method">

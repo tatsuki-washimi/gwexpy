@@ -83,42 +83,177 @@
            <div itemprop="articleBody">
              
   <h1>gwexpy.noise.gwinc_ のソースコード</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span></span><span class="sd">&quot;&quot;&quot;gwexpy.noise.gwinc_ - pyGWINC wrapper for ASD generation.</span>
+
+<span class="sd">This module provides functions to generate Amplitude Spectral Density (ASD)</span>
+<span class="sd">from pyGWINC detector noise models.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">..frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+
+
+<span class="c1"># Allowed quantity values for pyGWINC</span>
+<span class="n">_PYGWINC_QUANTITIES</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;strain&quot;</span><span class="p">,</span> <span class="s2">&quot;darm&quot;</span><span class="p">,</span> <span class="s2">&quot;displacement&quot;</span><span class="p">})</span>
+
 
 <div class="viewcode-block" id="from_pygwinc">
 <a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.from_pygwinc">[ドキュメント]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">from_pygwinc</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get detector noise ASD from pygwinc.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_pygwinc</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">frequencies</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;strain&quot;</span><span class="p">,</span> <span class="s2">&quot;darm&quot;</span><span class="p">,</span> <span class="s2">&quot;displacement&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;strain&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get detector noise ASD from pyGWINC.</span>
+
+<span class="sd">    This function returns the Amplitude Spectral Density (ASD) of a</span>
+<span class="sd">    gravitational wave detector noise model using pyGWINC.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : str</span>
+<span class="sd">        The pyGWINC model name (e.g., &quot;aLIGO&quot;, &quot;Aplus&quot;, &quot;Voyager&quot;).</span>
+<span class="sd">        &quot;A+&quot; is automatically converted to &quot;Aplus&quot;.</span>
+<span class="sd">    frequencies : array_like, optional</span>
+<span class="sd">        Frequency array in Hz. If not provided, a default array is generated</span>
+<span class="sd">        using `fmin`, `fmax`, and `df` from kwargs.</span>
+<span class="sd">    quantity : {&quot;strain&quot;, &quot;darm&quot;, &quot;displacement&quot;}, default &quot;strain&quot;</span>
+<span class="sd">        Physical quantity of the ASD to return:</span>
+
+<span class="sd">        - ``&quot;strain&quot;``: Strain ASD [1/sqrt(Hz)]</span>
+<span class="sd">        - ``&quot;darm&quot;``: Differential arm length ASD [m/sqrt(Hz)]</span>
+<span class="sd">        - ``&quot;displacement&quot;``: Deprecated alias for &quot;darm&quot;</span>
+
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments:</span>
+
+<span class="sd">        - ``fmin`` : float, default 10.0</span>
+<span class="sd">            Minimum frequency [Hz] for default frequency array.</span>
+<span class="sd">        - ``fmax`` : float, default 4000.0</span>
+<span class="sd">            Maximum frequency [Hz] for default frequency array.</span>
+<span class="sd">        - ``df`` : float, default 1.0</span>
+<span class="sd">            Frequency step [Hz] for default frequency array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FrequencySeries</span>
+<span class="sd">        The ASD as a FrequencySeries with appropriate units.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ImportError</span>
+<span class="sd">        If pyGWINC is not installed.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `quantity` is not one of the allowed values.</span>
+<span class="sd">        If `quantity=&quot;darm&quot;` or `&quot;displacement&quot;` and arm length cannot be</span>
+<span class="sd">        retrieved from the IFO model.</span>
+<span class="sd">        If `fmin &gt;= fmax`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Quantity Definitions:**</span>
+
+<span class="sd">    - **Strain ASD**: The detector&#39;s sensitivity expressed as equivalent</span>
+<span class="sd">      gravitational wave strain per sqrt(Hz).</span>
+<span class="sd">    - **DARM ASD**: Differential Arm Length Motion ASD, related to strain</span>
+<span class="sd">      by ``darm = strain * L`` where L is the arm length.</span>
+
+<span class="sd">    **Arm Length Conversion:**</span>
+
+<span class="sd">    For ``quantity=&quot;darm&quot;`` (or ``&quot;displacement&quot;``), the strain ASD is</span>
+<span class="sd">    multiplied by the arm length L obtained from ``ifo.Infrastructure.Length``.</span>
+
+<span class="sd">    **Frequency Array:**</span>
+
+<span class="sd">    If `frequencies` is not provided, a uniform frequency array is generated:</span>
+<span class="sd">    ``np.arange(fmin, fmax + df, df)``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.noise.asd import from_pygwinc</span>
+
+<span class="sd">    Get strain ASD for aLIGO:</span>
+
+<span class="sd">    &gt;&gt;&gt; asd = from_pygwinc(&quot;aLIGO&quot;, fmin=10.0, fmax=1000.0, df=1.0)</span>
+<span class="sd">    &gt;&gt;&gt; asd.unit</span>
+<span class="sd">    Unit(&quot;1 / Hz(1/2)&quot;)</span>
+
+<span class="sd">    Get DARM ASD:</span>
+
+<span class="sd">    &gt;&gt;&gt; darm_asd = from_pygwinc(&quot;aLIGO&quot;, quantity=&quot;darm&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; darm_asd.unit</span>
+<span class="sd">    Unit(&quot;m / Hz(1/2)&quot;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">gwinc</span>
     <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Please install pygwinc to use gwexpy.noise.from_pygwinc&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="s2">&quot;Please install pygwinc to use gwexpy.noise.asd.from_pygwinc&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Validate quantity</span>
+    <span class="n">quantity_lower</span> <span class="o">=</span> <span class="n">quantity</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">quantity_lower</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_PYGWINC_QUANTITIES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid quantity &#39;</span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Allowed values are: &#39;strain&#39;, &#39;darm&#39;, &#39;displacement&#39;. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Note: &#39;velocity&#39; and &#39;acceleration&#39; are not supported for pyGWINC.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Handle deprecated alias</span>
+    <span class="k">if</span> <span class="n">quantity_lower</span> <span class="o">==</span> <span class="s2">&quot;displacement&quot;</span><span class="p">:</span>
+        <span class="n">quantity_lower</span> <span class="o">=</span> <span class="s2">&quot;darm&quot;</span>
+
+    <span class="c1"># Build frequency array</span>
+    <span class="n">fmin</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fmin&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
+    <span class="n">fmax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fmax&quot;</span><span class="p">,</span> <span class="mf">4000.0</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">fmin</span> <span class="o">&gt;=</span> <span class="n">fmax</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;fmin (</span><span class="si">{</span><span class="n">fmin</span><span class="si">}</span><span class="s2">) must be less than fmax (</span><span class="si">{</span><span class="n">fmax</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">frequencies</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">fmin</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fmin&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
-        <span class="n">fmax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fmax&quot;</span><span class="p">,</span> <span class="mf">4000.0</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
         <span class="n">frequencies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span> <span class="o">+</span> <span class="n">df</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 
+    <span class="c1"># Handle model name alias</span>
     <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;A+&quot;</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;Aplus&quot;</span>
 
+    <span class="c1"># Load budget and run</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">budget</span> <span class="o">=</span> <span class="n">gwinc</span><span class="o">.</span><span class="n">load_budget</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
-        <span class="c1"># Fallback if specific model name handling is needed or let it bubble</span>
         <span class="k">raise</span>
 
     <span class="n">trace</span> <span class="o">=</span> <span class="n">budget</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="n">frequencies</span><span class="p">)</span>
-    <span class="n">asd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">psd</span><span class="p">)</span>
+    <span class="n">strain_asd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">psd</span><span class="p">)</span>
+
+    <span class="c1"># Get arm length for DARM conversion if needed</span>
+    <span class="k">if</span> <span class="n">quantity_lower</span> <span class="o">==</span> <span class="s2">&quot;darm&quot;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ifo</span> <span class="o">=</span> <span class="n">budget</span><span class="o">.</span><span class="n">ifo</span>
+            <span class="n">arm_length</span> <span class="o">=</span> <span class="n">ifo</span><span class="o">.</span><span class="n">Infrastructure</span><span class="o">.</span><span class="n">Length</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Cannot retrieve arm length from IFO model &#39;</span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;for quantity=&#39;darm&#39;. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">asd</span> <span class="o">=</span> <span class="n">strain_asd</span> <span class="o">*</span> <span class="n">arm_length</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;m / sqrt(Hz)&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># quantity == &quot;strain&quot;</span>
+        <span class="n">asd</span> <span class="o">=</span> <span class="n">strain_asd</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;1 / sqrt(Hz)&quot;</span>
 
     <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span>
-        <span class="n">asd</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;strain / sqrt(Hz)&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="n">asd</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span></div>
 
 </pre></div>

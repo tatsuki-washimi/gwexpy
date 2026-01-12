@@ -362,12 +362,20 @@
 <span class="sd">        hermitian : bool, optional</span>
 <span class="sd">            If True, exploit Hermitian symmetry (default True).</span>
 <span class="sd">        include_diagonal : bool, optional</span>
-<span class="sd">            Whether to include diagonal elements (default True).</span>
+<span class="sd">            Must be True for CSD matrices; False raises ValueError because the</span>
+<span class="sd">            diagonal is always the PSD.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeriesMatrix</span>
 <span class="sd">            The CSD matrix.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The diagonal of a self-CSD matrix is always computed as the PSD. Any</span>
+<span class="sd">        uncomputed elements are represented as complex NaN. The frequency axis</span>
+<span class="sd">        is taken from the first computed element without alignment/truncation;</span>
+<span class="sd">        dt and fftlength consistency is enforced before computation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">csd_matrix_from_collection</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span>
@@ -403,6 +411,15 @@
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeriesMatrix</span>
 <span class="sd">            The coherence matrix.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If include_diagonal is True and diagonal_value is not None, the</span>
+<span class="sd">        diagonal is filled with that value without computation. If</span>
+<span class="sd">        diagonal_value is None, the diagonal coherence is computed. Uncomputed</span>
+<span class="sd">        elements are represented as NaN. The frequency axis is taken from the</span>
+<span class="sd">        first computed element without alignment/truncation; dt and fftlength</span>
+<span class="sd">        consistency is enforced before computation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">coherence_matrix_from_collection</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span>
@@ -1149,11 +1166,19 @@
 <span class="sd">        hermitian : bool, default=True</span>
 <span class="sd">            If True and other is None, compute only upper triangle and conjugate fill lower.</span>
 <span class="sd">        include_diagonal : bool, default=True</span>
-<span class="sd">            Whether to compute diagonal elements.</span>
+<span class="sd">            Must be True for CSD matrices; False raises ValueError because the</span>
+<span class="sd">            diagonal is always the PSD.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeriesMatrix</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The diagonal of a self-CSD matrix is always computed as the PSD. Any</span>
+<span class="sd">        uncomputed elements are represented as complex NaN. The frequency axis</span>
+<span class="sd">        is taken from the first computed element without alignment/truncation;</span>
+<span class="sd">        dt and fftlength consistency is enforced before computation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">csd_matrix_from_collection</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span>
@@ -1185,6 +1210,15 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeriesMatrix</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If include_diagonal is True and diagonal_value is not None, the</span>
+<span class="sd">        diagonal is filled with that value without computation. If</span>
+<span class="sd">        diagonal_value is None, the diagonal coherence is computed. Uncomputed</span>
+<span class="sd">        elements are represented as NaN. The frequency axis is taken from the</span>
+<span class="sd">        first computed element without alignment/truncation; dt and fftlength</span>
+<span class="sd">        consistency is enforced before computation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">coherence_matrix_from_collection</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span>

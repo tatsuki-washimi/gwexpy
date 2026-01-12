@@ -82,44 +82,24 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gwexpy.noise.obspy_</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="sd">&quot;&quot;&quot;gwexpy.noise.obspy_ - ObsPy wrapper for ASD generation.</span>
+
+<span class="sd">This module provides functions to generate Amplitude Spectral Density (ASD)</span>
+<span class="sd">from ObsPy seismic and infrasound noise models.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Union</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">..frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_convert_obspy_unit</span><span class="p">(</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">target_unit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">],</span> <span class="n">is_seismic</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
-    <span class="n">target_unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">target_unit</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">is_seismic</span><span class="p">:</span>
-        <span class="c1"># Seismic base is acceleration [m/s^2/sqrt(Hz)]</span>
-        <span class="n">velocity_unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="s2">&quot;m / s / Hz^(1/2)&quot;</span><span class="p">)</span>
-        <span class="n">displacement_unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="s2">&quot;m / Hz^(1/2)&quot;</span><span class="p">)</span>
-
-        <span class="n">f</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">omega</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f</span>
-
-        <span class="k">if</span> <span class="n">target_unit</span><span class="o">.</span><span class="n">is_equivalent</span><span class="p">(</span><span class="n">velocity_unit</span><span class="p">):</span>
-            <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">omega</span>
-                <span class="k">if</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span>
-                <span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">velocity_unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">name</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">target_unit</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">target_unit</span><span class="o">.</span><span class="n">is_equivalent</span><span class="p">(</span><span class="n">displacement_unit</span><span class="p">):</span>
-            <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="p">(</span><span class="n">omega</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span>
-                <span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">displacement_unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">name</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">target_unit</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">target_unit</span><span class="p">)</span>
+<span class="c1"># Allowed quantity values for ObsPy seismic models</span>
+<span class="n">_OBSPY_QUANTITIES</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;displacement&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="s2">&quot;acceleration&quot;</span><span class="p">})</span>
 
 
 <div class="viewcode-block" id="from_obspy">
@@ -127,21 +107,135 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">from_obspy</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">frequencies</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">unit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;displacement&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="s2">&quot;acceleration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;acceleration&quot;</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get standard noise models from ObsPy.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get standard noise models from ObsPy.</span>
+
+<span class="sd">    This function returns the Amplitude Spectral Density (ASD) of seismic</span>
+<span class="sd">    or infrasound noise models from ObsPy.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : str</span>
+<span class="sd">        The ObsPy model name. Supported models:</span>
+
+<span class="sd">        - ``&quot;NHNM&quot;``: New High Noise Model (Peterson 1993)</span>
+<span class="sd">        - ``&quot;NLNM&quot;``: New Low Noise Model (Peterson 1993)</span>
+<span class="sd">        - ``&quot;IDCH&quot;``: IDC Infrasound High Noise Model</span>
+<span class="sd">        - ``&quot;IDCL&quot;``: IDC Infrasound Low Noise Model</span>
+
+<span class="sd">    frequencies : array_like, optional</span>
+<span class="sd">        Frequency array in Hz for interpolation. If not provided, the</span>
+<span class="sd">        original model frequencies are used.</span>
+<span class="sd">    quantity : {&quot;displacement&quot;, &quot;velocity&quot;, &quot;acceleration&quot;}, default &quot;acceleration&quot;</span>
+<span class="sd">        Physical quantity of the ASD to return (for seismic models only):</span>
+
+<span class="sd">        - ``&quot;acceleration&quot;``: Acceleration ASD [m/(s²·sqrt(Hz))]</span>
+<span class="sd">        - ``&quot;velocity&quot;``: Velocity ASD [m/(s·sqrt(Hz))]</span>
+<span class="sd">        - ``&quot;displacement&quot;``: Displacement ASD [m/sqrt(Hz)]</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            The ``&quot;strain&quot;`` quantity is **not supported** for seismic noise</span>
+<span class="sd">            models. Use ``from_pygwinc`` for strain-based detector noise.</span>
+
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments passed to FrequencySeries constructor.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FrequencySeries</span>
+<span class="sd">        The ASD as a FrequencySeries with appropriate units.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ImportError</span>
+<span class="sd">        If ObsPy is not installed.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `model` is not one of the supported models.</span>
+<span class="sd">        If `quantity` is not one of the allowed values.</span>
+<span class="sd">        If `quantity=&quot;strain&quot;` is requested (not supported).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Quantity Conversion (Seismic Models):**</span>
+
+<span class="sd">    The NHNM and NLNM models are defined in terms of acceleration. Conversions</span>
+<span class="sd">    to velocity and displacement are performed in the frequency domain:</span>
+
+<span class="sd">    - ``velocity = acceleration / (2πf)``</span>
+<span class="sd">    - ``displacement = acceleration / (2πf)²``</span>
+
+<span class="sd">    At ``f=0``, the conversion results in ``NaN`` to avoid division by zero.</span>
+
+<span class="sd">    **Unit Table:**</span>
+
+<span class="sd">    ============== ========================</span>
+<span class="sd">    Quantity       Unit</span>
+<span class="sd">    ============== ========================</span>
+<span class="sd">    acceleration   m / (s² · sqrt(Hz))</span>
+<span class="sd">    velocity       m / (s · sqrt(Hz))</span>
+<span class="sd">    displacement   m / sqrt(Hz)</span>
+<span class="sd">    ============== ========================</span>
+
+<span class="sd">    **Infrasound Models:**</span>
+
+<span class="sd">    For IDCH and IDCL models, the quantity parameter is ignored as these</span>
+<span class="sd">    return pressure ASD in units of Pa/sqrt(Hz).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.noise.asd import from_obspy</span>
+
+<span class="sd">    Get acceleration ASD for NLNM:</span>
+
+<span class="sd">    &gt;&gt;&gt; asd = from_obspy(&quot;NLNM&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; asd.unit</span>
+<span class="sd">    Unit(&quot;m / (Hz(1/2) s2)&quot;)</span>
+
+<span class="sd">    Get displacement ASD:</span>
+
+<span class="sd">    &gt;&gt;&gt; disp_asd = from_obspy(&quot;NLNM&quot;, quantity=&quot;displacement&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; disp_asd.unit</span>
+<span class="sd">    Unit(&quot;m / Hz(1/2)&quot;)</span>
+
+<span class="sd">    Strain is not supported:</span>
+
+<span class="sd">    &gt;&gt;&gt; from_obspy(&quot;NLNM&quot;, quantity=&quot;strain&quot;)  # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">    ValueError: quantity=&#39;strain&#39; is not supported for seismic noise models...</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">obspy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">spectral_estimation</span>
     <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Please install obspy to use gwexpy.noise.from_obspy&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="s2">&quot;Please install obspy to use gwexpy.noise.asd.from_obspy&quot;</span>
+        <span class="p">)</span>
 
+    <span class="c1"># Validate quantity</span>
+    <span class="n">quantity_lower</span> <span class="o">=</span> <span class="n">quantity</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">quantity_lower</span> <span class="o">==</span> <span class="s2">&quot;strain&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;quantity=&#39;strain&#39; is not supported for seismic noise models. &quot;</span>
+            <span class="s2">&quot;Strain ASD is only available from gravitational wave detector &quot;</span>
+            <span class="s2">&quot;models using from_pygwinc().&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">quantity_lower</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_OBSPY_QUANTITIES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid quantity &#39;</span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Allowed values are: &#39;displacement&#39;, &#39;velocity&#39;, &#39;acceleration&#39;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Load model data</span>
     <span class="n">model_upper</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">model_upper</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;NHNM&quot;</span><span class="p">,</span> <span class="s2">&quot;NLNM&quot;</span><span class="p">]:</span>
-        <span class="n">periods</span><span class="p">,</span> <span class="n">psd_db</span> <span class="o">=</span> <span class="p">(</span><span class="n">spectral_estimation</span><span class="o">.</span><span class="n">get_nhnm</span><span class="p">()</span> <span class="k">if</span> <span class="n">model_upper</span> <span class="o">==</span> <span class="s2">&quot;NHNM&quot;</span>
-                           <span class="k">else</span> <span class="n">spectral_estimation</span><span class="o">.</span><span class="n">get_nlnm</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">model_upper</span> <span class="o">==</span> <span class="s2">&quot;NHNM&quot;</span><span class="p">:</span>
+        <span class="n">periods</span><span class="p">,</span> <span class="n">psd_db</span> <span class="o">=</span> <span class="n">spectral_estimation</span><span class="o">.</span><span class="n">get_nhnm</span><span class="p">()</span>
+        <span class="n">base_unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="s2">&quot;m / s^2 / Hz^(1/2)&quot;</span><span class="p">)</span>
+        <span class="n">is_seismic</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="n">model_upper</span> <span class="o">==</span> <span class="s2">&quot;NLNM&quot;</span><span class="p">:</span>
+        <span class="n">periods</span><span class="p">,</span> <span class="n">psd_db</span> <span class="o">=</span> <span class="n">spectral_estimation</span><span class="o">.</span><span class="n">get_nlnm</span><span class="p">()</span>
         <span class="n">base_unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="s2">&quot;m / s^2 / Hz^(1/2)&quot;</span><span class="p">)</span>
         <span class="n">is_seismic</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">elif</span> <span class="n">model_upper</span> <span class="o">==</span> <span class="s2">&quot;IDCH&quot;</span><span class="p">:</span>
@@ -153,21 +247,27 @@
         <span class="n">base_unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="s2">&quot;Pa / Hz^(1/2)&quot;</span><span class="p">)</span>
         <span class="n">is_seismic</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown model: </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unknown model: &#39;</span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Supported models: &#39;NHNM&#39;, &#39;NLNM&#39;, &#39;IDCH&#39;, &#39;IDCL&#39;.&quot;</span>
+        <span class="p">)</span>
 
+    <span class="c1"># Convert periods to frequencies and sort</span>
     <span class="n">f_orig</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">periods</span>
     <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">f_orig</span><span class="p">)</span>
     <span class="n">f_orig</span> <span class="o">=</span> <span class="n">f_orig</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
     <span class="n">psd_db</span> <span class="o">=</span> <span class="n">psd_db</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
     <span class="n">asd_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="n">psd_db</span> <span class="o">/</span> <span class="mf">10.0</span><span class="p">))</span>
 
+    <span class="c1"># Interpolate to requested frequencies if provided</span>
     <span class="k">if</span> <span class="n">frequencies</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">mask_orig</span> <span class="o">=</span> <span class="n">f_orig</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="n">mask_new</span> <span class="o">=</span> <span class="n">frequencies</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
         <span class="n">log_f_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">f_orig</span><span class="p">[</span><span class="n">mask_orig</span><span class="p">])</span>
         <span class="n">log_asd_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">asd_orig</span><span class="p">[</span><span class="n">mask_orig</span><span class="p">])</span>
 
-        <span class="n">asd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">frequencies</span><span class="p">)</span>
+        <span class="n">asd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask_new</span><span class="p">):</span>
             <span class="n">log_f_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">frequencies</span><span class="p">[</span><span class="n">mask_new</span><span class="p">])</span>
             <span class="n">log_asd_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">log_f_new</span><span class="p">,</span> <span class="n">log_f_orig</span><span class="p">,</span> <span class="n">log_asd_orig</span><span class="p">)</span>
@@ -176,13 +276,67 @@
         <span class="n">frequencies</span> <span class="o">=</span> <span class="n">f_orig</span>
         <span class="n">asd</span> <span class="o">=</span> <span class="n">asd_orig</span>
 
-    <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">base_unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">model_upper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="c1"># Create FrequencySeries with base unit (acceleration for seismic)</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+        <span class="n">asd</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">base_unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">model_upper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">fs</span> <span class="o">=</span> <span class="n">_convert_obspy_unit</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">is_seismic</span><span class="p">)</span>
+    <span class="c1"># Apply quantity conversion for seismic models</span>
+    <span class="k">if</span> <span class="n">is_seismic</span> <span class="ow">and</span> <span class="n">quantity_lower</span> <span class="o">!=</span> <span class="s2">&quot;acceleration&quot;</span><span class="p">:</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="n">_convert_seismic_quantity</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">quantity_lower</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fs</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_convert_seismic_quantity</span><span class="p">(</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert seismic ASD from acceleration to velocity or displacement.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fs : FrequencySeries</span>
+<span class="sd">        Input ASD in acceleration units [m/(s²·sqrt(Hz))].</span>
+<span class="sd">    quantity : str</span>
+<span class="sd">        Target quantity: &quot;velocity&quot; or &quot;displacement&quot;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FrequencySeries</span>
+<span class="sd">        Converted ASD with appropriate units.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    At f=0, the result is NaN to avoid infinity from division by zero.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f</span>
+
+    <span class="k">if</span> <span class="n">quantity</span> <span class="o">==</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span>
+        <span class="n">target_unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="s2">&quot;m / s / Hz^(1/2)&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">omega</span>
+            <span class="c1"># Set f=0 to NaN (not 0 or inf)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="k">elif</span> <span class="n">quantity</span> <span class="o">==</span> <span class="s2">&quot;displacement&quot;</span><span class="p">:</span>
+        <span class="n">target_unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="s2">&quot;m / Hz^(1/2)&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="p">(</span><span class="n">omega</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># Set f=0 to NaN (not 0 or inf)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Should not reach here due to earlier validation</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown quantity: </span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">target_unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">name</span>
+    <span class="p">)</span>
 </pre></div>
 
            </div>
