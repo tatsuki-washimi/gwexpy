@@ -1,29 +1,35 @@
-import numpy as np
+import inspect
+
 import matplotlib.pyplot as plt
+import numpy as np
 from iminuit import Minuit
 from iminuit.util import describe
-import inspect
+
 from .models import get_model
 
 # Optional imports for MCMC
 try:
-    import emcee
     import corner
+    import emcee
 except ImportError:
     emcee = None
     corner = None
+
 
 class ComplexLeastSquares:
     """
     Least Squares cost function for complex-valued data.
     Minimizes the sum of squared residuals for both Real and Imaginary parts.
     """
+
     errordef = Minuit.LEAST_SQUARES
 
     def __init__(self, x, y, dy, model):
         self.x = x
         self.y = y  # Complex data
-        self.dy = dy # Error (assumed isotropic for real/imag unless specified otherwise)
+        self.dy = (
+            dy  # Error (assumed isotropic for real/imag unless specified otherwise)
+        )
         self.model = model
 
         # Determine parameters from model (skipping 'x')
@@ -181,13 +187,14 @@ class FitResult:
         if xscale is None and self.x_kind == "time" and ax.get_xscale() == "linear":
             try:
                 import gwpy.plot.gps  # noqa: F401  (registers GPS scales)
+
                 ax.set_xscale("auto-gps")
             except Exception:
                 pass
         elif xscale is not None:
             ax.set_xscale(xscale)
 
-        fit_zorder = kwargs.setdefault('zorder', 5)
+        fit_zorder = kwargs.setdefault("zorder", 5)
         data_zorder = max(0, fit_zorder - 1)
         err_zorder = max(0, data_zorder - 1)
 
@@ -228,20 +235,22 @@ class FitResult:
             else:
                 x_fit = np.asarray(self.x)
                 y_fit = np.asarray(self.y)
-                dy_fit = np.asarray(self.dy)
+                dy_fit_arr = np.asarray(self.dy)
                 if ax.get_yscale() == "log":
                     fit_mask = y_fit > 0
                     x_fit = x_fit[fit_mask]
                     y_fit = y_fit[fit_mask]
-                    dy_fit = dy_fit[fit_mask] if not np.isscalar(dy_fit) else dy_fit
+                    dy_fit_arr = (
+                        dy_fit_arr[fit_mask] if dy_fit_arr.shape != () else dy_fit_arr
+                    )
 
-                if np.isscalar(dy_fit) or dy_fit.shape == ():
-                    dy_fit = np.full_like(y_fit, float(dy_fit), dtype=float)
+                if dy_fit_arr.shape == ():
+                    dy_fit_arr = np.full_like(y_fit, float(dy_fit_arr), dtype=float)
 
-                yerr = dy_fit
+                yerr = dy_fit_arr
                 if ax.get_yscale() == "log":
-                    lower = np.minimum(dy_fit, y_fit * (1 - 1e-12))
-                    yerr = np.vstack([lower, dy_fit])
+                    lower = np.minimum(dy_fit_arr, y_fit * (1 - 1e-12))
+                    yerr = np.vstack([lower, dy_fit_arr])
 
                 ax.errorbar(
                     x_fit,
@@ -263,7 +272,7 @@ class FitResult:
         )
 
         # Plot Model (Fit) in front of points
-        kwargs.setdefault('color', 'red')
+        kwargs.setdefault("color", "red")
         if x_range is None:
             x_range = self.x_fit_range
         if x_range is not None:
@@ -272,13 +281,14 @@ class FitResult:
         else:
             x_plot = np.linspace(min(self.x), max(self.x), num_points)
         y_plot = self.model(x_plot, **self.params)
-        ax.plot(x_plot, y_plot, label='Fit', **kwargs)
+        ax.plot(x_plot, y_plot, label="Fit", **kwargs)
 
         # If we're using a GWpy GPS scale, let GWpy format the X label
         # during draw() (it uses the epoch + unit). Do not override here.
         uses_gps_x = False
         try:
             from gwpy.plot.gps import GPS_SCALES
+
             uses_gps_x = ax.get_xscale() in GPS_SCALES
         except Exception:
             uses_gps_x = False
@@ -305,10 +315,12 @@ class FitResult:
         elif isinstance(ax, (list, tuple, np.ndarray)) and len(ax) == 2:
             ax_mag, ax_phase = ax
         else:
-            raise ValueError("For bode_plot, 'ax' must be a list/tuple of 2 axes (mag, phase), or None.")
+            raise ValueError(
+                "For bode_plot, 'ax' must be a list/tuple of 2 axes (mag, phase), or None."
+            )
 
-        kwargs.setdefault('color', 'red')
-        fit_zorder = kwargs.setdefault('zorder', 5)
+        kwargs.setdefault("color", "red")
+        fit_zorder = kwargs.setdefault("zorder", 5)
         data_zorder = max(0, fit_zorder - 1)
         err_zorder = max(0, data_zorder - 1)
 
@@ -351,8 +363,8 @@ class FitResult:
 
         ym_plot = self.model(x_plot, **self.params)
 
-        ax_mag.set_xscale('log')
-        ax_mag.set_yscale('log')
+        ax_mag.set_xscale("log")
+        ax_mag.set_yscale("log")
 
         # Data (Second)
         mag_data = np.abs(self.y_data)
@@ -398,9 +410,9 @@ class FitResult:
                     fit_mask = (mag_fit > 0) & (x_fit > 0)
                     x_fit = x_fit[fit_mask]
                     mag_fit = mag_fit[fit_mask]
-                    dy_fit = dy_fit[fit_mask] if not np.isscalar(dy_fit) else dy_fit
+                    dy_fit = dy_fit[fit_mask] if dy_fit.shape != () else dy_fit
 
-                if np.isscalar(dy_fit) or dy_fit.shape == ():
+                if dy_fit.shape == ():
                     dy_fit = np.full_like(mag_fit, float(dy_fit), dtype=float)
 
                 yerr = dy_fit
@@ -432,29 +444,31 @@ class FitResult:
 
         ax_mag.set_xlim(x_min, x_max)
 
-        ax_mag.set_ylabel('Magnitude')
+        ax_mag.set_ylabel("Magnitude")
         ax_mag.legend()
-        ax_mag.grid(True, which='both', alpha=0.3)
+        ax_mag.grid(True, which="both", alpha=0.3)
 
         # --- Phase ---
         # Model (First)
         ax_phase.set_xscale("log")
-        ax_phase.plot(x_plot, np.angle(ym_plot, deg=True), label='Fit', **kwargs)
+        ax_phase.plot(x_plot, np.angle(ym_plot, deg=True), label="Fit", **kwargs)
 
         # Data (Second)
-        phase_data = np.angle(self.y_data, deg=True) # Degrees
+        phase_data = np.angle(self.y_data, deg=True)  # Degrees
         x_phase = x_all[pos] if np.any(pos) else x_all
         phase_data = np.asarray(phase_data)
         phase_data = phase_data[pos] if np.any(pos) else phase_data
-        ax_phase.plot(x_phase, phase_data, '.', label='Data', color='black', zorder=data_zorder)
+        ax_phase.plot(
+            x_phase, phase_data, ".", label="Data", color="black", zorder=data_zorder
+        )
 
-        ax_phase.set_ylabel('Phase [deg]')
+        ax_phase.set_ylabel("Phase [deg]")
         if self.x_label:
             ax_phase.set_xlabel(self.x_label)
         else:
-            ax_phase.set_xlabel('Frequency / Time')
+            ax_phase.set_xlabel("Frequency / Time")
 
-        ax_phase.grid(True, which='both', alpha=0.3)
+        ax_phase.grid(True, which="both", alpha=0.3)
         ax_phase.set_xlim(x_min, x_max)
 
         return (ax_mag, ax_phase)
@@ -462,11 +476,11 @@ class FitResult:
     def run_mcmc(self, n_walkers=32, n_steps=3000, burn_in=500, progress=True):
         """
         Run MCMC using emcee starting from the best-fit parameters.
-        
+
         This method supports both standard least squares and GLS (Generalized
         Least Squares) error structures. If `cov_inv` is available, the log
         probability is computed using the full covariance structure.
-        
+
         Parameters
         ----------
         n_walkers : int, optional
@@ -477,14 +491,16 @@ class FitResult:
             Number of initial steps to discard. Default is 500.
         progress : bool, optional
             Whether to show progress bar. Default is True.
-        
+
         Returns
         -------
         sampler : emcee.EnsembleSampler
             The emcee sampler object containing the full chain.
         """
         if emcee is None:
-            raise ImportError("Please install 'emcee' and 'corner' to use MCMC features.")
+            raise ImportError(
+                "Please install 'emcee' and 'corner' to use MCMC features."
+            )
 
         # 1. Parameter Information Extraction
         # Filter out fixed parameters for MCMC
@@ -492,8 +508,12 @@ class FitResult:
         ndim = len(float_params)
 
         # Dictionary of fixed parameters
-        fixed_params = {p: self.minuit.values[p] for p in self.minuit.parameters if self.minuit.fixed[p]}
-        
+        fixed_params = {
+            p: self.minuit.values[p]
+            for p in self.minuit.parameters
+            if self.minuit.fixed[p]
+        }
+
         # Cache values for log_prob closure
         x = self.x
         y = self.y
@@ -501,8 +521,11 @@ class FitResult:
         cov_inv = self.cov_inv
         dy = self.dy
         all_param_names = list(self.minuit.parameters)
-        limits_dict = {p: self.minuit.limits[p] for p in self.minuit.parameters 
-                       if self.minuit.limits[p] != (None, None)}
+        limits_dict = {
+            p: self.minuit.limits[p]
+            for p in self.minuit.parameters
+            if self.minuit.limits[p] != (None, None)
+        }
 
         # Log Probability Function
         def log_prob(theta):
@@ -526,7 +549,7 @@ class FitResult:
                 args = [current_params[p] for p in all_param_names]
                 ym = model(x, *args)
                 r = y - ym
-                
+
                 # Compute log probability based on error structure
                 if cov_inv is not None:
                     # GLS: use full covariance structure
@@ -534,9 +557,9 @@ class FitResult:
                 else:
                     # Standard: use diagonal errors
                     chi2 = float(np.sum((r / dy) ** 2))
-                
+
                 return -0.5 * chi2
-                
+
             except (ValueError, TypeError, ZeroDivisionError):
                 # Expected numerical errors
                 return -np.inf
@@ -547,8 +570,14 @@ class FitResult:
         # Initial state: small ball around minuit result
         p0_float = np.array([self.minuit.values[p] for p in float_params])
         # Use hessian errors for initialization spread, or small value if fixed/zero
-        stds = np.array([self.minuit.errors[p] if self.minuit.errors[p] > 0 else 1e-4 * abs(v) + 1e-8
-                         for p, v in zip(float_params, p0_float)])
+        stds = np.array(
+            [
+                self.minuit.errors[p]
+                if self.minuit.errors[p] > 0
+                else 1e-4 * abs(v) + 1e-8
+                for p, v in zip(float_params, p0_float)
+            ]
+        )
 
         pos = p0_float + stds * 1e-1 * np.random.randn(n_walkers, ndim)
 
@@ -567,15 +596,15 @@ class FitResult:
     def parameter_intervals(self):
         """
         Get parameter confidence intervals from MCMC samples.
-        
+
         Returns 16th, 50th, and 84th percentiles for each parameter,
         corresponding to median and ±1σ bounds.
-        
+
         Returns
         -------
         dict
             Dictionary mapping parameter names to (lower, median, upper) tuples.
-        
+
         Raises
         ------
         RuntimeError
@@ -583,20 +612,21 @@ class FitResult:
         """
         if self.samples is None:
             raise RuntimeError("Run .run_mcmc() first.")
-        
+
         intervals = {}
-        for i, name in enumerate(self.mcmc_labels):
+        labels = self.mcmc_labels or []
+        for i, name in enumerate(labels):
             samples_i = self.samples[:, i]
             q16, q50, q84 = np.percentile(samples_i, [16, 50, 84])
             intervals[name] = (q16, q50, q84)
-        
+
         return intervals
 
     @property
     def mcmc_chain(self):
         """
         Get the full MCMC chain (not flattened, not discarded).
-        
+
         Returns
         -------
         ndarray
@@ -609,7 +639,7 @@ class FitResult:
     def plot_corner(self, show_titles=True, quantiles=None, **kwargs):
         """
         Plot corner plot of MCMC samples.
-        
+
         Parameters
         ----------
         show_titles : bool, optional
@@ -618,7 +648,7 @@ class FitResult:
             Quantiles for title display. Default is [0.16, 0.5, 0.84].
         **kwargs
             Additional arguments passed to corner.corner().
-        
+
         Returns
         -------
         figure : matplotlib.figure.Figure
@@ -632,30 +662,40 @@ class FitResult:
         # Set defaults
         if quantiles is None:
             quantiles = [0.16, 0.5, 0.84]
-        
+
         # Show BestFit truth lines
         if self.mcmc_labels:
             truths = [self.minuit.values[p] for p in self.mcmc_labels]
-            kwargs.setdefault('truths', truths)
-            kwargs.setdefault('labels', self.mcmc_labels)
-        
-        kwargs.setdefault('show_titles', show_titles)
-        kwargs.setdefault('quantiles', quantiles)
-        kwargs.setdefault('title_kwargs', {"fontsize": 10})
-        
+            kwargs.setdefault("truths", truths)
+            kwargs.setdefault("labels", self.mcmc_labels)
+
+        kwargs.setdefault("show_titles", show_titles)
+        kwargs.setdefault("quantiles", quantiles)
+        kwargs.setdefault("title_kwargs", {"fontsize": 10})
+
         fig = corner.corner(self.samples, **kwargs)
-        
+
         # Add annotation if GLS was used
         if self.cov_inv is not None:
-            fig.text(0.95, 0.95, "GLS fit", ha='right', va='top', 
-                    fontsize=10, style='italic', transform=fig.transFigure)
-        
+            fig.text(
+                0.95,
+                0.95,
+                "GLS fit",
+                ha="right",
+                va="top",
+                fontsize=10,
+                style="italic",
+                transform=fig.transFigure,
+            )
+
         return fig
 
-    def plot_fit_band(self, ax=None, num_points=200, n_samples=100, alpha=0.3, **kwargs):
+    def plot_fit_band(
+        self, ax=None, num_points=200, n_samples=100, alpha=0.3, **kwargs
+    ):
         """
         Plot the fit with uncertainty band from MCMC samples.
-        
+
         Parameters
         ----------
         ax : matplotlib.axes.Axes, optional
@@ -668,7 +708,7 @@ class FitResult:
             Alpha transparency for uncertainty band. Default is 0.3.
         **kwargs
             Additional arguments passed to ax.fill_between().
-        
+
         Returns
         -------
         ax : matplotlib.axes.Axes
@@ -676,66 +716,95 @@ class FitResult:
         """
         if self.samples is None:
             raise RuntimeError("Run .run_mcmc() first.")
-        
+
         if ax is None:
             fig, ax = plt.subplots()
-        
+
         # Generate x values for plotting
         x_plot = np.linspace(np.min(self.x), np.max(self.x), num_points)
-        
+
         # Get random subset of samples
         n_total = len(self.samples)
         indices = np.random.choice(n_total, size=min(n_samples, n_total), replace=False)
-        
+
         # Fixed parameters
-        fixed_params = {p: self.minuit.values[p] for p in self.minuit.parameters 
-                        if self.minuit.fixed[p]}
+        fixed_params = {
+            p: self.minuit.values[p]
+            for p in self.minuit.parameters
+            if self.minuit.fixed[p]
+        }
         all_param_names = list(self.minuit.parameters)
-        
+
         # Compute model curves for samples
         y_samples = []
+        labels = self.mcmc_labels or []
         for idx in indices:
             sample = self.samples[idx]
             current_params = fixed_params.copy()
-            for name, val in zip(self.mcmc_labels, sample):
+            for name, val in zip(labels, sample):
                 current_params[name] = val
             args = [current_params[p] for p in all_param_names]
             y_samples.append(self.model(x_plot, *args))
-        
-        y_samples = np.array(y_samples)
-        
+
+        y_samples_arr = np.array(y_samples)
+
         # Compute percentiles
-        y_lower = np.percentile(y_samples, 16, axis=0)
-        y_median = np.percentile(y_samples, 50, axis=0)
-        y_upper = np.percentile(y_samples, 84, axis=0)
-        
+        y_lower = np.percentile(y_samples_arr, 16, axis=0)
+        y_upper = np.percentile(y_samples_arr, 84, axis=0)
+
         # Plot data
-        ax.errorbar(self.x, self.y, yerr=self.dy if self.has_dy else None,
-                    fmt='.', color='black', label='Data', zorder=2)
-        
+        ax.errorbar(
+            self.x,
+            self.y,
+            yerr=self.dy if self.has_dy else None,
+            fmt=".",
+            color="black",
+            label="Data",
+            zorder=2,
+        )
+
         # Plot best fit
         y_best = self.model(x_plot, **self.params)
-        ax.plot(x_plot, y_best, color='red', label='Best fit', zorder=3)
-        
+        ax.plot(x_plot, y_best, color="red", label="Best fit", zorder=3)
+
         # Plot uncertainty band
-        band_color = kwargs.pop('color', 'blue')
-        ax.fill_between(x_plot, y_lower, y_upper, alpha=alpha, color=band_color,
-                       label='68% credible', zorder=1, **kwargs)
-        
+        band_color = kwargs.pop("color", "blue")
+        ax.fill_between(
+            x_plot,
+            y_lower,
+            y_upper,
+            alpha=alpha,
+            color=band_color,
+            label="68% credible",
+            zorder=1,
+            **kwargs,
+        )
+
         if self.x_label:
             ax.set_xlabel(self.x_label)
         if self.y_label:
             ax.set_ylabel(self.y_label)
         ax.legend()
-        
+
         return ax
 
-def fit_series(series, model, x_range=None, sigma=None, cov=None,
-               cost_function=None, p0=None, limits=None, fixed=None, **kwargs):
+
+def fit_series(
+    series,
+    model,
+    x_range=None,
+    sigma=None,
+    cov=None,
+    cost_function=None,
+    p0=None,
+    limits=None,
+    fixed=None,
+    **kwargs,
+):
     """
     Fit a Series object using iminuit.
     Supports real and complex valued Series (simultaneous Re/Im fit).
-    
+
     Parameters
     ----------
     series : Series
@@ -764,7 +833,7 @@ def fit_series(series, model, x_range=None, sigma=None, cov=None,
         List of parameter names to fix during fit.
     **kwargs
         Additional arguments passed to Minuit.
-    
+
     Returns
     -------
     FitResult
@@ -779,45 +848,45 @@ def fit_series(series, model, x_range=None, sigma=None, cov=None,
     target = series.crop(*x_range) if x_range else series
 
     # x軸の取得
-    x_label = 'x'
-    y_label = 'y'
+    x_label = "x"
+    y_label = "y"
 
     # full-range data for plotting
-    if hasattr(series, 'frequencies'):
+    if hasattr(series, "frequencies"):
         x_full = series.frequencies.value
-    elif hasattr(series, 'times'):
+    elif hasattr(series, "times"):
         x_full = series.times.value
     else:
         x_full = series.xindex.value
     y_full = series.value
 
-    if hasattr(target, 'frequencies'):
+    if hasattr(target, "frequencies"):
         x = target.frequencies.value
-        x_label = 'Frequency'
+        x_label = "Frequency"
         x_kind = "frequency"
-        if hasattr(target, 'xunit') and str(target.xunit) != 'dimensionless':
-             x_label += f" [{target.xunit}]"
-    elif hasattr(target, 'times'):
+        if hasattr(target, "xunit") and str(target.xunit) != "dimensionless":
+            x_label += f" [{target.xunit}]"
+    elif hasattr(target, "times"):
         x = target.times.value
-        x_label = 'Time'
+        x_label = "Time"
         x_kind = "time"
-        if hasattr(target, 'xunit') and str(target.xunit) != 'dimensionless':
-             x_label += f" [{target.xunit}]"
+        if hasattr(target, "xunit") and str(target.xunit) != "dimensionless":
+            x_label += f" [{target.xunit}]"
     else:
         x = target.xindex.value
-        if hasattr(target, 'xunit') and str(target.xunit) != 'dimensionless':
-             x_label += f" [{target.xunit}]"
+        if hasattr(target, "xunit") and str(target.xunit) != "dimensionless":
+            x_label += f" [{target.xunit}]"
         x_kind = "index"
 
     y = target.value
 
     # Determine y-label
-    if hasattr(target, 'unit') and str(target.unit) != 'dimensionless':
+    if hasattr(target, "unit") and str(target.unit) != "dimensionless":
         y_label_unit = f"[{target.unit}]"
     else:
         y_label_unit = ""
 
-    if hasattr(target, 'name') and target.name:
+    if hasattr(target, "name") and target.name:
         y_label = f"{target.name}"
         if y_label_unit:
             y_label += f" {y_label_unit}"
@@ -826,16 +895,17 @@ def fit_series(series, model, x_range=None, sigma=None, cov=None,
 
     # 誤差の処理
     original_len = len(series)
+    sigma_full_for_plot: np.ndarray | float | None = None
     if sigma is None:
         # 重みなし最小二乗 (Cost function internally uses 1.0)
         dy = np.ones(len(y))
         sigma_for_result = None
-        sigma_full_for_plot = None
     else:
         # If sigma is a scalar, broadcast it
         if np.isscalar(sigma):
-            dy = np.full(len(y), float(sigma))
-            sigma_full_for_plot = float(sigma)
+            sigma_val = float(sigma)  # type: ignore[arg-type]
+            dy = np.full(len(y), sigma_val)
+            sigma_full_for_plot = sigma_val
         else:
             sigma_arr = np.asarray(sigma)
             sigma_full_for_plot = sigma_arr if len(sigma_arr) == original_len else None
@@ -859,12 +929,12 @@ def fit_series(series, model, x_range=None, sigma=None, cov=None,
     # 2. Cost Function
     # Priority: cost_function > cov > sigma > default
     cov_inv_for_result = None  # Will be set if GLS is used
-    
+
     if cost_function is not None:
         # User-provided cost function takes highest priority
         cost = cost_function
         # Try to extract cov_inv from cost function if it's a GLS
-        if hasattr(cost_function, 'cov_inv'):
+        if hasattr(cost_function, "cov_inv"):
             cov_inv_for_result = cost_function.cov_inv
     elif cov is not None:
         # GLS mode: use covariance matrix
@@ -873,15 +943,15 @@ def fit_series(series, model, x_range=None, sigma=None, cov=None,
                 "GLS fitting is not yet supported for complex data. "
                 "Please use sigma instead."
             )
-        
+
         from .gls import GeneralizedLeastSquares
-        
+
         # Handle BifrequencyMap or 2D ndarray
         cov_arr = None
         cov_inv = None
-        
+
         # Check if cov is a BifrequencyMap (duck typing to avoid import issues)
-        if hasattr(cov, 'inverse') and hasattr(cov, 'value'):
+        if hasattr(cov, "inverse") and hasattr(cov, "value"):
             # BifrequencyMap: get inverse and extract value
             inv_map = cov.inverse()
             cov_inv = np.asarray(inv_map.value)
@@ -892,7 +962,7 @@ def fit_series(series, model, x_range=None, sigma=None, cov=None,
             if cov_arr.ndim != 2:
                 raise ValueError(f"cov must be a 2D array, got {cov_arr.ndim}D")
             cov_inv = np.linalg.pinv(cov_arr)
-        
+
         # Check dimension matches
         n = len(y)
         if cov_inv.shape != (n, n):
@@ -900,14 +970,14 @@ def fit_series(series, model, x_range=None, sigma=None, cov=None,
                 f"Covariance matrix shape {cov_arr.shape} does not match "
                 f"data length {n}. Expected ({n}, {n})."
             )
-        
+
         # Generate dy from diagonal of covariance for plotting error bars
         diag_cov = np.diag(cov_arr)
         # Handle potential negative values from numerical issues
         dy = np.sqrt(np.maximum(diag_cov, 0))
         sigma_for_result = dy
         sigma_full_for_plot = None  # TODO: crop to full range if needed
-        
+
         cost = GeneralizedLeastSquares(x, y, cov_inv, model)
         cov_inv_for_result = cov_inv  # Save for MCMC
     elif is_complex:
@@ -936,7 +1006,10 @@ def fit_series(series, model, x_range=None, sigma=None, cov=None,
 
         if p0 and isinstance(p0, dict) and name in p0:
             init_params[name] = p0[name]
-        elif name in sig.parameters and sig.parameters[name].default is not inspect.Parameter.empty:
+        elif (
+            name in sig.parameters
+            and sig.parameters[name].default is not inspect.Parameter.empty
+        ):
             init_params[name] = sig.parameters[name].default
         else:
             # Fallback for parameters without p0 or default
