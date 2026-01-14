@@ -5,6 +5,7 @@ Adapted from reference_ndscope.
 
 try:
     import nds2
+
     _NDS2_IMPORT_ERROR = None
 except Exception as exc:  # pragma: no cover - depends on optional dependency
     nds2 = None
@@ -57,13 +58,13 @@ class NDSThread(QtCore.QThread):
                     self.dataReceived.emit(payload, "raw", True)
 
         except Exception as e:
-            if self.running: # Only log if not intentional stop
+            if self.running:  # Only log if not intentional stop
                 print(f"NDSThread Error: {e}")
         finally:
             if self.conn:
                 try:
                     c = self.conn
-                    self.conn = None # Avoid double close
+                    self.conn = None  # Avoid double close
                     c.close()
                 except Exception:
                     pass

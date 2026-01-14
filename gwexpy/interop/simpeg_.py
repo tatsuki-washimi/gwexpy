@@ -1,9 +1,12 @@
+import numpy as np
 
 from ._optional import require_optional
 from .base import to_plain_array
-import numpy as np
 
-def to_simpeg(data, location=None, rx_type="PointElectricField", orientation='x', **kwargs):
+
+def to_simpeg(
+    data, location=None, rx_type="PointElectricField", orientation="x", **kwargs
+):
     """
     Convert gwexpy object to simpeg.data.Data.
 
@@ -27,7 +30,7 @@ def to_simpeg(data, location=None, rx_type="PointElectricField", orientation='x'
     from simpeg import data as simpeg_data
 
     if location is None:
-        location = np.array([0., 0., 0.])
+        location = np.array([0.0, 0.0, 0.0])
     else:
         location = np.array(location)
 
@@ -38,7 +41,7 @@ def to_simpeg(data, location=None, rx_type="PointElectricField", orientation='x'
                 return getattr(module, name)
             # Try appending 'Rx' if not found? No, user should pass correct name.
             raise ValueError(f"Receiver class '{name}' not found in {module.__name__}")
-        return name # Assuming it's a class
+        return name  # Assuming it's a class
 
     # Check input type
     if hasattr(data, "times") and hasattr(data, "dt"):
@@ -55,12 +58,14 @@ def to_simpeg(data, location=None, rx_type="PointElectricField", orientation='x'
 
         rx_kwargs = {"locations": location.reshape(1, 3), "times": data.times.value}
         if "orientation" in RxClass.__init__.__code__.co_varnames:
-             rx_kwargs["orientation"] = orientation
+            rx_kwargs["orientation"] = orientation
 
         rx = RxClass(**rx_kwargs)
 
         # Source (dummy source needed for survey)
-        src = tdem.sources.MagDipole(receiver_list=[rx], location=np.array([0., 0., 0.]))
+        src = tdem.sources.MagDipole(
+            receiver_list=[rx], location=np.array([0.0, 0.0, 0.0])
+        )
 
         # Survey
         survey = tdem.Survey(source_list=[src])
@@ -77,7 +82,7 @@ def to_simpeg(data, location=None, rx_type="PointElectricField", orientation='x'
         # Create Rx - FDEM
         rx_kwargs = {"locations": location.reshape(1, 3)}
         if "orientation" in RxClass.__init__.__code__.co_varnames:
-             rx_kwargs["orientation"] = orientation
+            rx_kwargs["orientation"] = orientation
 
         # One Rx instance can be reused across sources in recent SimPEG versions?
         # Creating new instance per source to be safe if they store internal state (unlikely for point rx but safer)
@@ -86,7 +91,9 @@ def to_simpeg(data, location=None, rx_type="PointElectricField", orientation='x'
 
         src_list = []
         for f in freqs:
-            src = fdem.sources.MagDipole(receiver_list=[rx], location=np.array([0., 0., 0.]), frequency=f)
+            src = fdem.sources.MagDipole(
+                receiver_list=[rx], location=np.array([0.0, 0.0, 0.0]), frequency=f
+            )
             src_list.append(src)
 
         survey = fdem.Survey(source_list=src_list)
@@ -150,12 +157,12 @@ def from_simpeg(cls, data_obj, **kwargs):
                 is_tdem = True
                 is_fdem = False
             else:
-                 # Default logic fallback
-                 is_tdem = False
-                 is_fdem = False
+                # Default logic fallback
+                is_tdem = False
+                is_fdem = False
         else:
-             is_tdem = False
-             is_fdem = False
+            is_tdem = False
+            is_fdem = False
 
     if is_tdem:
         # Reconstruct TimeSeries
@@ -168,7 +175,9 @@ def from_simpeg(cls, data_obj, **kwargs):
             t0 = times[0]
             return cls(dobs, t0=t0, dt=val_dt)
         else:
-            raise ValueError("SimPEG time channels are non-uniform, cannot map directly to uniform TimeSeries.")
+            raise ValueError(
+                "SimPEG time channels are non-uniform, cannot map directly to uniform TimeSeries."
+            )
 
     elif is_fdem:
         # Reconstruct FrequencySeries
@@ -178,5 +187,6 @@ def from_simpeg(cls, data_obj, **kwargs):
         return cls(dobs, frequencies=freqs)
 
     else:
-        raise ValueError("Could not determine Time or Frequency domain from SimPEG survey.")
-
+        raise ValueError(
+            "Could not determine Time or Frequency domain from SimPEG survey."
+        )

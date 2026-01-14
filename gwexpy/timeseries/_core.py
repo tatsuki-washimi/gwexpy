@@ -9,10 +9,20 @@ This module contains the base TimeSeries class with essential functionality:
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any, TypeAlias
+
 import numpy as np
-from typing import Optional, Any
+from astropy import units as u
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
+from numpy.typing import ArrayLike
+
 from gwexpy.types.mixin import RegularityMixin
+
+QuantityLike: TypeAlias = ArrayLike | u.Quantity
+
+if TYPE_CHECKING:
+    from gwexpy.timeseries.timeseries import TimeSeries
 
 
 class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
@@ -27,12 +37,11 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
     # Properties
     # ===============================
 
-
     # ===============================
     # Basic Operations
     # ===============================
 
-    def tail(self, n: int = 5) -> "TimeSeriesCore":
+    def tail(self, n: int | None = 5) -> TimeSeriesCore:
         """Return the last `n` samples of this series."""
         if n is None:
             return self
@@ -41,34 +50,38 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
             return self[:0]
         return self[-n:]
 
-    def crop(self, start: Any = None, end: Any = None, copy: bool = False) -> "TimeSeriesCore":
+    def crop(
+        self, start: Any | None = None, end: Any | None = None, copy: bool = False
+    ) -> TimeSeriesCore:
         """
         Crop this series to the given GPS start and end times.
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         """
         from gwexpy.time import to_gps
+
         # Convert inputs to GPS if provided
         if start is not None:
-             start = to_gps(start)
-             if isinstance(start, (np.ndarray, list)) and np.ndim(start) > 0:
-                 start = start[0]
-             start = float(start)
+            start = to_gps(start)
+            if isinstance(start, (np.ndarray, list)) and np.ndim(start) > 0:
+                start = start[0]
+            start = float(start)
         if end is not None:
-             end = to_gps(end)
-             if isinstance(end, (np.ndarray, list)) and np.ndim(end) > 0:
-                 end = end[0]
-             end = float(end)
+            end = to_gps(end)
+            if isinstance(end, (np.ndarray, list)) and np.ndim(end) > 0:
+                end = end[0]
+            end = float(end)
 
         return super().crop(start=start, end=end, copy=copy)
 
     def append(
         self,
-        other: Any,
+        other: TimeSeries | BaseTimeSeries | ArrayLike,
+        *,
         inplace: bool = True,
         pad: Any = None,
         gap: Any = None,
         resize: bool = True,
-    ) -> "TimeSeriesCore":
+    ) -> TimeSeriesCore:
         """
         Append another TimeSeries (GWpy-compatible), returning gwexpy TimeSeries.
         """
@@ -87,15 +100,15 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
 
     def find_peaks(
         self,
-        height: Any = None,
-        threshold: Any = None,
-        distance: Any = None,
-        prominence: Any = None,
-        width: Any = None,
-        wlen: Optional[int] = None,
+        height: QuantityLike | None = None,
+        threshold: QuantityLike | None = None,
+        distance: QuantityLike | None = None,
+        prominence: QuantityLike | None = None,
+        width: QuantityLike | Iterable[QuantityLike] | None = None,
+        wlen: int | None = None,
         rel_height: float = 0.5,
-        plateau_size: Any = None,
-    ) -> tuple["TimeSeriesCore", dict[str, Any]]:
+        plateau_size: QuantityLike | None = None,
+    ) -> tuple[TimeSeriesCore, dict[str, Any]]:
         """
         Find peaks in the TimeSeries.
 
@@ -113,12 +126,12 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
         # Handle unit quantities
         val = self.value
 
-        def _to_val(x, unit=None):
-             if hasattr(x, "value"):
-                  if unit and hasattr(x, "to"):
-                      return x.to(unit).value
-                  return x.value
-             return x
+        def _to_val(x: Any, unit: u.UnitBase | None = None) -> Any:
+            if hasattr(x, "value"):
+                if unit and hasattr(x, "to"):
+                    return x.to(unit).value
+                return x.value
+            return x
 
         # Height/Threshold: relative to data units
         h = _to_val(height, self.unit)
@@ -127,52 +140,54 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
 
         # Distance/Width: time or samples
         # Scipy uses samples.
-        dist = distance
-        wid = width
+        dist: QuantityLike | None = distance
+        wid: QuantityLike | Iterable[QuantityLike] | None = width
 
         if self.dt is not None:
-             fs = self.sample_rate.to("Hz").value
-             # If distance is time quantity
-             if hasattr(dist, "to"):
-                  dist = int(dist.to("s").value * fs)
+            fs = self.sample_rate.to("Hz").value
+            # If distance is time quantity
+            if dist is not None and hasattr(dist, "to"):
+                dist = int(dist.to("s").value * fs)
 
-             # If width is quantity (or tuple of quantities)
-             if np.iterable(wid):
-                  new_wid = []
-                  for w in wid:
-                       if hasattr(w, "to"):
-                            new_wid.append(w.to("s").value * fs)
-                       else:
-                            new_wid.append(w)
-                  wid = tuple(new_wid) if isinstance(wid, tuple) else new_wid
-             elif hasattr(wid, "to"):
-                  wid = wid.to("s").value * fs
+            # If width is quantity (or tuple of quantities)
+            if wid is not None and np.iterable(wid):
+                new_wid: list[float] = []
+                for w in wid:
+                    if hasattr(w, "to"):
+                        new_wid.append(w.to("s").value * fs)
+                    else:
+                        new_wid.append(w)
+                wid = tuple(new_wid) if isinstance(wid, tuple) else new_wid
+            elif wid is not None and hasattr(wid, "to"):
+                wid = wid.to("s").value * fs
 
         # Call scipy
         peaks_indices, props = find_peaks(
-             val,
-             height=h,
-             threshold=t,
-             distance=dist,
-             prominence=p,
-             width=wid,
-             wlen=wlen,
-             rel_height=rel_height,
-             plateau_size=plateau_size
+            val,
+            height=h,
+            threshold=t,
+            distance=dist,
+            prominence=p,
+            width=wid,
+            wlen=wlen,
+            rel_height=rel_height,
+            plateau_size=plateau_size,
         )
 
         if len(peaks_indices) == 0:
-             # Return empty
-             return self.__class__([], times=[], unit=self.unit, name=self.name, channel=self.channel), props
+            # Return empty
+            return self.__class__(
+                [], times=[], unit=self.unit, name=self.name, channel=self.channel
+            ), props
 
         peak_times = self.times[peaks_indices]
         peak_vals = val[peaks_indices]
 
         out = self.__class__(
-             peak_vals,
-             times=peak_times,
-             unit=self.unit,
-             name=f"{self.name}_peaks" if self.name else "peaks",
-             channel=self.channel
+            peak_vals,
+            times=peak_times,
+            unit=self.unit,
+            name=f"{self.name}_peaks" if self.name else "peaks",
+            channel=self.channel,
         )
         return out, props

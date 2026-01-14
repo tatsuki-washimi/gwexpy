@@ -19,7 +19,6 @@ This file now only contains:
 
 from __future__ import annotations
 
-
 try:
     import scipy.signal  # noqa: F401 - availability check
 except ImportError:
@@ -27,9 +26,7 @@ except ImportError:
 
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
-
 # --- Imports for delegation ---
-
 
 
 class TimeSeries(BaseTimeSeries):
@@ -43,4 +40,5 @@ class TimeSeries(BaseTimeSeries):
     Note: This class should not be used directly. Use
     `from gwexpy.timeseries import TimeSeries` instead.
     """
+
     pass

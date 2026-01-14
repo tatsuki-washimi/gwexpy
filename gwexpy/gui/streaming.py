@@ -1,9 +1,11 @@
 import logging
-import numpy as np
 from collections import deque
+
+import numpy as np
 from gwpy.timeseries import TimeSeries
 
 logger = logging.getLogger(__name__)
+
 
 class SpectralAccumulator:
     """
@@ -61,7 +63,9 @@ class SpectralAccumulator:
         params["window"] = window
         self.params = params
         self.active_traces = active_traces
-        self.available_channels = set(available_channels) if available_channels is not None else None
+        self.available_channels = (
+            set(available_channels) if available_channels is not None else None
+        )
         self.reset()
 
         # Pre-calculate stride and FFT length
@@ -79,9 +83,11 @@ class SpectralAccumulator:
             self.stride = self.fftlength
             self.overlap_sec = 0
 
-        self.last_segments = {} # Cache for Time Series display
+        self.last_segments = {}  # Cache for Time Series display
 
-        logger.info(f"SpectralAccumulator configured. FFT={self.fftlength}s, Stride={self.stride}s")
+        logger.info(
+            f"SpectralAccumulator configured. FFT={self.fftlength}s, Stride={self.stride}s"
+        )
         # for i, t in enumerate(self.active_traces):
         #     print(f"DEBUG: Trace {i} Config: Active={t.get('active')}, ChA='{t.get('ch_a')}', ChB='{t.get('ch_b')}'")
 
@@ -92,7 +98,7 @@ class SpectralAccumulator:
         """
         if self.is_done and self.params.get("avg_type") == "Fixed":
             return
-            
+
         if not data_dict:
             return
 
@@ -100,7 +106,9 @@ class SpectralAccumulator:
         if self.common_t0 is None:
             first_ch = list(data_dict.keys())[0]
             self.common_t0 = data_dict[first_ch]["gps_start"]
-            logger.info(f"SpectralAccumulator starting alignment at t0={self.common_t0}")
+            logger.info(
+                f"SpectralAccumulator starting alignment at t0={self.common_t0}"
+            )
 
         for ch, packet in data_dict.items():
             t0 = packet["gps_start"]
@@ -120,12 +128,7 @@ class SpectralAccumulator:
 
             # 2. Update Processing Buffer
             if ch not in self.buffers:
-                self.buffers[ch] = {
-                    "data": [],
-                    "dt": dt,
-                    "t0": t0,
-                    "current_len": 0
-                }
+                self.buffers[ch] = {"data": [], "dt": dt, "t0": t0, "current_len": 0}
 
             buf = self.buffers[ch]
             buf["data"].append(data)
@@ -137,7 +140,7 @@ class SpectralAccumulator:
                 win_sec = self.params.get("nds_win", 30.0)
                 maxlen = int(win_sec / dt)
                 self.display_history[ch] = deque(maxlen=maxlen)
-            
+
             self.display_history[ch].extend(data)
 
         self._process_buffers()
@@ -200,11 +203,16 @@ class SpectralAccumulator:
                         return
 
     def _update_spectra(self, segment_map):
-        fft_kwargs = {"fftlength": self.fftlength, "window": self.params.get("window", "hann")}
+        fft_kwargs = {
+            "fftlength": self.fftlength,
+            "window": self.params.get("window", "hann"),
+        }
 
         # Iterate over active traces and compute
-        count = self.state["count"] + 1 # 1-based for averaging
-        avg_type = self.params.get("avg_type", "Infinite") # Fixed treated same as Infinite while running
+        count = self.state["count"] + 1  # 1-based for averaging
+        avg_type = self.params.get(
+            "avg_type", "Infinite"
+        )  # Fixed treated same as Infinite while running
 
         # Cache unique calculations per step to avoid re-computing same PSD for different traces
 
@@ -226,9 +234,6 @@ class SpectralAccumulator:
                 # if ch_a: print(f"DEBUG: Trace {i} ch_a '{ch_a}' NOT in segment_map")
                 continue
 
-            # Get Gain
-            gain = trace.get("gain", 1.0)
-            
             # Keys for state storage (unique per channel)
             # We accumulate RAW PSD/CSD (gain=1.0) to allow shared computation,
             # and apply gain during get_results for flexibility.
@@ -274,54 +279,59 @@ class SpectralAccumulator:
 
             # 4. Handle Spectrogram Updates (Per Segment)
             # Check if this trace requires Spectrogram
-            graph_type = trace.get("graph_type", self.params.get("graph_type", "Amplitude Spectral Density"))
+            graph_type = trace.get(
+                "graph_type",
+                self.params.get("graph_type", "Amplitude Spectral Density"),
+            )
             if graph_type == "Spectrogram":
                 # Only if we have new data for ch_a
                 if ch_a in segment_map:
                     try:
                         # Compute single-segment ASD (Magnitude)
-                        # Use cached PSD if available? No, PSD is average. 
+                        # Use cached PSD if available? No, PSD is average.
                         # We need instantaneous ASD for this segment.
                         # But wait, step_cache['key_a'] is `ts_a.psd()`. `psd` is periodogram of this segment.
                         # So sqrt(psd) is ASD of this segment.
                         # This avoids re-computing FFT.
-                        
+
                         # However, psd() returns Power. Spectrogram usually displays Amplitude or Power.
                         # We store Amplitude for consistency with existing logic (asd function).
                         # p = |FFT|^2 / const.  asd = sqrt(p).
-                        
+
                         current_psd = step_cache.get(key_a)
                         if current_psd is None:
                             # Should have been computed above
                             ts_a = segment_map[ch_a]
                             current_psd = ts_a.psd(**fft_kwargs)
                             step_cache[key_a] = current_psd
-                            
+
                         # Convert to ASD (Magnitude)
                         # We use gwpy's build-in or just sqrt.
                         # `current_psd` is a FrequencySeries.
-                        spec_obj = current_psd ** 0.5
+                        spec_obj = current_psd**0.5
                         # Correct unit? psd is unit^2/Hz. sqrt is unit/sqrt(Hz).
                         # This matches standard ASD.
-                        
+
                         # Crop frequency range (store only relevant part to save memory?)
                         start_f = self.params.get("start_freq", 0)
                         stop_f = self.params.get("stop_freq", 1000)
                         spec_obj = spec_obj.crop(start_f, stop_f)
-                        
+
                         # Update History
                         if ch_a not in self.spectrogram_history:
                             self.spectrogram_history[ch_a] = deque(maxlen=200)
-                            
+
                         # Use the segment's central time or start time?
                         # `ts_a.t0` is start.
                         t_val = ts_a.t0.value + ts_a.duration.value / 2.0
-                        
-                        self.spectrogram_history[ch_a].append({
-                            "t": t_val,
-                            "v": spec_obj.value,
-                            "f": spec_obj.frequencies.value
-                        })
+
+                        self.spectrogram_history[ch_a].append(
+                            {
+                                "t": t_val,
+                                "v": spec_obj.value,
+                                "f": spec_obj.frequencies.value,
+                            }
+                        )
                     except Exception as e:
                         logger.error(f"Spectrogram Update Error {ch_a}: {e}")
 
@@ -340,7 +350,7 @@ class SpectralAccumulator:
             if avg_type == "Exponential":
                 # params should ideally have 'alpha' or 'averages' to derive alpha
                 N = self.params.get("averages", 10)
-                alpha = 2.0 / (N + 1.0) # Standard EMA? or 1/N
+                alpha = 2.0 / (N + 1.0)  # Standard EMA? or 1/N
                 # DTT "Exponential" often means "Average" setting implies decay.
                 self.state[key] = (1.0 - alpha) * current_val + alpha * new_val
             else:
@@ -362,7 +372,10 @@ class SpectralAccumulator:
 
             ch_a = trace.get("ch_a")
             ch_b = trace.get("ch_b")
-            graph_type = trace.get("graph_type", self.params.get("graph_type", "Amplitude Spectral Density"))
+            graph_type = trace.get(
+                "graph_type",
+                self.params.get("graph_type", "Amplitude Spectral Density"),
+            )
 
             res = None
             key_a = f"{ch_a}"
@@ -377,15 +390,14 @@ class SpectralAccumulator:
                     # Calculate timestamps based on common_t0 or first sample in history
                     # For simplicity, we assume dt is constant.
                     # Actually, better to use TimeSeries for consistency.
-                    dt = self.buffers[ch_a]["dt"]
-                    # If common_t0 is 100 and we have 1000 samples at 1000Hz, 
+                    # If common_t0 is 100 and we have 1000 samples at 1000Hz,
                     # times go from 100 to 101.
-                    # But if we have been running for a long time, we need to know 
+                    # But if we have been running for a long time, we need to know
                     # where the CURRENT deque starts.
-                    # We can track 'samples_pushed' or just use the buffer's t0 
+                    # We can track 'samples_pushed' or just use the buffer's t0
                     # (which shifts in _process_buffers)
-                    
-                    # Safer approach: use the latest buffer's t0 and count back? 
+
+                    # Safer approach: use the latest buffer's t0 and count back?
                     # No, deque popleft() makes it hard.
                     # Let's just return what we have as a tuple (times, values).
                     buf_ref = self.buffers[ch_a]
@@ -396,26 +408,30 @@ class SpectralAccumulator:
                 else:
                     results.append(None)
                 continue
-            
+
             # Special handling for "Spectrogram" - return history
             if graph_type == "Spectrogram":
-                if ch_a in self.spectrogram_history and len(self.spectrogram_history[ch_a]) > 0:
+                if (
+                    ch_a in self.spectrogram_history
+                    and len(self.spectrogram_history[ch_a]) > 0
+                ):
                     hist = list(self.spectrogram_history[ch_a])
                     times = np.array([h["t"] for h in hist])
                     # mask checks that hist is not empty done above
-                    values = np.stack([h["v"] for h in hist]) # (Time, Freq)
+                    values = np.stack([h["v"] for h in hist])  # (Time, Freq)
                     freqs = hist[0]["f"]
-                    
-                    results.append({
-                        "type": "spectrogram",
-                        "value": values,
-                        "times": times,
-                        "freqs": freqs
-                    })
+
+                    results.append(
+                        {
+                            "type": "spectrogram",
+                            "value": values,
+                            "times": times,
+                            "freqs": freqs,
+                        }
+                    )
                 else:
                     results.append(None)
                 continue
-
 
             psd_a = self.state.get(key_a)
             # Apply Gain (power) to PSD/CSD
@@ -432,7 +448,7 @@ class SpectralAccumulator:
             key_csd = f"csd_{ch_a}_{ch_b}"
             psd_b = self.state.get(key_b) if ch_b else None
             csd_ab = self.state.get(key_csd) if ch_b else None
-            
+
             if gain != 1.0:
                 if psd_b is not None:
                     psd_b = psd_b * (gain**2)
@@ -442,9 +458,12 @@ class SpectralAccumulator:
             try:
                 # print(f"DEBUG: Trace {i} GraphType: '{graph_type}' KeyA: '{key_a}'")
                 res = None
-                if "Amplitude Spectral Density" in graph_type or "Power Spectral Density" in graph_type:
+                if (
+                    "Amplitude Spectral Density" in graph_type
+                    or "Power Spectral Density" in graph_type
+                ):
                     # ASD = sqrt(PSD)
-                    res = psd_a ** 0.5 if "Amplitude" in graph_type else psd_a
+                    res = psd_a**0.5 if "Amplitude" in graph_type else psd_a
 
                 elif graph_type == "Coherence":
                     if psd_a is not None and psd_b is not None and csd_ab is not None:
@@ -460,9 +479,9 @@ class SpectralAccumulator:
 
                 elif graph_type == "Transfer Function":
                     if psd_a is not None and csd_ab is not None:
-                         # H = P_ba / P_aa = conj(P_ab) / P_aa
-                         # If both A and B are scaled by G, TF is unchanged.
-                         # In gwexpy GUI, Gain is trace-specific. We assume it's applied to the signal.
+                        # H = P_ba / P_aa = conj(P_ab) / P_aa
+                        # If both A and B are scaled by G, TF is unchanged.
+                        # In gwexpy GUI, Gain is trace-specific. We assume it's applied to the signal.
                         res = csd_ab.conjugate() / psd_a
 
                 elif graph_type == "Cross Spectral Density":

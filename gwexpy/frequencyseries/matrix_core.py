@@ -3,8 +3,6 @@ from __future__ import annotations
 from typing import Any
 
 
-
-
 class FrequencySeriesMatrixCoreMixin:
     """Core properties and basic operations for FrequencySeriesMatrix."""
 
@@ -34,7 +32,9 @@ class FrequencySeriesMatrixCoreMixin:
             u_meta = self.meta[0, 0].unit
         else:
             u_meta = None
-        return f"<FrequencySeriesMatrix shape={self.shape}, df={self.df}, unit={u_meta}>"
+        return (
+            f"<FrequencySeriesMatrix shape={self.shape}, df={self.df}, unit={u_meta}>"
+        )
 
     def _get_series_kwargs(self, xindex, meta):
         return {

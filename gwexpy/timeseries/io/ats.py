@@ -8,9 +8,9 @@ from __future__ import annotations
 import datetime
 
 import numpy as np
+from gwpy.io import registry as io_registry
 from gwpy.time import to_gps
 
-from gwpy.io import registry as io_registry
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
@@ -27,7 +27,7 @@ def read_timeseries_ats(source, **kwargs):
     Read a Metronix ATS file into a TimeSeries.
     """
     filename = str(source)
-    with open(filename, mode='rb') as f:
+    with open(filename, mode="rb") as f:
         # Read entire file content buffer?
         # For large files, memory mapping or chunk reading is better,
         # but following original script's logic:
@@ -58,29 +58,30 @@ def read_timeseries_ats(source, **kwargs):
 
         # Strings are fixed width, null padded?
         # Channel Type: 38-40
-        channel_type = header_bytes[38:40].decode('utf-8', errors='ignore').strip()
+        channel_type = header_bytes[38:40].decode("utf-8", errors="ignore").strip()
 
         # Sensor Type: 40-46
-        sensor_type = header_bytes[40:46].decode('utf-8', errors='ignore').strip()
+        sensor_type = header_bytes[40:46].decode("utf-8", errors="ignore").strip()
 
         # Serial Number: 46-48 (int16)
         serial_number = np.frombuffer(header_bytes[46:48], dtype=np.int16)[0]
 
         # System Type: 132-144
-        system_type = header_bytes[132:144].strip(b'\x00').decode('utf-8', errors='ignore').strip()
+        system_type = (
+            header_bytes[132:144]
+            .strip(b"\x00")
+            .decode("utf-8", errors="ignore")
+            .strip()
+        )
 
         # Construct Channel Name
-        chname = 'Metronix_{}_{:03}_{}_{}_{:04}'.format(
-            system_type,
-            system_number,
-            channel_type,
-            sensor_type,
-            serial_number
-        )
+        chname = f"Metronix_{system_type}_{system_number:03}_{channel_type}_{sensor_type}_{serial_number:04}"
 
         # Calculate t0
         # StartTime is Unix timestamp
-        dt_obj = datetime.datetime.fromtimestamp(start_time_int, tz=datetime.timezone.utc)
+        dt_obj = datetime.datetime.fromtimestamp(
+            start_time_int, tz=datetime.timezone.utc
+        )
         t0 = to_gps(dt_obj)
 
         # Read Data
@@ -104,7 +105,7 @@ def read_timeseries_ats(source, **kwargs):
             t0=t0,
             name=chname,
             channel=chname,
-            unit='V' # 'Volt'
+            unit="V",  # 'Volt'
         )
 
         return ts
@@ -122,7 +123,9 @@ def read_timeseries_ats_mth5(source, **kwargs):
     try:
         from mth5.io.metronix import metronix_atss
     except ImportError:
-        raise ImportError("mth5 library is required to use this reader. Install it via pip.")
+        raise ImportError(
+            "mth5 library is required to use this reader. Install it via pip."
+        )
 
     # mth5 requires .atss extension?
     # Based on investigation, it checks .suffix in _get_file_type.
@@ -149,8 +152,8 @@ def read_timeseries_ats_mth5(source, **kwargs):
     # xarray time index:
     # data_array.time[0]
 
-    from gwpy.time import to_gps
     import pandas as pd
+    from gwpy.time import to_gps
 
     # Attempt to get t0 from time index
     if len(data_array.time) > 0:
@@ -166,28 +169,33 @@ def read_timeseries_ats_mth5(source, **kwargs):
     name = channel_ts.channel_metadata.id or "mth5_channel"
     unit = channel_ts.channel_metadata.units
 
-    return TimeSeries(
-        data,
-        t0=t0,
-        dt=dt,
-        name=name,
-        unit=unit
-    )
+    return TimeSeries(data, t0=t0, dt=dt, name=name, unit=unit)
 
 
 # -- Registration
 
 for fmt in ["ats"]:
-    io_registry.register_reader(fmt, TimeSeriesDict, read_timeseriesdict_ats, force=True)
+    io_registry.register_reader(
+        fmt, TimeSeriesDict, read_timeseriesdict_ats, force=True
+    )
     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=True)
-    io_registry.register_reader(fmt, TimeSeriesMatrix, lambda *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(), force=True)
+    io_registry.register_reader(
+        fmt,
+        TimeSeriesMatrix,
+        lambda *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
+        force=True,
+    )
 
     io_registry.register_identifier(
-        fmt, TimeSeriesDict,
-        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
+        fmt,
+        TimeSeriesDict,
+        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
+    )
     io_registry.register_identifier(
-        fmt, TimeSeries,
-        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"))
+        fmt,
+        TimeSeries,
+        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
+    )
 
 # Register mth5 variant
 io_registry.register_reader("ats.mth5", TimeSeries, read_timeseries_ats_mth5)

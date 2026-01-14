@@ -13,4 +13,3 @@ __all__ = [
     "format_db_selection",
     "parse_column_filters",
 ]
-

@@ -1,6 +1,6 @@
 from gwpy.utils.shell import (
-    CalledProcessError,
     PIPE,
+    CalledProcessError,
     Popen,
     call,
     deprecated_function,
@@ -15,4 +15,3 @@ __all__ = [
     "deprecated_function",
     "which",
 ]
-

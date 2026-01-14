@@ -23,4 +23,3 @@ __all__ = [
     "table_from_root",
     "table_to_root",
 ]
-

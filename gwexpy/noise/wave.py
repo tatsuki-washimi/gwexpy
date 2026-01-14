@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
 from astropy import units as u
@@ -15,12 +15,12 @@ if TYPE_CHECKING:
 
 
 def from_asd(
-    asd: "FrequencySeries",
+    asd: FrequencySeries,
     duration: float,
     sample_rate: float,
     t0: float = 0.0,
-    rng: Union["Generator", None] = None,
-) -> "TimeSeries":
+    rng: Generator | None = None,
+) -> TimeSeries:
     """
     Generate colored noise TimeSeries from an ASD (Amplitude Spectral Density).
 
@@ -89,7 +89,7 @@ def from_asd(
     if unit is not None:
         try:
             unit = u.Unit(unit)
-            ts_unit = unit * (u.Hz ** 0.5)
+            ts_unit = unit * (u.Hz**0.5)
         except Exception:
             ts_unit = unit
 

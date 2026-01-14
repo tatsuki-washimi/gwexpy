@@ -1,7 +1,8 @@
 import contextlib
 import datetime as _dt
+from collections.abc import Iterable
+from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-from typing import Any, Optional, Dict, Iterable
 
 import numpy as np
 from astropy import units as u
@@ -40,7 +41,11 @@ def parse_timezone(tz: Any) -> _dt.tzinfo:
         try:
             delta = _dt.timedelta(hours=sign * int(hours), minutes=sign * int(minutes))
             return _dt.timezone(delta)
-        except (ValueError, TypeError, OverflowError) as exc:  # pragma: no cover - defensive
+        except (
+            ValueError,
+            TypeError,
+            OverflowError,
+        ) as exc:  # pragma: no cover - defensive
             raise ValueError(f"Could not parse timezone {tz!r}") from exc
     raise ValueError(f"Unsupported timezone specifier: {tz!r}")
 
@@ -56,7 +61,7 @@ def datetime_to_gps(dt: _dt.datetime) -> float:
     return float(to_gps(dt))
 
 
-def ensure_datetime(value: Any, tzinfo: Optional[_dt.tzinfo] = None) -> _dt.datetime:
+def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetime:
     """
     Parse a timestamp into a timezone-aware datetime.
 
@@ -88,7 +93,7 @@ def ensure_datetime(value: Any, tzinfo: Optional[_dt.tzinfo] = None) -> _dt.date
     raise ValueError(f"Unrecognised time value: {value!r}")
 
 
-def apply_unit(series: Any, unit: Optional[Any]) -> Any:
+def apply_unit(series: Any, unit: Any | None) -> Any:
     """
     Override the unit on a series-like object, if requested.
     """
@@ -129,7 +134,7 @@ def apply_unit(series: Any, unit: Optional[Any]) -> Any:
             raise ValueError(f"Could not apply unit {unit!r}") from exc
 
 
-def set_provenance(obj: Any, info: Dict[str, Any]) -> None:
+def set_provenance(obj: Any, info: dict[str, Any]) -> None:
     """
     Attach provenance metadata to a gwexpy/gwpy object.
     """
@@ -143,7 +148,7 @@ def set_provenance(obj: Any, info: Dict[str, Any]) -> None:
         setattr(obj, "_gwexpy_io", {**info})
 
 
-def filter_by_channels(mapping: Dict[str, Any], channels: Optional[Iterable[str]]):
+def filter_by_channels(mapping: dict[str, Any], channels: Iterable[str] | None):
     """
     Return a filtered dictionary by selected channel names.
     """

@@ -19,4 +19,3 @@ __all__ = [
     "decorate_registered_reader",
     "registry",
 ]
-

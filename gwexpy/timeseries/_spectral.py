@@ -12,7 +12,9 @@ from ._spectral_fourier import TimeSeriesSpectralFourierMixin
 from ._spectral_special import TimeSeriesSpectralSpecialMixin
 
 
-class TimeSeriesSpectralMixin(TimeSeriesSpectralFourierMixin, TimeSeriesSpectralSpecialMixin):
+class TimeSeriesSpectralMixin(
+    TimeSeriesSpectralFourierMixin, TimeSeriesSpectralSpecialMixin
+):
     """
     Mixin class providing spectral transform methods for TimeSeries.
 
@@ -20,4 +22,5 @@ class TimeSeriesSpectralMixin(TimeSeriesSpectralFourierMixin, TimeSeriesSpectral
     - TimeSeriesSpectralFourierMixin: Standard Fourier transforms
     - TimeSeriesSpectralSpecialMixin: Special/Time-Frequency transforms
     """
+
     pass

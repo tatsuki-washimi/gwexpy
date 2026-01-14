@@ -1,9 +1,9 @@
 from gwpy.table.io.ligolw import (
     GET_AS_EXCLUDE,
     LIGOLW_TABLES,
-    LIGOTimeGPS,
     NUMPY_TYPE_MAP,
     EventTable,
+    LIGOTimeGPS,
     Table,
     is_ligolw,
     patch_ligotimegps,
@@ -43,4 +43,3 @@ __all__ = [
     "write_ligolw_tables",
     "write_table",
 ]
-

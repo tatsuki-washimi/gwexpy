@@ -3,6 +3,7 @@ Thread for capturing PC Audio using sounddevice.
 """
 
 import time
+
 import numpy as np
 
 try:

@@ -41,7 +41,9 @@ class SeriesMatrixValidationMixin:
     def is_contiguous_exact(self, other: Any, tol: float = 1 / 2.0**18) -> int:
         """Check contiguity with strict shape matching."""
         if self._value.shape != other._value.shape:
-            raise ValueError(f"shape does not match: {self._value.shape} vs {other._value.shape}")
+            raise ValueError(
+                f"shape does not match: {self._value.shape} vs {other._value.shape}"
+            )
 
         base_unit = getattr(self.xindex, "unit", None)
         if base_unit is None:
@@ -86,7 +88,9 @@ class SeriesMatrixValidationMixin:
             raise ValueError(f"xindex does not match: {self.xindex} vs {other.xindex}")
 
         if self._value.shape != other._value.shape:
-            raise ValueError(f"shape does not match: {self._value.shape} vs {other._value.shape}")
+            raise ValueError(
+                f"shape does not match: {self._value.shape} vs {other._value.shape}"
+            )
 
         if list(self.rows.keys()) != list(other.rows.keys()):
             raise ValueError("row keys do not match")
@@ -95,31 +99,45 @@ class SeriesMatrixValidationMixin:
 
         for (k1, meta1), (k2, meta2) in zip(self.rows.items(), other.rows.items()):
             if not meta1.unit.is_equivalent(meta2.unit):
-                raise ValueError(f"row {k1} unit does not match: {meta1.unit} vs {meta2.unit}")
+                raise ValueError(
+                    f"row {k1} unit does not match: {meta1.unit} vs {meta2.unit}"
+                )
         for (k1, meta1), (k2, meta2) in zip(self.cols.items(), other.cols.items()):
             if not meta1.unit.is_equivalent(meta2.unit):
-                raise ValueError(f"col {k1} unit does not match: {meta1.unit} vs {meta2.unit}")
+                raise ValueError(
+                    f"col {k1} unit does not match: {meta1.unit} vs {meta2.unit}"
+                )
         return True
+
     def is_compatible(self, other: Any) -> bool:
         """Compatibility check."""
         from .seriesmatrix_base import SeriesMatrix
+
         if not isinstance(other, SeriesMatrix):
             arr = np.asarray(other)
             if arr.shape != self._value.shape:
-                raise ValueError(f"shape does not match: {self._value.shape} vs {arr.shape}")
+                raise ValueError(
+                    f"shape does not match: {self._value.shape} vs {arr.shape}"
+                )
             return True
 
         if self._value.shape[:2] != other._value.shape[:2]:
-            raise ValueError(f"matrix shape does not match: {self._value.shape[:2]} vs {other._value.shape[:2]}")
+            raise ValueError(
+                f"matrix shape does not match: {self._value.shape[:2]} vs {other._value.shape[:2]}"
+            )
 
         xunit_self = getattr(self.xindex, "unit", None)
         xunit_other = getattr(other.xindex, "unit", None)
         if xunit_self is not None and xunit_other is not None:
             try:
                 if not u.Unit(xunit_self).is_equivalent(u.Unit(xunit_other)):
-                    raise ValueError(f"xindex unit does not match: {xunit_self} vs {xunit_other}")
+                    raise ValueError(
+                        f"xindex unit does not match: {xunit_self} vs {xunit_other}"
+                    )
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-                raise ValueError(f"xindex unit does not match: {xunit_self} vs {xunit_other}")
+                raise ValueError(
+                    f"xindex unit does not match: {xunit_self} vs {xunit_other}"
+                )
 
         try:
             dx_self = self.dx

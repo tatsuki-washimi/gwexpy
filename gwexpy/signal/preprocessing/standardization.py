@@ -20,6 +20,7 @@ class StandardizationModel:
     axis : int or str
         Axis along which standardization was performed.
     """
+
     def __init__(self, mean, scale, axis):
         self.mean = mean
         self.scale = scale
@@ -39,7 +40,7 @@ class StandardizationModel:
         X : ndarray
             Original-scale data.
         """
-        if hasattr(X_std, 'value'):
+        if hasattr(X_std, "value"):
             val = X_std.value
         else:
             val = X_std
@@ -81,16 +82,16 @@ def standardize(X, *, method="zscore", ddof=0, axis=-1, return_model=True):
         scale = np.nanstd(X, axis=axis, ddof=ddof, keepdims=True)
         scale = np.where(scale == 0, 1.0, scale)
     else:
-        raise ValueError(f"Unknown standardization method '{method}'. "
-                         f"Supported methods are 'zscore', 'robust'.")
+        raise ValueError(
+            f"Unknown standardization method '{method}'. "
+            f"Supported methods are 'zscore', 'robust'."
+        )
 
     X_standardized = (X - center) / scale
 
     if return_model:
         model = StandardizationModel(
-            mean=np.squeeze(center),
-            scale=np.squeeze(scale),
-            axis=axis
+            mean=np.squeeze(center), scale=np.squeeze(scale), axis=axis
         )
         return X_standardized, model
     return X_standardized

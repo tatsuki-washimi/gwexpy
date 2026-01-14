@@ -5,6 +5,9 @@ gwexpy.timeseries.utils
 Utility functions for time series axis validation and extraction.
 """
 
+from collections.abc import Sequence
+from typing import Any, TypedDict
+
 import numpy as np
 from astropy import units as u
 
@@ -19,7 +22,24 @@ __all__ = [
     "SeriesType",
 ]
 
-def _coerce_t0_gps(t0):
+
+class AxisInfo(TypedDict):
+    regular: bool
+    dt: Any
+    t0: u.Quantity | None
+    n: int | None
+    times: Any
+
+
+class FreqAxisInfo(TypedDict):
+    regular: bool
+    df: Any
+    f0: Any
+    n: int | None
+    freqs: Any
+
+
+def _coerce_t0_gps(t0: Any) -> u.Quantity | None:
     """
     Normalize t0 to LIGO GPS seconds (Quantity, u.s).
 
@@ -55,7 +75,7 @@ def _coerce_t0_gps(t0):
     return u.Quantity(gps_val, u.s)
 
 
-def _extract_axis_info(ts):
+def _extract_axis_info(ts: Any) -> AxisInfo:
     """
     Extract axis information for a TimeSeries-like object.
 
@@ -89,7 +109,7 @@ def _extract_axis_info(ts):
             else:
                 val = float(dt)
                 finite = np.isfinite(val)
-                zero = (val == 0)
+                zero = val == 0
             regular = bool(finite and not zero)
         except (TypeError, ValueError):
             regular = False
@@ -117,7 +137,9 @@ def _extract_axis_info(ts):
     return {"regular": regular, "dt": dt, "t0": t0, "n": n, "times": axis}
 
 
-def _validate_common_axis(axis_infos, method_name):
+def _validate_common_axis(
+    axis_infos: Sequence[AxisInfo], method_name: str
+) -> tuple[Any | None, int]:
     """
     Validate that a list of axis infos share a common axis.
 
@@ -143,7 +165,7 @@ def _validate_common_axis(axis_infos, method_name):
         ref = axis_infos[0]
         ref_dt = ref["dt"]
         ref_t0 = ref["t0"]
-        ref_n = ref["n"]
+        ref_n = int(ref["n"] or 0)
         for info in axis_infos[1:]:
             if info["n"] != ref_n:
                 raise ValueError(
@@ -184,7 +206,7 @@ def _validate_common_axis(axis_infos, method_name):
     return ref_times, len(ref_vals)
 
 
-def _extract_freq_axis_info(fs):
+def _extract_freq_axis_info(fs: Any) -> FreqAxisInfo:
     """
     Extract frequency-axis information from a FrequencySeries-like object.
 
@@ -218,7 +240,7 @@ def _extract_freq_axis_info(fs):
             else:
                 val = float(df)
                 finite = np.isfinite(val)
-                zero = (val == 0)
+                zero = val == 0
             regular = bool(finite and not zero)
         except (TypeError, ValueError):
             regular = False
@@ -244,7 +266,9 @@ def _extract_freq_axis_info(fs):
     return {"regular": regular, "df": df, "f0": f0, "n": n, "freqs": freqs}
 
 
-def _validate_common_frequency_axis(axis_infos, method_name):
+def _validate_common_frequency_axis(
+    axis_infos: Sequence[FreqAxisInfo], method_name: str
+) -> tuple[Any | None, Any | None, Any | None, int]:
     """
     Validate common frequency axis across FrequencySeries results.
 
@@ -274,7 +298,7 @@ def _validate_common_frequency_axis(axis_infos, method_name):
         ref = axis_infos[0]
         ref_df = ref["df"]
         ref_f0 = ref["f0"]
-        ref_n = ref["n"]
+        ref_n = int(ref["n"] or 0)
         for info in axis_infos[1:]:
             if info["n"] != ref_n:
                 raise ValueError(
@@ -315,7 +339,7 @@ def _validate_common_frequency_axis(axis_infos, method_name):
     return ref_freqs, None, None, len(ref_vals)
 
 
-def _validate_common_epoch(epochs, method_name):
+def _validate_common_epoch(epochs: Sequence[Any], method_name: str) -> Any | None:
     """
     Validate that all epochs are identical.
 
@@ -345,6 +369,6 @@ try:
 except ImportError:  # fallback for gwpy versions without SeriesType
     from enum import Enum
 
-    class SeriesType(Enum):
+    class SeriesType(Enum):  # type: ignore[no-redef]
         TIME = "time"
         FREQ = "freq"

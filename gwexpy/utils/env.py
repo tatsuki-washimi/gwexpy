@@ -7,4 +7,3 @@ __all__ = [
     "TRUE",
     "bool_env",
 ]
-

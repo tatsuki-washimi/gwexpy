@@ -1,5 +1,6 @@
-from gwpy.plot.utils import *  # noqa: F403
 import numpy as np
+from gwpy.plot.utils import *  # noqa: F403
+
 
 def adaptive_decimate(ts, target_points=10000):
     """
@@ -51,15 +52,18 @@ def adaptive_decimate(ts, target_points=10000):
 
     # New times axis
     ts.dt.value * bin_size / 2.0
-    new_times = np.linspace(ts.times[0].value, ts.times[n_samples-1].value, decimated_data.size)
+    new_times = np.linspace(
+        ts.times[0].value, ts.times[n_samples - 1].value, decimated_data.size
+    )
 
     # Create new TimeSeries
     from gwexpy.timeseries import TimeSeries
+
     new_ts = TimeSeries(
         decimated_data,
         times=new_times,
         unit=ts.unit,
         name=ts.name,
-        channel=getattr(ts, 'channel', None)
+        channel=getattr(ts, "channel", None),
     )
     return new_ts

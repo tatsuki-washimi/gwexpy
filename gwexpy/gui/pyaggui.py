@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-import sys
-import os
-from pathlib import Path
-from PyQt5 import QtWidgets, QtCore
 import logging
+import os
+import sys
+from pathlib import Path
+
+from PyQt5 import QtCore, QtWidgets
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(name)s:%(message)s")
 

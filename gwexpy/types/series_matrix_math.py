@@ -119,7 +119,9 @@ class SeriesMatrixMathMixin:
         for i in range(nrow):
             u_ii = self.meta[i, i].unit
             if not u_ii.is_equivalent(ref_unit):
-                raise u.UnitConversionError(f"Diagonal units not equivalent: {u_ii} vs {ref_unit}")
+                raise u.UnitConversionError(
+                    f"Diagonal units not equivalent: {u_ii} vs {ref_unit}"
+                )
             diag_values.append(u.Quantity(self._value[i, i], u_ii).to_value(ref_unit))
         summed = np.sum(diag_values, axis=0)
 
@@ -167,7 +169,9 @@ class SeriesMatrixMathMixin:
             from .seriesmatrix_validation import _slice_metadata_dict
 
             rows_dict = _slice_metadata_dict(self.rows, list(range(n)), "row")
-            cols_dict = MetaDataDict({"diag": MetaData()}, expected_size=1, key_prefix="col")
+            cols_dict = MetaDataDict(
+                {"diag": MetaData()}, expected_size=1, key_prefix="col"
+            )
             return self.__class__(
                 values,
                 xindex=self.xindex,
@@ -205,7 +209,9 @@ class SeriesMatrixMathMixin:
         # These helpers must be in the mixin or base class
         ok, ref_unit = self._all_element_units_equivalent()
         if not ok:
-            raise u.UnitConversionError("All element units must be equivalent for det()")
+            raise u.UnitConversionError(
+                "All element units must be equivalent for det()"
+            )
         common = self._to_common_unit_values(ref_unit)
         mats = np.moveaxis(common, 2, 0)
         det_vals = np.linalg.det(mats)
@@ -229,7 +235,9 @@ class SeriesMatrixMathMixin:
             raise ValueError("inv requires a square matrix")
         ok, ref_unit = self._all_element_units_equivalent()
         if not ok:
-            raise u.UnitConversionError("All element units must be equivalent for inv()")
+            raise u.UnitConversionError(
+                "All element units must be equivalent for inv()"
+            )
         common = self._to_common_unit_values(ref_unit)
         mats = np.moveaxis(common, 2, 0)
         inv_stack = np.linalg.inv(mats)
@@ -248,8 +256,16 @@ class SeriesMatrixMathMixin:
                 items[k] = MetaData(**dict(v))
             return MetaDataDict(items, expected_size=len(md), key_prefix=prefix)
 
-        rows_out = _copy_meta_dict(self.cols, "row") if swap_rowcol else _copy_meta_dict(self.rows, "row")
-        cols_out = _copy_meta_dict(self.rows, "col") if swap_rowcol else _copy_meta_dict(self.cols, "col")
+        rows_out = (
+            _copy_meta_dict(self.cols, "row")
+            if swap_rowcol
+            else _copy_meta_dict(self.rows, "row")
+        )
+        cols_out = (
+            _copy_meta_dict(self.rows, "col")
+            if swap_rowcol
+            else _copy_meta_dict(self.cols, "col")
+        )
 
         return self.__class__(
             inv_vals,
@@ -262,7 +278,9 @@ class SeriesMatrixMathMixin:
             attrs=getattr(self, "attrs", {}),
         )
 
-    def schur(self, keep_rows, keep_cols=None, eliminate_rows=None, eliminate_cols=None):
+    def schur(
+        self, keep_rows, keep_cols=None, eliminate_rows=None, eliminate_cols=None
+    ):
         """Compute the Schur complement of a block matrix."""
         from collections import OrderedDict
 
@@ -292,13 +310,17 @@ class SeriesMatrixMathMixin:
             eliminate_cols_idx = [_col_idx(k) for k in eliminate_cols]
 
         if len(eliminate_rows_idx) != len(eliminate_cols_idx):
-            raise ValueError("Eliminated row/col sets must have the same size for Schur complement")
+            raise ValueError(
+                "Eliminated row/col sets must have the same size for Schur complement"
+            )
         if not keep_rows_idx or not keep_cols_idx:
             raise ValueError("Keep sets must be non-empty")
 
         ok, ref_unit = self._all_element_units_equivalent()
         if not ok:
-            raise u.UnitConversionError("All element units must be equivalent for schur()")
+            raise u.UnitConversionError(
+                "All element units must be equivalent for schur()"
+            )
         common = self._to_common_unit_values(ref_unit)
 
         r_keep = len(keep_rows_idx)
@@ -309,9 +331,15 @@ class SeriesMatrixMathMixin:
         else:
             stack = np.moveaxis(common, 2, 0)
             A = np.take(np.take(stack, keep_rows_idx, axis=1), keep_cols_idx, axis=2)
-            B = np.take(np.take(stack, keep_rows_idx, axis=1), eliminate_cols_idx, axis=2)
-            C = np.take(np.take(stack, eliminate_rows_idx, axis=1), keep_cols_idx, axis=2)
-            D = np.take(np.take(stack, eliminate_rows_idx, axis=1), eliminate_cols_idx, axis=2)
+            B = np.take(
+                np.take(stack, keep_rows_idx, axis=1), eliminate_cols_idx, axis=2
+            )
+            C = np.take(
+                np.take(stack, eliminate_rows_idx, axis=1), keep_cols_idx, axis=2
+            )
+            D = np.take(
+                np.take(stack, eliminate_rows_idx, axis=1), eliminate_cols_idx, axis=2
+            )
 
             D_inv = np.linalg.inv(D)
             schur_block = A - np.matmul(np.matmul(B, D_inv), C)
@@ -321,7 +349,9 @@ class SeriesMatrixMathMixin:
         for ii, ri in enumerate(keep_rows_idx):
             for jj, cj in enumerate(keep_cols_idx):
                 base_meta = self.meta[ri, cj]
-                meta_arr[ii, jj] = MetaData(unit=ref_unit, name=base_meta.name, channel=base_meta.channel)
+                meta_arr[ii, jj] = MetaData(
+                    unit=ref_unit, name=base_meta.name, channel=base_meta.channel
+                )
 
         def _subset_meta_dict(md: MetaDataDict, indices, prefix):
             items = OrderedDict()

@@ -21,4 +21,3 @@ __all__ = [
     "warnings",
     "with_read_hdf5",
 ]
-

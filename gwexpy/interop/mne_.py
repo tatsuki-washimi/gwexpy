@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
 from ._optional import require_optional
-
 
 
 def _infer_sfreq_hz(ts: Any) -> float:
@@ -58,7 +57,9 @@ def _infer_sfreq_hz(ts: Any) -> float:
 
     # Fallback to None if not strict? MNE requires sfreq.
     # Raise error if we can't find it.
-    raise ValueError("Cannot infer sampling frequency (missing sample_rate/dt/frequencies/times)")
+    raise ValueError(
+        "Cannot infer sampling frequency (missing sample_rate/dt/frequencies/times)"
+    )
 
 
 def _default_ch_name(ts: Any, *, fallback: str) -> str:
@@ -72,7 +73,9 @@ def _default_ch_name(ts: Any, *, fallback: str) -> str:
     return fallback
 
 
-def _select_items(items: list[tuple[Any, Any]], picks: Optional[Any]) -> list[tuple[Any, Any]]:
+def _select_items(
+    items: list[tuple[Any, Any]], picks: Any | None
+) -> list[tuple[Any, Any]]:
     # ... existing implementation ...
     if picks is None:
         return items
@@ -90,9 +93,6 @@ def _select_items(items: list[tuple[Any, Any]], picks: Optional[Any]) -> list[tu
     return [items[i] for i in indices]
 
 
-
-
-
 def _mne_spectrum_to_fs(cls, spectrum, **kwargs):
     """mne.time_frequency.Spectrum -> FrequencySeries (or dict)"""
     data = spectrum.get_data()
@@ -102,10 +102,9 @@ def _mne_spectrum_to_fs(cls, spectrum, **kwargs):
     n_epochs, n_ch, n_freqs = data.shape
 
     if n_epochs > 1:
-        data = data.mean(axis=0) # (n_ch, n_freqs)
+        data = data.mean(axis=0)  # (n_ch, n_freqs)
     else:
-        data = data[0] # (n_ch, n_freqs)
-
+        data = data[0]  # (n_ch, n_freqs)
 
     if n_ch == 1:
         # data[0] is (n_freqs,) array.
@@ -114,6 +113,7 @@ def _mne_spectrum_to_fs(cls, spectrum, **kwargs):
         return cls(val, frequencies=freqs, name=ch_names[0], **kwargs)
 
     from gwexpy.frequencyseries import FrequencySeriesDict
+
     fsd = FrequencySeriesDict()
     for i, name in enumerate(ch_names):
         fsd[name] = cls(data[i], frequencies=freqs, name=name, **kwargs)
@@ -150,30 +150,28 @@ def _spec_to_mne_tfr(specd, info=None, **kwargs):
         # data shape: (n_epochs, n_channels, n_freqs, n_times)
 
         if val.shape == (len(times), len(freqs)):
-            val = val.T # (freqs, times)
+            val = val.T  # (freqs, times)
         elif val.shape == (len(freqs), len(times)):
             pass
         else:
-             # Dimensions mismatch?
-             # Might be due to different conventions or errors.
-             # Let's verify dimensions.
-             # If mismatch, MNE will raise error later usually.
-             pass
+            # Dimensions mismatch?
+            # Might be due to different conventions or errors.
+            # Let's verify dimensions.
+            # If mismatch, MNE will raise error later usually.
+            pass
 
         data_list.append(val)
         ch_names.append(str(name))
 
     # Stack channels
-    data_3d = np.stack(data_list, axis=0) # (n_ch, n_freqs, n_times)
-    data_4d = data_3d[None, :, :, :]    # (1, n_ch, n_freqs, n_times)
+    data_3d = np.stack(data_list, axis=0)  # (n_ch, n_freqs, n_times)
+    data_4d = data_3d[None, :, :, :]  # (1, n_ch, n_freqs, n_times)
 
     sfreq = _infer_sfreq_hz(first)
 
     if info is None:
         info = mne.create_info(
-            ch_names=ch_names,
-            sfreq=sfreq,
-            ch_types=["misc"] * len(ch_names)
+            ch_names=ch_names, sfreq=sfreq, ch_types=["misc"] * len(ch_names)
         )
 
     if not hasattr(mne.time_frequency, "EpochsTFRArray"):
@@ -191,15 +189,16 @@ def _mne_tfr_to_spec(cls, tfr, **kwargs):
     ch_names = tfr.ch_names
 
     if data.ndim == 4:
-        data = data.mean(axis=0) # (n_ch, n_freqs, n_times)
+        data = data.mean(axis=0)  # (n_ch, n_freqs, n_times)
 
     from gwexpy.spectrogram import SpectrogramDict
+
     sd = SpectrogramDict()
 
     for i, name in enumerate(ch_names):
         # Transpose back: (freqs, times) -> (times, freqs) for Spectrogram
         # data[i] is (freqs, times)
-        val = data[i].T # (times, freqs)
+        val = data[i].T  # (times, freqs)
 
         sd[name] = cls(val, times=times, frequencies=freqs, name=name, **kwargs)
 
@@ -229,6 +228,7 @@ def to_mne_rawarray(tsd, info=None, picks=None):
             raise TypeError("picks is only supported for mapping inputs")
 
         from .base import to_plain_array
+
         data_1d = to_plain_array(tsd)
         if data_1d.ndim != 1:
             raise ValueError("Single-channel input must be 1D")
@@ -263,8 +263,9 @@ def to_mne_rawarray(tsd, info=None, picks=None):
         try:
             tsd_sel = tsd.__class__()  # TimeSeriesDict-like
             for k, ts in items:
-                 tsd_sel[k] = ts
+                tsd_sel[k] = ts
             from .base import to_plain_array
+
             mat = tsd_sel.to_matrix()
             data = to_plain_array(mat)
             if data.ndim == 3:
@@ -282,12 +283,13 @@ def to_mne_rawarray(tsd, info=None, picks=None):
         )
 
     if info is None:
-        info = mne.create_info(ch_names=ch_names, sfreq=sfreq, ch_types=["misc"] * len(ch_names))
+        info = mne.create_info(
+            ch_names=ch_names, sfreq=sfreq, ch_types=["misc"] * len(ch_names)
+        )
     elif int(info["nchan"]) != len(ch_names):
         raise ValueError(f"info expects nchan={len(ch_names)}, got {info['nchan']}")
 
     return mne.io.RawArray(data, info)
-
 
 
 def from_mne_raw(cls, raw, unit_map=None):
@@ -299,16 +301,17 @@ def from_mne_raw(cls, raw, unit_map=None):
     # times: (n_times,) relative to first sample usually 0
 
     ch_names = raw.ch_names
-    sfreq = raw.info['sfreq']
+    sfreq = raw.info["sfreq"]
     dt = 1.0 / sfreq
 
     # meas_date check for t0?
     t0 = 0
-    if raw.info['meas_date']:
+    if raw.info["meas_date"]:
         # datetime to gps
         from ._time import datetime_utc_to_gps
+
         # meas_date is datetime (aware UTC usually)
-        t0 = datetime_utc_to_gps(raw.info['meas_date'])
+        t0 = datetime_utc_to_gps(raw.info["meas_date"])
 
     tsd = cls()
     for i, name in enumerate(ch_names):
@@ -352,7 +355,7 @@ def to_mne(data, info=None, **kwargs):
 
     # Check for FrequencySeries (or dict)
     is_fs = False
-    if hasattr(data, "frequencies"): # Single FrequencySeries
+    if hasattr(data, "frequencies"):  # Single FrequencySeries
         is_fs = True
     elif isinstance(data, Mapping) and len(data) > 0:
         first = next(iter(data.values()))
@@ -364,7 +367,6 @@ def to_mne(data, info=None, **kwargs):
 
     # Default to RawArray (TimeSeries)
     return to_mne_rawarray(data, info, **kwargs)
-
 
 
 def from_mne(cls, data, **kwargs):
@@ -409,7 +411,7 @@ def _fs_to_mne_spectrum(fsd, info=None, **kwargs):
     # Normalize input to list of (name, series)
     if isinstance(fsd, Mapping):
         items = list(fsd.items())
-    elif hasattr(fsd, "name"): # Single series
+    elif hasattr(fsd, "name"):  # Single series
         name = _default_ch_name(fsd, fallback="ch0")
         items = [(name, fsd)]
     else:
@@ -432,10 +434,9 @@ def _fs_to_mne_spectrum(fsd, info=None, **kwargs):
     for name, fs in items:
         # Consistency check
         if not np.allclose(fs.frequencies.value, freqs):
-             raise ValueError("All channels must have same frequencies")
+            raise ValueError("All channels must have same frequencies")
         data_list.append(fs.value)
         ch_names.append(str(name))
-
 
     # Stack channels: (n_channels, n_freqs)
     data_2d = np.stack(data_list, axis=0)
@@ -444,9 +445,7 @@ def _fs_to_mne_spectrum(fsd, info=None, **kwargs):
 
     if info is None:
         info = mne.create_info(
-            ch_names=ch_names,
-            sfreq=sfreq,
-            ch_types=["mag"] * len(ch_names)
+            ch_names=ch_names, sfreq=sfreq, ch_types=["mag"] * len(ch_names)
         )
 
     # MNE >= 1.2 required for SpectrumArray
@@ -458,7 +457,6 @@ def _fs_to_mne_spectrum(fsd, info=None, **kwargs):
     return mne.time_frequency.SpectrumArray(data_2d, info, freqs, **kwargs)
 
 
-
 def _mne_spectrum_to_fs(cls, spectrum, **kwargs):
     """mne.time_frequency.Spectrum -> FrequencySeries (or dict)"""
     data = spectrum.get_data()
@@ -466,17 +464,16 @@ def _mne_spectrum_to_fs(cls, spectrum, **kwargs):
     ch_names = spectrum.ch_names
 
     # Handle data shape (might be 2D or 3D)
-    if data.ndim == 3: # (n_epochs, n_channels, n_freqs)
+    if data.ndim == 3:  # (n_epochs, n_channels, n_freqs)
         n_epochs, n_ch, n_freqs_dim = data.shape
         if n_epochs > 1:
-            data = data.mean(axis=0) # (n_ch, n_freqs)
+            data = data.mean(axis=0)  # (n_ch, n_freqs)
         else:
             data = data[0]
-    elif data.ndim == 2: # (n_channels, n_freqs)
+    elif data.ndim == 2:  # (n_channels, n_freqs)
         n_ch, n_freqs_dim = data.shape
     else:
         raise ValueError(f"Unexpected spectrum data shape: {data.shape}")
-
 
     if n_ch == 1:
         # data[0] is (n_freqs,) array.
@@ -484,6 +481,7 @@ def _mne_spectrum_to_fs(cls, spectrum, **kwargs):
         return cls(val, frequencies=freqs, name=ch_names[0], **kwargs)
 
     from gwexpy.frequencyseries import FrequencySeriesDict
+
     fsd = FrequencySeriesDict()
     for i, name in enumerate(ch_names):
         fsd[name] = cls(data[i], frequencies=freqs, name=name, **kwargs)
@@ -507,7 +505,7 @@ def _spec_to_mne_tfr(specd, info=None, **kwargs):
 
     first = items[0][1]
     freqs = first.frequencies.value
-    times = first.times.value # relative time usually? Or GPS?
+    times = first.times.value  # relative time usually? Or GPS?
     # MNE times are usually relative to trigger.
     # If Spectrogram times are GPS, we might want to shift them or put t0 in info['meas_date']?
     # For TFRArray, tmin is optional arg (default times[0]).
@@ -546,9 +544,7 @@ def _spec_to_mne_tfr(specd, info=None, **kwargs):
 
     if info is None:
         info = mne.create_info(
-            ch_names=ch_names,
-            sfreq=sfreq,
-            ch_types=["misc"] * len(ch_names)
+            ch_names=ch_names, sfreq=sfreq, ch_types=["misc"] * len(ch_names)
         )
 
     # MNE >= 1.3 required for EpochsTFRArray
@@ -582,6 +578,7 @@ def _mne_tfr_to_spec(cls, tfr, **kwargs):
 
     # Convert to gwexpy: (n_ti, n_fr) usually?
     from gwexpy.spectrogram import SpectrogramDict
+
     sd = SpectrogramDict()
 
     for i, name in enumerate(ch_names):

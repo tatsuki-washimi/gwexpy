@@ -1,7 +1,7 @@
-
-from ._optional import require_optional
 import numpy as np
 from gwpy.time import LIGOTimeGPS
+
+from ._optional import require_optional
 
 
 def to_xarray(ts, time_coord="datetime"):
@@ -15,16 +15,18 @@ def to_xarray(ts, time_coord="datetime"):
         "unit": str(ts.unit),
         "name": str(ts.name),
         "channel": str(ts.channel),
-        "epoch": float(ts.t0.value if hasattr(ts.t0, 'value') else ts.t0),
+        "epoch": float(ts.t0.value if hasattr(ts.t0, "value") else ts.t0),
         "time_coord": time_coord,
     }
 
     times_gps = ts.times.value
     if time_coord == "datetime":
         from astropy.time import Time
+
         t_vals = Time(times_gps, format="gps").to_datetime()
     elif time_coord == "seconds":
         from astropy.time import Time
+
         t_vals = Time(times_gps, format="gps").unix
     elif time_coord == "gps":
         t_vals = times_gps
@@ -51,11 +53,13 @@ def from_xarray(cls, da, unit=None):
     time_coord = da.attrs.get("time_coord")
     if np.issubdtype(t_coord.dtype, np.datetime64):
         from astropy.time import Time
+
         t_obj = Time(t_coord, format="datetime64")
         t0_gps = float(t_obj[0].gps)
         dt = float(t_obj[1].gps - t0_gps) if len(t_coord) > 1 else 1.0
     elif time_coord == "seconds":
         from astropy.time import Time
+
         t_obj = Time(t_coord, format="unix")
         t0_gps = float(t_obj[0].gps)
         dt = float(t_obj[1].gps - t0_gps) if len(t_coord) > 1 else 1.0

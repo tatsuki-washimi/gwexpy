@@ -1,20 +1,19 @@
 from __future__ import annotations
 
-import numpy as np
-
 from typing import Any
 
+import numpy as np
+
 from gwexpy.types.seriesmatrix import SeriesMatrix
-from .frequencyseries import FrequencySeries, SeriesType
+
 from .collections import FrequencySeriesDict, FrequencySeriesList
-from .matrix_core import FrequencySeriesMatrixCoreMixin
+from .frequencyseries import FrequencySeries, SeriesType
 from .matrix_analysis import FrequencySeriesMatrixAnalysisMixin
+from .matrix_core import FrequencySeriesMatrixCoreMixin
 
 
 class FrequencySeriesMatrix(
-    FrequencySeriesMatrixCoreMixin,
-    FrequencySeriesMatrixAnalysisMixin,
-    SeriesMatrix
+    FrequencySeriesMatrixCoreMixin, FrequencySeriesMatrixAnalysisMixin, SeriesMatrix
 ):
     """
     Matrix container for multiple FrequencySeries objects.
@@ -56,26 +55,26 @@ class FrequencySeriesMatrix(
                 # Intelligent reshaping based on data shape
                 try:
                     if hasattr(data, "shape"):
-                         dshape = data.shape
+                        dshape = data.shape
                     else:
-                         dshape = np.shape(data)
+                        dshape = np.shape(data)
 
                     if len(dshape) >= 2:
                         N, M = dshape[:2]
                         if cn.size == N * M:
                             kwargs["names"] = cn.reshape(N, M)
                         elif cn.size == N:
-                             kwargs["names"] = cn.reshape(N, 1)
+                            kwargs["names"] = cn.reshape(N, 1)
                         else:
-                             # Default to 1D, which broadcasts to (..., M) if size matches M
-                             kwargs["names"] = cn
+                            # Default to 1D, which broadcasts to (..., M) if size matches M
+                            kwargs["names"] = cn
                     else:
                         kwargs["names"] = cn
                 except Exception:
-                     if cn.ndim == 1:
-                          kwargs["names"] = cn.reshape(-1, 1)
-                     else:
-                          kwargs["names"] = cn
+                    if cn.ndim == 1:
+                        kwargs["names"] = cn.reshape(-1, 1)
+                    else:
+                        kwargs["names"] = cn
 
         obj = super().__new__(cls, data, **kwargs)
         return obj
@@ -83,4 +82,5 @@ class FrequencySeriesMatrix(
     def plot(self, **kwargs: Any) -> Any:
         """Plot FrequencySeriesMatrix."""
         from gwexpy.plot import Plot
+
         return Plot(self, **kwargs)

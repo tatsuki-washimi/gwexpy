@@ -1,10 +1,9 @@
 from pathlib import Path
-from gwexpy.timeseries import TimeSeriesDict, TimeSeries
 
-
-from gwexpy.frequencyseries import FrequencySeriesDict, FrequencySeries
-from gwexpy.spectrogram import Spectrogram
+from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
 from gwexpy.io.dttxml_common import load_dttxml_products
+from gwexpy.spectrogram import Spectrogram
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 
 def load_products(filename: str) -> dict:

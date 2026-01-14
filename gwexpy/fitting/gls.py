@@ -5,7 +5,11 @@ This module provides a cost function class for fitting with a full
 covariance matrix, enabling χ² minimization that properly accounts
 for correlations between data points.
 """
+
 from __future__ import annotations
+
+from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 from iminuit import Minuit
@@ -57,7 +61,7 @@ class GeneralizedLeastSquares:
         x: np.ndarray,
         y: np.ndarray,
         cov_inv: np.ndarray,
-        model: callable,
+        model: Callable[..., Any],
     ) -> None:
         self.x = np.asarray(x)
         self.y = np.asarray(y)

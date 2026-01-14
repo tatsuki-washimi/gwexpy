@@ -1,5 +1,5 @@
-
 from ._optional import require_optional
+
 
 def to_hdf5(ts, group, path, overwrite=False, compression=None, compression_opts=None):
     """
@@ -14,7 +14,7 @@ def to_hdf5(ts, group, path, overwrite=False, compression=None, compression_opts
         if overwrite:
             del group[path]
         else:
-            raise IOError(f"Path {path} exists in HDF5 group")
+            raise OSError(f"Path {path} exists in HDF5 group")
 
     # Use gwpy's write if available on the object?
     # No, we want to write *into* an open h5py object.
@@ -22,10 +22,7 @@ def to_hdf5(ts, group, path, overwrite=False, compression=None, compression_opts
 
     # Manual write for maximum control/interop
     dset = group.create_dataset(
-        path,
-        data=ts.value,
-        compression=compression,
-        compression_opts=compression_opts
+        path, data=ts.value, compression=compression, compression_opts=compression_opts
     )
 
     # Metadata attributes (gwpy compatible names)
@@ -36,6 +33,7 @@ def to_hdf5(ts, group, path, overwrite=False, compression=None, compression_opts
         dset.attrs["name"] = str(ts.name)
     if ts.channel:
         dset.attrs["channel"] = str(ts.channel)
+
 
 def from_hdf5(cls, group, path):
     """Read TimeSeries from HDF5 group."""

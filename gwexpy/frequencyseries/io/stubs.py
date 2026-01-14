@@ -4,7 +4,11 @@ Placeholder readers for unsupported frequency-domain formats.
 
 from gwpy.io import registry as io_registry
 
-from ..frequencyseries import FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix
+from ..frequencyseries import (
+    FrequencySeries,
+    FrequencySeriesDict,
+    FrequencySeriesMatrix,
+)
 
 _P2_FORMATS = [
     "win",
@@ -35,4 +39,3 @@ for _fmt in _P2_FORMATS:
     io_registry.register_reader(_fmt, FrequencySeries, reader)
     io_registry.register_reader(_fmt, FrequencySeriesDict, reader)
     io_registry.register_reader(_fmt, FrequencySeriesMatrix, reader)
-

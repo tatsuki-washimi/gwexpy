@@ -12,8 +12,8 @@ from gwpy.timeseries.core import (
     TimeSeriesBaseList,
     as_series_dict_class,
     ceil,
-    gps_types,
     gprint,
+    gps_types,
     io_registry,
     to_gps,
     units,
@@ -39,4 +39,3 @@ __all__ = [
     "to_gps",
     "units",
 ]
-

@@ -1,6 +1,6 @@
 """gwexpy.noise.colored - Power-law noise generation."""
 
-from typing import Any, Union
+from typing import Any
 
 import numpy as np
 from astropy import units as u
@@ -10,9 +10,9 @@ from ..frequencyseries import FrequencySeries
 
 def power_law(
     exponent: float,
-    amplitude: Union[float, u.Quantity] = 1.0,
-    f_ref: Union[float, u.Quantity] = 1.0,
-    frequencies: Union[np.ndarray, None] = None,
+    amplitude: float | u.Quantity = 1.0,
+    f_ref: float | u.Quantity = 1.0,
+    frequencies: np.ndarray | None = None,
     **kwargs: Any,
 ) -> FrequencySeries:
     """
@@ -21,11 +21,11 @@ def power_law(
     """
     if frequencies is None:
         if "df" in kwargs and ("N" in kwargs or "f0" in kwargs):
-             fmin = kwargs.pop("fmin", 0.0)
-             fmax = kwargs.pop("fmax", 100.0)
-             df = kwargs.pop("df", 1.0)
-             if "frequencies" not in kwargs:
-                 frequencies = np.arange(fmin, fmax + df, df)
+            fmin = kwargs.pop("fmin", 0.0)
+            fmax = kwargs.pop("fmax", 100.0)
+            df = kwargs.pop("df", 1.0)
+            if "frequencies" not in kwargs:
+                frequencies = np.arange(fmin, fmax + df, df)
         else:
             raise ValueError(
                 "The 'frequencies' argument is required to evaluate the power law."
@@ -65,35 +65,23 @@ def power_law(
     # Remove 'unit' from kwargs to avoid double passing
     kwargs.pop("unit", None)
 
-    return FrequencySeries(
-        data,
-        frequencies=frequencies,
-        unit=target_unit,
-        **kwargs
-    )
+    return FrequencySeries(data, frequencies=frequencies, unit=target_unit, **kwargs)
 
 
-def white_noise(
-    amplitude: Union[float, u.Quantity],
-    **kwargs: Any
-) -> FrequencySeries:
+def white_noise(amplitude: float | u.Quantity, **kwargs: Any) -> FrequencySeries:
     """Generate White noise ASD (~ f^0)."""
     return power_law(0.0, amplitude=amplitude, **kwargs)
 
 
 def pink_noise(
-    amplitude: Union[float, u.Quantity],
-    f_ref: Union[float, u.Quantity] = 1.0,
-    **kwargs: Any
+    amplitude: float | u.Quantity, f_ref: float | u.Quantity = 1.0, **kwargs: Any
 ) -> FrequencySeries:
     """Generate Pink noise ASD (~ f^-0.5)."""
     return power_law(0.5, amplitude=amplitude, f_ref=f_ref, **kwargs)
 
 
 def red_noise(
-    amplitude: Union[float, u.Quantity],
-    f_ref: Union[float, u.Quantity] = 1.0,
-    **kwargs: Any
+    amplitude: float | u.Quantity, f_ref: float | u.Quantity = 1.0, **kwargs: Any
 ) -> FrequencySeries:
     """Generate Red (Brownian) noise ASD (~ f^-1)."""
     return power_law(1.0, amplitude=amplitude, f_ref=f_ref, **kwargs)

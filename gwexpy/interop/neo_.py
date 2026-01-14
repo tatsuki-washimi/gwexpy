@@ -1,13 +1,12 @@
-
 from ._optional import require_optional
+
 
 def to_neo(obj, units=None):
     """
     Convert TimeSeries or TimeSeriesMatrix to neo.AnalogSignal.
     """
     neo = require_optional("neo")
-    import quantities as pq # neo uses quantities
-
+    import quantities as pq  # neo uses quantities
     from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
     if isinstance(obj, BaseTimeSeries):
@@ -26,20 +25,25 @@ def to_neo(obj, units=None):
         if val.ndim == 3:
             # (n_ch, 1, time) -> (time, n_ch)
             data = val.squeeze(axis=1).T
+
             # channels is 2D (n_ch, 1) extract first column
             # Try to get names/channels from metadata
             # SeriesMatrix base has obj.names and obj.channels
             def _is_valid_array(arr):
-                if arr is None or arr.size == 0: return False
+                if arr is None or arr.size == 0:
+                    return False
                 # Check at least one element is not None AND has a useful name
                 for x in arr.flat:
-                    if x is None: continue
+                    if x is None:
+                        continue
                     # For GWpy Channel objects, check if name is not None/ "None"
                     if hasattr(x, "name"):
-                        if x.name is not None and str(x.name) != "None": return True
+                        if x.name is not None and str(x.name) != "None":
+                            return True
                     else:
                         # For raw strings or other objects
-                        if x is not None and str(x) != "None": return True
+                        if x is not None and str(x) != "None":
+                            return True
                 return False
 
             if hasattr(obj, "channel_names") and obj.channel_names:
@@ -74,27 +78,25 @@ def to_neo(obj, units=None):
     u_str = str(unit) if units is None else units
 
     sig = neo.AnalogSignal(
-        data * pq.Quantity(1, u_str),
-        sampling_rate=fs,
-        t_start=t_start,
-        name=name
+        data * pq.Quantity(1, u_str), sampling_rate=fs, t_start=t_start, name=name
     )
     sig.array_annotations = {"channel_names": ch_names}
 
     return sig
+
 
 def from_neo(cls, sig):
     """
     Create TimeSeriesMatrix from neo.AnalogSignal.
     """
     # sig shape: (time, ch)
-    data = sig.magnitude.T # (ch, time)
-    data = data[:, None, :] # (ch, 1, time)
+    data = sig.magnitude.T  # (ch, time)
+    data = data[:, None, :]  # (ch, 1, time)
 
     # meta
-    sfreq = sig.sampling_rate.rescale('Hz').magnitude
+    sfreq = sig.sampling_rate.rescale("Hz").magnitude
     dt = 1.0 / sfreq
-    t0 = sig.t_start.rescale('s').magnitude
+    t0 = sig.t_start.rescale("s").magnitude
     unit = str(sig.units.dimensionality)
 
     # channels?

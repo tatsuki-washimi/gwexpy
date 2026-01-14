@@ -1,6 +1,7 @@
+import json
 
 import numpy as np
-import json
+
 
 def to_json(ts):
     """
@@ -10,11 +11,13 @@ def to_json(ts):
     data_dict = to_dict(ts)
     return json.dumps(data_dict, indent=2, default=str)
 
+
 def to_dict(ts):
     """
     Convert TimeSeries to a dictionary.
     """
     from .base import to_plain_array
+
     data = to_plain_array(ts)
 
     meta = {
@@ -22,9 +25,10 @@ def to_dict(ts):
         "dt": float(ts.dt.value) if hasattr(ts.dt, "value") else float(ts.dt),
         "unit": str(ts.unit),
         "name": str(ts.name) if ts.name else None,
-        "data": data.tolist()
+        "data": data.tolist(),
     }
     return meta
+
 
 def from_json(cls, json_str):
     """
@@ -32,6 +36,7 @@ def from_json(cls, json_str):
     """
     data_dict = json.loads(json_str)
     return from_dict(cls, data_dict)
+
 
 def from_dict(cls, data_dict):
     """

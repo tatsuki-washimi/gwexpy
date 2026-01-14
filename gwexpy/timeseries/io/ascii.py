@@ -9,4 +9,3 @@ __all__ = [
     "TimeSeries",
     "register_ascii_series_io",
 ]
-

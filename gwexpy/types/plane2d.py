@@ -1,19 +1,21 @@
-
 from gwpy.types.array2d import Array2D as GwpyArray2D
+
 from .array2d import Array2D
 
 __all__ = ["Plane2D"]
+
 
 class Plane2D(Array2D):
     """
     2D Array wrapper where the two axes are semantically significant as Axis 1 and Axis 2.
     """
+
     # Do NOT add _axis1_name/_axis2_name to slots, as they duplicate Array2D slots or cause confusion.
     # We rely on Array2D's _axis0_name/_axis1_name for storage.
 
     def __new__(cls, data, axis1_name="axis1", axis2_name="axis2", **kwargs):
         if "axis_names" in kwargs:
-             axis1_name, axis2_name = kwargs.pop("axis_names")
+            axis1_name, axis2_name = kwargs.pop("axis_names")
         obj = super().__new__(cls, data, axis_names=(axis1_name, axis2_name), **kwargs)
         return obj
 
@@ -36,12 +38,12 @@ class Plane2D(Array2D):
         # New y (axis 0) = old x (axis 1)
         # New x (axis 1) = old y (axis 0)
         obj = Plane2D(
-             new_data.value,
-             unit=new_data.unit,
-             axis1_name=self.axis2.name,
-             axis2_name=self.axis1.name,
-             yindex=self.xindex,
-             xindex=self.yindex
+            new_data.value,
+            unit=new_data.unit,
+            axis1_name=self.axis2.name,
+            axis2_name=self.axis1.name,
+            yindex=self.xindex,
+            xindex=self.yindex,
         )
         # Safety force set
         obj.xindex = self.yindex

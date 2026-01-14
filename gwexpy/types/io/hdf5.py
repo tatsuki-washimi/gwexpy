@@ -41,4 +41,3 @@ __all__ = [
     "write_hdf5_array",
     "write_hdf5_series",
 ]
-

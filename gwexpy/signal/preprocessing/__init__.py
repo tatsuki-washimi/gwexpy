@@ -5,9 +5,9 @@ gwexpy.signal.preprocessing
 Signal preprocessing algorithms.
 """
 
-from .whitening import WhiteningModel, whiten
-from .standardization import StandardizationModel, standardize
 from .imputation import impute
+from .standardization import StandardizationModel, standardize
+from .whitening import WhiteningModel, whiten
 
 __all__ = [
     "WhiteningModel",

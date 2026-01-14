@@ -21,6 +21,7 @@ class FrequencySeriesMatrixAnalysisMixin:
             The time-domain matrix resulting from the inverse FFT.
         """
         import numpy.fft as fft
+
         from gwexpy.timeseries import TimeSeriesMatrix
 
         n_freq = self.shape[-1]
@@ -73,6 +74,7 @@ class FrequencySeriesMatrixAnalysisMixin:
             Filtered matrix.
         """
         from gwpy.frequencyseries._fdcommon import fdfilter
+
         return fdfilter(self, *filt, **kwargs)
 
     def apply_response(self, response: Any, inplace: bool = False) -> Any:
@@ -99,7 +101,9 @@ class FrequencySeriesMatrixAnalysisMixin:
         else:
             return self * h
 
-    def smooth(self, width: int, method: str = "amplitude", ignore_nan: bool = True) -> Any:
+    def smooth(
+        self, width: int, method: str = "amplitude", ignore_nan: bool = True
+    ) -> Any:
         """
         Smooth the frequency series matrix along the frequency axis.
 
@@ -129,7 +133,12 @@ class FrequencySeriesMatrixAnalysisMixin:
                 orig_shape = x.shape
                 flat_x = x.reshape(-1, orig_shape[-1])
                 # pandas rolling mean on DataFrame (axis=1)
-                res = pd.DataFrame(flat_x).T.rolling(window=width, center=True, min_periods=1).mean().T.values
+                res = (
+                    pd.DataFrame(flat_x)
+                    .T.rolling(window=width, center=True, min_periods=1)
+                    .mean()
+                    .T.values
+                )
                 return res.reshape(orig_shape)
             else:
                 return uniform_filter1d(x, size=width, axis=axis)

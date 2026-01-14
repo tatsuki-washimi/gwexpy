@@ -10,17 +10,19 @@ This module provides interoperability with other libraries as a mixin class:
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 import numpy as np
-from typing import Optional, Any, TYPE_CHECKING
+
+from gwexpy.types.mixin import InteropMixin
+
+from ._typing import TimeSeriesAttrs
 
 if TYPE_CHECKING:
     pass
 
 
-from gwexpy.types.mixin import InteropMixin
-
-
-class TimeSeriesInteropMixin(InteropMixin):
+class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
     """
     Mixin class providing interoperability methods for TimeSeries.
 
@@ -32,7 +34,9 @@ class TimeSeriesInteropMixin(InteropMixin):
     # pandas
     # ===============================
 
-    def to_pandas(self, index: str = "datetime", *, name: Optional[str] = None, copy: bool = False) -> Any:
+    def to_pandas(
+        self, index: str = "datetime", *, name: str | None = None, copy: bool = False
+    ) -> Any:
         """
         Convert TimeSeries to pandas.Series.
 
@@ -50,6 +54,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         pandas.Series
         """
         from gwexpy.interop import to_pandas_series
+
         return to_pandas_series(self, index=index, name=name, copy=copy)
 
     @classmethod
@@ -57,7 +62,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         cls,
         series: Any,
         *,
-        unit: Optional[Any] = None,
+        unit: Any | None = None,
         t0: Any = None,
         dt: Any = None,
     ) -> Any:
@@ -80,13 +85,20 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_pandas_series
+
         return from_pandas_series(cls, series, unit=unit, t0=t0, dt=dt)
 
     # ===============================
     # polars
     # ===============================
 
-    def to_polars(self, name: Optional[str] = None, as_dataframe: bool = True, times: str = "time", time_unit: str = "datetime") -> Any:
+    def to_polars(
+        self,
+        name: str | None = None,
+        as_dataframe: bool = True,
+        times: str = "time",
+        time_unit: str = "datetime",
+    ) -> Any:
         """
         Convert TimeSeries to polars object.
 
@@ -107,14 +119,18 @@ class TimeSeriesInteropMixin(InteropMixin):
         polars.DataFrame or polars.Series
         """
         if as_dataframe:
-             from gwexpy.interop import to_polars_dataframe
-             return to_polars_dataframe(self, index_column=times, time_unit=time_unit)
+            from gwexpy.interop import to_polars_dataframe
+
+            return to_polars_dataframe(self, index_column=times, time_unit=time_unit)
         else:
-             from gwexpy.interop import to_polars_series
-             return to_polars_series(self, name=name)
+            from gwexpy.interop import to_polars_series
+
+            return to_polars_series(self, name=name)
 
     @classmethod
-    def from_polars(cls, data: Any, times: Optional[str] = "time", unit: Optional[Any] = None) -> Any:
+    def from_polars(
+        cls, data: Any, times: str | None = "time", unit: Any | None = None
+    ) -> Any:
         """
         Create TimeSeries from polars.DataFrame or polars.Series.
 
@@ -132,18 +148,21 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         import polars as pl
+
         if isinstance(data, pl.DataFrame):
-             from gwexpy.interop import from_polars_dataframe
-             return from_polars_dataframe(cls, data, index_column=times, unit=unit)
+            from gwexpy.interop import from_polars_dataframe
+
+            return from_polars_dataframe(cls, data, index_column=times, unit=unit)
         else:
-             from gwexpy.interop import from_polars_series
-             return from_polars_series(cls, data, unit=unit)
+            from gwexpy.interop import from_polars_series
+
+            return from_polars_series(cls, data, unit=unit)
 
     # ===============================
     # ROOT
     # ===============================
 
-    def to_tgraph(self, error: Optional[Any] = None) -> Any:
+    def to_tgraph(self, error: Any | None = None) -> Any:
         """
         Convert to ROOT TGraph or TGraphErrors.
 
@@ -157,9 +176,10 @@ class TimeSeriesInteropMixin(InteropMixin):
         ROOT.TGraph or ROOT.TGraphErrors
         """
         from gwexpy.interop import to_tgraph
+
         return to_tgraph(self, error=error)
 
-    def to_th1d(self, error: Optional[Any] = None) -> Any:
+    def to_th1d(self, error: Any | None = None) -> Any:
         """
         Convert to ROOT TH1D.
 
@@ -173,6 +193,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         ROOT.TH1D
         """
         from gwexpy.interop import to_th1d
+
         return to_th1d(self, error=error)
 
     @classmethod
@@ -192,6 +213,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries or tuple of TimeSeries
         """
         from gwexpy.interop import from_root
+
         return from_root(cls, obj, return_error=return_error)
 
     # ===============================
@@ -212,10 +234,11 @@ class TimeSeriesInteropMixin(InteropMixin):
         xarray.DataArray
         """
         from gwexpy.interop import to_xarray
+
         return to_xarray(self, time_coord=time_coord)
 
     @classmethod
-    def from_xarray(cls, da: Any, *, unit: Optional[Any] = None) -> Any:
+    def from_xarray(cls, da: Any, *, unit: Any | None = None) -> Any:
         """
         Create TimeSeries from xarray.DataArray.
 
@@ -231,6 +254,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_xarray
+
         return from_xarray(cls, da, unit=unit)
 
     # ===============================
@@ -243,7 +267,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         path: str,
         *,
         overwrite: bool = False,
-        compression: Optional[str] = None,
+        compression: str | None = None,
         compression_opts: Any = None,
     ) -> None:
         """
@@ -263,7 +287,15 @@ class TimeSeriesInteropMixin(InteropMixin):
             Compression level.
         """
         from gwexpy.interop import to_hdf5
-        to_hdf5(self, group, path, overwrite=overwrite, compression=compression, compression_opts=compression_opts)
+
+        to_hdf5(
+            self,
+            group,
+            path,
+            overwrite=overwrite,
+            compression=compression,
+            compression_opts=compression_opts,
+        )
 
     @classmethod
     def from_hdf5_dataset(cls, group: Any, path: str) -> Any:
@@ -282,13 +314,16 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_hdf5
+
         return from_hdf5(cls, group, path)
 
     # ===============================
     # obspy
     # ===============================
 
-    def to_obspy(self, *, stats_extra: Optional[dict[str, Any]] = None, dtype: Any = None) -> Any:
+    def to_obspy(
+        self, *, stats_extra: dict[str, Any] | None = None, dtype: Any = None
+    ) -> Any:
         """
         Convert to obspy.Trace.
 
@@ -304,6 +339,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         obspy.Trace
         """
         from gwexpy.interop import to_obspy_trace
+
         return to_obspy_trace(self, stats_extra=stats_extra, dtype=dtype)
 
     @classmethod
@@ -311,7 +347,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         cls,
         tr: Any,
         *,
-        unit: Optional[Any] = None,
+        unit: Any | None = None,
         name_policy: str = "id",
     ) -> Any:
         """
@@ -331,13 +367,16 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_obspy_trace
+
         return from_obspy_trace(cls, tr, unit=unit, name_policy=name_policy)
 
     # ===============================
     # sqlite
     # ===============================
 
-    def to_sqlite(self, conn: Any, series_id: Optional[str] = None, *, overwrite: bool = False) -> Any:
+    def to_sqlite(
+        self, conn: Any, series_id: str | None = None, *, overwrite: bool = False
+    ) -> Any:
         """
         Save to sqlite3 database.
 
@@ -356,6 +395,7 @@ class TimeSeriesInteropMixin(InteropMixin):
             The series_id used.
         """
         from gwexpy.interop import to_sqlite
+
         return to_sqlite(self, conn, series_id=series_id, overwrite=overwrite)
 
     @classmethod
@@ -375,6 +415,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_sqlite
+
         return from_sqlite(cls, conn, series_id)
 
     # ===============================
@@ -390,7 +431,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         *,
         t0: Any = None,
         dt: Any = None,
-        unit: Optional[Any] = None,
+        unit: Any | None = None,
     ) -> Any:
         """
         Create from torch.Tensor.
@@ -411,6 +452,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_torch
+
         if t0 is None or dt is None:
             raise ValueError("t0 and dt are required when converting from raw tensor")
         return from_torch(cls, tensor, t0=t0, dt=dt, unit=unit)
@@ -428,7 +470,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         *,
         t0: Any = None,
         dt: Any = None,
-        unit: Optional[Any] = None,
+        unit: Any | None = None,
     ) -> Any:
         """
         Create from tensorflow.Tensor.
@@ -447,6 +489,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_tf
+
         if t0 is None or dt is None:
             raise ValueError("t0 and dt are required")
         return from_tf(cls, tensor, t0=t0, dt=dt, unit=unit)
@@ -464,7 +507,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         *,
         t0: Any = None,
         dt: Any = None,
-        unit: Optional[Any] = None,
+        unit: Any | None = None,
         compute: bool = True,
     ) -> Any:
         """
@@ -486,6 +529,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_dask
+
         if t0 is None or dt is None:
             raise ValueError("t0 and dt are required")
         return from_dask(cls, array, t0=t0, dt=dt, unit=unit, compute=compute)
@@ -513,6 +557,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_zarr
+
         return from_zarr(cls, store, path)
 
     # ===============================
@@ -533,6 +578,7 @@ class TimeSeriesInteropMixin(InteropMixin):
             Additional arguments for createVariable.
         """
         from gwexpy.interop import to_netcdf4
+
         to_netcdf4(self, ds, var_name, **kwargs)
 
     @classmethod
@@ -552,6 +598,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_netcdf4
+
         return from_netcdf4(cls, ds, var_name)
 
     # ===============================
@@ -571,7 +618,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         *,
         t0: Any = None,
         dt: Any = None,
-        unit: Optional[Any] = None,
+        unit: Any | None = None,
     ) -> Any:
         """
         Create from jax array.
@@ -590,6 +637,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_jax
+
         if t0 is None or dt is None:
             raise ValueError("t0 and dt are required")
         return from_jax(cls, array, t0=t0, dt=dt, unit=unit)
@@ -607,7 +655,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         *,
         t0: Any = None,
         dt: Any = None,
-        unit: Optional[Any] = None,
+        unit: Any | None = None,
     ) -> Any:
         """
         Create from cupy array.
@@ -626,6 +674,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_cupy
+
         if t0 is None or dt is None:
             raise ValueError("t0 and dt are required")
         return from_cupy(cls, array, t0=t0, dt=dt, unit=unit)
@@ -649,6 +698,7 @@ class TimeSeriesInteropMixin(InteropMixin):
             (y, sr) where y is the audio signal and sr is sample rate.
         """
         from gwexpy.interop import to_librosa
+
         return to_librosa(self, y_dtype=y_dtype)
 
     # ===============================
@@ -671,10 +721,11 @@ class TimeSeriesInteropMixin(InteropMixin):
         pydub.AudioSegment
         """
         from gwexpy.interop import to_pydub
+
         return to_pydub(self, sample_width=sample_width, channels=channels)
 
     @classmethod
-    def from_pydub(cls, seg: Any, *, unit: Optional[Any] = None) -> Any:
+    def from_pydub(cls, seg: Any, *, unit: Any | None = None) -> Any:
         """
         Create from pydub.AudioSegment.
 
@@ -690,13 +741,16 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_pydub
+
         return from_pydub(cls, seg, unit=unit)
 
     # ===============================
     # astropy
     # ===============================
 
-    def to_astropy_timeseries(self, column: str = "value", time_format: str = "gps") -> Any:
+    def to_astropy_timeseries(
+        self, column: str = "value", time_format: str = "gps"
+    ) -> Any:
         """
         Convert to astropy.timeseries.TimeSeries.
 
@@ -712,6 +766,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         astropy.timeseries.TimeSeries
         """
         from gwexpy.interop import to_astropy_timeseries
+
         return to_astropy_timeseries(self, column=column, time_format=time_format)
 
     @classmethod
@@ -719,7 +774,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         cls,
         ap_ts: Any,
         column: str = "value",
-        unit: Optional[Any] = None,
+        unit: Any | None = None,
     ) -> Any:
         """
         Create from astropy.timeseries.TimeSeries.
@@ -738,6 +793,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_astropy_timeseries
+
         return from_astropy_timeseries(cls, ap_ts, column=column, unit=unit)
 
     # ===============================
@@ -758,10 +814,11 @@ class TimeSeriesInteropMixin(InteropMixin):
         mne.io.RawArray
         """
         from gwexpy.interop import to_mne_rawarray
+
         return to_mne_rawarray(self, info=info)
 
     @classmethod
-    def from_mne(cls, raw: Any, channel: str, *, unit: Optional[Any] = None) -> Any:
+    def from_mne(cls, raw: Any, channel: str, *, unit: Any | None = None) -> Any:
         """
         Create TimeSeries from mne.io.Raw.
 
@@ -787,16 +844,17 @@ class TimeSeriesInteropMixin(InteropMixin):
             raise ValueError(f"Channel '{channel}' not found or invalid: {e}")
 
         if data.shape[0] == 0:
-             raise ValueError(f"Channel '{channel}' not found in MNE object")
+            raise ValueError(f"Channel '{channel}' not found in MNE object")
 
         value = data[0]
-        sfreq = raw.info['sfreq']
+        sfreq = raw.info["sfreq"]
         dt = 1.0 / sfreq
 
         t0 = 0
-        if raw.info['meas_date']:
-             from gwexpy.time import to_gps
-             t0 = to_gps(raw.info['meas_date'])
+        if raw.info["meas_date"]:
+            from gwexpy.time import to_gps
+
+            t0 = to_gps(raw.info["meas_date"])
 
         return cls(value, t0=t0, dt=dt, unit=unit, name=channel)
 
@@ -813,6 +871,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         str
         """
         from gwexpy.interop import to_json
+
         return to_json(self)
 
     @classmethod
@@ -830,6 +889,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_json
+
         return from_json(cls, json_str)
 
     def to_dict(self) -> dict:
@@ -843,6 +903,7 @@ class TimeSeriesInteropMixin(InteropMixin):
         # Note: TimeSeriesMatrix also has to_dict which returns TimeSeriesDict.
         # This one returns a plain python dict of metadata and values.
         from gwexpy.interop import to_dict
+
         return to_dict(self)
 
     @classmethod
@@ -860,13 +921,14 @@ class TimeSeriesInteropMixin(InteropMixin):
         TimeSeries
         """
         from gwexpy.interop import from_dict
+
         return from_dict(cls, data_dict)
 
     # ===============================
     # Neo
     # ===============================
 
-    def to_neo(self, units: Optional[Any] = None) -> Any:
+    def to_neo(self, units: Any | None = None) -> Any:
         """
         Convert to neo.AnalogSignal.
 
@@ -880,4 +942,5 @@ class TimeSeriesInteropMixin(InteropMixin):
         neo.core.AnalogSignal
         """
         from gwexpy.interop import to_neo
+
         return to_neo(self, units=units)

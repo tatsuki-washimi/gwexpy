@@ -1,4 +1,5 @@
-from typing import Callable, Optional, Union, TYPE_CHECKING
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Union
 
 import numpy as np
 
@@ -20,7 +21,8 @@ class TimeSeriesWindowDataset:
         window: int,
         stride: int = 1,
         horizon: int = 0,
-        labels: Optional[Union["TimeSeries", "TimeSeriesMatrix", np.ndarray, Callable]] = None,
+        labels: Union["TimeSeries", "TimeSeriesMatrix", np.ndarray, Callable]
+        | None = None,
         multivariate: bool = False,
         align: str = "intersection",
         device=None,
@@ -36,7 +38,12 @@ class TimeSeriesWindowDataset:
         if self.window <= 0 or self.stride <= 0:
             raise ValueError("window and stride must be positive integers.")
 
-        from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix, TimeSeriesDict, TimeSeriesList
+        from gwexpy.timeseries import (
+            TimeSeries,
+            TimeSeriesDict,
+            TimeSeriesList,
+            TimeSeriesMatrix,
+        )
 
         from .base import to_plain_array
 
@@ -56,9 +63,13 @@ class TimeSeriesWindowDataset:
             self.dt = data_obj.dt
             self.data = to_plain_array(data_obj)[None, :]
             self.unit = getattr(data_obj, "unit", None)
-            self._feature_names = [data_obj.name] if getattr(data_obj, "name", None) else None
+            self._feature_names = (
+                [data_obj.name] if getattr(data_obj, "name", None) else None
+            )
         else:
-            raise TypeError(f"Unsupported type for TimeSeriesWindowDataset: {type(data_obj)}")
+            raise TypeError(
+                f"Unsupported type for TimeSeriesWindowDataset: {type(data_obj)}"
+            )
 
         self.labels = labels
         if isinstance(labels, (TimeSeries, TimeSeriesMatrix)):
@@ -66,7 +77,9 @@ class TimeSeriesWindowDataset:
             self.label_array = label_vals.reshape(-1, label_vals.shape[-1])
         elif isinstance(labels, np.ndarray):
             arr = labels
-            self.label_array = arr.reshape(-1, arr.shape[-1]) if arr.ndim > 1 else arr[None, :]
+            self.label_array = (
+                arr.reshape(-1, arr.shape[-1]) if arr.ndim > 1 else arr[None, :]
+            )
         else:
             self.label_array = None
 
@@ -109,7 +122,7 @@ def to_torch_dataset(
     window: int,
     stride: int = 1,
     horizon: int = 0,
-    labels: Optional[Union["TimeSeries", "TimeSeriesMatrix", np.ndarray, Callable]] = None,
+    labels: Union["TimeSeries", "TimeSeriesMatrix", np.ndarray, Callable] | None = None,
     multivariate: bool = False,
     align: str = "intersection",
     device=None,
@@ -131,9 +144,22 @@ def to_torch_dataset(
     )
 
 
-def to_torch_dataloader(dataset, *, batch_size: int = 1, shuffle: bool = False, num_workers: int = 0, **kwargs):
+def to_torch_dataloader(
+    dataset,
+    *,
+    batch_size: int = 1,
+    shuffle: bool = False,
+    num_workers: int = 0,
+    **kwargs,
+):
     """
     Create a torch DataLoader from the provided dataset.
     """
     torch = require_optional("torch")
-    return torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, **kwargs)
+    return torch.utils.data.DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        num_workers=num_workers,
+        **kwargs,
+    )

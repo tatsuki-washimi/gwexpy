@@ -1,12 +1,13 @@
+from .pairplot import PairPlot
 from .plot import Plot, plot_mmm
 from .skymap import SkyMap
-from .pairplot import PairPlot
 
 __all__ = ["Plot", "plot_mmm", "SkyMap", "GeoMap", "PairPlot"]
 
 # Dynamic import from gwpy (PEP 562)
-import gwpy.plot
 import importlib
+
+import gwpy.plot
 
 
 def __getattr__(name):

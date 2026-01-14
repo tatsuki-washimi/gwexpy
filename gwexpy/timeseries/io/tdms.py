@@ -5,11 +5,13 @@ TDMS (National Instruments) reader for gwexpy.
 from __future__ import annotations
 
 import datetime
+
 import numpy as np
 from gwpy.io import registry as io_registry
 
-from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 from gwexpy.io.utils import apply_unit, set_provenance
+
+from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
 def _import_nptdms():
@@ -37,11 +39,11 @@ def read_timeseriesdict_tdms(
     tdms_file = TdmsFile.read(source)
 
     # Fallback timing from root
-    if 'DateTime' in tdms_file.properties:
-        dt_root = tdms_file.properties['DateTime']
+    if "DateTime" in tdms_file.properties:
+        dt_root = tdms_file.properties["DateTime"]
         if isinstance(dt_root, (np.datetime64, datetime.datetime)):
-             # We will convert it below in the loop if needed
-             pass
+            # We will convert it below in the loop if needed
+            pass
 
     tsd = TimeSeriesDict()
 
@@ -56,27 +58,32 @@ def read_timeseriesdict_tdms(
             props = channel.properties
 
             # Timing
-            dt = props.get('wf_increment', 1.0)
+            dt = props.get("wf_increment", 1.0)
             if dt == 0 or np.isinf(dt) or np.isnan(dt):
-                dt = 1.0 # fallback
+                dt = 1.0  # fallback
 
-            t0 = props.get('wf_start_time', 0.0)
-            if (t0 == 0.0 or (isinstance(t0, np.datetime64) and np.isnat(t0))) and 'DateTime' in tdms_file.properties:
-                t0 = tdms_file.properties['DateTime']
+            t0 = props.get("wf_start_time", 0.0)
+            if (
+                t0 == 0.0 or (isinstance(t0, np.datetime64) and np.isnat(t0))
+            ) and "DateTime" in tdms_file.properties:
+                t0 = tdms_file.properties["DateTime"]
 
             # Convert numpy.datetime64 or datetime.datetime to GPS
             if isinstance(t0, (np.datetime64, datetime.datetime)):
                 from gwexpy.io.utils import datetime_to_gps
+
                 if isinstance(t0, np.datetime64):
                     if np.isnat(t0):
                         t0 = 0.0
                     else:
                         # Convert to python datetime
-                        unix_epoch = np.datetime64('1970-01-01T00:00:00Z')
-                        seconds = (t0 - unix_epoch) / np.timedelta64(1, 's')
-                        dt_obj = datetime.datetime.fromtimestamp(seconds, tz=datetime.timezone.utc)
+                        unix_epoch = np.datetime64("1970-01-01T00:00:00Z")
+                        seconds = (t0 - unix_epoch) / np.timedelta64(1, "s")
+                        dt_obj = datetime.datetime.fromtimestamp(
+                            seconds, tz=datetime.timezone.utc
+                        )
                         t0 = datetime_to_gps(dt_obj)
-                else: # datetime.datetime
+                else:  # datetime.datetime
                     if t0.tzinfo is None:
                         t0 = t0.replace(tzinfo=datetime.timezone.utc)
                     t0 = datetime_to_gps(t0)
@@ -118,5 +125,11 @@ io_registry.register_reader("tdms", TimeSeriesDict, read_timeseriesdict_tdms)
 io_registry.register_reader("tdms", TimeSeries, read_timeseries_tdms)
 io_registry.register_reader("tdms", TimeSeriesMatrix, read_timeseriesmatrix_tdms)
 
-io_registry.register_identifier("tdms", TimeSeriesDict, lambda *args, **kwargs: str(args[1]).lower().endswith(".tdms"))
-io_registry.register_identifier("tdms", TimeSeries, lambda *args, **kwargs: str(args[1]).lower().endswith(".tdms"))
+io_registry.register_identifier(
+    "tdms",
+    TimeSeriesDict,
+    lambda *args, **kwargs: str(args[1]).lower().endswith(".tdms"),
+)
+io_registry.register_identifier(
+    "tdms", TimeSeries, lambda *args, **kwargs: str(args[1]).lower().endswith(".tdms")
+)

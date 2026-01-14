@@ -1,6 +1,6 @@
-from astropy.coordinates import SkyCoord
 import astropy.units as u
 import numpy as np
+from astropy.coordinates import SkyCoord
 
 from .plot import Plot
 
@@ -8,15 +8,18 @@ from .plot import Plot
 try:
     # Workaround for scipy 1.14+ where trapz was removed but still used by healpy/ligo.skymap
     import scipy.integrate
-    if not hasattr(scipy.integrate, 'trapz'):
-        scipy.integrate.trapz = getattr(scipy.integrate, 'trapezoid', None)
+
+    if not hasattr(scipy.integrate, "trapz"):
+        scipy.integrate.trapz = getattr(scipy.integrate, "trapezoid", None)
 
     # Also patch sys.modules to be extremely safe
     import sys
-    if 'scipy.integrate' in sys.modules:
-        setattr(sys.modules['scipy.integrate'], 'trapz', scipy.integrate.trapz)
+
+    if "scipy.integrate" in sys.modules:
+        setattr(sys.modules["scipy.integrate"], "trapz", scipy.integrate.trapz)
 
     import ligo.skymap.plot  # noqa: F401
+
     HAS_LIGO_SKYMAP = True
 except (ImportError, AttributeError):
     HAS_LIGO_SKYMAP = False
@@ -44,7 +47,7 @@ class SkyMap(Plot):
 
         # Ensure at least one axis if no data provided
         if not args and "geometry" not in kwargs:
-             kwargs.setdefault("geometry", (1, 1))
+            kwargs.setdefault("geometry", (1, 1))
 
         super().__init__(*args, **kwargs)
 
@@ -64,7 +67,8 @@ class SkyMap(Plot):
             # Try once more to patch and import if it was not successful initially
             try:
                 import scipy.integrate
-                scipy.integrate.trapz = getattr(scipy.integrate, 'trapezoid', None)
+
+                scipy.integrate.trapz = getattr(scipy.integrate, "trapezoid", None)
             except Exception:
                 raise ImportError(
                     "ligo.skymap is required for add_healpix. Install with: pip install ligo.skymap"
@@ -97,11 +101,11 @@ class SkyMap(Plot):
         if not isinstance(ra, u.Quantity):
             ra = np.atleast_1d(ra) * u.deg
         else:
-             ra = np.atleast_1d(ra)
+            ra = np.atleast_1d(ra)
         if not isinstance(dec, u.Quantity):
             dec = np.atleast_1d(dec) * u.deg
         else:
-             dec = np.atleast_1d(dec)
+            dec = np.atleast_1d(dec)
 
         # Convert to SkyCoord for convenience
         coord = SkyCoord(ra, dec, frame="icrs")
@@ -119,9 +123,15 @@ class SkyMap(Plot):
         if label:
             # Place label slightly offset from the marker
             # We must pass scalars to ax.text
-            tx = float(coord.ra.rad[0]) if not coord.ra.isscalar else float(coord.ra.rad)
-            ty = float(coord.dec.rad[0]) if not coord.dec.isscalar else float(coord.dec.rad)
-            ax.text(tx, ty, f" {label}", transform=ax.get_transform('world'))
+            tx = (
+                float(coord.ra.rad[0]) if not coord.ra.isscalar else float(coord.ra.rad)
+            )
+            ty = (
+                float(coord.dec.rad[0])
+                if not coord.dec.isscalar
+                else float(coord.dec.rad)
+            )
+            ax.text(tx, ty, f" {label}", transform=ax.get_transform("world"))
 
     # ------------------------------------------------------------------
     # Heatmap overlay

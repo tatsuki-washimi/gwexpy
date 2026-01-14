@@ -7,23 +7,28 @@ Estimates the coupling function (CF) with flexible threshold strategies:
 - PercentileThreshold: Data-driven percentile (Robust to non-Gaussianity).
 """
 
-import numpy as np
 import warnings
 from abc import ABC, abstractmethod
-from typing import Optional, Union, Dict, Tuple
 
-from ..timeseries import TimeSeries, TimeSeriesDict
+import numpy as np
+
 from ..frequencyseries import FrequencySeries
-
+from ..timeseries import TimeSeries, TimeSeriesDict
 
 # --- Threshold Strategies ---
+
 
 class ThresholdStrategy(ABC):
     """Abstract base class for excess detection strategies."""
 
     @abstractmethod
-    def check(self, psd_inj: FrequencySeries, psd_bkg: FrequencySeries,
-              raw_bkg: Optional[TimeSeries] = None, **kwargs) -> np.ndarray:
+    def check(
+        self,
+        psd_inj: FrequencySeries,
+        psd_bkg: FrequencySeries,
+        raw_bkg: TimeSeries | None = None,
+        **kwargs,
+    ) -> np.ndarray:
         """
         Return a boolean mask where P_inj is considered 'excess'.
 
@@ -40,16 +45,23 @@ class ThresholdStrategy(ABC):
         pass
 
     @abstractmethod
-    def threshold(self, psd_inj: FrequencySeries, psd_bkg: FrequencySeries,
-                  raw_bkg: Optional[TimeSeries] = None, **kwargs) -> np.ndarray:
+    def threshold(
+        self,
+        psd_inj: FrequencySeries,
+        psd_bkg: FrequencySeries,
+        raw_bkg: TimeSeries | None = None,
+        **kwargs,
+    ) -> np.ndarray:
         """Return the PSD threshold values used by this strategy."""
         pass
+
 
 class RatioThreshold(ThresholdStrategy):
     """
     Checks if P_inj > ratio * P_bkg_mean.
     Simple and fast.
     """
+
     def __init__(self, ratio: float = 2.0):
         self.ratio = ratio
 
@@ -59,11 +71,13 @@ class RatioThreshold(ThresholdStrategy):
     def threshold(self, psd_inj, psd_bkg, **kwargs):
         return psd_bkg.value * self.ratio
 
+
 class SigmaThreshold(ThresholdStrategy):
     """
     Checks if P_inj > P_bkg + sigma * std_error.
     Assumes Gaussian noise statistics.
     """
+
     def __init__(self, sigma: float = 3.0):
         self.sigma = sigma
 
@@ -80,6 +94,7 @@ class SigmaThreshold(ThresholdStrategy):
         factor = 1.0 + (self.sigma / np.sqrt(n_avg))
         return psd_bkg.value * factor
 
+
 class PercentileThreshold(ThresholdStrategy):
     """
     Checks if P_inj > factor * Percentile(P_bkg_segments).
@@ -95,17 +110,31 @@ class PercentileThreshold(ThresholdStrategy):
         Multiplier for the percentile value.
         Threshold = factor * P_bkg_percentile
     """
+
     def __init__(self, percentile: float = 95, factor: float = 1.0):
         self.percentile = percentile
         self.factor = factor
 
-    def check(self, psd_inj, psd_bkg, raw_bkg=None, fftlength=None, overlap=None, **kwargs):
-        threshold = self.threshold(psd_inj, psd_bkg, raw_bkg=raw_bkg, fftlength=fftlength, overlap=overlap, **kwargs)
+    def check(
+        self, psd_inj, psd_bkg, raw_bkg=None, fftlength=None, overlap=None, **kwargs
+    ):
+        threshold = self.threshold(
+            psd_inj,
+            psd_bkg,
+            raw_bkg=raw_bkg,
+            fftlength=fftlength,
+            overlap=overlap,
+            **kwargs,
+        )
         return psd_inj.value > threshold
 
-    def threshold(self, psd_inj, psd_bkg, raw_bkg=None, fftlength=None, overlap=None, **kwargs):
+    def threshold(
+        self, psd_inj, psd_bkg, raw_bkg=None, fftlength=None, overlap=None, **kwargs
+    ):
         if raw_bkg is None or fftlength is None:
-            raise ValueError("PercentileThreshold requires 'raw_bkg' time series and 'fftlength' to calculate distributions.")
+            raise ValueError(
+                "PercentileThreshold requires 'raw_bkg' time series and 'fftlength' to calculate distributions."
+            )
 
         # Calculate Spectrogram (Time-Frequency map) of background
         # We need the variation over time segments
@@ -114,7 +143,7 @@ class PercentileThreshold(ThresholdStrategy):
             fftlength=fftlength,
             overlap=overlap if overlap else 0,
             method="welch",
-            window="hann"
+            window="hann",
         )
 
         # Calculate the percentile along the time axis (axis=0)
@@ -129,10 +158,12 @@ class PercentileThreshold(ThresholdStrategy):
 
 # --- Result Class ---
 
+
 class CouplingResult:
     """
     Result object for a SINGLE Witness -> Target pair.
     """
+
     def __init__(
         self,
         cf: FrequencySeries,
@@ -143,11 +174,11 @@ class CouplingResult:
         valid_mask: np.ndarray,
         witness_name: str,
         target_name: str,
-        cf_ul: Optional[FrequencySeries] = None,
-        ts_witness_bkg: Optional[TimeSeries] = None,
-        ts_target_bkg: Optional[TimeSeries] = None,
-        fftlength: Optional[float] = None,
-        overlap: Optional[float] = None
+        cf_ul: FrequencySeries | None = None,
+        ts_witness_bkg: TimeSeries | None = None,
+        ts_target_bkg: TimeSeries | None = None,
+        fftlength: float | None = None,
+        overlap: float | None = None,
     ):
         self.cf = cf
         self.cf_ul = cf_ul
@@ -184,15 +215,29 @@ class CouplingResult:
 
         # Handle figsize via kwargs if needed, or set explicitly
         if figsize is not None:
-            kwargs['figsize'] = figsize
+            kwargs["figsize"] = figsize
 
-        label = kwargs.pop('label', "Coupling Function")
-        plot = cf_plot.plot(color="tab:green", marker=".", linestyle="-", markersize=3, label=label, **kwargs)
+        label = kwargs.pop("label", "Coupling Function")
+        plot = cf_plot.plot(
+            color="tab:green",
+            marker=".",
+            linestyle="-",
+            markersize=3,
+            label=label,
+            **kwargs,
+        )
         ax = plot.gca()
 
         if cf_ul_plot is not None:
-             cf_ul_plot.name = "Upper Limit"
-             ax.plot(cf_ul_plot, color="lightskyblue", marker=".", linestyle="-", markersize=3, label="Upper Limit")
+            cf_ul_plot.name = "Upper Limit"
+            ax.plot(
+                cf_ul_plot,
+                color="lightskyblue",
+                marker=".",
+                linestyle="-",
+                markersize=3,
+                label="Upper Limit",
+            )
 
         ax.set_yscale("log")
         ax.set_xscale("log")
@@ -223,8 +268,10 @@ class CouplingResult:
             psd_bkg_eff = crop_if_needed(psd_bkg)
 
             # Median/Mean from PSD
-            asd_mean = psd_bkg_eff ** 0.5
-            asd_mean.name = f"Background ({ts_bkg.name if ts_bkg is not None else 'Target'})"
+            asd_mean = psd_bkg_eff**0.5
+            asd_mean.name = (
+                f"Background ({ts_bkg.name if ts_bkg is not None else 'Target'})"
+            )
 
             p10_asd = None
             p90_asd = None
@@ -236,7 +283,7 @@ class CouplingResult:
                         fftlength=self.fftlength,
                         overlap=self.overlap if self.overlap else 0,
                         method="welch",
-                        window="hann"
+                        window="hann",
                     )
                     # For percentiles, we crop the spectrogram itself if possible or crop result
                     # Cropping spectrogram is more efficient
@@ -245,8 +292,8 @@ class CouplingResult:
 
                     p10 = spec.percentile(10)
                     p90 = spec.percentile(90)
-                    p10_asd = p10 ** 0.5
-                    p90_asd = p90 ** 0.5
+                    p10_asd = p10**0.5
+                    p90_asd = p90**0.5
                 except Exception as e:
                     print(f"Warning: Could not compute percentiles: {e}")
 
@@ -256,16 +303,20 @@ class CouplingResult:
 
         # Witness
         psd_wit_inj_c = crop_if_needed(self.psd_witness_inj)
-        asd_wit_inj = psd_wit_inj_c ** 0.5
+        asd_wit_inj = psd_wit_inj_c**0.5
         asd_wit_inj.name = "Injection (Witness)"
-        asd_wit_mean, wit_p10, wit_p90 = get_bkg_stats(self.ts_witness_bkg, self.psd_witness_bkg)
+        asd_wit_mean, wit_p10, wit_p90 = get_bkg_stats(
+            self.ts_witness_bkg, self.psd_witness_bkg
+        )
         asd_wit_mean.name = "Background (Witness)"
 
         # Target
         psd_tgt_inj_c = crop_if_needed(self.psd_target_inj)
-        asd_tgt_inj = psd_tgt_inj_c ** 0.5
+        asd_tgt_inj = psd_tgt_inj_c**0.5
         asd_tgt_inj.name = "Injection (Target)"
-        asd_tgt_mean, tgt_p10, tgt_p90 = get_bkg_stats(self.ts_target_bkg, self.psd_target_bkg)
+        asd_tgt_mean, tgt_p10, tgt_p90 = get_bkg_stats(
+            self.ts_target_bkg, self.psd_target_bkg
+        )
         asd_tgt_mean.name = "Background (Target)"
 
         # Derived
@@ -282,12 +333,29 @@ class CouplingResult:
         # 1. Witness ASDs
         # Background
         if wit_p10 is not None and wit_p90 is not None:
-            plot.plot_mmm(asd_wit_mean, wit_p10, wit_p90, ax=ax0, color="black", linestyle="-", zorder=5, alpha_fill=0.1)
+            plot.plot_mmm(
+                asd_wit_mean,
+                wit_p10,
+                wit_p90,
+                ax=ax0,
+                color="black",
+                linestyle="-",
+                zorder=5,
+                alpha_fill=0.1,
+            )
         else:
-            ax0.plot(asd_wit_mean, color="black", linestyle="-", zorder=5, label=asd_wit_mean.name)
+            ax0.plot(
+                asd_wit_mean,
+                color="black",
+                linestyle="-",
+                zorder=5,
+                label=asd_wit_mean.name,
+            )
 
         # Injection
-        ax0.plot(asd_wit_inj, color="red", linestyle="-", zorder=4, label=asd_wit_inj.name)
+        ax0.plot(
+            asd_wit_inj, color="red", linestyle="-", zorder=4, label=asd_wit_inj.name
+        )
 
         ax0.set_ylabel(f"ASD [{asd_wit_inj.unit}]")
         ax0.set_title(f"Witness: {self.witness_name}")
@@ -297,25 +365,58 @@ class CouplingResult:
         # 2. Target ASDs
         # Background
         if tgt_p10 is not None and tgt_p90 is not None:
-            plot.plot_mmm(asd_tgt_mean, tgt_p10, tgt_p90, ax=ax1, color="black", linestyle="-", zorder=5, alpha_fill=0.1)
+            plot.plot_mmm(
+                asd_tgt_mean,
+                tgt_p10,
+                tgt_p90,
+                ax=ax1,
+                color="black",
+                linestyle="-",
+                zorder=5,
+                alpha_fill=0.1,
+            )
         else:
-            ax1.plot(asd_tgt_mean, color="black", linestyle="-", zorder=5, label=asd_tgt_mean.name)
+            ax1.plot(
+                asd_tgt_mean,
+                color="black",
+                linestyle="-",
+                zorder=5,
+                label=asd_tgt_mean.name,
+            )
 
         # Injection
-        ax1.plot(asd_tgt_inj, color="red", linestyle="-", zorder=4, label=asd_tgt_inj.name)
+        ax1.plot(
+            asd_tgt_inj, color="red", linestyle="-", zorder=4, label=asd_tgt_inj.name
+        )
 
         # Projection (Witness Bkg * CF)
         if cf_c is not None:
-            asd_wit_bkg = psd_wit_bkg_c ** 0.5
+            asd_wit_bkg = psd_wit_bkg_c**0.5
             projection_asd = asd_wit_bkg * cf_c
             projection_asd.name = "Projection"
-            ax1.plot(projection_asd, color="tab:green", marker=".", linestyle="-", markersize=3, zorder=6, label=projection_asd.name)
+            ax1.plot(
+                projection_asd,
+                color="tab:green",
+                marker=".",
+                linestyle="-",
+                markersize=3,
+                zorder=6,
+                label=projection_asd.name,
+            )
 
         if cf_ul_c is not None:
-            asd_wit_bkg = psd_wit_bkg_c ** 0.5
+            asd_wit_bkg = psd_wit_bkg_c**0.5
             projection_ul = asd_wit_bkg * cf_ul_c
             projection_ul.name = "Projection UL"
-            ax1.plot(projection_ul, color="lightskyblue", marker=".", linestyle="-", markersize=3, zorder=6, label=projection_ul.name)
+            ax1.plot(
+                projection_ul,
+                color="lightskyblue",
+                marker=".",
+                linestyle="-",
+                markersize=3,
+                zorder=6,
+                label=projection_ul.name,
+            )
 
         ax1.set_ylabel(f"ASD [{asd_tgt_inj.unit}]")
         ax1.set_title(f"Target: {self.target_name}")
@@ -324,11 +425,25 @@ class CouplingResult:
 
         # 3. Coupling Function
         cf_c.name = "Coupling Function"
-        ax2.plot(cf_c, color="tab:green", marker=".", linestyle="-", markersize=3, label=cf_c.name)
+        ax2.plot(
+            cf_c,
+            color="tab:green",
+            marker=".",
+            linestyle="-",
+            markersize=3,
+            label=cf_c.name,
+        )
 
         if cf_ul_c is not None:
-             cf_ul_c.name = "Upper Limit"
-             ax2.plot(cf_ul_c, color="lightskyblue", marker=".", linestyle="-", markersize=3, label=cf_ul_c.name)
+            cf_ul_c.name = "Upper Limit"
+            ax2.plot(
+                cf_ul_c,
+                color="lightskyblue",
+                marker=".",
+                linestyle="-",
+                markersize=3,
+                label=cf_ul_c.name,
+            )
 
         ax2.set_xlabel("Frequency [Hz]")
         ax2.set_ylabel(f"CF [{cf_c.unit}]")
@@ -351,6 +466,7 @@ class CouplingResult:
 
 # --- Helper for Parallel Processing ---
 
+
 def _process_single_target(
     tgt_key,
     ts_tgt_inj,
@@ -367,7 +483,7 @@ def _process_single_target(
     check_kwargs,
     fftlength,
     overlap,
-    freq_mask
+    freq_mask,
 ):
     """
     Process a single target channel.
@@ -379,14 +495,12 @@ def _process_single_target(
 
     # Frequency check
     if not np.allclose(psd_wit_inj.xindex.value, psd_tgt_inj.xindex.value):
-         warnings.warn(f"Frequency mismatch for {tgt_key}. Skipping.")
-         return None
+        warnings.warn(f"Frequency mismatch for {tgt_key}. Skipping.")
+        return None
 
     # Check Target Excess
     mask_tgt = threshold_target.check(
-        psd_tgt_inj, psd_tgt_bkg,
-        raw_bkg=ts_tgt_bkg,
-        **check_kwargs
+        psd_tgt_inj, psd_tgt_bkg, raw_bkg=ts_tgt_bkg, **check_kwargs
     )
 
     delta_tgt = psd_tgt_inj.value - psd_tgt_bkg.value
@@ -398,12 +512,16 @@ def _process_single_target(
 
     cf_values = np.full_like(delta_wit, np.nan)
 
-    with np.errstate(divide='ignore', invalid='ignore'):
+    with np.errstate(divide="ignore", invalid="ignore"):
         sq_cf = delta_tgt[valid_mask] / delta_wit[valid_mask]
         cf_values[valid_mask] = np.sqrt(sq_cf)
 
     try:
-        cf_unit = psd_tgt_inj.unit.is_unity() and "dimensionless" or (ts_tgt_inj.unit / ts_wit_inj.unit)
+        cf_unit = (
+            psd_tgt_inj.unit.is_unity()
+            and "dimensionless"
+            or (ts_tgt_inj.unit / ts_wit_inj.unit)
+        )
     except Exception:
         cf_unit = "dimensionless"
 
@@ -411,7 +529,7 @@ def _process_single_target(
         cf_values,
         xindex=psd_wit_inj.xindex,
         unit=cf_unit,
-        name=f"CF: {witness_key} -> {tgt_key}"
+        name=f"CF: {witness_key} -> {tgt_key}",
     )
 
     # --- Calculate Upper Limit (UL) ---
@@ -421,9 +539,7 @@ def _process_single_target(
 
     try:
         psd_tgt_threshold = threshold_target.threshold(
-            psd_tgt_inj, psd_tgt_bkg,
-            raw_bkg=ts_tgt_bkg,
-            **check_kwargs
+            psd_tgt_inj, psd_tgt_bkg, raw_bkg=ts_tgt_bkg, **check_kwargs
         )
     except AttributeError:
         psd_tgt_threshold = psd_tgt_bkg.value
@@ -436,7 +552,7 @@ def _process_single_target(
 
     ul_values = np.full_like(delta_wit, np.nan)
 
-    with np.errstate(divide='ignore', invalid='ignore'):
+    with np.errstate(divide="ignore", invalid="ignore"):
         sq_ul = delta_thr / delta_wit
         ul_values[mask_ul] = np.sqrt(sq_ul[mask_ul])
 
@@ -444,7 +560,7 @@ def _process_single_target(
         ul_values,
         xindex=psd_wit_inj.xindex,
         unit=cf_unit,
-        name=f"CF Upper Limit: {witness_key} -> {tgt_key}"
+        name=f"CF Upper Limit: {witness_key} -> {tgt_key}",
     )
 
     res = CouplingResult(
@@ -460,12 +576,13 @@ def _process_single_target(
         ts_witness_bkg=ts_wit_bkg,
         ts_target_bkg=ts_tgt_bkg,
         fftlength=fftlength,
-        overlap=overlap
+        overlap=overlap,
     )
     return tgt_key, res
 
 
 # --- Analysis Class ---
+
 
 class CouplingFunctionAnalysis:
     """
@@ -477,14 +594,14 @@ class CouplingFunctionAnalysis:
         data_inj: TimeSeriesDict,
         data_bkg: TimeSeriesDict,
         fftlength: float,
-        witness: Optional[str] = None,
-        frange: Optional[Tuple[float, float]] = None,
+        witness: str | None = None,
+        frange: tuple[float, float] | None = None,
         overlap: float = 0,
         threshold_witness: ThresholdStrategy = RatioThreshold(25.0),
         threshold_target: ThresholdStrategy = RatioThreshold(4.0),
-        n_jobs: Optional[int] = None,
-        **kwargs
-    ) -> Union[CouplingResult, Dict[str, CouplingResult]]:
+        n_jobs: int | None = None,
+        **kwargs,
+    ) -> CouplingResult | dict[str, CouplingResult]:
         """
         Compute Coupling Function(s) from TimeSeriesDicts.
 
@@ -520,10 +637,14 @@ class CouplingFunctionAnalysis:
         else:
             witness_key = witness
             if witness_key not in data_inj:
-                raise KeyError(f"Witness channel '{witness_key}' not found in input data.")
+                raise KeyError(
+                    f"Witness channel '{witness_key}' not found in input data."
+                )
 
         if witness_key not in data_bkg:
-             raise KeyError(f"Witness channel '{witness_key}' not found in background data.")
+            raise KeyError(
+                f"Witness channel '{witness_key}' not found in background data."
+            )
 
         # --- 2. Separate Data ---
         ts_wit_inj = data_inj[witness_key]
@@ -531,17 +652,24 @@ class CouplingFunctionAnalysis:
         target_keys = [k for k in all_channels if k != witness_key]
 
         if not target_keys:
-            raise ValueError("No target channels found. Data must contain at least 2 channels.")
+            raise ValueError(
+                "No target channels found. Data must contain at least 2 channels."
+            )
 
         # --- 3. Compute PSDs & N_avg ---
-        psd_kwargs = {"fftlength": fftlength, "overlap": overlap, "method": "welch", "window": "hann"}
+        psd_kwargs = {
+            "fftlength": fftlength,
+            "overlap": overlap,
+            "method": "welch",
+            "window": "hann",
+        }
         psd_kwargs.update(kwargs)
 
         # Helper to pass extra data needed by PercentileThreshold
         check_kwargs = {
             "fftlength": fftlength,
             "overlap": overlap,
-            "n_avg": 1.0 # Will be updated
+            "n_avg": 1.0,  # Will be updated
         }
 
         # Estimate number of averages (N_avg)
@@ -566,11 +694,19 @@ class CouplingFunctionAnalysis:
             if fmin is None:
                 fmin_val = -np.inf
             else:
-                fmin_val = float(getattr(fmin, "to_value", lambda _: fmin)("Hz")) if hasattr(fmin, "to_value") else float(fmin)
+                fmin_val = (
+                    float(getattr(fmin, "to_value", lambda _: fmin)("Hz"))
+                    if hasattr(fmin, "to_value")
+                    else float(fmin)
+                )
             if fmax is None:
                 fmax_val = np.inf
             else:
-                fmax_val = float(getattr(fmax, "to_value", lambda _: fmax)("Hz")) if hasattr(fmax, "to_value") else float(fmax)
+                fmax_val = (
+                    float(getattr(fmax, "to_value", lambda _: fmax)("Hz"))
+                    if hasattr(fmax, "to_value")
+                    else float(fmax)
+                )
             if fmin_val > fmax_val:
                 raise ValueError("frange must satisfy fmin <= fmax")
             freqs = psd_wit_inj.xindex.value
@@ -579,9 +715,7 @@ class CouplingFunctionAnalysis:
         # Check Witness Excess
         # Note: We pass raw_bkg in case PercentileThreshold is used
         mask_wit = threshold_witness.check(
-            psd_wit_inj, psd_wit_bkg,
-            raw_bkg=ts_wit_bkg,
-            **check_kwargs
+            psd_wit_inj, psd_wit_bkg, raw_bkg=ts_wit_bkg, **check_kwargs
         )
 
         delta_wit = psd_wit_inj.value - psd_wit_bkg.value
@@ -592,6 +726,7 @@ class CouplingFunctionAnalysis:
 
         # Determine joblib usage
         from gwexpy.interop._optional import require_optional
+
         try:
             joblib = require_optional("joblib")
             Parallel, delayed = joblib.Parallel, joblib.delayed
@@ -615,17 +750,28 @@ class CouplingFunctionAnalysis:
                 Parallel, delayed = joblib.Parallel, joblib.delayed
 
         if Parallel is None:
-             # Sequential execution
+            # Sequential execution
             for tgt_key in target_keys:
-                if tgt_key not in data_bkg: continue
+                if tgt_key not in data_bkg:
+                    continue
 
                 res = _process_single_target(
                     tgt_key,
-                    data_inj[tgt_key], data_bkg[tgt_key],
+                    data_inj[tgt_key],
+                    data_bkg[tgt_key],
                     psd_kwargs,
-                    psd_wit_inj, psd_wit_bkg, mask_wit, delta_wit,
-                    witness_key, ts_wit_inj, ts_wit_bkg,
-                    threshold_target, check_kwargs, fftlength, overlap, freq_mask
+                    psd_wit_inj,
+                    psd_wit_bkg,
+                    mask_wit,
+                    delta_wit,
+                    witness_key,
+                    ts_wit_inj,
+                    ts_wit_bkg,
+                    threshold_target,
+                    check_kwargs,
+                    fftlength,
+                    overlap,
+                    freq_mask,
                 )
                 if res:
                     results[res[0]] = res[1]
@@ -635,12 +781,24 @@ class CouplingFunctionAnalysis:
             par_results = Parallel(n_jobs=n_jobs)(
                 delayed(_process_single_target)(
                     tgt_key,
-                    data_inj[tgt_key], data_bkg[tgt_key],
+                    data_inj[tgt_key],
+                    data_bkg[tgt_key],
                     psd_kwargs,
-                    psd_wit_inj, psd_wit_bkg, mask_wit, delta_wit,
-                    witness_key, ts_wit_inj, ts_wit_bkg,
-                    threshold_target, check_kwargs, fftlength, overlap, freq_mask
-                ) for tgt_key in target_keys if tgt_key in data_bkg
+                    psd_wit_inj,
+                    psd_wit_bkg,
+                    mask_wit,
+                    delta_wit,
+                    witness_key,
+                    ts_wit_inj,
+                    ts_wit_bkg,
+                    threshold_target,
+                    check_kwargs,
+                    fftlength,
+                    overlap,
+                    freq_mask,
+                )
+                for tgt_key in target_keys
+                if tgt_key in data_bkg
             )
 
             for res in par_results:
@@ -658,13 +816,13 @@ def estimate_coupling(
     data_inj: TimeSeriesDict,
     data_bkg: TimeSeriesDict,
     fftlength: float,
-    witness: Optional[str] = None,
-    frange: Optional[Tuple[float, float]] = None,
-    threshold_witness: Union[ThresholdStrategy, float] = 25.0,
-    threshold_target: Union[ThresholdStrategy, float] = 4.0,
-    n_jobs: Optional[int] = None,
-    **kwargs
-) -> Union[CouplingResult, Dict[str, CouplingResult]]:
+    witness: str | None = None,
+    frange: tuple[float, float] | None = None,
+    threshold_witness: ThresholdStrategy | float = 25.0,
+    threshold_target: ThresholdStrategy | float = 4.0,
+    n_jobs: int | None = None,
+    **kwargs,
+) -> CouplingResult | dict[str, CouplingResult]:
     """Helper function to estimate CF.
 
     Parameters
@@ -684,11 +842,13 @@ def estimate_coupling(
 
     analysis = CouplingFunctionAnalysis()
     return analysis.compute(
-        data_inj, data_bkg, fftlength,
+        data_inj,
+        data_bkg,
+        fftlength,
         witness=witness,
         frange=frange,
         threshold_witness=tw,
         threshold_target=tt,
         n_jobs=n_jobs,
-        **kwargs
+        **kwargs,
     )

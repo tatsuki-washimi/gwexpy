@@ -12,7 +12,6 @@ import numpy as np
 
 from ..frequencyseries import FrequencySeries
 
-
 # Allowed quantity values for pyGWINC
 _PYGWINC_QUANTITIES = frozenset({"strain", "darm", "displacement"})
 
@@ -106,9 +105,7 @@ def from_pygwinc(
     try:
         import gwinc
     except ImportError:
-        raise ImportError(
-            "Please install pygwinc to use gwexpy.noise.asd.from_pygwinc"
-        )
+        raise ImportError("Please install pygwinc to use gwexpy.noise.asd.from_pygwinc")
 
     # Validate quantity
     quantity_lower = quantity.lower()

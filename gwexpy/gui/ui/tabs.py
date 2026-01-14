@@ -1,5 +1,6 @@
-from PyQt5 import QtWidgets, QtCore
 import pyqtgraph as pg
+from PyQt5 import QtCore, QtWidgets
+
 from .graph_panel import GraphPanel
 
 

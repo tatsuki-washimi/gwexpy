@@ -43,4 +43,3 @@ __all__ = [
     "register_identifier",
     "register_reader",
 ]
-

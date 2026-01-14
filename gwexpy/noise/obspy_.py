@@ -6,13 +6,12 @@ from ObsPy seismic and infrasound noise models.
 
 from __future__ import annotations
 
-from typing import Any, Literal, Union
+from typing import Any, Literal
 
 import numpy as np
 from astropy import units as u
 
 from ..frequencyseries import FrequencySeries
-
 
 # Allowed quantity values for ObsPy seismic models
 _OBSPY_QUANTITIES = frozenset({"displacement", "velocity", "acceleration"})
@@ -123,9 +122,7 @@ def from_obspy(
     try:
         from obspy.signal import spectral_estimation
     except ImportError:
-        raise ImportError(
-            "Please install obspy to use gwexpy.noise.asd.from_obspy"
-        )
+        raise ImportError("Please install obspy to use gwexpy.noise.asd.from_obspy")
 
     # Validate quantity
     quantity_lower = quantity.lower()

@@ -13,4 +13,3 @@ __all__ = [
     "series_contenthandler",
     "to_gps",
 ]
-

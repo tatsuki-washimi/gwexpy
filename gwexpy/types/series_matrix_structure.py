@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from copy import deepcopy
-from typing import OrderedDict
 
 import numpy as np
 
@@ -130,7 +130,9 @@ class SeriesMatrixStructureMixin:
             target_shape = (shape[0], shape[1], nsamp)
         elif len(shape) == 3:
             if shape[2] != nsamp:
-                raise ValueError(f"Cannot reshape sample axis: expected {nsamp}, got {shape[2]}")
+                raise ValueError(
+                    f"Cannot reshape sample axis: expected {nsamp}, got {shape[2]}"
+                )
             target_shape = shape
         else:
             raise ValueError("Reshape target must be 2D or 3D")

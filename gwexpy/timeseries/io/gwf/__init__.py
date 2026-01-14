@@ -47,4 +47,3 @@ __all__ = [
     "register_writer",
     "to_gps",
 ]
-

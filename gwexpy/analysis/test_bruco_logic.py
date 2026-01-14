@@ -1,6 +1,7 @@
-
 import numpy as np
+
 from gwexpy.analysis.bruco import BrucoResult
+
 
 def test_bruco_result_top_n():
     freqs = np.array([10, 20, 30])
@@ -11,10 +12,7 @@ def test_bruco_result_top_n():
     # A: [0.1, 0.9, 0.5]
     # B: [0.2, 0.8, 0.6]
     names_1 = ["A", "B"]
-    coh_1 = np.array([
-        [0.1, 0.9, 0.5],
-        [0.2, 0.8, 0.6]
-    ])
+    coh_1 = np.array([[0.1, 0.9, 0.5], [0.2, 0.8, 0.6]])
     res.update_batch(names_1, coh_1)
 
     # Check
@@ -25,9 +23,7 @@ def test_bruco_result_top_n():
     # Batch 2: Channel C
     # C: [0.95, 0.0, 0.55]
     names_2 = ["C"]
-    coh_2 = np.array([
-        [0.95, 0.0, 0.55]
-    ])
+    coh_2 = np.array([[0.95, 0.0, 0.55]])
     res.update_batch(names_2, coh_2)
 
     # Check Bin 0: C(0.95), B(0.2). A(0.1) is pushed out
@@ -46,17 +42,19 @@ def test_bruco_result_top_n():
     assert "C" in res.top_channels[2]
     assert "A" not in res.top_channels[2]
 
+
 def test_projection():
     freqs = np.array([10])
     target_psd = np.array([4.0])
     res = BrucoResult(freqs, "Target", target_psd, top_n=1)
 
-    res.update_batch(["A"], np.array([[0.25]])) # sqrt(0.25) = 0.5
+    res.update_batch(["A"], np.array([[0.25]]))  # sqrt(0.25) = 0.5
 
     proj, coh = res.get_noise_projection(0)
     # Proj = ASD * sqrt(Coh) = 2.0 * 0.5 = 1.0
     assert coh[0] == 0.25
     assert proj[0] == 1.0
+
 
 if __name__ == "__main__":
     try:

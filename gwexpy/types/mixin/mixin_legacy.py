@@ -5,8 +5,10 @@ gwexpy.types.mixin
 Common mixins for gwexpy types.
 """
 
-from typing import Optional, Any
+from typing import Any
+
 import numpy as np
+
 
 class RegularityMixin:
     """Mixin to provide regularity checking for series types."""
@@ -20,7 +22,7 @@ class RegularityMixin:
             if idx is None:
                 return True
             if hasattr(idx, "regular"):
-                 return idx.regular
+                return idx.regular
 
             # Manual check
             vals = np.asarray(idx)
@@ -32,7 +34,7 @@ class RegularityMixin:
         except (AttributeError, ValueError, TypeError):
             return False
 
-    def _check_regular(self, method_name: Optional[str] = None):
+    def _check_regular(self, method_name: str | None = None):
         """Helper to ensure the series is regular before applying certain transforms."""
         if not self.is_regular:
             method = method_name or "This method"

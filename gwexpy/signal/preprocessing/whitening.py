@@ -6,6 +6,7 @@ Whitening algorithms for signal processing.
 """
 
 import warnings
+
 import numpy as np
 
 
@@ -19,6 +20,7 @@ class WhiteningModel:
     W : ndarray
         Whitening matrix.
     """
+
     def __init__(self, mean, W):
         self.mean = mean
         self.W = W
@@ -38,7 +40,7 @@ class WhiteningModel:
         X_rec : ndarray
             Reconstructed data.
         """
-        if hasattr(X_w, 'value'):
+        if hasattr(X_w, "value"):
             val = X_w.value
         else:
             val = X_w

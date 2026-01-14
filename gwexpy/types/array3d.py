@@ -1,28 +1,41 @@
-
 import numpy as np
 from astropy.units import Quantity, dimensionless_unscaled
-
 from gwpy.types.array import Array as GwpyArray
+
 from .array import Array
 from .axis import AxisDescriptor, coerce_1d_quantity
 from .plane2d import Plane2D
 
 __all__ = ["Array3D"]
 
+
 class Array3D(Array):
     """
     3D Array with explicit axis management.
     """
+
     _metadata_slots = Array._metadata_slots + (
-        "_axis0_name", "_axis1_name", "_axis2_name",
-        "_axis0_index", "_axis1_index", "_axis2_index",
+        "_axis0_name",
+        "_axis1_name",
+        "_axis2_name",
+        "_axis0_index",
+        "_axis1_index",
+        "_axis2_index",
     )
 
-    def __new__(cls, data, unit=None, axis0=None, axis1=None, axis2=None,
-                axis_names=None, **kwargs):
+    def __new__(
+        cls,
+        data,
+        unit=None,
+        axis0=None,
+        axis1=None,
+        axis2=None,
+        axis_names=None,
+        **kwargs,
+    ):
         obj = super().__new__(cls, data, unit=unit, **kwargs)
         if obj.ndim != 3:
-             raise ValueError(f"Array3D must be 3-dimensional, got {obj.ndim}D")
+            raise ValueError(f"Array3D must be 3-dimensional, got {obj.ndim}D")
 
         if axis_names is None:
             obj._axis0_name = "axis0"
@@ -31,7 +44,9 @@ class Array3D(Array):
         else:
             if len(axis_names) != 3:
                 raise ValueError("axis_names must be length 3")
-            obj._axis0_name, obj._axis1_name, obj._axis2_name = [str(x) for x in axis_names]
+            obj._axis0_name, obj._axis1_name, obj._axis2_name = [
+                str(x) for x in axis_names
+            ]
 
         if axis0 is None:
             obj._axis0_index = np.arange(obj.shape[0]) * dimensionless_unscaled
@@ -74,23 +89,23 @@ class Array3D(Array):
         # If ndim < 1, assume scalar or broken
 
         if self.ndim >= 1 and getattr(self, "_axis0_index", None) is None:
-             # Try copy if shape matches
-             if getattr(obj, "ndim", 0) >= 1 and obj.shape[0] == self.shape[0]:
-                 self._axis0_index = getattr(obj, "_axis0_index", None)
-             if getattr(self, "_axis0_index", None) is None:
-                 self._axis0_index = np.arange(self.shape[0]) * dimensionless_unscaled
+            # Try copy if shape matches
+            if getattr(obj, "ndim", 0) >= 1 and obj.shape[0] == self.shape[0]:
+                self._axis0_index = getattr(obj, "_axis0_index", None)
+            if getattr(self, "_axis0_index", None) is None:
+                self._axis0_index = np.arange(self.shape[0]) * dimensionless_unscaled
 
         if self.ndim >= 2 and getattr(self, "_axis1_index", None) is None:
-             if getattr(obj, "ndim", 0) >= 2 and obj.shape[1] == self.shape[1]:
-                 self._axis1_index = getattr(obj, "_axis1_index", None)
-             if getattr(self, "_axis1_index", None) is None:
-                 self._axis1_index = np.arange(self.shape[1]) * dimensionless_unscaled
+            if getattr(obj, "ndim", 0) >= 2 and obj.shape[1] == self.shape[1]:
+                self._axis1_index = getattr(obj, "_axis1_index", None)
+            if getattr(self, "_axis1_index", None) is None:
+                self._axis1_index = np.arange(self.shape[1]) * dimensionless_unscaled
 
         if self.ndim >= 3 and getattr(self, "_axis2_index", None) is None:
-             if getattr(obj, "ndim", 0) >= 3 and obj.shape[2] == self.shape[2]:
-                 self._axis2_index = getattr(obj, "_axis2_index", None)
-             if getattr(self, "_axis2_index", None) is None:
-                 self._axis2_index = np.arange(self.shape[2]) * dimensionless_unscaled
+            if getattr(obj, "ndim", 0) >= 3 and obj.shape[2] == self.shape[2]:
+                self._axis2_index = getattr(obj, "_axis2_index", None)
+            if getattr(self, "_axis2_index", None) is None:
+                self._axis2_index = np.arange(self.shape[2]) * dimensionless_unscaled
 
         if getattr(self, "_axis_names", None) is not None and self.ndim == 3:
             self._axis_names = [self._axis0_name, self._axis1_name, self._axis2_name]
@@ -112,7 +127,10 @@ class Array3D(Array):
             self._axis2_name = name
         else:
             raise IndexError(index)
-        if getattr(self, "_axis_names", None) is not None and len(self._axis_names) == 3:
+        if (
+            getattr(self, "_axis_names", None) is not None
+            and len(self._axis_names) == 3
+        ):
             self._axis_names = [self._axis0_name, self._axis1_name, self._axis2_name]
 
     def __getitem__(self, item):
@@ -178,7 +196,9 @@ class Array3D(Array):
 
     @staticmethod
     def _is_int_index(value):
-        return isinstance(value, (int, np.integer)) and not isinstance(value, (bool, np.bool_))
+        return isinstance(value, (int, np.integer)) and not isinstance(
+            value, (bool, np.bool_)
+        )
 
     @staticmethod
     def _normalize_item(item):
@@ -194,7 +214,9 @@ class Array3D(Array):
             fill = 3 - num_specified
             if fill < 0:
                 return None
-            item = item[:ellipsis_idx] + (slice(None),) * fill + item[ellipsis_idx + 1:]
+            item = (
+                item[:ellipsis_idx] + (slice(None),) * fill + item[ellipsis_idx + 1 :]
+            )
         if len(item) > 3:
             return None
         if len(item) < 3:
@@ -232,7 +254,9 @@ class Array3D(Array):
         names = [self._axis0_name, self._axis1_name, self._axis2_name]
         indices = [self._axis0_index, self._axis1_index, self._axis2_index]
         obj._axis0_name, obj._axis1_name, obj._axis2_name = [names[i] for i in order]
-        obj._axis0_index, obj._axis1_index, obj._axis2_index = [indices[i] for i in order]
+        obj._axis0_index, obj._axis1_index, obj._axis2_index = [
+            indices[i] for i in order
+        ]
         if getattr(obj, "_axis_names", None) is not None:
             obj._axis_names = [names[i] for i in order]
 

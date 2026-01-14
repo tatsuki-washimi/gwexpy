@@ -10,13 +10,17 @@ This module provides statistical analysis functionality as a mixin class:
 
 from __future__ import annotations
 
-from typing import Optional, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
+
+from astropy import units as u
+
+from ._typing import TimeSeriesAttrs
 
 if TYPE_CHECKING:
     from gwexpy.timeseries.timeseries import TimeSeries
 
 
-class TimeSeriesAnalysisMixin:
+class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
     """
     Mixin class providing statistical analysis methods for TimeSeries.
 
@@ -32,11 +36,11 @@ class TimeSeriesAnalysisMixin:
         self,
         *,
         method: str = "linear",
-        limit: Optional[int] = None,
-        axis: str = "time",
-        max_gap: Optional[float] = None,
+        limit: int | None = None,
+        axis: int | str = "time",
+        max_gap: float | u.Quantity | None = None,
         **kwargs: Any,
-    ) -> "TimeSeries":
+    ) -> TimeSeries:
         """
         Impute missing values.
 
@@ -63,9 +67,18 @@ class TimeSeriesAnalysisMixin:
         gwexpy.timeseries.preprocess.impute_timeseries
         """
         from gwexpy.timeseries.preprocess import impute_timeseries
-        return impute_timeseries(self, method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs)
 
-    def standardize(self, *, method: str = "zscore", ddof: int = 0, robust: bool = False) -> "TimeSeries":
+        ts_in = cast(TimeSeries, self)
+        return cast(
+            TimeSeries,
+            impute_timeseries(
+                ts_in, method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs
+            ),
+        )
+
+    def standardize(
+        self, *, method: str = "zscore", ddof: int = 0, robust: bool = False
+    ) -> TimeSeries:
         """
         Standardize the series.
 
@@ -88,7 +101,11 @@ class TimeSeriesAnalysisMixin:
         gwexpy.timeseries.preprocess.standardize_timeseries
         """
         from gwexpy.timeseries.preprocess import standardize_timeseries
-        return standardize_timeseries(self, method=method, ddof=ddof, robust=robust)
+
+        ts_std, _ = standardize_timeseries(
+            cast(TimeSeries, self), method=method, ddof=ddof, robust=robust
+        )
+        return ts_std
 
     # ===============================
     # Time Series Modeling
@@ -115,7 +132,8 @@ class TimeSeriesAnalysisMixin:
         gwexpy.timeseries.arima.fit_arima
         """
         from gwexpy.timeseries.arima import fit_arima
-        return fit_arima(self, order=order, **kwargs)
+
+        return fit_arima(cast(TimeSeries, self), order=order, **kwargs)
 
     def hurst(self, **kwargs: Any) -> Any:
         """
@@ -136,9 +154,10 @@ class TimeSeriesAnalysisMixin:
         gwexpy.timeseries.hurst.hurst
         """
         from gwexpy.timeseries.hurst import hurst
+
         return hurst(self, **kwargs)
 
-    def local_hurst(self, window: Any, **kwargs: Any) -> "TimeSeries":
+    def local_hurst(self, window: Any, **kwargs: Any) -> TimeSeries:
         """
         Compute local Hurst exponent over a sliding window.
 
@@ -159,6 +178,7 @@ class TimeSeriesAnalysisMixin:
         gwexpy.timeseries.hurst.local_hurst
         """
         from gwexpy.timeseries.hurst import local_hurst
+
         return local_hurst(self, window=window, **kwargs)
 
     # ===============================
@@ -173,8 +193,8 @@ class TimeSeriesAnalysisMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
-        ignore_nan: Optional[bool] = None,
-    ) -> "TimeSeries":
+        ignore_nan: bool | None = None,
+    ) -> TimeSeries:
         """
         Rolling mean over time.
 
@@ -199,7 +219,16 @@ class TimeSeriesAnalysisMixin:
             Rolling mean.
         """
         from gwexpy.timeseries.rolling import rolling_mean
-        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
+
+        return rolling_mean(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
 
     def rolling_std(
         self,
@@ -210,8 +239,8 @@ class TimeSeriesAnalysisMixin:
         nan_policy: str = "omit",
         backend: str = "auto",
         ddof: int = 0,
-        ignore_nan: Optional[bool] = None,
-    ) -> "TimeSeries":
+        ignore_nan: bool | None = None,
+    ) -> TimeSeries:
         """
         Rolling standard deviation over time.
 
@@ -238,7 +267,17 @@ class TimeSeriesAnalysisMixin:
             Rolling standard deviation.
         """
         from gwexpy.timeseries.rolling import rolling_std
-        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof, ignore_nan=ignore_nan)
+
+        return rolling_std(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ddof=ddof,
+            ignore_nan=ignore_nan,
+        )
 
     def rolling_median(
         self,
@@ -248,8 +287,8 @@ class TimeSeriesAnalysisMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
-        ignore_nan: Optional[bool] = None,
-    ) -> "TimeSeries":
+        ignore_nan: bool | None = None,
+    ) -> TimeSeries:
         """
         Rolling median over time.
 
@@ -274,7 +313,16 @@ class TimeSeriesAnalysisMixin:
             Rolling median.
         """
         from gwexpy.timeseries.rolling import rolling_median
-        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
+
+        return rolling_median(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
 
     def rolling_min(
         self,
@@ -284,8 +332,8 @@ class TimeSeriesAnalysisMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
-        ignore_nan: Optional[bool] = None,
-    ) -> "TimeSeries":
+        ignore_nan: bool | None = None,
+    ) -> TimeSeries:
         """
         Rolling minimum over time.
 
@@ -310,7 +358,16 @@ class TimeSeriesAnalysisMixin:
             Rolling minimum.
         """
         from gwexpy.timeseries.rolling import rolling_min
-        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
+
+        return rolling_min(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
 
     def rolling_max(
         self,
@@ -320,8 +377,8 @@ class TimeSeriesAnalysisMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
-        ignore_nan: Optional[bool] = None,
-    ) -> "TimeSeries":
+        ignore_nan: bool | None = None,
+    ) -> TimeSeries:
         """
         Rolling maximum over time.
 
@@ -346,4 +403,13 @@ class TimeSeriesAnalysisMixin:
             Rolling maximum.
         """
         from gwexpy.timeseries.rolling import rolling_max
-        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
+
+        return rolling_max(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )

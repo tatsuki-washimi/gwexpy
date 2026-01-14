@@ -21,4 +21,3 @@ __all__ = [
     "savetxt",
     "write_ascii_series",
 ]
-

@@ -1,9 +1,9 @@
 from gwpy.testing.utils import (
-    Path,
     TEST_DATA_DIR,
     TEST_GWF_FILE,
     TEST_GWF_SPAN,
     TEST_HDF5_FILE,
+    Path,
     TemporaryFilename,
     Time,
     assert_allclose,
@@ -71,4 +71,3 @@ __all__ = [
     "test_read_write",
     "zip_longest",
 ]
-

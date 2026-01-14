@@ -7,6 +7,7 @@ import numpy as np
 from astropy import units as u
 
 from gwexpy.interop._optional import require_optional
+
 from .metadata import MetaData, MetaDataDict, MetaDataMatrix
 
 
@@ -51,7 +52,14 @@ class SeriesMatrixIOMixin:
                     row_list.extend([r] * K)
                     col_list.extend([c] * K)
             long_values = np.concatenate(val_list)
-            df = pd.DataFrame({"index": long_index, "row": row_list, "col": col_list, "value": long_values})
+            df = pd.DataFrame(
+                {
+                    "index": long_index,
+                    "row": row_list,
+                    "col": col_list,
+                    "value": long_values,
+                }
+            )
             return df
         else:
             raise ValueError(f"Unknown format: {format}")
@@ -105,22 +113,48 @@ class SeriesMatrixIOMixin:
             else:
                 grp_x.create_dataset("value", data=np.asarray(self.xindex))
             meta_grp = f.create_group("meta")
-            units = np.vectorize(lambda u_: "" if u_ is None else str(u_))(self.meta.units)
+            units = np.vectorize(lambda u_: "" if u_ is None else str(u_))(
+                self.meta.units
+            )
             names = np.vectorize(lambda n: "" if n is None else str(n))(self.meta.names)
-            channels = np.vectorize(lambda c: "" if c is None else str(c))(self.meta.channels)
+            channels = np.vectorize(lambda c: "" if c is None else str(c))(
+                self.meta.channels
+            )
             meta_grp.create_dataset("units", data=units.astype("S"))
             meta_grp.create_dataset("names", data=names.astype("S"))
             meta_grp.create_dataset("channels", data=channels.astype("S"))
             row_grp = f.create_group("rows")
-            row_grp.create_dataset("keys", data=np.array(list(self.rows.keys()), dtype="S"))
-            row_grp.create_dataset("names", data=np.array([str(v.name) for v in self.rows.values()], dtype="S"))
-            row_grp.create_dataset("units", data=np.array([str(v.unit) for v in self.rows.values()], dtype="S"))
-            row_grp.create_dataset("channels", data=np.array([str(v.channel) for v in self.rows.values()], dtype="S"))
+            row_grp.create_dataset(
+                "keys", data=np.array(list(self.rows.keys()), dtype="S")
+            )
+            row_grp.create_dataset(
+                "names",
+                data=np.array([str(v.name) for v in self.rows.values()], dtype="S"),
+            )
+            row_grp.create_dataset(
+                "units",
+                data=np.array([str(v.unit) for v in self.rows.values()], dtype="S"),
+            )
+            row_grp.create_dataset(
+                "channels",
+                data=np.array([str(v.channel) for v in self.rows.values()], dtype="S"),
+            )
             col_grp = f.create_group("cols")
-            col_grp.create_dataset("keys", data=np.array(list(self.cols.keys()), dtype="S"))
-            col_grp.create_dataset("names", data=np.array([str(v.name) for v in self.cols.values()], dtype="S"))
-            col_grp.create_dataset("units", data=np.array([str(v.unit) for v in self.cols.values()], dtype="S"))
-            col_grp.create_dataset("channels", data=np.array([str(v.channel) for v in self.cols.values()], dtype="S"))
+            col_grp.create_dataset(
+                "keys", data=np.array(list(self.cols.keys()), dtype="S")
+            )
+            col_grp.create_dataset(
+                "names",
+                data=np.array([str(v.name) for v in self.cols.values()], dtype="S"),
+            )
+            col_grp.create_dataset(
+                "units",
+                data=np.array([str(v.unit) for v in self.cols.values()], dtype="S"),
+            )
+            col_grp.create_dataset(
+                "channels",
+                data=np.array([str(v.channel) for v in self.cols.values()], dtype="S"),
+            )
 
     ##### Visualizations #####
     def __repr__(self):
@@ -173,8 +207,9 @@ class SeriesMatrixIOMixin:
         SeriesMatrix
             The loaded matrix.
         """
-        import h5py  # noqa: F401 - availability check
         from pathlib import Path
+
+        import h5py  # noqa: F401 - availability check
 
         if format is None:
             ext = Path(source).suffix.lower()
@@ -222,7 +257,9 @@ class SeriesMatrixIOMixin:
             for i in range(N):
                 for j in range(M):
                     unit_str = units_raw[i, j]
-                    unit_val = u.Unit(unit_str) if unit_str else u.dimensionless_unscaled
+                    unit_val = (
+                        u.Unit(unit_str) if unit_str else u.dimensionless_unscaled
+                    )
                     meta_arr[i, j] = MetaData(
                         unit=unit_val,
                         name=names_raw[i, j] if names_raw[i, j] else None,
@@ -231,29 +268,60 @@ class SeriesMatrixIOMixin:
             meta_matrix = MetaDataMatrix(meta_arr)
 
             row_grp = f["rows"]
-            row_keys = [k.decode() if isinstance(k, bytes) else k for k in row_grp["keys"][:]]
-            row_names = [n.decode() if isinstance(n, bytes) else n for n in row_grp["names"][:]]
-            row_units = [u_.decode() if isinstance(u_, bytes) else u_ for u_ in row_grp["units"][:]]
-            row_channels = [c.decode() if isinstance(c, bytes) else c for c in row_grp["channels"][:]]
+            row_keys = [
+                k.decode() if isinstance(k, bytes) else k for k in row_grp["keys"][:]
+            ]
+            row_names = [
+                n.decode() if isinstance(n, bytes) else n for n in row_grp["names"][:]
+            ]
+            row_units = [
+                u_.decode() if isinstance(u_, bytes) else u_
+                for u_ in row_grp["units"][:]
+            ]
+            row_channels = [
+                c.decode() if isinstance(c, bytes) else c
+                for c in row_grp["channels"][:]
+            ]
             rows = OrderedDict()
             for k, n, u_, c in zip(row_keys, row_names, row_units, row_channels):
                 rows[k] = MetaData(
-                    unit=u.Unit(u_) if u_ else u.dimensionless_unscaled, name=n if n else None, channel=c if c else None
+                    unit=u.Unit(u_) if u_ else u.dimensionless_unscaled,
+                    name=n if n else None,
+                    channel=c if c else None,
                 )
             rows = MetaDataDict(rows, expected_size=len(row_keys), key_prefix="row")
 
             col_grp = f["cols"]
-            col_keys = [k.decode() if isinstance(k, bytes) else k for k in col_grp["keys"][:]]
-            col_names = [n.decode() if isinstance(n, bytes) else n for n in col_grp["names"][:]]
-            col_units = [u_.decode() if isinstance(u_, bytes) else u_ for u_ in col_grp["units"][:]]
-            col_channels = [c.decode() if isinstance(c, bytes) else c for c in col_grp["channels"][:]]
+            col_keys = [
+                k.decode() if isinstance(k, bytes) else k for k in col_grp["keys"][:]
+            ]
+            col_names = [
+                n.decode() if isinstance(n, bytes) else n for n in col_grp["names"][:]
+            ]
+            col_units = [
+                u_.decode() if isinstance(u_, bytes) else u_
+                for u_ in col_grp["units"][:]
+            ]
+            col_channels = [
+                c.decode() if isinstance(c, bytes) else c
+                for c in col_grp["channels"][:]
+            ]
             cols = OrderedDict()
             for k, n, u_, c in zip(col_keys, col_names, col_units, col_channels):
                 cols[k] = MetaData(
-                    unit=u.Unit(u_) if u_ else u.dimensionless_unscaled, name=n if n else None, channel=c if c else None
+                    unit=u.Unit(u_) if u_ else u.dimensionless_unscaled,
+                    name=n if n else None,
+                    channel=c if c else None,
                 )
             cols = MetaDataDict(cols, expected_size=len(col_keys), key_prefix="col")
 
         return cls(
-            data, xindex=xindex, meta=meta_matrix, rows=rows, cols=cols, name=name, epoch=epoch, attrs=attrs
+            data,
+            xindex=xindex,
+            meta=meta_matrix,
+            rows=rows,
+            cols=cols,
+            name=name,
+            epoch=epoch,
+            attrs=attrs,
         )

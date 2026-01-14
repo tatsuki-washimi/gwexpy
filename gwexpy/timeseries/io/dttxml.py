@@ -7,7 +7,7 @@ This module supports a minimal XML parser and will use an external
 
 from __future__ import annotations
 
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 import numpy as np
 from gwpy.io import registry as io_registry
@@ -21,6 +21,7 @@ from gwexpy.io.utils import (
     parse_timezone,
     set_provenance,
 )
+
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
@@ -32,6 +33,7 @@ def _build_epoch(value, timezone):
     tzinfo = parse_timezone(timezone) if timezone else None
     if tzinfo is None:
         from datetime import timezone as _timezone
+
         tzinfo = _timezone.utc
     return datetime_to_gps(ensure_datetime(value, tzinfo=tzinfo))
 
@@ -40,7 +42,7 @@ def read_timeseriesdict_dttxml(
     source,
     *,
     products=None,
-    channels: Optional[Iterable[str]] = None,
+    channels: Iterable[str] | None = None,
     unit=None,
     epoch=None,
     timezone=None,
@@ -98,9 +100,17 @@ def read_timeseriesmatrix_dttxml(*args, **kwargs) -> TimeSeriesMatrix:
 
 
 # -- registration
-io_registry.register_reader("dttxml", TimeSeriesDict, read_timeseriesdict_dttxml, force=True)
+io_registry.register_reader(
+    "dttxml", TimeSeriesDict, read_timeseriesdict_dttxml, force=True
+)
 io_registry.register_reader("dttxml", TimeSeries, read_timeseries_dttxml, force=True)
-io_registry.register_reader("dttxml", TimeSeriesMatrix, read_timeseriesmatrix_dttxml, force=True)
+io_registry.register_reader(
+    "dttxml", TimeSeriesMatrix, read_timeseriesmatrix_dttxml, force=True
+)
 
-io_registry.register_identifier("dttxml", TimeSeries, lambda *args, **kwargs: str(args[1]).endswith(".xml"))
-io_registry.register_identifier("dttxml", TimeSeriesDict, lambda *args, **kwargs: str(args[1]).endswith(".xml"))
+io_registry.register_identifier(
+    "dttxml", TimeSeries, lambda *args, **kwargs: str(args[1]).endswith(".xml")
+)
+io_registry.register_identifier(
+    "dttxml", TimeSeriesDict, lambda *args, **kwargs: str(args[1]).endswith(".xml")
+)

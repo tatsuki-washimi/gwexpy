@@ -17,4 +17,3 @@ __all__ = [
     "round_to_power",
     "unique",
 ]
-

@@ -1,18 +1,19 @@
-
 import numpy as np
 from astropy.units import dimensionless_unscaled
-
 from gwpy.types.array2d import Array2D as GwpyArray2D
+
+from ._stats import StatisticalMethodsMixin
 from .axis import AxisDescriptor
 from .axis_api import AxisApiMixin
-from ._stats import StatisticalMethodsMixin
 
 __all__ = ["Array2D"]
+
 
 class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
     """
     2D Array with unified axis API.
     """
+
     _metadata_slots = GwpyArray2D._metadata_slots + ("_axis0_name", "_axis1_name")
 
     def __new__(cls, data, axis_names=None, **kwargs):
@@ -31,17 +32,17 @@ class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
         # Resolve data shape
         shape = np.shape(data)
         if len(shape) == 2:
-             if "yindex" not in kwargs:
-                 kwargs["yindex"] = np.arange(shape[0]) * dimensionless_unscaled
-             if "xindex" not in kwargs:
-                 kwargs["xindex"] = np.arange(shape[1]) * dimensionless_unscaled
+            if "yindex" not in kwargs:
+                kwargs["yindex"] = np.arange(shape[0]) * dimensionless_unscaled
+            if "xindex" not in kwargs:
+                kwargs["xindex"] = np.arange(shape[1]) * dimensionless_unscaled
 
         obj = super().__new__(cls, data, **kwargs)
         if axis_names is None:
             name0, name1 = "axis0", "axis1"
         else:
             if len(axis_names) != 2:
-                 raise ValueError("axis_names must have length 2 for Array2D")
+                raise ValueError("axis_names must have length 2 for Array2D")
             name0, name1 = axis_names
         obj._axis0_name = name0
         obj._axis1_name = name1
@@ -91,33 +92,33 @@ class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
 
         # Access old indices before swap
         try:
-             old_x = self.xindex
+            old_x = self.xindex
         except AttributeError:
-             old_x = None
+            old_x = None
         try:
-             old_y = self.yindex
+            old_y = self.yindex
         except AttributeError:
-             old_y = None
+            old_y = None
 
         new_data = GwpyArray2D.swapaxes(self, a, b)
 
         # Create fresh instance to ensure metadata correctness
         # Passing xindex/yindex explicitly swaps them
         return self.__class__(
-             new_data.value,
-             unit=new_data.unit,
-             axis_names=(self._axis1_name, self._axis0_name),
-             xindex=old_y,
-             yindex=old_x
+            new_data.value,
+            unit=new_data.unit,
+            axis_names=(self._axis1_name, self._axis0_name),
+            xindex=old_y,
+            yindex=old_x,
         )
 
     def _transpose_int(self, axes: tuple[int, ...]):
         if axes == (0, 1):
-             return self.copy()
+            return self.copy()
         elif axes == (1, 0):
-             return self._swapaxes_int(0, 1)
+            return self._swapaxes_int(0, 1)
         else:
-             raise ValueError(f"Invalid transpose axes for 2D: {axes}")
+            raise ValueError(f"Invalid transpose axes for 2D: {axes}")
 
     def imshow(self, **kwargs):
         """Plot this array using matplotlib.axes.Axes.imshow.

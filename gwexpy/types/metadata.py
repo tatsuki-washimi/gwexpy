@@ -1,14 +1,17 @@
 from __future__ import annotations
-import warnings
+
 import sys
+import warnings
+
 import numpy as np
+
 try:
     import pandas as pd
 except ImportError:
     pd = None
-from html import escape
 from collections import OrderedDict
-from typing import Optional, Union
+from html import escape
+
 from astropy import units as u
 from astropy.units import Unit, UnitConversionError
 from gwpy.detector import Channel
@@ -19,15 +22,22 @@ _UFUNC_ABS_REAL = {np.abs, np.negative, np.positive, np.real, np.imag}
 _UFUNC_CONJ = {np.conjugate, np.conj}
 _UFUNC_TRANSCENDENTAL = {np.exp, np.sin, np.cos, np.log}
 _UFUNC_ADD_SUB = {np.add, np.subtract}
-_UFUNC_COMPARISON = {np.less, np.less_equal, np.equal, np.not_equal, np.greater, np.greater_equal}
+_UFUNC_COMPARISON = {
+    np.less,
+    np.less_equal,
+    np.equal,
+    np.not_equal,
+    np.greater,
+    np.greater_equal,
+}
 _UFUNC_MULT_DIV = {np.multiply, np.divide, np.floor_divide}
-from gwpy.timeseries import TimeSeries
 from gwpy.frequencyseries import FrequencySeries
-
+from gwpy.timeseries import TimeSeries
 
 # =============================
 # MetaData: metadata for a single object (e.g., row/column/parameter)
 # =============================
+
 
 class MetaData(dict):
     def __init__(self, **kwargs):
@@ -46,12 +56,13 @@ class MetaData(dict):
             if isinstance(raw_unit, u.UnitBase):
                 self["unit"] = raw_unit
             elif isinstance(raw_unit, str):
-                self["unit"] = u.Unit(raw_unit) if raw_unit else u.dimensionless_unscaled
+                self["unit"] = (
+                    u.Unit(raw_unit) if raw_unit else u.dimensionless_unscaled
+                )
             else:
                 self["unit"] = u.Unit(raw_unit)
         except (ValueError, TypeError):
             self["unit"] = u.dimensionless_unscaled
-
 
     @property
     def name(self):
@@ -90,9 +101,11 @@ class MetaData(dict):
 
     @classmethod
     def from_series(cls, series):
-        return cls(name   =getattr(series, "name", ""),
-                   channel=getattr(series, "channel", ""),
-                   unit   =getattr(series, "unit", u.dimensionless_unscaled))
+        return cls(
+            name=getattr(series, "name", ""),
+            channel=getattr(series, "channel", ""),
+            unit=getattr(series, "unit", u.dimensionless_unscaled),
+        )
 
     def as_meta(self, obj):
         if isinstance(obj, MetaData):
@@ -100,7 +113,7 @@ class MetaData(dict):
         return MetaData(name=self.name, channel=self.channel, unit=get_unit(obj))
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
-        if method != '__call__':
+        if method != "__call__":
             return NotImplemented
 
         # unary operations
@@ -111,13 +124,17 @@ class MetaData(dict):
             if ufunc in _UFUNC_CONJ:
                 return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit)
             if ufunc == np.sqrt:
-                return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit ** 0.5)
+                return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit**0.5)
             if ufunc == np.square:
-                return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit ** 2)
+                return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit**2)
             if ufunc in _UFUNC_TRANSCENDENTAL:
                 if not lhs.unit.is_equivalent(1):
-                    raise UnitConversionError(f"{ufunc.__name__} requires dimensionless input")
-                return MetaData(name=lhs.name, channel=lhs.channel, unit=u.dimensionless_unscaled)
+                    raise UnitConversionError(
+                        f"{ufunc.__name__} requires dimensionless input"
+                    )
+                return MetaData(
+                    name=lhs.name, channel=lhs.channel, unit=u.dimensionless_unscaled
+                )
             return NotImplemented
 
         # binary operations (two or more operands)
@@ -138,7 +155,9 @@ class MetaData(dict):
                 raise UnitConversionError("Exponent must be dimensionless")
 
             base = lhs if isinstance(lhs, MetaData) else self
-            return MetaData(name=base.name, channel=base.channel, unit=lhs_unit ** exponent)
+            return MetaData(
+                name=base.name, channel=base.channel, unit=lhs_unit**exponent
+            )
 
         lhs = self.as_meta(lhs_raw)
         rhs = self.as_meta(rhs_raw)
@@ -157,7 +176,9 @@ class MetaData(dict):
             if not lhs_unit.is_equivalent(rhs_unit):
                 raise UnitConversionError(f"{ufunc.__name__} requires compatible units")
             base = lhs if isinstance(lhs, MetaData) else rhs
-            return MetaData(name=base.name, channel=base.channel, unit=u.dimensionless_unscaled)
+            return MetaData(
+                name=base.name, channel=base.channel, unit=u.dimensionless_unscaled
+            )
 
         # multiplication/division
         if ufunc in _UFUNC_MULT_DIV:
@@ -170,34 +191,58 @@ class MetaData(dict):
 
         return NotImplemented
 
+    def __abs__(self):
+        return np.abs(self)
 
-    def __abs__(self):               return np.abs(self)
-    def __neg__(self):               return np.negative(self)
-    def __pos__(self):               return np.positive(self)
-    def __add__(self, other):        return np.add(self, other)
-    def __radd__(self, other):       return np.add(other, self)
-    def __sub__(self, other):        return np.subtract(self, other)
-    def __rsub__(self, other):       return np.subtract(other, self)
-    def __mul__(self, other):        return np.multiply(self, other)
-    def __rmul__(self, other):       return np.multiply(other, self)
-    def __truediv__(self, other):    return np.divide(self, other)
-    def __rtruediv__(self, other):   return np.divide(other, self)
-    def __pow__(self, exponent):     return np.power(self, exponent)
+    def __neg__(self):
+        return np.negative(self)
+
+    def __pos__(self):
+        return np.positive(self)
+
+    def __add__(self, other):
+        return np.add(self, other)
+
+    def __radd__(self, other):
+        return np.add(other, self)
+
+    def __sub__(self, other):
+        return np.subtract(self, other)
+
+    def __rsub__(self, other):
+        return np.subtract(other, self)
+
+    def __mul__(self, other):
+        return np.multiply(self, other)
+
+    def __rmul__(self, other):
+        return np.multiply(other, self)
+
+    def __truediv__(self, other):
+        return np.divide(self, other)
+
+    def __rtruediv__(self, other):
+        return np.divide(other, self)
+
+    def __pow__(self, exponent):
+        return np.power(self, exponent)
 
     def __repr__(self):
-        keys = ['name', 'unit', 'channel']
+        keys = ["name", "unit", "channel"]
         summary = ", ".join(f"{k}={self.get(k, '')}" for k in keys)
         return f"({summary})"
 
     def __str__(self):
-        keys = ['name', 'unit', 'channel']
+        keys = ["name", "unit", "channel"]
         return "\t".join(f"{k:>8}: {self.get(k, '')}" for k in keys)
 
     def _repr_html_(self):
-        keys = ['name', 'unit', 'channel']
+        keys = ["name", "unit", "channel"]
         html = "<table>"
         for k in keys:
-            html += f"<tr><td><b>{k}</b></td><td>{escape(str(self.get(k, '')))}</td></tr>"
+            html += (
+                f"<tr><td><b>{k}</b></td><td>{escape(str(self.get(k, '')))}</td></tr>"
+            )
         html += "</table>"
         return html
 
@@ -206,12 +251,14 @@ class MetaData(dict):
 # MetaDataDict: ordered mapping from keys to MetaData
 # =============================
 
-class MetaDataDict(OrderedDict):
-    def __init__(self,
-                 entries: Optional[Union[dict, list, pd.DataFrame, MetaDataDict]] = None,
-                 expected_size: Optional[int] = None,
-                 key_prefix: str = 'key'):
 
+class MetaDataDict(OrderedDict):
+    def __init__(
+        self,
+        entries: dict | list | pd.DataFrame | MetaDataDict | None = None,
+        expected_size: int | None = None,
+        key_prefix: str = "key",
+    ):
         super().__init__()
         final_entries = OrderedDict()
         actual_size = None
@@ -221,7 +268,9 @@ class MetaDataDict(OrderedDict):
                 actual_size = 0
             else:
                 if not isinstance(expected_size, int) or expected_size < 0:
-                    raise ValueError("expected_size must be a non-negative integer when entries is None")
+                    raise ValueError(
+                        "expected_size must be a non-negative integer when entries is None"
+                    )
                 for i in range(expected_size):
                     final_entries[f"{key_prefix}{i}"] = MetaData()
                 actual_size = expected_size
@@ -242,14 +291,20 @@ class MetaDataDict(OrderedDict):
             elif all(isinstance(e, (dict, MetaData)) for e in entries):
                 for i, entry in enumerate(entries):
                     key = f"{key_prefix}{i}"
-                    final_entries[key] = MetaData(**entry) if isinstance(entry, dict) else entry
+                    final_entries[key] = (
+                        MetaData(**entry) if isinstance(entry, dict) else entry
+                    )
             else:
-                raise TypeError("List entries must be all strings or all dict/MetaData objects.")
+                raise TypeError(
+                    "List entries must be all strings or all dict/MetaData objects."
+                )
 
         elif isinstance(entries, (dict, OrderedDict)):
             actual_size = len(entries)
             for key, entry in entries.items():
-                final_entries[key] = MetaData(**entry) if isinstance(entry, dict) else entry
+                final_entries[key] = (
+                    MetaData(**entry) if isinstance(entry, dict) else entry
+                )
             # Dict insertion order is guaranteed in Python 3.7+ as part of language spec.
             # For Python 3.6 or lower, explicitly suggest OrderedDict if order matters.
             if isinstance(entries, dict) and sys.version_info < (3, 7):
@@ -270,11 +325,12 @@ class MetaDataDict(OrderedDict):
 
         # --- Size validation ---
         if expected_size is not None and actual_size != expected_size:
-            raise ValueError(f"Number of entries ({actual_size}) does not match expected size ({expected_size}).")
+            raise ValueError(
+                f"Number of entries ({actual_size}) does not match expected size ({expected_size})."
+            )
 
         # Populate self
         self.update(final_entries)
-
 
     @property
     def names(self):
@@ -308,7 +364,9 @@ class MetaDataDict(OrderedDict):
     @classmethod
     def from_series(cls, collection):
         if isinstance(collection, (list, tuple)):
-            return cls({f'key{i}': MetaData.from_series(s) for i, s in enumerate(collection)})
+            return cls(
+                {f"key{i}": MetaData.from_series(s) for i, s in enumerate(collection)}
+            )
         elif isinstance(collection, dict):
             return cls({k: MetaData.from_series(s) for k, s in collection.items()})
         else:
@@ -329,7 +387,7 @@ class MetaDataDict(OrderedDict):
             return result
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
-        if method != '__call__':
+        if method != "__call__":
             return NotImplemented
         keys = self.keys()
         result = {}
@@ -344,20 +402,41 @@ class MetaDataDict(OrderedDict):
             result[key] = ufunc(*args, **ufunc_kwargs)
         return self.__class__(result)
 
-    def __abs__(self):             return np.abs(self)
-    def __neg__(self):             return np.negative(self)
-    def __pos__(self):             return np.positive(self)
-    def __add__(self, other):      return self._binary_op(other, np.add)
-    def __sub__(self, other):      return self._binary_op(other, np.subtract)
-    def __mul__(self, other):      return self._binary_op(other, np.multiply)
-    def __truediv__(self, other):  return self._binary_op(other, np.divide)
-    def __pow__(self, other):      return self._binary_op(other, np.power)
-    def __radd__(self, other):     return self.__add__(other)
-    def __rsub__(self, other):     return self.__sub__(other)
-    def __rmul__(self, other):     return self.__mul__(other)
-    def __rtruediv__(self, other): return self.__truediv__(other)
+    def __abs__(self):
+        return np.abs(self)
 
+    def __neg__(self):
+        return np.negative(self)
 
+    def __pos__(self):
+        return np.positive(self)
+
+    def __add__(self, other):
+        return self._binary_op(other, np.add)
+
+    def __sub__(self, other):
+        return self._binary_op(other, np.subtract)
+
+    def __mul__(self, other):
+        return self._binary_op(other, np.multiply)
+
+    def __truediv__(self, other):
+        return self._binary_op(other, np.divide)
+
+    def __pow__(self, other):
+        return self._binary_op(other, np.power)
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __rsub__(self, other):
+        return self.__sub__(other)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __rtruediv__(self, other):
+        return self.__truediv__(other)
 
     def __str__(self):
         return self.to_dataframe().to_string()
@@ -393,7 +472,11 @@ class MetaDataMatrix(np.ndarray):
         if input_array is None:
             if shape is None:
                 raise ValueError("Must provide either input_array or shape")
-            default = default if isinstance(default, MetaData) else MetaData(**(default or {}))
+            default = (
+                default
+                if isinstance(default, MetaData)
+                else MetaData(**(default or {}))
+            )
             input_array = np.full(shape, default, dtype=object)
 
         obj = np.asarray(input_array, dtype=object).copy().view(cls)
@@ -422,12 +505,16 @@ class MetaDataMatrix(np.ndarray):
 
         return obj
 
-    def __init__(self, input_array=None, shape=None, default=None,
-                 row_keys=None, col_keys=None):
+    def __init__(
+        self, input_array=None, shape=None, default=None, row_keys=None, col_keys=None
+    ):
         N, M = self.shape
-        self.row_keys = list(row_keys) if row_keys is not None else [f"row{i}" for i in range(N)]
-        self.col_keys = list(col_keys) if col_keys is not None else [f"col{j}" for j in range(M)]
-
+        self.row_keys = (
+            list(row_keys) if row_keys is not None else [f"row{i}" for i in range(N)]
+        )
+        self.col_keys = (
+            list(col_keys) if col_keys is not None else [f"col{j}" for j in range(M)]
+        )
 
     def fill(self, value):
         """
@@ -493,10 +580,14 @@ class MetaDataMatrix(np.ndarray):
 
     def to_dataframe(self):
         rows, cols = self.shape
-        data = [{**dict(meta),            # expand MetaData to dict
-                 "row": idx // cols,      # row index
-                 "col": idx %  cols       # column index
-                } for idx, meta in enumerate(self.flat)]
+        data = [
+            {
+                **dict(meta),  # expand MetaData to dict
+                "row": idx // cols,  # row index
+                "col": idx % cols,  # column index
+            }
+            for idx, meta in enumerate(self.flat)
+        ]
 
         if pd is None:
             raise ImportError("pandas is required for to_dataframe()")
@@ -542,26 +633,51 @@ class MetaDataMatrix(np.ndarray):
 
         arr_inputs = [_to_array(inp) for inp in inputs]
         if len({a.shape for a in arr_inputs}) != 1:
-            raise ValueError(f"Shape mismatch among operands: {[a.shape for a in arr_inputs]}")
+            raise ValueError(
+                f"Shape mismatch among operands: {[a.shape for a in arr_inputs]}"
+            )
 
-        ufunc_kwargs = {k: v for k, v in kwargs.items() if k not in ('out', 'where')}
+        ufunc_kwargs = {k: v for k, v in kwargs.items() if k not in ("out", "where")}
 
-        apply_elem = np.vectorize(lambda *args: ufunc(*args, **ufunc_kwargs), otypes=[object])
+        apply_elem = np.vectorize(
+            lambda *args: ufunc(*args, **ufunc_kwargs), otypes=[object]
+        )
         result = apply_elem(*arr_inputs)  # shape (N, M)
         return MetaDataMatrix(result)
 
-    def __mul__(self, other):      return np.multiply(self, other)
-    def __rmul__(self, other):     return np.multiply(other, self)
-    def __add__(self, other):      return np.add(self, other)
-    def __radd__(self, other):     return np.add(other, self)
-    def __sub__(self, other):      return np.subtract(self, other)
-    def __rsub__(self, other):     return np.subtract(other, self)
-    def __truediv__(self, other):  return np.divide(self, other)
-    def __rtruediv__(self, other): return np.divide(other, self)
-    def __pow__(self, exponent):   return np.power(self, exponent)
+    def __mul__(self, other):
+        return np.multiply(self, other)
 
-    def __repr__(self):       return f"MetaDataMatrix(shape={self.shape})"
-    def _repr_html_(self):    return self.to_dataframe().to_html()
+    def __rmul__(self, other):
+        return np.multiply(other, self)
+
+    def __add__(self, other):
+        return np.add(self, other)
+
+    def __radd__(self, other):
+        return np.add(other, self)
+
+    def __sub__(self, other):
+        return np.subtract(self, other)
+
+    def __rsub__(self, other):
+        return np.subtract(other, self)
+
+    def __truediv__(self, other):
+        return np.divide(self, other)
+
+    def __rtruediv__(self, other):
+        return np.divide(other, self)
+
+    def __pow__(self, exponent):
+        return np.power(self, exponent)
+
+    def __repr__(self):
+        return f"MetaDataMatrix(shape={self.shape})"
+
+    def _repr_html_(self):
+        return self.to_dataframe().to_html()
+
     def __str__(self):
         df = self.to_dataframe()
         if "unit" in df.columns:
@@ -573,19 +689,26 @@ class MetaDataMatrix(np.ndarray):
 # Utirity Functions
 # =============================
 
+
 def get_unit(obj):
     if isinstance(obj, (int, float, complex, np.number)):
         return u.dimensionless_unscaled
     elif isinstance(obj, u.UnitBase):
         return obj
-    elif isinstance(obj, (u.Quantity, Array, Series, TimeSeries, FrequencySeries, MetaData) ):
+    elif isinstance(
+        obj, (u.Quantity, Array, Series, TimeSeries, FrequencySeries, MetaData)
+    ):
         return obj.unit
     elif hasattr(obj, "unit"):
         try:
             return Unit(obj.unit)
         except (ValueError, TypeError):
-            warnings.warn(f"Cannot interpret .unit from {type(obj)}: {obj.unit} - treating as dimensionless")
+            warnings.warn(
+                f"Cannot interpret .unit from {type(obj)}: {obj.unit} - treating as dimensionless"
+            )
             return u.dimensionless_unscaled
 
-    warnings.warn(f"Cannot extract unit from object of type {type(obj)} - treating as dimensionless")
+    warnings.warn(
+        f"Cannot extract unit from object of type {type(obj)} - treating as dimensionless"
+    )
     return u.dimensionless_unscaled

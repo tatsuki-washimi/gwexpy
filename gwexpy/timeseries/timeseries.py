@@ -14,45 +14,47 @@ This module integrates all Mixins into a single TimeSeries class.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 import numpy as np
 from astropy import units as u
-from typing import Optional, Any
+from numpy.typing import ArrayLike
+
+from gwexpy.fitting.mixin import FittingMixin
+from gwexpy.types.mixin import PhaseMethodsMixin, RegularityMixin, SignalAnalysisMixin
+
+from ._analysis import TimeSeriesAnalysisMixin
+from ._interop import TimeSeriesInteropMixin
+from ._resampling import TimeSeriesResamplingMixin
+from ._signal import TimeSeriesSignalMixin
 
 # Import Mixins
 from ._spectral import TimeSeriesSpectralMixin
-from ._signal import TimeSeriesSignalMixin
-from ._resampling import TimeSeriesResamplingMixin
-from ._analysis import TimeSeriesAnalysisMixin
-from ._interop import TimeSeriesInteropMixin
 from ._statistics import StatisticsMixin
-from gwexpy.fitting.mixin import FittingMixin
-from gwexpy.types.mixin import (
-    RegularityMixin,
-    PhaseMethodsMixin,
-    SignalAnalysisMixin
-)
 
 # Import legacy for remaining methods
 from ._timeseries_legacy import TimeSeries as _LegacyTimeSeries
 
+if TYPE_CHECKING:
+    from gwpy.plot import Plot
+    from gwpy.timeseries import TimeSeries as GwpyTimeSeries
+
+    from gwexpy.timeseries import TimeSeriesDict
+
 
 class TimeSeries(
-    TimeSeriesInteropMixin,    # Interoperability (highest priority)
-    TimeSeriesAnalysisMixin,   # Analysis
-    TimeSeriesResamplingMixin, # Resampling
-    TimeSeriesSignalMixin,     # Signal processing
-    SignalAnalysisMixin,       # Generic Signal Analysis (smooth, find_peaks)
-    TimeSeriesSpectralMixin,   # Spectral transforms
-    StatisticsMixin,           # Statistical analysis & correlation
-    FittingMixin,              # Fitting functionality
-    PhaseMethodsMixin,         # Phase/Angle methods (radian, degree, phase, angle)
-    RegularityMixin,           # Regularity checking (is_regular, _check_regular)
-    _LegacyTimeSeries,         # All legacy methods including BaseTimeSeries
+    TimeSeriesInteropMixin,  # Interoperability (highest priority)
+    TimeSeriesAnalysisMixin,  # Analysis
+    TimeSeriesResamplingMixin,  # Resampling
+    TimeSeriesSignalMixin,  # Signal processing
+    SignalAnalysisMixin,  # Generic Signal Analysis (smooth, find_peaks)
+    TimeSeriesSpectralMixin,  # Spectral transforms
+    StatisticsMixin,  # Statistical analysis & correlation
+    FittingMixin,  # Fitting functionality
+    PhaseMethodsMixin,  # Phase/Angle methods (radian, degree, phase, angle)
+    RegularityMixin,  # Regularity checking (is_regular, _check_regular)
+    _LegacyTimeSeries,  # All legacy methods including BaseTimeSeries
 ):
-
-
-
-
     """
     Extended TimeSeries with all gwexpy functionality.
 
@@ -66,19 +68,20 @@ class TimeSeries(
     Inherits from gwpy.timeseries.TimeSeries for full compatibility.
     """
 
-    def _get_meta_for_constructor(self):
+    def _get_meta_for_constructor(self) -> dict[str, Any]:
         """Helper for SignalAnalysisMixin to reconstruct object."""
         return {
             "t0": self.t0,
             "dt": self.dt,
         }
 
-    def plot(self, **kwargs: Any):
+    def plot(self, **kwargs: Any) -> Plot:
         """Plot this TimeSeries. Delegates to gwexpy.plot.Plot."""
         from gwexpy.plot import Plot
+
         return Plot(self, **kwargs)
 
-    def __new__(cls, data, *args, **kwargs):
+    def __new__(cls, data: ArrayLike, *args: Any, **kwargs: Any) -> TimeSeries:
         from gwexpy.timeseries.utils import _coerce_t0_gps
 
         should_coerce = True
@@ -107,7 +110,7 @@ class TimeSeries(
     # (These take precedence over _LegacyTimeSeries versions)
     # ===============================
 
-    def tail(self, n: int = 5) -> "TimeSeries":
+    def tail(self, n: int | None = 5) -> TimeSeries:
         """Return the last `n` samples of this series."""
         if n is None:
             return self
@@ -116,39 +119,46 @@ class TimeSeries(
             return self[:0]
         return self[-n:]
 
-    def crop(self, start: Any = None, end: Any = None, copy: bool = False) -> "TimeSeries":
+    def crop(
+        self, start: Any | None = None, end: Any | None = None, copy: bool = False
+    ) -> TimeSeries:
         """
         Crop this series to the given GPS start and end times.
         Accepts any time format supported by gwexpy.time.to_gps.
         """
         from gwexpy.time import to_gps
+
         if start is not None:
-             start = to_gps(start)
-             if isinstance(start, (np.ndarray, list)) and np.ndim(start) > 0:
-                 start = start[0]
-             start = float(start)
+            start = to_gps(start)
+            if isinstance(start, (np.ndarray, list)) and np.ndim(start) > 0:
+                start = start[0]
+            start = float(start)
         if end is not None:
-             end = to_gps(end)
-             if isinstance(end, (np.ndarray, list)) and np.ndim(end) > 0:
-                 end = end[0]
-             end = float(end)
+            end = to_gps(end)
+            if isinstance(end, (np.ndarray, list)) and np.ndim(end) > 0:
+                end = end[0]
+            end = float(end)
 
         from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
         return BaseTimeSeries.crop(self, start=start, end=end, copy=copy)
 
     def append(
         self,
-        other: Any,
+        other: ArrayLike | GwpyTimeSeries,
         inplace: bool = True,
         pad: Any = None,
         gap: Any = None,
         resize: bool = True,
-    ) -> "TimeSeries":
+    ) -> TimeSeries:
         """
         Append another TimeSeries (GWpy-compatible), returning gwexpy TimeSeries.
         """
         from gwpy.timeseries import TimeSeries as BaseTimeSeries
-        res = BaseTimeSeries.append(self, other, inplace=inplace, pad=pad, gap=gap, resize=resize)
+
+        res = BaseTimeSeries.append(
+            self, other, inplace=inplace, pad=pad, gap=gap, resize=resize
+        )
         if inplace:
             return self
         if isinstance(res, self.__class__):
@@ -161,17 +171,17 @@ class TimeSeries(
             channel=getattr(res, "channel", None),
         )
 
-    def find_peaks(
+    def find_peaks(  # type: ignore[override]
         self,
-        height: Any = None,
-        threshold: Any = None,
-        distance: Any = None,
-        prominence: Any = None,
-        width: Any = None,
-        wlen: Optional[int] = None,
+        height: ArrayLike | u.Quantity | None = None,
+        threshold: ArrayLike | u.Quantity | None = None,
+        distance: float | u.Quantity | None = None,
+        prominence: ArrayLike | u.Quantity | None = None,
+        width: ArrayLike | u.Quantity | None = None,
+        wlen: int | None = None,
         rel_height: float = 0.5,
-        plateau_size: Any = None,
-    ) -> tuple["TimeSeries", dict[str, Any]]:
+        plateau_size: ArrayLike | None = None,
+    ) -> tuple[TimeSeries, dict[str, Any]]:
         """
         Find peaks in the TimeSeries.
 
@@ -189,11 +199,11 @@ class TimeSeries(
         val = self.value
 
         def _to_val(x, unit=None):
-             if hasattr(x, "value"):
-                  if unit and hasattr(x, "to"):
-                      return x.to(unit).value
-                  return x.value
-             return x
+            if hasattr(x, "value"):
+                if unit and hasattr(x, "to"):
+                    return x.to(unit).value
+                return x.value
+            return x
 
         h = _to_val(height, self.unit)
         t = _to_val(threshold, self.unit)
@@ -203,50 +213,57 @@ class TimeSeries(
         wid = width
 
         if self.dt is not None:
-             fs = self.sample_rate.to("Hz").value
-             if hasattr(dist, "to"):
-                  dist = int(dist.to("s").value * fs)
+            fs = self.sample_rate.to("Hz").value
+            if dist is not None and hasattr(dist, "to"):
+                dist = int(dist.to("s").value * fs)
 
-             if np.iterable(wid):
-                  new_wid = []
-                  for w in wid:
-                       if hasattr(w, "to"):
-                            new_wid.append(w.to("s").value * fs)
-                       else:
-                            new_wid.append(w)
-                  wid = tuple(new_wid) if isinstance(wid, tuple) else new_wid
-             elif hasattr(wid, "to"):
-                  wid = wid.to("s").value * fs
+            if np.iterable(wid):
+                new_wid = []
+                for w in wid:
+                    if hasattr(w, "to"):
+                        new_wid.append(w.to("s").value * fs)
+                    else:
+                        new_wid.append(w)
+                wid = tuple(new_wid) if isinstance(wid, tuple) else new_wid
+            elif wid is not None and hasattr(wid, "to"):
+                wid = wid.to("s").value * fs
 
         peaks_indices, props = find_peaks(
-             val,
-             height=h,
-             threshold=t,
-             distance=dist,
-             prominence=p,
-             width=wid,
-             wlen=wlen,
-             rel_height=rel_height,
-             plateau_size=plateau_size
+            val,
+            height=h,
+            threshold=t,
+            distance=dist,
+            prominence=p,
+            width=wid,
+            wlen=wlen,
+            rel_height=rel_height,
+            plateau_size=plateau_size,
         )
 
         if len(peaks_indices) == 0:
-             return self.__class__([], times=[], unit=self.unit, name=self.name, channel=self.channel), props
+            return self.__class__(
+                [], times=[], unit=self.unit, name=self.name, channel=self.channel
+            ), props
 
         peak_times = self.times[peaks_indices]
         peak_vals = val[peaks_indices]
 
         out = self.__class__(
-             peak_vals,
-             times=peak_times,
-             unit=self.unit,
-             name=f"{self.name}_peaks" if self.name else "peaks",
-             channel=self.channel
+            peak_vals,
+            times=peak_times,
+            unit=self.unit,
+            name=f"{self.name}_peaks" if self.name else "peaks",
+            channel=self.channel,
         )
         return out, props
 
-
-    def to_simpeg(self, location=None, rx_type="PointElectricField", orientation='x', **kwargs) -> Any:
+    def to_simpeg(
+        self,
+        location: ArrayLike | None = None,
+        rx_type: str = "PointElectricField",
+        orientation: str = "x",
+        **kwargs: Any,
+    ) -> Any:
         """
         Convert to SimPEG Data object.
 
@@ -264,10 +281,13 @@ class TimeSeries(
         simpeg.data.Data
         """
         from gwexpy.interop import to_simpeg
-        return to_simpeg(self, location=location, rx_type=rx_type, orientation=orientation, **kwargs)
+
+        return to_simpeg(
+            self, location=location, rx_type=rx_type, orientation=orientation, **kwargs
+        )
 
     @classmethod
-    def from_simpeg(cls, data_obj: Any, **kwargs: Any) -> Any:
+    def from_simpeg(cls, data_obj: Any, **kwargs: Any) -> TimeSeries:
         """
         Create TimeSeries from SimPEG Data object.
 
@@ -281,10 +301,11 @@ class TimeSeries(
         TimeSeries
         """
         from gwexpy.interop import from_simpeg
+
         return from_simpeg(cls, data_obj, **kwargs)
 
     @classmethod
-    def from_control(cls, response: Any, **kwargs) -> Any:
+    def from_control(cls, response: Any, **kwargs: Any) -> TimeSeries | TimeSeriesDict:
         """
         Create TimeSeries from python-control TimeResponseData.
 
@@ -301,6 +322,7 @@ class TimeSeries(
             The converted time-domain data.
         """
         from gwexpy.interop import from_control_response
+
         return from_control_response(cls, response, **kwargs)
 
     # =========================================================================
@@ -309,12 +331,12 @@ class TimeSeries(
 
     def arima(
         self,
-        order: tuple = (1, 0, 0),
+        order: tuple[int, int, int] = (1, 0, 0),
         *,
-        seasonal_order: Optional[tuple] = None,
+        seasonal_order: tuple[int, int, int, int] | None = None,
         auto: bool = False,
-        **kwargs
-    ):
+        **kwargs: Any,
+    ) -> Any:
         """
         Fit an ARIMA or SARIMAX model to this TimeSeries.
 
@@ -338,27 +360,31 @@ class TimeSeries(
             Object containing the fitted model, with methods .predict(), .forecast(), .plot().
         """
         from .arima import fit_arima
-        return fit_arima(self, order=order, seasonal_order=seasonal_order, auto=auto, **kwargs)
 
-    def ar(self, p: int = 1, **kwargs):
+        return fit_arima(
+            self, order=order, seasonal_order=seasonal_order, auto=auto, **kwargs
+        )
+
+    def ar(self, p: int = 1, **kwargs: Any) -> Any:
         """
         Fit an AutoRegressive AR(p) model.
         Shortcut for .arima(order=(p, 0, 0)).
         """
         return self.arima(order=(p, 0, 0), **kwargs)
 
-    def ma(self, q: int = 1, **kwargs):
+    def ma(self, q: int = 1, **kwargs: Any) -> Any:
         """
         Fit a Moving Average MA(q) model.
         Shortcut for .arima(order=(0, 0, q)).
         """
         return self.arima(order=(0, 0, q), **kwargs)
 
-    def arma(self, p: int = 1, q: int = 1, **kwargs):
+    def arma(self, p: int = 1, q: int = 1, **kwargs: Any) -> Any:
         """
         Fit an ARMA(p, q) model.
         Shortcut for .arima(order=(p, 0, q)).
         """
         return self.arima(order=(p, 0, q), **kwargs)
+
 
 __all__ = ["TimeSeries"]

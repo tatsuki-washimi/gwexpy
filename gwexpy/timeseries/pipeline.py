@@ -1,21 +1,22 @@
 import copy
-from typing import List, Sequence, Tuple, Dict, Any, Optional
+from collections.abc import Sequence
+from typing import Any
 
 import numpy as np
 from astropy import units as u
 
-from .timeseries import TimeSeries
 from .collections import TimeSeriesDict, TimeSeriesList
-from .matrix import TimeSeriesMatrix
-from .preprocess import impute_timeseries, whiten_matrix, WhiteningModel
 from .decomposition import (
-    pca_fit,
-    pca_transform,
-    pca_inverse_transform,
     ica_fit,
-    ica_transform,
     ica_inverse_transform,
+    ica_transform,
+    pca_fit,
+    pca_inverse_transform,
+    pca_transform,
 )
+from .matrix import TimeSeriesMatrix
+from .preprocess import WhiteningModel, impute_timeseries, whiten_matrix
+from .timeseries import TimeSeries
 
 
 def _is_collection(x):
@@ -66,7 +67,9 @@ class Transform:
 
     def inverse_transform(self, y):
         """Reverse the transform. Not all transforms support this."""
-        raise NotImplementedError("inverse_transform is not implemented for this transform")
+        raise NotImplementedError(
+            "inverse_transform is not implemented for this transform"
+        )
 
 
 class Pipeline:
@@ -74,7 +77,7 @@ class Pipeline:
     Sequentially apply a list of transforms.
     """
 
-    def __init__(self, steps: Sequence[Tuple[str, Transform]]):
+    def __init__(self, steps: Sequence[tuple[str, Transform]]):
         """Initialize pipeline with named transform steps.
 
         Parameters
@@ -82,7 +85,7 @@ class Pipeline:
         steps : list of (name, Transform) tuples
             Sequence of transforms to apply.
         """
-        self.steps: List[Tuple[str, Transform]] = []
+        self.steps: list[tuple[str, Transform]] = []
         for name, step in steps:
             if not isinstance(step, Transform):
                 raise TypeError(f"Step '{name}' must be a Transform")
@@ -125,7 +128,9 @@ class Pipeline:
                 data = step.inverse_transform(data)
             else:
                 if strict:
-                    raise ValueError(f"Step '{name}' does not support inverse_transform")
+                    raise ValueError(
+                        f"Step '{name}' does not support inverse_transform"
+                    )
         return data
 
 
@@ -174,7 +179,7 @@ class StandardizeTransform(Transform):
         self.axis = axis
         self.multivariate = multivariate
         self.align = align
-        self.params: Optional[Dict[str, Any]] = None
+        self.params: dict[str, Any] | None = None
 
     def _compute_stats_ts(self, ts: TimeSeries):
         if self.method == "robust":
@@ -192,7 +197,9 @@ class StandardizeTransform(Transform):
         np_axis = -1 if self.axis == "time" else (0, 1)
         if self.method == "robust":
             center = np.nanmedian(val, axis=np_axis, keepdims=True)
-            scale = 1.4826 * np.nanmedian(np.abs(val - center), axis=np_axis, keepdims=True)
+            scale = 1.4826 * np.nanmedian(
+                np.abs(val - center), axis=np_axis, keepdims=True
+            )
         else:
             center = np.nanmean(val, axis=np_axis, keepdims=True)
             scale = np.nanstd(val, axis=np_axis, ddof=self.ddof, keepdims=True)
@@ -200,7 +207,11 @@ class StandardizeTransform(Transform):
         return center, scale
 
     def fit(self, x):
-        data, original = _to_matrix_from_collection(x, align=self.align) if self.multivariate else (x, None)
+        data, original = (
+            _to_matrix_from_collection(x, align=self.align)
+            if self.multivariate
+            else (x, None)
+        )
         if isinstance(data, TimeSeries):
             center, scale = self._compute_stats_ts(data)
             self.params = {"type": "ts", "center": center, "scale": scale, "meta": data}
@@ -244,13 +255,21 @@ class StandardizeTransform(Transform):
             self.fit(x)
 
         params = copy.deepcopy(self.params)
-        data, original = _to_matrix_from_collection(x, align=self.align) if self.multivariate else (x, None)
+        data, original = (
+            _to_matrix_from_collection(x, align=self.align)
+            if self.multivariate
+            else (x, None)
+        )
 
         if params["type"] == "ts" and isinstance(data, TimeSeries):
             return self._apply_ts(data, params["center"], params["scale"])
         if params["type"] == "matrix" and isinstance(data, TimeSeriesMatrix):
             result = self._apply_matrix(data, params["center"], params["scale"])
-            return _restore_collection(result, params.get("collection")) if self.multivariate else result
+            return (
+                _restore_collection(result, params.get("collection"))
+                if self.multivariate
+                else result
+            )
         if params["type"] == "dict" and isinstance(data, TimeSeriesDict):
             out = data.__class__()
             for k, ts in data.items():
@@ -268,7 +287,9 @@ class StandardizeTransform(Transform):
                 out_list.append(self._apply_ts(ts, center, scale))
             return out_list
 
-        raise TypeError(f"Incompatible input for StandardizeTransform.transform: {type(data)}")
+        raise TypeError(
+            f"Incompatible input for StandardizeTransform.transform: {type(data)}"
+        )
 
     def inverse_transform(self, y):
         if self.params is None:
@@ -286,12 +307,18 @@ class StandardizeTransform(Transform):
             val = data.value * scale + center
             new_mat = data.copy()
             new_mat.value[:] = val
-            return _restore_collection(new_mat, params.get("collection")) if self.multivariate else new_mat
+            return (
+                _restore_collection(new_mat, params.get("collection"))
+                if self.multivariate
+                else new_mat
+            )
         if params["type"] == "dict" and isinstance(data, TimeSeriesDict):
             out = data.__class__()
             for k, ts in data.items():
                 if k not in params["stats"]:
-                    raise KeyError(f"Key '{k}' not present in fitted StandardizeTransform stats.")
+                    raise KeyError(
+                        f"Key '{k}' not present in fitted StandardizeTransform stats."
+                    )
                 center, scale = params["stats"][k]
                 new_ts = ts.copy()
                 new_ts.value[:] = ts.value * scale + center
@@ -308,7 +335,9 @@ class StandardizeTransform(Transform):
                 out_list.append(new_ts)
             return out_list
 
-        raise TypeError(f"Incompatible input for StandardizeTransform.inverse_transform: {type(data)}")
+        raise TypeError(
+            f"Incompatible input for StandardizeTransform.inverse_transform: {type(data)}"
+        )
 
 
 class WhitenTransform(Transform):
@@ -322,7 +351,7 @@ class WhitenTransform(Transform):
         self,
         method: str = "pca",
         eps: float = 1e-12,
-        n_components: Optional[int] = None,
+        n_components: int | None = None,
         *,
         multivariate: bool = True,
         align: str = "intersection",
@@ -333,8 +362,8 @@ class WhitenTransform(Transform):
         self.n_components = n_components
         self.multivariate = multivariate
         self.align = align
-        self.model: Optional[WhiteningModel] = None
-        self._channel_names: Optional[List[str]] = None
+        self.model: WhiteningModel | None = None
+        self._channel_names: list[str] | None = None
 
     def _to_matrix(self, x):
         if isinstance(x, TimeSeriesMatrix):
@@ -352,10 +381,16 @@ class WhitenTransform(Transform):
         original = None
         if self.multivariate:
             mat_data, original = _to_matrix_from_collection(x, align=self.align)
-        mat_data, orig2 = (mat_data, None) if isinstance(mat_data, TimeSeriesMatrix) else self._to_matrix(mat_data)
+        mat_data, orig2 = (
+            (mat_data, None)
+            if isinstance(mat_data, TimeSeriesMatrix)
+            else self._to_matrix(mat_data)
+        )
         original = original or orig2
 
-        whitened, model = whiten_matrix(mat_data, method=self.method, eps=self.eps, n_components=self.n_components)
+        whitened, model = whiten_matrix(
+            mat_data, method=self.method, eps=self.eps, n_components=self.n_components
+        )
         self.model = model
         self._channel_names = getattr(whitened, "channel_names", None)
         self._original_collection = original
@@ -369,7 +404,11 @@ class WhitenTransform(Transform):
         original = None
         if self.multivariate:
             mat_data, original = _to_matrix_from_collection(x, align=self.align)
-        mat_data, orig2 = (mat_data, None) if isinstance(mat_data, TimeSeriesMatrix) else self._to_matrix(mat_data)
+        mat_data, orig2 = (
+            (mat_data, None)
+            if isinstance(mat_data, TimeSeriesMatrix)
+            else self._to_matrix(mat_data)
+        )
         original = original or orig2
 
         X = mat_data.value.reshape(-1, mat_data.shape[-1]).T  # (time, features)
@@ -384,9 +423,15 @@ class WhitenTransform(Transform):
     def inverse_transform(self, y):
         if self.model is None:
             raise ValueError("WhitenTransform has not been fitted.")
-        mat_data, original = _to_matrix_from_collection(y, align=self.align) if self.multivariate else (y, None)
+        mat_data, original = (
+            _to_matrix_from_collection(y, align=self.align)
+            if self.multivariate
+            else (y, None)
+        )
         if not isinstance(mat_data, TimeSeriesMatrix):
-            raise TypeError("inverse_transform expects TimeSeriesMatrix-compatible input.")
+            raise TypeError(
+                "inverse_transform expects TimeSeriesMatrix-compatible input."
+            )
         X_w = mat_data.value.reshape(-1, mat_data.shape[-1]).T
         X_rec = self.model.inverse_transform(X_w)
         X_rec = X_rec.T[:, None, :]
@@ -403,7 +448,7 @@ class PCATransform(Transform):
 
     def __init__(
         self,
-        n_components: Optional[int] = None,
+        n_components: int | None = None,
         *,
         multivariate: bool = True,
         align: str = "intersection",
@@ -423,12 +468,16 @@ class PCATransform(Transform):
         if _is_collection(x):
             mat, original = _to_matrix_from_collection(x, align=self.align)
             return mat, original
-        raise TypeError("PCATransform expects TimeSeriesMatrix or collection convertible to matrix.")
+        raise TypeError(
+            "PCATransform expects TimeSeriesMatrix or collection convertible to matrix."
+        )
 
     def fit(self, x):
         mat, collection = self._ensure_matrix(x) if self.multivariate else (x, None)
         if not isinstance(mat, TimeSeriesMatrix):
-            raise TypeError("PCATransform requires TimeSeriesMatrix when multivariate=False.")
+            raise TypeError(
+                "PCATransform requires TimeSeriesMatrix when multivariate=False."
+            )
         self.model = pca_fit(mat, n_components=self.n_components, **self.kwargs)
         self._collection = collection
         return self
@@ -447,7 +496,9 @@ class PCATransform(Transform):
             raise ValueError("PCATransform has not been fitted.")
         mat, collection = self._ensure_matrix(y) if self.multivariate else (y, None)
         if not isinstance(mat, TimeSeriesMatrix):
-            raise TypeError("PCATransform inverse_transform expects TimeSeriesMatrix input.")
+            raise TypeError(
+                "PCATransform inverse_transform expects TimeSeriesMatrix input."
+            )
         rec = pca_inverse_transform(self.model, mat)
         return _restore_collection(rec, collection if self.multivariate else None)
 
@@ -461,7 +512,7 @@ class ICATransform(Transform):
 
     def __init__(
         self,
-        n_components: Optional[int] = None,
+        n_components: int | None = None,
         *,
         multivariate: bool = True,
         align: str = "intersection",
@@ -481,12 +532,16 @@ class ICATransform(Transform):
         if _is_collection(x):
             mat, original = _to_matrix_from_collection(x, align=self.align)
             return mat, original
-        raise TypeError("ICATransform expects TimeSeriesMatrix or collection convertible to matrix.")
+        raise TypeError(
+            "ICATransform expects TimeSeriesMatrix or collection convertible to matrix."
+        )
 
     def fit(self, x):
         mat, collection = self._ensure_matrix(x) if self.multivariate else (x, None)
         if not isinstance(mat, TimeSeriesMatrix):
-            raise TypeError("ICATransform requires TimeSeriesMatrix when multivariate=False.")
+            raise TypeError(
+                "ICATransform requires TimeSeriesMatrix when multivariate=False."
+            )
         self.model = ica_fit(mat, n_components=self.n_components, **self.kwargs)
         self._collection = collection
         return self
@@ -505,6 +560,8 @@ class ICATransform(Transform):
             raise ValueError("ICATransform has not been fitted.")
         mat, collection = self._ensure_matrix(y) if self.multivariate else (y, None)
         if not isinstance(mat, TimeSeriesMatrix):
-            raise TypeError("ICATransform inverse_transform expects TimeSeriesMatrix input.")
+            raise TypeError(
+                "ICATransform inverse_transform expects TimeSeriesMatrix input."
+            )
         rec = ica_inverse_transform(self.model, mat)
         return _restore_collection(rec, collection if self.multivariate else None)

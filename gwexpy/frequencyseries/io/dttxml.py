@@ -5,10 +5,13 @@ Frequency-domain dttxml reader.
 from __future__ import annotations
 
 import numpy as np
-
 from gwpy.io import registry as io_registry
 
-from gwexpy.io.dttxml_common import SUPPORTED_FREQ, SUPPORTED_MATRIX, load_dttxml_products
+from gwexpy.io.dttxml_common import (
+    SUPPORTED_FREQ,
+    SUPPORTED_MATRIX,
+    load_dttxml_products,
+)
 from gwexpy.io.utils import (
     apply_unit,
     datetime_to_gps,
@@ -17,6 +20,7 @@ from gwexpy.io.utils import (
     parse_timezone,
     set_provenance,
 )
+
 from ..frequencyseries import (
     FrequencySeries,
     FrequencySeriesDict,
@@ -32,6 +36,7 @@ def _build_epoch(value, timezone):
     tzinfo = parse_timezone(timezone) if timezone else None
     if tzinfo is None:
         from datetime import timezone as _timezone
+
         tzinfo = _timezone.utc
     return datetime_to_gps(ensure_datetime(value, tzinfo=tzinfo))
 
@@ -126,7 +131,9 @@ def read_frequencyseriesmatrix_dttxml(
             df = info["df"]
             break
     if freq_axis is None:
-        freq_axis = np.arange(len(next(iter(payload.values())).get("data", []))) * (df or 1.0)
+        freq_axis = np.arange(len(next(iter(payload.values())).get("data", []))) * (
+            df or 1.0
+        )
     nfreq = len(freq_axis)
     matrix = np.full((len(row_labels), len(col_labels), nfreq), np.nan, dtype=float)
     meta_unit = unit
@@ -142,7 +149,9 @@ def read_frequencyseriesmatrix_dttxml(
         if vector.size != nfreq:
             if vector.size and not freq_axis.size:
                 freq_axis = np.arange(vector.size)
-                matrix = np.full((len(row_labels), len(col_labels), vector.size), np.nan, dtype=float)
+                matrix = np.full(
+                    (len(row_labels), len(col_labels), vector.size), np.nan, dtype=float
+                )
                 nfreq = vector.size
             vector = np.resize(vector, nfreq)
         matrix[i, j] = vector
@@ -173,8 +182,12 @@ def read_frequencyseriesmatrix_dttxml(
 
 
 # -- registration
-io_registry.register_reader("dttxml", FrequencySeriesDict, read_frequencyseriesdict_dttxml, force=True)
-io_registry.register_reader("dttxml", FrequencySeriesMatrix, read_frequencyseriesmatrix_dttxml, force=True)
+io_registry.register_reader(
+    "dttxml", FrequencySeriesDict, read_frequencyseriesdict_dttxml, force=True
+)
+io_registry.register_reader(
+    "dttxml", FrequencySeriesMatrix, read_frequencyseriesmatrix_dttxml, force=True
+)
 
 
 def _adapt_frequencyseries(*args, **kwargs):
@@ -184,7 +197,13 @@ def _adapt_frequencyseries(*args, **kwargs):
     return fsd[next(iter(fsd.keys()))]
 
 
-io_registry.register_reader("dttxml", FrequencySeries, _adapt_frequencyseries, force=True)
+io_registry.register_reader(
+    "dttxml", FrequencySeries, _adapt_frequencyseries, force=True
+)
 
-io_registry.register_identifier("dttxml", FrequencySeries, lambda *args, **kwargs: str(args[1]).endswith(".xml"))
-io_registry.register_identifier("dttxml", FrequencySeriesDict, lambda *args, **kwargs: str(args[1]).endswith(".xml"))
+io_registry.register_identifier(
+    "dttxml", FrequencySeries, lambda *args, **kwargs: str(args[1]).endswith(".xml")
+)
+io_registry.register_identifier(
+    "dttxml", FrequencySeriesDict, lambda *args, **kwargs: str(args[1]).endswith(".xml")
+)
