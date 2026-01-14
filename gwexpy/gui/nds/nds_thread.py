@@ -52,26 +52,35 @@ class NDSThread(QtCore.QThread):
                         "step": 1.0 / b.channel.sample_rate,
                     }
 
-                # Emit data
-                print(f"DEBUG: NDSThread received {len(payload)} channels")
-                self.dataReceived.emit(payload, "raw", True)
+                # Emit data only if still running to avoid shutdown crashes
+                if self.running:
+                    self.dataReceived.emit(payload, "raw", True)
 
         except Exception as e:
-            print(f"NDSThread Error: {e}")
+            if self.running: # Only log if not intentional stop
+                print(f"NDSThread Error: {e}")
         finally:
             if self.conn:
                 try:
-                    self.conn.close()
+                    c = self.conn
+                    self.conn = None # Avoid double close
+                    c.close()
                 except Exception:
                     pass
             self.finished.emit()
 
     def stop(self):
         self.running = False
-        # nds2.iterate is blocking, so we might need to rely on the iterator checking
-        # or closing connection from outside if possible, but standard iteration usually checks flag.
-        # If it blocks indefinitely waiting for data, we might hang here.
-        # For Phase 1, we rely on the loop checking self.running after each buffer.
+        # nds2.iterate is blocking. Closing the connection from another thread
+        # is the standard way to unblock it in nds2-client.
+        if self.conn:
+            try:
+                # Assign to local to avoid race condition where self.conn is set to None by run()
+                c = self.conn
+                if c:
+                    c.close()
+            except Exception:
+                pass
 
 
 class ChannelListWorker(QtCore.QThread):

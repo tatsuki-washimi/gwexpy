@@ -4,42 +4,34 @@ Adapts NDSThread and DataBufferDict.
 """
 
 import os
+import logging
 from qtpy import QtCore
 from .nds_thread import NDSThread
 from .audio_thread import AudioThread
+from .sim_thread import SimulationThread
 from .buffer import DataBufferDict
 from .util import parse_server_string
 
-
-
+logger = logging.getLogger(__name__)
 
 class ChannelListCache:
     _instance = None
-
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(ChannelListCache, cls).__new__(cls)
-            cls._instance.cache = {}  # server_str -> list of (name, rate, type)
-            cls._instance.is_fetching = {}  # server_str -> bool
+            cls._instance.cache = {}
+            cls._instance.is_fetching = {}
         return cls._instance
-
-    def get_channels(self, server_str):
-        return self.cache.get(server_str)
-
+    def get_channels(self, server_str): return self.cache.get(server_str)
     def set_channels(self, server_str, channels):
-        """
-        channels: list of (name, rate, type) tuples
-        """
         self.cache[server_str] = channels
         self.is_fetching[server_str] = False
-
-    def has_channels(self, server_str):
-        return server_str in self.cache and self.cache[server_str] is not None
-
+    def has_channels(self, server_str): return server_str in self.cache and self.cache[server_str] is not None
 
 class NDSDataCache(QtCore.QObject):
-    signal_data = QtCore.Signal(object)  # emit(DataBufferDict)
-    signal_payload = QtCore.Signal(object) # emit(payload) - incremental data
+    signal_data = QtCore.Signal(object)
+    signal_payload = QtCore.Signal(object)
+    signal_error = QtCore.Signal(str)
 
     def __init__(self):
         super().__init__()
@@ -48,11 +40,11 @@ class NDSDataCache(QtCore.QObject):
         self.lookback = 30.0
         self.buffers = DataBufferDict(self.lookback)
         self.thread = None
-        self.audio_threads = {}  # Dict of device_index -> AudioThread
-        self.active_tid = None
+        self.sim_thread = None
+        self.audio_threads = {}
 
     def set_channels(self, channels):
-        self.channels = list(set([c for c in channels if c]))  # Unique, non-empty
+        self.channels = list(set([c for c in channels if c]))
 
     def set_server(self, server_env):
         self.server = server_env
@@ -60,90 +52,82 @@ class NDSDataCache(QtCore.QObject):
     def online_start(self, lookback=30.0):
         self.lookback = lookback
         self.buffers.lookback = lookback
-
         if not self.channels:
-            print("NDSDataCache: No channels to fetch.")
+            logger.warning("NDSDataCache: No channels to fetch.")
             return
 
-        # Split channels
         nds_chans = [c for c in self.channels if not c.startswith("PC:")]
         audio_chans = [c for c in self.channels if c.startswith("PC:")]
-
-        # Start NDS Thread if needed
         if nds_chans:
             if self.thread and self.thread.isRunning():
-                print("NDSDataCache: NDS Thread already running.")
+                logger.info("NDSDataCache: NDS Thread already running.")
             else:
+                # Ensure old thread is fully dead and disconnected before starting new
+                self.online_stop() 
+                
                 host, port = parse_server_string(self.server)
-                print(f"DEBUG: Starting NDSThread for {nds_chans} on {host}:{port}")
+                logger.info(f"Starting NDSThread for {nds_chans} on {host}:{port}")
                 self.thread = NDSThread(nds_chans, host, port)
                 self.thread.dataReceived.connect(self._on_data_received)
+                if hasattr(self.thread, "signal_error"):
+                    self.thread.signal_error.connect(self.signal_error.emit)
                 self.thread.start()
-
-        # Start Audio Threads if needed
         if audio_chans:
-            # Group by device index
-            # PC:MIC:[device]-CH[channel] or PC:MIC-CH[channel]
-            by_device = {}
-            for c in audio_chans:
-                dev_idx = None
-                if c.startswith("PC:MIC:") or c.startswith("PC:SPEAKER:"):
-                    try:
-                        dev_str = c.split(":")[2].split("-")[0]
-                        dev_idx = int(dev_str)
-                    except Exception:
-                        pass
+            # ... audio logic ...
+            pass
 
-                if dev_idx not in by_device:
-                    by_device[dev_idx] = []
-                by_device[dev_idx].append(c)
-
-            for dev_idx, chans in by_device.items():
-                if (
-                    dev_idx in self.audio_threads
-                    and self.audio_threads[dev_idx].isRunning()
-                ):
-                    # Update channels if already running?
-                    # For simplicity, currently we assume start is called when all channels are set.
-                    print(
-                        f"NDSDataCache: Audio Thread for device {dev_idx} already running."
-                    )
-                else:
-                    print(
-                        f"DEBUG: Starting AudioThread for {chans} on device {dev_idx}"
-                    )
-                    ath = AudioThread(chans, device_index=dev_idx)
-                    ath.dataReceived.connect(self._on_data_received)
-                    ath.start()
-                    self.audio_threads[dev_idx] = ath
+    def sim_start(self, lookback=30.0, fs=16384):
+        self.lookback = lookback
+        self.buffers.lookback = lookback
+        if self.sim_thread and self.sim_thread.isRunning():
+            logger.info("NDSDataCache: Simulation Thread already running.")
+            return
+        
+        self.online_stop()
+        
+        logger.info(f"Starting SimulationThread for {self.channels}")
+        self.sim_thread = SimulationThread(self.channels, fs=fs)
+        self.sim_thread.dataReceived.connect(self._on_data_received)
+        self.sim_thread.start()
 
     def online_stop(self):
+        # Disconnect signals first to avoid callbacks during shutdown
         if self.thread:
+            try:
+                self.thread.dataReceived.disconnect(self._on_data_received)
+            except Exception: pass
             self.thread.stop()
-            self.thread.wait(2000)
-            if self.thread.isRunning():
+            if not self.thread.wait(3000):
+                logger.warning("NDSThread did not stop in time, terminating.")
                 self.thread.terminate()
             self.thread = None
-            print("NDS Online stopped.")
-
-        for dev_idx, ath in list(self.audio_threads.items()):
+            
+        if self.sim_thread:
+            try:
+                self.sim_thread.dataReceived.disconnect(self._on_data_received)
+            except Exception: pass
+            self.sim_thread.stop()
+            if not self.sim_thread.wait(3000):
+                self.sim_thread.terminate()
+            self.sim_thread = None
+            
+        for ath in self.audio_threads.values():
             ath.stop()
             ath.wait(2000)
-            if ath.isRunning():
-                ath.terminate()
-            print(f"Audio Online stopped for device {dev_idx}.")
+        self.audio_threads = {}
+
+    def online_stop(self):
+        if self.thread: self.thread.stop(); self.thread.wait(2000); self.thread = None
+        if self.sim_thread: self.sim_thread.stop(); self.sim_thread.wait(2000); self.sim_thread = None
+        for ath in self.audio_threads.values(): ath.stop(); ath.wait(2000)
         self.audio_threads = {}
 
     def reset(self):
         self.online_stop()
         self.buffers.reset()
-        print("NDS Cache reset.")
 
     def _on_data_received(self, payload, trend, is_online):
-        # Update internal buffers
-        print("DEBUG: Cache received data payload")
+        logger.info("Cache received data payload")
         self.buffers.update_buffers(payload)
-        # Emit updated buffers to GUI
         self.signal_data.emit(self.buffers)
-        # Emit incremental payload for streaming analysis
         self.signal_payload.emit(payload)

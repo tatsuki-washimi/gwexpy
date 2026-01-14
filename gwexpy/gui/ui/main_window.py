@@ -101,6 +101,24 @@ class MainWindow(QtWidgets.QMainWindow):
 
         connect_trace_combos(self.graph_info1)
         connect_trace_combos(self.graph_info2)
+        
+        # Link X-Axis of Graph 2 to Graph 1 (Synchronization)
+        # self.graph_info2["plot"].setXLink(self.graph_info1["plot"]) # Removed unconditional link
+        
+        # Connect Graph Combo to update X-Link logic
+        self.graph_info1["graph_combo"].currentTextChanged.connect(self.update_x_link_logic)
+        self.graph_info2["graph_combo"].currentTextChanged.connect(self.update_x_link_logic)
+        
+        # Connect Range Mode (Auto/Manual) RadioButtons to update X-Link logic
+        p1 = self.graph_info1.get("panel")
+        p2 = self.graph_info2.get("panel")
+        if p1 and hasattr(p1, "rb_x_auto"):
+            p1.rb_x_auto.toggled.connect(self.update_x_link_logic)
+        if p2 and hasattr(p2, "rb_x_auto"):
+            p2.rb_x_auto.toggled.connect(self.update_x_link_logic)
+        
+        # Initial Link Check
+        self.update_x_link_logic()
 
         central = QtWidgets.QWidget()
         self.setCentralWidget(central)
@@ -177,6 +195,11 @@ class MainWindow(QtWidgets.QMainWindow):
         """Fetch NDS channels in background for the default server."""
         if not self._enable_preload:
             return
+        
+        # Prevention: Do not start another worker if one is already running
+        if getattr(self, "_preload_worker", None) is not None:
+            return
+
         try:
             # Determine default server/port (Same logic as show_channel_browser)
             ds_mode = self.input_controls["ds_combo"].currentText()
@@ -215,6 +238,47 @@ class MainWindow(QtWidgets.QMainWindow):
             ChannelListCache().set_channels(key, results)
             logger.info(f"Pre-load complete for {key}: {len(results)} channels cached.")
         self._preload_worker = None  # Release ref
+
+    def update_x_link_logic(self):
+        """
+        Dynamically link/unlink X-axes based on graph types AND range mode.
+        - Time-based graphs (Time Series, Spectrogram) should be linked.
+        - Frequency-based graphs (ASD, Coherence, TF) should be linked.
+        - Mixed types should NOT be linked.
+        - Only link when BOTH are in "Auto" range mode.
+        """
+        g1 = self.graph_info1["graph_combo"].currentText()
+        g2 = self.graph_info2["graph_combo"].currentText()
+        
+        time_types = ["Time Series", "Spectrogram"]
+        
+        is_g1_time = g1 in time_types
+        is_g2_time = g2 in time_types
+        
+        same_type = (is_g1_time == is_g2_time)
+        
+        # Check Auto Range mode
+        p1 = self.graph_info1.get("panel")
+        p2 = self.graph_info2.get("panel")
+        
+        is_g1_auto = True
+        is_g2_auto = True
+        if p1 and hasattr(p1, "rb_x_auto"):
+            is_g1_auto = p1.rb_x_auto.isChecked()
+        if p2 and hasattr(p2, "rb_x_auto"):
+            is_g2_auto = p2.rb_x_auto.isChecked()
+        
+        should_link = same_type and is_g1_auto and is_g2_auto
+        
+        # Cache previous state to avoid redundant calls (prevents flicker)
+        prev_linked = getattr(self, "_x_axes_linked", None)
+        
+        if should_link and prev_linked is not True:
+            self.graph_info2["plot"].setXLink(self.graph_info1["plot"])
+            self._x_axes_linked = True
+        elif not should_link and prev_linked is not False:
+            self.graph_info2["plot"].setXLink(None)
+            self._x_axes_linked = False
 
     def on_measurement_channel_changed(self):
         # Update Result tab comboboxes based on active Measurement channels
@@ -369,6 +433,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.accumulator.add_chunk(payload)
 
     def on_nds_data(self, buffers):
+        print(f"DEBUG: MainWindow received NDS data with {len(buffers)} channels")
         self.nds_latest_raw = buffers
 
     def on_data_error(self, message):
@@ -377,6 +442,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.status_label.setText(message)
 
     def start_animation(self):
+        # Prevention: Do not start if already running
+        if self.timer.isActive() or self.btn_abort.isEnabled() and not self.btn_start.isEnabled():
+            logger.warning("start_animation called while already active. Ignoring.")
+            return
+
         if hasattr(self, "status_label"):
             self.status_label.setText("")
         # Validate Excitation Channels (uniqueness)
@@ -399,7 +469,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Read Data Source directly from UI to avoid signal issues
         self.data_source = self.input_controls["ds_combo"].currentText()
-        logger.debug(f"start_animation called. DataSource: {self.data_source}")
+        logger.info(f"start_animation called. DataSource: {self.data_source}")
 
         self.btn_start.setEnabled(False)
         self.btn_pause.setEnabled(True)
@@ -408,10 +478,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.tabs.setTabEnabled(0, False) # Allow switching to Input tab even during operation
 
         use_pc_audio = self.input_controls["pcaudio"].isChecked()
+        channels = []
 
-        if self.data_source == "NDS" or use_pc_audio:
+        if self.data_source in ["NDS", "NDS2"] or use_pc_audio:
             # Collect channels
-            channels = []
             sim_channels = [
                 "HF_sine",
                 "LF_sine",
@@ -431,7 +501,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     if s["name"].startswith("PC:"):
                         if use_pc_audio:
                             channels.append(s["name"])
-                    elif self.data_source == "NDS":
+                    elif self.data_source in ["NDS", "NDS2"]:
                         channels.append(s["name"])
 
             if channels:
@@ -450,49 +520,46 @@ class MainWindow(QtWidgets.QMainWindow):
                 real_nds_channels = [c for c in channels if not c.startswith("PC:") and c != "Excitation"]
                 
                 if real_nds_channels:
-                    logger.debug(f"Starting DataCache for channels: {channels}")
                     self.nds_cache.set_server(f"{server}:{port}")
                     self.nds_cache.set_channels(channels)
-    
                     win_sec = self.input_controls["nds_win"].value()
                     self.nds_cache.online_start(lookback=win_sec)
                 elif any(c.startswith("PC:") for c in channels):
-                    # PC Audio only case
-                    logger.debug(f"Starting Audio Only (no NDS connection). Channels: {channels}")
-                    # Audio thread is managed via ChannelListWorker? No, AudioThread. 
-                    # Wait, where is AudioThread managed?
-                    # Ah, NDSDataCache handles AudioThread internally if channel name starts with PC: ?
-                    # Let's check NDSDataCache implementation.
-                    # Assuming NDSDataCache handles it, we still need to set channels.
-                    # But we should NOT set server if we don't want NDS connection.
-                    # If NDSDataCache requires set_server even for Audio, that's a dependency we need to check.
-                    # For now, let's assume it might need configuration but we want to avoid `online_start` triggering NDS logic if no NDS channels.
-                    # Actually, `nds_cache.set_channels` might be enough if cache handles the types.
-                    # Let's call set_channels anyway, but maybe set a dummy server or skip set_server?
-                    # Start should be called.
                     self.nds_cache.set_channels(channels)
                     win_sec = self.input_controls["nds_win"].value()
                     self.nds_cache.online_start(lookback=win_sec)
-                
-                # Configure Spectral Accumulator
-                params = self.get_ui_params()
-                all_traces = []
-                for info in [self.graph_info1, self.graph_info2]:
-                    # Also need to know graph type per panel?
-                    # Accumulator assumes one graph type or generalized.
-                    # Ideally we pass graph type in the trace dict or handle it.
-                    # Current Accumulator.get_results uses params['graph_type'] which is single global.
-                    # But we have 2 graph panels.
-                    # We should probably pass graph_type in trace dict to Accumulator.
-                    g_type = info["graph_combo"].currentText()
-                    for c in info["traces"]:
-                        all_traces.append({
-                            "active": c["active"].isChecked(),
-                            "ch_a": c["chan_a"].currentText(),
-                            "ch_b": c["chan_b"].currentText(),
-                            "graph_type": g_type # Add this!
-                        })
-                self.accumulator.configure(params, all_traces)
+        
+        elif self.data_source == "Simulation":
+            # Simulation mode
+            logger.debug("Starting Simulation mode")
+            # For simulation, we can just use the provided channels from meas_controls
+            states = self.meas_controls["channel_states"]
+            for s in states:
+                if s["active"] and s["name"]:
+                    channels.append(s["name"])
+            
+            if not channels:
+                # Default if none: just use white_noise
+                channels = ["white_noise"]
+            
+            self.nds_cache.set_channels(channels)
+            win_sec = self.input_controls["nds_win"].value()
+            self.nds_cache.sim_start(lookback=win_sec)
+
+        # Configure Spectral Accumulator (moved outside of specific source blocks to cover all)
+        params = self.get_ui_params()
+        all_traces = []
+        for info in [self.graph_info1, self.graph_info2]:
+            g_type = info["graph_combo"].currentText()
+            for c in info["traces"]:
+                all_traces.append({
+                    "active": c["active"].isChecked(),
+                    "ch_a": c["chan_a"].currentText(),
+                    "ch_b": c["chan_b"].currentText(),
+                    "gain": c.get("gain").value() if c.get("gain") else 1.0,
+                    "graph_type": g_type
+                })
+        self.accumulator.configure(params, all_traces, available_channels=channels)
 
         self.meas_start_gps = None  # Initialize measurement start time
         self.timer.start(50)
@@ -573,7 +640,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     has_active_excitation = True
                     break
 
-        if self.data_source == "NDS" or self.input_controls["pcaudio"].isChecked():
+        if self.data_source in ["NDS", "NDS2", "Simulation"] or self.input_controls["pcaudio"].isChecked():
             # Try to get data
             if self.nds_latest_raw:
                 for ch_name, buf in self.nds_latest_raw.items():
@@ -592,7 +659,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             current_fs = 1.0 / buf.step
 
             # Fallback if no data but we want to see Excitation (only in NDS mode)
-            if not data_map and has_active_excitation and self.data_source == "NDS":
+            if not data_map and has_active_excitation and self.data_source in ["NDS", "NDS2"]:
                 self.time_counter += 0.05
                 params = self.get_ui_params()
                 duration = max(10.0, 2.0 / params.get("bw", 1.0))
@@ -602,7 +669,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 n = int(fs * duration)
                 current_times = np.linspace(t0, t0 + duration, n, endpoint=False)
 
-            if not data_map and current_times is None and self.data_source == "NDS":
+            if not data_map and current_times is None and self.data_source in ["NDS", "NDS2", "Simulation"]:
                 return  # No data and no fallback
 
         # SIM Logic (Legacy/Fallback, though UI removed)
@@ -688,14 +755,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Determine measurement start if not set (Fresh Start)
         if self.meas_start_gps is None:
             if current_times is not None and len(current_times) > 0:
-                # Start tracking from the END of the current buffer to ensure fresh data.
-                # Just using current_times[-1] might miss one sample, but safe.
-                # Actually, if we use real-time, we want anything NEWER than now.
-                # But NDS buffer might be lagging.
-                # Let's start from the *beginning* of the 'latest' buffer if it hasn't been seen?
-                # No, standard DTT behavior is "Start Measurement -> Clear buffers -> Accumulate".
-                # Here we simulate clearing by cropping against a start time.
-                self.meas_start_gps = current_times[-1]
+                # Use the FIRST time point of the FIRST data buffer as t0.
+                # This ensures t=0 means "measurement start" and time increases to the right.
+                self.meas_start_gps = current_times[0]
                 logger.debug(f"Measurement Start GPS set to {self.meas_start_gps}")
 
         # Apply Cropping if in Fixed/Fresh mode
@@ -782,7 +844,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 g_type = info_root["graph_combo"].currentText()
 
                 # Decide source of results
-                use_accumulator = (self.data_source == "NDS" or self.input_controls["pcaudio"].isChecked())
+                use_accumulator = (self.data_source in ["NDS", "NDS2", "Simulation"] or self.input_controls["pcaudio"].isChecked())
                 
                 # Fallback: If NDS is selected but no data arrived (NDS dead), and we have generated Simulation data (data_map),
                 # we should use the legacy Engine to compute results from data_map.
@@ -819,6 +881,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 "active": c["active"].isChecked(),
                                 "ch_a": c["chan_a"].currentText(),
                                 "ch_b": c["chan_b"].currentText(),
+                                "gain": c.get("gain").value() if c.get("gain") else 1.0,
                             }
                             for c in info_root["traces"]
                         ],
@@ -831,8 +894,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 # Find T0 from the first valid result if possible
                 if is_time_axis:
-                     # Try to get t0 from data source or results
-                     if current_times is not None and len(current_times) > 0:
+                     # Use fixed measurement start if available (Time since Measurement Start)
+                     if self.meas_start_gps is not None:
+                         start_time_gps = self.meas_start_gps
+                     # Fallback to data start (Time since Window Start)
+                     elif current_times is not None and len(current_times) > 0:
                          start_time_gps = current_times[0]
                      elif results:
                          # Try to find first result with time
@@ -903,15 +969,71 @@ class MainWindow(QtWidgets.QMainWindow):
                             img.setImage(data, autoLevels=False)
                             img.setLevels([np.min(data), np.max(data)])
                             
-                            if len(times) > 1 and len(freqs) > 1:
+                            if len(freqs) > 1:
+                                df = freqs[1] - freqs[0]
+                                height = df * len(freqs)
+                                
+                                # Estimate dt if only 1 time point
+                                dt = 1.0 
+                                if len(times) > 1:
+                                    dt = times[1] - times[0]
+                                elif len(times) == 1:
+                                    # Fallback: cannot know dt from 1 point history.
+                                    # However, we can guess or leave it proportional.
+                                    # Ideally we should get 'stride' from result metadata, 
+                                    # but it's not passed.
+                                    # Assume 1.0 or derived from previous if available?
+                                    # Just use 1.0 width per sample for now to ensure visibility.
+                                    pass
+                                    
+                                width = dt * len(times)
+                                
+                                # Handle Log-Y
+                                f0 = freqs[0]
+                                y_pos = f0
+                                h_val = height
+
+                                # Check if Y-Axis is Log
+                                is_log_y = False
+                                if "panel" in info_root:
+                                    try:
+                                        is_log_y = info_root["panel"].rb_y_log.isChecked()
+                                    except Exception:
+                                        pass
+                                
+                                if is_log_y:
+                                    # Offset 0Hz to a small positive value
+                                    min_f = (df * 0.5) if df > 0 else 1e-6
+                                    if f0 < min_f:
+                                        f0 = min_f
+                                    
+                                    # For Log Axis, ImageItem rect must be in log coordinates
+                                    # y_start = log10(f0)
+                                    # y_end = log10(f0 + height)
+                                    # rect_height = y_end - y_start
+                                    
+                                    # Calculate f_end from original linear height
+                                    f_end = freqs[0] + height # Original f_end (approx freqs[-1] + df)
+                                    if f_end <= f0: # Safety
+                                         f_end = f0 + min_f
+                                    
+                                    y_pos = np.log10(f0)
+                                    h_val = np.log10(f_end) - y_pos
+
+                                # Center alignment: times[0] is the center of the first bin.
+                                # ImageItem draws from x to x+w.
+                                # We want x + bin_w/2 = times[0]. => x = times[0] - bin_w/2.
+                                # Calculate bin width (dt)
+                                n_bins = len(times)
+                                dt_bin = width / n_bins if n_bins > 0 else 0
+                                x_start = times[0] - (dt_bin / 2.0)
+
                                 img.setRect(
                                     QtCore.QRectF(
-                                        times[0],
-                                        freqs[0],
-                                        (times[1] - times[0])
-                                        * len(times),
-                                        (freqs[1] - freqs[0])
-                                        * len(freqs),
+                                        x_start,
+                                        y_pos, 
+                                        width,
+                                        h_val,
                                     )
                                 )
                                 img.setVisible(True)
@@ -943,8 +1065,27 @@ class MainWindow(QtWidgets.QMainWindow):
                                 )
                     except Exception as e:
                         print(f"Error updating Graph {plot_idx + 1} Trace {t_idx}: {e}")
+                
+                # Stabilize X Range during streaming for Time-based graphs
+                # Skip range_updater for X-axis during streaming to prevent jitter
+                is_streaming = self.data_source in ["NDS", "NDS2", "Simulation"]
+                
                 if "range_updater" in info_root:
-                    info_root["range_updater"]()
+                    if is_streaming and is_time_axis:
+                        # Only update Y-axis, skip X-axis auto-range during streaming
+                        # Manually set X range to NDS window size
+                        nds_window = getattr(self, "nds_window", 30.0)
+                        plot = info_root.get("plot")
+                        if plot:
+                            plot.enableAutoRange(axis="x", enable=False)
+                            # t=0 is measurement start (left), t=nds_window is newest (right)
+                            plot.setXRange(0, nds_window, padding=0.02)
+                        # Still update Y-axis
+                        panel = info_root.get("panel")
+                        if panel and hasattr(panel, "rb_y_auto") and panel.rb_y_auto.isChecked():
+                            plot.enableAutoRange(axis="y")
+                    else:
+                        info_root["range_updater"]()
             except Exception as e:
                 print(f"Error in update_graphs for Graph {plot_idx + 1}: {e}")
 
@@ -999,6 +1140,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 for t_idx, ctrl in enumerate(info["traces"]):
                     try:
                         tr = traces[t_idx]
+                        print(f"DEBUG: Processing Trace {t_idx}")
                         curve, _bar, img = tr["curve"], tr["bar"], tr["img"]
 
                         if not ctrl["active"].isChecked():

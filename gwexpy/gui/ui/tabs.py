@@ -52,21 +52,24 @@ def create_input_tab():
     gb_ds, l_ds = _create_group("Data Source Selection", "h")
     ds_combo = QtWidgets.QComboBox()
     ds_combo.setVisible(False)
-    ds_combo.addItems(["NDS", "NDS2", "FILE"])
+    ds_combo.addItems(["NDS", "NDS2", "FILE", "Simulation"])
 
     rb1 = QtWidgets.QRadioButton("Online system")
     rb1.setChecked(True)
     rb2 = QtWidgets.QRadioButton("User NDS")
     rb3 = QtWidgets.QRadioButton("NDS2")
     rb4 = QtWidgets.QRadioButton("LiDaX")
+    rb5 = QtWidgets.QRadioButton("Simulation")
 
     def update_ds():
         if rb3.isChecked():
             ds_combo.setCurrentText("NDS2")
+        elif rb5.isChecked():
+            ds_combo.setCurrentText("Simulation")
         else:
             ds_combo.setCurrentText("NDS")  # Maps others to NDS for now
 
-    for r in [rb1, rb2, rb3, rb4]:
+    for r in [rb1, rb2, rb3, rb4, rb5]:
         r.toggled.connect(update_ds)
         l_ds.addWidget(r)
 
