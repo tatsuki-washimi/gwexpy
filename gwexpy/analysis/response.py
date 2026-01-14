@@ -6,13 +6,13 @@ Stepped Sine (Discrete) Injections. It prioritizes statistical significance
 by calculating averaged ASDs for each stable frequency step.
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
 
-from ..timeseries import TimeSeries
+import matplotlib.pyplot as plt
+import numpy as np
+
 from ..spectrogram import Spectrogram
+from ..timeseries import TimeSeries
 
 
 @dataclass
@@ -22,14 +22,15 @@ class ResponseFunctionResult:
 
     Stores the full spectral data for all injection steps efficiently.
     """
+
     # 2D Data: (Steps x Frequencies)
     spectrogram_inj: Spectrogram
     spectrogram_bkg: Spectrogram
 
     # Metadata per step
     injected_freqs: np.ndarray  # [Hz]
-    step_times: np.ndarray      # [GPS Start Time]
-    coupling_factors: np.ndarray # Representative CF at injection freq
+    step_times: np.ndarray  # [GPS Start Time]
+    coupling_factors: np.ndarray  # Representative CF at injection freq
 
     witness_name: str
     target_name: str
@@ -44,8 +45,13 @@ class ResponseFunctionResult:
         # Sort by frequency for a clean line plot
         sort_idx = np.argsort(self.injected_freqs)
 
-        ax.loglog(self.injected_freqs[sort_idx], self.coupling_factors[sort_idx],
-                  'o-', label="Measured CF", **kwargs)
+        ax.loglog(
+            self.injected_freqs[sort_idx],
+            self.coupling_factors[sort_idx],
+            "o-",
+            label="Measured CF",
+            **kwargs,
+        )
 
         ax.set_xlabel("Injected Frequency [Hz]")
         ax.set_ylabel("Coupling Factor")
@@ -62,7 +68,9 @@ class ResponseFunctionResult:
         # Create a 2D array: X=Injected Freq, Y=Target Freq, Z=Amplitude
         # Re-sort spectrogram rows by injected frequency
         sort_idx = np.argsort(self.injected_freqs)
-        sorted_map = self.spectrogram_inj.value[sort_idx, :].T # Transpose to (Freq, Step)
+        sorted_map = self.spectrogram_inj.value[
+            sort_idx, :
+        ].T  # Transpose to (Freq, Step)
 
         from matplotlib.colors import LogNorm
 
@@ -75,20 +83,24 @@ class ResponseFunctionResult:
         Z = sorted_map
 
         # Simple auto-level
-        vmin = np.nanpercentile(Z[Z>0], 5)
-        vmax = np.nanpercentile(Z[Z>0], 95)
+        vmin = np.nanpercentile(Z[Z > 0], 5)
+        vmax = np.nanpercentile(Z[Z > 0], 95)
 
-        c = ax.pcolormesh(X, Y, Z, norm=LogNorm(vmin=vmin, vmax=vmax), shading='auto', **kwargs)
+        c = ax.pcolormesh(
+            X, Y, Z, norm=LogNorm(vmin=vmin, vmax=vmax), shading="auto", **kwargs
+        )
         plt.colorbar(c, ax=ax, label=f"Target Amplitude [{self.spectrogram_inj.unit}]")
 
-        ax.set_xscale('log')
-        ax.set_yscale('log')
+        ax.set_xscale("log")
+        ax.set_yscale("log")
         ax.set_xlabel("Injected Frequency [Hz]")
         ax.set_ylabel("Response Frequency [Hz]")
         ax.set_title("Response Matrix")
         return ax
 
-    def plot_snapshot(self, freq: float = None, step_index: int = None, ax=None):
+    def plot_snapshot(
+        self, freq: float | None = None, step_index: int | None = None, ax=None
+    ):
         """
         Plot ASDs and Upper Limits for a SPECIFIC injection step.
         """
@@ -109,8 +121,21 @@ class ResponseFunctionResult:
 
         # 1. Spectra
         f_axis = self.spectrogram_inj.frequencies.value
-        ax.loglog(f_axis, asd_inj.value, label="Target (Injection)", color="tab:red", alpha=0.8)
-        ax.loglog(f_axis, asd_bkg.value, label="Target (Background)", color="tab:gray", alpha=0.6, linestyle="--")
+        ax.loglog(
+            f_axis,
+            asd_inj.value,
+            label="Target (Injection)",
+            color="tab:red",
+            alpha=0.8,
+        )
+        ax.loglog(
+            f_axis,
+            asd_bkg.value,
+            label="Target (Background)",
+            color="tab:gray",
+            alpha=0.6,
+            linestyle="--",
+        )
 
         # 2. Highlight Injection Point
         # Find closest bin
@@ -118,31 +143,35 @@ class ResponseFunctionResult:
         peak_val = asd_inj.value[idx]
         bkg_val = asd_bkg.value[idx]
 
-        ax.plot(target_freq, peak_val, 'r*', markersize=12, label="Measured Peak", zorder=10)
+        ax.plot(
+            target_freq, peak_val, "r*", markersize=12, label="Measured Peak", zorder=10
+        )
 
         # 3. Annotate Excess / Upper Limit
-        if peak_val > bkg_val * 1.1: # Significant excess
+        if peak_val > bkg_val * 1.1:  # Significant excess
             ax.annotate(
                 f"Excess\n(CF={cf:.2e})",
                 xy=(target_freq, peak_val),
-                xytext=(target_freq*1.15, peak_val*2),
+                xytext=(target_freq * 1.15, peak_val * 2),
                 arrowprops=dict(arrowstyle="->", color="black"),
-                bbox=dict(boxstyle="round", fc="white", alpha=0.8)
+                bbox=dict(boxstyle="round", fc="white", alpha=0.8),
             )
         else:
             # Upper Limit Case
             ax.annotate(
                 "No Excess\n(Upper Limit)",
                 xy=(target_freq, peak_val),
-                xytext=(target_freq*1.15, peak_val*3),
+                xytext=(target_freq * 1.15, peak_val * 3),
                 arrowprops=dict(arrowstyle="-|>", color="gray", linestyle=":"),
-                color="gray"
+                color="gray",
             )
 
         ax.set_xlabel("Frequency [Hz]")
         ax.set_ylabel(f"ASD [{asd_inj.unit}]")
-        ax.set_title(f"Step Snapshot @ {target_freq:.1f} Hz (t0={self.step_times[step_index]:.1f})")
-        ax.legend(loc='lower left')
+        ax.set_title(
+            f"Step Snapshot @ {target_freq:.1f} Hz (t0={self.step_times[step_index]:.1f})"
+        )
+        ax.legend(loc="lower left")
         ax.grid(True, which="both", linestyle=":")
 
         # Auto-zoom X-axis around injection
@@ -157,8 +186,8 @@ def detect_step_segments(
     snr_threshold: float = 10.0,
     min_duration: float = 5.0,
     trim_edge: float = 1.0,
-    freq_tolerance: float = 1.0
-) -> List[Tuple[float, float, float]]:
+    freq_tolerance: float = 1.0,
+) -> list[tuple[float, float, float]]:
     """
     Automatically detect time segments where the injection frequency is constant.
     """
@@ -195,16 +224,16 @@ def detect_step_segments(
         if in_segment:
             if not loud or freq_changed:
                 # Close segment
-                duration = times[i-1] - times[current_start_idx]
+                duration = times[i - 1] - times[current_start_idx]
                 if duration >= min_duration:
                     t_start = times[current_start_idx] + trim_edge
-                    t_end = times[i-1] - trim_edge
+                    t_end = times[i - 1] - trim_edge
                     if t_end > t_start:
                         segments.append((t_start, t_end, current_freq))
 
                 # Reset
                 in_segment = False
-                if loud: # Immediate new step
+                if loud:  # Immediate new step
                     in_segment = True
                     current_start_idx = i
                     current_freq = f
@@ -235,7 +264,7 @@ class ResponseFunctionAnalysis:
         self,
         witness: TimeSeries,
         target: TimeSeries,
-        segments: Optional[List[Tuple[float, float, float]]] = None,
+        segments: list[tuple[float, float, float]] | None = None,
         fftlength: float = 4.0,
         overlap: float = 0,
         # Auto-detect params
@@ -244,9 +273,9 @@ class ResponseFunctionAnalysis:
         min_duration: float = 5.0,
         trim_edge: float = 1.0,
         # Background
-        witness_bkg: Optional[TimeSeries] = None,
-        target_bkg: Optional[TimeSeries] = None,
-        **kwargs
+        witness_bkg: TimeSeries | None = None,
+        target_bkg: TimeSeries | None = None,
+        **kwargs,
     ) -> ResponseFunctionResult:
         """
         Perform the analysis.
@@ -258,8 +287,11 @@ class ResponseFunctionAnalysis:
 
             # Use smaller fft for detection tracking
             segments = detect_step_segments(
-                witness, fftlength=1.0,
-                snr_threshold=snr_threshold, min_duration=min_duration, trim_edge=trim_edge
+                witness,
+                fftlength=1.0,
+                snr_threshold=snr_threshold,
+                min_duration=min_duration,
+                trim_edge=trim_edge,
             )
 
         if not segments:
@@ -273,9 +305,13 @@ class ResponseFunctionAnalysis:
         master_asd_wit_bkg = None
 
         if target_bkg is not None:
-            master_asd_tgt_bkg = target_bkg.asd(fftlength=fftlength, overlap=overlap, **kwargs)
+            master_asd_tgt_bkg = target_bkg.asd(
+                fftlength=fftlength, overlap=overlap, **kwargs
+            )
         if witness_bkg is not None:
-            master_asd_wit_bkg = witness_bkg.asd(fftlength=fftlength, overlap=overlap, **kwargs)
+            master_asd_wit_bkg = witness_bkg.asd(
+                fftlength=fftlength, overlap=overlap, **kwargs
+            )
 
         # Pre-allocate containers
         # Find first segment long enough for FFT to determine frequency axis size
@@ -283,13 +319,17 @@ class ResponseFunctionAnalysis:
         freq_axis = None
         for t_s, t_e, _ in segments:
             if (t_e - t_s) >= fftlength:
-                dummy_res = target.crop(t_s, t_s + fftlength).asd(fftlength=fftlength, **kwargs)
+                dummy_res = target.crop(t_s, t_s + fftlength).asd(
+                    fftlength=fftlength, **kwargs
+                )
                 freq_axis = dummy_res.frequencies
                 n_freqs = len(freq_axis)
                 break
 
         if n_freqs is None:
-            raise ValueError(f"No segments found with duration >= fftlength ({fftlength}s).")
+            raise ValueError(
+                f"No segments found with duration >= fftlength ({fftlength}s)."
+            )
 
         n_steps = len(segments)
 
@@ -310,12 +350,16 @@ class ResponseFunctionAnalysis:
             # Calculate Injection ASDs
             # Dynamic overlap adjustment to maximize averages
             seg_len = t_e - t_s
-            seg_ovlp = overlap if overlap > 0 else (fftlength/2)
+            seg_ovlp = overlap if overlap > 0 else (fftlength / 2)
             if seg_len < fftlength:
                 seg_ovlp = 0  # Should be skipped anyway
 
-            asd_tgt_inj = ts_tgt_seg.asd(fftlength=fftlength, overlap=seg_ovlp, **kwargs)
-            asd_wit_inj = ts_wit_seg.asd(fftlength=fftlength, overlap=seg_ovlp, **kwargs)
+            asd_tgt_inj = ts_tgt_seg.asd(
+                fftlength=fftlength, overlap=seg_ovlp, **kwargs
+            )
+            asd_wit_inj = ts_wit_seg.asd(
+                fftlength=fftlength, overlap=seg_ovlp, **kwargs
+            )
 
             # Get Background ASDs
             if master_asd_tgt_bkg is not None:
@@ -334,10 +378,14 @@ class ResponseFunctionAnalysis:
 
                 # Check if we need to shift left if we hit the right boundary
                 if (t_b_e_eff - t_b_s_eff) < fftlength:
-                     t_b_s_eff = max(target.span[0], t_b_e_eff - fftlength)
-                     t_b_e_eff = min(target.span[1], t_b_s_eff + fftlength)
+                    t_b_s_eff = max(target.span[0], t_b_e_eff - fftlength)
+                    t_b_e_eff = min(target.span[1], t_b_s_eff + fftlength)
 
-                val_tgt_bkg = target.crop(t_b_s_eff, t_b_e_eff).asd(fftlength=fftlength, overlap=seg_ovlp, **kwargs).value
+                val_tgt_bkg = (
+                    target.crop(t_b_s_eff, t_b_e_eff)
+                    .asd(fftlength=fftlength, overlap=seg_ovlp, **kwargs)
+                    .value
+                )
 
             if master_asd_wit_bkg is not None:
                 val_wit_bkg = master_asd_wit_bkg.value
@@ -351,10 +399,14 @@ class ResponseFunctionAnalysis:
                 t_b_e_eff = min(t_b_s_eff + max(seg_len, fftlength), witness.span[1])
 
                 if (t_b_e_eff - t_b_s_eff) < fftlength:
-                     t_b_s_eff = max(witness.span[0], t_b_e_eff - fftlength)
-                     t_b_e_eff = min(witness.span[1], t_b_s_eff + fftlength)
+                    t_b_s_eff = max(witness.span[0], t_b_e_eff - fftlength)
+                    t_b_e_eff = min(witness.span[1], t_b_s_eff + fftlength)
 
-                val_wit_bkg = witness.crop(t_b_s_eff, t_b_e_eff).asd(fftlength=fftlength, overlap=seg_ovlp, **kwargs).value
+                val_wit_bkg = (
+                    witness.crop(t_b_s_eff, t_b_e_eff)
+                    .asd(fftlength=fftlength, overlap=seg_ovlp, **kwargs)
+                    .value
+                )
 
             # Store in arrays
             spec_inj[i, :] = asd_tgt_inj.value
@@ -367,19 +419,23 @@ class ResponseFunctionAnalysis:
             assert freq_axis is not None
             f_idx = np.argmin(np.abs(freq_axis.value - f_inj))
 
-            p_tgt_net = asd_tgt_inj.value[f_idx]**2 - val_tgt_bkg[f_idx]**2
-            p_wit_net = asd_wit_inj.value[f_idx]**2 - val_wit_bkg[f_idx]**2
+            p_tgt_net = asd_tgt_inj.value[f_idx] ** 2 - val_tgt_bkg[f_idx] ** 2
+            p_wit_net = asd_wit_inj.value[f_idx] ** 2 - val_wit_bkg[f_idx] ** 2
 
             if p_tgt_net > 0 and p_wit_net > 0:
                 cf_vals[i] = np.sqrt(p_tgt_net / p_wit_net)
             else:
-                cf_vals[i] = np.nan # Upper limit condition
+                cf_vals[i] = np.nan  # Upper limit condition
 
         # Wrap in Containers
-        unit = getattr(target, 'unit', None) or "dimensionless"
+        unit = getattr(target, "unit", None) or "dimensionless"
 
-        sg_inj = Spectrogram(spec_inj, times=step_times, frequencies=freq_axis, unit=unit, name="Inj")
-        sg_bkg = Spectrogram(spec_bkg, times=step_times, frequencies=freq_axis, unit=unit, name="Bkg")
+        sg_inj = Spectrogram(
+            spec_inj, times=step_times, frequencies=freq_axis, unit=unit, name="Inj"
+        )
+        sg_bkg = Spectrogram(
+            spec_bkg, times=step_times, frequencies=freq_axis, unit=unit, name="Bkg"
+        )
 
         return ResponseFunctionResult(
             spectrogram_inj=sg_inj,
@@ -388,8 +444,9 @@ class ResponseFunctionAnalysis:
             step_times=step_times,
             coupling_factors=cf_vals,
             witness_name=str(witness.name) if witness.name else "Witness",
-            target_name=str(target.name) if target.name else "Target"
+            target_name=str(target.name) if target.name else "Target",
         )
+
 
 def estimate_response_function(witness, target, **kwargs):
     """Helper function."""

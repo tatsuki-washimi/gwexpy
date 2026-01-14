@@ -4,19 +4,49 @@ Standard Fourier-based spectral transform methods for TimeSeries.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+
 import numpy as np
+import numpy.typing as npt
 from astropy import units as u
-from typing import Optional, Any, TYPE_CHECKING
+
+from ._typing import TimeSeriesAttrs
 
 if TYPE_CHECKING:
-    pass
+    from gwexpy.frequencyseries import FrequencySeries
+    from gwexpy.spectrogram import Spectrogram
 
-class TimeSeriesSpectralFourierMixin:
+NumberLike: TypeAlias = int | float | np.number
+WindowLike: TypeAlias = str | tuple[Any, ...] | npt.ArrayLike
+
+
+def _get_next_fast_len() -> Callable[[int], int]:
+    """Return scipy's next_fast_len if available, else identity."""
+    try:
+        import scipy.fft
+
+        return scipy.fft.next_fast_len
+    except ImportError:
+        try:
+            from scipy.fftpack import next_fast_len
+
+            return next_fast_len  # type: ignore[return-value]
+        except ImportError:
+            return lambda n: n
+
+
+class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
     """
     Mixin class providing standard Fourier-based spectral transform methods.
     """
 
-    def _prepare_data_for_transform(self, data=None, window=None, detrend=False):
+    def _prepare_data_for_transform(
+        self,
+        data: npt.ArrayLike | None = None,
+        window: WindowLike | None = None,
+        detrend: bool = False,
+    ) -> npt.NDArray[Any]:
         """Helper to copy data and apply detrending and windowing."""
         try:
             import scipy.signal  # noqa: F401 - availability check
@@ -24,35 +54,35 @@ class TimeSeriesSpectralFourierMixin:
             raise ImportError("scipy is required for this transform")
 
         if data is None:
-            data = self.value.copy()
+            data_array = self.value.copy()
         else:
-            data = data.copy()
+            data_array = np.asarray(data).copy()
 
         if detrend:
-            data = scipy.signal.detrend(data, type='linear')
+            data_array = scipy.signal.detrend(data_array, type="linear")
 
         if window is not None:
             if isinstance(window, (str, tuple)):
-                win = scipy.signal.get_window(window, len(data))
+                win = scipy.signal.get_window(window, len(data_array))
             else:
                 win = np.asarray(window)
-                if len(win) != len(data):
+                if len(win) != len(data_array):
                     raise ValueError("Window length must match data length")
-            data *= win
-        return data
+            data_array *= win
+        return data_array
 
     def fft(
         self,
-        nfft: Optional[int] = None,
+        nfft: NumberLike | None = None,
         *,
-        mode: str = "gwpy",
-        pad_mode: str = "zero",
-        pad_left: int = 0,
-        pad_right: int = 0,
-        nfft_mode: Optional[str] = None,
-        other_length: Optional[int] = None,
+        mode: Literal["gwpy", "transient"] = "gwpy",
+        pad_mode: Literal["zero", "reflect"] = "zero",
+        pad_left: NumberLike = 0,
+        pad_right: NumberLike = 0,
+        nfft_mode: str | None = None,
+        other_length: NumberLike | None = None,
         **kwargs: Any,
-    ) -> Any:
+    ) -> FrequencySeries:
         """
         Compute the Discrete Fourier Transform (DFT).
 
@@ -89,15 +119,18 @@ class TimeSeriesSpectralFourierMixin:
                 pad_right=pad_right,
                 nfft_mode=nfft_mode,
                 other_length=other_length,
-                **kwargs
+                **kwargs,
             )
 
         raise ValueError(f"Unknown mode: {mode}")
 
-    def _fft_gwpy(self, nfft: Optional[int] = None, **kwargs: Any) -> Any:
+    def _fft_gwpy(
+        self, nfft: NumberLike | None = None, **kwargs: Any
+    ) -> FrequencySeries:
         """Internal method for standard GWpy FFT."""
         from gwexpy.frequencyseries import FrequencySeries as GWEXFrequencySeries
-        base_fs = super().fft(nfft=nfft, **kwargs)
+
+        base_fs = super().fft(nfft=nfft, **kwargs)  # type: ignore[safe-super]
         if isinstance(base_fs, GWEXFrequencySeries):
             return base_fs
         return GWEXFrequencySeries(
@@ -111,14 +144,14 @@ class TimeSeriesSpectralFourierMixin:
 
     def _fft_transient(
         self,
-        nfft: Optional[int] = None,
-        pad_mode: str = "zero",
-        pad_left: int = 0,
-        pad_right: int = 0,
-        nfft_mode: Optional[str] = None,
-        other_length: Optional[int] = None,
+        nfft: NumberLike | None = None,
+        pad_mode: Literal["zero", "reflect"] = "zero",
+        pad_left: NumberLike = 0,
+        pad_right: NumberLike = 0,
+        nfft_mode: str | None = None,
+        other_length: NumberLike | None = None,
         **kwargs: Any,
-    ) -> Any:
+    ) -> FrequencySeries:
         """Internal method for transient-restoration FFT."""
         x = self.value
 
@@ -138,7 +171,9 @@ class TimeSeriesSpectralFourierMixin:
 
             if pad_left > 0 or pad_right > 0:
                 if pad_mode == "zero":
-                    x = np.pad(x, (pad_left, pad_right), mode="constant", constant_values=0)
+                    x = np.pad(
+                        x, (pad_left, pad_right), mode="constant", constant_values=0
+                    )
                 elif pad_mode == "reflect":
                     x = np.pad(x, (pad_left, pad_right), mode="reflect")
                 else:
@@ -157,17 +192,8 @@ class TimeSeriesSpectralFourierMixin:
                 target_len = len_x
 
             if nfft_mode == "next_fast_len":
-                try:
-                    import scipy.fft
-                    def next_fast_len(n):
-                        return scipy.fft.next_fast_len(n)
-                except ImportError:
-                    try:
-                        from scipy.fftpack import next_fast_len
-                    except ImportError:
-                        def next_fast_len(n):
-                            return n
-                target_nfft = next_fast_len(target_len)
+                next_fast_len_func = _get_next_fast_len()
+                target_nfft = int(next_fast_len_func(target_len))
             else:
                 target_nfft = target_len
 
@@ -186,6 +212,7 @@ class TimeSeriesSpectralFourierMixin:
                 dft[1:] *= 2.0
 
         from gwexpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(
             dft,
             epoch=self.epoch,
@@ -194,6 +221,8 @@ class TimeSeriesSpectralFourierMixin:
             channel=self.channel,
             **kwargs,
         )
+        if self.dt is None:
+            raise ValueError("FFT requires defined dt.")
         fs.frequencies = np.fft.rfftfreq(target_nfft, d=self.dt.value) * u.Hz
         fs._gwex_fft_mode = "transient"
         fs._gwex_pad_left = pad_left
@@ -205,51 +234,63 @@ class TimeSeriesSpectralFourierMixin:
 
         return fs
 
-    def rfft(self, *args: Any, **kwargs: Any) -> Any:
+    def rfft(self, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("rfft")
-        return super().rfft(*args, **kwargs)
+        return super().rfft(*args, **kwargs)  # type: ignore[safe-super]
 
-    def psd(self, *args: Any, **kwargs: Any) -> Any:
+    def psd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("psd")
         from gwexpy.frequencyseries import FrequencySeries
-        res = super().psd(*args, **kwargs)
+
+        res = super().psd(*args, **kwargs)  # type: ignore[safe-super]
         return res.view(FrequencySeries)
 
-    def asd(self, *args: Any, **kwargs: Any) -> Any:
+    def asd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("asd")
         from gwexpy.frequencyseries import FrequencySeries
-        res = super().asd(*args, **kwargs)
+
+        res = super().asd(*args, **kwargs)  # type: ignore[safe-super]
         return res.view(FrequencySeries)
 
-    def csd(self, other: Any, *args: Any, **kwargs: Any) -> Any:
+    def csd(self, other: Any, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("csd")
         from gwexpy.frequencyseries import FrequencySeries
-        res = super().csd(other, *args, **kwargs)
+
+        res = super().csd(other, *args, **kwargs)  # type: ignore[safe-super]
         # GWpy's csd sometimes returns incorrect units when inputs have different units
-        target_unit = self.unit * getattr(other, "unit", u.dimensionless_unscaled) / u.Hz
+        target_unit = (
+            self.unit * getattr(other, "unit", u.dimensionless_unscaled) / u.Hz
+        )
         res_fs = res.view(FrequencySeries)
         if res_fs.unit != target_unit:
-             res_fs.override_unit(target_unit)
+            res_fs.override_unit(target_unit)
         return res_fs
 
-    def coherence(self, *args: Any, **kwargs: Any) -> Any:
+    def coherence(self, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("coherence")
         from gwexpy.frequencyseries import FrequencySeries
-        res = super().coherence(*args, **kwargs)
+
+        res = super().coherence(*args, **kwargs)  # type: ignore[safe-super]
         return res.view(FrequencySeries)
 
-    def spectrogram2(self, *args: Any, **kwargs: Any) -> Any:
+    def spectrogram2(self, *args: Any, **kwargs: Any) -> Spectrogram:
         """
         Compute an alternative spectrogram (spectrogram2).
         Returns Spectrogram.
         """
         from gwexpy.spectrogram import Spectrogram
+
         res = self.spectrogram(*args, **kwargs)
         return res.view(Spectrogram)
 
     def dct(
-        self, type: int = 2, norm: str = "ortho", *, window: Any = None, detrend: bool = False
-    ) -> Any:
+        self,
+        type: int = 2,
+        norm: str = "ortho",
+        *,
+        window: WindowLike | None = None,
+        detrend: bool = False,
+    ) -> FrequencySeries:
         self._check_regular("dct")
         try:
             import scipy.fft
@@ -260,20 +301,23 @@ class TimeSeriesSpectralFourierMixin:
         out_dct = scipy.fft.dct(data, type=type, norm=norm)
         N = len(data)
         if self.dt is None:
-             raise ValueError("TimeSeries must have a valid dt for DCT frequency calculation")
+            raise ValueError(
+                "TimeSeries must have a valid dt for DCT frequency calculation"
+            )
         dt = self.dt.to("s").value
         k = np.arange(N)
         freqs_val = k / (2 * N * dt)
         frequencies = u.Quantity(freqs_val, "Hz")
 
         from gwexpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(
             out_dct,
             frequencies=frequencies,
             unit=self.unit,
             name=self.name + "_dct" if self.name else "dct",
             channel=self.channel,
-            epoch=self.epoch
+            epoch=self.epoch,
         )
         fs.transform = "dct"
         fs.dct_type = type
@@ -284,62 +328,63 @@ class TimeSeriesSpectralFourierMixin:
 
     def cepstrum(
         self,
-        kind: str = "real",
+        kind: Literal["real", "complex", "power"] = "real",
         *,
-        window: Any = None,
+        window: WindowLike | None = None,
         detrend: bool = False,
-        eps: Optional[float] = None,
+        eps: float | None = None,
         fft_mode: str = "gwpy",
-    ) -> Any:
+    ) -> FrequencySeries:
         try:
-             import scipy.fft
+            import scipy.fft
         except ImportError:
             raise ImportError("scipy is required for cepstrum.")
 
         data = self._prepare_data_for_transform(window=window, detrend=detrend)
         if kind == "complex":
-             spec = scipy.fft.rfft(data)
-             if eps is not None:
-                  spec += eps
-             with np.errstate(divide='ignore', invalid='ignore'):
-                  log_spec = np.log(spec)
-             ceps = scipy.fft.irfft(log_spec, n=len(data))
+            spec = scipy.fft.rfft(data)
+            if eps is not None:
+                spec += eps
+            with np.errstate(divide="ignore", invalid="ignore"):
+                log_spec = np.log(spec)
+            ceps = scipy.fft.irfft(log_spec, n=len(data))
         elif kind == "real":
-             spec = scipy.fft.rfft(data)
-             mag = np.abs(spec)
-             if eps is not None:
-                  mag += eps
-             with np.errstate(divide='ignore'):
-                  log_mag = np.log(mag)
-             ceps = scipy.fft.irfft(log_mag, n=len(data))
+            spec = scipy.fft.rfft(data)
+            mag = np.abs(spec)
+            if eps is not None:
+                mag += eps
+            with np.errstate(divide="ignore"):
+                log_mag = np.log(mag)
+            ceps = scipy.fft.irfft(log_mag, n=len(data))
         elif kind == "power":
-             spec = scipy.fft.rfft(data)
-             pwr = np.abs(spec)**2
-             if eps is not None:
-                  pwr += eps
-             with np.errstate(divide='ignore'):
-                  log_pwr = np.log(pwr)
-             ceps = scipy.fft.irfft(log_pwr, n=len(data))
+            spec = scipy.fft.rfft(data)
+            pwr = np.abs(spec) ** 2
+            if eps is not None:
+                pwr += eps
+            with np.errstate(divide="ignore"):
+                log_pwr = np.log(pwr)
+            ceps = scipy.fft.irfft(log_pwr, n=len(data))
         else:
-             raise ValueError(f"Unknown cepstrum kind: {kind}")
+            raise ValueError(f"Unknown cepstrum kind: {kind}")
 
         if self.dt is None:
-             dt = 1.0
+            dt = 1.0
         else:
-             dt = self.dt.to("s").value
+            dt = self.dt.to("s").value
 
         n = len(ceps)
         quefrencies = np.arange(n) * dt
         quefrencies = u.Quantity(quefrencies, "s")
 
         from gwexpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(
             ceps,
             frequencies=quefrencies,
             unit=u.dimensionless_unscaled,
             name=self.name + "_cepstrum" if self.name else "cepstrum",
             channel=self.channel,
-            epoch=self.epoch
+            epoch=self.epoch,
         )
         fs.axis_type = "quefrency"
         fs.transform = "cepstrum"
