@@ -1,56 +1,51 @@
 import pytest
+import os
+import logging
+import sys
+from PyQt5.QtWidgets import QApplication
 
+# Config logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logger = logging.getLogger(__name__)
 
-def _require_gui_deps():
-    pytest.importorskip("PyQt5")
-    pytest.importorskip("pyqtgraph")
-    pytest.importorskip("qtpy")
-    pytest.importorskip("gwpy")
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    """
+    Hook to capture screenshot on test failure.
+    """
+    outcome = yield
+    report = outcome.get_result()
+    
+    if report.when == "call" and report.failed:
+        # Check if we have a Qt application
+        qt_app = QApplication.instance()
+        print(f"\n[Screenshot Hook] Detected failure in {item.name}. App instance: {qt_app}")
+        if qt_app is None:
+            return
 
+        # Attempt to grab screenshot
+        try:
+            # We must use absolute path for saving
+            cur_dir = os.path.dirname(os.path.abspath(__file__))
+            screenshot_dir = os.path.join(cur_dir, "screenshots")
+            os.makedirs(screenshot_dir, exist_ok=True)
+            
+            filename = f"{item.name}_failed.png"
+            path = os.path.join(screenshot_dir, filename)
+            
+            # Use grabWindow or grab() on main window if possible
+            # Grab all screens or primary
+            screen = qt_app.primaryScreen()
+            if screen:
+                screenshot = screen.grabWindow(0)
+                screenshot.save(path)
+                print(f"[Screenshot Hook] Saved failure screenshot to: {path}")
+            else:
+                print("[Screenshot Hook] No primary screen found.")
+                
+        except Exception as e:
+            print(f"[Screenshot Hook] Failed to capture screenshot: {e}")
 
-@pytest.fixture
-def gui_deps():
-    _require_gui_deps()
-
-
-@pytest.fixture
-def synthetic_source(gui_deps):
-    from gwexpy.gui.data_sources import SyntheticDataSource
-
-    return SyntheticDataSource(
-        channels=["TEST:CHAN1"],
-        sample_rate=64.0,
-        chunk_size=64,
-    )
-
-
-@pytest.fixture
-def stub_source(gui_deps):
-    from gwexpy.gui.data_sources import StubDataSource
-
-    return StubDataSource(
-        channels=["TEST:CHAN1"],
-        sample_rate=64.0,
-        chunk_size=64,
-    )
-
-
-@pytest.fixture
-def main_window(qtbot, gui_deps, synthetic_source):
-    from gwexpy.gui.ui.main_window import MainWindow
-
-    window = MainWindow(enable_preload=False, data_backend=synthetic_source)
-    qtbot.addWidget(window)
-    window.show()
-    qtbot.waitExposed(window)
-
-    window.input_controls["ds_combo"].setCurrentText("NDS")
-    window.meas_controls["set_all_channels"](
-        [
-            {"name": "TEST:CHAN1", "active": True},
-        ]
-    )
-    window.graph_info1["graph_combo"].setCurrentText("Time Series")
-    window.graph_info1["traces"][0]["active"].setChecked(True)
-    window.graph_info1["traces"][0]["chan_a"].setCurrentText("TEST:CHAN1")
-    return window
+@pytest.fixture(autouse=True)
+def log_gui_action(qtbot):
+    return logger

@@ -263,6 +263,11 @@ class GraphPanel(QtWidgets.QFrame):
             cb.setEditable(True)
             cb.addItems(channel_names)
             gl.addWidget(cb, 1, 1)
+            
+            gl.addWidget(QtWidgets.QLabel("Gain:"), 2, 0)
+            sb_gain = _small_spin_dbl(decimals=3, width=80, step=0.1)
+            sb_gain.setValue(1.0)
+            gl.addWidget(sb_gain, 2, 1)
             pl.addWidget(gc)
             gs = QtWidgets.QGroupBox("Style")
             gls = QtWidgets.QGridLayout(gs)
@@ -317,6 +322,7 @@ class GraphPanel(QtWidgets.QFrame):
                 "active": active_chk,
                 "chan_a": ca,
                 "chan_b": cb,
+                "gain": sb_gain,
                 "g_style": gs,
                 "line_chk": lchk,
                 "line_c": lc,
@@ -348,7 +354,7 @@ class GraphPanel(QtWidgets.QFrame):
                     update_style(x),
                 )
             )
-            for w in [lc, ls, lw, schk, sc, ss, sw, bc, bs, bw]:
+            for w in [lc, ls, lw, schk, sc, ss, sw, bc, bs, bw, sb_gain]:
                 if isinstance(w, QtWidgets.QComboBox):
                     w.currentIndexChanged.connect(lambda _, x=i: update_style(x))
                 else:

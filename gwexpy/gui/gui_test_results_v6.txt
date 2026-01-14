@@ -1,0 +1,627 @@
+Running GUI Tests using pytest-qt and xvfb...
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-7.4.0, pluggy-1.2.0 -- /home/washimi/mambaforge/bin/python
+cachedir: .pytest_cache
+PyQt5 5.15.9 -- Qt runtime 5.15.8 -- Qt compiled 5.15.8
+rootdir: /home/washimi/work/gwexpy
+configfile: pytest.ini
+collecting ... 
+----------------------------- live log collection ------------------------------
+INFO     numexpr.utils:utils.py:160 NumExpr defaulting to 4 threads.
+INFO     OpenGL.acceleratesupport:acceleratesupport.py:24 No OpenGL_accelerate module loaded: No module named 'OpenGL_accelerate'
+collected 5 items
+
+tests/gui/integration/test_channel_config.py::test_channel_selection_and_banking 
+-------------------------------- live log call ---------------------------------
+INFO     tests.gui.conftest:test_channel_config.py:11 Starting Channel Config Test
+INFO     tests.gui.conftest:test_channel_config.py:26 Setting channels at indices 0, 1, 15
+INFO     tests.gui.conftest:test_channel_config.py:46 Switching to Bank 1
+INFO     tests.gui.conftest:test_channel_config.py:53 Setting CH16 in Bank 1 UI
+INFO     tests.gui.conftest:test_channel_config.py:67 Channel Config Test Passed
+PASSED                                                                   [ 20%]
+tests/gui/integration/test_excitation_controls.py::test_excitation_tab_controls 
+-------------------------------- live log call ---------------------------------
+INFO     tests.gui.conftest:test_excitation_controls.py:11 Starting Excitation Controls Test
+INFO     tests.gui.conftest:test_excitation_controls.py:26 Enabling excitation for Channel 0
+INFO     tests.gui.conftest:test_excitation_controls.py:32 Selecting Sine type
+INFO     tests.gui.conftest:test_excitation_controls.py:39 Setting frequency and amplitude
+INFO     tests.gui.conftest:test_excitation_controls.py:50 Excitation Controls Test Passed
+PASSED                                                                   [ 40%]
+tests/gui/integration/test_main_window_flow.py::test_main_window_tab_navigation 
+-------------------------------- live log call ---------------------------------
+INFO     tests.gui.conftest:test_main_window_flow.py:12 Starting Navigation Test
+INFO     tests.gui.conftest:test_main_window_flow.py:22 Checked initial tab
+INFO     tests.gui.conftest:test_main_window_flow.py:25 Switching to Measurement Tab
+INFO     tests.gui.conftest:test_main_window_flow.py:33 Toggling Averaging Type
+INFO     tests.gui.conftest:test_main_window_flow.py:42 Toggled Averaging Type successfully
+INFO     tests.gui.conftest:test_main_window_flow.py:47 returned to Input Tab
+INFO     tests.gui.conftest:test_main_window_flow.py:50 Test Finished
+PASSED                                                                   [ 60%]
+tests/gui/integration/test_measurement_params.py::test_measurement_parameter_updates 
+-------------------------------- live log call ---------------------------------
+INFO     tests.gui.conftest:test_measurement_params.py:11 Starting Measurement Params Test
+INFO     tests.gui.conftest:test_measurement_params.py:23 Testing BW update
+INFO     tests.gui.conftest:test_measurement_params.py:29 Testing Averages update
+INFO     tests.gui.conftest:test_measurement_params.py:35 Testing Window selection
+INFO     tests.gui.conftest:test_measurement_params.py:42 Testing Averaging Type radio buttons
+INFO     tests.gui.conftest:test_measurement_params.py:56 Testing Overlap update
+INFO     tests.gui.conftest:test_measurement_params.py:61 Measurement Params Test Passed
+PASSED                                                                   [ 80%]
+tests/gui/integration/test_simulation_acquisition.py::test_simulation_acquisition_flow 
+-------------------------------- live log call ---------------------------------
+INFO     tests.gui.conftest:test_simulation_acquisition.py:11 Starting Simulation Acquisition Test
+INFO     tests.gui.conftest:test_simulation_acquisition.py:20 Targeting Simulation mode at index 3
+INFO     tests.gui.conftest:test_simulation_acquisition.py:27 Selecting white_noise channel
+INFO     tests.gui.conftest:test_simulation_acquisition.py:34 Clicking Start
+INFO     gwexpy.gui.ui.main_window:main_window.py:403 start_animation called. DataSource: Simulation
+INFO     gwexpy.gui.nds.cache:cache.py:82 Starting SimulationThread for ['white_noise']
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:19 SimulationThread initialized for channels: ['white_noise']
+INFO     gwexpy.gui.streaming:streaming.py:67 SpectralAccumulator configured. FFT=1.0s, Stride=0.5s
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:25 SimulationThread run() started
+INFO     tests.gui.conftest:test_simulation_acquisition.py:44 Waiting for simulation data...
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+
+[Screenshot Hook] Detected failure in test_simulation_acquisition_flow. App instance: <PyQt5.QtWidgets.QApplication object at 0x7498d9facdc0>
+[Screenshot Hook] Saved failure screenshot to: /home/washimi/work/gwexpy/tests/gui/screenshots/test_simulation_acquisition_flow_failed.png
+FAILED                                                                   [100%]
+------------------------------ live log teardown -------------------------------
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+
+tests/gui/integration/test_simulation_acquisition.py::test_simulation_acquisition_flow ERROR [100%]
+
+==================================== ERRORS ====================================
+____________ ERROR at teardown of test_simulation_acquisition_flow _____________
+TEARDOWN ERROR: Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+----------------------------- Captured stderr call -----------------------------
+2026-01-13 12:50:30,569 [INFO] Starting Simulation Acquisition Test
+2026-01-13 12:50:30,740 [INFO] Targeting Simulation mode at index 3
+2026-01-13 12:50:30,741 [INFO] Selecting white_noise channel
+2026-01-13 12:50:30,742 [INFO] Clicking Start
+2026-01-13 12:50:30,745 [INFO] start_animation called. DataSource: Simulation
+2026-01-13 12:50:30,746 [INFO] Starting SimulationThread for ['white_noise']
+2026-01-13 12:50:30,746 [INFO] SimulationThread initialized for channels: ['white_noise']
+2026-01-13 12:50:30,747 [INFO] SpectralAccumulator configured. FFT=1.0s, Stride=0.5s
+2026-01-13 12:50:30,747 [INFO] SimulationThread run() started
+2026-01-13 12:50:30,747 [INFO] Waiting for simulation data...
+2026-01-13 12:50:30,748 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:30,753 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:31,749 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:31,750 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:32,750 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:32,750 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:33,750 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:33,751 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:34,751 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:34,752 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:35,753 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:35,753 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:36,754 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:36,754 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:37,754 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:37,755 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:38,755 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:38,755 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:39,756 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:39,756 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:40,757 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:40,757 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:41,758 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:41,759 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+------------------------------ Captured log call -------------------------------
+INFO     tests.gui.conftest:test_simulation_acquisition.py:11 Starting Simulation Acquisition Test
+INFO     tests.gui.conftest:test_simulation_acquisition.py:20 Targeting Simulation mode at index 3
+INFO     tests.gui.conftest:test_simulation_acquisition.py:27 Selecting white_noise channel
+INFO     tests.gui.conftest:test_simulation_acquisition.py:34 Clicking Start
+INFO     gwexpy.gui.ui.main_window:main_window.py:403 start_animation called. DataSource: Simulation
+INFO     gwexpy.gui.nds.cache:cache.py:82 Starting SimulationThread for ['white_noise']
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:19 SimulationThread initialized for channels: ['white_noise']
+INFO     gwexpy.gui.streaming:streaming.py:67 SpectralAccumulator configured. FFT=1.0s, Stride=0.5s
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:25 SimulationThread run() started
+INFO     tests.gui.conftest:test_simulation_acquisition.py:44 Waiting for simulation data...
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+--------------------------- Captured stderr teardown ---------------------------
+2026-01-13 12:50:42,819 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:42,844 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+---------------------------- Captured log teardown -----------------------------
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+=================================== FAILURES ===================================
+_______________________ test_simulation_acquisition_flow _______________________
+
+qtbot = <pytestqt.qtbot.QtBot object at 0x7498d9366200>
+log_gui_action = <Logger tests.gui.conftest (INFO)>
+
+    @pytest.mark.gui
+    def test_simulation_acquisition_flow(qtbot, log_gui_action):
+        """
+        Test starting simulation mode and verifying data reception.
+        """
+        logger = log_gui_action
+        logger.info("Starting Simulation Acquisition Test")
+    
+        window = MainWindow(enable_preload=False)
+        qtbot.addWidget(window)
+        window.show()
+    
+        # 1. Configure Simulation Mode
+        ds_combo = window.input_controls["ds_combo"]
+        idx_sim = ds_combo.findText("Simulation")
+        logger.info(f"Targeting Simulation mode at index {idx_sim}")
+        assert idx_sim != -1, "Simulation mode not found in ds_combo"
+    
+        ds_combo.setCurrentIndex(idx_sim)
+        assert ds_combo.currentText() == "Simulation"
+    
+        # 2. Select a simulation channel
+        logger.info("Selecting white_noise channel")
+        new_channels = [
+            {"name": "white_noise", "active": True},
+        ]
+        window.meas_controls["set_all_channels"](new_channels)
+    
+        # 3. Start Acquisition
+        logger.info("Clicking Start")
+        qtbot.mouseClick(window.btn_start, QtCore.Qt.LeftButton)
+    
+        # Wait for acquisition to start
+        qtbot.waitUntil(lambda: not window.btn_start.isEnabled(), timeout=5000)
+    
+        # 4. Verify data update
+        def has_data():
+            return window.nds_latest_raw is not None and len(window.nds_latest_raw) > 0
+    
+        logger.info("Waiting for simulation data...")
+        # Increase timeout for robustness
+>       qtbot.waitUntil(has_data, timeout=12000)
+E       pytestqt.exceptions.TimeoutError: waitUntil timed out in 12000 milliseconds
+
+tests/gui/integration/test_simulation_acquisition.py:46: TimeoutError
+----------------------------- Captured Qt messages -----------------------------
+QtWarningMsg: This plugin does not support propagateSizeHints()
+----------------------------- Captured stderr call -----------------------------
+2026-01-13 12:50:30,569 [INFO] Starting Simulation Acquisition Test
+2026-01-13 12:50:30,740 [INFO] Targeting Simulation mode at index 3
+2026-01-13 12:50:30,741 [INFO] Selecting white_noise channel
+2026-01-13 12:50:30,742 [INFO] Clicking Start
+2026-01-13 12:50:30,745 [INFO] start_animation called. DataSource: Simulation
+2026-01-13 12:50:30,746 [INFO] Starting SimulationThread for ['white_noise']
+2026-01-13 12:50:30,746 [INFO] SimulationThread initialized for channels: ['white_noise']
+2026-01-13 12:50:30,747 [INFO] SpectralAccumulator configured. FFT=1.0s, Stride=0.5s
+2026-01-13 12:50:30,747 [INFO] SimulationThread run() started
+2026-01-13 12:50:30,747 [INFO] Waiting for simulation data...
+2026-01-13 12:50:30,748 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:30,753 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:31,749 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:31,750 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:32,750 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:32,750 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:33,750 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:33,751 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:34,751 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:34,752 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:35,753 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:35,753 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:36,754 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:36,754 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:37,754 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:37,755 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:38,755 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:38,755 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:39,756 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:39,756 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:40,757 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:40,757 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+2026-01-13 12:50:41,758 [INFO] SimulationThread emitting payload with 1 channels
+2026-01-13 12:50:41,759 [INFO] Cache received data payload
+Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/cache.py", line 99, in _on_data_received
+    self.buffers.update_buffers(payload)
+  File "/home/washimi/work/gwexpy/gwexpy/gui/nds/buffer.py", line 91, in update_buffers
+    for channel, packet in payload.items():
+AttributeError: 'list' object has no attribute 'items'
+________________________________________________________________________________
+------------------------------ Captured log call -------------------------------
+INFO     tests.gui.conftest:test_simulation_acquisition.py:11 Starting Simulation Acquisition Test
+INFO     tests.gui.conftest:test_simulation_acquisition.py:20 Targeting Simulation mode at index 3
+INFO     tests.gui.conftest:test_simulation_acquisition.py:27 Selecting white_noise channel
+INFO     tests.gui.conftest:test_simulation_acquisition.py:34 Clicking Start
+INFO     gwexpy.gui.ui.main_window:main_window.py:403 start_animation called. DataSource: Simulation
+INFO     gwexpy.gui.nds.cache:cache.py:82 Starting SimulationThread for ['white_noise']
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:19 SimulationThread initialized for channels: ['white_noise']
+INFO     gwexpy.gui.streaming:streaming.py:67 SpectralAccumulator configured. FFT=1.0s, Stride=0.5s
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:25 SimulationThread run() started
+INFO     tests.gui.conftest:test_simulation_acquisition.py:44 Waiting for simulation data...
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:51 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+=============================== warnings summary ===============================
+../../mambaforge/lib/python3.10/site-packages/scitokens/utils/keycache.py:9
+  /home/washimi/mambaforge/lib/python3.10/site-packages/scitokens/utils/keycache.py:9: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources  # part of setuptools
+
+tests/gui/integration/test_main_window_flow.py::test_main_window_tab_navigation
+  /home/washimi/mambaforge/lib/python3.10/site-packages/pytestqt/qtbot.py:304: DeprecationWarning: waitForWindowShown is deprecated, as the underlying Qt method was obsoleted in Qt 5.0 and removed in Qt 6.0. Its name is imprecise and the pytest-qt wrapper does not raise qtbot.TimeoutError if the window wasn't shown. Please use the qtbot.waitExposed context manager instead.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/gui/integration/test_simulation_acquisition.py::test_simulation_acquisition_flow
+FAILED tests/gui/integration/test_simulation_acquisition.py::test_simulation_acquisition_flow
+============== 1 failed, 4 passed, 2 warnings, 1 error in 15.39s ===============

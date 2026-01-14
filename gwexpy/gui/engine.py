@@ -131,14 +131,15 @@ class Engine:
                     if ts_b is None:
                         spec = None
                     else:
-                        spec = ts_a.coherence(ts_b, **fft_kwargs)
+                        # gwpy coherence() returns MSC. Linear coherence is sqrt(MSC).
+                        spec = ts_a.coherence(ts_b, **fft_kwargs) ** 0.5
 
                 elif graph_type == "Squared Coherence":
                     if ts_b is None:
                         spec = None
                     else:
-                        coh = ts_a.coherence(ts_b, **fft_kwargs)
-                        spec = coh**2
+                        # Magnitude Squared Coherence (MSC)
+                        spec = ts_a.coherence(ts_b, **fft_kwargs)
 
                 elif graph_type == "Transfer Function":
                     if ts_b is None:

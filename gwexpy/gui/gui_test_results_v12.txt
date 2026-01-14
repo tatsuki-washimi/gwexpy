@@ -1,0 +1,112 @@
+Running GUI Tests using pytest-qt and xvfb...
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-7.4.0, pluggy-1.2.0 -- /home/washimi/mambaforge/bin/python
+cachedir: .pytest_cache
+PyQt5 5.15.9 -- Qt runtime 5.15.8 -- Qt compiled 5.15.8
+rootdir: /home/washimi/work/gwexpy
+configfile: pytest.ini
+collecting ... 
+----------------------------- live log collection ------------------------------
+INFO     numexpr.utils:utils.py:160 NumExpr defaulting to 4 threads.
+INFO     OpenGL.acceleratesupport:acceleratesupport.py:24 No OpenGL_accelerate module loaded: No module named 'OpenGL_accelerate'
+collected 6 items
+
+tests/gui/integration/test_channel_config.py::test_channel_selection_and_banking 
+-------------------------------- live log call ---------------------------------
+INFO     tests.gui.conftest:test_channel_config.py:11 Starting Channel Config Test
+INFO     tests.gui.conftest:test_channel_config.py:26 Setting channels at indices 0, 1, 15
+INFO     tests.gui.conftest:test_channel_config.py:46 Switching to Bank 1
+INFO     tests.gui.conftest:test_channel_config.py:53 Setting CH16 in Bank 1 UI
+INFO     tests.gui.conftest:test_channel_config.py:67 Channel Config Test Passed
+PASSED                                                                   [ 16%]
+tests/gui/integration/test_excitation_controls.py::test_excitation_tab_controls 
+-------------------------------- live log call ---------------------------------
+INFO     tests.gui.conftest:test_excitation_controls.py:11 Starting Excitation Controls Test
+INFO     tests.gui.conftest:test_excitation_controls.py:26 Enabling excitation for Channel 0
+INFO     tests.gui.conftest:test_excitation_controls.py:32 Selecting Sine type
+INFO     tests.gui.conftest:test_excitation_controls.py:39 Setting frequency and amplitude
+INFO     tests.gui.conftest:test_excitation_controls.py:50 Excitation Controls Test Passed
+PASSED                                                                   [ 33%]
+tests/gui/integration/test_main_window_flow.py::test_main_window_tab_navigation 
+-------------------------------- live log call ---------------------------------
+INFO     tests.gui.conftest:test_main_window_flow.py:12 Starting Navigation Test
+INFO     tests.gui.conftest:test_main_window_flow.py:22 Checked initial tab
+INFO     tests.gui.conftest:test_main_window_flow.py:25 Switching to Measurement Tab
+INFO     tests.gui.conftest:test_main_window_flow.py:33 Toggling Averaging Type
+INFO     tests.gui.conftest:test_main_window_flow.py:42 Toggled Averaging Type successfully
+INFO     tests.gui.conftest:test_main_window_flow.py:47 returned to Input Tab
+INFO     tests.gui.conftest:test_main_window_flow.py:50 Test Finished
+PASSED                                                                   [ 50%]
+tests/gui/integration/test_measurement_params.py::test_measurement_parameter_updates 
+-------------------------------- live log call ---------------------------------
+INFO     tests.gui.conftest:test_measurement_params.py:11 Starting Measurement Params Test
+INFO     tests.gui.conftest:test_measurement_params.py:23 Testing BW update
+INFO     tests.gui.conftest:test_measurement_params.py:29 Testing Averages update
+INFO     tests.gui.conftest:test_measurement_params.py:35 Testing Window selection
+INFO     tests.gui.conftest:test_measurement_params.py:42 Testing Averaging Type radio buttons
+INFO     tests.gui.conftest:test_measurement_params.py:56 Testing Overlap update
+INFO     tests.gui.conftest:test_measurement_params.py:61 Measurement Params Test Passed
+PASSED                                                                   [ 66%]
+tests/gui/integration/test_simulation_acquisition.py::test_simulation_acquisition_flow 
+-------------------------------- live log call ---------------------------------
+INFO     tests.gui.conftest:test_simulation_acquisition.py:12 Starting Simulation Acquisition Test (Detailed)
+INFO     tests.gui.conftest:test_simulation_acquisition.py:25 Selecting white_noise channel
+INFO     tests.gui.conftest:test_simulation_acquisition.py:31 Clicking Start
+INFO     gwexpy.gui.ui.main_window:main_window.py:403 start_animation called. DataSource: Simulation
+INFO     gwexpy.gui.nds.cache:cache.py:82 Starting SimulationThread for ['white_noise']
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:19 SimulationThread initialized for channels: ['white_noise']
+INFO     gwexpy.gui.streaming:streaming.py:69 SpectralAccumulator configured. FFT=1.0s, Stride=0.5s
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:25 SimulationThread run() started
+INFO     tests.gui.conftest:test_simulation_acquisition.py:46 Waiting for PSD results in plots...
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:47 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     tests.gui.conftest:test_simulation_acquisition.py:49 Plot data received!
+INFO     tests.gui.conftest:test_simulation_acquisition.py:52 Aborting acquisition
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:54 SimulationThread run() finished
+INFO     tests.gui.conftest:test_simulation_acquisition.py:56 Simulation Acquisition Test Passed Successfully
+PASSED                                                                   [ 83%]
+tests/gui/integration/test_simulation_partial_channels.py::test_simulation_partial_channels_update 
+-------------------------------- live log call ---------------------------------
+INFO     tests.gui.conftest:test_simulation_partial_channels.py:13 Starting Partial Channels Simulation Test
+INFO     tests.gui.conftest:test_simulation_partial_channels.py:25 Selecting white_noise channel for measurement
+INFO     tests.gui.conftest:test_simulation_partial_channels.py:53 Clicking Start
+INFO     gwexpy.gui.ui.main_window:main_window.py:403 start_animation called. DataSource: Simulation
+INFO     gwexpy.gui.nds.cache:cache.py:82 Starting SimulationThread for ['white_noise']
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:19 SimulationThread initialized for channels: ['white_noise']
+INFO     gwexpy.gui.streaming:streaming.py:69 SpectralAccumulator configured. FFT=1.0s, Stride=0.5s
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:25 SimulationThread run() started
+INFO     tests.gui.conftest:test_simulation_partial_channels.py:67 Waiting for Trace 0 data (should not be blocked by Trace 1)...
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:47 SimulationThread emitting payload with 1 channels
+INFO     gwexpy.gui.nds.cache:cache.py:98 Cache received data payload
+INFO     tests.gui.conftest:test_simulation_partial_channels.py:70 Trace 0 updated successfully!
+INFO     gwexpy.gui.nds.sim_thread:sim_thread.py:54 SimulationThread run() finished
+PASSED                                                                   [100%]
+
+=============================== warnings summary ===============================
+../../mambaforge/lib/python3.10/site-packages/scitokens/utils/keycache.py:9
+  /home/washimi/mambaforge/lib/python3.10/site-packages/scitokens/utils/keycache.py:9: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources  # part of setuptools
+
+tests/gui/integration/test_main_window_flow.py::test_main_window_tab_navigation
+  /home/washimi/mambaforge/lib/python3.10/site-packages/pytestqt/qtbot.py:304: DeprecationWarning: waitForWindowShown is deprecated, as the underlying Qt method was obsoleted in Qt 5.0 and removed in Qt 6.0. Its name is imprecise and the pytest-qt wrapper does not raise qtbot.TimeoutError if the window wasn't shown. Please use the qtbot.waitExposed context manager instead.
+    warnings.warn(
+
+tests/gui/integration/test_simulation_acquisition.py::test_simulation_acquisition_flow
+tests/gui/integration/test_simulation_partial_channels.py::test_simulation_partial_channels_update
+tests/gui/integration/test_simulation_partial_channels.py::test_simulation_partial_channels_update
+  /home/washimi/mambaforge/lib/python3.10/site-packages/erfa/core.py:133: ErfaWarning: ERFA function "taiutc" yielded 1 of "dubious year (Note 4)"
+    warn(f'ERFA function "{func_name}" yielded {wmsg}', ErfaWarning)
+
+tests/gui/integration/test_simulation_acquisition.py::test_simulation_acquisition_flow
+tests/gui/integration/test_simulation_partial_channels.py::test_simulation_partial_channels_update
+tests/gui/integration/test_simulation_partial_channels.py::test_simulation_partial_channels_update
+  /home/washimi/mambaforge/lib/python3.10/site-packages/erfa/core.py:133: ErfaWarning: ERFA function "d2dtf" yielded 1 of "dubious year (Note 5)"
+    warn(f'ERFA function "{func_name}" yielded {wmsg}', ErfaWarning)
+
+tests/gui/integration/test_simulation_acquisition.py::test_simulation_acquisition_flow
+tests/gui/integration/test_simulation_partial_channels.py::test_simulation_partial_channels_update
+  /home/washimi/mambaforge/lib/python3.10/site-packages/erfa/core.py:133: ErfaWarning: ERFA function "utctai" yielded 1 of "dubious year (Note 3)"
+    warn(f'ERFA function "{func_name}" yielded {wmsg}', ErfaWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 6 passed, 10 warnings in 7.00s ========================
