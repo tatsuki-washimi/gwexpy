@@ -1,6 +1,6 @@
 """gwexpy.noise.magnetic - Geomagnetic noise models."""
 
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any
 
 import numpy as np
 from astropy import units as u
@@ -11,8 +11,8 @@ from .peaks import lorentzian_line
 
 
 def schumann_resonance(
-    frequencies: Union[np.ndarray, None] = None,
-    modes: Optional[List[Tuple[float, float, float]]] = None,
+    frequencies: np.ndarray | None = None,
+    modes: list[tuple[float, float, float]] | None = None,
     amplitude_scale: float = 1.0,
     **kwargs: Any,
 ) -> FrequencySeries:
@@ -32,10 +32,10 @@ def schumann_resonance(
         Additional arguments for FrequencySeries.
     """
     if frequencies is None:
-         # Need valid frequencies to sum over
-         frequencies = kwargs.pop("frequencies", None)
-         if frequencies is None:
-              raise ValueError("frequencies argument is required for schumann_resonance.")
+        # Need valid frequencies to sum over
+        frequencies = kwargs.pop("frequencies", None)
+        if frequencies is None:
+            raise ValueError("frequencies argument is required for schumann_resonance.")
 
     if modes is None:
         # Default Schumann modes: f0 (Hz), Q, Amplitude (pT/rtHz)
@@ -75,29 +75,21 @@ def schumann_resonance(
         # If lorentzian_line returns Quantity, we get value.
 
         peak_asd_series = lorentzian_line(
-            f0,
-            A * amplitude_scale,
-            Q=Q,
-            frequencies=f_arr,
-            unit=kwargs["unit"]
+            f0, A * amplitude_scale, Q=Q, frequencies=f_arr, unit=kwargs["unit"]
         )
 
         # Add to total PSD (incoherently)
-        total_psd += peak_asd_series.value ** 2
+        total_psd += peak_asd_series.value**2
 
     # Final ASD
     total_asd = np.sqrt(total_psd)
 
-    return FrequencySeries(
-        total_asd,
-        frequencies=f_arr,
-        **kwargs
-    )
+    return FrequencySeries(total_asd, frequencies=f_arr, **kwargs)
 
 
 def geomagnetic_background(
     frequencies: np.ndarray,
-    amplitude_1hz: float = 10e-12, # 10 pT
+    amplitude_1hz: float = 10e-12,  # 10 pT
     exponent: float = 1.0,
     **kwargs: Any,
 ) -> FrequencySeries:
@@ -126,14 +118,10 @@ def geomagnetic_background(
         # If we pass 10e-12 directly to power_law with unit=pT, we get 1e-11 pT... very small.
         # Let's allow user to specify. If defaults:
 
-        if amplitude_1hz < 1e-9: # Likely Tesla
-             # Convert to pT for the default unit
-             amplitude_1hz *= 1e12
+        if amplitude_1hz < 1e-9:  # Likely Tesla
+            # Convert to pT for the default unit
+            amplitude_1hz *= 1e12
 
     return power_law(
-        exponent,
-        amplitude=amplitude_1hz,
-        f_ref=1.0,
-        frequencies=frequencies,
-        **kwargs
+        exponent, amplitude=amplitude_1hz, f_ref=1.0, frequencies=frequencies, **kwargs
     )

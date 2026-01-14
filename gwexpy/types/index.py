@@ -9,4 +9,3 @@ __all__ = [
     "Index",
     "Quantity",
 ]
-

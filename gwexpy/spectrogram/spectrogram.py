@@ -1,20 +1,22 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
-
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
-from gwexpy.types.mixin import PhaseMethodsMixin, InteropMixin
+
+from gwexpy.types.mixin import InteropMixin, PhaseMethodsMixin
 
 
 class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
     """
     Extends gwpy.spectrogram.Spectrogram with additional interop methods.
     """
+
     def plot(self, **kwargs: Any) -> Any:
         """Plot this Spectrogram. Delegates to gwexpy.plot.Plot."""
         from gwexpy.plot import Plot
+
         return Plot(self, **kwargs)
 
     def bootstrap(
@@ -90,6 +92,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Convert to ROOT TH2D.
         """
         from gwexpy.interop import to_th2d
+
         return to_th2d(self, error=error)
 
     def to_quantities(self, units=None):
@@ -97,6 +100,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Convert to quantities.Quantity (Elephant/Neo compatible).
         """
         from gwexpy.interop import to_quantity
+
         return to_quantity(self, units=units)
 
     @classmethod
@@ -114,6 +118,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             Frequency axis.
         """
         from gwexpy.interop import from_quantity
+
         return from_quantity(cls, q, times=times, frequencies=frequencies)
 
     @classmethod
@@ -122,9 +127,10 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Create Spectrogram from ROOT TH2D.
         """
         from gwexpy.interop import from_root
+
         return from_root(cls, obj, return_error=return_error)
 
-    def to_mne(self, info: Optional[Any] = None) -> Any:
+    def to_mne(self, info: Any | None = None) -> Any:
         """
         Convert to MNE-Python object.
 
@@ -138,6 +144,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         mne.time_frequency.EpochsTFRArray
         """
         from gwexpy.interop import to_mne
+
         return to_mne(self, info=info)
 
     @classmethod
@@ -157,6 +164,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Spectrogram or SpectrogramDict
         """
         from gwexpy.interop import from_mne
+
         return from_mne(cls, tfr, **kwargs)
 
     def to_obspy(self, **kwargs: Any) -> Any:
@@ -168,6 +176,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         obspy.Stream
         """
         from gwexpy.interop import to_obspy
+
         return to_obspy(self, **kwargs)
 
     @classmethod
@@ -187,6 +196,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Spectrogram
         """
         from gwexpy.interop import from_obspy
+
         return from_obspy(cls, stream, **kwargs)
 
     def imshow(self, **kwargs):
@@ -197,7 +207,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         """Plot using pcolormesh. Inherited from gwpy."""
         return super().pcolormesh(**kwargs)
 
-    def radian(self, unwrap: bool = False) -> "Spectrogram":
+    def radian(self, unwrap: bool = False) -> Spectrogram:
         """
         Calculate the phase of this Spectrogram in radians.
         """
@@ -214,7 +224,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             name=name,
         )
 
-    def degree(self, unwrap: bool = False) -> "Spectrogram":
+    def degree(self, unwrap: bool = False) -> Spectrogram:
         """
         Calculate the phase of this Spectrogram in degrees.
         """

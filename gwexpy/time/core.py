@@ -1,8 +1,8 @@
 import numpy as np
 from astropy.time import Time
-from gwpy.time import to_gps as _gwpy_to_gps
 from gwpy.time import from_gps as _gwpy_from_gps
 from gwpy.time import tconvert as _gwpy_tconvert
+from gwpy.time import to_gps as _gwpy_to_gps
 
 try:
     import pandas as pd

@@ -7,6 +7,7 @@ import numpy as np
 from astropy import units as u
 
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
+
 from .utils import (
     _extract_axis_info,
     _extract_freq_axis_info,
@@ -84,7 +85,9 @@ class TimeSeriesMatrixCoreMixin:
             "epoch": getattr(self, "epoch", None),
         }
 
-    def _apply_timeseries_method(self, method_name: str, *args: Any, **kwargs: Any) -> Any:
+    def _apply_timeseries_method(
+        self, method_name: str, *args: Any, **kwargs: Any
+    ) -> Any:
         """
         Apply a TimeSeries method element-wise and rebuild a TimeSeriesMatrix.
         """
@@ -136,7 +139,9 @@ class TimeSeriesMatrixCoreMixin:
                 axis_length = axis_info["n"]
                 data_arr = np.asarray(ts_result.value)
                 if data_arr.shape[-1] != axis_length:
-                    raise ValueError(f"{method_name} produced inconsistent data lengths")
+                    raise ValueError(
+                        f"{method_name} produced inconsistent data lengths"
+                    )
 
                 values[i][j] = data_arr
                 meta_array[i, j] = MetaData(
@@ -144,7 +149,11 @@ class TimeSeriesMatrixCoreMixin:
                     name=ts_result.name,
                     channel=ts_result.channel,
                 )
-                dtype = data_arr.dtype if dtype is None else np.result_type(dtype, data_arr.dtype)
+                dtype = (
+                    data_arr.dtype
+                    if dtype is None
+                    else np.result_type(dtype, data_arr.dtype)
+                )
 
         common_axis, axis_length = _validate_common_axis(axis_infos, method_name)
 
@@ -193,7 +202,9 @@ class TimeSeriesMatrixCoreMixin:
 
         return _getter_factory(other)
 
-    def _apply_bivariate_spectral_method(self, method_name: str, other: Any, *args: Any, **kwargs: Any) -> Any:
+    def _apply_bivariate_spectral_method(
+        self, method_name: str, other: Any, *args: Any, **kwargs: Any
+    ) -> Any:
         """
         Apply a bivariate TimeSeries spectral method element-wise and return FrequencySeriesMatrix.
         """
@@ -219,7 +230,9 @@ class TimeSeriesMatrixCoreMixin:
                 ts_b = get_other(i, j)
                 result = getattr(ts_a, method_name)(ts_b, *args, **kwargs)
                 if not hasattr(result, "frequencies"):
-                    raise TypeError(f"{method_name} must return a FrequencySeries-like object")
+                    raise TypeError(
+                        f"{method_name} must return a FrequencySeries-like object"
+                    )
                 freq_info = _extract_freq_axis_info(result)
                 freq_infos.append(freq_info)
                 epochs.append(getattr(result, "epoch", None))
@@ -235,9 +248,15 @@ class TimeSeriesMatrixCoreMixin:
                     name=name,
                     channel=channel,
                 )
-                dtype = data_arr.dtype if dtype is None else np.result_type(dtype, data_arr.dtype)
+                dtype = (
+                    data_arr.dtype
+                    if dtype is None
+                    else np.result_type(dtype, data_arr.dtype)
+                )
 
-        common_freqs, common_df, common_f0, n_freq = _validate_common_frequency_axis(freq_infos, method_name)
+        common_freqs, common_df, common_f0, n_freq = _validate_common_frequency_axis(
+            freq_infos, method_name
+        )
         common_epoch = _validate_common_epoch(epochs, method_name)
 
         out_data = np.empty((N, M, n_freq), dtype=dtype)
@@ -257,7 +276,9 @@ class TimeSeriesMatrixCoreMixin:
             epoch=common_epoch,
         )
 
-    def _apply_univariate_spectral_method(self, method_name: str, *args: Any, **kwargs: Any) -> Any:
+    def _apply_univariate_spectral_method(
+        self, method_name: str, *args: Any, **kwargs: Any
+    ) -> Any:
         """
         Apply a univariate TimeSeries spectral method element-wise and return FrequencySeriesMatrix.
         """
@@ -280,7 +301,9 @@ class TimeSeriesMatrixCoreMixin:
                 ts = self[i, j]
                 result = getattr(ts, method_name)(*args, **kwargs)
                 if not hasattr(result, "frequencies"):
-                    raise TypeError(f"{method_name} must return a FrequencySeries-like object")
+                    raise TypeError(
+                        f"{method_name} must return a FrequencySeries-like object"
+                    )
                 freq_info = _extract_freq_axis_info(result)
                 freq_infos.append(freq_info)
                 epochs.append(getattr(result, "epoch", None))
@@ -296,9 +319,15 @@ class TimeSeriesMatrixCoreMixin:
                     name=name,
                     channel=channel,
                 )
-                dtype = data_arr.dtype if dtype is None else np.result_type(dtype, data_arr.dtype)
+                dtype = (
+                    data_arr.dtype
+                    if dtype is None
+                    else np.result_type(dtype, data_arr.dtype)
+                )
 
-        common_freqs, common_df, common_f0, n_freq = _validate_common_frequency_axis(freq_infos, method_name)
+        common_freqs, common_df, common_f0, n_freq = _validate_common_frequency_axis(
+            freq_infos, method_name
+        )
         common_epoch = _validate_common_epoch(epochs, method_name)
 
         out_data = np.empty((N, M, n_freq), dtype=dtype)
@@ -318,7 +347,9 @@ class TimeSeriesMatrixCoreMixin:
             epoch=common_epoch,
         )
 
-    def _apply_spectrogram_method(self, method_name: str, *args: Any, **kwargs: Any) -> Any:
+    def _apply_spectrogram_method(
+        self, method_name: str, *args: Any, **kwargs: Any
+    ) -> Any:
         """
         Apply a TimeSeries spectrogram method element-wise and return SpectrogramMatrix.
         """
@@ -347,7 +378,9 @@ class TimeSeriesMatrixCoreMixin:
                 ts = self[i, j]
                 result = getattr(ts, method_name)(*args, **kwargs)
                 if not hasattr(result, "times") or not hasattr(result, "frequencies"):
-                    raise TypeError(f"{method_name} must return a Spectrogram-like object")
+                    raise TypeError(
+                        f"{method_name} must return a Spectrogram-like object"
+                    )
 
                 time_info = _extract_axis_info(result)
                 freq_info = _extract_freq_axis_info(result)
@@ -369,22 +402,32 @@ class TimeSeriesMatrixCoreMixin:
                 if unit_ref is None:
                     unit_ref = unit
                 elif unit != unit_ref:
-                    raise ValueError(f"{method_name} requires common unit; mismatch in unit")
+                    raise ValueError(
+                        f"{method_name} requires common unit; mismatch in unit"
+                    )
 
                 if name_ref is None:
                     name_ref = getattr(result, "name", None)
 
-                dtype = data_arr.dtype if dtype is None else np.result_type(dtype, data_arr.dtype)
+                dtype = (
+                    data_arr.dtype
+                    if dtype is None
+                    else np.result_type(dtype, data_arr.dtype)
+                )
 
         common_times, n_time = _validate_common_axis(time_infos, method_name)
-        common_freqs, _, _, n_freq = _validate_common_frequency_axis(freq_infos, method_name)
+        common_freqs, _, _, n_freq = _validate_common_frequency_axis(
+            freq_infos, method_name
+        )
         common_epoch = _validate_common_epoch(epochs, method_name)
 
         out_data = np.empty((N, M, n_time, n_freq), dtype=dtype)
         for i in range(N):
             for j in range(M):
                 if values[i][j].shape != (n_time, n_freq):
-                    raise ValueError(f"{method_name} produced inconsistent spectrogram shapes")
+                    raise ValueError(
+                        f"{method_name} produced inconsistent spectrogram shapes"
+                    )
                 out_data[i, j, :, :] = values[i][j]
 
         meta_matrix = MetaDataMatrix(meta_array)

@@ -1,11 +1,12 @@
-import numpy as np
 from dataclasses import dataclass
-from typing import Dict, Optional, Tuple
+
+import numpy as np
 
 # --- Optional Dependencies ---
 try:
     import statsmodels.api as sm  # noqa: F401
     from statsmodels.tsa.arima.model import ARIMA
+
     try:
         from statsmodels.tsa.statespace.sarimax import SARIMAX
     except ImportError:
@@ -18,12 +19,14 @@ except ImportError:
 
 try:
     import pmdarima as pm
+
     PMDARIMA_AVAILABLE = True
 except ImportError:
     PMDARIMA_AVAILABLE = False
 
 try:
     from typing import TYPE_CHECKING
+
     if TYPE_CHECKING:
         from .timeseries import TimeSeries
 except ImportError:
@@ -33,7 +36,7 @@ except ImportError:
 @dataclass
 class ArimaForecastResult:
     forecast_ts: "TimeSeries"
-    intervals: Dict[str, "TimeSeries"]
+    intervals: dict[str, "TimeSeries"]
 
 
 class ArimaResult:
@@ -41,6 +44,7 @@ class ArimaResult:
     Result object for ARIMA/SARIMAX modeling on TimeSeries.
     Wraps statsmodels results and provides TimeSeries-aware methods.
     """
+
     def __init__(self, res, t0, dt, unit, name=None, channel=None, original_data=None):
         self.res = res
         self.t0 = t0
@@ -91,17 +95,15 @@ class ArimaResult:
 
         # Handle case where predict returns a single value
         if np.ndim(pred) == 0:
-             pred = [pred]
+            pred = [pred]
 
         return TimeSeries(
-            pred,
-            t0=new_t0,
-            dt=self.dt,
-            unit=self.unit,
-            name=f"{self.name}_pred"
+            pred, t0=new_t0, dt=self.dt, unit=self.unit, name=f"{self.name}_pred"
         )
 
-    def forecast(self, steps: int, *, alpha: float = 0.05) -> Tuple["TimeSeries", Dict[str, "TimeSeries"]]:
+    def forecast(
+        self, steps: int, *, alpha: float = 0.05
+    ) -> tuple["TimeSeries", dict[str, "TimeSeries"]]:
         """
         Out-of-sample forecasts.
 
@@ -127,7 +129,11 @@ class ArimaResult:
         conf = pred_res.conf_int(alpha=alpha)
 
         # Determine start time of forecast (immediately after training data)
-        n_obs = int(self.res.nobs) if hasattr(self.res, 'nobs') else len(self.res.fittedvalues)
+        n_obs = (
+            int(self.res.nobs)
+            if hasattr(self.res, "nobs")
+            else len(self.res.fittedvalues)
+        )
         forecast_t0 = self.t0 + n_obs * self.dt
 
         forecast_ts = TimeSeries(
@@ -135,22 +141,14 @@ class ArimaResult:
             t0=forecast_t0,
             dt=self.dt,
             unit=self.unit,
-            name=f"{self.name}_forecast"
+            name=f"{self.name}_forecast",
         )
 
         lower = TimeSeries(
-            conf[:, 0],
-            t0=forecast_t0,
-            dt=self.dt,
-            unit=self.unit,
-            name="lower_ci"
+            conf[:, 0], t0=forecast_t0, dt=self.dt, unit=self.unit, name="lower_ci"
         )
         upper = TimeSeries(
-            conf[:, 1],
-            t0=forecast_t0,
-            dt=self.dt,
-            unit=self.unit,
-            name="upper_ci"
+            conf[:, 1], t0=forecast_t0, dt=self.dt, unit=self.unit, name="upper_ci"
         )
 
         return forecast_ts, {"lower": lower, "upper": upper}
@@ -158,15 +156,16 @@ class ArimaResult:
     def residuals(self) -> "TimeSeries":
         """Return the model residuals as a TimeSeries."""
         from .timeseries import TimeSeries
+
         return TimeSeries(
             self.res.resid,
             t0=self.t0,
             dt=self.dt,
             unit=self.unit,
-            name=f"{self.name}_resid"
+            name=f"{self.name}_resid",
         )
 
-    def params_dict(self) -> Dict:
+    def params_dict(self) -> dict:
         """
         Return model parameters as a dictionary.
 
@@ -177,15 +176,17 @@ class ArimaResult:
             (parameter names), and 'aic', 'bic' if available.
         """
         result = {
-            'params': self.res.params,
-            'param_names': list(self.res.params.index) if hasattr(self.res.params, 'index') else None,
+            "params": self.res.params,
+            "param_names": list(self.res.params.index)
+            if hasattr(self.res.params, "index")
+            else None,
         }
 
         # Add fit statistics if available
-        if hasattr(self.res, 'aic'):
-            result['aic'] = self.res.aic
-        if hasattr(self.res, 'bic'):
-            result['bic'] = self.res.bic
+        if hasattr(self.res, "aic"):
+            result["aic"] = self.res.aic
+        if hasattr(self.res, "bic"):
+            result["bic"] = self.res.bic
 
         return result
 
@@ -215,8 +216,13 @@ class ArimaResult:
 
         # 1. Original Data
         if self.original_data is not None:
-            ax.plot(self.original_data,
-                    label="Original", color="gray", alpha=0.6, linewidth=1.5)
+            ax.plot(
+                self.original_data,
+                label="Original",
+                color="gray",
+                alpha=0.6,
+                linewidth=1.5,
+            )
 
         # 2. In-sample Prediction (Fit)
         # Note: ARIMA fits usually have bad predictions for the very first few samples (diffs)
@@ -229,14 +235,17 @@ class ArimaResult:
             fc, conf = self.forecast(steps=forecast_steps, alpha=alpha)
 
             from ..plot import plot_mmm
+
             plot_mmm(
-                fc, conf['lower'], conf['upper'],
+                fc,
+                conf["lower"],
+                conf["upper"],
                 ax=ax,
                 color="tab:orange",
                 linewidth=2,
                 label="Forecast",
                 alpha_fill=0.2,
-                label_fill=f"{int((1-alpha)*100)}% CI"
+                label_fill=f"{int((1 - alpha) * 100)}% CI",
             )
 
         ax.set_xlabel("GPS Time [s]")
@@ -250,16 +259,16 @@ class ArimaResult:
 
 def fit_arima(
     timeseries: "TimeSeries",
-    order: Tuple[int, int, int] = (1, 0, 0),
+    order: tuple[int, int, int] = (1, 0, 0),
     *,
-    seasonal_order: Optional[Tuple[int, int, int, int]] = None,
-    trend: Optional[str] = "c",
+    seasonal_order: tuple[int, int, int, int] | None = None,
+    trend: str | None = "c",
     auto: bool = False,
-    auto_kwargs: Optional[Dict] = None,
-    method: Optional[str] = None,
-    method_kwargs: Optional[Dict] = None,
+    auto_kwargs: dict | None = None,
+    method: str | None = None,
+    method_kwargs: dict | None = None,
     nan_policy: str = "raise",
-    impute_kwargs: Optional[Dict] = None,
+    impute_kwargs: dict | None = None,
     **kwargs,
 ) -> ArimaResult:
     """
@@ -281,7 +290,9 @@ def fit_arima(
         Arguments passed to pmdarima.auto_arima (e.g., {'max_p': 5}).
     """
     if not STATSMODELS_AVAILABLE:
-        raise ImportError("statsmodels is required for ARIMA. `pip install statsmodels`")
+        raise ImportError(
+            "statsmodels is required for ARIMA. `pip install statsmodels`"
+        )
 
     if timeseries.dt is None:
         raise ValueError("TimeSeries must have a regular sample rate (dt) for ARIMA.")
@@ -294,11 +305,14 @@ def fit_arima(
         # Basic imputation if requested
         if np.any(np.isnan(y)):
             from .preprocess import impute_timeseries
+
             ikw = (impute_kwargs or {}).copy()
             ts_imp = impute_timeseries(timeseries, **ikw)
             y = np.asarray(ts_imp.value)
             if np.any(np.isnan(y)):
-                raise ValueError("NaNs remain after imputation; adjust impute_kwargs or nan_policy.")
+                raise ValueError(
+                    "NaNs remain after imputation; adjust impute_kwargs or nan_policy."
+                )
 
     elif nan_policy == "raise":
         if np.any(np.isnan(y)):
@@ -309,7 +323,9 @@ def fit_arima(
     # --- Auto ARIMA (pmdarima) ---
     if auto:
         if not PMDARIMA_AVAILABLE:
-            raise ImportError("pmdarima is required for auto=True. `pip install pmdarima`")
+            raise ImportError(
+                "pmdarima is required for auto=True. `pip install pmdarima`"
+            )
 
         akwargs = (auto_kwargs or {}).copy()
         # Merge extra kwargs into akwargs
@@ -318,17 +334,21 @@ def fit_arima(
                 akwargs[k] = v
 
         # Ensure seasonal and trend are set without conflict
-        if 'seasonal' not in akwargs:
-            akwargs['seasonal'] = (seasonal_order is not None)
-        if 'trend' not in akwargs:
-            akwargs['trend'] = trend
+        if "seasonal" not in akwargs:
+            akwargs["seasonal"] = seasonal_order is not None
+        if "trend" not in akwargs:
+            akwargs["trend"] = trend
 
         # Adjust start values if max values are smaller (pmdarima requirement)
         # Defaults are start_p=2, start_q=2, start_P=1, start_Q=1
-        for m_key, s_key in [('max_p', 'start_p'), ('max_q', 'start_q'),
-                             ('max_P', 'start_P'), ('max_Q', 'start_Q')]:
+        for m_key, s_key in [
+            ("max_p", "start_p"),
+            ("max_q", "start_q"),
+            ("max_P", "start_P"),
+            ("max_Q", "start_Q"),
+        ]:
             if m_key in akwargs:
-                default_start = 2 if s_key in ['start_p', 'start_q'] else 1
+                default_start = 2 if s_key in ["start_p", "start_q"] else 1
                 current_start = akwargs.get(s_key, default_start)
                 if akwargs[m_key] < current_start:
                     akwargs[s_key] = akwargs[m_key]
@@ -344,8 +364,8 @@ def fit_arima(
             dt=timeseries.dt,
             unit=timeseries.unit,
             name=f"{timeseries.name}_auto",
-            channel=getattr(timeseries, 'channel', None),
-            original_data=timeseries
+            channel=getattr(timeseries, "channel", None),
+            original_data=timeseries,
         )
 
     # --- Manual ARIMA / SARIMAX ---
@@ -360,12 +380,12 @@ def fit_arima(
 
     # Use SARIMAX class for everything if available, as it's more robust in statsmodels v0.12+
     if seasonal_order is None and ARIMA is not None:
-         # Use standard ARIMA if no seasonality needed
-         model = ARIMA(y, order=order, trend=trend)
+        # Use standard ARIMA if no seasonality needed
+        model = ARIMA(y, order=order, trend=trend)
     else:
-         if SARIMAX is None:
-              raise ImportError("SARIMAX not available in statsmodels")
-         model = SARIMAX(y, order=order, seasonal_order=seasonal_order, trend=trend)
+        if SARIMAX is None:
+            raise ImportError("SARIMAX not available in statsmodels")
+        model = SARIMAX(y, order=order, seasonal_order=seasonal_order, trend=trend)
 
     res = model.fit(**fit_kwargs)
 
@@ -375,6 +395,6 @@ def fit_arima(
         dt=timeseries.dt,
         unit=timeseries.unit,
         name=timeseries.name,
-        channel=getattr(timeseries, 'channel', None),
-        original_data=timeseries
+        channel=getattr(timeseries, "channel", None),
+        original_data=timeseries,
     )

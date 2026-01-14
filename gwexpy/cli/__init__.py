@@ -4,9 +4,13 @@ gwexpy CLI module.
 NOTE: The CLI is currently a placeholder. Main functionality is provided
 through the Python API. Subcommands will be implemented in future versions.
 """
+
 import sys
+
 from gwpy.cli import *  # noqa: F403
+
 from .._version import __version__
+
 
 def main(args=None):
     """Entry point for the gwexpy command."""

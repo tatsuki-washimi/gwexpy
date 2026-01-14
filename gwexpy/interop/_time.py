@@ -1,13 +1,16 @@
-
 from datetime import datetime, timezone
-from gwpy.time import LIGOTimeGPS
+
 from astropy.time import Time
+from gwpy.time import LIGOTimeGPS
+
 
 class LeapSecondConversionError(ValueError):
     """Raised when conversion fails due to a leap second."""
+
     pass
 
-def gps_to_datetime_utc(gps, *, leap='raise') -> datetime:
+
+def gps_to_datetime_utc(gps, *, leap="raise") -> datetime:
     """
     Convert GPS time to UTC datetime.
 
@@ -28,7 +31,7 @@ def gps_to_datetime_utc(gps, *, leap='raise') -> datetime:
     """
     # Use astropy for robust conversion including leap seconds
     # verify input is LIGOTimeGPS compatible
-    t_gps = Time(gps, format='gps').utc
+    t_gps = Time(gps, format="gps").utc
 
     # Check if this time is actually a leap second?
     # Astropy handles leap seconds by representing them (e.g. :60) depending on format.
@@ -39,34 +42,46 @@ def gps_to_datetime_utc(gps, *, leap='raise') -> datetime:
         dt = t_gps.to_datetime(timezone=timezone.utc)
     except ValueError as e:
         if "leap second" in str(e).lower() or "second must be in" in str(e).lower():
-             if leap == 'raise':
-                 raise LeapSecondConversionError(f"Cannot allow leap second {gps} in datetime") from e
-             elif leap == 'floor':
-                 # Clamp to end of previous second (59.999999)
-                 vals = t_gps.ymdhms
-                 dt = datetime(
-                     vals.year, vals.month, vals.day,
-                     vals.hour, vals.minute,
-                     59, 999999,
-                     tzinfo=timezone.utc
-                 )
-             elif leap == 'ceil':
-                 # Round to start of next minute
-                 from datetime import timedelta
-                 vals = t_gps.ymdhms
-                 # Construct base and add minute
-                 dt = datetime(
-                     vals.year, vals.month, vals.day,
-                     vals.hour, vals.minute,
-                     0, 0,
-                     tzinfo=timezone.utc
-                 ) + timedelta(minutes=1)
-             else:
-                 raise NotImplementedError(f"Leap policy {leap} not implemented")
+            if leap == "raise":
+                raise LeapSecondConversionError(
+                    f"Cannot allow leap second {gps} in datetime"
+                ) from e
+            elif leap == "floor":
+                # Clamp to end of previous second (59.999999)
+                vals = t_gps.ymdhms
+                dt = datetime(
+                    vals.year,
+                    vals.month,
+                    vals.day,
+                    vals.hour,
+                    vals.minute,
+                    59,
+                    999999,
+                    tzinfo=timezone.utc,
+                )
+            elif leap == "ceil":
+                # Round to start of next minute
+                from datetime import timedelta
+
+                vals = t_gps.ymdhms
+                # Construct base and add minute
+                dt = datetime(
+                    vals.year,
+                    vals.month,
+                    vals.day,
+                    vals.hour,
+                    vals.minute,
+                    0,
+                    0,
+                    tzinfo=timezone.utc,
+                ) + timedelta(minutes=1)
+            else:
+                raise NotImplementedError(f"Leap policy {leap} not implemented")
         else:
             raise e
 
     return dt
+
 
 def datetime_utc_to_gps(dt: datetime) -> LIGOTimeGPS:
     """
@@ -78,10 +93,11 @@ def datetime_utc_to_gps(dt: datetime) -> LIGOTimeGPS:
         # per spec: treat naive as UTC
         dt = dt.replace(tzinfo=timezone.utc)
 
-    t_gps = Time(dt, format='datetime', scale='utc').gps
+    t_gps = Time(dt, format="datetime", scale="utc").gps
     return LIGOTimeGPS(t_gps)
 
-def gps_to_unix(gps, *, leap='raise') -> float:
+
+def gps_to_unix(gps, *, leap="raise") -> float:
     """
     Convert GPS to UNIX timestamp (POSIX seconds).
 
@@ -95,7 +111,7 @@ def gps_to_unix(gps, *, leap='raise') -> float:
     float
     """
     # astropy Time.unix
-    t = Time(gps, format='gps', scale='utc')
+    t = Time(gps, format="gps", scale="utc")
     # If it is a leap second, unix timestamp definition is ambiguous/implementation defined.
     # Usually strictly POSIX time "repeats" or "stalls".
     # Astropy unix conversion typically handles it smoothly in linear timeline but POSIX is step.
@@ -103,5 +119,6 @@ def gps_to_unix(gps, *, leap='raise') -> float:
     # GWpy suggests explicit handling. Time(gps).unix is valid float.
     return t.unix
 
+
 def unix_to_gps(ts: float) -> LIGOTimeGPS:
-    return LIGOTimeGPS(Time(ts, format='unix').gps)
+    return LIGOTimeGPS(Time(ts, format="unix").gps)

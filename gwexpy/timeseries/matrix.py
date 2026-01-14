@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
+
 import numpy as np
 from astropy import units as u
 
@@ -11,19 +12,16 @@ except ImportError:
 
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
-from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.types.mixin import PhaseMethodsMixin
+from gwexpy.types.seriesmatrix import SeriesMatrix
 
-from .utils import SeriesType
-from .timeseries import TimeSeries
 from .collections import TimeSeriesDict, TimeSeriesList
-
-from .matrix_core import (
-    TimeSeriesMatrixCoreMixin
-)
 from .matrix_analysis import TimeSeriesMatrixAnalysisMixin
-from .matrix_spectral import TimeSeriesMatrixSpectralMixin
+from .matrix_core import TimeSeriesMatrixCoreMixin
 from .matrix_interop import TimeSeriesMatrixInteropMixin
+from .matrix_spectral import TimeSeriesMatrixSpectralMixin
+from .timeseries import TimeSeries
+from .utils import SeriesType
 
 
 class TimeSeriesMatrix(
@@ -32,7 +30,7 @@ class TimeSeriesMatrix(
     TimeSeriesMatrixAnalysisMixin,
     TimeSeriesMatrixSpectralMixin,
     TimeSeriesMatrixInteropMixin,
-    SeriesMatrix
+    SeriesMatrix,
 ):
     """
     Matrix container for multiple TimeSeries objects.
@@ -57,8 +55,9 @@ class TimeSeriesMatrix(
         sample_rate: Any = None,
         epoch: Any = None,
         **kwargs: Any,
-    ) -> "TimeSeriesMatrix":
+    ) -> TimeSeriesMatrix:
         import warnings
+
         from gwexpy.timeseries.utils import _coerce_t0_gps
 
         channel_names = kwargs.pop("channel_names", None)
@@ -156,35 +155,35 @@ class TimeSeriesMatrix(
                 # Intelligent reshaping based on data shape
                 try:
                     if hasattr(data, "shape"):
-                         dshape = data.shape
+                        dshape = data.shape
                     else:
-                         dshape = np.shape(data)
+                        dshape = np.shape(data)
 
                     if len(dshape) >= 2:
                         N, M = dshape[:2]
                         if cn.size == N * M:
                             kwargs["names"] = cn.reshape(N, M)
                         elif cn.size == N:
-                             kwargs["names"] = cn.reshape(N, 1)
+                            kwargs["names"] = cn.reshape(N, 1)
                         else:
-                             # Default to 1D, which broadcasts to (..., M) if size matches M
-                             kwargs["names"] = cn
+                            # Default to 1D, which broadcasts to (..., M) if size matches M
+                            kwargs["names"] = cn
                     else:
                         kwargs["names"] = cn
                 except Exception:
-                     if cn.ndim == 1:
-                          kwargs["names"] = cn.reshape(-1, 1)
-                     else:
-                          kwargs["names"] = cn
+                    if cn.ndim == 1:
+                        kwargs["names"] = cn.reshape(-1, 1)
+                    else:
+                        kwargs["names"] = cn
 
         obj = super().__new__(cls, data, **kwargs)
-
 
         return obj
 
     def plot(self, **kwargs: Any) -> Any:
         """Plot the matrix data."""
         from gwexpy.plot import Plot
+
         return Plot(self, **kwargs)
 
 
@@ -213,12 +212,14 @@ _TSM_MISSING_TIME_DOMAIN_METHODS = [
 for _m in _TSM_TIME_DOMAIN_METHODS:
     if _m in _TSM_MISSING_TIME_DOMAIN_METHODS:
         continue
+
     # Use the helper from core, but wrap it to add metadata if needed
     # Actually, the helpers in CoreMixin were slightly different (docstring etc.)
     # Let's redefine them here to maintain exact behavior
     def _make_wrapper(name):
         def _wrapper(self, *args, **kwargs):
             return self._apply_timeseries_method(name, *args, **kwargs)
+
         _wrapper.__name__ = name
         _wrapper.__qualname__ = f"TimeSeriesMatrix.{name}"
         _wrapper.__doc__ = f"Element-wise delegate to `TimeSeries.{name}`."
@@ -239,22 +240,32 @@ _TSM_UNIVARIATE_METHODS = [
 
 for _m in _TSM_BIVARIATE_METHODS:
     if hasattr(BaseTimeSeries, _m):
+
         def _make_biv_wrapper(name):
             def _wrapper(self, other, *args, **kwargs):
-                return self._apply_bivariate_spectral_method(name, other, *args, **kwargs)
+                return self._apply_bivariate_spectral_method(
+                    name, other, *args, **kwargs
+                )
+
             _wrapper.__name__ = name
             _wrapper.__qualname__ = f"TimeSeriesMatrix.{name}"
-            _wrapper.__doc__ = f"Element-wise delegate to `TimeSeries.{name}` with another TimeSeries."
+            _wrapper.__doc__ = (
+                f"Element-wise delegate to `TimeSeries.{name}` with another TimeSeries."
+            )
             return _wrapper
+
         setattr(TimeSeriesMatrix, _m, _make_biv_wrapper(_m))
 
 for _m in _TSM_UNIVARIATE_METHODS:
     if hasattr(BaseTimeSeries, _m):
+
         def _make_univ_wrapper(name):
             def _wrapper(self, *args, **kwargs):
                 return self._apply_univariate_spectral_method(name, *args, **kwargs)
+
             _wrapper.__name__ = name
             _wrapper.__qualname__ = f"TimeSeriesMatrix.{name}"
             _wrapper.__doc__ = f"Element-wise delegate to `TimeSeries.{name}`."
             return _wrapper
+
         setattr(TimeSeriesMatrix, _m, _make_univ_wrapper(_m))

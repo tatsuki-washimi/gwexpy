@@ -1,4 +1,3 @@
-
 import importlib
 from typing import Any
 
@@ -29,6 +28,7 @@ _OPTIONAL_DEPENDENCIES = {
     "gwinc": "gwinc",
     "joblib": "joblib",
 }
+
 
 def require_optional(name: str) -> Any:
     """

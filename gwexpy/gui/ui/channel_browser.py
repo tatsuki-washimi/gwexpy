@@ -1,5 +1,7 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
 import fnmatch
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 from ..nds.cache import ChannelListCache
 from ..nds.nds_thread import ChannelListWorker
 
@@ -10,7 +12,9 @@ except ImportError:
 
 
 class ChannelBrowserDialog(QtWidgets.QDialog):
-    def __init__(self, server, port, parent=None, audio_enabled=False, initial_source="NDS"):
+    def __init__(
+        self, server, port, parent=None, audio_enabled=False, initial_source="NDS"
+    ):
         super().__init__(parent)
         self.setWindowTitle("Channel List")
         self.resize(800, 600)
@@ -33,19 +37,21 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         self.cb_source.addItem(f"NDS ({self.server_key})", "NDS")
         if self.audio_enabled:
             self.cb_source.addItem("Local PC Audio", "AUDIO")
-        
+
         # Set initial selection
         idx = self.cb_source.findData(self.current_source)
         if idx != -1:
             self.cb_source.setCurrentIndex(idx)
-        
+
         self.cb_source.currentIndexChanged.connect(self.on_source_changed)
         h_src.addWidget(self.cb_source)
         h_src.addStretch(1)
         layout.addLayout(h_src)
 
         # Info Label
-        self.lbl_info = QtWidgets.QLabel(f"server: <b>{self.server_key}</b> [Checking cache...]")
+        self.lbl_info = QtWidgets.QLabel(
+            f"server: <b>{self.server_key}</b> [Checking cache...]"
+        )
         self.lbl_info.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.lbl_info)
 
@@ -92,13 +98,18 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
 
         if data is not None:
             self.full_channel_list = data
-            self.lbl_info.setText(f"server: <b>{self.server_key}</b> [{len(data)} channels (cached)]")
+            self.lbl_info.setText(
+                f"server: <b>{self.server_key}</b> [{len(data)} channels (cached)]"
+            )
             self.populate_ui()
         else:
             self.lbl_info.setText(f"server: <b>{self.server_key}</b> [Fetching...]")
-            self.lbl_status.setText("Fetching channel list from NDS... This may take a while.")
+            self.lbl_status.setText(
+                "Fetching channel list from NDS... This may take a while."
+            )
             if self.worker:
-                if self.worker.isRunning(): return
+                if self.worker.isRunning():
+                    return
 
             self.worker = ChannelListWorker(self.server_host, self.port, "*")
             self.worker.finished.connect(self.on_worker_finished)
@@ -106,7 +117,9 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
 
     def load_audio_devices(self):
         if sd is None:
-            QtWidgets.QMessageBox.warning(self, "Error", "sounddevice module not found.")
+            QtWidgets.QMessageBox.warning(
+                self, "Error", "sounddevice module not found."
+            )
             return
 
         try:
@@ -114,11 +127,11 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             devices = sd.query_devices()
             # Input devices only? or output too? usually input for analysis.
             for i, dev in enumerate(devices):
-                if dev['max_input_channels'] > 0:
-                     # Add each channel
-                     for ch in range(dev['max_input_channels']):
-                         name = f"PC:MIC:{i}-CH{ch}"
-                         results.append((name, dev['default_samplerate'], 'audio'))
+                if dev["max_input_channels"] > 0:
+                    # Add each channel
+                    for ch in range(dev["max_input_channels"]):
+                        name = f"PC:MIC:{i}-CH{ch}"
+                        results.append((name, dev["default_samplerate"], "audio"))
 
             self.full_channel_list = results
             self.lbl_info.setText(f"Local PC Audio [{len(results)} channels]")
@@ -187,7 +200,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         h_btns.addWidget(self.lbl_status)
         h_btns.addStretch(1)
 
-        btn_close = QtWidgets.QPushButton("Close") # Screenshot says Close
+        btn_close = QtWidgets.QPushButton("Close")  # Screenshot says Close
         btn_close.clicked.connect(self.reject)
         # We also need an "Add" or "Ok" logic. Screenshot shows "Drag channels into plot to add." and "Close".
         # But our main window expects a result on exec_.
@@ -210,11 +223,15 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
 
         if data is not None:
             self.full_channel_list = data
-            self.lbl_info.setText(f"server: <b>{self.server_key}</b> [{len(data)} channels (cached)]")
+            self.lbl_info.setText(
+                f"server: <b>{self.server_key}</b> [{len(data)} channels (cached)]"
+            )
             self.populate_ui()
         else:
             self.lbl_info.setText(f"server: <b>{self.server_key}</b> [Fetching...]")
-            self.lbl_status.setText("Fetching channel list from NDS... This may take a while.")
+            self.lbl_status.setText(
+                "Fetching channel list from NDS... This may take a while."
+            )
             self.worker = ChannelListWorker(self.server_host, self.port, "*")
             self.worker.finished.connect(self.on_worker_finished)
             self.worker.start()
@@ -223,7 +240,9 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         if error:
             # Only show error if we are still expecting NDS
             if self.current_source == "NDS":
-                QtWidgets.QMessageBox.critical(self, "Error", f"Failed to fetch channels: {error}")
+                QtWidgets.QMessageBox.critical(
+                    self, "Error", f"Failed to fetch channels: {error}"
+                )
                 self.lbl_status.setText("Error.")
             return
 
@@ -233,7 +252,9 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         # Update UI only if still detecting NDS
         if self.current_source == "NDS":
             self.full_channel_list = results
-            self.lbl_info.setText(f"server: <b>{self.server_key}</b> [{len(results)} channels]")
+            self.lbl_info.setText(
+                f"server: <b>{self.server_key}</b> [{len(results)} channels]"
+            )
             self.lbl_status.setText("Ready")
             self.populate_ui()
 
@@ -249,8 +270,10 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
     def apply_filter(self):
         pattern = self.search_edit.text()
         mode = "all"
-        if self.rb_slow.isChecked(): mode = "slow"
-        elif self.rb_fast.isChecked(): mode = "fast"
+        if self.rb_slow.isChecked():
+            mode = "slow"
+        elif self.rb_fast.isChecked():
+            mode = "fast"
 
         # We only filter the Search Tab list. The Tree Tab usually shows everything or could be filtered too.
         # For performance, let's filter the Search List.
@@ -260,22 +283,26 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         # Pre-compile glob if needed? fnmatch is ok.
 
         count = 0
-        limit = 5000 # Safety limit for display
+        limit = 5000  # Safety limit for display
 
         self.search_tree.clear()
 
         items = []
         for name, rate, ctype in self.full_channel_list:
             # Rate Filter
-            if mode == "slow" and rate > 16: continue
-            if mode == "fast" and rate <= 16: continue
+            if mode == "slow" and rate > 16:
+                continue
+            if mode == "fast" and rate <= 16:
+                continue
 
             # Name Filter
             if pattern:
                 if is_glob:
-                    if not fnmatch.fnmatch(name, pattern): continue
+                    if not fnmatch.fnmatch(name, pattern):
+                        continue
                 else:
-                    if pattern not in name: continue
+                    if pattern not in name:
+                        continue
 
             # Add to list
             item = QtWidgets.QTreeWidgetItem([name, str(rate)])
@@ -321,7 +348,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
 
         for name, rate, ctype in channels:
             # Heuristic splitting
-            parts = name.split(':')
+            parts = name.split(":")
             # Further split the second part if exists?
             # Example: K1:ADS-DCU... -> [K1, ADS, DCU...]
             # Actually, usually subsystem is first 3 chars after :?
@@ -332,7 +359,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
                 rest = parts[1]
 
                 # Try to split by '-'
-                sub_parts = rest.split('-')
+                sub_parts = rest.split("-")
                 path = [domain] + sub_parts
             else:
                 path = parts
@@ -343,12 +370,14 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
                 if p not in current:
                     current[p] = {}
                 current = current[p]
-                if isinstance(current, tuple): # Conflict: node is both leaf and branch?
-                     # Should not happen if naming is consistent, but if it does,
-                     # we might lose the leaf. NDS names are unique.
-                     # But if we have A:B and A:B-C, then B is a leaf in first and node in second?
-                     # We'll see.
-                     pass
+                if isinstance(
+                    current, tuple
+                ):  # Conflict: node is both leaf and branch?
+                    # Should not happen if naming is consistent, but if it does,
+                    # we might lose the leaf. NDS names are unique.
+                    # But if we have A:B and A:B-C, then B is a leaf in first and node in second?
+                    # We'll see.
+                    pass
 
             leaf_key = path[-1]
             # Store data at leaf
@@ -371,9 +400,9 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
                     item = QtWidgets.QTreeWidgetItem([c_name, str(c_rate)])
                     # Color
                     if c_rate <= 16:
-                         item.setForeground(0, QtGui.QBrush(QtGui.QColor("green")))
+                        item.setForeground(0, QtGui.QBrush(QtGui.QColor("green")))
                     else:
-                         item.setForeground(0, QtGui.QBrush(QtGui.QColor("blue")))
+                        item.setForeground(0, QtGui.QBrush(QtGui.QColor("blue")))
                     items.append(item)
                 else:
                     # It's a folder
@@ -385,7 +414,6 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
 
         top_items = dict_to_items(root)
         self.hier_tree.addTopLevelItems(top_items)
-
 
     def accept(self):
         # Gather selected from ACTIVE tab

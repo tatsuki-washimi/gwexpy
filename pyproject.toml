@@ -26,7 +26,16 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "pytest-qt", "freezegun", "requests-mock", "ruff", "mypy"]
+dev = [
+  "pytest",
+  "pytest-cov",
+  "pytest-qt",
+  "freezegun",
+  "requests-mock",
+  "ruff",
+  "mypy",
+  "types-requests",
+]
 gw = [
   "pycbc",
   "nds2-client",
@@ -98,11 +107,11 @@ exclude = ["typings*", "tests*", "docs*", "examples*"]
 "gwexpy.gui" = "gwexpy.gui.pyaggui:main"
 
 [tool.ruff]
-line-length = 120
-target-version = "py39"
+line-length = 88
+target-version = "py310"
 
 [tool.ruff.lint]
-select = ["E", "F", "W"]
+select = ["E", "F", "I", "W", "UP"]
 ignore = [
     # Allow module-level imports not at top (for circular import avoidance and optional deps)
     "E402",
@@ -120,3 +129,51 @@ ignore = [
 "gwexpy/*/tests/*" = ["F401", "E741"]
 # GUI code: compact style is acceptable
 "gwexpy/gui/*" = ["E701", "E702"]
+
+[tool.mypy]
+ignore_missing_imports = true
+check_untyped_defs = true
+exclude = "gwexpy/(gui/.*|frequencyseries/.*|spectrogram/.*)"
+
+[[tool.mypy.overrides]]
+module = [
+  "gwexpy.frequencyseries.*",
+  "gwexpy.spectrogram.*",
+  "gwexpy.timeseries.matrix",
+  "gwexpy.timeseries.matrix_analysis",
+  "gwexpy.timeseries.matrix_core",
+  "gwexpy.timeseries.matrix_interop",
+  "gwexpy.timeseries.matrix_spectral",
+  "gwexpy.types.seriesmatrix_base",
+  "gwexpy.types.seriesmatrix_validation",
+  "gwexpy.types.seriesmatrix",
+  "gwexpy.types.series_matrix_core",
+  "gwexpy.types.series_matrix_indexing",
+  "gwexpy.types.series_matrix_io",
+  "gwexpy.types.series_matrix_math",
+  "gwexpy.types.series_matrix_analysis",
+  "gwexpy.types.series_matrix_structure",
+  "gwexpy.types.series_matrix_validation_mixin",
+  "gwexpy.types.series_matrix_visualization",
+]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+  "gwexpy.types.metadata",
+  "gwexpy.analysis.*",
+  "gwexpy.timeseries.pipeline",
+  "gwexpy.timeseries.io.win",
+  "gwexpy.timeseries.io.tdms",
+  "gwexpy.io.dttxml_common",
+]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+  "gwexpy.types.*",
+  "gwexpy.interop.*",
+  "gwexpy.io.*",
+  "gwexpy.conftest",
+]
+ignore_errors = true

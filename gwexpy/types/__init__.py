@@ -1,15 +1,14 @@
 """gwexpy.types - Data type definitions and utilities."""
 
-from .metadata import MetaData, MetaDataDict, MetaDataMatrix
-from .seriesmatrix import SeriesMatrix
-from .series_creator import as_series
-
-from .axis import AxisDescriptor, coerce_1d_quantity
-from .axis_api import AxisApiMixin
 from .array import Array
 from .array2d import Array2D
-from .plane2d import Plane2D
 from .array3d import Array3D
+from .axis import AxisDescriptor, coerce_1d_quantity
+from .axis_api import AxisApiMixin
+from .metadata import MetaData, MetaDataDict, MetaDataMatrix
+from .plane2d import Plane2D
+from .series_creator import as_series
+from .seriesmatrix import SeriesMatrix
 from .time_plane_transform import TimePlaneTransform
 
 __all__ = [
@@ -35,10 +34,12 @@ __all__ = [
 # Dynamic import from gwpy (PEP 562)
 import gwpy.types as _gwpy_types
 
+
 def __getattr__(name):
     if name.startswith("_"):
         raise AttributeError(name)
     return getattr(_gwpy_types, name)
+
 
 def __dir__():
     return sorted(set(__all__) | set(dir(_gwpy_types)))

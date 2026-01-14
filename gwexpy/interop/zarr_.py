@@ -1,5 +1,5 @@
-
 from ._optional import require_optional
+
 
 def to_zarr(ts, store, path, chunks=None, compressor=None, overwrite=False):
     """
@@ -7,7 +7,7 @@ def to_zarr(ts, store, path, chunks=None, compressor=None, overwrite=False):
     """
     zarr = require_optional("zarr")
 
-    mode = 'w' if overwrite else 'w-'
+    mode = "w" if overwrite else "w-"
 
     # Open group or array
     # If store is path string, use open_group/open_array
@@ -43,14 +43,15 @@ def to_zarr(ts, store, path, chunks=None, compressor=None, overwrite=False):
     if ts.name:
         arr.attrs["name"] = str(ts.name)
 
+
 def from_zarr(cls, store, path):
     """
     Read from Zarr array.
     """
     zarr = require_optional("zarr")
 
-    arr = zarr.open_array(store=store, mode='r', path=path)
-    data = arr[:] # Load into memory? Or keep as zarr array (array-like)?
+    arr = zarr.open_array(store=store, mode="r", path=path)
+    data = arr[:]  # Load into memory? Or keep as zarr array (array-like)?
     # GWpy usually expects in-memory numpy. Loading.
 
     t0 = arr.attrs.get("t0", 0)

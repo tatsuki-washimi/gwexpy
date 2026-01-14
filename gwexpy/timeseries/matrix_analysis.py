@@ -1,24 +1,29 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 from astropy import units as u
 
-from .preprocess import impute_timeseries, standardize_matrix, whiten_matrix
 from .decomposition import (
-    pca_fit, pca_transform, pca_inverse_transform,
-    ica_fit, ica_transform, ica_inverse_transform
+    ica_fit,
+    ica_inverse_transform,
+    ica_transform,
+    pca_fit,
+    pca_inverse_transform,
+    pca_transform,
 )
+from .preprocess import impute_timeseries, standardize_matrix, whiten_matrix
 
 
 def _calc_correlation_direct(ts, target, meth):
     """Picklable helper for correlation_vector."""
     try:
         # Ensure ts is a gwexpy TimeSeries to have .correlation() method
-        if not hasattr(ts, 'correlation'):
+        if not hasattr(ts, "correlation"):
             from .timeseries import TimeSeries as GWExTimeSeries
-            sr = getattr(ts, 'sample_rate', None)
+
+            sr = getattr(ts, "sample_rate", None)
             ts = GWExTimeSeries(ts.value, t0=ts.t0, sample_rate=sr, name=ts.name)
         return ts.correlation(target, method=meth)
     except Exception:
@@ -48,10 +53,13 @@ class TimeSeriesMatrixAnalysisMixin:
             How to handle NaNs: 'propagate', 'raise', or 'omit'.
         """
         from scipy import stats
+
         ax = self._resolve_axis(axis)
         return stats.skew(self.value, axis=ax, nan_policy=nan_policy)
 
-    def kurtosis(self, axis: str = "time", fisher: bool = True, nan_policy: str = "propagate") -> np.ndarray:
+    def kurtosis(
+        self, axis: str = "time", fisher: bool = True, nan_policy: str = "propagate"
+    ) -> np.ndarray:
         """
         Compute the kurtosis of the matrix along the specified axis.
 
@@ -65,6 +73,7 @@ class TimeSeriesMatrixAnalysisMixin:
             How to handle NaNs: 'propagate', 'raise', or 'omit'.
         """
         from scipy import stats
+
         ax = self._resolve_axis(axis)
         return stats.kurtosis(self.value, axis=ax, fisher=fisher, nan_policy=nan_policy)
 
@@ -74,7 +83,9 @@ class TimeSeriesMatrixAnalysisMixin:
         func = np.nanmean if ignore_nan else np.mean
         return func(self.value, axis=ax)
 
-    def std(self, axis: str = "time", ddof: int = 0, ignore_nan: bool = False) -> np.ndarray:
+    def std(
+        self, axis: str = "time", ddof: int = 0, ignore_nan: bool = False
+    ) -> np.ndarray:
         """Compute standard deviation along the specified axis."""
         ax = self._resolve_axis(axis)
         func = np.nanstd if ignore_nan else np.std
@@ -97,7 +108,6 @@ class TimeSeriesMatrixAnalysisMixin:
         ax = self._resolve_axis(axis)
         func = np.nanmax if ignore_nan else np.max
         return func(self.value, axis=ax)
-
 
     def _vectorized_detrend(self, detrend: str = "linear", **kwargs: Any) -> Any:
         """
@@ -156,18 +166,24 @@ class TimeSeriesMatrixAnalysisMixin:
         """
         Vectorized implementation of filter (and bandpass, lowpass, etc.).
         """
-        from scipy.signal import sosfiltfilt, filtfilt
+        from scipy.signal import filtfilt, sosfiltfilt
 
         data = np.asarray(self.value)
         inplace = kwargs.pop("inplace", False)
 
         # Handle SOS or BA filter
-        if len(filt) == 1 and np.asarray(filt[0]).ndim == 2 and np.asarray(filt[0]).shape[1] == 6:
+        if (
+            len(filt) == 1
+            and np.asarray(filt[0]).ndim == 2
+            and np.asarray(filt[0]).shape[1] == 6
+        ):
             new_data = sosfiltfilt(filt[0], data, axis=-1, **kwargs)
         elif len(filt) == 2:
             new_data = filtfilt(filt[0], filt[1], data, axis=-1, **kwargs)
         else:
-            return self._apply_timeseries_method("filter", *filt, inplace=inplace, **kwargs)
+            return self._apply_timeseries_method(
+                "filter", *filt, inplace=inplace, **kwargs
+            )
 
         if inplace:
             self.value[:] = new_data
@@ -189,8 +205,6 @@ class TimeSeriesMatrixAnalysisMixin:
         new_mat = self.copy().astype(complex)
         new_mat.value[:] = h_data
         return new_mat
-
-
 
     def _vectorized_radian(self, unwrap: bool = False) -> Any:
         """
@@ -269,7 +283,7 @@ class TimeSeriesMatrixAnalysisMixin:
         if isinstance(rate, str):
             is_time_bin = True
         elif isinstance(rate, u.Quantity):
-            if rate.unit.physical_type == 'time':
+            if rate.unit.physical_type == "time":
                 is_time_bin = True
 
         if is_time_bin:
@@ -283,18 +297,27 @@ class TimeSeriesMatrixAnalysisMixin:
         self,
         *,
         method: str = "linear",
-        limit: Optional[int] = None,
+        limit: int | None = None,
         axis: str = "time",
-        max_gap: Optional[float] = None,
+        max_gap: float | None = None,
         **kwargs: Any,
     ) -> Any:
         """Impute missing values in the matrix."""
-        new_val = impute_timeseries(self.value, method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs)
+        new_val = impute_timeseries(
+            self.value, method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs
+        )
         new_mat = self.copy()
         new_mat.value[:] = new_val
         return new_mat
 
-    def standardize(self, *, axis: str = "time", method: str = "zscore", ddof: int = 0, **kwargs: Any) -> Any:
+    def standardize(
+        self,
+        *,
+        axis: str = "time",
+        method: str = "zscore",
+        ddof: int = 0,
+        **kwargs: Any,
+    ) -> Any:
         """
         Standardize the matrix.
         See gwexpy.timeseries.preprocess.standardize_matrix.
@@ -306,7 +329,7 @@ class TimeSeriesMatrixAnalysisMixin:
         *,
         method: str = "pca",
         eps: float = 1e-12,
-        n_components: Optional[int] = None,
+        n_components: int | None = None,
         return_model: bool = True,
     ) -> Any:
         """
@@ -315,7 +338,9 @@ class TimeSeriesMatrixAnalysisMixin:
         Set return_model=False to return only the whitened matrix.
         See gwexpy.timeseries.preprocess.whiten_matrix.
         """
-        mat, model = whiten_matrix(self, method=method, eps=eps, n_components=n_components)
+        mat, model = whiten_matrix(
+            self, method=method, eps=eps, n_components=n_components
+        )
         if return_model:
             return mat, model
         return mat
@@ -328,11 +353,20 @@ class TimeSeriesMatrixAnalysisMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
-        ignore_nan: Optional[bool] = None,
+        ignore_nan: bool | None = None,
     ) -> Any:
         """Rolling mean along the time axis."""
         from gwexpy.timeseries.rolling import rolling_mean
-        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
+
+        return rolling_mean(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
 
     def rolling_std(
         self,
@@ -343,11 +377,21 @@ class TimeSeriesMatrixAnalysisMixin:
         nan_policy: str = "omit",
         backend: str = "auto",
         ddof: int = 0,
-        ignore_nan: Optional[bool] = None,
+        ignore_nan: bool | None = None,
     ) -> Any:
         """Rolling standard deviation along the time axis."""
         from gwexpy.timeseries.rolling import rolling_std
-        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof, ignore_nan=ignore_nan)
+
+        return rolling_std(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ddof=ddof,
+            ignore_nan=ignore_nan,
+        )
 
     def rolling_median(
         self,
@@ -357,11 +401,20 @@ class TimeSeriesMatrixAnalysisMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
-        ignore_nan: Optional[bool] = None,
+        ignore_nan: bool | None = None,
     ) -> Any:
         """Rolling median along the time axis."""
         from gwexpy.timeseries.rolling import rolling_median
-        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
+
+        return rolling_median(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
 
     def rolling_min(
         self,
@@ -371,11 +424,20 @@ class TimeSeriesMatrixAnalysisMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
-        ignore_nan: Optional[bool] = None,
+        ignore_nan: bool | None = None,
     ) -> Any:
         """Rolling minimum along the time axis."""
         from gwexpy.timeseries.rolling import rolling_min
-        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
+
+        return rolling_min(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
 
     def rolling_max(
         self,
@@ -385,11 +447,20 @@ class TimeSeriesMatrixAnalysisMixin:
         min_count: int = 1,
         nan_policy: str = "omit",
         backend: str = "auto",
-        ignore_nan: Optional[bool] = None,
+        ignore_nan: bool | None = None,
     ) -> Any:
         """Rolling maximum along the time axis."""
         from gwexpy.timeseries.rolling import rolling_max
-        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
+
+        return rolling_max(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
 
     def crop(self, start: Any = None, end: Any = None, copy: bool = False) -> Any:
         """
@@ -403,7 +474,7 @@ class TimeSeriesMatrixAnalysisMixin:
                 return None
             gps = to_gps(val)
             # LIGOTimeGPS has .gpsSeconds and .gpsNanoSeconds, or can be cast to float
-            if hasattr(gps, 'gpsSeconds'):
+            if hasattr(gps, "gpsSeconds"):
                 return float(gps)
             return float(gps)
 
@@ -451,7 +522,9 @@ class TimeSeriesMatrixAnalysisMixin:
             return sources, res
         return sources
 
-    def correlation(self, other: Any = None, method: str = 'pearson', **kwargs: Any) -> Any:
+    def correlation(
+        self, other: Any = None, method: str = "pearson", **kwargs: Any
+    ) -> Any:
         """
         Calculate correlation coefficients.
 
@@ -463,47 +536,50 @@ class TimeSeriesMatrixAnalysisMixin:
             # Pairwise correlation between all channels
             # Reshape (N, M, T) -> (N*M, T)
             data = self.value.reshape(-1, self.shape[-1])
-            if method == 'pearson':
+            if method == "pearson":
                 return np.corrcoef(data)
             # Other methods might need loops or specialized vectorized impls
 
-        if hasattr(other, 'ndim') and other.ndim == 1:
-             # Target TimeSeries
-             return self.correlation_vector(other, method=method, **kwargs)
+        if hasattr(other, "ndim") and other.ndim == 1:
+            # Target TimeSeries
+            return self.correlation_vector(other, method=method, **kwargs)
 
-        return self._apply_timeseries_method("correlation", other, method=method, **kwargs)
+        return self._apply_timeseries_method(
+            "correlation", other, method=method, **kwargs
+        )
 
     def mic(self, other: Any, **kwargs: Any) -> Any:
         """
         Calculate Maximal Information Coefficient (MIC).
         """
-        return self.correlation(other, method='mic', **kwargs)
+        return self.correlation(other, method="mic", **kwargs)
 
     def distance_correlation(self, other: Any, **kwargs: Any) -> Any:
         """
         Calculate Distance Correlation.
         """
-        return self.correlation(other, method='distance', **kwargs)
+        return self.correlation(other, method="distance", **kwargs)
 
     def pcc(self, other: Any, **kwargs: Any) -> Any:
         """
         Calculate Pearson Correlation Coefficient.
         """
-        return self.correlation(other, method='pearson', **kwargs)
+        return self.correlation(other, method="pearson", **kwargs)
 
     def ktau(self, other: Any, **kwargs: Any) -> Any:
         """
         Calculate Kendall's Rank Correlation Coefficient.
         """
-        return self.correlation(other, method='kendall', **kwargs)
+        return self.correlation(other, method="kendall", **kwargs)
 
-    def correlation_vector(self, target_timeseries, method='mic', nproc=None):
+    def correlation_vector(self, target_timeseries, method="mic", nproc=None):
         """
         Calculate correlation between a target TimeSeries and all channels in this Matrix.
         """
-        import pandas as pd
         import os
         from concurrent.futures import ProcessPoolExecutor
+
+        import pandas as pd
 
         if nproc is None:
             nproc = os.cpu_count() or 1
@@ -516,9 +592,10 @@ class TimeSeriesMatrixAnalysisMixin:
                 for j in range(M):
                     ts = self[i, j]
                     score = _calc_correlation_direct(ts, target_timeseries, method)
-                    results.append({
-                        "row": i, "col": j, "channel": ts.name, "score": score
-                    })
+                    results.append(
+                        {"row": i, "col": j, "channel": ts.name, "score": score}
+                    )
+
         if nproc <= 1:
             _run_serial()
         else:
@@ -528,7 +605,9 @@ class TimeSeriesMatrixAnalysisMixin:
                     for i in range(N):
                         for j in range(M):
                             ts = self[i, j]
-                            fut = executor.submit(_calc_correlation_direct, ts, target_timeseries, method)
+                            fut = executor.submit(
+                                _calc_correlation_direct, ts, target_timeseries, method
+                            )
                             futures[fut] = (i, j, ts.name)
 
                     for fut in futures:
@@ -537,9 +616,9 @@ class TimeSeriesMatrixAnalysisMixin:
                             score = fut.result()
                         except Exception:
                             score = np.nan
-                        results.append({
-                            "row": i, "col": j, "channel": name, "score": score
-                        })
+                        results.append(
+                            {"row": i, "col": j, "channel": name, "score": score}
+                        )
             except (OSError, PermissionError, RuntimeError):
                 _run_serial()
 

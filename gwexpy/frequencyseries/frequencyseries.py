@@ -8,11 +8,10 @@ Extends gwpy.frequencyseries with matrix support and future extensibility.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Optional, TypeVar
+from typing import Any, TypeVar
 
 import numpy as np
 from astropy import units as u
-
 from gwpy.frequencyseries import FrequencySeries as BaseFrequencySeries
 
 from gwexpy.fitting.mixin import FittingMixin
@@ -42,12 +41,18 @@ except ImportError:
 # =============================
 
 
-class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, StatisticalMethodsMixin, BaseFrequencySeries):
+class FrequencySeries(
+    SignalAnalysisMixin,
+    RegularityMixin,
+    FittingMixin,
+    StatisticalMethodsMixin,
+    BaseFrequencySeries,
+):
     """Light wrapper of gwpy's FrequencySeries for compatibility and future extension."""
 
     # --- Phase and Angle ---
 
-    def phase(self, unwrap: bool = False) -> "FrequencySeries":
+    def phase(self, unwrap: bool = False) -> FrequencySeries:
         """
         Calculate the phase of this FrequencySeries.
 
@@ -69,14 +74,19 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         name = self.name + "_phase" if self.name else "phase"
 
         return self.__class__(
-            val, frequencies=self.frequencies, unit="rad", name=name, channel=self.channel, epoch=self.epoch
+            val,
+            frequencies=self.frequencies,
+            unit="rad",
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch,
         )
 
-    def angle(self, unwrap: bool = False) -> "FrequencySeries":
+    def angle(self, unwrap: bool = False) -> FrequencySeries:
         """Alias for `phase(unwrap=unwrap)`."""
         return self.phase(unwrap=unwrap)
 
-    def degree(self, unwrap: bool = False) -> "FrequencySeries":
+    def degree(self, unwrap: bool = False) -> FrequencySeries:
         """
         Calculate the phase of this FrequencySeries in degrees.
 
@@ -96,12 +106,17 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         name = self.name + "_phase_deg" if self.name else "phase_deg"
 
         return self.__class__(
-            val, frequencies=self.frequencies, unit="deg", name=name, channel=self.channel, epoch=self.epoch
+            val,
+            frequencies=self.frequencies,
+            unit="deg",
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch,
         )
 
     # --- Calculus ---
 
-    def differentiate(self, order: int = 1) -> "FrequencySeries":
+    def differentiate(self, order: int = 1) -> FrequencySeries:
         """
         Differentiate the FrequencySeries in the frequency domain.
 
@@ -137,13 +152,22 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
 
         name = f"d({self.name})/dt" if self.name else "derivative"
         if order > 1:
-            name = f"d^{order}({self.name})/dt^{order}" if self.name else f"{order}-th_derivative"
+            name = (
+                f"d^{order}({self.name})/dt^{order}"
+                if self.name
+                else f"{order}-th_derivative"
+            )
 
         return self.__class__(
-            val, frequencies=self.frequencies, unit=new_unit, name=name, channel=self.channel, epoch=self.epoch
+            val,
+            frequencies=self.frequencies,
+            unit=new_unit,
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch,
         )
 
-    def integrate(self, order: int = 1) -> "FrequencySeries":
+    def integrate(self, order: int = 1) -> FrequencySeries:
         """
         Integrate the FrequencySeries in the frequency domain.
 
@@ -183,16 +207,24 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
 
         name = f"int({self.name})dt" if self.name else "integral"
         if order > 1:
-             name = f"int^{order}({self.name})dt^{order}" if self.name else f"{order}-th_integral"
+            name = (
+                f"int^{order}({self.name})dt^{order}"
+                if self.name
+                else f"{order}-th_integral"
+            )
 
         return self.__class__(
-            val, frequencies=self.frequencies, unit=new_unit, name=name, channel=self.channel, epoch=self.epoch
+            val,
+            frequencies=self.frequencies,
+            unit=new_unit,
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch,
         )
-
 
     # --- dB / Logarithmic ---
 
-    def to_db(self, ref: Any = 1.0, amplitude: bool = True) -> "FrequencySeries":
+    def to_db(self, ref: Any = 1.0, amplitude: bool = True) -> FrequencySeries:
         """
         Convert this series to decibels.
 
@@ -227,12 +259,18 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         name = self.name + "_db" if self.name else "db"
 
         return self.__class__(
-            db_val, frequencies=self.frequencies, unit="dB", name=name, channel=self.channel, epoch=self.epoch
+            db_val,
+            frequencies=self.frequencies,
+            unit="dB",
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch,
         )
 
     def plot(self, **kwargs: Any) -> Any:
         """Plot this FrequencySeries. Delegates to gwexpy.plot.Plot."""
         from gwexpy.plot import Plot
+
         return Plot(self, **kwargs)
 
     # --- Interop helpers ---
@@ -242,12 +280,14 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         """
         return super().filterba(*args, **kwargs)
 
-    def to_pandas(self, index: str = "frequency", *, name: Optional[str] = None, copy: bool = False) -> Any:
+    def to_pandas(
+        self, index: str = "frequency", *, name: str | None = None, copy: bool = False
+    ) -> Any:
         """Convert to pandas.Series."""
         return to_pandas_frequencyseries(self, index=index, name=name, copy=copy)
 
     @classmethod
-    def from_pandas(cls: type["FrequencySeries"], series: Any, **kwargs: Any) -> Any:
+    def from_pandas(cls: type[FrequencySeries], series: Any, **kwargs: Any) -> Any:
         """Create FrequencySeries from pandas.Series."""
         return from_pandas_frequencyseries(cls, series, **kwargs)
 
@@ -255,7 +295,12 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
     # 5. External Library Interop
     # ===============================
 
-    def to_polars(self, name: Optional[str] = None, as_dataframe: bool = True, frequencies: str = "frequency") -> Any:
+    def to_polars(
+        self,
+        name: str | None = None,
+        as_dataframe: bool = True,
+        frequencies: str = "frequency",
+    ) -> Any:
         """
         Convert this series to a polars.DataFrame or polars.Series.
 
@@ -285,7 +330,10 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
 
     @classmethod
     def from_polars(
-        cls: type["FrequencySeries"], data: Any, frequencies: Optional[str] = "frequency", **kwargs: Any
+        cls: type[FrequencySeries],
+        data: Any,
+        frequencies: str | None = "frequency",
+        **kwargs: Any,
     ) -> Any:
         """
         Create a FrequencySeries from a polars.DataFrame or polars.Series.
@@ -314,7 +362,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
 
             return from_polars_series(cls, data, **kwargs)
 
-    def to_tgraph(self, error: Optional[Any] = None) -> Any:
+    def to_tgraph(self, error: Any | None = None) -> Any:
         """
         Convert to ROOT TGraph or TGraphErrors.
         """
@@ -322,7 +370,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
 
         return to_tgraph(self, error=error)
 
-    def to_th1d(self, error: Optional[Any] = None) -> Any:
+    def to_th1d(self, error: Any | None = None) -> Any:
         """
         Convert to ROOT TH1D.
         """
@@ -331,7 +379,9 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         return to_th1d(self, error=error)
 
     @classmethod
-    def from_root(cls: type["FrequencySeries"], obj: Any, return_error: bool = False, **kwargs: Any) -> Any:
+    def from_root(
+        cls: type[FrequencySeries], obj: Any, return_error: bool = False, **kwargs: Any
+    ) -> Any:
         """
         Create FrequencySeries from ROOT TGraph or TH1.
         """
@@ -344,7 +394,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         return to_xarray_frequencyseries(self, freq_coord=freq_coord)
 
     @classmethod
-    def from_xarray(cls: type["FrequencySeries"], da: Any, **kwargs: Any) -> Any:
+    def from_xarray(cls: type[FrequencySeries], da: Any, **kwargs: Any) -> Any:
         """Create FrequencySeries from xarray.DataArray."""
         return from_xarray_frequencyseries(cls, da, **kwargs)
 
@@ -354,7 +404,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         path: str,
         *,
         overwrite: bool = False,
-        compression: Optional[str] = None,
+        compression: str | None = None,
         compression_opts: Any = None,
     ) -> Any:
         """Write to HDF5 dataset within a group."""
@@ -368,7 +418,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         )
 
     @classmethod
-    def from_hdf5_dataset(cls: type["FrequencySeries"], group: Any, path: str) -> Any:
+    def from_hdf5_dataset(cls: type[FrequencySeries], group: Any, path: str) -> Any:
         """Read FrequencySeries from HDF5 dataset."""
         return from_hdf5_frequencyseries(cls, group, path)
 
@@ -379,9 +429,9 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         *,
         mode: str = "auto",
         trim: bool = True,
-        original_n: Optional[int] = None,
-        pad_left: Optional[int] = None,
-        pad_right: Optional[int] = None,
+        original_n: int | None = None,
+        pad_left: int | None = None,
+        pad_right: int | None = None,
         **kwargs: Any,
     ) -> Any:
         """
@@ -403,7 +453,11 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
 
         mode_to_use = mode
         if mode == "auto":
-            mode_to_use = "transient" if getattr(self, "_gwex_fft_mode", None) == "transient" else "gwpy"
+            mode_to_use = (
+                "transient"
+                if getattr(self, "_gwex_fft_mode", None) == "transient"
+                else "gwpy"
+            )
 
         if mode_to_use == "gwpy":
             ts = super().ifft(**kwargs)
@@ -437,8 +491,16 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
             dt = None
 
         # trimming / pad removal
-        pad_l = pad_left if pad_left is not None else getattr(self, "_gwex_pad_left", 0) or 0
-        pad_r = pad_right if pad_right is not None else getattr(self, "_gwex_pad_right", 0) or 0
+        pad_l = (
+            pad_left
+            if pad_left is not None
+            else getattr(self, "_gwex_pad_left", 0) or 0
+        )
+        pad_r = (
+            pad_right
+            if pad_right is not None
+            else getattr(self, "_gwex_pad_right", 0) or 0
+        )
         data_trim = time_data
         if trim and (pad_l or pad_r):
             if pad_r == 0:
@@ -446,7 +508,11 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
             else:
                 data_trim = data_trim[pad_l:-pad_r]
 
-        target_n = original_n if original_n is not None else getattr(self, "_gwex_original_n", None)
+        target_n = (
+            original_n
+            if original_n is not None
+            else getattr(self, "_gwex_original_n", None)
+        )
         if trim and target_n is not None:
             data_trim = data_trim[:target_n]
 
@@ -459,7 +525,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
             channel=self.channel,
         )
 
-    def idct(self, type: int = 2, norm: str = "ortho", *, n: Optional[int] = None) -> Any:
+    def idct(self, type: int = 2, norm: str = "ortho", *, n: int | None = None) -> Any:
         # ... (docstring) ...
         self._check_regular("idct")
         scipy_fft = require_optional("scipy.fft")
@@ -529,7 +595,12 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         name = f"d({self.name})/dt" if self.name else "differentiation"
 
         return self.__class__(
-            new_val, frequencies=self.frequencies, unit=new_unit, name=name, channel=self.channel, epoch=self.epoch
+            new_val,
+            frequencies=self.frequencies,
+            unit=new_unit,
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch,
         )
 
     def integrate_time(self) -> Any:
@@ -564,11 +635,15 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         name = f"int({self.name})dt" if self.name else "integration"
 
         return self.__class__(
-            new_val, frequencies=self.frequencies, unit=new_unit, name=name, channel=self.channel, epoch=self.epoch
+            new_val,
+            frequencies=self.frequencies,
+            unit=new_unit,
+            name=name,
+            channel=self.channel,
+            epoch=self.epoch,
         )
 
     # smooth() and find_peaks() are now inherited from SignalAnalysisMixin
-
 
     def quadrature_sum(self, other: Any) -> Any:
         """
@@ -594,7 +669,11 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         val = np.sqrt(mag_self**2 + mag_other**2)
 
         return self.__class__(
-            val, frequencies=self.frequencies, unit=self.unit, name=f"sqrt({self.name}^2 + {other.name}^2)", epoch=self.epoch
+            val,
+            frequencies=self.frequencies,
+            unit=self.unit,
+            name=f"sqrt({self.name}^2 + {other.name}^2)",
+            epoch=self.epoch,
         )
 
     def group_delay(self) -> Any:
@@ -636,7 +715,9 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         return to_control_frd(self, frequency_unit=frequency_unit)
 
     @classmethod
-    def from_control_frd(cls: type["FrequencySeries"], frd: Any, *, frequency_unit: str = "Hz") -> Any:
+    def from_control_frd(
+        cls: type[FrequencySeries], frd: Any, *, frequency_unit: str = "Hz"
+    ) -> Any:
         """Create from control.FRD."""
         from gwexpy.interop import from_control_frd
 
@@ -646,7 +727,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
 
     def to_torch(
         self,
-        device: Optional[str] = None,
+        device: str | None = None,
         dtype: Any = None,
         requires_grad: bool = False,
         copy: bool = False,
@@ -671,10 +752,17 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         """
         from gwexpy.interop.torch_ import to_torch
 
-        return to_torch(self, device=device, dtype=dtype, requires_grad=requires_grad, copy=copy)
+        return to_torch(
+            self, device=device, dtype=dtype, requires_grad=requires_grad, copy=copy
+        )
 
     @classmethod
-    def from_torch(cls: type["FrequencySeries"], tensor: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
+    def from_torch(
+        cls: type[FrequencySeries],
+        tensor: Any,
+        frequencies: Any,
+        unit: Any | None = None,
+    ) -> Any:
         """
         Create FrequencySeries from torch.Tensor.
 
@@ -712,7 +800,12 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         return to_tf(self, dtype=dtype)
 
     @classmethod
-    def from_tensorflow(cls: type["FrequencySeries"], tensor: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
+    def from_tensorflow(
+        cls: type[FrequencySeries],
+        tensor: Any,
+        frequencies: Any,
+        unit: Any | None = None,
+    ) -> Any:
         """Create FrequencySeries from tensorflow.Tensor."""
         data = tensor.numpy()
         return cls(data, frequencies=frequencies, unit=unit)
@@ -730,7 +823,12 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         return to_jax(self, dtype=dtype)
 
     @classmethod
-    def from_jax(cls: type["FrequencySeries"], array: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
+    def from_jax(
+        cls: type[FrequencySeries],
+        array: Any,
+        frequencies: Any,
+        unit: Any | None = None,
+    ) -> Any:
         """Create FrequencySeries from JAX array."""
         import numpy as np
 
@@ -750,7 +848,12 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         return to_cupy(self, dtype=dtype)
 
     @classmethod
-    def from_cupy(cls: type["FrequencySeries"], array: Any, frequencies: Any, unit: Optional[Any] = None) -> Any:
+    def from_cupy(
+        cls: type[FrequencySeries],
+        array: Any,
+        frequencies: Any,
+        unit: Any | None = None,
+    ) -> Any:
         """Create FrequencySeries from CuPy array."""
         cp = require_optional("cupy")
         data = cp.asnumpy(array)
@@ -758,7 +861,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
 
     # --- Domain Specific Interop ---
 
-    def to_quantities(self, units: Optional[str] = None) -> Any:
+    def to_quantities(self, units: str | None = None) -> Any:
         """
         Convert to quantities.Quantity (Elephant/Neo compatible).
 
@@ -776,7 +879,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         return to_quantity(self, units=units)
 
     @classmethod
-    def from_quantities(cls: type["FrequencySeries"], q: Any, frequencies: Any) -> Any:
+    def from_quantities(cls: type[FrequencySeries], q: Any, frequencies: Any) -> Any:
         """
         Create FrequencySeries from quantities.Quantity.
 
@@ -795,7 +898,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
 
         return from_quantity(cls, q, frequencies=frequencies)
 
-    def to_mne(self, info: Optional[Any] = None) -> Any:
+    def to_mne(self, info: Any | None = None) -> Any:
         """
         Convert to MNE-Python object.
 
@@ -813,7 +916,7 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         return to_mne(self, info=info)
 
     @classmethod
-    def from_mne(cls: type["FrequencySeries"], spectrum: Any, **kwargs: Any) -> Any:
+    def from_mne(cls: type[FrequencySeries], spectrum: Any, **kwargs: Any) -> Any:
         """
         Create FrequencySeries from MNE-Python Spectrum object.
 
@@ -864,7 +967,9 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
 
         return from_obspy(cls, trace, **kwargs)
 
-    def to_simpeg(self, location=None, rx_type="PointElectricField", orientation="x", **kwargs) -> Any:
+    def to_simpeg(
+        self, location=None, rx_type="PointElectricField", orientation="x", **kwargs
+    ) -> Any:
         """
         Convert to SimPEG Data object.
 
@@ -883,7 +988,9 @@ class FrequencySeries(SignalAnalysisMixin, RegularityMixin, FittingMixin, Statis
         """
         from gwexpy.interop import to_simpeg
 
-        return to_simpeg(self, location=location, rx_type=rx_type, orientation=orientation, **kwargs)
+        return to_simpeg(
+            self, location=location, rx_type=rx_type, orientation=orientation, **kwargs
+        )
 
     @classmethod
     def from_simpeg(cls, data_obj: Any, **kwargs: Any) -> Any:
@@ -986,7 +1093,7 @@ def as_series_dict_class(seriesclass):
     `FrequencySeries.DictClass` to point to the matching dict container.
     """
 
-    def decorate_class(cls: type["FrequencySeries"]) -> type["FrequencySeries"]:
+    def decorate_class(cls: type[FrequencySeries]) -> type[FrequencySeries]:
         seriesclass.DictClass = cls
         return cls
 

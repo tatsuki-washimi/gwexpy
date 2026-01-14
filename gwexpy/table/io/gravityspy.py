@@ -15,4 +15,3 @@ __all__ = [
     "get_gravityspy_triggers",
     "register_fetcher",
 ]
-

@@ -23,4 +23,3 @@ __all__ = [
     "table_from_gwf",
     "table_to_gwf",
 ]
-

@@ -35,4 +35,3 @@ __all__ = [
     "to_lal_type_str",
     "to_lal_unit",
 ]
-

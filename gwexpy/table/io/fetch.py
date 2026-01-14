@@ -13,4 +13,3 @@ __all__ = [
     "io_registry",
     "register_fetcher",
 ]
-

@@ -50,7 +50,9 @@ def to_control_frd(fs, frequency_unit: str = "rad/s"):
     elif frequency_unit == "Hz":
         omega = freqs
     else:
-        raise ValueError(f"frequency_unit must be 'rad/s' or 'Hz', got '{frequency_unit}'")
+        raise ValueError(
+            f"frequency_unit must be 'rad/s' or 'Hz', got '{frequency_unit}'"
+        )
 
     frd = ctl.frd(fs.value, omega)
 
@@ -99,7 +101,9 @@ def from_control_frd(cls, frd, frequency_unit: str = "Hz"):
         # FRD.omega is always in rad/s internally
         freqs = omega / (2 * np.pi)
     else:
-        raise ValueError(f"frequency_unit must be 'Hz' or 'rad/s', got '{frequency_unit}'")
+        raise ValueError(
+            f"frequency_unit must be 'Hz' or 'rad/s', got '{frequency_unit}'"
+        )
 
     # Check for regular spacing
     if len(freqs) > 1:
@@ -118,12 +122,14 @@ def from_control_frd(cls, frd, frequency_unit: str = "Hz"):
 
         if is_matrix:
             from gwexpy.frequencyseries import FrequencySeriesMatrix
+
             return FrequencySeriesMatrix(data, df=df, f0=f0)
         return cls(np.asarray(data).flatten(), df=df, f0=f0)
 
     # Irregular frequencies
     if is_matrix:
         from gwexpy.frequencyseries import FrequencySeriesMatrix
+
         return FrequencySeriesMatrix(data, frequencies=freqs)
     return cls(np.asarray(data).flatten(), frequencies=freqs)
 
@@ -172,7 +178,10 @@ def from_control_response(cls, response, **kwargs):
         tdict = TimeSeriesDict()
         for i in range(response.noutputs):
             label = None
-            if hasattr(response, 'output_labels') and response.output_labels is not None:
+            if (
+                hasattr(response, "output_labels")
+                and response.output_labels is not None
+            ):
                 label = response.output_labels[i]
 
             name = label or f"output_{i}"
@@ -182,11 +191,10 @@ def from_control_response(cls, response, **kwargs):
         from gwexpy.timeseries import TimeSeries
 
         label = None
-        if hasattr(response, 'output_labels') and response.output_labels is not None:
+        if hasattr(response, "output_labels") and response.output_labels is not None:
             label = response.output_labels[0]
 
         name = label or "output"
         # If it's SISO but forced to be (1, nsteps), flatten it
         data = outputs.flatten()
         return TimeSeries(data, dt=dt, t0=t0, name=name, **kwargs)
-

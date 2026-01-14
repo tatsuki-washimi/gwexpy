@@ -1,5 +1,5 @@
-from .mixin_legacy import RegularityMixin, PhaseMethodsMixin
-from .signal_interop import SignalAnalysisMixin, InteropMixin
+from .mixin_legacy import PhaseMethodsMixin, RegularityMixin
+from .signal_interop import InteropMixin, SignalAnalysisMixin
 
 __all__ = [
     "RegularityMixin",

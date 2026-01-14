@@ -10,7 +10,7 @@ Requires the `mth5` package.
 
 from __future__ import annotations
 
-from typing import Any, Optional, Union
+from typing import Any
 
 from ._optional import require_optional
 
@@ -19,9 +19,9 @@ __all__ = ["to_mth5", "from_mth5"]
 
 def to_mth5(
     series,
-    mth5_obj: Union[str, Any],  # mth5.mth5.MTH5 if available
-    station: Optional[str] = None,
-    run: Optional[str] = None,
+    mth5_obj: str | Any,  # mth5.mth5.MTH5 if available
+    station: str | None = None,
+    run: str | None = None,
     channel_type: str = "electric",
 ) -> None:
     """
@@ -58,7 +58,9 @@ def to_mth5(
     file_managed = False
     if isinstance(mth5_obj, str):
         import os
+
         from mth5.mth5 import MTH5
+
         filename = mth5_obj
         # Workaround for empty files (e.g. from tempfile.NamedTemporaryFile)
         # MTH5 0.5.0 fails to initialize if the file exists but is empty in 'a' mode.
@@ -133,9 +135,11 @@ def to_mth5(
         # electric: e\w+, magnetic: [r,h,b]\w+, auxiliary: \w+
         comp_lower = comp.lower()
         if channel_type == "electric" and not comp_lower.startswith("e"):
-             channel_type = "auxiliary"
-        elif channel_type == "magnetic" and not any(comp_lower.startswith(x) for x in ["r", "h", "b"]):
-             channel_type = "auxiliary"
+            channel_type = "auxiliary"
+        elif channel_type == "magnetic" and not any(
+            comp_lower.startswith(x) for x in ["r", "h", "b"]
+        ):
+            channel_type = "auxiliary"
 
         run_group.add_channel(
             comp,
@@ -151,11 +155,11 @@ def to_mth5(
 
 
 def from_mth5(
-    mth5_obj: Union[str, Any],  # mth5.mth5.MTH5 if available
+    mth5_obj: str | Any,  # mth5.mth5.MTH5 if available
     station: str,
     run: str,
     channel: str,
-    survey: Optional[str] = None,
+    survey: str | None = None,
 ):
     """
     Read a channel from MTH5 to TimeSeries.
@@ -189,13 +193,15 @@ def from_mth5(
     >>> ts = from_mth5("data.h5", "Site01", "Run01", "Ex")
     """
     require_optional("mth5")
-    from gwexpy.timeseries import TimeSeries
     import astropy.units as u
+
+    from gwexpy.timeseries import TimeSeries
 
     # Handle filename vs open object
     file_managed = False
     if isinstance(mth5_obj, str):
         from mth5.mth5 import MTH5
+
         filename = mth5_obj
         mth5_obj = MTH5()
         mth5_obj.open_mth5(filename, mode="r")
@@ -217,7 +223,9 @@ def from_mth5(
                     except Exception:
                         continue
                 if st_group is None:
-                    raise KeyError(f"Station {station} not found in any survey: {available_surveys}")
+                    raise KeyError(
+                        f"Station {station} not found in any survey: {available_surveys}"
+                    )
         else:
             st_group = mth5_obj.get_station(station)
         run_group = st_group.get_run(run)
@@ -235,6 +243,7 @@ def from_mth5(
         t0 = 0 * u.s
         if start is not None:
             from astropy.time import Time
+
             try:
                 t0 = Time(start).gps * u.s
             except (ValueError, TypeError):

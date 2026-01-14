@@ -1,6 +1,6 @@
-
 import numpy as np
 from scipy import stats as scipy_stats
+
 
 class StatisticalMethodsMixin:
     """
@@ -23,27 +23,129 @@ class StatisticalMethodsMixin:
 
         if unit is not None:
             from astropy.units import Quantity
+
             return Quantity(res, unit=unit)
         return res
 
-    def mean(self, axis=None, dtype=None, out=None, keepdims=False, *, where=True, ignore_nan=True):
-        return self._apply_stat_func(np.nanmean, np.mean, ignore_nan, axis=axis, dtype=dtype, out=out, keepdims=keepdims, where=where)
+    def mean(
+        self,
+        axis=None,
+        dtype=None,
+        out=None,
+        keepdims=False,
+        *,
+        where=True,
+        ignore_nan=True,
+    ):
+        return self._apply_stat_func(
+            np.nanmean,
+            np.mean,
+            ignore_nan,
+            axis=axis,
+            dtype=dtype,
+            out=out,
+            keepdims=keepdims,
+            where=where,
+        )
 
-    def std(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True, ignore_nan=True):
-        return self._apply_stat_func(np.nanstd, np.std, ignore_nan, axis=axis, dtype=dtype, out=out, ddof=ddof, keepdims=keepdims, where=where)
+    def std(
+        self,
+        axis=None,
+        dtype=None,
+        out=None,
+        ddof=0,
+        keepdims=False,
+        *,
+        where=True,
+        ignore_nan=True,
+    ):
+        return self._apply_stat_func(
+            np.nanstd,
+            np.std,
+            ignore_nan,
+            axis=axis,
+            dtype=dtype,
+            out=out,
+            ddof=ddof,
+            keepdims=keepdims,
+            where=where,
+        )
 
-    def var(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True, ignore_nan=True):
-        return self._apply_stat_func(np.nanvar, np.var, ignore_nan, axis=axis, dtype=dtype, out=out, ddof=ddof, keepdims=keepdims, where=where)
+    def var(
+        self,
+        axis=None,
+        dtype=None,
+        out=None,
+        ddof=0,
+        keepdims=False,
+        *,
+        where=True,
+        ignore_nan=True,
+    ):
+        return self._apply_stat_func(
+            np.nanvar,
+            np.var,
+            ignore_nan,
+            axis=axis,
+            dtype=dtype,
+            out=out,
+            ddof=ddof,
+            keepdims=keepdims,
+            where=where,
+        )
 
-    def min(self, axis=None, out=None, keepdims=False, initial=None, where=True, ignore_nan=True):
-        return self._apply_stat_func(np.nanmin, np.min, ignore_nan, axis=axis, out=out, keepdims=keepdims, initial=initial, where=where)
+    def min(
+        self,
+        axis=None,
+        out=None,
+        keepdims=False,
+        initial=None,
+        where=True,
+        ignore_nan=True,
+    ):
+        return self._apply_stat_func(
+            np.nanmin,
+            np.min,
+            ignore_nan,
+            axis=axis,
+            out=out,
+            keepdims=keepdims,
+            initial=initial,
+            where=where,
+        )
 
-    def max(self, axis=None, out=None, keepdims=False, initial=None, where=True, ignore_nan=True):
-        return self._apply_stat_func(np.nanmax, np.max, ignore_nan, axis=axis, out=out, keepdims=keepdims, initial=initial, where=where)
+    def max(
+        self,
+        axis=None,
+        out=None,
+        keepdims=False,
+        initial=None,
+        where=True,
+        ignore_nan=True,
+    ):
+        return self._apply_stat_func(
+            np.nanmax,
+            np.max,
+            ignore_nan,
+            axis=axis,
+            out=out,
+            keepdims=keepdims,
+            initial=initial,
+            where=where,
+        )
 
-    def median(self, axis=None, out=None, overwrite_input=False, keepdims=False, ignore_nan=True):
+    def median(
+        self,
+        axis=None,
+        out=None,
+        overwrite_input=False,
+        keepdims=False,
+        ignore_nan=True,
+    ):
         # overwrite_input is only in median/nanmedian
-        kwargs = dict(axis=axis, out=out, overwrite_input=overwrite_input, keepdims=keepdims)
+        kwargs = dict(
+            axis=axis, out=out, overwrite_input=overwrite_input, keepdims=keepdims
+        )
         return self._apply_stat_func(np.nanmedian, np.median, ignore_nan, **kwargs)
 
     def rms(self, axis=None, keepdims=False, ignore_nan=True):
@@ -53,11 +155,12 @@ class StatisticalMethodsMixin:
         val = np.sqrt(func(np.square(data), axis=axis, keepdims=keepdims))
         unit = getattr(self, "unit", None)
         if unit is not None:
-             from astropy.units import Quantity
-             return Quantity(val, unit=unit)
+            from astropy.units import Quantity
+
+            return Quantity(val, unit=unit)
         return val
 
-    def skewness(self, axis=None, nan_policy='propagate'):
+    def skewness(self, axis=None, nan_policy="propagate"):
         """
         Compute the skewness of the data.
 
@@ -80,7 +183,7 @@ class StatisticalMethodsMixin:
         data = np.asarray(self)
         return scipy_stats.skew(data, axis=axis, nan_policy=nan_policy)
 
-    def kurtosis(self, axis=None, fisher=True, nan_policy='propagate'):
+    def kurtosis(self, axis=None, fisher=True, nan_policy="propagate"):
         """
         Compute the kurtosis (Fisher or Pearson) of the data.
 
@@ -103,4 +206,6 @@ class StatisticalMethodsMixin:
             The kurtosis value(s).
         """
         data = np.asarray(self)
-        return scipy_stats.kurtosis(data, axis=axis, fisher=fisher, nan_policy=nan_policy)
+        return scipy_stats.kurtosis(
+            data, axis=axis, fisher=fisher, nan_policy=nan_policy
+        )

@@ -1,8 +1,8 @@
 from gwpy.table.io.losc import (
     DEFAULT_GWOSC_URL,
     MISSING_DATA,
-    UNITS,
     UNIT_SUFFIX,
+    UNITS,
     EventTable,
     OrderedDict,
     constants,
@@ -29,4 +29,3 @@ __all__ = [
     "read_with_selection",
     "units",
 ]
-

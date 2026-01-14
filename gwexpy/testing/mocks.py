@@ -23,4 +23,3 @@ __all__ = [
     "nds2_connection",
     "nds2_segment",
 ]
-

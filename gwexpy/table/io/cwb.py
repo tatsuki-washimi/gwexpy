@@ -21,4 +21,3 @@ __all__ = [
     "registry",
     "table_from_cwb",
 ]
-

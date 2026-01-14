@@ -1,6 +1,7 @@
-
 import json
+
 import numpy as np
+
 
 def _ensure_schema(conn):
     conn.execute("""
@@ -23,6 +24,7 @@ def _ensure_schema(conn):
     )
     """)
 
+
 def to_sqlite(ts, conn, series_id=None, overwrite=False):
     _ensure_schema(conn)
 
@@ -42,16 +44,27 @@ def to_sqlite(ts, conn, series_id=None, overwrite=False):
     attrs = {"name": str(ts.name)}
     cur.execute(
         "INSERT INTO series (series_id, channel, unit, t0, dt, n, attrs_json) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        (sid, str(ts.channel) if ts.channel else "", str(ts.unit), ts.t0.value, ts.dt.value, len(ts), json.dumps(attrs))
+        (
+            sid,
+            str(ts.channel) if ts.channel else "",
+            str(ts.unit),
+            ts.t0.value,
+            ts.dt.value,
+            len(ts),
+            json.dumps(attrs),
+        ),
     )
 
     # Insert data (bulk)
     # Using executemany with generator
     data = ts.value
     params = ((sid, i, float(v)) for i, v in enumerate(data))
-    cur.executemany("INSERT INTO samples (series_id, i, value) VALUES (?, ?, ?)", params)
+    cur.executemany(
+        "INSERT INTO samples (series_id, i, value) VALUES (?, ?, ?)", params
+    )
 
     return sid
+
 
 def from_sqlite(cls, conn, series_id):
     cur = conn.cursor()

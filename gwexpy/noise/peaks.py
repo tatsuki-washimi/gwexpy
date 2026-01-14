@@ -1,6 +1,6 @@
 """gwexpy.noise.peaks - Generic peak generation functions."""
 
-from typing import Any, Union
+from typing import Any
 
 import numpy as np
 from astropy import units as u
@@ -9,9 +9,7 @@ from scipy.special import wofz
 from ..frequencyseries import FrequencySeries
 
 
-def _get_freqs(
-    frequencies: Union[np.ndarray, None], kwargs: dict[str, Any]
-) -> np.ndarray:
+def _get_freqs(frequencies: np.ndarray | None, kwargs: dict[str, Any]) -> np.ndarray:
     """Helper to determine frequency array from args or kwargs."""
     if frequencies is not None:
         if isinstance(frequencies, u.Quantity):
@@ -26,10 +24,10 @@ def _get_freqs(
 
 def lorentzian_line(
     f0: float,
-    amplitude: Union[float, u.Quantity],
-    Q: float = None,
-    gamma: float = None,
-    frequencies: Union[np.ndarray, None] = None,
+    amplitude: float | u.Quantity,
+    Q: float | None = None,
+    gamma: float | None = None,
+    frequencies: np.ndarray | None = None,
     **kwargs: Any,
 ) -> FrequencySeries:
     """
@@ -72,7 +70,7 @@ def lorentzian_line(
     # Lorentzian calculation (ASD)
     # L(f) = gamma / sqrt((f-f0)^2 + gamma^2) -> Peak is 1 at f=f0
     denom = np.sqrt((f_vals - f0) ** 2 + gamma_val**2)
-    with np.errstate(divide='ignore', invalid='ignore'):
+    with np.errstate(divide="ignore", invalid="ignore"):
         shape = gamma_val / denom
         # Handle cases where peak might be undefined or calculation unstable (though standard form is fine)
 
@@ -85,19 +83,14 @@ def lorentzian_line(
     # Remove 'unit' from kwargs if present to avoid multiple values error
     kwargs.pop("unit", None)
 
-    return FrequencySeries(
-        data,
-        frequencies=f_vals,
-        unit=target_unit,
-        **kwargs
-    )
+    return FrequencySeries(data, frequencies=f_vals, unit=target_unit, **kwargs)
 
 
 def gaussian_line(
     f0: float,
-    amplitude: Union[float, u.Quantity],
+    amplitude: float | u.Quantity,
     sigma: float,
-    frequencies: Union[np.ndarray, None] = None,
+    frequencies: np.ndarray | None = None,
     **kwargs: Any,
 ) -> FrequencySeries:
     """
@@ -117,20 +110,15 @@ def gaussian_line(
     data = amp_val * np.exp(-((f_vals - f0) ** 2) / (2 * sigma**2))
 
     kwargs.pop("unit", None)
-    return FrequencySeries(
-        data,
-        frequencies=f_vals,
-        unit=target_unit,
-        **kwargs
-    )
+    return FrequencySeries(data, frequencies=f_vals, unit=target_unit, **kwargs)
 
 
 def voigt_line(
     f0: float,
-    amplitude: Union[float, u.Quantity],
+    amplitude: float | u.Quantity,
     sigma: float,
     gamma: float,
-    frequencies: Union[np.ndarray, None] = None,
+    frequencies: np.ndarray | None = None,
     **kwargs: Any,
 ) -> FrequencySeries:
     """
@@ -160,9 +148,4 @@ def voigt_line(
     data = amp_val * (v / peak_factor)
 
     kwargs.pop("unit", None)
-    return FrequencySeries(
-        data,
-        frequencies=f_vals,
-        unit=target_unit,
-        **kwargs
-    )
+    return FrequencySeries(data, frequencies=f_vals, unit=target_unit, **kwargs)

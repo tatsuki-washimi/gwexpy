@@ -3,11 +3,17 @@ Statistical analysis and correlation mixin for TimeSeries.
 Provides skewed, kurtosis, Granger causality, distance correlation,
 and classic correlations (Pearson, Kendall, MIC).
 """
+
+from __future__ import annotations
+
 import warnings
+
 import numpy as np
 from scipy import stats
 
 from gwexpy.types._stats import StatisticalMethodsMixin
+
+from ._typing import TimeSeriesAttrs
 
 
 class GrangerResult(float):
@@ -16,6 +22,7 @@ class GrangerResult(float):
     Inheriting from float allows p-value formatting like `f"{result:.4f}"`.
     Dictionary-like access is also supported for backward compatibility.
     """
+
     def __new__(cls, min_p_value, best_lag, p_values):
         return super().__new__(cls, min_p_value)
 
@@ -25,29 +32,29 @@ class GrangerResult(float):
         self.p_values = p_values
 
     def __getitem__(self, key):
-        if key == 'min_p_value':
+        if key == "min_p_value":
             return self.min_p_value
-        if key == 'best_lag':
+        if key == "best_lag":
             return self.best_lag
-        if key == 'p_values':
+        if key == "p_values":
             return self.p_values
         raise KeyError(key)
 
     def __contains__(self, key):
-        return key in ['min_p_value', 'best_lag', 'p_values']
+        return key in ["min_p_value", "best_lag", "p_values"]
 
     def keys(self):
-        return ['min_p_value', 'best_lag', 'p_values']
+        return ["min_p_value", "best_lag", "p_values"]
 
     def items(self):
         return [
-            ('min_p_value', self.min_p_value),
-            ('best_lag', self.best_lag),
-            ('p_values', self.p_values)
+            ("min_p_value", self.min_p_value),
+            ("best_lag", self.best_lag),
+            ("p_values", self.p_values),
         ]
 
 
-class StatisticsMixin(StatisticalMethodsMixin):
+class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     """
     Mixin class to add statistical analysis and correlation methods to TimeSeries.
 
@@ -57,12 +64,11 @@ class StatisticsMixin(StatisticalMethodsMixin):
 
     # skewness and kurtosis are now inherited from StatisticalMethodsMixin
 
-
     # ===============================
     # Correlation & Causality
     # ===============================
 
-    def correlation(self, other, method='pearson', **kwargs):
+    def correlation(self, other, method="pearson", **kwargs):
         """
         Calculate correlation coefficient with another TimeSeries.
 
@@ -77,13 +83,13 @@ class StatisticsMixin(StatisticalMethodsMixin):
         # Data preparation: align length and strip units
         x, y = self._prep_stat_data(other)
 
-        if method == 'pearson':
+        if method == "pearson":
             return self._calculate_pearson(x, y)
-        elif method == 'kendall':
+        elif method == "kendall":
             return self._calculate_kendall(x, y)
-        elif method == 'mic':
+        elif method == "mic":
             return self._calculate_mic(x, y, **kwargs)
-        elif method == 'distance':
+        elif method == "distance":
             return self._calculate_distance_correlation(x, y, **kwargs)
         else:
             raise ValueError(f"Unknown correlation method: {method}")
@@ -92,19 +98,19 @@ class StatisticsMixin(StatisticalMethodsMixin):
         """
         Calculate Maximal Information Coefficient (MIC) using minepy.
         """
-        return self.correlation(other, method='mic', alpha=alpha, c=c, est=est)
+        return self.correlation(other, method="mic", alpha=alpha, c=c, est=est)
 
     def pcc(self, other):
         """
         Calculate Pearson Correlation Coefficient.
         """
-        return self.correlation(other, method='pearson')
+        return self.correlation(other, method="pearson")
 
     def ktau(self, other):
         """
         Calculate Kendall's Rank Correlation Coefficient.
         """
-        return self.correlation(other, method='kendall')
+        return self.correlation(other, method="kendall")
 
     def distance_correlation(self, other):
         """
@@ -120,9 +126,9 @@ class StatisticsMixin(StatisticalMethodsMixin):
         Returns:
             float: The distance correlation (0 to 1).
         """
-        return self.correlation(other, method='distance')
+        return self.correlation(other, method="distance")
 
-    def granger_causality(self, other, maxlag=10, test='ssr_ftest', verbose=False):
+    def granger_causality(self, other, maxlag=10, test="ssr_ftest", verbose=False):
         """
         Check if 'other' Granger-causes 'self'.
 
@@ -162,10 +168,10 @@ class StatisticsMixin(StatisticalMethodsMixin):
         lags = []
 
         for lag, result in res.items():
-             test_result = result[0][test]
-             p_val = test_result[1]
-             p_values.append(p_val)
-             lags.append(lag)
+            test_result = result[0][test]
+            p_val = test_result[1]
+            p_values.append(p_val)
+            lags.append(lag)
 
         # Find best lag (minimum p-value)
         min_idx = np.argmin(p_values)
@@ -173,9 +179,7 @@ class StatisticsMixin(StatisticalMethodsMixin):
         best_lag = lags[min_idx]
 
         return GrangerResult(
-            min_p_value=min_p,
-            best_lag=best_lag,
-            p_values=dict(zip(lags, p_values))
+            min_p_value=min_p, best_lag=best_lag, p_values=dict(zip(lags, p_values))
         )
 
     # --- Internal Methods ---
@@ -191,7 +195,9 @@ class StatisticsMixin(StatisticalMethodsMixin):
 
         # Check sample rate match (approximate check)
         if self.sample_rate != other.sample_rate:
-            warnings.warn("Sample rates do not match. Resampling 'other' to match 'self'.")
+            warnings.warn(
+                "Sample rates do not match. Resampling 'other' to match 'self'."
+            )
             # Resample 'other' to match 'self'
             other = other.resample(self.sample_rate)
 
@@ -220,7 +226,7 @@ class StatisticsMixin(StatisticalMethodsMixin):
         except ImportError:
             try:
                 # Some mictools installations might expose minepy
-                import mictools
+                import mictools  # noqa: F401
                 from minepy import MINE
             except ImportError:
                 raise ImportError(

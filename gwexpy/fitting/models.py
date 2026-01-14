@@ -1,5 +1,7 @@
+from inspect import Parameter, signature
+
 import numpy as np
-from inspect import signature, Parameter
+
 
 def gaussian(x, A, mu, sigma):
     """
@@ -8,6 +10,7 @@ def gaussian(x, A, mu, sigma):
     """
     return A * np.exp(-0.5 * ((x - mu) / sigma) ** 2)
 
+
 def exponential(x, A, tau):
     """
     Exponential decay.
@@ -15,12 +18,14 @@ def exponential(x, A, tau):
     """
     return A * np.exp(-x / tau)
 
+
 def power_law(x, A, alpha):
     """
     Power law.
     f(x) = A * x^alpha
     """
-    return A * x ** alpha
+    return A * x**alpha
+
 
 def damped_oscillation(x, A, tau, f, phi=0):
     """
@@ -28,6 +33,7 @@ def damped_oscillation(x, A, tau, f, phi=0):
     f(x) = A * exp(-x / tau) * sin(2 * pi * f * x + phi)
     """
     return A * np.exp(-x / tau) * np.sin(2 * np.pi * f * x + phi)
+
 
 def landau(x, A, mu, sigma):
     """
@@ -37,19 +43,20 @@ def landau(x, A, mu, sigma):
     lam = (x - mu) / sigma
     return A * np.exp(-0.5 * (lam + np.exp(-lam)))
 
+
 def make_pol_func(n):
     """
     Create a polynomial function of degree n with signature (x, p0, p1, ..., pn).
     f(x) = p0 + p1*x + ... + pn*x^n
     """
-    param_names = [f'p{i}' for i in range(n + 1)]
+    param_names = [f"p{i}" for i in range(n + 1)]
 
     def pol_func(x, *args, **kwargs):
         # Handle both positional and keyword arguments
         if kwargs:
             p_vals = [kwargs[name] for name in param_names]
         else:
-            p_vals = args
+            p_vals = list(args)
 
         res = 0
         for i, p in enumerate(p_vals):
@@ -57,29 +64,31 @@ def make_pol_func(n):
         return res
 
     # Construct the function signature manually so iminuit can detect parameter names
-    parameters = [Parameter('x', Parameter.POSITIONAL_OR_KEYWORD)]
+    parameters = [Parameter("x", Parameter.POSITIONAL_OR_KEYWORD)]
     for name in param_names:
         parameters.append(Parameter(name, Parameter.POSITIONAL_OR_KEYWORD))
 
-    pol_func.__signature__ = signature(lambda: None).replace(parameters=parameters)
+    pol_func.__signature__ = signature(lambda: None).replace(parameters=parameters)  # type: ignore[attr-defined]
     pol_func.__doc__ = f"Polynomial of degree {n}: p0 + p1*x + ... + p{n}*x^{n}"
     return pol_func
 
+
 # Predefined dictionary
 MODELS = {
-    'gaus': gaussian,
-    'gaussian': gaussian,
-    'exp': exponential,
-    'expo': exponential,  # ROOT style
-    'exponential': exponential,
-    'landau': landau,
-    'power_law': power_law,
-    'damped_oscillation': damped_oscillation,
+    "gaus": gaussian,
+    "gaussian": gaussian,
+    "exp": exponential,
+    "expo": exponential,  # ROOT style
+    "exponential": exponential,
+    "landau": landau,
+    "power_law": power_law,
+    "damped_oscillation": damped_oscillation,
 }
 
 # Add pol0 to pol9
 for i in range(10):
-    MODELS[f'pol{i}'] = make_pol_func(i)
+    MODELS[f"pol{i}"] = make_pol_func(i)
+
 
 def get_model(name):
     """
@@ -93,7 +102,7 @@ def get_model(name):
         return MODELS[key]
 
     # Handle polN for N >= 10 if needed, though usually not recommended
-    if key.startswith('pol') and key[3:].isdigit():
+    if key.startswith("pol") and key[3:].isdigit():
         n = int(key[3:])
         return make_pol_func(n)
 

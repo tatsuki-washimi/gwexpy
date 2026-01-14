@@ -1,30 +1,34 @@
+from collections.abc import Mapping
 
+import numpy as np
 
 from ._optional import require_optional
-from ._time import gps_to_datetime_utc, datetime_utc_to_gps
-from collections.abc import Mapping
-import numpy as np
+from ._time import datetime_utc_to_gps, gps_to_datetime_utc
 
 # -----------------------------------------------------------------------------
 # TimeSeries
 # -----------------------------------------------------------------------------
 
+
 def _ts_to_obspy_trace(ts, stats_extra=None, dtype=None):
     obspy = require_optional("obspy")
     from .base import to_plain_array
+
     data = to_plain_array(ts)
     if dtype:
         data = data.astype(dtype)
 
     stats = {
-        "starttime": gps_to_datetime_utc(ts.t0, leap='raise'),
+        "starttime": gps_to_datetime_utc(ts.t0, leap="raise"),
         "sampling_rate": ts.sample_rate.value,
         "npts": len(data),
     }
 
     # Map name/channel
     if ts.channel:
-        stats["channel"] = str(ts.channel.name) if hasattr(ts.channel, "name") else str(ts.channel)
+        stats["channel"] = (
+            str(ts.channel.name) if hasattr(ts.channel, "name") else str(ts.channel)
+        )
 
     # Use name as station if available, strictly speaking Obspy station is short code
     if ts.name:
@@ -35,9 +39,11 @@ def _ts_to_obspy_trace(ts, stats_extra=None, dtype=None):
 
     return obspy.Trace(data=data, header=stats)
 
+
 def to_obspy_trace(ts, stats_extra=None, dtype=None):
     """Legacy alias for internal use, prefers using new generic to_obspy."""
     return _ts_to_obspy_trace(ts, stats_extra, dtype)
+
 
 def _from_obspy_trace_to_ts(cls, tr, unit=None, name_policy="id"):
     data = tr.data
@@ -50,14 +56,17 @@ def _from_obspy_trace_to_ts(cls, tr, unit=None, name_policy="id"):
 
     return cls(data, t0=t0, dt=dt, unit=unit, name=name)
 
+
 def from_obspy_trace(cls, tr, unit=None, name_policy="id"):
     """Legacy alias."""
     require_optional("obspy")
     return _from_obspy_trace_to_ts(cls, tr, unit, name_policy)
 
+
 # -----------------------------------------------------------------------------
 # FrequencySeries
 # -----------------------------------------------------------------------------
+
 
 def _fs_to_obspy_trace(fs, stats_extra=None, **kwargs):
     """
@@ -71,7 +80,7 @@ def _fs_to_obspy_trace(fs, stats_extra=None, **kwargs):
     stats = {
         "delta": fs.df.value,
         "starttime": fs.f0.value if hasattr(fs, "f0") else 0.0,
-        "npts": len(data)
+        "npts": len(data),
     }
 
     if fs.name:
@@ -84,6 +93,7 @@ def _fs_to_obspy_trace(fs, stats_extra=None, **kwargs):
     # Obspy doesn't have a standard field for this.
 
     return obspy.Trace(data=data, header=stats)
+
 
 def _trace_to_fs(cls, tr, unit=None, name_policy="id", **kwargs):
     """
@@ -105,9 +115,11 @@ def _trace_to_fs(cls, tr, unit=None, name_policy="id", **kwargs):
 
     return cls(data, df=df, f0=f0, unit=unit, name=name)
 
+
 # -----------------------------------------------------------------------------
 # Spectrogram
 # -----------------------------------------------------------------------------
+
 
 def _spec_to_obspy_stream(spec, **kwargs):
     """
@@ -136,21 +148,21 @@ def _spec_to_obspy_stream(spec, **kwargs):
     station = str(spec.name) if spec.name else "SPEC"
 
     # Ensure t0 is properly formatted for Obspy
-    starttime = gps_to_datetime_utc(t0, leap='raise')
+    starttime = gps_to_datetime_utc(t0, leap="raise")
 
     for i, freq in enumerate(freqs):
         # Time series for this frequency bin
         # data[:, i] because gwexpy Spectrogram is (n_times, n_freqs)
 
-        tr_data = data[:, i].astype(np.float64) # Obspy likes float64 or 32
+        tr_data = data[:, i].astype(np.float64)  # Obspy likes float64 or 32
 
         stats = {
             "network": "",
             "station": station,
             "location": "",
-            "channel": f"F{i:04d}", # Fake channel name
+            "channel": f"F{i:04d}",  # Fake channel name
             "starttime": starttime,
-            "sampling_rate": 1.0/dt.value,
+            "sampling_rate": 1.0 / dt.value,
             "npts": len(tr_data),
         }
 
@@ -159,10 +171,11 @@ def _spec_to_obspy_stream(spec, **kwargs):
         # It allows assignment after creation or via AttribDict in header
 
         tr = obspy.Trace(data=tr_data, header=stats)
-        tr.stats.frequency = freq # Custom header
+        tr.stats.frequency = freq  # Custom header
         st.append(tr)
 
     return st
+
 
 def _stream_to_spec(cls, st, unit=None, name_policy="id", **kwargs):
     # Reconstruct Spectrogram from Stream
@@ -170,7 +183,7 @@ def _stream_to_spec(cls, st, unit=None, name_policy="id", **kwargs):
     if len(st) == 0:
         raise ValueError("Empty stream")
 
-    st.sort(keys=['channel']) # Sort by channel (F0000, F0001...) or ideally frequency
+    st.sort(keys=["channel"])  # Sort by channel (F0000, F0001...) or ideally frequency
 
     # Extract common stats
     tr0 = st[0]
@@ -182,18 +195,18 @@ def _stream_to_spec(cls, st, unit=None, name_policy="id", **kwargs):
     freqs = []
 
     for tr in st:
-        if hasattr(tr.stats, 'frequency'):
+        if hasattr(tr.stats, "frequency"):
             f = tr.stats.frequency
         else:
             # Try to guess from channel name or index?
             # If we don't have frequency info, we can't reconstruct properly without guessing.
             # Assuming linear spacing if missing?
-            f = 0.0 # Placeholder
+            f = 0.0  # Placeholder
 
         data_list.append(tr.data)
         freqs.append(f)
 
-    data = np.stack(data_list).T # (n_times, n_freqs)
+    data = np.stack(data_list).T  # (n_times, n_freqs)
 
     # If frequencies were not stored, create dummy
     if all(f == 0.0 for f in freqs):
@@ -207,6 +220,7 @@ def _stream_to_spec(cls, st, unit=None, name_policy="id", **kwargs):
 # -----------------------------------------------------------------------------
 # Dispatch
 # -----------------------------------------------------------------------------
+
 
 def to_obspy(data, **kwargs):
     """
@@ -252,6 +266,7 @@ def to_obspy(data, **kwargs):
 
     raise TypeError(f"Unsupported type for to_obspy: {type(data)}")
 
+
 def from_obspy(cls, data, **kwargs):
     """
     Convert Obspy object to gwexpy object of type cls.
@@ -260,13 +275,13 @@ def from_obspy(cls, data, **kwargs):
 
     if isinstance(data, obspy.Trace):
         # Target cls determines interpretation
-        if hasattr(cls, 'frequencies'): # FrequencySeries?
+        if hasattr(cls, "frequencies"):  # FrequencySeries?
             # How to check if cls is FrequencySeries class without importing?
             # Check name or check known classes if imported
             if "FrequencySeries" in cls.__name__:
                 return _trace_to_fs(cls, data, **kwargs)
             elif "Spectrogram" in cls.__name__:
-                 raise ValueError("Cannot convert single Trace to Spectrogram directly.")
+                raise ValueError("Cannot convert single Trace to Spectrogram directly.")
             else:
                 # Default to TimeSeries
                 return _from_obspy_trace_to_ts(cls, data, **kwargs)

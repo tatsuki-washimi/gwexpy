@@ -1,13 +1,11 @@
-from gwpy.conftest import *  # noqa: F401,F403
-
-import pytest
-
-import gwpy.time._tconvert as _tconvert
-import gwpy.conftest as _gwpy_conftest
-
 import importlib
 import multiprocessing as _mp
 import socket
+
+import gwpy.conftest as _gwpy_conftest
+import gwpy.time._tconvert as _tconvert
+import pytest
+from gwpy.conftest import *  # noqa: F401,F403
 
 
 def pytest_configure(config):
@@ -80,7 +78,9 @@ def _is_network_error(exc: BaseException) -> bool:
             return True
         if urllib3 and isinstance(current, urllib3.exceptions.HTTPError):
             return True
-        current = getattr(current, "__cause__", None) or getattr(current, "__context__", None)
+        current = getattr(current, "__cause__", None) or getattr(
+            current, "__context__", None
+        )
     return False
 
 
@@ -154,10 +154,12 @@ def _freeze_time_marker(monkeypatch, request):
     monkeypatch.setattr(_tconvert, "_tomorrow", _tomorrow, raising=False)
     monkeypatch.setattr(_tconvert, "_yesterday", _yesterday, raising=False)
     date_strings = dict(_tconvert.DATE_STRINGS)
-    date_strings.update({
-        "now": _now,
-        "today": _today,
-        "tomorrow": _tomorrow,
-        "yesterday": _yesterday,
-    })
+    date_strings.update(
+        {
+            "now": _now,
+            "today": _today,
+            "tomorrow": _tomorrow,
+            "yesterday": _yesterday,
+        }
+    )
     monkeypatch.setattr(_tconvert, "DATE_STRINGS", date_strings, raising=False)

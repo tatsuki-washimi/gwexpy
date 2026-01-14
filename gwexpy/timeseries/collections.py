@@ -1,22 +1,21 @@
+from typing import Any
+
 from astropy import units as u
-from typing import Optional, Any
+
 try:
     import scipy.signal  # noqa: F401 - availability check
 except ImportError:
-    pass # scipy is optional dependency for gwpy but required here for hilbert
+    pass  # scipy is optional dependency for gwpy but required here for hilbert
 
 
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
 from gwpy.timeseries import TimeSeriesDict as BaseTimeSeriesDict
 from gwpy.timeseries import TimeSeriesList as BaseTimeSeriesList
 
-
 # --- Monkey Patch TimeSeriesDict ---
-
-
 from gwexpy.types.mixin import PhaseMethodsMixin
-from .spectral import csd_matrix_from_collection, coherence_matrix_from_collection
 
+from .spectral import coherence_matrix_from_collection, csd_matrix_from_collection
 
 
 class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
@@ -43,7 +42,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         is_time_bin = False
         if isinstance(rate, str):
             is_time_bin = True
-        elif isinstance(rate, u.Quantity) and rate.unit.physical_type == 'time':
+        elif isinstance(rate, u.Quantity) and rate.unit.physical_type == "time":
             is_time_bin = True
 
         if is_time_bin:
@@ -52,7 +51,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             # (asfreq/resample return new objects usually),
             # so we replace the values in the dict.
             for key in list(self.keys()):
-                 self[key] = self[key].resample(rate, **kwargs)
+                self[key] = self[key].resample(rate, **kwargs)
             return self
         else:
             # Native gwpy resample (signal processing)
@@ -65,8 +64,6 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         for key, ts in self.items():
             new_dict[key] = ts.hilbert(*args, **kwargs)
         return new_dict
-
-
 
     def envelope(self, *args, **kwargs):
         """Apply envelope to each item."""
@@ -84,7 +81,6 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
 
         return new_dict
 
-
     # ===============================
     # P2 Methods (Domain Specific)
     # ===============================
@@ -92,12 +88,14 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
     def to_mne(self, info=None, picks=None):
         """Convert to mne.io.RawArray."""
         from gwexpy.interop import to_mne_rawarray
+
         return to_mne_rawarray(self, info=info, picks=picks)
 
     @classmethod
     def from_mne(cls, raw, *, unit_map=None):
         """Create from mne.io.Raw."""
         from gwexpy.interop import from_mne_raw
+
         return from_mne_raw(cls, raw, unit_map=unit_map)
 
     @classmethod
@@ -118,6 +116,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             The converted time-domain data.
         """
         from gwexpy.interop import from_control_response
+
         res = from_control_response(cls, response, **kwargs)
         if not isinstance(res, cls):
             # Wrap in a Dictionary if it isn't one already
@@ -168,7 +167,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         """Apply baseband to each item."""
         new_dict = self.__class__()
         for key, ts in self.items():
-             new_dict[key] = ts.baseband(*args, **kwargs)
+            new_dict[key] = ts.baseband(*args, **kwargs)
         return new_dict
 
     def heterodyne(self, *args, **kwargs):
@@ -186,31 +185,40 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         # We need to know the output structure (tuple vs single)
         # Peek first item
         if not self:
-             return self.__class__()
+            return self.__class__()
 
         keys = list(self.keys())
         first_res = self[keys[0]].lock_in(*args, **kwargs)
 
         if isinstance(first_res, tuple):
-             # Tuple return (e.g. mag, phase or i, q)
-             # Assume logic dictates uniform return type
-             dict_tuple = tuple(self.__class__() for _ in first_res)
+            # Tuple return (e.g. mag, phase or i, q)
+            # Assume logic dictates uniform return type
+            dict_tuple = tuple(self.__class__() for _ in first_res)
 
-             for key, ts in self.items():
-                  res = ts.lock_in(*args, **kwargs)
-                  for i, val in enumerate(res):
-                       dict_tuple[i][key] = val
-             return dict_tuple
+            for key, ts in self.items():
+                res = ts.lock_in(*args, **kwargs)
+                for i, val in enumerate(res):
+                    dict_tuple[i][key] = val
+            return dict_tuple
         else:
-             # Single return
-             new_dict = self.__class__()
-             new_dict[keys[0]] = first_res
-             for key in keys[1:]:
-                  new_dict[key] = self[key].lock_in(*args, **kwargs)
-             return new_dict
+            # Single return
+            new_dict = self.__class__()
+            new_dict[keys[0]] = first_res
+            for key in keys[1:]:
+                new_dict[key] = self[key].lock_in(*args, **kwargs)
+            return new_dict
 
-
-    def csd_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs):
+    def csd_matrix(
+        self,
+        other=None,
+        *,
+        fftlength=None,
+        overlap=None,
+        window="hann",
+        hermitian=True,
+        include_diagonal=True,
+        **kwargs,
+    ):
         """Compute Cross-Spectral Density matrix for all pairs.
 
         Parameters
@@ -242,13 +250,28 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         dt and fftlength consistency is enforced before computation.
         """
         return csd_matrix_from_collection(
-            self, other,
-            fftlength=fftlength, overlap=overlap, window=window,
-            hermitian=hermitian, include_diagonal=include_diagonal,
-            **kwargs
+            self,
+            other,
+            fftlength=fftlength,
+            overlap=overlap,
+            window=window,
+            hermitian=hermitian,
+            include_diagonal=include_diagonal,
+            **kwargs,
         )
 
-    def coherence_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs):
+    def coherence_matrix(
+        self,
+        other=None,
+        *,
+        fftlength=None,
+        overlap=None,
+        window="hann",
+        symmetric=True,
+        include_diagonal=True,
+        diagonal_value=1.0,
+        **kwargs,
+    ):
         """Compute coherence matrix for all pairs.
 
         Parameters
@@ -283,14 +306,28 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         consistency is enforced before computation.
         """
         return coherence_matrix_from_collection(
-            self, other,
-            fftlength=fftlength, overlap=overlap, window=window,
-            symmetric=symmetric, include_diagonal=include_diagonal,
+            self,
+            other,
+            fftlength=fftlength,
+            overlap=overlap,
+            window=window,
+            symmetric=symmetric,
+            include_diagonal=include_diagonal,
             diagonal_value=diagonal_value,
-            **kwargs
+            **kwargs,
         )
 
-    def csd(self, other=None, *, fftlength=None, overlap=None, window="hann", hermitian=True, include_diagonal=True, **kwargs):
+    def csd(
+        self,
+        other=None,
+        *,
+        fftlength=None,
+        overlap=None,
+        window="hann",
+        hermitian=True,
+        include_diagonal=True,
+        **kwargs,
+    ):
         """
         Compute CSD for each element or as a matrix depending on `other`.
         """
@@ -308,6 +345,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
 
         if isinstance(other, BaseTimeSeries):
             from gwexpy.frequencyseries import FrequencySeriesDict
+
             new_dict = FrequencySeriesDict()
             for key, ts in self.items():
                 new_dict[key] = ts.csd(
@@ -327,11 +365,20 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
                 **kwargs,
             )
 
-        raise TypeError(
-            "other must be TimeSeries, TimeSeriesList/Dict, or None/'self'"
-        )
+        raise TypeError("other must be TimeSeries, TimeSeriesList/Dict, or None/'self'")
 
-    def coherence(self, other=None, *, fftlength=None, overlap=None, window="hann", symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs):
+    def coherence(
+        self,
+        other=None,
+        *,
+        fftlength=None,
+        overlap=None,
+        window="hann",
+        symmetric=True,
+        include_diagonal=True,
+        diagonal_value=1.0,
+        **kwargs,
+    ):
         """
         Compute coherence for each element or as a matrix depending on `other`.
         """
@@ -350,6 +397,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
 
         if isinstance(other, BaseTimeSeries):
             from gwexpy.frequencyseries import FrequencySeriesDict
+
             new_dict = FrequencySeriesDict()
             for key, ts in self.items():
                 new_dict[key] = ts.coherence(
@@ -370,16 +418,14 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
                 **kwargs,
             )
 
-        raise TypeError(
-            "other must be TimeSeries, TimeSeriesList/Dict, or None/'self'"
-        )
-
+        raise TypeError("other must be TimeSeries, TimeSeriesList/Dict, or None/'self'")
 
     def psd(self, *args, **kwargs):
         """Compute Power Spectral Density for each TimeSeries in the dict.
         Returns a FrequencySeriesDict.
         """
         from gwexpy.frequencyseries import FrequencySeriesDict
+
         new_dict = FrequencySeriesDict()
         for key, ts in self.items():
             new_dict[key] = ts.psd(*args, **kwargs)
@@ -390,6 +436,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         Returns a FrequencySeriesDict.
         """
         from gwexpy.frequencyseries import FrequencySeriesDict
+
         new_dict = FrequencySeriesDict()
         for key, ts in self.items():
             new_dict[key] = ts.asd(*args, **kwargs)
@@ -401,6 +448,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         Returns a SpectrogramDict.
         """
         from gwexpy.spectrogram import SpectrogramDict
+
         new_dict = SpectrogramDict()
         for key, ts in self.items():
             new_dict[key] = ts.spectrogram(*args, **kwargs)
@@ -412,6 +460,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         Returns a SpectrogramDict.
         """
         from gwexpy.spectrogram import SpectrogramDict
+
         new_dict = SpectrogramDict()
         for key, ts in self.items():
             new_dict[key] = ts.spectrogram2(*args, **kwargs)
@@ -423,11 +472,11 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         Returns a SpectrogramDict.
         """
         from gwexpy.spectrogram import SpectrogramDict
+
         new_dict = SpectrogramDict()
         for key, ts in self.items():
             new_dict[key] = ts.q_transform(*args, **kwargs)
         return new_dict
-
 
     # ===============================
     # Interoperability Methods (P0)
@@ -436,90 +485,195 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
     def to_pandas(self, index="datetime", *, copy=False):
         """Convert to pandas.DataFrame."""
         from gwexpy.interop import to_pandas_dataframe
+
         return to_pandas_dataframe(self, index=index, copy=copy)
 
     @classmethod
     def from_pandas(cls, df, *, unit_map=None, t0=None, dt=None):
         """Create TimeSeriesDict from pandas.DataFrame."""
         from gwexpy.interop import from_pandas_dataframe
+
         return from_pandas_dataframe(cls, df, unit_map=unit_map, t0=t0, dt=dt)
 
     def to_polars(self, time_column="time", time_unit="datetime"):
         """Convert to polars.DataFrame."""
         from gwexpy.interop import to_polars_dict
-        return to_polars_dict(self, time_column=time_column, time_unit=time_unit)
+
+        return to_polars_dict(self, index_column=time_column, time_unit=time_unit)
 
     @classmethod
     def from_polars(cls, df, *, time_column="time", unit_map=None):
         """Create TimeSeriesDict from polars.DataFrame."""
         from gwexpy.interop import from_polars_dict
-        return from_polars_dict(cls, df, time_column=time_column, unit_map=unit_map)
 
-    def to_tmultigraph(self, name: Optional[str] = None) -> Any:
+        return from_polars_dict(cls, df, index_column=time_column, unit_map=unit_map)
+
+    def to_tmultigraph(self, name: str | None = None) -> Any:
         """Convert to ROOT TMultiGraph."""
         from gwexpy.interop import to_tmultigraph
+
         return to_tmultigraph(self, name=name)
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
-             from gwexpy.interop.root_ import write_root_file
-             return write_root_file(self, target, **kwargs)
+            from gwexpy.interop.root_ import write_root_file
+
+            return write_root_file(self, target, **kwargs)
         return super().write(target, *args, **kwargs)
 
     def plot(self, **kwargs: Any):
         """Plot all series. Delegates to gwexpy.plot.Plot."""
         from gwexpy.plot import Plot
+
         return Plot(self, **kwargs)
 
     def plot_all(self, *args: Any, **kwargs: Any):
         """Alias for plot(). Plots all series."""
         return self.plot(*args, **kwargs)
 
-
-    def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
+    def impute(
+        self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs
+    ):
         """Apply impute to each item."""
         new_dict = self.__class__()
         for key, ts in self.items():
-            new_dict[key] = ts.impute(method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs)
+            new_dict[key] = ts.impute(
+                method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs
+            )
         return new_dict
 
-    def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
+    def rolling_mean(
+        self,
+        window,
+        *,
+        center=False,
+        min_count=1,
+        nan_policy="omit",
+        backend="auto",
+        ignore_nan=None,
+    ):
         """Apply rolling mean to each item."""
         from gwexpy.timeseries.rolling import rolling_mean
-        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
-    def rolling_std(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ddof=0, ignore_nan=None):
+        return rolling_mean(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
+
+    def rolling_std(
+        self,
+        window,
+        *,
+        center=False,
+        min_count=1,
+        nan_policy="omit",
+        backend="auto",
+        ddof=0,
+        ignore_nan=None,
+    ):
         """Apply rolling std to each item."""
         from gwexpy.timeseries.rolling import rolling_std
-        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof, ignore_nan=ignore_nan)
 
-    def rolling_median(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
+        return rolling_std(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ddof=ddof,
+            ignore_nan=ignore_nan,
+        )
+
+    def rolling_median(
+        self,
+        window,
+        *,
+        center=False,
+        min_count=1,
+        nan_policy="omit",
+        backend="auto",
+        ignore_nan=None,
+    ):
         """Apply rolling median to each item."""
         from gwexpy.timeseries.rolling import rolling_median
-        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
-    def rolling_min(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
+        return rolling_median(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
+
+    def rolling_min(
+        self,
+        window,
+        *,
+        center=False,
+        min_count=1,
+        nan_policy="omit",
+        backend="auto",
+        ignore_nan=None,
+    ):
         """Apply rolling min to each item."""
         from gwexpy.timeseries.rolling import rolling_min
-        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
-    def rolling_max(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
+        return rolling_min(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
+
+    def rolling_max(
+        self,
+        window,
+        *,
+        center=False,
+        min_count=1,
+        nan_policy="omit",
+        backend="auto",
+        ignore_nan=None,
+    ):
         """Apply rolling max to each item."""
         from gwexpy.timeseries.rolling import rolling_max
-        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
+
+        return rolling_max(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
 
     def to_matrix(self, *, align="intersection", **kwargs):
         """
         Convert dictionary to TimeSeriesMatrix with alignment.
         """
         from gwexpy.timeseries.preprocess import align_timeseries_collection
+
         # Ensure consistent order (keys sorted) or specific
         # Dicts are ordered in modern python but keys() usually safe
         keys = list(self.keys())
         series_list = [self[k] for k in keys]
 
-        vals, times, meta = align_timeseries_collection(series_list, how=align, **kwargs)
+        vals, times, meta = align_timeseries_collection(
+            series_list, how=align, **kwargs
+        )
 
         # SeriesMatrix expects 3D usually (rows, cols, time) or checks last axis
         # vals: (samples, channels).
@@ -527,6 +681,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         data = vals.T[:, None, :]
 
         from .matrix import TimeSeriesMatrix
+
         matrix = TimeSeriesMatrix(
             data,
             times=times,
@@ -541,7 +696,6 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         matrix.channel_names = keys
         return matrix
 
-
     # ===============================
     # Batch Processing Methods (P1)
     # ===============================
@@ -555,6 +709,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         Returns a new TimeSeriesDict.
         """
         from gwexpy.time import to_gps
+
         # Convert inputs to GPS if provided
         if start is not None:
             start = float(to_gps(start))
@@ -571,19 +726,23 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         Append another mapping of TimeSeries or a single TimeSeries to each item.
         """
         if isinstance(other, BaseTimeSeries):
-             for ts in self.values():
-                 ts.append(other, **kwargs)
-             return self
+            for ts in self.values():
+                ts.append(other, **kwargs)
+            return self
 
         # If 'copy' key is present in 'other' (can happen with some readers),
         # it will cause super().append to fail if 'copy' is not a TimeSeries.
         # We should filter it out if it's not a TimeSeries.
-        if hasattr(other, 'pop') and 'copy' in other and not isinstance(other['copy'], BaseTimeSeries):
-             other.pop('copy')
+        if (
+            hasattr(other, "pop")
+            and "copy" in other
+            and not isinstance(other["copy"], BaseTimeSeries)
+        ):
+            other.pop("copy")
 
         # Ensure we don't pass 'copy' twice if it's already in kwargs
-        if 'copy' in kwargs:
-            copy = kwargs.pop('copy')
+        if "copy" in kwargs:
+            copy = kwargs.pop("copy")
 
         return super().append(other, copy=copy, **kwargs)
 
@@ -715,6 +874,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         Returns a FrequencySeriesDict.
         """
         from gwexpy.frequencyseries import FrequencySeriesDict
+
         new_dict = FrequencySeriesDict()
         for key, ts in self.items():
             new_dict[key] = ts.fft(*args, **kwargs)
@@ -726,11 +886,11 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         Returns a FrequencySeriesDict.
         """
         from gwexpy.frequencyseries import FrequencySeriesDict
+
         new_dict = FrequencySeriesDict()
         for key, ts in self.items():
             new_dict[key] = ts.average_fft(*args, **kwargs)
         return new_dict
-
 
     # --- Statistics & Measurements ---
 
@@ -741,7 +901,8 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         If scalar -> return pandas.Series.
         """
         import pandas as pd
-        results = {}
+
+        results: dict[Any, Any] = {}
         is_ts = False
         first = True
 
@@ -759,8 +920,8 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             if is_ts:
                 # Ensure consistency
                 if not (hasattr(res, "value") and hasattr(res, "dt")):
-                     # Mixed types not supported cleanly here, defaulting to dict of objects
-                     pass
+                    # Mixed types not supported cleanly here, defaulting to dict of objects
+                    pass
 
             results[key] = res
 
@@ -776,7 +937,6 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
     def is_contiguous(self, *args, **kwargs):
         """Check contiguity with another object for each TimeSeries."""
         return self._apply_scalar_or_map("is_contiguous", *args, **kwargs)
-
 
     def skewness(self, **kwargs):
         """Compute skewness. Vectorized via TimeSeriesMatrix."""
@@ -846,7 +1006,17 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
 class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
     """List of TimeSeries objects."""
 
-    def csd_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs):
+    def csd_matrix(
+        self,
+        other=None,
+        *,
+        fftlength=None,
+        overlap=None,
+        window="hann",
+        hermitian=True,
+        include_diagonal=True,
+        **kwargs,
+    ):
         """
         Compute Cross Spectral Density Matrix.
 
@@ -874,13 +1044,28 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         dt and fftlength consistency is enforced before computation.
         """
         return csd_matrix_from_collection(
-            self, other,
-            fftlength=fftlength, overlap=overlap, window=window,
-            hermitian=hermitian, include_diagonal=include_diagonal,
-            **kwargs
+            self,
+            other,
+            fftlength=fftlength,
+            overlap=overlap,
+            window=window,
+            hermitian=hermitian,
+            include_diagonal=include_diagonal,
+            **kwargs,
         )
 
-    def coherence_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs):
+    def coherence_matrix(
+        self,
+        other=None,
+        *,
+        fftlength=None,
+        overlap=None,
+        window="hann",
+        symmetric=True,
+        include_diagonal=True,
+        diagonal_value=1.0,
+        **kwargs,
+    ):
         """
         Compute Coherence Matrix.
 
@@ -911,14 +1096,28 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         consistency is enforced before computation.
         """
         return coherence_matrix_from_collection(
-            self, other,
-            fftlength=fftlength, overlap=overlap, window=window,
-            symmetric=symmetric, include_diagonal=include_diagonal,
+            self,
+            other,
+            fftlength=fftlength,
+            overlap=overlap,
+            window=window,
+            symmetric=symmetric,
+            include_diagonal=include_diagonal,
             diagonal_value=diagonal_value,
-            **kwargs
+            **kwargs,
         )
 
-    def csd(self, other=None, *, fftlength=None, overlap=None, window="hann", hermitian=True, include_diagonal=True, **kwargs):
+    def csd(
+        self,
+        other=None,
+        *,
+        fftlength=None,
+        overlap=None,
+        window="hann",
+        hermitian=True,
+        include_diagonal=True,
+        **kwargs,
+    ):
         """
         Compute CSD for each element or as a matrix depending on `other`.
         """
@@ -936,11 +1135,19 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
 
         if isinstance(other, BaseTimeSeries):
             from gwexpy.frequencyseries import FrequencySeriesList
+
             new_list = FrequencySeriesList()
             for ts in self:
-                list.append(new_list, ts.csd(
-                    other, fftlength=fftlength, overlap=overlap, window=window, **kwargs
-                ))
+                list.append(
+                    new_list,
+                    ts.csd(
+                        other,
+                        fftlength=fftlength,
+                        overlap=overlap,
+                        window=window,
+                        **kwargs,
+                    ),
+                )
             return new_list
 
         if isinstance(other, (BaseTimeSeriesList, BaseTimeSeriesDict, list, dict)):
@@ -955,11 +1162,20 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
                 **kwargs,
             )
 
-        raise TypeError(
-            "other must be TimeSeries, TimeSeriesList/Dict, or None/'self'"
-        )
+        raise TypeError("other must be TimeSeries, TimeSeriesList/Dict, or None/'self'")
 
-    def coherence(self, other=None, *, fftlength=None, overlap=None, window="hann", symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs):
+    def coherence(
+        self,
+        other=None,
+        *,
+        fftlength=None,
+        overlap=None,
+        window="hann",
+        symmetric=True,
+        include_diagonal=True,
+        diagonal_value=1.0,
+        **kwargs,
+    ):
         """
         Compute coherence for each element or as a matrix depending on `other`.
         """
@@ -978,11 +1194,19 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
 
         if isinstance(other, BaseTimeSeries):
             from gwexpy.frequencyseries import FrequencySeriesList
+
             new_list = FrequencySeriesList()
             for ts in self:
-                list.append(new_list, ts.coherence(
-                    other, fftlength=fftlength, overlap=overlap, window=window, **kwargs
-                ))
+                list.append(
+                    new_list,
+                    ts.coherence(
+                        other,
+                        fftlength=fftlength,
+                        overlap=overlap,
+                        window=window,
+                        **kwargs,
+                    ),
+                )
             return new_list
 
         if isinstance(other, (BaseTimeSeriesList, BaseTimeSeriesDict, list, dict)):
@@ -998,11 +1222,11 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
                 **kwargs,
             )
 
-        raise TypeError(
-            "other must be TimeSeries, TimeSeriesList/Dict, or None/'self'"
-        )
+        raise TypeError("other must be TimeSeries, TimeSeriesList/Dict, or None/'self'")
 
-    def impute(self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs):
+    def impute(
+        self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs
+    ):
         """Impute missing data (NaNs) in each TimeSeries.
 
         Parameters
@@ -1024,33 +1248,130 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         """
         new_list = self.__class__()
         for ts in self:
-            list.append(new_list, ts.impute(method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs))
+            list.append(
+                new_list,
+                ts.impute(
+                    method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs
+                ),
+            )
         return new_list
 
-    def rolling_mean(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
+    def rolling_mean(
+        self,
+        window,
+        *,
+        center=False,
+        min_count=1,
+        nan_policy="omit",
+        backend="auto",
+        ignore_nan=None,
+    ):
         """Apply rolling mean to each element."""
         from gwexpy.timeseries.rolling import rolling_mean
-        return rolling_mean(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
-    def rolling_std(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ddof=0, ignore_nan=None):
+        return rolling_mean(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
+
+    def rolling_std(
+        self,
+        window,
+        *,
+        center=False,
+        min_count=1,
+        nan_policy="omit",
+        backend="auto",
+        ddof=0,
+        ignore_nan=None,
+    ):
         """Apply rolling std to each element."""
         from gwexpy.timeseries.rolling import rolling_std
-        return rolling_std(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ddof=ddof, ignore_nan=ignore_nan)
 
-    def rolling_median(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
+        return rolling_std(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ddof=ddof,
+            ignore_nan=ignore_nan,
+        )
+
+    def rolling_median(
+        self,
+        window,
+        *,
+        center=False,
+        min_count=1,
+        nan_policy="omit",
+        backend="auto",
+        ignore_nan=None,
+    ):
         """Apply rolling median to each element."""
         from gwexpy.timeseries.rolling import rolling_median
-        return rolling_median(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
-    def rolling_min(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
+        return rolling_median(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
+
+    def rolling_min(
+        self,
+        window,
+        *,
+        center=False,
+        min_count=1,
+        nan_policy="omit",
+        backend="auto",
+        ignore_nan=None,
+    ):
         """Apply rolling min to each element."""
         from gwexpy.timeseries.rolling import rolling_min
-        return rolling_min(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
 
-    def rolling_max(self, window, *, center=False, min_count=1, nan_policy="omit", backend="auto", ignore_nan=None):
+        return rolling_min(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
+
+    def rolling_max(
+        self,
+        window,
+        *,
+        center=False,
+        min_count=1,
+        nan_policy="omit",
+        backend="auto",
+        ignore_nan=None,
+    ):
         """Apply rolling max to each element."""
         from gwexpy.timeseries.rolling import rolling_max
-        return rolling_max(self, window, center=center, min_count=min_count, nan_policy=nan_policy, backend=backend, ignore_nan=ignore_nan)
+
+        return rolling_max(
+            self,
+            window,
+            center=center,
+            min_count=min_count,
+            nan_policy=nan_policy,
+            backend=backend,
+            ignore_nan=ignore_nan,
+        )
 
     def to_matrix(self, *, align="intersection", **kwargs):
         """Convert list to TimeSeriesMatrix with alignment.
@@ -1067,8 +1388,9 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         TimeSeriesMatrix
             Matrix with all series aligned to common time axis.
         """
-        from gwexpy.timeseries.preprocess import align_timeseries_collection
         from gwexpy.timeseries.matrix import TimeSeriesMatrix
+        from gwexpy.timeseries.preprocess import align_timeseries_collection
+
         vals, times, meta = align_timeseries_collection(list(self), how=align, **kwargs)
         # Use names from metadata (from TS objects)
         names = meta.get("channel_names")
@@ -1080,7 +1402,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             times=times,
         )
         if names:
-             matrix.channel_names = names
+            matrix.channel_names = names
         return matrix
 
     # ===============================
@@ -1096,6 +1418,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         Returns a new TimeSeriesList.
         """
         from gwexpy.time import to_gps
+
         # Convert inputs to GPS if provided
         if start is not None:
             start = float(to_gps(start))
@@ -1253,8 +1576,6 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             list.append(new_list, ts.hilbert(*args, **kwargs))
         return new_list
 
-
-
     def envelope(self, *args, **kwargs):
         """Apply envelope to each item."""
         new_list = self.__class__()
@@ -1332,6 +1653,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         Returns a FrequencySeriesList.
         """
         from gwexpy.frequencyseries import FrequencySeriesList
+
         new_list = FrequencySeriesList()
         for ts in self:
             list.append(new_list, ts.fft(*args, **kwargs))
@@ -1343,6 +1665,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         Returns a FrequencySeriesList.
         """
         from gwexpy.frequencyseries import FrequencySeriesList
+
         new_list = FrequencySeriesList()
         for ts in self:
             list.append(new_list, ts.average_fft(*args, **kwargs))
@@ -1354,6 +1677,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         Returns a FrequencySeriesList.
         """
         from gwexpy.frequencyseries import FrequencySeriesList
+
         new_list = FrequencySeriesList()
         for ts in self:
             list.append(new_list, ts.psd(*args, **kwargs))
@@ -1365,6 +1689,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         Returns a FrequencySeriesList.
         """
         from gwexpy.frequencyseries import FrequencySeriesList
+
         new_list = FrequencySeriesList()
         for ts in self:
             list.append(new_list, ts.asd(*args, **kwargs))
@@ -1376,6 +1701,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         Returns a SpectrogramList.
         """
         from gwexpy.spectrogram import SpectrogramList
+
         new_list = SpectrogramList()
         for ts in self:
             new_list.append(ts.spectrogram(*args, **kwargs))
@@ -1387,6 +1713,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         Returns a SpectrogramList.
         """
         from gwexpy.spectrogram import SpectrogramList
+
         new_list = SpectrogramList()
         for ts in self:
             new_list.append(ts.spectrogram2(*args, **kwargs))
@@ -1398,6 +1725,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         Returns a SpectrogramList.
         """
         from gwexpy.spectrogram import SpectrogramList
+
         new_list = SpectrogramList()
         for ts in self:
             new_list.append(ts.q_transform(*args, **kwargs))
@@ -1411,7 +1739,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         If TimeSeries -> return TimeSeriesList.
         If scalar -> return list.
         """
-        results = []
+        results: list[Any] | TimeSeriesList = []
         is_ts = False
         first = True
 
@@ -1443,7 +1771,6 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
     def is_contiguous(self, *args, **kwargs):
         """Check contiguity with another object for each TimeSeries."""
         return self._apply_scalar_or_map("is_contiguous", *args, **kwargs)
-
 
     def skewness(self, **kwargs):
         """Compute skewness. Vectorized via TimeSeriesMatrix."""
@@ -1497,27 +1824,29 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         for i, ts in enumerate(self):
             name = ts.name or f"series_{i}"
             if hasattr(ts, "to_pandas"):
-                 s = ts.to_pandas()
+                s = ts.to_pandas()
             else:
-                 s = pd.Series(ts.value, index=ts.times.value)
+                s = pd.Series(ts.value, index=ts.times.value)
 
             data[name] = s
 
         return pd.DataFrame(data)
 
-
-    def to_tmultigraph(self, name: Optional[str] = None) -> Any:
+    def to_tmultigraph(self, name: str | None = None) -> Any:
         """Convert to ROOT TMultiGraph."""
         from gwexpy.interop import to_tmultigraph
+
         return to_tmultigraph(self, name=name)
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write TimeSeriesList to file (HDF5, ROOT, etc.)."""
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
-             from gwexpy.interop.root_ import write_root_file
-             return write_root_file(self, target, **kwargs)
+            from gwexpy.interop.root_ import write_root_file
+
+            return write_root_file(self, target, **kwargs)
         from astropy.io import registry
+
         return registry.write(self, target, *args, **kwargs)
 
     def pca(self, *args, **kwargs):
@@ -1531,6 +1860,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
     def plot(self, **kwargs: Any):
         """Plot all series. Delegates to gwexpy.plot.Plot."""
         from gwexpy.plot import Plot
+
         return Plot(self, **kwargs)
 
     def plot_all(self, *args: Any, **kwargs: Any):

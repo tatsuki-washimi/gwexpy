@@ -2,14 +2,14 @@ from gwpy.table.gravityspy import (
     DEFAULT_HOST,
     DURATIONS,
     ERA,
-    EventTable,
-    GravitySpyTable,
-    JSONDecodeError,
     JSON_CONTENT_TYPE,
-    Path,
     SEARCH_PATH,
     SIMILARITY_SEARCH_PATH,
     URL_COLUMN,
+    EventTable,
+    GravitySpyTable,
+    JSONDecodeError,
+    Path,
     mp_utils,
     re,
     requests,
@@ -33,4 +33,3 @@ __all__ = [
     "requests",
     "urlencode",
 ]
-

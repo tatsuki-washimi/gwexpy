@@ -34,12 +34,13 @@ Examples
 
 from __future__ import annotations
 
+from .colored import pink_noise, power_law, red_noise, white_noise
+
 # Re-export ASD-generating functions
 from .gwinc_ import from_pygwinc
+from .magnetic import geomagnetic_background, schumann_resonance
 from .obspy_ import from_obspy
-from .colored import power_law, white_noise, pink_noise, red_noise
-from .magnetic import schumann_resonance, geomagnetic_background
-from .peaks import lorentzian_line, gaussian_line, voigt_line
+from .peaks import gaussian_line, lorentzian_line, voigt_line
 
 __all__ = [
     "from_pygwinc",

@@ -1,7 +1,8 @@
-
 class IoNotImplementedError(NotImplementedError):
     """Exception raised when an I/O format is not fully implemented."""
+
     pass
+
 
 def raise_unimplemented_io(format_name, hint=None, refs=None, plugin_help=None):
     """
@@ -18,7 +19,9 @@ def raise_unimplemented_io(format_name, hint=None, refs=None, plugin_help=None):
     plugin_help : str, optional
         Instructions on how to add a plugin.
     """
-    msg = [f"The reader for format '{format_name}' is currently unimplemented in gwexpy."]
+    msg = [
+        f"The reader for format '{format_name}' is currently unimplemented in gwexpy."
+    ]
 
     if hint:
         msg.append(f"Hint: {hint}")

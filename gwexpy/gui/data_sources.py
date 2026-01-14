@@ -1,5 +1,4 @@
 import logging
-from typing import Dict, List, Optional
 
 import numpy as np
 from qtpy import QtCore
@@ -25,11 +24,11 @@ class BaseDataSource(QtCore.QObject):
 
     def __init__(self) -> None:
         super().__init__()
-        self.channels: List[str] = []
+        self.channels: list[str] = []
         self.server: str = ""
         self.lookback: float = 30.0
 
-    def set_channels(self, channels: List[str]) -> None:
+    def set_channels(self, channels: list[str]) -> None:
         self.channels = list(dict.fromkeys([c for c in channels if c]))
 
     def set_server(self, server_env: str) -> None:
@@ -52,7 +51,7 @@ class SyntheticDataSource(BaseDataSource):
 
     def __init__(
         self,
-        channels: Optional[List[str]] = None,
+        channels: list[str] | None = None,
         sample_rate: float = 128.0,
         chunk_size: int = 128,
         lookback: float = 30.0,
@@ -69,7 +68,7 @@ class SyntheticDataSource(BaseDataSource):
         self.emit_interval_ms = int(emit_interval_ms)
         self.buffers = DataBufferDict(self.lookback)
         self._current_time = 0.0
-        self._timer: Optional[QtCore.QTimer] = None
+        self._timer: QtCore.QTimer | None = None
 
     def online_start(self, lookback: float = 30.0) -> None:
         super().online_start(lookback)
@@ -90,14 +89,14 @@ class SyntheticDataSource(BaseDataSource):
         self.buffers.reset()
         self._current_time = 0.0
 
-    def emit_next(self) -> Dict[str, Dict[str, object]]:
+    def emit_next(self) -> dict[str, dict[str, object]]:
         payload = self._generate_payload()
         self.buffers.update_buffers(payload)
         self.signal_data.emit(self.buffers)
         self.signal_payload.emit(payload)
         return payload
 
-    def _generate_payload(self) -> Dict[str, Dict[str, object]]:
+    def _generate_payload(self) -> dict[str, dict[str, object]]:
         if not self.channels:
             logger.warning("SyntheticDataSource has no channels configured.")
             return {}
@@ -105,7 +104,7 @@ class SyntheticDataSource(BaseDataSource):
         step = 1.0 / self.sample_rate
         t0 = self._current_time
         t = t0 + np.arange(self.chunk_size) * step
-        payload: Dict[str, Dict[str, object]] = {}
+        payload: dict[str, dict[str, object]] = {}
         for idx, ch in enumerate(self.channels):
             freq = 0.2 * (idx + 1)
             data = np.sin(2.0 * np.pi * freq * t) + 0.1 * (idx + 1)
@@ -121,11 +120,11 @@ class StubDataSource(SyntheticDataSource):
 
     def __init__(
         self,
-        channels: Optional[List[str]] = None,
+        channels: list[str] | None = None,
         sample_rate: float = 128.0,
         chunk_size: int = 128,
         lookback: float = 30.0,
-        failure_mode: Optional[str] = None,
+        failure_mode: str | None = None,
     ) -> None:
         super().__init__(
             channels=channels,
@@ -135,15 +134,15 @@ class StubDataSource(SyntheticDataSource):
             auto_emit=False,
         )
         self.failure_mode = failure_mode
-        self._next_failure: Optional[str] = None
+        self._next_failure: str | None = None
 
-    def set_failure_mode(self, mode: Optional[str]) -> None:
+    def set_failure_mode(self, mode: str | None) -> None:
         self.failure_mode = mode
 
     def fail_next(self, mode: str) -> None:
         self._next_failure = mode
 
-    def emit_next(self) -> Dict[str, Dict[str, object]]:
+    def emit_next(self) -> dict[str, dict[str, object]]:
         mode = self._next_failure or self.failure_mode
         self._next_failure = None
         try:
@@ -162,9 +161,9 @@ class StubDataSource(SyntheticDataSource):
 
     def _apply_failure_mode(
         self,
-        payload: Dict[str, Dict[str, object]],
-        mode: Optional[str],
-    ) -> Dict[str, Dict[str, object]]:
+        payload: dict[str, dict[str, object]],
+        mode: str | None,
+    ) -> dict[str, dict[str, object]]:
         if not mode:
             return payload
 

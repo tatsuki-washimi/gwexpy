@@ -10,11 +10,12 @@ from __future__ import annotations
 import contextlib
 import io
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, List, Optional, Tuple
 
 import numpy as np
+from gwpy.io import registry as io_registry
 
 from gwexpy.io.utils import (
     datetime_to_gps,
@@ -23,9 +24,8 @@ from gwexpy.io.utils import (
     parse_timezone,
     set_provenance,
 )
-from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
-from gwpy.io import registry as io_registry
 
+from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 HEADER_SIZE_PATTERN = re.compile(r"HeaderSiz[e]?\s*[:=]\s*(\d+)", re.IGNORECASE)
 
@@ -37,9 +37,9 @@ class GBDHeader:
     stop_local: str
     dt: float
     dtype: np.dtype
-    order: List[str]
+    order: list[str]
     counts: int
-    scales: List[float]
+    scales: list[float]
     raw_text: str
 
 
@@ -47,7 +47,7 @@ def read_timeseriesdict_gbd(
     source,
     *,
     timezone=None,
-    channels: Optional[Iterable[str]] = None,
+    channels: Iterable[str] | None = None,
     unit=None,
     epoch=None,
     pad=np.nan,
@@ -86,7 +86,9 @@ def read_timeseriesdict_gbd(
         gps_start = datetime_to_gps(ensure_datetime(header.start_local, tzinfo=tzinfo))
         epoch_source = "timezone_start"
 
-    scale_arr = np.asarray(header.scales if header.scales else [1.0] * len(header.order))
+    scale_arr = np.asarray(
+        header.scales if header.scales else [1.0] * len(header.order)
+    )
     if scale_arr.size != len(header.order):
         scale_arr = np.ones(len(header.order))
     data = data * scale_arr
@@ -141,7 +143,7 @@ def read_timeseriesmatrix_gbd(*args, channels=None, **kwargs) -> TimeSeriesMatri
     return tsd.to_matrix()
 
 
-def _read_gbd(source) -> Tuple[GBDHeader, np.ndarray]:
+def _read_gbd(source) -> tuple[GBDHeader, np.ndarray]:
     close_after = False
     if isinstance(source, (str, Path)):
         fh = open(source, "rb")
@@ -159,7 +161,7 @@ def _read_gbd(source) -> Tuple[GBDHeader, np.ndarray]:
             fh.close()
 
 
-def _read_header_text(fh: io.BufferedReader) -> Tuple[str, int]:
+def _read_header_text(fh: io.BufferedReader) -> tuple[str, int]:
     probe = fh.read(4096)
     text_probe = probe.decode("ascii", errors="ignore")
     match = HEADER_SIZE_PATTERN.search(text_probe)
@@ -177,7 +179,9 @@ def _parse_header(header_text: str, header_size: int) -> GBDHeader:
     stop = _find_field(header_text, r"Stop\s*[:=]\s*([^\r\n]+)", default=start)
     dt_raw = _find_field(header_text, r"Sample\s*[:=]\s*([^\r\n]+)", default="1")
     dt = _parse_sample(dt_raw)
-    dtype_raw = _find_field(header_text, r"Type\s*[:=]\s*([^\r\n]+)", default="little,float32")
+    dtype_raw = _find_field(
+        header_text, r"Type\s*[:=]\s*([^\r\n]+)", default="little,float32"
+    )
     dtype = _parse_dtype(dtype_raw)
     order_raw = _find_field(header_text, r"Order\s*[:=]\s*([^\r\n]+)", default="")
     order = [c.strip() for c in re.split(r"[,\s]+", order_raw) if c.strip()] or ["CH0"]
@@ -197,7 +201,7 @@ def _parse_header(header_text: str, header_size: int) -> GBDHeader:
     )
 
 
-def _find_field(text: str, pattern: str, default: Optional[str] = None) -> str:
+def _find_field(text: str, pattern: str, default: str | None = None) -> str:
     match = re.search(pattern, text, re.IGNORECASE)
     if match:
         return match.group(1).strip()
@@ -240,7 +244,7 @@ def _parse_dtype(raw: str) -> np.dtype:
     return np.dtype(endian + base)
 
 
-def _parse_scales(header_text: str, order: List[str]) -> List[float]:
+def _parse_scales(header_text: str, order: list[str]) -> list[float]:
     scales = []
     for ch in order:
         pattern = rf"{re.escape(ch)}.*?(?:Range|Scale)\s*[:=]\s*([0-9eE.+-]+)"
@@ -270,5 +274,9 @@ def _read_data_block(fh, header: GBDHeader) -> np.ndarray:
 io_registry.register_reader("gbd", TimeSeriesDict, read_timeseriesdict_gbd)
 io_registry.register_reader("gbd", TimeSeries, read_timeseries_gbd)
 io_registry.register_reader("gbd", TimeSeriesMatrix, read_timeseriesmatrix_gbd)
-io_registry.register_identifier("gbd", TimeSeriesDict, lambda *args, **kwargs: str(args[1]).lower().endswith(".gbd"))
-io_registry.register_identifier("gbd", TimeSeries, lambda *args, **kwargs: str(args[1]).lower().endswith(".gbd"))
+io_registry.register_identifier(
+    "gbd", TimeSeriesDict, lambda *args, **kwargs: str(args[1]).lower().endswith(".gbd")
+)
+io_registry.register_identifier(
+    "gbd", TimeSeries, lambda *args, **kwargs: str(args[1]).lower().endswith(".gbd")
+)

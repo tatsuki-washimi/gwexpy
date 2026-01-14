@@ -35,10 +35,13 @@ def to_torch(series, device=None, dtype=None, requires_grad=False, copy=False):
     torch = require_optional("torch")
 
     from .base import to_plain_array
+
     data = to_plain_array(series, copy=copy)
 
     if copy:
-        tensor = torch.tensor(data, device=device, dtype=dtype, requires_grad=requires_grad)
+        tensor = torch.tensor(
+            data, device=device, dtype=dtype, requires_grad=requires_grad
+        )
     else:
         tensor = torch.as_tensor(data, device=device, dtype=dtype)
         if requires_grad:

@@ -1,14 +1,18 @@
 """Geographic map plotting using PyGMT backend with Cartopy-like interface."""
 
 import os
+from typing import Any
+
 import numpy as np
 
 _SKIP_PYGMT = os.getenv("GWEXPY_SKIP_PYGMT", "").lower() in {"1", "true", "yes", "on"}
-_PYGMT_IMPORT_ERROR = None
-pygmt = None
+_PYGMT_IMPORT_ERROR: Exception | None = None
+pygmt: Any | None = None
 if not _SKIP_PYGMT:
     try:
-        import pygmt  # noqa: F401 - availability check
+        import pygmt as _pygmt
+
+        pygmt = _pygmt
         HAS_PYGMT = True
     except Exception as exc:
         HAS_PYGMT = False
@@ -19,37 +23,38 @@ else:
 
 # 検出器座標データベース (簡易版)
 DETECTORS = {
-    'K1': {'lon': 137.31, 'lat': 36.41, 'name': 'KAGRA', 'color': 'darkgreen'},
-    'H1': {'lon': -119.41, 'lat': 46.45, 'name': 'LIGO Hanford', 'color': 'darkred'},
-    'L1': {'lon': -90.77, 'lat': 30.56, 'name': 'LIGO Livingston', 'color': 'darkblue'},
-    'V1': {'lon': 10.5, 'lat': 43.63, 'name': 'Virgo', 'color': 'darkorange'},
-    'G1': {'lon': 9.80, 'lat': 52.24, 'name': 'GEO600', 'color': 'darkmagenta'},
+    "K1": {"lon": 137.31, "lat": 36.41, "name": "KAGRA", "color": "darkgreen"},
+    "H1": {"lon": -119.41, "lat": 46.45, "name": "LIGO Hanford", "color": "darkred"},
+    "L1": {"lon": -90.77, "lat": 30.56, "name": "LIGO Livingston", "color": "darkblue"},
+    "V1": {"lon": 10.5, "lat": 43.63, "name": "Virgo", "color": "darkorange"},
+    "G1": {"lon": 9.80, "lat": 52.24, "name": "GEO600", "color": "darkmagenta"},
 }
 
 # 投影法のマッピング (Friendly Name -> GMT Code)
 PROJECTIONS = {
-    'Mercator': 'M',
-    'Robinson': 'N',
-    'Mollweide': 'W',
-    'PlateCarree': 'Q',  # Cylindrical Equidistant
-    'Equidistant': 'Q',
+    "Mercator": "M",
+    "Robinson": "N",
+    "Mollweide": "W",
+    "PlateCarree": "Q",  # Cylindrical Equidistant
+    "Equidistant": "Q",
 }
 
 # マーカーのマッピング (Matplotlib -> GMT)
 MARKERS = {
-    'o': 'c', # circle
-    's': 's', # square
-    '^': 't', # triangle
-    'd': 'd', # diamond
-    '+': '+', # plus
-    'x': 'x', # cross
-    '*': 'a', # star
+    "o": "c",  # circle
+    "s": "s",  # square
+    "^": "t",  # triangle
+    "d": "d",  # diamond
+    "+": "+",  # plus
+    "x": "x",  # cross
+    "*": "a",  # star
 }
 
+
 class GeoMap:
-    """A PyGMT wrapper that provides a Cartopy-like interface.
-    """
-    def __init__(self, projection='Robinson', center_lon=0, width='15c', **kwargs):
+    """A PyGMT wrapper that provides a Cartopy-like interface."""
+
+    def __init__(self, projection="Robinson", center_lon=0, width="15c", **kwargs):
         """
         Initialize a new GeoMap.
 
@@ -72,6 +77,7 @@ class GeoMap:
                 message = f"{message} (details: {_PYGMT_IMPORT_ERROR})"
             raise ImportError(message)
 
+        assert pygmt is not None
         self.fig = pygmt.Figure()
 
         # 投影法の設定
@@ -79,7 +85,7 @@ class GeoMap:
 
         # GMTの投影指定を作成
         # region 'd' is -180/180/-90/90
-        self.region = kwargs.get('region', 'd')
+        self.region = kwargs.get("region", "d")
 
         if center_lon != 0:
             self.projection = f"{proj_code}{center_lon}/{width}"
@@ -87,42 +93,39 @@ class GeoMap:
             self.projection = f"{proj_code}{width}"
 
         # GMT Error: Option -R: Cannot include south/north poles with Mercator projection!
-        if proj_code == 'M' and self.region == 'd':
-            self.region = [-180, 180, -80, 80] # Trim poles for Mercator
+        if proj_code == "M" and self.region == "d":
+            self.region = [-180, 180, -80, 80]  # Trim poles for Mercator
 
-        self.frame = kwargs.get('frame', 'ag') # auto, grid
+        self.frame = kwargs.get("frame", "ag")  # auto, grid
 
         # ベースマップの初期化
-        self.fig.basemap(region=self.region, projection=self.projection, frame=self.frame)
+        self.fig.basemap(
+            region=self.region, projection=self.projection, frame=self.frame
+        )
 
-    def add_coastlines(self, resolution='low', color='black', linewidth=0.5):
+    def add_coastlines(self, resolution="low", color="black", linewidth=0.5):
         """Draw coastlines (Cartopy-like API)."""
-        res_map = {'low': 'l', 'medium': 'i', 'high': 'h', 'crude': 'c', 'full': 'f'}
-        res = res_map.get(resolution, 'l')
+        res_map = {"low": "l", "medium": "i", "high": "h", "crude": "c", "full": "f"}
+        res = res_map.get(resolution, "l")
 
         pen = f"{linewidth}p,{color}"
         self.fig.coast(shorelines=pen, resolution=res, area_thresh=10000)
 
-    def fill_continents(self, color='lightgray'):
+    def fill_continents(self, color="lightgray"):
         """Fill land colors."""
         self.fig.coast(land=color)
 
-    def fill_oceans(self, color='azure'):
+    def fill_oceans(self, color="azure"):
         """Fill water colors."""
         self.fig.coast(water=color)
 
-    def plot(self, x, y, color='blue', marker='o', markersize=10, label=None, **kwargs):
+    def plot(self, x, y, color="blue", marker="o", markersize=10, label=None, **kwargs):
         """Plot points (Matplotlib-like API)."""
-        gmt_marker = MARKERS.get(marker, 'c')
+        gmt_marker = MARKERS.get(marker, "c")
         style = f"{gmt_marker}{markersize}p"
 
         self.fig.plot(
-            x=x, y=y,
-            style=style,
-            fill=color,
-            pen="0.5p,black",
-            label=label,
-            **kwargs
+            x=x, y=y, style=style, fill=color, pen="0.5p,black", label=label, **kwargs
         )
 
     def text(self, x, y, text, **kwargs):
@@ -149,10 +152,10 @@ class GeoMap:
 
         det = DETECTORS[name]
 
-        plot_kwargs = {'marker': '*', 'markersize': 15, 'color': det['color']}
+        plot_kwargs = {"marker": "*", "markersize": 15, "color": det["color"]}
         plot_kwargs.update(kwargs)
 
-        self.plot(det['lon'], det['lat'], **plot_kwargs)
+        self.plot(det["lon"], det["lat"], **plot_kwargs)
 
         if label:
             if label_offset is not None:
@@ -162,19 +165,28 @@ class GeoMap:
                 if isinstance(self.region, (list, tuple, np.ndarray)):
                     lat_min, lat_max = self.region[2], self.region[3]
                     lat_span = lat_max - lat_min
-                elif self.region == 'd':
+                elif self.region == "d":
                     lat_span = 180.0
                 else:
                     # If region is a string (e.g., 'JP'), it's likely a regional map.
                     # We assume a standard regional span (e.g., 30 degrees) for the heuristic.
                     lat_span = 30.0
 
-                offset = max(0.2, lat_span * 0.03) # 3% of the span, minimum 0.2 degrees
+                offset = max(
+                    0.2, lat_span * 0.03
+                )  # 3% of the span, minimum 0.2 degrees
 
-            self.text(det['lon'], det['lat'] + offset, text=det['name'],
-                      font="10p,Helvetica-Bold,black", justify="CM")
+            self.text(
+                det["lon"],
+                det["lat"] + offset,
+                text=det["name"],
+                font="10p,Helvetica-Bold,black",
+                justify="CM",
+            )
 
-    def add_scale_bar(self, width='500k', position='jBL', offset='0.5c/0.5c', fancy=True):
+    def add_scale_bar(
+        self, width="500k", position="jBL", offset="0.5c/0.5c", fancy=True
+    ):
         """Add a scale bar to the map.
 
         Parameters

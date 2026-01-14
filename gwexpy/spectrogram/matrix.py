@@ -1,13 +1,16 @@
 from __future__ import annotations
-import numpy as np
+
 from typing import Any
+
+import numpy as np
 from astropy import units as u
 
-from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.types.mixin import PhaseMethodsMixin
+from gwexpy.types.seriesmatrix import SeriesMatrix
+
+from .collections import SpectrogramDict, SpectrogramList
 from .matrix_analysis import SpectrogramMatrixAnalysisMixin
 from .matrix_core import SpectrogramMatrixCoreMixin
-from .collections import SpectrogramList, SpectrogramDict
 from .spectrogram import Spectrogram
 
 
@@ -15,7 +18,7 @@ class SpectrogramMatrix(
     PhaseMethodsMixin,
     SpectrogramMatrixCoreMixin,
     SpectrogramMatrixAnalysisMixin,
-    SeriesMatrix
+    SeriesMatrix,
 ):
     """
     Evaluation Matrix for Spectrograms (Time-Frequency maps).
@@ -27,16 +30,26 @@ class SpectrogramMatrix(
     It inherits from SeriesMatrix, providing powerful indexing, metadata management,
     and analysis capabilities (slicing, interpolation, statistics).
     """
+
     series_class = Spectrogram
     dict_class = SpectrogramDict
     list_class = SpectrogramList
 
-    def __new__(cls, data, times=None, frequencies=None, unit=None, name=None,
-                rows=None, cols=None, meta=None, **kwargs):
-
+    def __new__(
+        cls,
+        data,
+        times=None,
+        frequencies=None,
+        unit=None,
+        name=None,
+        rows=None,
+        cols=None,
+        meta=None,
+        **kwargs,
+    ):
         # Handle alias
         if times is None:
-             times = kwargs.get('xindex')
+            times = kwargs.get("xindex")
 
         # SeriesMatrix expects 'xindex' and 'xunit' etc.
         # We assume 'data' might be (N, M, Time, Freq) or (N, Time, Freq).
@@ -93,7 +106,7 @@ class SpectrogramMatrix(
         # Only do basic setup here to replicate old behavior + SeriesMatrix props
 
         obj.name = name
-        obj.unit = unit # logic for unit array vs scalar unit needed?
+        obj.unit = unit  # logic for unit array vs scalar unit needed?
 
         # Setup MetaDataMatrix using rows/cols logic from previous implementation
         from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
@@ -101,41 +114,41 @@ class SpectrogramMatrix(
         def _entries_len(entries):
             return len(entries) if entries is not None else None
 
-        if obj.ndim == 3: # (Batch, Time, Freq)
-             N = obj.shape[0]
-             # ... (same logic as before for rows/cols) ...
-             # Simplify for brevity or reuse logic?
-             row_len = _entries_len(rows)
-             col_len = _entries_len(cols)
-             use_grid = (row_len and col_len and row_len * col_len == N)
+        if obj.ndim == 3:  # (Batch, Time, Freq)
+            N = obj.shape[0]
+            # ... (same logic as before for rows/cols) ...
+            # Simplify for brevity or reuse logic?
+            row_len = _entries_len(rows)
+            col_len = _entries_len(cols)
+            use_grid = row_len and col_len and row_len * col_len == N
 
-             if use_grid:
-                 obj.rows = MetaDataDict(rows, expected_size=row_len, key_prefix='row')
-                 obj.cols = MetaDataDict(cols, expected_size=col_len, key_prefix='col')
-                 obj.meta = MetaDataMatrix(meta, shape=(row_len, col_len))
-             else:
-                 obj.rows = MetaDataDict(rows, expected_size=N, key_prefix='batch')
-                 obj.cols = MetaDataDict(None, expected_size=1, key_prefix='col')
-                 obj.meta = MetaDataMatrix(meta, shape=(N, 1))
+            if use_grid:
+                obj.rows = MetaDataDict(rows, expected_size=row_len, key_prefix="row")
+                obj.cols = MetaDataDict(cols, expected_size=col_len, key_prefix="col")
+                obj.meta = MetaDataMatrix(meta, shape=(row_len, col_len))
+            else:
+                obj.rows = MetaDataDict(rows, expected_size=N, key_prefix="batch")
+                obj.cols = MetaDataDict(None, expected_size=1, key_prefix="col")
+                obj.meta = MetaDataMatrix(meta, shape=(N, 1))
 
-        elif obj.ndim == 4: # (Row, Col, Time, Freq)
-             nrow, ncol = obj.shape[:2]
-             obj.rows = MetaDataDict(rows, expected_size=nrow, key_prefix='row')
-             obj.cols = MetaDataDict(cols, expected_size=ncol, key_prefix='col')
-             obj.meta = MetaDataMatrix(meta, shape=(nrow, ncol))
+        elif obj.ndim == 4:  # (Row, Col, Time, Freq)
+            nrow, ncol = obj.shape[:2]
+            obj.rows = MetaDataDict(rows, expected_size=nrow, key_prefix="row")
+            obj.cols = MetaDataDict(cols, expected_size=ncol, key_prefix="col")
+            obj.meta = MetaDataMatrix(meta, shape=(nrow, ncol))
         else:
-             # Fallback
-             obj.rows = None
-             obj.cols = None
-             obj.meta = None
+            # Fallback
+            obj.rows = None
+            obj.cols = None
+            obj.meta = None
 
         # Apply unit to metadata if needed
-        if unit is not None and getattr(obj, 'meta', None) is not None:
-             for m in obj.meta.flat:
-                  if m.unit is None:
-                       m.unit = unit
+        if unit is not None and getattr(obj, "meta", None) is not None:
+            for m in obj.meta.flat:
+                if m.unit is None:
+                    m.unit = unit
 
-        obj.epoch = kwargs.get('epoch', 0.0)
+        obj.epoch = kwargs.get("epoch", 0.0)
         obj._value = obj.view(np.ndarray)
         return obj
 
@@ -143,19 +156,24 @@ class SpectrogramMatrix(
         if obj is None:
             return
         super().__array_finalize__(obj)
-        self.frequencies = getattr(obj, 'frequencies', None)
-        if not hasattr(self, '_value'):
-             self._value = self.view(np.ndarray)
+        self.frequencies = getattr(obj, "frequencies", None)
+        if not hasattr(self, "_value"):
+            self._value = self.view(np.ndarray)
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
         """
         Override SeriesMatrix.__array_ufunc__ to correctly handle SpectrogramMatrix structure
         (Batch, Time, Freq) or (Row, Col, Time, Freq).
         """
-        if method != '__call__':
+        if method != "__call__":
             # Defer to ndarray (e.g. at, reduce) - might lose metadata but SeriesMatrix does too
-            args = [inp.view(np.ndarray) if isinstance(inp, SpectrogramMatrix) else inp for inp in inputs]
-            return super(SeriesMatrix, self).__array_ufunc__(ufunc, method, *args, **kwargs)
+            args = [
+                inp.view(np.ndarray) if isinstance(inp, SpectrogramMatrix) else inp
+                for inp in inputs
+            ]
+            return super(SeriesMatrix, self).__array_ufunc__(
+                ufunc, method, *args, **kwargs
+            )
 
         # 1. Unpack inputs and checking units/meta
         args = []
@@ -167,20 +185,20 @@ class SpectrogramMatrix(
                 metas.append(inp.meta)
                 shapes.append(inp.shape)
             elif isinstance(inp, (u.Quantity, np.ndarray, float, int, complex)):
-                 # Wrap as ndarray
-                 val = getattr(inp, 'value', inp)
-                 args.append(np.asarray(val))
-                 # Dummy meta? Scalar has no meta. Implicitly handled by ufunc logic if skipped?
-                 metas.append(None)
-                 shapes.append(np.shape(val))
+                # Wrap as ndarray
+                val = getattr(inp, "value", inp)
+                args.append(np.asarray(val))
+                # Dummy meta? Scalar has no meta. Implicitly handled by ufunc logic if skipped?
+                metas.append(None)
+                shapes.append(np.shape(val))
             else:
-                 return NotImplemented
+                return NotImplemented
 
         # 2. Compute Data
         try:
-             result_data = ufunc(*args, **kwargs)
+            result_data = ufunc(*args, **kwargs)
         except Exception:
-             return NotImplemented
+            return NotImplemented
 
         # 3. Propagate Metadata (Units)
         # We assume result has same shape structure (or broadcasted).
@@ -196,22 +214,24 @@ class SpectrogramMatrix(
         # Attempt to compute new global unit
         unit_args = []
         for inp in inputs:
-             if hasattr(inp, 'unit'):
-                 unit_args.append(inp.unit if inp.unit else u.dimensionless_unscaled)
-             else:
-                 unit_args.append(u.dimensionless_unscaled)
+            if hasattr(inp, "unit"):
+                unit_args.append(inp.unit if inp.unit else u.dimensionless_unscaled)
+            else:
+                unit_args.append(u.dimensionless_unscaled)
         q_args = []
         for x in unit_args:
-             if x is None: q_args.append(1)
-             else: q_args.append(u.Quantity(1, x))
+            if x is None:
+                q_args.append(1)
+            else:
+                q_args.append(u.Quantity(1, x))
 
         try:
-             res_q = ufunc(*q_args)
-             new_unit = res_q.unit if hasattr(res_q, 'unit') else None
+            res_q = ufunc(*q_args)
+            new_unit = res_q.unit if hasattr(res_q, "unit") else None
         except (TypeError, ValueError, AttributeError) as e:
-             if isinstance(e, u.UnitConversionError):
-                  raise e
-             new_unit = None
+            if isinstance(e, u.UnitConversionError):
+                raise e
+            new_unit = None
 
         # Reconstruct SpectrogramMatrix
         # If shape matches main, keep rows/cols/times/freqs
@@ -219,28 +239,28 @@ class SpectrogramMatrix(
         # Standard ufuncs like add/mul preserve shape.
 
         if result_data.shape == main.shape:
-             # Propagate meta if possible
-             new_meta = None
-             if main.meta is not None:
-                  # Deep copy meta and update units
-                  # Or create new MetaDataMatrix with new units
-                  if new_unit is not None:
-                       # Update all cells?
-                       # Doing shallow copy of meta matrix
-                       pass
-                  new_meta = main.meta # Simplification: keep meta structure
+            # Propagate meta if possible
+            new_meta = None
+            if main.meta is not None:
+                # Deep copy meta and update units
+                # Or create new MetaDataMatrix with new units
+                if new_unit is not None:
+                    # Update all cells?
+                    # Doing shallow copy of meta matrix
+                    pass
+                new_meta = main.meta  # Simplification: keep meta structure
 
-             obj = self.__class__(
-                 result_data,
-                 times=main.times,
-                 frequencies=main.frequencies,
-                 rows=main.rows,
-                 cols=main.cols,
-                 meta=new_meta,
-                 name=main.name,
-                 unit=new_unit
-             )
-             return obj
+            obj = self.__class__(
+                result_data,
+                times=main.times,
+                frequencies=main.frequencies,
+                rows=main.rows,
+                cols=main.cols,
+                meta=new_meta,
+                name=main.name,
+                unit=new_unit,
+            )
+            return obj
 
         return result_data
 
@@ -258,24 +278,32 @@ class SpectrogramMatrix(
         """
         # 1. Type check
         if not isinstance(other, type(self)):
-             # Fallback or strict check? SeriesMatrix falls back to array shape check.
-             if hasattr(other, 'shape') and np.shape(self) != np.shape(other):
-                  raise ValueError(f"shape does not match: {self.shape} vs {np.shape(other)}")
-             return True # assume compatible if shapes match and not SpectrogramMatrix
+            # Fallback or strict check? SeriesMatrix falls back to array shape check.
+            if hasattr(other, "shape") and np.shape(self) != np.shape(other):
+                raise ValueError(
+                    f"shape does not match: {self.shape} vs {np.shape(other)}"
+                )
+            return True  # assume compatible if shapes match and not SpectrogramMatrix
 
         # 2. Shape check
         if self.shape != other.shape:
-            raise ValueError(f"matrix shape does not match: {self.shape} vs {other.shape}")
+            raise ValueError(
+                f"matrix shape does not match: {self.shape} vs {other.shape}"
+            )
 
         # 3. Times/Xindex Check
         # Check units
         t_unit_self = getattr(self.times, "unit", None)
         t_unit_other = getattr(other.times, "unit", None)
-        if t_unit_self != t_unit_other: # Simple equality check sufficient for same implementation
-             # Try convert? SeriesMatrix logic is strict about unit object equality or equivalence
-             if t_unit_self is not None and t_unit_other is not None:
-                 if not u.Unit(t_unit_self).is_equivalent(u.Unit(t_unit_other)):
-                      raise ValueError(f"times unit does not match: {t_unit_self} vs {t_unit_other}")
+        if (
+            t_unit_self != t_unit_other
+        ):  # Simple equality check sufficient for same implementation
+            # Try convert? SeriesMatrix logic is strict about unit object equality or equivalence
+            if t_unit_self is not None and t_unit_other is not None:
+                if not u.Unit(t_unit_self).is_equivalent(u.Unit(t_unit_other)):
+                    raise ValueError(
+                        f"times unit does not match: {t_unit_self} vs {t_unit_other}"
+                    )
 
         # Check dx/content (for contiguous check, usually handled by caller, but is_compatible checks xindex content equality?)
         # SeriesMatrix.is_compatible checks xindex equality if dx matches or fallback.
@@ -285,21 +313,28 @@ class SpectrogramMatrix(
 
         # 4. Meta/Channel Unit consistency
         if self.meta.shape != other.meta.shape:
-             # Should match if shapes match (unless metadata structure differs profoundly)
-             # But let's proceed to loop over valid meta range
-             raise ValueError(f"metadata shape mismatch: {self.meta.shape} vs {other.meta.shape}")
+            # Should match if shapes match (unless metadata structure differs profoundly)
+            # But let's proceed to loop over valid meta range
+            raise ValueError(
+                f"metadata shape mismatch: {self.meta.shape} vs {other.meta.shape}"
+            )
 
         for i in range(self.meta.shape[0]):
-             for j in range(self.meta.shape[1]):
-                  u1 = self.meta[i, j].unit
-                  u2 = other.meta[i, j].unit
-                  if u1 != u2:
-                       # Allow None vs None
-                       if u1 is None and u2 is None: continue
-                       if u1 is None or u2 is None:
-                            raise ValueError(f"Unit mismatch at meta ({i},{j}): {u1} vs {u2}")
-                       if not u1.is_equivalent(u2):
-                            raise ValueError(f"Unit mismatch at meta ({i},{j}): {u1} vs {u2}")
+            for j in range(self.meta.shape[1]):
+                u1 = self.meta[i, j].unit
+                u2 = other.meta[i, j].unit
+                if u1 != u2:
+                    # Allow None vs None
+                    if u1 is None and u2 is None:
+                        continue
+                    if u1 is None or u2 is None:
+                        raise ValueError(
+                            f"Unit mismatch at meta ({i},{j}): {u1} vs {u2}"
+                        )
+                    if not u1.is_equivalent(u2):
+                        raise ValueError(
+                            f"Unit mismatch at meta ({i},{j}): {u1} vs {u2}"
+                        )
 
         return True
 
@@ -329,7 +364,11 @@ class SpectrogramMatrix(
             except KeyError:
                 raise
 
-        if isinstance(key, (list, np.ndarray)) and len(key) > 0 and isinstance(key[0], str):
+        if (
+            isinstance(key, (list, np.ndarray))
+            and len(key) > 0
+            and isinstance(key[0], str)
+        ):
             key = [self.row_index(k) for k in key]
 
         # Handle tuple keys (Row, Col) or (Row, Col, Time, Freq)
@@ -352,40 +391,43 @@ class SpectrogramMatrix(
         is_single_element = False
         r_idx, c_idx = 0, 0
 
-
-        if self.ndim == 3: # (Batch, Time, Freq)
+        if self.ndim == 3:  # (Batch, Time, Freq)
             if isinstance(key, (int, np.integer)):
                 is_single_element = True
                 r_idx = key
                 c_idx = 0
-        elif self.ndim == 4: # (Row, Col, Time, Freq)
+        elif self.ndim == 4:  # (Row, Col, Time, Freq)
             if isinstance(key, tuple) and len(key) >= 2:
                 r, c = key[0], key[1]
-                if isinstance(r, (int, np.integer)) and isinstance(c, (int, np.integer)):
-                     is_single_element = True
-                     r_idx, c_idx = r, c
+                if isinstance(r, (int, np.integer)) and isinstance(
+                    c, (int, np.integer)
+                ):
+                    is_single_element = True
+                    r_idx, c_idx = r, c
 
         if is_single_element:
-             # Return Spectrogram
-             meta = self.meta[r_idx, c_idx] if self.meta is not None else None
-             unit = meta.unit if meta else self.unit
-             name = (meta.name if meta and meta.name else self.name)
-             channel = meta.channel if meta else None
+            # Return Spectrogram
+            meta = self.meta[r_idx, c_idx] if self.meta is not None else None
+            unit = meta.unit if meta else self.unit
+            name = meta.name if meta and meta.name else self.name
+            channel = meta.channel if meta else None
 
-             # raw_data should be (Time, Freq)
-             if raw_data.ndim != 2:
-                 # Should not happen if indices are correct for 3D/4D
-                 raise ValueError(f"Extracted data has wrong dimension for Spectrogram: {raw_data.ndim} (expected 2)")
+            # raw_data should be (Time, Freq)
+            if raw_data.ndim != 2:
+                # Should not happen if indices are correct for 3D/4D
+                raise ValueError(
+                    f"Extracted data has wrong dimension for Spectrogram: {raw_data.ndim} (expected 2)"
+                )
 
-             return self.series_class(
-                 raw_data,
-                 times=self.times,
-                 frequencies=self.frequencies,
-                 unit=unit,
-                 name=name,
-                 channel=channel,
-                 epoch=getattr(self, 'epoch', None)
-             )
+            return self.series_class(
+                raw_data,
+                times=self.times,
+                frequencies=self.frequencies,
+                unit=unit,
+                name=name,
+                channel=channel,
+                epoch=getattr(self, "epoch", None),
+            )
 
         # Return Sub-Matrix
         # We assume raw_data is ndarray. View as SpectrogramMatrix.
@@ -393,10 +435,10 @@ class SpectrogramMatrix(
         ret._value = ret.view(np.ndarray)
 
         # Propagate global props
-        ret.times = getattr(self, 'times', None)
-        ret.frequencies = getattr(self, 'frequencies', None)
-        ret.unit = getattr(self, 'unit', None)
-        ret.epoch = getattr(self, 'epoch', None)
+        ret.times = getattr(self, "times", None)
+        ret.frequencies = getattr(self, "frequencies", None)
+        ret.unit = getattr(self, "unit", None)
+        ret.epoch = getattr(self, "epoch", None)
 
         # Propagate/Slice Metadata (Rows, Cols, Meta)
         # This is complex for general slicing. Simplification:
@@ -408,32 +450,34 @@ class SpectrogramMatrix(
 
         # 3D: (Batch, T, F) -> Slice batch
         if self.ndim == 3 and ret.ndim == 3:
-             if self.rows:
-                 ret.rows = _slice_metadata_dict(self.rows, main_key, 'row')
-             if self.meta is not None:
-                 # meta is (N, 1)
-                 try:
-                     ret.meta = self.meta[main_key]
-                 except (IndexError, TypeError):
-                     pass
+            if self.rows:
+                ret.rows = _slice_metadata_dict(self.rows, main_key, "row")
+            if self.meta is not None:
+                # meta is (N, 1)
+                try:
+                    ret.meta = self.meta[main_key]
+                except (IndexError, TypeError):
+                    pass
         # 4D: (Row, Col, T, F) -> Slice row, maybe col
         elif self.ndim == 4 and ret.ndim == 4:
-             r_key = key[0] if isinstance(key, tuple) else key
-             c_key = key[1] if isinstance(key, tuple) and len(key) > 1 else slice(None)
+            r_key = key[0] if isinstance(key, tuple) else key
+            c_key = key[1] if isinstance(key, tuple) and len(key) > 1 else slice(None)
 
-             if self.rows: ret.rows = _slice_metadata_dict(self.rows, r_key, 'row')
-             if self.cols: ret.cols = _slice_metadata_dict(self.cols, c_key, 'col')
-             if self.meta is not None:
-                  try:
-                      # meta is (Row, Col)
-                      # If key is simple tuple (slice, slice)
-                      if isinstance(key, tuple) and len(key) <= 2:
-                           ret.meta = self.meta[key]
-                      else:
-                           # complex slicing?
-                           pass
-                  except Exception:
-                      pass
+            if self.rows:
+                ret.rows = _slice_metadata_dict(self.rows, r_key, "row")
+            if self.cols:
+                ret.cols = _slice_metadata_dict(self.cols, c_key, "col")
+            if self.meta is not None:
+                try:
+                    # meta is (Row, Col)
+                    # If key is simple tuple (slice, slice)
+                    if isinstance(key, tuple) and len(key) <= 2:
+                        ret.meta = self.meta[key]
+                    else:
+                        # complex slicing?
+                        pass
+                except Exception:
+                    pass
 
         return ret
 
@@ -442,7 +486,7 @@ class SpectrogramMatrix(
         r_keys = self.row_keys()
         c_keys = self.col_keys()
         if self.ndim == 3:
-             return [[self[i] for _ in range(1)] for i in range(len(r_keys))]
+            return [[self[i] for _ in range(1)] for i in range(len(r_keys))]
         return [[self[i, j] for j in range(len(c_keys))] for i in range(len(r_keys))]
 
     def to_series_1Dlist(self):
@@ -464,11 +508,13 @@ class SpectrogramMatrix(
     def to_list(self):
         """Convert to SpectrogramList."""
         from .collections import SpectrogramList
+
         return SpectrogramList(self.to_series_1Dlist())
 
     def to_dict(self):
         """Convert to SpectrogramDict."""
         from .collections import SpectrogramDict
+
         r_keys = self.row_keys()
         c_keys = self.col_keys()
         results = SpectrogramDict()
@@ -491,7 +537,7 @@ class SpectrogramMatrix(
         ref_unit = self.meta[0, 0].unit
         for m in self.meta.flat:
             if m.unit is None:
-                 continue
+                continue
             if not m.unit.is_equivalent(ref_unit):
                 return False, ref_unit
         return True, ref_unit
@@ -508,6 +554,7 @@ class SpectrogramMatrix(
     def plot(self, **kwargs):
         """Plot the matrix data using gwexpy.plot.Plot."""
         from gwexpy.plot import Plot
+
         return Plot(self, **kwargs)
 
     def plot_summary(self, **kwargs):
@@ -515,4 +562,5 @@ class SpectrogramMatrix(
         Plot Matrix as side-by-side Spectrograms and percentile summaries.
         """
         from gwexpy.plot.plot import plot_summary
+
         return plot_summary(self, **kwargs)

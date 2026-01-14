@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 import numpy as np
 
 from .seriesmatrix_validation import _expand_key, _slice_metadata_dict
@@ -65,14 +64,18 @@ class SeriesMatrixIndexingMixin:
 
         # 3. Handle label-based slicing for rows/cols
         ri = r
-        if isinstance(r, (str, list)) or (isinstance(r, np.ndarray) and r.dtype.kind in "US"):
+        if isinstance(r, (str, list)) or (
+            isinstance(r, np.ndarray) and r.dtype.kind in "US"
+        ):
             if isinstance(r, str):
                 ri = self.row_index(r)
             else:
                 ri = [self.row_index(k) for k in r]
 
         ci = c
-        if isinstance(c, (str, list)) or (isinstance(c, np.ndarray) and c.dtype.kind in "US"):
+        if isinstance(c, (str, list)) or (
+            isinstance(c, np.ndarray) and c.dtype.kind in "US"
+        ):
             if isinstance(c, str):
                 ci = self.col_index(c)
             else:
@@ -151,14 +154,18 @@ class SeriesMatrixIndexingMixin:
         r, c, s = expanded_key
 
         ri = r
-        if isinstance(r, (str, list)) or (isinstance(r, np.ndarray) and r.dtype.kind in "US"):
+        if isinstance(r, (str, list)) or (
+            isinstance(r, np.ndarray) and r.dtype.kind in "US"
+        ):
             if isinstance(r, str):
                 ri = self.row_index(r)
             else:
                 ri = [self.row_index(k) for k in r]
 
         ci = c
-        if isinstance(c, (str, list)) or (isinstance(c, np.ndarray) and c.dtype.kind in "US"):
+        if isinstance(c, (str, list)) or (
+            isinstance(c, np.ndarray) and c.dtype.kind in "US"
+        ):
             if isinstance(c, str):
                 ci = self.col_index(c)
             else:

@@ -1,5 +1,5 @@
-
 from ._optional import require_optional
+
 
 def to_netcdf4(ts, ds, var_name, dim_time="time", time_units=None, overwrite=False):
     """
@@ -18,7 +18,7 @@ def to_netcdf4(ts, ds, var_name, dim_time="time", time_units=None, overwrite=Fal
 
     # Define dimension if not exists
     if dim_time not in ds.dimensions:
-        ds.createDimension(dim_time, ts.size) # or None for unlimited
+        ds.createDimension(dim_time, ts.size)  # or None for unlimited
 
     # Create variable
     if var_name not in ds.variables:
@@ -35,6 +35,7 @@ def to_netcdf4(ts, ds, var_name, dim_time="time", time_units=None, overwrite=Fal
     if ts.name:
         v.long_name = str(ts.name)
 
+
 def from_netcdf4(cls, ds, var_name):
     """
     Read from netCDF4 Dataset.
@@ -44,8 +45,9 @@ def from_netcdf4(cls, ds, var_name):
 
     # Check masked array
     import numpy as np
+
     if np.ma.is_masked(data):
-        data = data.filled(np.nan) # or specific fill
+        data = data.filled(np.nan)  # or specific fill
 
     t0 = getattr(v, "t0", 0)
     dt = getattr(v, "dt", 1)

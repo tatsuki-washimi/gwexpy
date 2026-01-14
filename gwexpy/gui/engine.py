@@ -181,24 +181,24 @@ class Engine:
                         # Use spectrogram2 which supports overlap correctly.
                         # spectrogram2(fftlength, overlap=..., window=...)
                         # Note: spectrogram2 usually returns a Spectrogram object similar to the others.
-                        
+
                         length = fft_kwargs["fftlength"]
                         # overlap was removed from fft_kwargs in _get_fft_kwargs but stored in ovlap variable above?
                         # Wait, in compute() we popped overlap into ovlap.
-                        
+
                         # Re-construct overlap argument if needed, or pass directly.
                         # spectrogram2 takes 'overlap' in seconds (default 0).
-                        
+
                         # fft_kwargs has 'window', 'fftlength'.
                         # We need to ensure we call it correctly.
-                        
+
                         # Remove 'fftlength' from kwargs if we pass it as positional args?
                         # spectrogram2 signature: spectrogram2(fftlength, overlap=None, window=None, ...)
-                        
+
                         kw = fft_kwargs.copy()
                         if "fftlength" in kw:
                             del kw["fftlength"]
-                        
+
                         # ovlap is in seconds (calculated in _get_fft_kwargs as overlap * fftlength)
                         spec = ts_a.spectrogram2(length, overlap=ovlap, **kw)
 

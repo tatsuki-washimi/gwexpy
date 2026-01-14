@@ -5,4 +5,3 @@ from gwpy.testing.marks import (
 __all__ = [
     "MARKS",
 ]
-

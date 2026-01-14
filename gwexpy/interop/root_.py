@@ -1,8 +1,10 @@
+from typing import Any
 
 import numpy as np
-from typing import Any, Optional
+
 from ._optional import require_optional
 from .base import to_plain_array
+
 
 def _get_label(obj, unit, default_name="x"):
     name = getattr(obj, "name", None) or default_name
@@ -11,6 +13,7 @@ def _get_label(obj, unit, default_name="x"):
         return f"{name} [{unit_str}]"
     return str(name)
 
+
 def _extract_error_array(series, error):
     """Internal helper to extract a matching error array from various types."""
     from astropy import units as u
@@ -18,7 +21,9 @@ def _extract_error_array(series, error):
     # If it's a gwpy/gwexpy Series
     if hasattr(error, "value") and hasattr(error, "xindex"):
         if len(error) != len(series):
-            raise ValueError(f"Error series length ({len(error)}) does not match data length ({len(series)})")
+            raise ValueError(
+                f"Error series length ({len(error)}) does not match data length ({len(series)})"
+            )
         # Check xindex matching (optional check, maybe too strict if slightly shifted?)
         # For now, just extract value
         return to_plain_array(error.value)
@@ -26,7 +31,9 @@ def _extract_error_array(series, error):
     # If it's an astropy Quantity
     if isinstance(error, u.Quantity):
         if error.shape != series.shape:
-            raise ValueError(f"Error shape {error.shape} does not match data shape {series.shape}")
+            raise ValueError(
+                f"Error shape {error.shape} does not match data shape {series.shape}"
+            )
         # Try to match units if series has unit
         if hasattr(series, "unit") and series.unit:
             try:
@@ -41,8 +48,11 @@ def _extract_error_array(series, error):
     # If it's a plain numpy array or list
     err_arr = np.asarray(error)
     if err_arr.shape != series.shape:
-        raise ValueError(f"Error shape {err_arr.shape} does not match data shape {series.shape}")
+        raise ValueError(
+            f"Error shape {err_arr.shape} does not match data shape {series.shape}"
+        )
     return err_arr
+
 
 def to_tgraph(series, error=None):
     """
@@ -74,6 +84,7 @@ def to_tgraph(series, error=None):
 
     return graph
 
+
 def to_th1d(series, error=None):
     """
     Convert 1D Series to ROOT TH1D.
@@ -99,8 +110,8 @@ def to_th1d(series, error=None):
 
     if is_regular:
         dx = dx_vals[0]
-        xlow = x[0] - dx/2.0
-        xup = x[-1] + dx/2.0
+        xlow = x[0] - dx / 2.0
+        xup = x[-1] + dx / 2.0
         hist = ROOT.TH1D(name, title, n, xlow, xup)
     else:
         # Variable bin widths
@@ -133,6 +144,7 @@ def to_th1d(series, error=None):
 
     return hist
 
+
 def to_th2d(spec, error=None):
     """
     Convert Spectrogram to ROOT TH2D.
@@ -149,17 +161,17 @@ def to_th2d(spec, error=None):
     # helper for edges
     def _get_edges(arr):
         if len(arr) < 2:
-             return np.array([arr[0]-0.5, arr[0]+0.5])
+            return np.array([arr[0] - 0.5, arr[0] + 0.5])
         dx = np.diff(arr)
         if np.allclose(dx, dx[0]):
-             step = dx[0]
-             return np.linspace(arr[0]-step/2, arr[-1]+step/2, len(arr)+1)
+            step = dx[0]
+            return np.linspace(arr[0] - step / 2, arr[-1] + step / 2, len(arr) + 1)
         else:
-             edges = np.zeros(len(arr)+1)
-             edges[1:-1] = (arr[:-1] + arr[1:]) / 2.0
-             edges[0] = arr[0] - (edges[1] - arr[0])
-             edges[-1] = arr[-1] + (arr[-1] - edges[-2])
-             return edges
+            edges = np.zeros(len(arr) + 1)
+            edges[1:-1] = (arr[:-1] + arr[1:]) / 2.0
+            edges[0] = arr[0] - (edges[1] - arr[0])
+            edges[-1] = arr[-1] + (arr[-1] - edges[-2])
+            return edges
 
     t_edges = _get_edges(times)
     f_edges = _get_edges(freqs)
@@ -182,17 +194,22 @@ def to_th2d(spec, error=None):
     if error is not None:
         err_arr = np.asarray(error).astype(float)
         if err_arr.shape != data.shape:
-             raise ValueError("Error shape mismatch")
+            raise ValueError("Error shape mismatch")
         full_error = np.zeros((nf + 2, nt + 2), dtype=np.float64)
         full_error[1:-1, 1:-1] = err_arr.T
         hist.SetError(full_error.flatten())
 
     # Labels
-    hist.GetXaxis().SetTitle(_get_label(spec.times, spec.times.unit, default_name="time"))
-    hist.GetYaxis().SetTitle(_get_label(spec.frequencies, spec.frequencies.unit, default_name="frequency"))
+    hist.GetXaxis().SetTitle(
+        _get_label(spec.times, spec.times.unit, default_name="time")
+    )
+    hist.GetYaxis().SetTitle(
+        _get_label(spec.frequencies, spec.frequencies.unit, default_name="frequency")
+    )
     hist.GetZaxis().SetTitle(_get_label(spec, spec.unit, default_name="value"))
 
     return hist
+
 
 def from_root(cls, obj, return_error=False):
     """
@@ -211,8 +228,8 @@ def from_root(cls, obj, return_error=False):
     if is_hist2d:
         nx = obj.GetNbinsX()
         ny = obj.GetNbinsY()
-        x = np.array([obj.GetXaxis().GetBinCenter(i+1) for i in range(nx)])
-        y = np.array([obj.GetYaxis().GetBinCenter(j+1) for j in range(ny)])
+        x = np.array([obj.GetXaxis().GetBinCenter(i + 1) for i in range(nx)])
+        y = np.array([obj.GetYaxis().GetBinCenter(j + 1) for j in range(ny)])
         z = np.zeros((nx, ny))
         ez = np.zeros((nx, ny)) if return_error else None
 
@@ -252,47 +269,48 @@ def from_root(cls, obj, return_error=False):
         # ... logic for unit extraction from Z axis if possible ...
         z_title = obj.GetZaxis().GetTitle()
         if "[" in z_title and "]" in z_title:
-             import re
-             match = re.search(r"\[(.*?)\]", z_title)
-             if match:
-                 unit = match.group(1)
+            import re
+
+            match = re.search(r"\[(.*?)\]", z_title)
+            if match:
+                unit = match.group(1)
 
         res = cls(z, times=x, frequencies=y, unit=unit, name=name)
         if return_error:
-             err_res = cls(ez, times=x, frequencies=y, unit=unit, name=f"{name}_error")
-             return res, err_res
+            err_res = cls(ez, times=x, frequencies=y, unit=unit, name=f"{name}_error")
+            return res, err_res
         return res
 
     if is_hist:
         # TH1
         n = obj.GetNbinsX()
-        x = np.array([obj.GetBinCenter(i+1) for i in range(n)])
+        x = np.array([obj.GetBinCenter(i + 1) for i in range(n)])
 
         buff_ptr = obj.GetArray()
         # buffer size n+2
-        y = np.frombuffer(buff_ptr, dtype=np.float64, count=n+2)[1:-1].copy()
+        y = np.frombuffer(buff_ptr, dtype=np.float64, count=n + 2)[1:-1].copy()
 
         if return_error:
-             if obj.GetSumw2N() > 0:
-                 err_ptr = obj.GetSumw2().GetArray()
-                 err_raw = np.frombuffer(err_ptr, dtype=np.float64, count=n+2)[1:-1]
-                 ey = np.sqrt(err_raw).copy()
-             else:
-                 ey = np.sqrt(y)
+            if obj.GetSumw2N() > 0:
+                err_ptr = obj.GetSumw2().GetArray()
+                err_raw = np.frombuffer(err_ptr, dtype=np.float64, count=n + 2)[1:-1]
+                ey = np.sqrt(err_raw).copy()
+            else:
+                ey = np.sqrt(y)
         else:
-             ey = None
-    else: # is_graph
+            ey = None
+    else:  # is_graph
         n = obj.GetN()
         # buffer access is faster
         x = np.frombuffer(obj.GetX(), dtype=np.float64, count=n).copy()
         y = np.frombuffer(obj.GetY(), dtype=np.float64, count=n).copy()
         if return_error:
-             if hasattr(obj, "GetEY"):
-                 ey = np.frombuffer(obj.GetEY(), dtype=np.float64, count=n).copy()
-             else:
-                 ey = np.zeros(n)
+            if hasattr(obj, "GetEY"):
+                ey = np.frombuffer(obj.GetEY(), dtype=np.float64, count=n).copy()
+            else:
+                ey = np.zeros(n)
         else:
-             ey = None
+            ey = None
 
     # Try to extract name and unit
     name = obj.GetName()
@@ -301,6 +319,7 @@ def from_root(cls, obj, return_error=False):
     if "[" in title and "]" in title:
         # Simple parser "Name [Unit]"
         import re
+
         match = re.search(r"\[(.*?)\]", title)
         if match:
             unit = match.group(1)
@@ -316,7 +335,7 @@ def from_root(cls, obj, return_error=False):
             else:
                 res = cls(y, times=x, unit=unit, name=name)
     else:
-        res = cls(y, x0=float(x[0]) if n==1 else 0, unit=unit, name=name)
+        res = cls(y, x0=float(x[0]) if n == 1 else 0, unit=unit, name=name)
 
     if return_error:
         # Create a matching series for error
@@ -328,7 +347,8 @@ def from_root(cls, obj, return_error=False):
 
     return res
 
-def to_tmultigraph(collection, name: Optional[str] = None) -> Any:
+
+def to_tmultigraph(collection, name: str | None = None) -> Any:
     """
     Convert a collection of Series to a ROOT TMultiGraph.
     """
@@ -358,12 +378,13 @@ def to_tmultigraph(collection, name: Optional[str] = None) -> Any:
 
         # Ensure it has a meaningful name in the legend
         if g.GetName() in ["graph", ""]:
-             g.SetName(str(key))
-             g.SetTitle(str(key))
+            g.SetName(str(key))
+            g.SetTitle(str(key))
 
         mg.Add(g)
 
     return mg
+
 
 def write_root_file(collection, filename: str, **kwargs: Any) -> None:
     """
@@ -377,7 +398,7 @@ def write_root_file(collection, filename: str, **kwargs: Any) -> None:
 
     f = ROOT.TFile.Open(filename, mode)
     if not f or f.IsZombie():
-        raise IOError(f"Failed to open {filename} for writing")
+        raise OSError(f"Failed to open {filename} for writing")
 
     if hasattr(collection, "items"):
         items = collection.items()
@@ -386,17 +407,17 @@ def write_root_file(collection, filename: str, **kwargs: Any) -> None:
 
     for key, series in items:
         if hasattr(series, "to_th2d"):
-             obj = series.to_th2d()
+            obj = series.to_th2d()
         elif hasattr(series, "to_tgraph"):
-             obj = series.to_tgraph()
+            obj = series.to_tgraph()
         else:
-             obj = to_tgraph(series)
+            obj = to_tgraph(series)
 
         # Determine a good name for the object in the ROOT file
         obj_name = str(key)
         if isinstance(key, int):
-             # For lists, try to use the object's own name if it has one
-             obj_name = getattr(series, "name", None) or str(key)
+            # For lists, try to use the object's own name if it has one
+            obj_name = getattr(series, "name", None) or str(key)
 
         obj.SetName(str(obj_name))
         obj.Write()

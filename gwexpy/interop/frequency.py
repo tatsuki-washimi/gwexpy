@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 import numpy as np
 
 from ._optional import require_optional
@@ -17,7 +16,9 @@ def to_pandas_frequencyseries(fs, index="frequency", name=None, copy=False):
     return pd.Series(data, index=idx, name=name or fs.name)
 
 
-def from_pandas_frequencyseries(cls, series, *, unit=None, frequencies=None, df=None, f0=None, epoch=None):
+def from_pandas_frequencyseries(
+    cls, series, *, unit=None, frequencies=None, df=None, f0=None, epoch=None
+):
     vals = series.values
     idx = series.index
     freq_axis = None
@@ -29,7 +30,13 @@ def from_pandas_frequencyseries(cls, series, *, unit=None, frequencies=None, df=
         freq_axis = f0_val + np.arange(len(vals)) * df_val
     else:
         freq_axis = idx.values
-    return cls(vals, frequencies=freq_axis, unit=unit or getattr(series, "unit", None), name=series.name, epoch=epoch)
+    return cls(
+        vals,
+        frequencies=freq_axis,
+        unit=unit or getattr(series, "unit", None),
+        name=series.name,
+        epoch=epoch,
+    )
 
 
 def to_xarray_frequencyseries(fs, freq_coord="Hz"):
@@ -44,28 +51,43 @@ def to_xarray_frequencyseries(fs, freq_coord="Hz"):
         attrs={
             "unit": str(fs.unit),
             "channel": str(getattr(fs, "channel", "")),
-            "epoch": float(fs.epoch.to("s").value) if getattr(fs, "epoch", None) is not None and hasattr(fs.epoch, "to") else getattr(fs, "epoch", None)
+            "epoch": float(fs.epoch.to("s").value)
+            if getattr(fs, "epoch", None) is not None and hasattr(fs.epoch, "to")
+            else getattr(fs, "epoch", None),
         },
     )
     return da
 
 
-def from_xarray_frequencyseries(cls, da, *, unit=None, freq_coord="frequency", epoch=None):
+def from_xarray_frequencyseries(
+    cls, da, *, unit=None, freq_coord="frequency", epoch=None
+):
     vals = da.values
     freqs = da.coords[freq_coord].values
     u = unit or da.attrs.get("unit")
     ch = da.attrs.get("channel", None)
-    return cls(vals, frequencies=freqs, unit=u, name=da.name, channel=ch, epoch=epoch or da.attrs.get("epoch"))
+    return cls(
+        vals,
+        frequencies=freqs,
+        unit=u,
+        name=da.name,
+        channel=ch,
+        epoch=epoch or da.attrs.get("epoch"),
+    )
 
 
-def to_hdf5_frequencyseries(fs, group, path, overwrite=False, compression=None, compression_opts=None):
+def to_hdf5_frequencyseries(
+    fs, group, path, overwrite=False, compression=None, compression_opts=None
+):
     require_optional("h5py")
     if path in group:
         if overwrite:
             del group[path]
         else:
-            raise IOError(f"{path} exists in group")
-    dset = group.create_dataset(path, data=fs.value, compression=compression, compression_opts=compression_opts)
+            raise OSError(f"{path} exists in group")
+    dset = group.create_dataset(
+        path, data=fs.value, compression=compression, compression_opts=compression_opts
+    )
     dset.attrs["unit"] = str(fs.unit)
     if getattr(fs, "name", None):
         dset.attrs["name"] = fs.name
@@ -108,6 +130,7 @@ def from_hdf5_frequencyseries(cls, group, path):
         freqs = np.array(freqs) * 1.0
         try:
             import astropy.units as u
+
             freqs = freqs * u.Unit(freq_unit) if freq_unit else freqs
         except (ImportError, ValueError):
             pass
@@ -115,4 +138,6 @@ def from_hdf5_frequencyseries(cls, group, path):
     name = attrs.get("name", None)
     epoch = attrs.get("epoch", None)
     channel = attrs.get("channel", None)
-    return cls(data, frequencies=freqs, unit=unit, name=name, epoch=epoch, channel=channel)
+    return cls(
+        data, frequencies=freqs, unit=unit, name=name, epoch=epoch, channel=channel
+    )

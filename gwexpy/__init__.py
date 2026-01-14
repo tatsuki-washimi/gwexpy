@@ -7,14 +7,56 @@ gravitational wave and time-series data analysis.
 """
 
 import warnings
+
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
-warnings.filterwarnings('ignore', category=UserWarning, module='gwpy')
-warnings.filterwarnings('ignore', category=UserWarning, module='scipy')
+warnings.filterwarnings("ignore", category=UserWarning, module="gwpy")
+warnings.filterwarnings("ignore", category=UserWarning, module="scipy")
 from astropy.utils.exceptions import AstropyWarning
+
 warnings.filterwarnings("ignore", category=AstropyWarning)
 
-from ._version import __version__
 from typing import TYPE_CHECKING, Any
+
+# Subpackages are available via namespace
+from . import (
+    astro,
+    detector,
+    frequencyseries,
+    interop,
+    io,
+    noise,
+    plot,
+    segments,
+    signal,
+    spectral,
+    spectrogram,
+    table,
+    time,
+    timeseries,
+    types,
+)
+from ._version import __version__
+from .frequencyseries import (
+    FrequencySeries,
+    FrequencySeriesDict,
+    FrequencySeriesList,
+    FrequencySeriesMatrix,
+)
+
+# Signal processing utilities
+from .signal.preprocessing import (
+    StandardizationModel,
+    WhiteningModel,
+    impute,
+    standardize,
+    whiten,
+)
+from .spectrogram import (
+    Spectrogram,
+    SpectrogramDict,
+    SpectrogramList,
+    SpectrogramMatrix,
+)
 
 # Core data types - explicitly imported for IDE support and clear API
 from .timeseries import (
@@ -23,54 +65,14 @@ from .timeseries import (
     TimeSeriesList,
     TimeSeriesMatrix,
 )
-from .frequencyseries import (
-    FrequencySeries,
-    FrequencySeriesDict,
-    FrequencySeriesList,
-    FrequencySeriesMatrix,
-)
-from .spectrogram import (
-    Spectrogram,
-    SpectrogramList,
-    SpectrogramDict,
-    SpectrogramMatrix,
-)
 
 # Types
 from .types import (
-    SeriesMatrix,
     MetaData,
     MetaDataDict,
     MetaDataMatrix,
+    SeriesMatrix,
     as_series,
-)
-
-# Signal processing utilities
-from .signal.preprocessing import (
-    whiten,
-    standardize,
-    impute,
-    WhiteningModel,
-    StandardizationModel,
-)
-
-# Subpackages are available via namespace
-from . import (
-    timeseries,
-    frequencyseries,
-    spectrogram,
-    spectral,
-    astro,
-    detector,
-    plot,
-    segments,
-    signal,
-    table,
-    time,
-    types,
-    io,
-    interop,
-    noise,
 )
 
 __all__ = [
@@ -143,6 +145,7 @@ def __dir__() -> list[str]:
 # Enable fitting monkeypatch by default for user convenience
 try:
     from .fitting import enable_series_fit
+
     enable_series_fit()
 except ImportError:
     pass

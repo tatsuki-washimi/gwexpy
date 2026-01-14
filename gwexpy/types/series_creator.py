@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import Any
 
 import numpy as np
@@ -76,6 +77,7 @@ def as_series(axis, unit=None, *, name=None):
         Optional series name.
     """
     from gwexpy.time import to_gps
+
     axis_unit = getattr(axis, "unit", None)
 
     if isinstance(axis, u.Quantity):
@@ -95,13 +97,17 @@ def as_series(axis, unit=None, *, name=None):
             # If to_gps returned a numeric array from a non-numeric input, we treat it as seconds.
             # But if it was already numeric and had no unit, we should maybe be more strict?
             # For now, following the user request to support datetime arrays.
-            if isinstance(axis, (np.ndarray, list)) and len(axis) > 0 and not isinstance(axis[0], (int, float, np.number)):
-                 axis_q = _to_quantity_1d(u.Quantity(np.asarray(axis_gps), u.s))
+            if (
+                isinstance(axis, (np.ndarray, list))
+                and len(axis) > 0
+                and not isinstance(axis[0], (int, float, np.number))
+            ):
+                axis_q = _to_quantity_1d(u.Quantity(np.asarray(axis_gps), u.s))
             else:
-                 # If it was already numeric and reached here, it means it had no .unit.
-                 # We still try to wrap it in case to_gps did something useful,
-                 # but this is where the "unclear error" usually happened.
-                 axis_q = _to_quantity_1d(u.Quantity(np.asarray(axis_gps), u.s))
+                # If it was already numeric and reached here, it means it had no .unit.
+                # We still try to wrap it in case to_gps did something useful,
+                # but this is where the "unclear error" usually happened.
+                axis_q = _to_quantity_1d(u.Quantity(np.asarray(axis_gps), u.s))
         except (ValueError, TypeError, AttributeError) as e:
             raise TypeError(
                 f"as_series expects a 1D axis-like input (Quantity, Index with unit, or datetime array). "
@@ -114,6 +120,7 @@ def as_series(axis, unit=None, *, name=None):
             raise ValueError("unit must be time-like for a time axis")
 
         from gwexpy.timeseries import TimeSeries
+
         values_q = axis_q.to(value_unit)
         times_axis = axis_q
         return TimeSeries(values_q.value, times=times_axis, unit=value_unit, name=name)
@@ -124,7 +131,9 @@ def as_series(axis, unit=None, *, name=None):
         else:
             value_unit = u.Unit(unit)
             if not (_is_freq_unit(value_unit) or _is_angular_frequency(value_unit)):
-                raise ValueError("unit must be frequency-like (Hz) or angular frequency (rad/s) for a frequency axis")
+                raise ValueError(
+                    "unit must be frequency-like (Hz) or angular frequency (rad/s) for a frequency axis"
+                )
 
         axis_hz = _to_hz(axis_q)
         if _is_angular_frequency(value_unit):
@@ -133,7 +142,14 @@ def as_series(axis, unit=None, *, name=None):
             values_q = axis_hz.to(value_unit)
 
         from gwexpy.frequencyseries import FrequencySeries
-        freq_axis = axis if axis_unit is not None and not _is_angular_frequency(axis_q.unit) else axis_hz
-        return FrequencySeries(values_q.value, frequencies=freq_axis, unit=value_unit, name=name)
+
+        freq_axis = (
+            axis
+            if axis_unit is not None and not _is_angular_frequency(axis_q.unit)
+            else axis_hz
+        )
+        return FrequencySeries(
+            values_q.value, frequencies=freq_axis, unit=value_unit, name=name
+        )
 
     raise ValueError("axis unit must be time-like (s) or frequency-like (Hz / rad/s)")

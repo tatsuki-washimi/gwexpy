@@ -1,5 +1,5 @@
-
 from ._optional import require_optional
+
 
 def is_cupy_available():
     """
@@ -7,10 +7,12 @@ def is_cupy_available():
     """
     try:
         import cupy
+
         # Try to get device count to ensure driver is working
         return cupy.cuda.runtime.getDeviceCount() > 0
     except Exception:
         return False
+
 
 def to_cupy(obj, dtype=None):
     cupy = require_optional("cupy")
@@ -21,11 +23,12 @@ def to_cupy(obj, dtype=None):
         # or other system-level errors during initialization.
         msg = str(e)
         if "cudaErrorInsufficientDriver" in msg or "CUDA driver version" in msg:
-             raise RuntimeError(
-                 "CuPy is installed but CUDA driver is insufficient or not found. "
-                 "GPU acceleration is not available in this environment."
-             ) from e
+            raise RuntimeError(
+                "CuPy is installed but CUDA driver is insufficient or not found. "
+                "GPU acceleration is not available in this environment."
+            ) from e
         raise e
+
 
 def from_cupy(cls, array, t0, dt, unit=None):
     cupy = require_optional("cupy")

@@ -1,16 +1,14 @@
-
 from abc import ABC, abstractmethod
-from typing import Tuple, Dict, Union
 
 from .axis import AxisDescriptor
 
 __all__ = ["AxisApiMixin"]
 
-class AxisApiMixin(ABC):
 
+class AxisApiMixin(ABC):
     @property
     @abstractmethod
-    def axes(self) -> Tuple[AxisDescriptor, ...]:
+    def axes(self) -> tuple[AxisDescriptor, ...]:
         """Tuple of AxisDescriptor objects for each dimension.
 
         Returns
@@ -21,7 +19,7 @@ class AxisApiMixin(ABC):
         pass
 
     @property
-    def axis_names(self) -> Tuple[str, ...]:
+    def axis_names(self) -> tuple[str, ...]:
         """Names of all axes as a tuple of strings.
 
         Returns
@@ -31,7 +29,7 @@ class AxisApiMixin(ABC):
         """
         return tuple(ax.name for ax in self.axes)
 
-    def axis(self, key: Union[int, str]) -> AxisDescriptor:
+    def axis(self, key: int | str) -> AxisDescriptor:
         """Get an axis descriptor by index or name.
 
         Parameters
@@ -61,12 +59,12 @@ class AxisApiMixin(ABC):
         else:
             raise TypeError(f"Axis key must be int or str, got {type(key)}")
 
-    def _get_axis_index(self, key: Union[int, str]) -> int:
+    def _get_axis_index(self, key: int | str) -> int:
         if isinstance(key, int):
             if key < 0:
                 key += len(self.axes)
             if not 0 <= key < len(self.axes):
-                 raise IndexError(f"Axis index {key} out of range")
+                raise IndexError(f"Axis index {key} out of range")
             return key
         elif isinstance(key, str):
             names = self.axis_names
@@ -76,7 +74,7 @@ class AxisApiMixin(ABC):
         else:
             raise TypeError(f"Axis key must be int or str, got {type(key)}")
 
-    def rename_axes(self, mapping: Dict[str, str], *, inplace=False):
+    def rename_axes(self, mapping: dict[str, str], *, inplace=False):
         """Rename axes using a mapping of old names to new names.
 
         Parameters
@@ -214,9 +212,9 @@ class AxisApiMixin(ABC):
     def _swapaxes_int(self, a: int, b: int):
         pass
 
-    def _transpose_int(self, axes: Tuple[int, ...]):
+    def _transpose_int(self, axes: tuple[int, ...]):
         """Default transpose implementation using mixin hooks if subclass handles simple swaps?
-           Or delegate to super().transpose then fix metadata.
+        Or delegate to super().transpose then fix metadata.
         """
         # Since we are mixin, we expect 'super()' to be the numpy array usually.
         # But calling super().transpose() might call generic object implementation?
@@ -235,8 +233,8 @@ class AxisApiMixin(ABC):
         # i.e. new_obj axis i comes from self axis axes[i].
 
         if hasattr(new_obj, "_set_axis_name"):
-             for i, origin_idx in enumerate(axes):
-                 origin_name = old_axes_info[origin_idx][1]
-                 new_obj._set_axis_name(i, origin_name)
+            for i, origin_idx in enumerate(axes):
+                origin_name = old_axes_info[origin_idx][1]
+                new_obj._set_axis_name(i, origin_name)
 
         return new_obj

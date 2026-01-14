@@ -1,5 +1,5 @@
-
 from ._optional import require_optional
+
 
 def to_dask(ts, chunks="auto"):
     """
@@ -7,6 +7,7 @@ def to_dask(ts, chunks="auto"):
     """
     da = require_optional("dask.array")
     return da.from_array(ts.value, chunks=chunks)
+
 
 def from_dask(cls, array, t0, dt, unit=None, compute=True):
     """

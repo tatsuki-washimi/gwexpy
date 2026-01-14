@@ -4,7 +4,6 @@ import numpy as np
 from astropy import units as u
 
 
-
 class SeriesMatrixAnalysisMixin:
     """Mixin for SeriesMatrix spectral analysis, cropping, and interpolation."""
 
@@ -38,8 +37,16 @@ class SeriesMatrixAnalysisMixin:
         start_val = _as_base(start)
         end_val = _as_base(end)
 
-        idx0 = np.searchsorted(xvalues, start_val, side="left") if start_val is not None else 0
-        idx1 = np.searchsorted(xvalues, end_val, side="left") if end_val is not None else len(xvalues)
+        idx0 = (
+            np.searchsorted(xvalues, start_val, side="left")
+            if start_val is not None
+            else 0
+        )
+        idx1 = (
+            np.searchsorted(xvalues, end_val, side="left")
+            if end_val is not None
+            else len(xvalues)
+        )
 
         sl = slice(idx0, idx1)
         new_data = self.value[self._get_axis_slice(self._x_axis_norm, sl)]
@@ -86,12 +93,16 @@ class SeriesMatrixAnalysisMixin:
         def _concat_ignore(a, b):
             new_data = np.concatenate([a.value, b.value], axis=axis)
             if base_unit is None:
-                new_xindex = np.concatenate([np.asarray(a.xindex), np.asarray(b.xindex)])
+                new_xindex = np.concatenate(
+                    [np.asarray(a.xindex), np.asarray(b.xindex)]
+                )
             else:
                 ax = u.Quantity(a.xindex).to_value(base_unit)
                 bx = u.Quantity(b.xindex).to_value(base_unit)
                 new_xindex = np.concatenate([ax, bx]) * base_unit
-            return self.__class__(**self._get_meta_for_constructor(new_data, new_xindex))
+            return self.__class__(
+                **self._get_meta_for_constructor(new_data, new_xindex)
+            )
 
         cont = target.is_contiguous(other)
         if cont != 1:
@@ -111,7 +122,9 @@ class SeriesMatrixAnalysisMixin:
                     raise ValueError("Cannot append that starts before this one")
 
                 gap_base = np.inf if gap == "pad" else _to_base(gap)
-                out_full = target.append_exact(other, inplace=False, pad=pad, gap=gap_base)
+                out_full = target.append_exact(
+                    other, inplace=False, pad=pad, gap=gap_base
+                )
             elif gap == "ignore":
                 out_full = _concat_ignore(target, other)
             else:
@@ -128,7 +141,9 @@ class SeriesMatrixAnalysisMixin:
             sl = slice(-orig_len, None)
             new_data = out_full.value[out_full._get_axis_slice(axis, sl)]
             new_xindex = out_full.xindex[sl]
-            out_full = self.__class__(**self._get_meta_for_constructor(new_data, new_xindex))
+            out_full = self.__class__(
+                **self._get_meta_for_constructor(new_data, new_xindex)
+            )
 
         if inplace:
             if out_full.shape == target.shape:
@@ -157,7 +172,9 @@ class SeriesMatrixAnalysisMixin:
         o_shape.pop(axis)
 
         if s_shape != o_shape:
-             raise ValueError(f"Matrix shapes mismatch (excluding append axis): {self.shape} vs {other.shape}")
+            raise ValueError(
+                f"Matrix shapes mismatch (excluding append axis): {self.shape} vs {other.shape}"
+            )
 
         base_unit = getattr(self.xindex, "unit", getattr(other.xindex, "unit", None))
 
@@ -176,11 +193,15 @@ class SeriesMatrixAnalysisMixin:
 
         if abs(diff) > tol:
             if gap is None:
-                raise ValueError(f"Matrices are not contiguous (gap={diff}) and gap handling is not specified")
+                raise ValueError(
+                    f"Matrices are not contiguous (gap={diff}) and gap handling is not specified"
+                )
             if isinstance(gap, (int, float, np.number, u.Quantity)):
                 gap_val = _to_base(gap)
                 if abs(diff) > gap_val:
-                    raise ValueError(f"Matrices are not contiguous (gap={diff}) and gap exceeds tolerance {gap_val}")
+                    raise ValueError(
+                        f"Matrices are not contiguous (gap={diff}) and gap exceeds tolerance {gap_val}"
+                    )
 
             if pad is None:
                 raise ValueError("Gap detected but pad value not provided")
@@ -200,12 +221,16 @@ class SeriesMatrixAnalysisMixin:
                 pad_x = pad_x * base_unit
 
             new_data = np.concatenate([self.value, pad_data, other.value], axis=axis)
-            new_xindex = np.concatenate([np.asarray(self.xindex), np.asarray(pad_x), np.asarray(other.xindex)])
+            new_xindex = np.concatenate(
+                [np.asarray(self.xindex), np.asarray(pad_x), np.asarray(other.xindex)]
+            )
             if base_unit:
                 new_xindex = new_xindex * base_unit
         else:
             new_data = np.concatenate([self.value, other.value], axis=axis)
-            new_xindex = np.concatenate([np.asarray(self.xindex), np.asarray(other.xindex)])
+            new_xindex = np.concatenate(
+                [np.asarray(self.xindex), np.asarray(other.xindex)]
+            )
             if base_unit:
                 new_xindex = new_xindex * base_unit
 
@@ -214,7 +239,7 @@ class SeriesMatrixAnalysisMixin:
         if inplace:
             # Resizing inplace ndarray is tricky/impossible if size changes.
             # But SeriesMatrix logic tried to do self._value[:] = ...
-            pass # We return res mostly.
+            pass  # We return res mostly.
 
         return res
 
@@ -240,14 +265,16 @@ class SeriesMatrixAnalysisMixin:
         new_data = np.diff(self.value, n=n, axis=target_axis)
 
         if target_axis == self._x_axis_norm:
-             new_xindex = self.xindex[n:]
+            new_xindex = self.xindex[n:]
         else:
-             new_xindex = self.xindex
+            new_xindex = self.xindex
 
         # Name update handled by caller usually or simple append
-        new_inst = self.__class__(**self._get_meta_for_constructor(new_data, new_xindex))
+        new_inst = self.__class__(
+            **self._get_meta_for_constructor(new_data, new_xindex)
+        )
         if self.name:
-             new_inst.name = f"diff({self.name}, n={n})"
+            new_inst.name = f"diff({self.name}, n={n})"
         return new_inst
 
     def value_at(self, x):
@@ -292,7 +319,9 @@ class SeriesMatrixAnalysisMixin:
         total_len = new_data.shape[axis]
         from .seriesmatrix_validation import build_index_if_needed
 
-        new_xindex = build_index_if_needed(None, dx=dx, x0=new_x0, xunit=self.xunit, length=total_len)
+        new_xindex = build_index_if_needed(
+            None, dx=dx, x0=new_x0, xunit=self.xunit, length=total_len
+        )
 
         return self.__class__(**self._get_meta_for_constructor(new_data, new_xindex))
 

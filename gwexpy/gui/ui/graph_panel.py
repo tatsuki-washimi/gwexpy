@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
-import pyqtgraph as pg
 import numpy as np
+import pyqtgraph as pg
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 def _small_spin_int(min_val=-1000000000, max_val=1000000000, width=None):
@@ -263,7 +263,7 @@ class GraphPanel(QtWidgets.QFrame):
             cb.setEditable(True)
             cb.addItems(channel_names)
             gl.addWidget(cb, 1, 1)
-            
+
             gl.addWidget(QtWidgets.QLabel("Gain:"), 2, 0)
             sb_gain = _small_spin_dbl(decimals=3, width=80, step=0.1)
             sb_gain.setValue(1.0)

@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.signal  # noqa: F401 - availability check
+
 from .params import GeneratorParams
 
 

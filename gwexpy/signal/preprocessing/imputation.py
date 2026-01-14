@@ -43,17 +43,17 @@ def _limit_mask(nans, limit, *, direction="forward"):
                 run_len = i - run_start
                 if run_len > limit:
                     if direction == "backward":
-                        mask[run_start:i - limit] = True
+                        mask[run_start : i - limit] = True
                     else:
-                        mask[run_start + limit:i] = True
+                        mask[run_start + limit : i] = True
                 run_start = None
     if run_start is not None:
         run_len = n - run_start
         if run_len > limit:
             if direction == "backward":
-                mask[run_start:n - limit] = True
+                mask[run_start : n - limit] = True
             else:
-                mask[run_start + limit:n] = True
+                mask[run_start + limit : n] = True
     return mask
 
 
@@ -95,8 +95,15 @@ def _bfill_numpy(val, limit=None):
     return out
 
 
-def impute(values, *, method="interpolate", limit=None, times=None,
-           max_gap=None, fill_value=np.nan):
+def impute(
+    values,
+    *,
+    method="interpolate",
+    limit=None,
+    times=None,
+    max_gap=None,
+    fill_value=np.nan,
+):
     """
     Impute missing values in an array.
 
@@ -140,7 +147,9 @@ def impute(values, *, method="interpolate", limit=None, times=None,
 
     valid = ~nans
     if max_gap is not None:
-        gap_threshold = float(max_gap.value) if hasattr(max_gap, "value") else float(max_gap)
+        gap_threshold = (
+            float(max_gap.value) if hasattr(max_gap, "value") else float(max_gap)
+        )
     else:
         gap_threshold = None
     has_gap_constraint = gap_threshold is not None
@@ -152,14 +161,17 @@ def impute(values, *, method="interpolate", limit=None, times=None,
         if not np.any(valid):
             pass
         elif np.iscomplexobj(val):
-            real_part = np.interp(x[nans], x[valid], val[valid].real,
-                                  left=left_val, right=right_val)
-            imag_part = np.interp(x[nans], x[valid], val[valid].imag,
-                                  left=left_val, right=right_val)
+            real_part = np.interp(
+                x[nans], x[valid], val[valid].real, left=left_val, right=right_val
+            )
+            imag_part = np.interp(
+                x[nans], x[valid], val[valid].imag, left=left_val, right=right_val
+            )
             val[nans] = real_part + 1j * imag_part
         else:
-            val[nans] = np.interp(x[nans], x[valid], val[valid],
-                                  left=left_val, right=right_val)
+            val[nans] = np.interp(
+                x[nans], x[valid], val[valid], left=left_val, right=right_val
+            )
 
     elif method == "ffill":
         try:
@@ -190,7 +202,7 @@ def impute(values, *, method="interpolate", limit=None, times=None,
 
     # Apply max_gap constraint
     valid_indices = np.where(~nans)[0]
-    if has_gap_constraint and len(valid_indices) > 1:
+    if has_gap_constraint and gap_threshold is not None and len(valid_indices) > 1:
         valid_times = x[valid_indices]
         diffs = np.diff(valid_times)
         big_gaps = np.where(diffs > gap_threshold - 1e-12)[0]
@@ -206,7 +218,7 @@ def impute(values, *, method="interpolate", limit=None, times=None,
         if first_valid > 0:
             val[:first_valid] = np.nan
         if last_valid < len(val) - 1:
-            val[last_valid + 1:] = np.nan
+            val[last_valid + 1 :] = np.nan
 
     if limit is not None and method not in ("ffill", "bfill"):
         limit_mask = _limit_mask(nans, limit, direction="forward")
@@ -225,7 +237,9 @@ def impute(values, *, method="interpolate", limit=None, times=None,
             else:
                 left_edge = valid_indices[0]
                 right_edge = valid_indices[-1]
-                edge_mask = (np.arange(len(val)) < left_edge) | (np.arange(len(val)) > right_edge)
+                edge_mask = (np.arange(len(val)) < left_edge) | (
+                    np.arange(len(val)) > right_edge
+                )
                 val[edge_mask & np.isnan(val)] = fill_value
         elif method in ("ffill", "bfill"):
             val[np.isnan(val)] = fill_value

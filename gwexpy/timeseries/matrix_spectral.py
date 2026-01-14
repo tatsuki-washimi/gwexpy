@@ -6,6 +6,7 @@ import numpy as np
 from astropy import units as u
 
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
+
 from .utils import _extract_axis_info, _validate_common_axis
 
 
@@ -49,6 +50,7 @@ class TimeSeriesMatrixSpectralMixin:
         Vectorized implementation of PSD (Welch).
         """
         from scipy.signal import welch
+
         from gwexpy.frequencyseries import FrequencySeriesMatrix
 
         self._check_regular("Vectorized PSD")
@@ -61,12 +63,7 @@ class TimeSeriesMatrixSpectralMixin:
         noverlap = kwargs.pop("overlap", kwargs.pop("noverlap", None))
 
         freqs, psd_data = welch(
-            data,
-            fs=fs,
-            nperseg=nperseg,
-            noverlap=noverlap,
-            axis=-1,
-            **kwargs
+            data, fs=fs, nperseg=nperseg, noverlap=noverlap, axis=-1, **kwargs
         )
 
         return FrequencySeriesMatrix(
@@ -97,6 +94,7 @@ class TimeSeriesMatrixSpectralMixin:
         Vectorized implementation of CSD.
         """
         from scipy.signal import csd
+
         from gwexpy.frequencyseries import FrequencySeriesMatrix
 
         self._check_regular("Vectorized CSD")
@@ -115,7 +113,7 @@ class TimeSeriesMatrixSpectralMixin:
             nperseg=nperseg,
             noverlap=noverlap,
             axis=-1,
-            **kwargs
+            **kwargs,
         )
 
         return FrequencySeriesMatrix(
@@ -133,6 +131,7 @@ class TimeSeriesMatrixSpectralMixin:
         Vectorized implementation of Coherence.
         """
         from scipy.signal import coherence
+
         from gwexpy.frequencyseries import FrequencySeriesMatrix
 
         self._check_regular("Vectorized Coherence")
@@ -151,7 +150,7 @@ class TimeSeriesMatrixSpectralMixin:
             nperseg=nperseg,
             noverlap=noverlap,
             axis=-1,
-            **kwargs
+            **kwargs,
         )
 
         return FrequencySeriesMatrix(
@@ -202,19 +201,37 @@ class TimeSeriesMatrixSpectralMixin:
                 if expect_tuple:
                     r1, r2 = res
                     vals1[i][j] = np.asarray(r1.value)
-                    meta1[i, j] = MetaData(unit=str(r1.unit), name=r1.name, channel=r1.channel)
-                    dtype1 = np.result_type(dtype1, r1.value.dtype) if dtype1 else r1.value.dtype
+                    meta1[i, j] = MetaData(
+                        unit=str(r1.unit), name=r1.name, channel=r1.channel
+                    )
+                    dtype1 = (
+                        np.result_type(dtype1, r1.value.dtype)
+                        if dtype1
+                        else r1.value.dtype
+                    )
 
                     vals2[i][j] = np.asarray(r2.value)
-                    meta2[i, j] = MetaData(unit=str(r2.unit), name=r2.name, channel=r2.channel)
-                    dtype2 = np.result_type(dtype2, r2.value.dtype) if dtype2 else r2.value.dtype
+                    meta2[i, j] = MetaData(
+                        unit=str(r2.unit), name=r2.name, channel=r2.channel
+                    )
+                    dtype2 = (
+                        np.result_type(dtype2, r2.value.dtype)
+                        if dtype2
+                        else r2.value.dtype
+                    )
 
                     ax_infos.append(_extract_axis_info(r1))
                 else:
                     # Single return
                     vals1[i][j] = np.asarray(res.value)
-                    meta1[i, j] = MetaData(unit=str(res.unit), name=res.name, channel=res.channel)
-                    dtype1 = np.result_type(dtype1, res.value.dtype) if dtype1 else res.value.dtype
+                    meta1[i, j] = MetaData(
+                        unit=str(res.unit), name=res.name, channel=res.channel
+                    )
+                    dtype1 = (
+                        np.result_type(dtype1, res.value.dtype)
+                        if dtype1
+                        else res.value.dtype
+                    )
                     ax_infos.append(_extract_axis_info(res))
 
         # Validate common axis

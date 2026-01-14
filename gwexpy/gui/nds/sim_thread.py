@@ -1,9 +1,11 @@
-import time
-import numpy as np
 import logging
+import time
+
+import numpy as np
 from qtpy import QtCore
 
 logger = logging.getLogger(__name__)
+
 
 class SimulationThread(QtCore.QThread):
     dataReceived = QtCore.Signal(object, object, bool)
@@ -26,10 +28,15 @@ class SimulationThread(QtCore.QThread):
         while not self._stop:
             start_t = time.time()
             payload = {}
-            
-            t = np.linspace(self.t_offset, self.t_offset + self.chunk_sec, self.chunk_samples, endpoint=False)
+
+            t = np.linspace(
+                self.t_offset,
+                self.t_offset + self.chunk_sec,
+                self.chunk_samples,
+                endpoint=False,
+            )
             dt = 1.0 / self.fs
-            
+
             for ch in self.channels:
                 if "white_noise" in ch:
                     data = np.random.normal(0, 1.0, self.chunk_samples)
@@ -37,17 +44,15 @@ class SimulationThread(QtCore.QThread):
                     data = np.sin(2 * np.pi * 10.0 * t)
                 else:
                     data = np.random.normal(0, 0.1, self.chunk_samples)
-                
-                payload[ch] = {
-                    "data": data,
-                    "gps_start": self.t_offset,
-                    "step": dt
-                }
-            
-            logger.info(f"SimulationThread emitting payload with {len(payload)} channels")
+
+                payload[ch] = {"data": data, "gps_start": self.t_offset, "step": dt}
+
+            logger.info(
+                f"SimulationThread emitting payload with {len(payload)} channels"
+            )
             self.dataReceived.emit(payload, False, True)
             self.t_offset += self.chunk_sec
-            
+
             elapsed = time.time() - start_t
             sleep_time = max(0.01, self.chunk_sec - elapsed)
             time.sleep(sleep_time)

@@ -1,8 +1,8 @@
+"""Interoperability with pyspeckit."""
 
-"""Interoperability with pyspeckit.
-"""
 from ._optional import require_optional
 from .base import to_plain_array
+
 
 def to_pyspeckit(data, **kwargs):
     """
@@ -34,6 +34,7 @@ def to_pyspeckit(data, **kwargs):
         raise ValueError("Input data must have frequencies attribute.")
 
     return pyspeckit.Spectrum(data=d, xarr=xarr, **kwargs)
+
 
 def from_pyspeckit(cls, spectrum, **kwargs):
     """

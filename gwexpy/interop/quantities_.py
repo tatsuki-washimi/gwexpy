@@ -1,5 +1,5 @@
-
 from ._optional import require_optional
+
 
 def to_quantity(series, units=None):
     """
@@ -30,6 +30,7 @@ def to_quantity(series, units=None):
     # Ensure val is not an astropy Quantity (which behaves like array but carries unit)
     # If it was astropy Quantity, .value returns ndarray. But just in case.
     import numpy as np
+
     val = np.asarray(val)
 
     # Get unit
@@ -55,20 +56,21 @@ def to_quantity(series, units=None):
         # Try to map common ones or default appropriately?
         # For now, let it fail or default to dimensionless if simple
         if u_str == "dimensionless":
-             q = val * pq.dimensionless
+            q = val * pq.dimensionless
         else:
-             # Try replacing known issues e.g. "count" -> "dimensionless" in some contexts?
-             # But generally we expect standard physical units.
-             raise ValueError(f"Could not convert unit '{u_str}' to quantities.Quantity")
+            # Try replacing known issues e.g. "count" -> "dimensionless" in some contexts?
+            # But generally we expect standard physical units.
+            raise ValueError(f"Could not convert unit '{u_str}' to quantities.Quantity")
 
     if units is not None:
         if isinstance(units, str):
             q.units = units
         else:
-             # assume it is a quantities unit object
-             q = q.rescale(units)
+            # assume it is a quantities unit object
+            q = q.rescale(units)
 
     return q
+
 
 def from_quantity(cls, q, **kwargs):
     """

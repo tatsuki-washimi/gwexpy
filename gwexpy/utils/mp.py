@@ -9,4 +9,3 @@ __all__ = [
     "Queue",
     "multiprocess_with_queues",
 ]
-

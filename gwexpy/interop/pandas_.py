@@ -1,9 +1,11 @@
 import datetime
 
+import numpy as np
+from gwpy.time import LIGOTimeGPS
+
 from ._optional import require_optional
 from ._time import datetime_utc_to_gps
-from gwpy.time import LIGOTimeGPS
-import numpy as np
+
 
 def to_pandas_series(ts, index="datetime", name=None, copy=False):
     """
@@ -22,6 +24,7 @@ def to_pandas_series(ts, index="datetime", name=None, copy=False):
     """
     pd = require_optional("pandas")
     from .base import to_plain_array
+
     data = to_plain_array(ts, copy=copy)
 
     # Build index
@@ -43,12 +46,14 @@ def to_pandas_series(ts, index="datetime", name=None, copy=False):
         # Optimization: check span. If no leap second in span, linear shift.
         # For now, minimal impl -> vector offset.
         from astropy.time import Time
-        idx = pd.Index(Time(times_gps, format='gps').unix, name="time_unix")
+
+        idx = pd.Index(Time(times_gps, format="gps").unix, name="time_unix")
     elif index == "datetime":
         from astropy.time import Time
+
         # Time(..).to_datetime() returns array of datetimes (naive or aware?)
         # astropy usually returns naive. We need aware.
-        dts = Time(times_gps, format='gps').to_datetime()
+        dts = Time(times_gps, format="gps").to_datetime()
         # Localize to UTC
         idx = pd.DatetimeIndex(dts).tz_localize("UTC")
         idx.name = "time_utc"
@@ -57,13 +62,15 @@ def to_pandas_series(ts, index="datetime", name=None, copy=False):
 
     return pd.Series(data, index=idx, name=name or ts.name)
 
+
 def from_pandas_series(cls, series, *, unit=None, t0=None, dt=None):
     """
     Create TimeSeries from pandas.Series.
     """
     pd = require_optional("pandas")
     from .base import to_plain_array
-    values = to_plain_array(series) # Use to_plain_array on the series values
+
+    values = to_plain_array(series)  # Use to_plain_array on the series values
     index = series.index
 
     # Infer t0, dt if not provided
@@ -85,14 +92,14 @@ def from_pandas_series(cls, series, *, unit=None, t0=None, dt=None):
                     try:
                         inferred_dt = index.freq.delta.total_seconds()
                     except (AttributeError, ValueError):
-                         pass
+                        pass
 
                 if inferred_dt is None:
                     # Robust dt estimation using median of differences
                     # (Limit to first 1000 items for performance)
                     sample_size = min(len(index), 1000)
                     subset = index[:sample_size]
-                    
+
                     if isinstance(index, pd.DatetimeIndex):
                         # Convert to GPS float array for calculation
                         t_gps = []
@@ -103,30 +110,34 @@ def from_pandas_series(cls, series, *, unit=None, t0=None, dt=None):
                         diffs = np.diff(t_gps)
                     else:
                         diffs = np.diff(subset.to_numpy().astype(float))
-                    
+
                     inferred_dt = float(np.median(diffs))
-                    
+
                     # Warn if intervals are not uniform (std > 0.1% of median)
                     if len(diffs) > 1 and np.std(diffs) > (1e-3 * np.abs(inferred_dt)):
                         import warnings
+
                         warnings.warn(
                             "Non-uniform time intervals detected in pandas index. "
                             f"Using median interval (dt={inferred_dt}). "
                             "Consider providing dt explicitly if this is unexpected.",
-                            UserWarning
+                            UserWarning,
                         )
-        elif isinstance(index, (pd.Index, pd.RangeIndex)) and np.issubdtype(index.dtype, np.number):
+        elif isinstance(index, (pd.Index, pd.RangeIndex)) and np.issubdtype(
+            index.dtype, np.number
+        ):
             inferred_t0 = float(index[0])
             if len(index) > 1:
                 diffs = np.diff(index[:1000].to_numpy())
                 inferred_dt = float(np.median(diffs))
                 if len(diffs) > 1 and np.std(diffs) > (1e-3 * np.abs(inferred_dt)):
                     import warnings
+
                     warnings.warn(
                         "Non-uniform intervals detected in numeric index. "
                         f"Using median interval (dt={inferred_dt}). "
                         "Consider providing dt explicitly if this is unexpected.",
-                        UserWarning
+                        UserWarning,
                     )
 
     final_t0 = t0 if t0 is not None else (inferred_t0 if inferred_t0 is not None else 0)
@@ -137,6 +148,7 @@ def from_pandas_series(cls, series, *, unit=None, t0=None, dt=None):
         final_dt = float(final_dt)
 
     return cls(values, t0=final_t0, dt=final_dt, unit=unit, name=series.name)
+
 
 def to_pandas_dataframe(tsd, index="datetime", copy=False):
     """TimeSeriesDict -> DataFrame"""
@@ -166,6 +178,7 @@ def to_pandas_dataframe(tsd, index="datetime", copy=False):
     df = pd.concat(series_dict.values(), axis=1, keys=keys)
     return df
 
+
 def from_pandas_dataframe(cls, df, *, unit_map=None, t0=None, dt=None):
     """DataFrame -> TimeSeriesDict"""
     tsd = cls()
@@ -175,6 +188,6 @@ def from_pandas_dataframe(cls, df, *, unit_map=None, t0=None, dt=None):
         tsd[str(col)] = from_pandas_series(tsd.EntryClass, s, unit=unit, t0=t0, dt=dt)
     return tsd
 
+
 # Note: to_pandas_frequencyseries and from_pandas_frequencyseries
 # are defined in gwexpy.interop.frequency module to avoid duplication.
-

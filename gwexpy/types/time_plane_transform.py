@@ -1,10 +1,10 @@
-
 import numpy as np
 from astropy.units import dimensionless_unscaled
 
 from .array3d import Array3D
 
 __all__ = ["TimePlaneTransform", "LaplaceGram"]
+
 
 class TimePlaneTransform:
     """
@@ -48,7 +48,9 @@ class TimePlaneTransform:
                 unit = None
                 extra_meta = {}
             else:
-                 raise ValueError("Tuple data3d must be length 4 or 5: (value, time, ax1, ax2, [unit/meta])")
+                raise ValueError(
+                    "Tuple data3d must be length 4 or 5: (value, time, ax1, ax2, [unit/meta])"
+                )
 
             # Construct names from provided axes objects if possible, else defaults.
             # But the tuple typically provides coordinates (Quantity/array), not AxisDescriptor.
@@ -60,14 +62,16 @@ class TimePlaneTransform:
                 axis0=t_ax,
                 axis1=ax1,
                 axis2=ax2,
-                **extra_meta
+                **extra_meta,
             )
         else:
             raise TypeError("data3d must be an Array3D or a tuple.")
 
         # Validation
         if self._data.ndim != 3:
-            raise ValueError(f"TimePlaneTransform requires 3D data, got {self._data.ndim}D")
+            raise ValueError(
+                f"TimePlaneTransform requires 3D data, got {self._data.ndim}D"
+            )
 
     @property
     def kind(self):
@@ -141,7 +145,9 @@ class TimePlaneTransform:
             # User said: "axis0 name should be time by convention, but do not enforce... match against axes[i].name"
             # But "TimePlaneTransform is user-facing", so 'time' alias for axis 0 is reasonable if not conflicting?
             # User instruction: "if str: match against axes[i].name; else raise KeyError"
-            raise KeyError(f"No axis named '{key}' found. Axes are: {[ax.name for ax in self.axes]}")
+            raise KeyError(
+                f"No axis named '{key}' found. Axes are: {[ax.name for ax in self.axes]}"
+            )
 
         raise TypeError(f"Invalid axis key type: {type(key)}")
 
@@ -202,15 +208,15 @@ class TimePlaneTransform:
         times = time_ax.index
 
         # Ensure t is comparable (value check)
-        if hasattr(t, 'unit') and hasattr(times, 'unit') and times.unit is not None:
-             t_val = t.to(times.unit).value
-             times_val = times.value
-        elif hasattr(t, 'value'): # t is Quantity, times might be dimensionless
-             t_val = t.value
-             times_val = times.value if hasattr(times, 'value') else times
+        if hasattr(t, "unit") and hasattr(times, "unit") and times.unit is not None:
+            t_val = t.to(times.unit).value
+            times_val = times.value
+        elif hasattr(t, "value"):  # t is Quantity, times might be dimensionless
+            t_val = t.value
+            times_val = times.value if hasattr(times, "value") else times
         else:
-             t_val = t
-             times_val = times.value if hasattr(times, 'value') else times
+            t_val = t
+            times_val = times.value if hasattr(times, "value") else times
 
         if method == "nearest":
             # idx = time_ax.iloc_nearest(t)
@@ -221,7 +227,7 @@ class TimePlaneTransform:
 
         elif method == "linear":
             # Find insertion point
-            i = np.searchsorted(times_val, t_val, side='right')
+            i = np.searchsorted(times_val, t_val, side="right")
 
             # Clamp to boundaries
             if i <= 0:
@@ -238,7 +244,7 @@ class TimePlaneTransform:
             # Check for zero duration interval (duplicates)
             denom = t_next - t_prev
             if denom == 0:
-                 return self.plane(0, idx_prev)
+                return self.plane(0, idx_prev)
 
             alpha = (t_val - t_prev) / denom
 
@@ -263,11 +269,13 @@ class TimePlaneTransform:
                 axis1_name=p_prev.axis1.name,
                 axis2_name=p_prev.axis2.name,
                 yindex=p_prev.axis1.index,
-                xindex=p_prev.axis2.index
+                xindex=p_prev.axis2.index,
             )
 
         else:
-            raise NotImplementedError(f"Method '{method}' not implemented. Supported: 'nearest', 'linear'.")
+            raise NotImplementedError(
+                f"Method '{method}' not implemented. Supported: 'nearest', 'linear'."
+            )
 
         # 2. Slice (nearest case handled above)
         # return self.plane(0, idx)
@@ -281,36 +289,42 @@ class TimePlaneTransform:
         """
         # If sigma is an index (int)
         if hasattr(self, "axis1") and self.axis1.name == "sigma":
-             # We can try to match value if needed, but strict index for now?
-             # User requested `.at_sigma(sigma)` which implies value lookup potentially.
-             # Similar to at_time logic.
-             # Let's assume simplest implementation: nearest lookup or index.
+            # We can try to match value if needed, but strict index for now?
+            # User requested `.at_sigma(sigma)` which implies value lookup potentially.
+            # Similar to at_time logic.
+            # Let's assume simplest implementation: nearest lookup or index.
 
-             sigma_ax = self.axis1.index
-             if isinstance(sigma, int) and (not hasattr(sigma_ax, 'shape') or sigma < len(sigma_ax)):
-                 # It might be an index
-                 # But if sigma is 0.0 (float), it's a value.
-                 pass
+            sigma_ax = self.axis1.index
+            if isinstance(sigma, int) and (
+                not hasattr(sigma_ax, "shape") or sigma < len(sigma_ax)
+            ):
+                # It might be an index
+                # But if sigma is 0.0 (float), it's a value.
+                pass
 
-             # Implementation of value lookup
-             s_val = sigma
-             if hasattr(sigma, "value"):
-                  s_val = sigma.value
+            # Implementation of value lookup
+            s_val = sigma
+            if hasattr(sigma, "value"):
+                s_val = sigma.value
 
-             ax_val = sigma_ax
-             if hasattr(sigma_ax, "value"):
-                  ax_val = sigma_ax.value
+            ax_val = sigma_ax
+            if hasattr(sigma_ax, "value"):
+                ax_val = sigma_ax.value
 
-             if isinstance(s_val, (int, np.integer)) and (s_val >= 0 and s_val < len(ax_val)):
-                  # Ambiguous if values are integers. Assume value first?
-                  # But typically sigma is float.
-                  pass
+            if isinstance(s_val, (int, np.integer)) and (
+                s_val >= 0 and s_val < len(ax_val)
+            ):
+                # Ambiguous if values are integers. Assume value first?
+                # But typically sigma is float.
+                pass
 
-             # Nearest neighbor
-             idx = np.abs(ax_val - s_val).argmin()
-             return self.plane(1, idx)
+            # Nearest neighbor
+            idx = np.abs(ax_val - s_val).argmin()
+            return self.plane(1, idx)
         else:
-             raise ValueError("This transform does not appear to have 'sigma' as axis 1.")
+            raise ValueError(
+                "This transform does not appear to have 'sigma' as axis 1."
+            )
 
     def to_array3d(self):
         """Return the underlying Array3D object (advanced usage)."""
@@ -322,18 +336,19 @@ class LaplaceGram(TimePlaneTransform):
     3D container for Short-Time Laplace Transform data.
     Structure: (time, sigma, frequency).
     """
+
     def __init__(self, data3d, **kwargs):
         # Enforce axis names if Array3D is created here?
         # User passes constructed Array3D usually.
         # Just ensure base init works.
         super().__init__(data3d, **kwargs)
         if self.axis1.name != "sigma":
-             # Try to rename if generic
-             if self.axis1.name == "axis1":
-                  self._data._set_axis_name(1, "sigma")
+            # Try to rename if generic
+            if self.axis1.name == "axis1":
+                self._data._set_axis_name(1, "sigma")
         if self.axis2.name != "frequency":
-             if self.axis2.name == "axis2":
-                  self._data._set_axis_name(2, "frequency")
+            if self.axis2.name == "axis2":
+                self._data._set_axis_name(2, "frequency")
 
     @property
     def sigmas(self):
@@ -379,10 +394,8 @@ class LaplaceGram(TimePlaneTransform):
             axis_names=[self.axes[0].name, self.axis1.name, self.axis2.name],
             axis0=self.times,
             axis1=self.axis1.index,
-            axis2=self.axis2.index
+            axis2=self.axis2.index,
         )
 
         # Return wrapped in LaplaceGram
         return LaplaceGram(new_data, kind=self.kind, meta=self.meta.copy())
-
-

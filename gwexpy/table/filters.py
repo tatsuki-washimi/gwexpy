@@ -9,4 +9,3 @@ __all__ = [
     "not_in_segmentlist",
     "numpy",
 ]
-

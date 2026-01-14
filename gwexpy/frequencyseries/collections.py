@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from collections import OrderedDict
-from typing import Any, Iterable, Optional, TypeVar, Union
+from collections.abc import Iterable
+from typing import Any, TypeVar
 
 import numpy as np
 
@@ -43,26 +44,34 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
 
     def __setitem__(self, key: str, value: _FS) -> None:
         if not isinstance(value, self.EntryClass):
-            raise TypeError(f"Cannot set key '{key}' to type '{type(value).__name__}' in {type(self).__name__}")
+            raise TypeError(
+                f"Cannot set key '{key}' to type '{type(value).__name__}' in {type(self).__name__}"
+            )
         super().__setitem__(key, value)
 
-    def setdefault(self, key: str, default: Optional[_FS] = None) -> _FS:  # type: ignore[override]
+    def setdefault(self, key: str, default: _FS | None = None) -> _FS:  # type: ignore[override]
         if key in self:
             return self[key]
         if default is None:
-            raise TypeError(f"Cannot set default None for {type(self).__name__}; expected {self.EntryClass.__name__}")
+            raise TypeError(
+                f"Cannot set default None for {type(self).__name__}; expected {self.EntryClass.__name__}"
+            )
         if not isinstance(default, self.EntryClass):
-            raise TypeError(f"Cannot set default type '{type(default).__name__}' in {type(self).__name__}")
+            raise TypeError(
+                f"Cannot set default type '{type(default).__name__}' in {type(self).__name__}"
+            )
         self[key] = default
         return default
 
-    def copy(self) -> "FrequencySeriesBaseDict[_FS]":
+    def copy(self) -> FrequencySeriesBaseDict[_FS]:
         new = self.__class__()
         for key, val in self.items():
             new[key] = val.copy()
         return new
 
-    def crop(self, start: Any = None, end: Any = None, copy: bool = False) -> "FrequencySeriesBaseDict[_FS]":
+    def crop(
+        self, start: Any = None, end: Any = None, copy: bool = False
+    ) -> FrequencySeriesBaseDict[_FS]:
         for key, val in list(self.items()):
             self[key] = val.crop(start=start, end=end, copy=copy)
         return self
@@ -71,7 +80,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
         self,
         label: str = "key",
         method: str = "plot",
-        figsize: Optional[Any] = None,
+        figsize: Any | None = None,
         **kwargs: Any,
     ):
         """
@@ -117,7 +126,11 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
             plot = Plot(self, **kwargs)
 
         artmap = {"plot": "lines", "scatter": "collections"}
-        artists = [artist for ax in plot.axes for artist in getattr(ax, artmap.get(method, "lines"))]
+        artists = [
+            artist
+            for ax in plot.axes
+            for artist in getattr(ax, artmap.get(method, "lines"))
+        ]
 
         label_key = label.lower()
         for key, artist in zip(self, artists):
@@ -157,7 +170,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
     # 1. Axis & Edit Operations
     # ===============================
 
-    def crop(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def crop(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Crop each FrequencySeries in the dict.
         In-place operation (GWpy-compatible). Returns self.
@@ -165,7 +178,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
         super().crop(*args, **kwargs)
         return self
 
-    def pad(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def pad(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Pad each FrequencySeries in the dict.
         Returns a new FrequencySeriesDict.
@@ -175,7 +188,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             new_dict[key] = fs.pad(*args, **kwargs)
         return new_dict
 
-    def interpolate(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def interpolate(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Interpolate each FrequencySeries in the dict.
         Returns a new FrequencySeriesDict.
@@ -187,7 +200,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
 
     # --- In-place Element Operations ---
 
-    def append(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def append(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Append to each FrequencySeries in the dict (in-place).
         Returns self.
@@ -196,7 +209,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             fs.append(*args, **kwargs)
         return self
 
-    def prepend(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def prepend(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Prepend to each FrequencySeries in the dict (in-place).
         Returns self.
@@ -209,7 +222,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
     # 2. Filter & Response
     # ===============================
 
-    def zpk(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def zpk(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Apply ZPK filter to each FrequencySeries.
         Returns a new FrequencySeriesDict.
@@ -219,7 +232,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             new_dict[key] = fs.zpk(*args, **kwargs)
         return new_dict
 
-    def filter(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def filter(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Apply filter to each FrequencySeries.
         Returns a new FrequencySeriesDict.
@@ -229,7 +242,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             new_dict[key] = fs.filter(*args, **kwargs)
         return new_dict
 
-    def apply_response(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def apply_response(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Apply response to each FrequencySeries.
         Returns a new FrequencySeriesDict.
@@ -243,7 +256,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
     # 3. Analysis & Conversion
     # ===============================
 
-    def phase(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def phase(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Compute phase of each FrequencySeries.
         Returns a new FrequencySeriesDict.
@@ -253,11 +266,11 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             new_dict[key] = fs.phase(*args, **kwargs)
         return new_dict
 
-    def angle(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def angle(self, *args, **kwargs) -> FrequencySeriesDict:
         """Alias for phase(). Returns a new FrequencySeriesDict."""
         return self.phase(*args, **kwargs)
 
-    def degree(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def degree(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Compute phase (in degrees) of each FrequencySeries.
         Returns a new FrequencySeriesDict.
@@ -267,7 +280,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             new_dict[key] = fs.degree(*args, **kwargs)
         return new_dict
 
-    def to_db(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def to_db(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Convert each FrequencySeries to dB.
         Returns a new FrequencySeriesDict.
@@ -277,7 +290,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             new_dict[key] = fs.to_db(*args, **kwargs)
         return new_dict
 
-    def differentiate_time(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def differentiate_time(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Apply time differentiation to each item.
         Returns a new FrequencySeriesDict.
@@ -287,7 +300,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             new_dict[key] = fs.differentiate_time(*args, **kwargs)
         return new_dict
 
-    def integrate_time(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def integrate_time(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Apply time integration to each item.
         Returns a new FrequencySeriesDict.
@@ -297,7 +310,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             new_dict[key] = fs.integrate_time(*args, **kwargs)
         return new_dict
 
-    def group_delay(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def group_delay(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Compute group delay of each item.
         Returns a new FrequencySeriesDict.
@@ -307,7 +320,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             new_dict[key] = fs.group_delay(*args, **kwargs)
         return new_dict
 
-    def smooth(self, *args, **kwargs) -> "FrequencySeriesDict":
+    def smooth(self, *args, **kwargs) -> FrequencySeriesDict:
         """
         Smooth each FrequencySeries.
         Returns a new FrequencySeriesDict.
@@ -447,7 +460,7 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             epoch=first.epoch.gps if hasattr(first.epoch, "gps") else first.epoch,
         )
 
-    def to_tmultigraph(self, name: Optional[str] = None) -> Any:
+    def to_tmultigraph(self, name: str | None = None) -> Any:
         """Convert to ROOT TMultiGraph."""
         from gwexpy.interop import to_tmultigraph
 
@@ -470,7 +483,7 @@ class FrequencySeriesBaseList(list[_FS]):
 
     EntryClass = FrequencySeries
 
-    def __init__(self, *items: Union[_FS, Iterable[_FS]]):
+    def __init__(self, *items: _FS | Iterable[_FS]):
         super().__init__()
         if len(items) == 1 and isinstance(items[0], (list, tuple)):
             for item in items[0]:
@@ -488,7 +501,9 @@ class FrequencySeriesBaseList(list[_FS]):
 
     def _validate(self, item: Any, *, op: str) -> None:
         if not isinstance(item, self.EntryClass):
-            raise TypeError(f"Cannot {op} type '{type(item).__name__}' to {type(self).__name__}")
+            raise TypeError(
+                f"Cannot {op} type '{type(item).__name__}' to {type(self).__name__}"
+            )
 
     def append(self, item: _FS):  # type: ignore[override]
         self._validate(item, op="append")
@@ -516,7 +531,7 @@ class FrequencySeriesBaseList(list[_FS]):
             return self.__class__(*super().__getitem__(index))
         return super().__getitem__(index)
 
-    def copy(self) -> "FrequencySeriesBaseList[_FS]":
+    def copy(self) -> FrequencySeriesBaseList[_FS]:
         return self.__class__(*(item.copy() for item in self))
 
     def plot(self, **kwargs: Any):
@@ -550,7 +565,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
     # 1. Axis & Edit Operations
     # ===============================
 
-    def crop(self, *args, **kwargs) -> "FrequencySeriesList":
+    def crop(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Crop each FrequencySeries in the list.
         Returns a new FrequencySeriesList.
@@ -560,7 +575,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
             list.append(new_list, fs.crop(*args, **kwargs))
         return new_list
 
-    def pad(self, *args, **kwargs) -> "FrequencySeriesList":
+    def pad(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Pad each FrequencySeries in the list.
         Returns a new FrequencySeriesList.
@@ -570,7 +585,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
             list.append(new_list, fs.pad(*args, **kwargs))
         return new_list
 
-    def interpolate(self, *args, **kwargs) -> "FrequencySeriesList":
+    def interpolate(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Interpolate each FrequencySeries in the list.
         Returns a new FrequencySeriesList.
@@ -584,7 +599,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
     # 2. Filter & Response
     # ===============================
 
-    def zpk(self, *args, **kwargs) -> "FrequencySeriesList":
+    def zpk(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Apply ZPK filter to each FrequencySeries in the list.
         Returns a new FrequencySeriesList.
@@ -594,7 +609,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
             list.append(new_list, fs.zpk(*args, **kwargs))
         return new_list
 
-    def filter(self, *args, **kwargs) -> "FrequencySeriesList":
+    def filter(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Apply filter to each FrequencySeries in the list.
         Returns a new FrequencySeriesList.
@@ -604,7 +619,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
             list.append(new_list, fs.filter(*args, **kwargs))
         return new_list
 
-    def apply_response(self, *args, **kwargs) -> "FrequencySeriesList":
+    def apply_response(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Apply response to each FrequencySeries in the list.
         Returns a new FrequencySeriesList.
@@ -618,7 +633,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
     # 3. Analysis & Conversion
     # ===============================
 
-    def phase(self, *args, **kwargs) -> "FrequencySeriesList":
+    def phase(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Compute phase of each FrequencySeries.
         Returns a new FrequencySeriesList.
@@ -628,11 +643,11 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
             list.append(new_list, fs.phase(*args, **kwargs))
         return new_list
 
-    def angle(self, *args, **kwargs) -> "FrequencySeriesList":
+    def angle(self, *args, **kwargs) -> FrequencySeriesList:
         """Alias for phase(). Returns a new FrequencySeriesList."""
         return self.phase(*args, **kwargs)
 
-    def degree(self, *args, **kwargs) -> "FrequencySeriesList":
+    def degree(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Compute phase (in degrees) of each FrequencySeries.
         Returns a new FrequencySeriesList.
@@ -642,7 +657,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
             list.append(new_list, fs.degree(*args, **kwargs))
         return new_list
 
-    def to_db(self, *args, **kwargs) -> "FrequencySeriesList":
+    def to_db(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Convert each FrequencySeries to dB.
         Returns a new FrequencySeriesList.
@@ -652,7 +667,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
             list.append(new_list, fs.to_db(*args, **kwargs))
         return new_list
 
-    def differentiate_time(self, *args, **kwargs) -> "FrequencySeriesList":
+    def differentiate_time(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Apply time differentiation to each item.
         Returns a new FrequencySeriesList.
@@ -662,7 +677,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
             list.append(new_list, fs.differentiate_time(*args, **kwargs))
         return new_list
 
-    def integrate_time(self, *args, **kwargs) -> "FrequencySeriesList":
+    def integrate_time(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Apply time integration to each item.
         Returns a new FrequencySeriesList.
@@ -672,7 +687,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
             list.append(new_list, fs.integrate_time(*args, **kwargs))
         return new_list
 
-    def group_delay(self, *args, **kwargs) -> "FrequencySeriesList":
+    def group_delay(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Compute group delay of each item.
         Returns a new FrequencySeriesList.
@@ -682,7 +697,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
             list.append(new_list, fs.group_delay(*args, **kwargs))
         return new_list
 
-    def smooth(self, *args, **kwargs) -> "FrequencySeriesList":
+    def smooth(self, *args, **kwargs) -> FrequencySeriesList:
         """
         Smooth each FrequencySeries.
         Returns a new FrequencySeriesList.
@@ -793,7 +808,7 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
         # Concat
         return xr.concat(das, dim=xr.DataArray(names, dims="channel", name="channel"))
 
-    def to_tmultigraph(self, name: Optional[str] = None) -> Any:
+    def to_tmultigraph(self, name: str | None = None) -> Any:
         """Convert to ROOT TMultiGraph."""
         from gwexpy.interop import to_tmultigraph
 

@@ -5,7 +5,6 @@ Readers/Writers for ObsPy-supported seismic formats (miniSEED, SAC, GSE2, KNET).
 from __future__ import annotations
 
 import numpy as np
-
 from gwpy.io import registry as io_registry
 
 from gwexpy.io.utils import (
@@ -15,6 +14,7 @@ from gwexpy.io.utils import (
     parse_timezone,
     set_provenance,
 )
+
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
@@ -95,15 +95,30 @@ def _build_dict(stream, *, channels, unit, timezone, epoch):
 
     tsd = TimeSeriesDict()
     for tr in traces:
-        ts = _trace_to_timeseries(tr, unit=unit, timezone=timezone, epoch_override=epoch)
+        ts = _trace_to_timeseries(
+            tr, unit=unit, timezone=timezone, epoch_override=epoch
+        )
         # Handle duplicate channels if necessary, currently overwrites
         tsd[ts.channel] = ts
     return tsd
 
 
-def _read_timeseriesdict(format_name, source, *, channels=None, unit=None, epoch=None, timezone=None, pad=np.nan, gap="pad", **kwargs):
+def _read_timeseriesdict(
+    format_name,
+    source,
+    *,
+    channels=None,
+    unit=None,
+    epoch=None,
+    timezone=None,
+    pad=np.nan,
+    gap="pad",
+    **kwargs,
+):
     stream = _read_obspy_stream(format_name, source, pad=pad, gap=gap, **kwargs)
-    tsd = _build_dict(stream, channels=channels, unit=unit, timezone=timezone, epoch=epoch)
+    tsd = _build_dict(
+        stream, channels=channels, unit=unit, timezone=timezone, epoch=epoch
+    )
 
     set_provenance(
         tsd,
@@ -123,11 +138,14 @@ def _read_timeseriesdict(format_name, source, *, channels=None, unit=None, epoch
 def read_miniseed_timeseriesdict(*args, **kwargs):
     return _read_timeseriesdict("MSEED", *args, **kwargs)
 
+
 def read_sac_timeseriesdict(*args, **kwargs):
     return _read_timeseriesdict("SAC", *args, **kwargs)
 
+
 def read_gse2_timeseriesdict(*args, **kwargs):
     return _read_timeseriesdict("GSE2", *args, **kwargs)
+
 
 def read_knet_timeseriesdict(*args, **kwargs):
     return _read_timeseriesdict("KNET", *args, **kwargs)
@@ -141,6 +159,7 @@ def _adapt_timeseries(reader, *args, channels=None, **kwargs):
     # Return the first channel found
     return tsd[next(iter(tsd.keys()))]
 
+
 def _adapt_matrix(reader, *args, channels=None, **kwargs):
     tsd = reader(*args, channels=channels, **kwargs)
     return tsd.to_matrix()
@@ -150,6 +169,7 @@ def _adapt_matrix(reader, *args, channels=None, **kwargs):
 def _write_obspy(tsd, target, format_name, **kwargs):
     """Write TimeSeriesDict to file using ObsPy"""
     from ..interop.obspy_ import to_obspy_trace
+
     obspy = _import_obspy()
 
     stream = obspy.Stream()
@@ -159,14 +179,17 @@ def _write_obspy(tsd, target, format_name, **kwargs):
 
     stream.write(target, format=format_name, **kwargs)
 
+
 def write_miniseed(tsd, target, **kwargs):
     _write_obspy(tsd, target, "MSEED", **kwargs)
+
 
 def write_sac(tsd, target, **kwargs):
     # SAC does not support multi-trace in one file standardly like MSEED,
     # but ObsPy handles writing multiple files if target is likely a pattern or directory,
     # or raises error. We wrap simply here.
     _write_obspy(tsd, target, "SAC", **kwargs)
+
 
 def write_gse2(tsd, target, **kwargs):
     _write_obspy(tsd, target, "GSE2", **kwargs)
@@ -176,29 +199,65 @@ def write_gse2(tsd, target, **kwargs):
 
 # MINISEED
 io_registry.register_reader("miniseed", TimeSeriesDict, read_miniseed_timeseriesdict)
-io_registry.register_reader("miniseed", TimeSeries, lambda *a, **k: _adapt_timeseries(read_miniseed_timeseriesdict, *a, **k))
-io_registry.register_reader("miniseed", TimeSeriesMatrix, lambda *a, **k: _adapt_matrix(read_miniseed_timeseriesdict, *a, **k))
+io_registry.register_reader(
+    "miniseed",
+    TimeSeries,
+    lambda *a, **k: _adapt_timeseries(read_miniseed_timeseriesdict, *a, **k),
+)
+io_registry.register_reader(
+    "miniseed",
+    TimeSeriesMatrix,
+    lambda *a, **k: _adapt_matrix(read_miniseed_timeseriesdict, *a, **k),
+)
 io_registry.register_writer("miniseed", TimeSeriesDict, write_miniseed)
-io_registry.register_writer("miniseed", TimeSeries, lambda ts, f, **k: write_miniseed({ts.name: ts}, f, **k))
+io_registry.register_writer(
+    "miniseed", TimeSeries, lambda ts, f, **k: write_miniseed({ts.name: ts}, f, **k)
+)
 
 # SAC
 io_registry.register_reader("sac", TimeSeriesDict, read_sac_timeseriesdict)
-io_registry.register_reader("sac", TimeSeries, lambda *a, **k: _adapt_timeseries(read_sac_timeseriesdict, *a, **k))
-io_registry.register_reader("sac", TimeSeriesMatrix, lambda *a, **k: _adapt_matrix(read_sac_timeseriesdict, *a, **k))
+io_registry.register_reader(
+    "sac",
+    TimeSeries,
+    lambda *a, **k: _adapt_timeseries(read_sac_timeseriesdict, *a, **k),
+)
+io_registry.register_reader(
+    "sac",
+    TimeSeriesMatrix,
+    lambda *a, **k: _adapt_matrix(read_sac_timeseriesdict, *a, **k),
+)
 io_registry.register_writer("sac", TimeSeriesDict, write_sac)
-io_registry.register_writer("sac", TimeSeries, lambda ts, f, **k: write_sac({ts.name: ts}, f, **k))
+io_registry.register_writer(
+    "sac", TimeSeries, lambda ts, f, **k: write_sac({ts.name: ts}, f, **k)
+)
 
 # GSE2
 io_registry.register_reader("gse2", TimeSeriesDict, read_gse2_timeseriesdict)
-io_registry.register_reader("gse2", TimeSeries, lambda *a, **k: _adapt_timeseries(read_gse2_timeseriesdict, *a, **k))
-io_registry.register_reader("gse2", TimeSeriesMatrix, lambda *a, **k: _adapt_matrix(read_gse2_timeseriesdict, *a, **k))
+io_registry.register_reader(
+    "gse2",
+    TimeSeries,
+    lambda *a, **k: _adapt_timeseries(read_gse2_timeseriesdict, *a, **k),
+)
+io_registry.register_reader(
+    "gse2",
+    TimeSeriesMatrix,
+    lambda *a, **k: _adapt_matrix(read_gse2_timeseriesdict, *a, **k),
+)
 io_registry.register_writer("gse2", TimeSeriesDict, write_gse2)
-io_registry.register_writer("gse2", TimeSeries, lambda ts, f, **k: write_gse2({ts.name: ts}, f, **k))
+io_registry.register_writer(
+    "gse2", TimeSeries, lambda ts, f, **k: write_gse2({ts.name: ts}, f, **k)
+)
 
 
 # KNET (Read only typically)
 io_registry.register_reader("knet", TimeSeriesDict, read_knet_timeseriesdict)
-io_registry.register_reader("knet", TimeSeries, lambda *a, **k: _adapt_timeseries(read_knet_timeseriesdict, *a, **k))
-io_registry.register_reader("knet", TimeSeriesMatrix, lambda *a, **k: _adapt_matrix(read_knet_timeseriesdict, *a, **k))
-
-
+io_registry.register_reader(
+    "knet",
+    TimeSeries,
+    lambda *a, **k: _adapt_timeseries(read_knet_timeseriesdict, *a, **k),
+)
+io_registry.register_reader(
+    "knet",
+    TimeSeriesMatrix,
+    lambda *a, **k: _adapt_matrix(read_knet_timeseriesdict, *a, **k),
+)

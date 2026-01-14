@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+
 import numpy as np
 from astropy import units as u
 from gwpy.types.index import Index
@@ -21,8 +22,8 @@ class SeriesMatrixCoreMixin:
     @property
     def shape3D(self) -> tuple[int, int, int]:
         """Shape of the matrix as a 3-tuple (n_rows, n_cols, n_samples).
-           For 4D matrices (spectrograms), the last dimension is likely frequency,
-           so n_samples is determined by _x_axis_index.
+        For 4D matrices (spectrograms), the last dimension is likely frequency,
+        so n_samples is determined by _x_axis_index.
         """
         # This is a legacy helper; for 4D matrices it might not be strictly 3D.
         # But for display/repr, we might want (Row, Col, Time).
@@ -64,8 +65,15 @@ class SeriesMatrixCoreMixin:
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
                 n_samples = None
             suppress = getattr(self, "_suppress_xindex_check", False)
-            if (not suppress) and n_samples is not None and hasattr(xi, "__len__") and len(xi) != n_samples:
-                raise ValueError(f"xindex length mismatch: expected {n_samples}, got {len(xi)}")
+            if (
+                (not suppress)
+                and n_samples is not None
+                and hasattr(xi, "__len__")
+                and len(xi) != n_samples
+            ):
+                raise ValueError(
+                    f"xindex length mismatch: expected {n_samples}, got {len(xi)}"
+                )
             self._xindex = xi
         for attr in ("_dx", "_x0"):
             if hasattr(self, attr):
@@ -92,10 +100,12 @@ class SeriesMatrixCoreMixin:
             if not hasattr(self, "xindex") or self.xindex is None:
                 raise AttributeError("dx is undefined because xindex is not set")
             if hasattr(self.xindex, "regular") and not self.xindex.regular:
-                raise AttributeError("This SeriesMatrix has an irregular x-axis index, so 'dx' is not well defined")
+                raise AttributeError(
+                    "This SeriesMatrix has an irregular x-axis index, so 'dx' is not well defined"
+                )
             dx = self.xindex[1] - self.xindex[0]
             if not isinstance(dx, u.Quantity):
-                xunit = getattr(self.xindex, 'unit', u.dimensionless_unscaled)
+                xunit = getattr(self.xindex, "unit", u.dimensionless_unscaled)
                 dx = u.Quantity(dx, xunit)
             self._dx = dx
             return self._dx
@@ -121,7 +131,7 @@ class SeriesMatrixCoreMixin:
             return self._dx.unit
         except AttributeError:
             if self.xindex is not None:
-                return getattr(self.xindex, 'unit', u.dimensionless_unscaled)
+                return getattr(self.xindex, "unit", u.dimensionless_unscaled)
             try:
                 return self._x0.unit
             except AttributeError:
@@ -150,11 +160,15 @@ class SeriesMatrixCoreMixin:
     ##### rows/cols Information #####
     def row_keys(self) -> tuple[Any, ...]:
         """Get the keys (labels) for all rows."""
-        return tuple(self.rows.keys()) if hasattr(self, "rows") and self.rows else tuple()
+        return (
+            tuple(self.rows.keys()) if hasattr(self, "rows") and self.rows else tuple()
+        )
 
     def col_keys(self) -> tuple[Any, ...]:
         """Get the keys (labels) for all columns."""
-        return tuple(self.cols.keys()) if hasattr(self, "cols") and self.cols else tuple()
+        return (
+            tuple(self.cols.keys()) if hasattr(self, "cols") and self.cols else tuple()
+        )
 
     def keys(self) -> tuple[tuple[Any, ...], tuple[Any, ...]]:
         """Get both row and column keys."""
@@ -253,7 +267,9 @@ class SeriesMatrixCoreMixin:
 
         return dict_class(results)
 
-    def _get_meta_for_constructor(self, data: np.ndarray, xindex: Any) -> dict[str, Any]:
+    def _get_meta_for_constructor(
+        self, data: np.ndarray, xindex: Any
+    ) -> dict[str, Any]:
         """
         Prepare arguments for constructing a new instance of the same class.
         """

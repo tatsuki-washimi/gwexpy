@@ -4,11 +4,19 @@
 # Local preprocessing module
 from . import preprocessing
 from .preprocessing import (
-    WhiteningModel as WhiteningModel,
-    whiten as whiten,
     StandardizationModel as StandardizationModel,
-    standardize as standardize,
+)
+from .preprocessing import (
+    WhiteningModel as WhiteningModel,
+)
+from .preprocessing import (
     impute as impute,
+)
+from .preprocessing import (
+    standardize as standardize,
+)
+from .preprocessing import (
+    whiten as whiten,
 )
 
 __all__ = [
@@ -23,8 +31,10 @@ __all__ = [
 # Dynamic import from gwpy (PEP 562)
 import gwpy.signal
 
+
 def __getattr__(name):
     return getattr(gwpy.signal, name)
+
 
 def __dir__():
     local_names = {
@@ -36,4 +46,3 @@ def __dir__():
         "impute",
     }
     return sorted(local_names | set(dir(gwpy.signal)))
-

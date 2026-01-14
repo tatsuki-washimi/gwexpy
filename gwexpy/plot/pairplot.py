@@ -7,40 +7,40 @@ Pair plot for Series collections.
 
 from __future__ import annotations
 
-from typing import Any, Optional
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
+from typing import Any
 
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.figure import Figure
 
 __all__ = ["PairPlot"]
 
 
-def _get_min_sample_rate(series_list: list) -> float:
+def _get_min_sample_rate(series_list: list) -> float | None:
     """Get the minimum sample rate from a list of series."""
     rates = []
     for s in series_list:
-        if hasattr(s, 'sample_rate'):
+        if hasattr(s, "sample_rate"):
             rates.append(float(s.sample_rate.value))
-        elif hasattr(s, 'df'):
+        elif hasattr(s, "df"):
             rates.append(float(s.df.value))
     if not rates:
         return None
     return min(rates)
 
 
-def _get_common_span(series_list: list) -> tuple:
+def _get_common_span(series_list: list) -> tuple[float | None, float | None]:
     """Get common time/frequency span from a list of series."""
     starts = []
     ends = []
     for s in series_list:
-        if hasattr(s, 't0') and hasattr(s, 'duration'):
+        if hasattr(s, "t0") and hasattr(s, "duration"):
             starts.append(float(s.t0.value))
             ends.append(float(s.t0.value) + float(s.duration.value))
-        elif hasattr(s, 'f0') and hasattr(s, 'df'):
+        elif hasattr(s, "f0") and hasattr(s, "df"):
             starts.append(float(s.f0.value))
             ends.append(float(s.f0.value) + float(s.df.value) * len(s))
-        elif hasattr(s, 'xindex'):
+        elif hasattr(s, "xindex"):
             starts.append(float(s.xindex[0]))
             ends.append(float(s.xindex[-1]))
     if not starts or not ends:
@@ -64,14 +64,14 @@ def _align_series(series_list: list) -> list:
         aligned_s = s
 
         # Resample if needed
-        if min_rate is not None and hasattr(s, 'sample_rate'):
+        if min_rate is not None and hasattr(s, "sample_rate"):
             current_rate = float(s.sample_rate.value)
             if current_rate > min_rate:
                 aligned_s = aligned_s.resample(min_rate)
 
         # Crop to common span
         if start is not None and end is not None:
-            if hasattr(aligned_s, 'crop'):
+            if hasattr(aligned_s, "crop"):
                 aligned_s = aligned_s.crop(start, end)
 
         aligned.append(aligned_s)
@@ -95,20 +95,20 @@ def _normalize_input(data: Any) -> tuple[list, list[str]]:
     elif isinstance(data, (list, tuple)):
         for i, item in enumerate(data):
             series_list.append(item)
-            if hasattr(item, 'name') and item.name:
+            if hasattr(item, "name") and item.name:
                 labels.append(str(item.name))
             else:
                 labels.append(f"Series {i}")
-    elif hasattr(data, 'items'):
+    elif hasattr(data, "items"):
         # Dict-like (TimeSeriesDict, etc.)
         for key, value in data.items():
             series_list.append(value)
             labels.append(str(key))
-    elif hasattr(data, '__iter__'):
+    elif hasattr(data, "__iter__"):
         # List-like (TimeSeriesList, etc.)
         for i, item in enumerate(data):
             series_list.append(item)
-            if hasattr(item, 'name') and item.name:
+            if hasattr(item, "name") and item.name:
                 labels.append(str(item.name))
             else:
                 labels.append(f"Series {i}")
@@ -153,11 +153,11 @@ class PairPlot:
         data: Any,
         *,
         corner: bool = True,
-        diag: str = 'hist',
-        offdiag: str = 'hist2d',
+        diag: str = "hist",
+        offdiag: str = "hist2d",
         bins: int = 50,
-        figsize: Optional[tuple] = None,
-        **kwargs
+        figsize: tuple | None = None,
+        **kwargs,
     ):
         self.corner = corner
         self.diag = diag
@@ -184,11 +184,7 @@ class PairPlot:
 
     def _create_figure(self) -> tuple[Figure, np.ndarray]:
         """Create figure and axes grid."""
-        fig, axes = plt.subplots(
-            self._n, self._n,
-            figsize=self._figsize,
-            squeeze=False
-        )
+        fig, axes = plt.subplots(self._n, self._n, figsize=self._figsize, squeeze=False)
         return fig, axes
 
     def _plot(self):
@@ -227,10 +223,11 @@ class PairPlot:
         data = np.asarray(self._series[i].value).flatten()
         data = data[~np.isnan(data)]
 
-        if self.diag == 'hist':
+        if self.diag == "hist":
             ax.hist(data, bins=self.bins, density=True, alpha=0.7)
-        elif self.diag == 'kde':
+        elif self.diag == "kde":
             from scipy import stats
+
             kde = stats.gaussian_kde(data)
             x = np.linspace(data.min(), data.max(), 200)
             ax.plot(x, kde(x))
@@ -251,9 +248,9 @@ class PairPlot:
         data_i = data_i[:min_len]
         data_j = data_j[:min_len]
 
-        if self.offdiag == 'hist2d':
-            ax.hist2d(data_j, data_i, bins=self.bins, cmap='Blues')
-        elif self.offdiag == 'scatter':
+        if self.offdiag == "hist2d":
+            ax.hist2d(data_j, data_i, bins=self.bins, cmap="Blues")
+        elif self.offdiag == "scatter":
             ax.scatter(data_j, data_i, alpha=0.3, s=1)
 
     @property

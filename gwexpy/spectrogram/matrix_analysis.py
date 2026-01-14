@@ -20,10 +20,10 @@ class SpectrogramMatrixAnalysisMixin:
 
         new_meta = self.meta.copy() if self.meta is not None else None
         if new_meta is not None:
-             for m in new_meta.flat:
-                  m.unit = u.rad
-                  if m.name:
-                       m.name += "_phase"
+            for m in new_meta.flat:
+                m.unit = u.rad
+                if m.name:
+                    m.name += "_phase"
 
         # Use constructor of the class (SpectrogramMatrix)
         new_mat = self.__class__(
@@ -32,7 +32,7 @@ class SpectrogramMatrixAnalysisMixin:
             frequencies=self.frequencies,
             unit=u.rad,
             name=self.name + "_phase" if self.name else "phase",
-            meta=new_meta
+            meta=new_meta,
         )
         return new_mat
 
@@ -45,10 +45,10 @@ class SpectrogramMatrixAnalysisMixin:
 
         new_meta = p.meta.copy() if p.meta is not None else None
         if new_meta is not None:
-             for m in new_meta.flat:
-                  m.unit = u.deg
-                  if m.name and "_phase" in m.name:
-                       m.name += "_deg"
+            for m in new_meta.flat:
+                m.unit = u.deg
+                if m.name and "_phase" in m.name:
+                    m.name += "_deg"
 
         new_mat = self.__class__(
             val,
@@ -56,6 +56,6 @@ class SpectrogramMatrixAnalysisMixin:
             frequencies=p.frequencies,
             unit=u.deg,
             name=p.name + "_deg" if p.name else "phase_deg",
-            meta=new_meta
+            meta=new_meta,
         )
         return new_mat

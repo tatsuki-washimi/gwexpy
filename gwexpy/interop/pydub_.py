@@ -1,6 +1,7 @@
+import numpy as np
 
 from ._optional import require_optional
-import numpy as np
+
 
 def to_librosa(ts, y_dtype=np.float32):
     """
@@ -10,6 +11,7 @@ def to_librosa(ts, y_dtype=np.float32):
     y = ts.value.astype(y_dtype)
     sr = int(ts.sample_rate.value)
     return y, sr
+
 
 def to_pydub(ts, sample_width=2, channels=1):
     """
@@ -31,7 +33,7 @@ def to_pydub(ts, sample_width=2, channels=1):
 
     # Check if data looks like float -1..1 vs int
     # If float, scale. If int, assume ready?
-    if data.dtype.kind == 'f':
+    if data.dtype.kind == "f":
         # Clip and scale
         scaled = np.clip(data, -1.0, 1.0) * max_val
     else:
@@ -45,8 +47,9 @@ def to_pydub(ts, sample_width=2, channels=1):
         data=raw_data,
         sample_width=sample_width,
         frame_rate=int(ts.sample_rate.value),
-        channels=channels
+        channels=channels,
     )
+
 
 def from_pydub(cls, seg, unit=None):
     """
