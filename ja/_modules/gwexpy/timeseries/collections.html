@@ -83,25 +83,24 @@
            <div itemprop="articleBody">
              
   <h1>gwexpy.timeseries.collections のソースコード</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.signal</span>  <span class="c1"># noqa: F401 - availability check</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="k">pass</span> <span class="c1"># scipy is optional dependency for gwpy but required here for hilbert</span>
+    <span class="k">pass</span>  <span class="c1"># scipy is optional dependency for gwpy but required here for hilbert</span>
 
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span> <span class="k">as</span> <span class="n">BaseTimeSeries</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span> <span class="k">as</span> <span class="n">BaseTimeSeriesDict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesList</span> <span class="k">as</span> <span class="n">BaseTimeSeriesList</span>
 
-
 <span class="c1"># --- Monkey Patch TimeSeriesDict ---</span>
-
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhaseMethodsMixin</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">csd_matrix_from_collection</span><span class="p">,</span> <span class="n">coherence_matrix_from_collection</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">coherence_matrix_from_collection</span><span class="p">,</span> <span class="n">csd_matrix_from_collection</span>
 
 
 <div class="viewcode-block" id="TimeSeriesDict">
@@ -135,7 +134,7 @@
         <span class="n">is_time_bin</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">is_time_bin</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rate</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">physical_type</span> <span class="o">==</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rate</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">physical_type</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
             <span class="n">is_time_bin</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="n">is_time_bin</span><span class="p">:</span>
@@ -144,7 +143,7 @@
             <span class="c1"># (asfreq/resample return new objects usually),</span>
             <span class="c1"># so we replace the values in the dict.</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-                 <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Native gwpy resample (signal processing)</span>
@@ -160,8 +159,6 @@
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">hilbert</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_dict</span></div>
-
-
 
 
 <div class="viewcode-block" id="TimeSeriesDict.envelope">
@@ -186,7 +183,6 @@
         <span class="k">return</span> <span class="n">new_dict</span></div>
 
 
-
     <span class="c1"># ===============================</span>
     <span class="c1"># P2 Methods (Domain Specific)</span>
     <span class="c1"># ===============================</span>
@@ -196,6 +192,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">to_mne</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to mne.io.RawArray.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_mne_rawarray</span>
+
         <span class="k">return</span> <span class="n">to_mne_rawarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="n">picks</span><span class="p">)</span></div>
 
 
@@ -205,6 +202,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">from_mne</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">unit_map</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create from mne.io.Raw.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_mne_raw</span>
+
         <span class="k">return</span> <span class="n">from_mne_raw</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">unit_map</span><span class="o">=</span><span class="n">unit_map</span><span class="p">)</span></div>
 
 
@@ -228,6 +226,7 @@
 <span class="sd">            The converted time-domain data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_control_response</span>
+
         <span class="n">res</span> <span class="o">=</span> <span class="n">from_control_response</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
             <span class="c1"># Wrap in a Dictionary if it isn&#39;t one already</span>
@@ -296,7 +295,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply baseband to each item.&quot;&quot;&quot;</span>
         <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-             <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">baseband</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">baseband</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_dict</span></div>
 
 
@@ -320,34 +319,43 @@
         <span class="c1"># We need to know the output structure (tuple vs single)</span>
         <span class="c1"># Peek first item</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
-             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
 
         <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">first_res</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">lock_in</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first_res</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-             <span class="c1"># Tuple return (e.g. mag, phase or i, q)</span>
-             <span class="c1"># Assume logic dictates uniform return type</span>
-             <span class="n">dict_tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">first_res</span><span class="p">)</span>
+            <span class="c1"># Tuple return (e.g. mag, phase or i, q)</span>
+            <span class="c1"># Assume logic dictates uniform return type</span>
+            <span class="n">dict_tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">first_res</span><span class="p">)</span>
 
-             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                  <span class="n">res</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">lock_in</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                  <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
-                       <span class="n">dict_tuple</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-             <span class="k">return</span> <span class="n">dict_tuple</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">lock_in</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+                    <span class="n">dict_tuple</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="k">return</span> <span class="n">dict_tuple</span>
         <span class="k">else</span><span class="p">:</span>
-             <span class="c1"># Single return</span>
-             <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-             <span class="n">new_dict</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">first_res</span>
-             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-                  <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">lock_in</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-             <span class="k">return</span> <span class="n">new_dict</span></div>
-
+            <span class="c1"># Single return</span>
+            <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+            <span class="n">new_dict</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">first_res</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">lock_in</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">new_dict</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.csd_matrix">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.csd_matrix">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">csd_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hann&#39;</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">csd_matrix</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+        <span class="n">hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute Cross-Spectral Density matrix for all pairs.</span>
 
 <span class="sd">        Parameters</span>
@@ -379,16 +387,31 @@
 <span class="sd">        dt and fftlength consistency is enforced before computation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">csd_matrix_from_collection</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span>
-            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
-            <span class="n">hermitian</span><span class="o">=</span><span class="n">hermitian</span><span class="p">,</span> <span class="n">include_diagonal</span><span class="o">=</span><span class="n">include_diagonal</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">other</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+            <span class="n">hermitian</span><span class="o">=</span><span class="n">hermitian</span><span class="p">,</span>
+            <span class="n">include_diagonal</span><span class="o">=</span><span class="n">include_diagonal</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.coherence_matrix">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.coherence_matrix">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">coherence_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hann&#39;</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">diagonal_value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coherence_matrix</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+        <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">diagonal_value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute coherence matrix for all pairs.</span>
 
 <span class="sd">        Parameters</span>
@@ -423,17 +446,31 @@
 <span class="sd">        consistency is enforced before computation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">coherence_matrix_from_collection</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span>
-            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
-            <span class="n">symmetric</span><span class="o">=</span><span class="n">symmetric</span><span class="p">,</span> <span class="n">include_diagonal</span><span class="o">=</span><span class="n">include_diagonal</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">other</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+            <span class="n">symmetric</span><span class="o">=</span><span class="n">symmetric</span><span class="p">,</span>
+            <span class="n">include_diagonal</span><span class="o">=</span><span class="n">include_diagonal</span><span class="p">,</span>
             <span class="n">diagonal_value</span><span class="o">=</span><span class="n">diagonal_value</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.csd">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.csd">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">csd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">csd</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+        <span class="n">hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute CSD for each element or as a matrix depending on `other`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -451,6 +488,7 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">BaseTimeSeries</span><span class="p">):</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span>
+
             <span class="n">new_dict</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">csd</span><span class="p">(</span>
@@ -470,14 +508,23 @@
                 <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;other must be TimeSeries, TimeSeriesList/Dict, or None/&#39;self&#39;&quot;</span>
-        <span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;other must be TimeSeries, TimeSeriesList/Dict, or None/&#39;self&#39;&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.coherence">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.coherence">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">coherence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">diagonal_value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coherence</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+        <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">diagonal_value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute coherence for each element or as a matrix depending on `other`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -496,6 +543,7 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">BaseTimeSeries</span><span class="p">):</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span>
+
             <span class="n">new_dict</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span>
@@ -516,10 +564,7 @@
                 <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;other must be TimeSeries, TimeSeriesList/Dict, or None/&#39;self&#39;&quot;</span>
-        <span class="p">)</span></div>
-
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;other must be TimeSeries, TimeSeriesList/Dict, or None/&#39;self&#39;&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.psd">
@@ -529,6 +574,7 @@
 <span class="sd">        Returns a FrequencySeriesDict.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span>
+
         <span class="n">new_dict</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -542,6 +588,7 @@
 <span class="sd">        Returns a FrequencySeriesDict.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span>
+
         <span class="n">new_dict</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -556,6 +603,7 @@
 <span class="sd">        Returns a SpectrogramDict.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramDict</span>
+
         <span class="n">new_dict</span> <span class="o">=</span> <span class="n">SpectrogramDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -570,6 +618,7 @@
 <span class="sd">        Returns a SpectrogramDict.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramDict</span>
+
         <span class="n">new_dict</span> <span class="o">=</span> <span class="n">SpectrogramDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram2</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -584,11 +633,11 @@
 <span class="sd">        Returns a SpectrogramDict.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramDict</span>
+
         <span class="n">new_dict</span> <span class="o">=</span> <span class="n">SpectrogramDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">q_transform</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_dict</span></div>
-
 
 
     <span class="c1"># ===============================</span>
@@ -600,6 +649,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to pandas.DataFrame.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_pandas_dataframe</span>
+
         <span class="k">return</span> <span class="n">to_pandas_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span></div>
 
 
@@ -609,6 +659,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">from_pandas</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">unit_map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create TimeSeriesDict from pandas.DataFrame.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pandas_dataframe</span>
+
         <span class="k">return</span> <span class="n">from_pandas_dataframe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">unit_map</span><span class="o">=</span><span class="n">unit_map</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span></div>
 
 
@@ -617,7 +668,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">to_polars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_column</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to polars.DataFrame.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_polars_dict</span>
-        <span class="k">return</span> <span class="n">to_polars_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_column</span><span class="o">=</span><span class="n">time_column</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="n">time_unit</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">to_polars_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index_column</span><span class="o">=</span><span class="n">time_column</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="n">time_unit</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.from_polars">
@@ -626,14 +678,16 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">from_polars</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">time_column</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">unit_map</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create TimeSeriesDict from polars.DataFrame.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_polars_dict</span>
-        <span class="k">return</span> <span class="n">from_polars_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">time_column</span><span class="o">=</span><span class="n">time_column</span><span class="p">,</span> <span class="n">unit_map</span><span class="o">=</span><span class="n">unit_map</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">from_polars_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">index_column</span><span class="o">=</span><span class="n">time_column</span><span class="p">,</span> <span class="n">unit_map</span><span class="o">=</span><span class="n">unit_map</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.to_tmultigraph">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.to_tmultigraph">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_tmultigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_tmultigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to ROOT TMultiGraph.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_tmultigraph</span>
+
         <span class="k">return</span> <span class="n">to_tmultigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
 
 
@@ -642,8 +696,9 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="n">fmt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;root&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.root&quot;</span><span class="p">)):</span>
-             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.root_</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_root_file</span>
-             <span class="k">return</span> <span class="n">write_root_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.root_</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_root_file</span>
+
+            <span class="k">return</span> <span class="n">write_root_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -652,6 +707,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot all series. Delegates to gwexpy.plot.Plot.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+
         <span class="k">return</span> <span class="n">Plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -662,55 +718,150 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-
 <div class="viewcode-block" id="TimeSeriesDict.impute">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.impute">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">impute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">max_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">impute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">max_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply impute to each item.&quot;&quot;&quot;</span>
         <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">impute</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">max_gap</span><span class="o">=</span><span class="n">max_gap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">impute</span><span class="p">(</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">max_gap</span><span class="o">=</span><span class="n">max_gap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">new_dict</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.rolling_mean">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.rolling_mean">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_mean</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">window</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply rolling mean to each item.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.rolling</span><span class="w"> </span><span class="kn">import</span> <span class="n">rolling_mean</span>
-        <span class="k">return</span> <span class="n">rolling_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">rolling_mean</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">window</span><span class="p">,</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span>
+            <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.rolling_std">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.rolling_std">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_std</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">window</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply rolling std to each item.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.rolling</span><span class="w"> </span><span class="kn">import</span> <span class="n">rolling_std</span>
-        <span class="k">return</span> <span class="n">rolling_std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">rolling_std</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">window</span><span class="p">,</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span>
+            <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span>
+            <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.rolling_median">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.rolling_median">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_median</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">window</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply rolling median to each item.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.rolling</span><span class="w"> </span><span class="kn">import</span> <span class="n">rolling_median</span>
-        <span class="k">return</span> <span class="n">rolling_median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">rolling_median</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">window</span><span class="p">,</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span>
+            <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.rolling_min">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.rolling_min">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_min</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">window</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply rolling min to each item.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.rolling</span><span class="w"> </span><span class="kn">import</span> <span class="n">rolling_min</span>
-        <span class="k">return</span> <span class="n">rolling_min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">rolling_min</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">window</span><span class="p">,</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span>
+            <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.rolling_max">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.rolling_max">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_max</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">window</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply rolling max to each item.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.rolling</span><span class="w"> </span><span class="kn">import</span> <span class="n">rolling_max</span>
-        <span class="k">return</span> <span class="n">rolling_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">rolling_max</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">window</span><span class="p">,</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span>
+            <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesDict.to_matrix">
@@ -720,12 +871,15 @@
 <span class="sd">        Convert dictionary to TimeSeriesMatrix with alignment.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.preprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">align_timeseries_collection</span>
+
         <span class="c1"># Ensure consistent order (keys sorted) or specific</span>
         <span class="c1"># Dicts are ordered in modern python but keys() usually safe</span>
         <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">series_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
 
-        <span class="n">vals</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <span class="n">align_timeseries_collection</span><span class="p">(</span><span class="n">series_list</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="n">align</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">vals</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <span class="n">align_timeseries_collection</span><span class="p">(</span>
+            <span class="n">series_list</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="n">align</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
 
         <span class="c1"># SeriesMatrix expects 3D usually (rows, cols, time) or checks last axis</span>
         <span class="c1"># vals: (samples, channels).</span>
@@ -733,6 +887,7 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">vals</span><span class="o">.</span><span class="n">T</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">.matrix</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
+
         <span class="n">matrix</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
             <span class="n">data</span><span class="p">,</span>
             <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
@@ -746,7 +901,6 @@
         <span class="c1"># Assign channel names from keys</span>
         <span class="n">matrix</span><span class="o">.</span><span class="n">channel_names</span> <span class="o">=</span> <span class="n">keys</span>
         <span class="k">return</span> <span class="n">matrix</span></div>
-
 
 
     <span class="c1"># ===============================</span>
@@ -764,6 +918,7 @@
 <span class="sd">        Returns a new TimeSeriesDict.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span>
+
         <span class="c1"># Convert inputs to GPS if provided</span>
         <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">to_gps</span><span class="p">(</span><span class="n">start</span><span class="p">))</span>
@@ -783,19 +938,23 @@
 <span class="sd">        Append another mapping of TimeSeries or a single TimeSeries to each item.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">BaseTimeSeries</span><span class="p">):</span>
-             <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                 <span class="n">ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-             <span class="k">return</span> <span class="bp">self</span>
+            <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span>
 
         <span class="c1"># If &#39;copy&#39; key is present in &#39;other&#39; (can happen with some readers),</span>
         <span class="c1"># it will cause super().append to fail if &#39;copy&#39; is not a TimeSeries.</span>
         <span class="c1"># We should filter it out if it&#39;s not a TimeSeries.</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;pop&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;copy&#39;</span> <span class="ow">in</span> <span class="n">other</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">[</span><span class="s1">&#39;copy&#39;</span><span class="p">],</span> <span class="n">BaseTimeSeries</span><span class="p">):</span>
-             <span class="n">other</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;copy&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;pop&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="s2">&quot;copy&quot;</span> <span class="ow">in</span> <span class="n">other</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">[</span><span class="s2">&quot;copy&quot;</span><span class="p">],</span> <span class="n">BaseTimeSeries</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">other</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;copy&quot;</span><span class="p">)</span>
 
         <span class="c1"># Ensure we don&#39;t pass &#39;copy&#39; twice if it&#39;s already in kwargs</span>
-        <span class="k">if</span> <span class="s1">&#39;copy&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">copy</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;copy&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;copy&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">copy</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;copy&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -963,6 +1122,7 @@
 <span class="sd">        Returns a FrequencySeriesDict.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span>
+
         <span class="n">new_dict</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -977,11 +1137,11 @@
 <span class="sd">        Returns a FrequencySeriesDict.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span>
+
         <span class="n">new_dict</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">average_fft</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_dict</span></div>
-
 
 
     <span class="c1"># --- Statistics &amp; Measurements ---</span>
@@ -993,7 +1153,8 @@
 <span class="sd">        If scalar -&gt; return pandas.Series.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">is_ts</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">first</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -1011,8 +1172,8 @@
             <span class="k">if</span> <span class="n">is_ts</span><span class="p">:</span>
                 <span class="c1"># Ensure consistency</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">)):</span>
-                     <span class="c1"># Mixed types not supported cleanly here, defaulting to dict of objects</span>
-                     <span class="k">pass</span>
+                    <span class="c1"># Mixed types not supported cleanly here, defaulting to dict of objects</span>
+                    <span class="k">pass</span>
 
             <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
 
@@ -1033,7 +1194,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">is_contiguous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check contiguity with another object for each TimeSeries.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_scalar_or_map</span><span class="p">(</span><span class="s2">&quot;is_contiguous&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
 
 
 <div class="viewcode-block" id="TimeSeriesDict.skewness">
@@ -1154,7 +1314,17 @@
 
 <div class="viewcode-block" id="TimeSeriesList.csd_matrix">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesList.csd_matrix">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">csd_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hann&#39;</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">csd_matrix</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+        <span class="n">hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute Cross Spectral Density Matrix.</span>
 
@@ -1182,16 +1352,31 @@
 <span class="sd">        dt and fftlength consistency is enforced before computation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">csd_matrix_from_collection</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span>
-            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
-            <span class="n">hermitian</span><span class="o">=</span><span class="n">hermitian</span><span class="p">,</span> <span class="n">include_diagonal</span><span class="o">=</span><span class="n">include_diagonal</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">other</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+            <span class="n">hermitian</span><span class="o">=</span><span class="n">hermitian</span><span class="p">,</span>
+            <span class="n">include_diagonal</span><span class="o">=</span><span class="n">include_diagonal</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesList.coherence_matrix">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesList.coherence_matrix">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">coherence_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hann&#39;</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">diagonal_value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coherence_matrix</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+        <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">diagonal_value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute Coherence Matrix.</span>
 
@@ -1222,17 +1407,31 @@
 <span class="sd">        consistency is enforced before computation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">coherence_matrix_from_collection</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span>
-            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
-            <span class="n">symmetric</span><span class="o">=</span><span class="n">symmetric</span><span class="p">,</span> <span class="n">include_diagonal</span><span class="o">=</span><span class="n">include_diagonal</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">other</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+            <span class="n">symmetric</span><span class="o">=</span><span class="n">symmetric</span><span class="p">,</span>
+            <span class="n">include_diagonal</span><span class="o">=</span><span class="n">include_diagonal</span><span class="p">,</span>
             <span class="n">diagonal_value</span><span class="o">=</span><span class="n">diagonal_value</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesList.csd">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesList.csd">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">csd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">csd</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+        <span class="n">hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute CSD for each element or as a matrix depending on `other`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1250,11 +1449,19 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">BaseTimeSeries</span><span class="p">):</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesList</span>
+
             <span class="n">new_list</span> <span class="o">=</span> <span class="n">FrequencySeriesList</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-                <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">csd</span><span class="p">(</span>
-                    <span class="n">other</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-                <span class="p">))</span>
+                <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">new_list</span><span class="p">,</span>
+                    <span class="n">ts</span><span class="o">.</span><span class="n">csd</span><span class="p">(</span>
+                        <span class="n">other</span><span class="p">,</span>
+                        <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+                        <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+                        <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
             <span class="k">return</span> <span class="n">new_list</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="n">BaseTimeSeriesList</span><span class="p">,</span> <span class="n">BaseTimeSeriesDict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
@@ -1269,14 +1476,23 @@
                 <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;other must be TimeSeries, TimeSeriesList/Dict, or None/&#39;self&#39;&quot;</span>
-        <span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;other must be TimeSeries, TimeSeriesList/Dict, or None/&#39;self&#39;&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesList.coherence">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesList.coherence">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">coherence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">diagonal_value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coherence</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+        <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">diagonal_value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute coherence for each element or as a matrix depending on `other`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1295,11 +1511,19 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">BaseTimeSeries</span><span class="p">):</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesList</span>
+
             <span class="n">new_list</span> <span class="o">=</span> <span class="n">FrequencySeriesList</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-                <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span>
-                    <span class="n">other</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-                <span class="p">))</span>
+                <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">new_list</span><span class="p">,</span>
+                    <span class="n">ts</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span>
+                        <span class="n">other</span><span class="p">,</span>
+                        <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+                        <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+                        <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
             <span class="k">return</span> <span class="n">new_list</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="n">BaseTimeSeriesList</span><span class="p">,</span> <span class="n">BaseTimeSeriesDict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
@@ -1315,14 +1539,14 @@
                 <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;other must be TimeSeries, TimeSeriesList/Dict, or None/&#39;self&#39;&quot;</span>
-        <span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;other must be TimeSeries, TimeSeriesList/Dict, or None/&#39;self&#39;&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesList.impute">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesList.impute">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">impute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">max_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">impute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">max_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Impute missing data (NaNs) in each TimeSeries.</span>
 
 <span class="sd">        Parameters</span>
@@ -1344,48 +1568,145 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">impute</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">max_gap</span><span class="o">=</span><span class="n">max_gap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">new_list</span><span class="p">,</span>
+                <span class="n">ts</span><span class="o">.</span><span class="n">impute</span><span class="p">(</span>
+                    <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">max_gap</span><span class="o">=</span><span class="n">max_gap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">new_list</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesList.rolling_mean">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesList.rolling_mean">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_mean</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">window</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply rolling mean to each element.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.rolling</span><span class="w"> </span><span class="kn">import</span> <span class="n">rolling_mean</span>
-        <span class="k">return</span> <span class="n">rolling_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">rolling_mean</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">window</span><span class="p">,</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span>
+            <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesList.rolling_std">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesList.rolling_std">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_std</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">window</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply rolling std to each element.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.rolling</span><span class="w"> </span><span class="kn">import</span> <span class="n">rolling_std</span>
-        <span class="k">return</span> <span class="n">rolling_std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">rolling_std</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">window</span><span class="p">,</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span>
+            <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span>
+            <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesList.rolling_median">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesList.rolling_median">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_median</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">window</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply rolling median to each element.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.rolling</span><span class="w"> </span><span class="kn">import</span> <span class="n">rolling_median</span>
-        <span class="k">return</span> <span class="n">rolling_median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">rolling_median</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">window</span><span class="p">,</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span>
+            <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesList.rolling_min">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesList.rolling_min">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_min</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">window</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply rolling min to each element.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.rolling</span><span class="w"> </span><span class="kn">import</span> <span class="n">rolling_min</span>
-        <span class="k">return</span> <span class="n">rolling_min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">rolling_min</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">window</span><span class="p">,</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span>
+            <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesList.rolling_max">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesList.rolling_max">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rolling_max</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">window</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply rolling max to each element.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.rolling</span><span class="w"> </span><span class="kn">import</span> <span class="n">rolling_max</span>
-        <span class="k">return</span> <span class="n">rolling_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">rolling_max</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">window</span><span class="p">,</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">min_count</span><span class="o">=</span><span class="n">min_count</span><span class="p">,</span>
+            <span class="n">nan_policy</span><span class="o">=</span><span class="n">nan_policy</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesList.to_matrix">
@@ -1405,8 +1726,9 @@
 <span class="sd">        TimeSeriesMatrix</span>
 <span class="sd">            Matrix with all series aligned to common time axis.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.preprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">align_timeseries_collection</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.matrix</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.preprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">align_timeseries_collection</span>
+
         <span class="n">vals</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <span class="n">align_timeseries_collection</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">how</span><span class="o">=</span><span class="n">align</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># Use names from metadata (from TS objects)</span>
         <span class="n">names</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;channel_names&quot;</span><span class="p">)</span>
@@ -1418,7 +1740,7 @@
             <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">names</span><span class="p">:</span>
-             <span class="n">matrix</span><span class="o">.</span><span class="n">channel_names</span> <span class="o">=</span> <span class="n">names</span>
+            <span class="n">matrix</span><span class="o">.</span><span class="n">channel_names</span> <span class="o">=</span> <span class="n">names</span>
         <span class="k">return</span> <span class="n">matrix</span></div>
 
 
@@ -1437,6 +1759,7 @@
 <span class="sd">        Returns a new TimeSeriesList.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span>
+
         <span class="c1"># Convert inputs to GPS if provided</span>
         <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">to_gps</span><span class="p">(</span><span class="n">start</span><span class="p">))</span>
@@ -1631,8 +1954,6 @@
         <span class="k">return</span> <span class="n">new_list</span></div>
 
 
-
-
 <div class="viewcode-block" id="TimeSeriesList.envelope">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesList.envelope">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">envelope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1736,6 +2057,7 @@
 <span class="sd">        Returns a FrequencySeriesList.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesList</span>
+
         <span class="n">new_list</span> <span class="o">=</span> <span class="n">FrequencySeriesList</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
@@ -1750,6 +2072,7 @@
 <span class="sd">        Returns a FrequencySeriesList.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesList</span>
+
         <span class="n">new_list</span> <span class="o">=</span> <span class="n">FrequencySeriesList</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">average_fft</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
@@ -1764,6 +2087,7 @@
 <span class="sd">        Returns a FrequencySeriesList.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesList</span>
+
         <span class="n">new_list</span> <span class="o">=</span> <span class="n">FrequencySeriesList</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
@@ -1778,6 +2102,7 @@
 <span class="sd">        Returns a FrequencySeriesList.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesList</span>
+
         <span class="n">new_list</span> <span class="o">=</span> <span class="n">FrequencySeriesList</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
@@ -1792,6 +2117,7 @@
 <span class="sd">        Returns a SpectrogramList.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramList</span>
+
         <span class="n">new_list</span> <span class="o">=</span> <span class="n">SpectrogramList</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
@@ -1806,6 +2132,7 @@
 <span class="sd">        Returns a SpectrogramList.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramList</span>
+
         <span class="n">new_list</span> <span class="o">=</span> <span class="n">SpectrogramList</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">spectrogram2</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
@@ -1820,6 +2147,7 @@
 <span class="sd">        Returns a SpectrogramList.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramList</span>
+
         <span class="n">new_list</span> <span class="o">=</span> <span class="n">SpectrogramList</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">q_transform</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
@@ -1834,7 +2162,7 @@
 <span class="sd">        If TimeSeries -&gt; return TimeSeriesList.</span>
 <span class="sd">        If scalar -&gt; return list.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TimeSeriesList</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">is_ts</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">first</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -1871,7 +2199,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">is_contiguous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check contiguity with another object for each TimeSeries.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_scalar_or_map</span><span class="p">(</span><span class="s2">&quot;is_contiguous&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
 
 
 <div class="viewcode-block" id="TimeSeriesList.skewness">
@@ -1955,21 +2282,21 @@
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;series_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;to_pandas&quot;</span><span class="p">):</span>
-                 <span class="n">s</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                 <span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
             <span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
 
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
 
-
 <div class="viewcode-block" id="TimeSeriesList.to_tmultigraph">
 <a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeriesList.to_tmultigraph">[ドキュメント]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_tmultigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_tmultigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to ROOT TMultiGraph.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_tmultigraph</span>
+
         <span class="k">return</span> <span class="n">to_tmultigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
 
 
@@ -1979,9 +2306,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write TimeSeriesList to file (HDF5, ROOT, etc.).&quot;&quot;&quot;</span>
         <span class="n">fmt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;root&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.root&quot;</span><span class="p">)):</span>
-             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.root_</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_root_file</span>
-             <span class="k">return</span> <span class="n">write_root_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.root_</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_root_file</span>
+
+            <span class="k">return</span> <span class="n">write_root_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">registry</span>
+
         <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -2004,6 +2333,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot all series. Delegates to gwexpy.plot.Plot.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+
         <span class="k">return</span> <span class="n">Plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 

@@ -85,23 +85,22 @@
   <h1>gwexpy.frequencyseries.matrix のソースコード</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.seriesmatrix</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrix</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">SeriesType</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span><span class="p">,</span> <span class="n">FrequencySeriesList</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.matrix_core</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesMatrixCoreMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">SeriesType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.matrix_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesMatrixAnalysisMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.matrix_core</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesMatrixCoreMixin</span>
 
 
 <div class="viewcode-block" id="FrequencySeriesMatrix">
 <a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix">[ドキュメント]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FrequencySeriesMatrix</span><span class="p">(</span>
-    <span class="n">FrequencySeriesMatrixCoreMixin</span><span class="p">,</span>
-    <span class="n">FrequencySeriesMatrixAnalysisMixin</span><span class="p">,</span>
-    <span class="n">SeriesMatrix</span>
+    <span class="n">FrequencySeriesMatrixCoreMixin</span><span class="p">,</span> <span class="n">FrequencySeriesMatrixAnalysisMixin</span><span class="p">,</span> <span class="n">SeriesMatrix</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matrix container for multiple FrequencySeries objects.</span>
@@ -143,26 +142,26 @@
                 <span class="c1"># Intelligent reshaping based on data shape</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">):</span>
-                         <span class="n">dshape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+                        <span class="n">dshape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
                     <span class="k">else</span><span class="p">:</span>
-                         <span class="n">dshape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                        <span class="n">dshape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dshape</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
                         <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">dshape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
                         <span class="k">if</span> <span class="n">cn</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">N</span> <span class="o">*</span> <span class="n">M</span><span class="p">:</span>
                             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
                         <span class="k">elif</span> <span class="n">cn</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">N</span><span class="p">:</span>
-                             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
-                             <span class="c1"># Default to 1D, which broadcasts to (..., M) if size matches M</span>
-                             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
+                            <span class="c1"># Default to 1D, which broadcasts to (..., M) if size matches M</span>
+                            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                     <span class="k">if</span> <span class="n">cn</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                          <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                     <span class="k">else</span><span class="p">:</span>
-                          <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
+                    <span class="k">if</span> <span class="n">cn</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
 
         <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">obj</span>
@@ -172,6 +171,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot FrequencySeriesMatrix.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+
         <span class="k">return</span> <span class="n">Plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </div>
 

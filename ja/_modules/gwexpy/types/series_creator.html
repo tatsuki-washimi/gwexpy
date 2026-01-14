@@ -84,6 +84,7 @@
              
   <h1>gwexpy.types.series_creator のソースコード</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -163,6 +164,7 @@
 <span class="sd">        Optional series name.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span>
+
     <span class="n">axis_unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">):</span>
@@ -182,13 +184,17 @@
             <span class="c1"># If to_gps returned a numeric array from a non-numeric input, we treat it as seconds.</span>
             <span class="c1"># But if it was already numeric and had no unit, we should maybe be more strict?</span>
             <span class="c1"># For now, following the user request to support datetime arrays.</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">)):</span>
-                 <span class="n">axis_q</span> <span class="o">=</span> <span class="n">_to_quantity_1d</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">axis_gps</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span>
+                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">))</span>
+            <span class="p">):</span>
+                <span class="n">axis_q</span> <span class="o">=</span> <span class="n">_to_quantity_1d</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">axis_gps</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                 <span class="c1"># If it was already numeric and reached here, it means it had no .unit.</span>
-                 <span class="c1"># We still try to wrap it in case to_gps did something useful,</span>
-                 <span class="c1"># but this is where the &quot;unclear error&quot; usually happened.</span>
-                 <span class="n">axis_q</span> <span class="o">=</span> <span class="n">_to_quantity_1d</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">axis_gps</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">))</span>
+                <span class="c1"># If it was already numeric and reached here, it means it had no .unit.</span>
+                <span class="c1"># We still try to wrap it in case to_gps did something useful,</span>
+                <span class="c1"># but this is where the &quot;unclear error&quot; usually happened.</span>
+                <span class="n">axis_q</span> <span class="o">=</span> <span class="n">_to_quantity_1d</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">axis_gps</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">))</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;as_series expects a 1D axis-like input (Quantity, Index with unit, or datetime array). &quot;</span>
@@ -201,6 +207,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;unit must be time-like for a time axis&quot;</span><span class="p">)</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
         <span class="n">values_q</span> <span class="o">=</span> <span class="n">axis_q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">value_unit</span><span class="p">)</span>
         <span class="n">times_axis</span> <span class="o">=</span> <span class="n">axis_q</span>
         <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">values_q</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times_axis</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">value_unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
@@ -211,7 +218,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">value_unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">_is_freq_unit</span><span class="p">(</span><span class="n">value_unit</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_is_angular_frequency</span><span class="p">(</span><span class="n">value_unit</span><span class="p">)):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;unit must be frequency-like (Hz) or angular frequency (rad/s) for a frequency axis&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;unit must be frequency-like (Hz) or angular frequency (rad/s) for a frequency axis&quot;</span>
+                <span class="p">)</span>
 
         <span class="n">axis_hz</span> <span class="o">=</span> <span class="n">_to_hz</span><span class="p">(</span><span class="n">axis_q</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">_is_angular_frequency</span><span class="p">(</span><span class="n">value_unit</span><span class="p">):</span>
@@ -220,8 +229,15 @@
             <span class="n">values_q</span> <span class="o">=</span> <span class="n">axis_hz</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">value_unit</span><span class="p">)</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
-        <span class="n">freq_axis</span> <span class="o">=</span> <span class="n">axis</span> <span class="k">if</span> <span class="n">axis_unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_is_angular_frequency</span><span class="p">(</span><span class="n">axis_q</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span> <span class="k">else</span> <span class="n">axis_hz</span>
-        <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">values_q</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freq_axis</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">value_unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">freq_axis</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">axis</span>
+            <span class="k">if</span> <span class="n">axis_unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_is_angular_frequency</span><span class="p">(</span><span class="n">axis_q</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">axis_hz</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+            <span class="n">values_q</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freq_axis</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">value_unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span>
+        <span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;axis unit must be time-like (s) or frequency-like (Hz / rad/s)&quot;</span><span class="p">)</span></div>
 

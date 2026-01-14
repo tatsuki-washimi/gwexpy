@@ -82,13 +82,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gwexpy.types.time_plane_transform</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">dimensionless_unscaled</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.array3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array3D</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;TimePlaneTransform&quot;</span><span class="p">,</span> <span class="s2">&quot;LaplaceGram&quot;</span><span class="p">]</span>
+
 
 <div class="viewcode-block" id="TimePlaneTransform">
 <a class="viewcode-back" href="../../../api/types.html#gwexpy.types.TimePlaneTransform">[docs]</a>
@@ -134,7 +134,9 @@
                 <span class="n">unit</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">extra_meta</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">else</span><span class="p">:</span>
-                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Tuple data3d must be length 4 or 5: (value, time, ax1, ax2, [unit/meta])&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Tuple data3d must be length 4 or 5: (value, time, ax1, ax2, [unit/meta])&quot;</span>
+                <span class="p">)</span>
 
             <span class="c1"># Construct names from provided axes objects if possible, else defaults.</span>
             <span class="c1"># But the tuple typically provides coordinates (Quantity/array), not AxisDescriptor.</span>
@@ -146,14 +148,16 @@
                 <span class="n">axis0</span><span class="o">=</span><span class="n">t_ax</span><span class="p">,</span>
                 <span class="n">axis1</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span>
                 <span class="n">axis2</span><span class="o">=</span><span class="n">ax2</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">extra_meta</span>
+                <span class="o">**</span><span class="n">extra_meta</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;data3d must be an Array3D or a tuple.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Validation</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TimePlaneTransform requires 3D data, got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;TimePlaneTransform requires 3D data, got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span>
+            <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -227,7 +231,9 @@
             <span class="c1"># User said: &quot;axis0 name should be time by convention, but do not enforce... match against axes[i].name&quot;</span>
             <span class="c1"># But &quot;TimePlaneTransform is user-facing&quot;, so &#39;time&#39; alias for axis 0 is reasonable if not conflicting?</span>
             <span class="c1"># User instruction: &quot;if str: match against axes[i].name; else raise KeyError&quot;</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No axis named &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; found. Axes are: </span><span class="si">{</span><span class="p">[</span><span class="n">ax</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">ax</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No axis named &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; found. Axes are: </span><span class="si">{</span><span class="p">[</span><span class="n">ax</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">ax</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid axis key type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -293,15 +299,15 @@
         <span class="n">times</span> <span class="o">=</span> <span class="n">time_ax</span><span class="o">.</span><span class="n">index</span>
 
         <span class="c1"># Ensure t is comparable (value check)</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">times</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-             <span class="n">t_val</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
-             <span class="n">times_val</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">):</span> <span class="c1"># t is Quantity, times might be dimensionless</span>
-             <span class="n">t_val</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">value</span>
-             <span class="n">times_val</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">times</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">times</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">t_val</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">times_val</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>  <span class="c1"># t is Quantity, times might be dimensionless</span>
+            <span class="n">t_val</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">times_val</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">times</span>
         <span class="k">else</span><span class="p">:</span>
-             <span class="n">t_val</span> <span class="o">=</span> <span class="n">t</span>
-             <span class="n">times_val</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">times</span>
+            <span class="n">t_val</span> <span class="o">=</span> <span class="n">t</span>
+            <span class="n">times_val</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">times</span>
 
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;nearest&quot;</span><span class="p">:</span>
             <span class="c1"># idx = time_ax.iloc_nearest(t)</span>
@@ -312,7 +318,7 @@
 
         <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
             <span class="c1"># Find insertion point</span>
-            <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">times_val</span><span class="p">,</span> <span class="n">t_val</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">times_val</span><span class="p">,</span> <span class="n">t_val</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span>
 
             <span class="c1"># Clamp to boundaries</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -329,7 +335,7 @@
             <span class="c1"># Check for zero duration interval (duplicates)</span>
             <span class="n">denom</span> <span class="o">=</span> <span class="n">t_next</span> <span class="o">-</span> <span class="n">t_prev</span>
             <span class="k">if</span> <span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx_prev</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx_prev</span><span class="p">)</span>
 
             <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_val</span> <span class="o">-</span> <span class="n">t_prev</span><span class="p">)</span> <span class="o">/</span> <span class="n">denom</span>
 
@@ -354,11 +360,13 @@
                 <span class="n">axis1_name</span><span class="o">=</span><span class="n">p_prev</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">axis2_name</span><span class="o">=</span><span class="n">p_prev</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">yindex</span><span class="o">=</span><span class="n">p_prev</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
-                <span class="n">xindex</span><span class="o">=</span><span class="n">p_prev</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">index</span>
+                <span class="n">xindex</span><span class="o">=</span><span class="n">p_prev</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Method &#39;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&#39; not implemented. Supported: &#39;nearest&#39;, &#39;linear&#39;.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Method &#39;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&#39; not implemented. Supported: &#39;nearest&#39;, &#39;linear&#39;.&quot;</span>
+            <span class="p">)</span></div>
 
 
         <span class="c1"># 2. Slice (nearest case handled above)</span>
@@ -375,36 +383,42 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># If sigma is an index (int)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;axis1&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;sigma&quot;</span><span class="p">:</span>
-             <span class="c1"># We can try to match value if needed, but strict index for now?</span>
-             <span class="c1"># User requested `.at_sigma(sigma)` which implies value lookup potentially.</span>
-             <span class="c1"># Similar to at_time logic.</span>
-             <span class="c1"># Let&#39;s assume simplest implementation: nearest lookup or index.</span>
+            <span class="c1"># We can try to match value if needed, but strict index for now?</span>
+            <span class="c1"># User requested `.at_sigma(sigma)` which implies value lookup potentially.</span>
+            <span class="c1"># Similar to at_time logic.</span>
+            <span class="c1"># Let&#39;s assume simplest implementation: nearest lookup or index.</span>
 
-             <span class="n">sigma_ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">index</span>
-             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sigma_ax</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">sigma</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">sigma_ax</span><span class="p">)):</span>
-                 <span class="c1"># It might be an index</span>
-                 <span class="c1"># But if sigma is 0.0 (float), it&#39;s a value.</span>
-                 <span class="k">pass</span>
+            <span class="n">sigma_ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">index</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sigma_ax</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">sigma</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">sigma_ax</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="c1"># It might be an index</span>
+                <span class="c1"># But if sigma is 0.0 (float), it&#39;s a value.</span>
+                <span class="k">pass</span>
 
-             <span class="c1"># Implementation of value lookup</span>
-             <span class="n">s_val</span> <span class="o">=</span> <span class="n">sigma</span>
-             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
-                  <span class="n">s_val</span> <span class="o">=</span> <span class="n">sigma</span><span class="o">.</span><span class="n">value</span>
+            <span class="c1"># Implementation of value lookup</span>
+            <span class="n">s_val</span> <span class="o">=</span> <span class="n">sigma</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+                <span class="n">s_val</span> <span class="o">=</span> <span class="n">sigma</span><span class="o">.</span><span class="n">value</span>
 
-             <span class="n">ax_val</span> <span class="o">=</span> <span class="n">sigma_ax</span>
-             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sigma_ax</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
-                  <span class="n">ax_val</span> <span class="o">=</span> <span class="n">sigma_ax</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">ax_val</span> <span class="o">=</span> <span class="n">sigma_ax</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sigma_ax</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+                <span class="n">ax_val</span> <span class="o">=</span> <span class="n">sigma_ax</span><span class="o">.</span><span class="n">value</span>
 
-             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s_val</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">s_val</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s_val</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">ax_val</span><span class="p">)):</span>
-                  <span class="c1"># Ambiguous if values are integers. Assume value first?</span>
-                  <span class="c1"># But typically sigma is float.</span>
-                  <span class="k">pass</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s_val</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">s_val</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s_val</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">ax_val</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="c1"># Ambiguous if values are integers. Assume value first?</span>
+                <span class="c1"># But typically sigma is float.</span>
+                <span class="k">pass</span>
 
-             <span class="c1"># Nearest neighbor</span>
-             <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ax_val</span> <span class="o">-</span> <span class="n">s_val</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
-             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+            <span class="c1"># Nearest neighbor</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ax_val</span> <span class="o">-</span> <span class="n">s_val</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;This transform does not appear to have &#39;sigma&#39; as axis 1.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;This transform does not appear to have &#39;sigma&#39; as axis 1.&quot;</span>
+            <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimePlaneTransform.to_array3d">
@@ -421,18 +435,19 @@
 <span class="sd">    3D container for Short-Time Laplace Transform data.</span>
 <span class="sd">    Structure: (time, sigma, frequency).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data3d</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># Enforce axis names if Array3D is created here?</span>
         <span class="c1"># User passes constructed Array3D usually.</span>
         <span class="c1"># Just ensure base init works.</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data3d</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;sigma&quot;</span><span class="p">:</span>
-             <span class="c1"># Try to rename if generic</span>
-             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;axis1&quot;</span><span class="p">:</span>
-                  <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">_set_axis_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">)</span>
+            <span class="c1"># Try to rename if generic</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;axis1&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">_set_axis_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;frequency&quot;</span><span class="p">:</span>
-             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;axis2&quot;</span><span class="p">:</span>
-                  <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">_set_axis_name</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;frequency&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;axis2&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">_set_axis_name</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;frequency&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sigmas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -478,13 +493,11 @@
             <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
             <span class="n">axis0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
             <span class="n">axis1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
-            <span class="n">axis2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">index</span>
+            <span class="n">axis2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Return wrapped in LaplaceGram</span>
         <span class="k">return</span> <span class="n">LaplaceGram</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
-
-
 </pre></div>
 
            </div>

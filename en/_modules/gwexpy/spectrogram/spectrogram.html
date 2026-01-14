@@ -84,12 +84,12 @@
   <h1>Source code for gwexpy.spectrogram.spectrogram</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spectrogram</span> <span class="k">as</span> <span class="n">BaseSpectrogram</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhaseMethodsMixin</span><span class="p">,</span> <span class="n">InteropMixin</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">InteropMixin</span><span class="p">,</span> <span class="n">PhaseMethodsMixin</span>
 
 
 <div class="viewcode-block" id="Spectrogram">
@@ -98,11 +98,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extends gwpy.spectrogram.Spectrogram with additional interop methods.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="Spectrogram.plot">
 <a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot this Spectrogram. Delegates to gwexpy.plot.Plot.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+
         <span class="k">return</span> <span class="n">Plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -187,6 +189,7 @@
 <span class="sd">        Convert to ROOT TH2D.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_th2d</span>
+
         <span class="k">return</span> <span class="n">to_th2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">)</span></div>
 
 
@@ -197,6 +200,7 @@
 <span class="sd">        Convert to quantities.Quantity (Elephant/Neo compatible).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_quantity</span>
+
         <span class="k">return</span> <span class="n">to_quantity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">)</span></div>
 
 
@@ -217,6 +221,7 @@
 <span class="sd">            Frequency axis.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_quantity</span>
+
         <span class="k">return</span> <span class="n">from_quantity</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">)</span></div>
 
 
@@ -228,12 +233,13 @@
 <span class="sd">        Create Spectrogram from ROOT TH2D.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_root</span>
+
         <span class="k">return</span> <span class="n">from_root</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">return_error</span><span class="o">=</span><span class="n">return_error</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Spectrogram.to_mne">
 <a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_mne">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_mne</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_mne</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to MNE-Python object.</span>
 
@@ -247,6 +253,7 @@
 <span class="sd">        mne.time_frequency.EpochsTFRArray</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_mne</span>
+
         <span class="k">return</span> <span class="n">to_mne</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span></div>
 
 
@@ -269,6 +276,7 @@
 <span class="sd">        Spectrogram or SpectrogramDict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_mne</span>
+
         <span class="k">return</span> <span class="n">from_mne</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tfr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -283,6 +291,7 @@
 <span class="sd">        obspy.Stream</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_obspy</span>
+
         <span class="k">return</span> <span class="n">to_obspy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -305,6 +314,7 @@
 <span class="sd">        Spectrogram</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_obspy</span>
+
         <span class="k">return</span> <span class="n">from_obspy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -324,7 +334,7 @@
 
 <div class="viewcode-block" id="Spectrogram.radian">
 <a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.radian">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Spectrogram&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrogram</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the phase of this Spectrogram in radians.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -344,7 +354,7 @@
 
 <div class="viewcode-block" id="Spectrogram.degree">
 <a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.degree">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Spectrogram&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrogram</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the phase of this Spectrogram in degrees.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

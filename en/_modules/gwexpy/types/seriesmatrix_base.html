@@ -83,42 +83,52 @@
              
   <h1>Source code for gwexpy.types.seriesmatrix_base</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetaData</span><span class="p">,</span> <span class="n">MetaDataDict</span><span class="p">,</span> <span class="n">MetaDataMatrix</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.seriesmatrix_validation</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">_normalize_input</span><span class="p">,</span>
-    <span class="n">_check_attribute_consistency</span><span class="p">,</span>
-    <span class="n">_fill_missing_attributes</span><span class="p">,</span>
-    <span class="n">_make_meta_matrix</span><span class="p">,</span>
-    <span class="n">_check_shape_consistency</span><span class="p">,</span>
-    <span class="n">build_index_if_needed</span><span class="p">,</span>
-    <span class="n">check_shape_xindex_compatibility</span><span class="p">,</span>
-    <span class="n">check_add_sub_compatibility</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">InteropMixin</span><span class="p">,</span> <span class="n">RegularityMixin</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">._stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">StatisticalMethodsMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetaData</span><span class="p">,</span> <span class="n">MetaDataDict</span><span class="p">,</span> <span class="n">MetaDataMatrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.series_matrix_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrixAnalysisMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.series_matrix_core</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrixCoreMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.series_matrix_indexing</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrixIndexingMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.series_matrix_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrixIOMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.series_matrix_math</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrixMathMixin</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.series_matrix_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrixAnalysisMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.series_matrix_structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrixStructureMixin</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.series_matrix_visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrixVisualizationMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.series_matrix_validation_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrixValidationMixin</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">._stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">StatisticalMethodsMixin</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegularityMixin</span><span class="p">,</span> <span class="n">InteropMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.series_matrix_visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrixVisualizationMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.seriesmatrix_validation</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_check_attribute_consistency</span><span class="p">,</span>
+    <span class="n">_check_shape_consistency</span><span class="p">,</span>
+    <span class="n">_fill_missing_attributes</span><span class="p">,</span>
+    <span class="n">_make_meta_matrix</span><span class="p">,</span>
+    <span class="n">_normalize_input</span><span class="p">,</span>
+    <span class="n">build_index_if_needed</span><span class="p">,</span>
+    <span class="n">check_add_sub_compatibility</span><span class="p">,</span>
+    <span class="n">check_shape_xindex_compatibility</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">_ADD_SUB_COMPARISON_UFUNCS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">less_equal</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">,</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">not_equal</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">greater_equal</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">less_equal</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">not_equal</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">,</span>
 <span class="p">}</span>
+
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PerformanceWarning</span><span class="p">(</span><span class="ne">RuntimeWarning</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning raised when an operation falls back to a slower implementation.&quot;&quot;&quot;</span>
+
     <span class="k">pass</span>
+
 
 <div class="viewcode-block" id="SeriesMatrix">
 <a class="viewcode-back" href="../../../api/types.html#gwexpy.types.SeriesMatrix">[docs]</a>
@@ -136,24 +146,26 @@
     <span class="n">StatisticalMethodsMixin</span><span class="p">,</span>
     <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
-                <span class="n">data</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="o">*</span><span class="p">,</span>
-                <span class="n">meta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;MetaDataMatrix&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">units</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">rows</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">cols</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">shape</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">xindex</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">dx</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">x0</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">xunit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="n">epoch</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-                <span class="n">attrs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SeriesMatrix&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">meta</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;MetaDataMatrix&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">unit</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">channels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rows</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cols</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">shape</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">xindex</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dx</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">x0</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">xunit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">epoch</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SeriesMatrix&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a SeriesMatrix with normalized inputs and metadata.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -183,7 +195,7 @@
             <span class="n">xindex</span><span class="o">=</span><span class="n">xindex</span><span class="p">,</span>
             <span class="n">dx</span><span class="o">=</span><span class="n">dx</span><span class="p">,</span>
             <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span>
-            <span class="n">xunit</span><span class="o">=</span><span class="n">xunit</span>
+            <span class="n">xunit</span><span class="o">=</span><span class="n">xunit</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">meta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -200,13 +212,9 @@
                 <span class="n">data_attrs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">data_attrs</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">_check_attribute_consistency</span><span class="p">(</span>
-                <span class="n">data_attrs</span><span class="o">=</span><span class="n">data_attrs</span><span class="p">,</span>
-                <span class="n">meta</span><span class="o">=</span><span class="n">meta</span>
-            <span class="p">)</span>
+            <span class="n">_check_attribute_consistency</span><span class="p">(</span><span class="n">data_attrs</span><span class="o">=</span><span class="n">data_attrs</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
             <span class="n">units_arr</span><span class="p">,</span> <span class="n">names_arr</span><span class="p">,</span> <span class="n">channels_arr</span> <span class="o">=</span> <span class="n">_fill_missing_attributes</span><span class="p">(</span>
-                <span class="n">data_attrs</span><span class="o">=</span><span class="n">data_attrs</span><span class="p">,</span>
-                <span class="n">meta</span><span class="o">=</span><span class="n">meta</span>
+                <span class="n">data_attrs</span><span class="o">=</span><span class="n">data_attrs</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">units_arr</span> <span class="o">=</span> <span class="n">data_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -217,7 +225,7 @@
             <span class="n">shape</span><span class="o">=</span><span class="n">value_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span>
             <span class="n">units</span><span class="o">=</span><span class="n">units_arr</span><span class="p">,</span>
             <span class="n">names</span><span class="o">=</span><span class="n">names_arr</span><span class="p">,</span>
-            <span class="n">channels</span><span class="o">=</span><span class="n">channels_arr</span>
+            <span class="n">channels</span><span class="o">=</span><span class="n">channels_arr</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">xindex</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -232,13 +240,11 @@
                         <span class="n">dx</span><span class="o">=</span><span class="n">dx</span><span class="p">,</span>
                         <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span>
                         <span class="n">xunit</span><span class="o">=</span><span class="n">xunit</span><span class="p">,</span>
-                        <span class="n">length</span><span class="o">=</span><span class="n">value_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                        <span class="n">length</span><span class="o">=</span><span class="n">value_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
                     <span class="p">)</span>
 
         <span class="n">_check_shape_consistency</span><span class="p">(</span>
-            <span class="n">value_array</span><span class="o">=</span><span class="n">value_array</span><span class="p">,</span>
-            <span class="n">meta_matrix</span><span class="o">=</span><span class="n">meta_matrix</span><span class="p">,</span>
-            <span class="n">xindex</span><span class="o">=</span><span class="n">xindex</span>
+            <span class="n">value_array</span><span class="o">=</span><span class="n">value_array</span><span class="p">,</span> <span class="n">meta_matrix</span><span class="o">=</span><span class="n">meta_matrix</span><span class="p">,</span> <span class="n">xindex</span><span class="o">=</span><span class="n">xindex</span>
         <span class="p">)</span>
 
         <span class="n">obj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value_array</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
@@ -265,32 +271,39 @@
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_suppress_xindex_check</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">xindex</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;xindex&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xindex</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;xindex&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_suppress_xindex_check&quot;</span><span class="p">):</span>
             <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_suppress_xindex_check&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span>   <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;meta&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rows</span>   <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;rows&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cols</span>   <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;cols&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span>   <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span>  <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;epoch&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span>  <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;attrs&#39;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">{}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;rows&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;cols&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;epoch&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">{}))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">__array_ufunc__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ufunc</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;__call__&#39;</span><span class="p">:</span>
-            <span class="n">base_inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">inp</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">SeriesMatrix</span><span class="p">)</span> <span class="k">else</span> <span class="n">inp</span> <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__array_ufunc__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">ufunc</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;__call__&quot;</span><span class="p">:</span>
+            <span class="n">base_inputs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">inp</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">SeriesMatrix</span><span class="p">)</span> <span class="k">else</span> <span class="n">inp</span>
+                <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="n">inputs</span>
+            <span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="o">.</span><span class="n">__array_ufunc__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">),</span> <span class="n">ufunc</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">base_inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="o">.</span><span class="n">__array_ufunc__</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">),</span> <span class="n">ufunc</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">base_inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
                 <span class="k">return</span> <span class="bp">NotImplemented</span>
 
         <span class="n">casted_inputs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">xindex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xindex</span>
-        <span class="n">shape</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">rows</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span>
-        <span class="n">cols</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span>
-        <span class="n">epoch</span>  <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;epoch&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
-        <span class="n">name</span>   <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">attrs</span>  <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span>
+        <span class="n">epoch</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;epoch&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">{})</span>
 
         <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">SeriesMatrix</span><span class="p">):</span>
@@ -302,25 +315,37 @@
                     <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">val</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">K</span><span class="p">,):</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;1D Quantity must have length N_samples=</span><span class="si">{</span><span class="n">K</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;1D Quantity must have length N_samples=</span><span class="si">{</span><span class="n">K</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
                     <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">K</span><span class="p">),</span> <span class="n">shape</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">val</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;2D Quantity must have shape (Nrow,Ncol)=</span><span class="si">{</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="p">)</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;2D Quantity must have shape (Nrow,Ncol)=</span><span class="si">{</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="p">)</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
                     <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">shape</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">val</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">shape</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;3D Quantity must have shape </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;3D Quantity must have shape </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
                     <span class="n">arr</span> <span class="o">=</span> <span class="n">val</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quantity with ndim=</span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> is not supported in __array_ufunc__&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Quantity with ndim=</span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> is not supported in __array_ufunc__&quot;</span>
+                    <span class="p">)</span>
                 <span class="n">unit</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">unit</span>
                 <span class="n">meta_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
                     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
                         <span class="n">meta_array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;s</span><span class="si">{</span><span class="n">i</span><span class="si">}{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">meta_matrix</span> <span class="o">=</span> <span class="n">MetaDataMatrix</span><span class="p">(</span><span class="n">meta_array</span><span class="p">)</span>
-                <span class="n">casted_inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">xindex</span><span class="o">=</span><span class="n">xindex</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta_matrix</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+                <span class="n">casted_inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+                        <span class="n">arr</span><span class="p">,</span> <span class="n">xindex</span><span class="o">=</span><span class="n">xindex</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta_matrix</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">complex</span><span class="p">)):</span>
                 <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">inp</span><span class="p">)</span>
                 <span class="n">unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span>
@@ -329,7 +354,11 @@
                     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
                         <span class="n">meta_array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;s</span><span class="si">{</span><span class="n">i</span><span class="si">}{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">meta_matrix</span> <span class="o">=</span> <span class="n">MetaDataMatrix</span><span class="p">(</span><span class="n">meta_array</span><span class="p">)</span>
-                <span class="n">casted_inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">xindex</span><span class="o">=</span><span class="n">xindex</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta_matrix</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+                <span class="n">casted_inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+                        <span class="n">arr</span><span class="p">,</span> <span class="n">xindex</span><span class="o">=</span><span class="n">xindex</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta_matrix</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
                 <span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="n">shape</span>
@@ -349,14 +378,18 @@
                     <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">shape</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">val</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">shape</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;3D ndarray must have shape </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;3D ndarray must have shape </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
                     <span class="n">arr</span> <span class="o">=</span> <span class="n">val</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;ndarray with ndim=</span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> is not supported in __array_ufunc__&quot;</span>
                     <span class="p">)</span>
 
-                <span class="n">casted_inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">xindex</span><span class="o">=</span><span class="n">xindex</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+                <span class="n">casted_inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">xindex</span><span class="o">=</span><span class="n">xindex</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">NotImplemented</span>
 
@@ -369,27 +402,50 @@
 
         <span class="n">meta_matrices</span> <span class="o">=</span> <span class="p">[</span><span class="n">inp</span><span class="o">.</span><span class="n">meta</span> <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="n">casted_inputs</span><span class="p">]</span>
 
-        <span class="n">ufunc_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;out&#39;</span><span class="p">,</span> <span class="s1">&#39;where&#39;</span><span class="p">)}</span>
+        <span class="n">ufunc_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">)}</span>
 
         <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">logical_ufuncs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">,</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">meta_passthrough_ufuncs</span> <span class="o">=</span> <span class="n">logical_ufuncs</span> <span class="o">|</span> <span class="p">{</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">trunc</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">,</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">remainder</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">trunc</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">remainder</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">ufunc_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ufunc</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">meta_passthrough</span> <span class="o">=</span> <span class="n">ufunc</span> <span class="ow">in</span> <span class="n">meta_passthrough_ufuncs</span> <span class="ow">or</span> <span class="n">ufunc_name</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;clip&quot;</span><span class="p">}</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">probe_val_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value_arrays</span><span class="p">]</span>
             <span class="n">probe_result</span> <span class="o">=</span> <span class="n">ufunc</span><span class="p">(</span><span class="o">*</span><span class="n">probe_val_args</span><span class="p">,</span> <span class="o">**</span><span class="n">ufunc_kwargs</span><span class="p">)</span>
-            <span class="n">boolean_ufuncs</span> <span class="o">=</span> <span class="p">{</span><span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">less_equal</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">not_equal</span><span class="p">,</span>
-                              <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">,</span>
-                              <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">,</span>
-                              <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">,</span>
-                              <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">}</span>
+            <span class="n">boolean_ufuncs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">less_equal</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">not_equal</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">,</span>
+            <span class="p">}</span>
             <span class="k">if</span> <span class="n">ufunc</span> <span class="ow">in</span> <span class="n">boolean_ufuncs</span><span class="p">:</span>
                 <span class="n">result_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span>
             <span class="k">else</span><span class="p">:</span>
@@ -402,14 +458,17 @@
             <span class="n">result_values</span> <span class="o">=</span> <span class="n">ufunc</span><span class="p">(</span><span class="o">*</span><span class="n">value_arrays</span><span class="p">,</span> <span class="o">**</span><span class="n">ufunc_kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c1"># Fallback to loop if vectorized call fails (likely due to custom ufunc or mixed types)</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ufunc </span><span class="si">{</span><span class="n">ufunc</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> failed vectorized execution; falling back to loop. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">PerformanceWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;ufunc </span><span class="si">{</span><span class="n">ufunc</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> failed vectorized execution; falling back to loop. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">PerformanceWarning</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">result_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">result_dtype</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
                     <span class="n">val_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value_arrays</span><span class="p">]</span>
                     <span class="n">result_values</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">ufunc</span><span class="p">(</span><span class="o">*</span><span class="n">val_args</span><span class="p">,</span> <span class="o">**</span><span class="n">ufunc_kwargs</span><span class="p">)</span>
 
-        <span class="n">result_meta</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+        <span class="n">result_meta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
         <span class="n">bool_result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">result_dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
 
         <span class="c1"># Optimize Metadata calculation</span>
@@ -442,16 +501,19 @@
                     <span class="c1"># Leverage MetaDataMatrix&#39;s vectorized ufunc support</span>
                     <span class="n">result_meta</span> <span class="o">=</span> <span class="n">ufunc</span><span class="p">(</span><span class="o">*</span><span class="n">meta_matrices</span><span class="p">,</span> <span class="o">**</span><span class="n">ufunc_kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                 <span class="c1"># Fallback to loop if vectorized meta-ufunc fails</span>
-                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MetaData vectorized ufunc failed; falling back to loop. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">PerformanceWarning</span><span class="p">)</span>
-                 <span class="n">result_meta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
-                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
-                     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
-                         <span class="n">meta_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">meta_matrices</span><span class="p">]</span>
-                         <span class="k">if</span> <span class="n">bool_result</span> <span class="ow">or</span> <span class="n">meta_passthrough</span><span class="p">:</span>
-                             <span class="n">result_meta</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                         <span class="k">else</span><span class="p">:</span>
-                             <span class="n">result_meta</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">ufunc</span><span class="p">(</span><span class="o">*</span><span class="n">meta_args</span><span class="p">,</span> <span class="o">**</span><span class="n">ufunc_kwargs</span><span class="p">)</span>
+                <span class="c1"># Fallback to loop if vectorized meta-ufunc fails</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;MetaData vectorized ufunc failed; falling back to loop. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">PerformanceWarning</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">result_meta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+                        <span class="n">meta_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">meta_matrices</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">bool_result</span> <span class="ow">or</span> <span class="n">meta_passthrough</span><span class="p">:</span>
+                            <span class="n">result_meta</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">result_meta</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">ufunc</span><span class="p">(</span><span class="o">*</span><span class="n">meta_args</span><span class="p">,</span> <span class="o">**</span><span class="n">ufunc_kwargs</span><span class="p">)</span>
 
         <span class="n">result_meta_matrix</span> <span class="o">=</span> <span class="n">MetaDataMatrix</span><span class="p">(</span><span class="n">result_meta</span><span class="p">)</span>
         <span class="n">result_units</span> <span class="o">=</span> <span class="n">result_meta_matrix</span><span class="o">.</span><span class="n">units</span>
@@ -464,9 +526,8 @@
             <span class="n">cols</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">epoch</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
-            <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span>
         <span class="p">)</span></div>
-
 
 </pre></div>
 

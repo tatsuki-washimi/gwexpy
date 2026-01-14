@@ -86,6 +86,7 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
@@ -96,19 +97,16 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span> <span class="k">as</span> <span class="n">BaseTimeSeries</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.seriesmatrix</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrix</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhaseMethodsMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.seriesmatrix</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrix</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesType</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span><span class="p">,</span> <span class="n">TimeSeriesList</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">.matrix_core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">TimeSeriesMatrixCoreMixin</span>
-<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.matrix_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrixAnalysisMixin</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.matrix_spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrixSpectralMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.matrix_core</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrixCoreMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.matrix_interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrixInteropMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.matrix_spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrixSpectralMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesType</span>
 
 
 <div class="viewcode-block" id="TimeSeriesMatrix">
@@ -119,7 +117,7 @@
     <span class="n">TimeSeriesMatrixAnalysisMixin</span><span class="p">,</span>
     <span class="n">TimeSeriesMatrixSpectralMixin</span><span class="p">,</span>
     <span class="n">TimeSeriesMatrixInteropMixin</span><span class="p">,</span>
-    <span class="n">SeriesMatrix</span>
+    <span class="n">SeriesMatrix</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matrix container for multiple TimeSeries objects.</span>
@@ -144,8 +142,9 @@
         <span class="n">sample_rate</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">epoch</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesMatrix&quot;</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesMatrix</span><span class="p">:</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_coerce_t0_gps</span>
 
         <span class="n">channel_names</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;channel_names&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -243,29 +242,28 @@
                 <span class="c1"># Intelligent reshaping based on data shape</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">):</span>
-                         <span class="n">dshape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+                        <span class="n">dshape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
                     <span class="k">else</span><span class="p">:</span>
-                         <span class="n">dshape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                        <span class="n">dshape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dshape</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
                         <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">dshape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
                         <span class="k">if</span> <span class="n">cn</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">N</span> <span class="o">*</span> <span class="n">M</span><span class="p">:</span>
                             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
                         <span class="k">elif</span> <span class="n">cn</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">N</span><span class="p">:</span>
-                             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
-                             <span class="c1"># Default to 1D, which broadcasts to (..., M) if size matches M</span>
-                             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
+                            <span class="c1"># Default to 1D, which broadcasts to (..., M) if size matches M</span>
+                            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                     <span class="k">if</span> <span class="n">cn</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                          <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                     <span class="k">else</span><span class="p">:</span>
-                          <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
+                    <span class="k">if</span> <span class="n">cn</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
 
         <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
 
         <span class="k">return</span> <span class="n">obj</span>
 
@@ -274,6 +272,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the matrix data.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+
         <span class="k">return</span> <span class="n">Plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </div>
 
@@ -304,12 +303,14 @@
 <span class="k">for</span> <span class="n">_m</span> <span class="ow">in</span> <span class="n">_TSM_TIME_DOMAIN_METHODS</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">_m</span> <span class="ow">in</span> <span class="n">_TSM_MISSING_TIME_DOMAIN_METHODS</span><span class="p">:</span>
         <span class="k">continue</span>
+
     <span class="c1"># Use the helper from core, but wrap it to add metadata if needed</span>
     <span class="c1"># Actually, the helpers in CoreMixin were slightly different (docstring etc.)</span>
     <span class="c1"># Let&#39;s redefine them here to maintain exact behavior</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_make_wrapper</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_timeseries_method</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;TimeSeriesMatrix.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Element-wise delegate to `TimeSeries.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">`.&quot;</span>
@@ -330,24 +331,34 @@
 
 <span class="k">for</span> <span class="n">_m</span> <span class="ow">in</span> <span class="n">_TSM_BIVARIATE_METHODS</span><span class="p">:</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">BaseTimeSeries</span><span class="p">,</span> <span class="n">_m</span><span class="p">):</span>
+
         <span class="k">def</span><span class="w"> </span><span class="nf">_make_biv_wrapper</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
             <span class="k">def</span><span class="w"> </span><span class="nf">_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_bivariate_spectral_method</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_bivariate_spectral_method</span><span class="p">(</span>
+                    <span class="n">name</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">)</span>
+
             <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span>
             <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;TimeSeriesMatrix.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Element-wise delegate to `TimeSeries.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">` with another TimeSeries.&quot;</span>
+            <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Element-wise delegate to `TimeSeries.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">` with another TimeSeries.&quot;</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="n">_wrapper</span>
+
         <span class="nb">setattr</span><span class="p">(</span><span class="n">TimeSeriesMatrix</span><span class="p">,</span> <span class="n">_m</span><span class="p">,</span> <span class="n">_make_biv_wrapper</span><span class="p">(</span><span class="n">_m</span><span class="p">))</span>
 
 <span class="k">for</span> <span class="n">_m</span> <span class="ow">in</span> <span class="n">_TSM_UNIVARIATE_METHODS</span><span class="p">:</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">BaseTimeSeries</span><span class="p">,</span> <span class="n">_m</span><span class="p">):</span>
+
         <span class="k">def</span><span class="w"> </span><span class="nf">_make_univ_wrapper</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
             <span class="k">def</span><span class="w"> </span><span class="nf">_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_univariate_spectral_method</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
             <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span>
             <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;TimeSeriesMatrix.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Element-wise delegate to `TimeSeries.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">`.&quot;</span>
             <span class="k">return</span> <span class="n">_wrapper</span>
+
         <span class="nb">setattr</span><span class="p">(</span><span class="n">TimeSeriesMatrix</span><span class="p">,</span> <span class="n">_m</span><span class="p">,</span> <span class="n">_make_univ_wrapper</span><span class="p">(</span><span class="n">_m</span><span class="p">))</span>
 </pre></div>
 

@@ -83,17 +83,17 @@
              
   <h1>Source code for gwexpy.frequencyseries.bifrequencymap</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">interp1d</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array2D</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array2D</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">interp1d</span>
+
 
 <div class="viewcode-block" id="BifrequencyMap">
 <a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BifrequencyMap</span><span class="p">(</span><span class="n">Array2D</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;2つの異なる周波数軸を持つマップ（応答関数や相関行列）クラス。</span>
-<span class="sd">    </span>
+
 <span class="sd">    (行, 列) = (周波数2, 周波数1) としてデータを保持します。</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -113,7 +113,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">from_points</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        データと2つの周波数軸からインスタンスを生成します。</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        data : array-like</span>
@@ -125,9 +125,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># 単位が付いていない場合はHzとみなす</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">):</span>
-             <span class="n">f1</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+            <span class="n">f1</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">):</span>
-             <span class="n">f2</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+            <span class="n">f2</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
 
         <span class="c1"># Array2Dは (y, x) の順で初期化されるため、それに合わせる</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">yindex</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">xindex</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -138,7 +138,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">propagate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_spectrum</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        入力スペクトルに応答関数を適用し、出力スペクトルを計算します。</span>
-<span class="sd">        </span>
+
 <span class="sd">        入力スペクトルの周波数軸がこのマップの軸1(xindex)と異なる場合、</span>
 <span class="sd">        自動的に線形補間を行って合わせることができます。</span>
 
@@ -159,20 +159,29 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># 入力データの検証</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_spectrum</span><span class="p">,</span> <span class="n">FrequencySeries</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;input_spectrum must be a gwpy.frequencyseries.FrequencySeries&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;input_spectrum must be a gwpy.frequencyseries.FrequencySeries&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># 演算用の入力データ配列</span>
         <span class="n">in_val</span> <span class="o">=</span> <span class="n">input_spectrum</span><span class="o">.</span><span class="n">value</span>
         <span class="n">in_freq</span> <span class="o">=</span> <span class="n">input_spectrum</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
         <span class="n">map_in_freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">value</span>
-        
+
         <span class="c1"># 周波数軸の整合性チェックと補間</span>
         <span class="k">if</span> <span class="n">interpolate</span><span class="p">:</span>
             <span class="c1"># 軸が完全に一致していない場合は補間を行う</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_freq</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">map_in_freq</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">in_freq</span><span class="p">,</span> <span class="n">map_in_freq</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_freq</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">map_in_freq</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
+                <span class="n">in_freq</span><span class="p">,</span> <span class="n">map_in_freq</span>
+            <span class="p">):</span>
                 <span class="c1"># 線形補間関数を作成</span>
-                <span class="n">f</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">in_freq</span><span class="p">,</span> <span class="n">in_val</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> 
-                             <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">)</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span>
+                    <span class="n">in_freq</span><span class="p">,</span>
+                    <span class="n">in_val</span><span class="p">,</span>
+                    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+                    <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">,</span>
+                <span class="p">)</span>
                 <span class="c1"># マップのX軸に合わせてリサンプリング</span>
                 <span class="n">in_val</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">map_in_freq</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -183,7 +192,7 @@
                     <span class="sa">f</span><span class="s2">&quot;map input size </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">. Enable `interpolate=True`.&quot;</span>
                 <span class="p">)</span>
 
-        <span class="c1">#行列積の計算: (N_f2, N_f1) @ (N_f1,) -&gt; (N_f2,)</span>
+        <span class="c1"># 行列積の計算: (N_f2, N_f1) @ (N_f1,) -&gt; (N_f2,)</span>
         <span class="c1"># これにより、周波数1軸方向の成分が積算され、周波数2軸のデータになる</span>
         <span class="n">out_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">@</span> <span class="n">in_val</span>
 
@@ -195,7 +204,7 @@
             <span class="n">out_val</span><span class="p">,</span>
             <span class="n">frequencies</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="p">,</span>
             <span class="n">unit</span><span class="o">=</span><span class="n">new_unit</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Projected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="n">input_spectrum</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Projected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="n">input_spectrum</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -204,41 +213,42 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BifrequencyMap&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the (pseudo-)inverse of the BifrequencyMap.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        rcond : float or None</span>
 <span class="sd">            Cutoff for small singular values. Same as `np.linalg.pinv`.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        inv_map : BifrequencyMap</span>
 <span class="sd">            New BifrequencyMap instance representing the inverse matrix.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">pinv</span>
+
         <span class="k">if</span> <span class="n">rcond</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">inv_value</span> <span class="o">=</span> <span class="n">pinv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">inv_value</span> <span class="o">=</span> <span class="n">pinv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="n">rcond</span><span class="p">)</span>
-        
+
         <span class="c1"># Determine new unit</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">!=</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">:</span>
-             <span class="n">new_unit</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span>
+            <span class="n">new_unit</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span>
         <span class="k">else</span><span class="p">:</span>
-             <span class="n">new_unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span>
-             
+            <span class="n">new_unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span>
+
         <span class="c1"># New axes:</span>
         <span class="c1"># The result of pinv(A) has shape (ncols, nrows) where A is (nrows, ncols).</span>
         <span class="c1"># Original: rows=frequency2, cols=frequency1</span>
         <span class="c1"># Inverse: rows=frequency1, cols=frequency2</span>
         <span class="c1"># So new f2 (Y) is old f1, new f1 (X) is old f2.</span>
-        
+
         <span class="k">return</span> <span class="n">BifrequencyMap</span><span class="o">.</span><span class="n">from_points</span><span class="p">(</span>
             <span class="n">inv_value</span><span class="p">,</span>
             <span class="n">f2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">,</span>
             <span class="n">f1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="p">,</span>
             <span class="n">unit</span><span class="o">=</span><span class="n">new_unit</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Inverse of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="s2">&quot;Inverse&quot;</span>
+            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Inverse of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="s2">&quot;Inverse&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -259,14 +269,14 @@
         <span class="c1"># We use strict numpy array formatting to avoid huge outputs, similar to Series</span>
         <span class="n">arrobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
         <span class="n">data_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">arrobj</span><span class="p">)</span>
-        
+
         <span class="c1"># Indentation for metadata</span>
         <span class="n">indent</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        
+
         <span class="c1"># Construct metadata strings</span>
         <span class="n">meta</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">meta</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        
+
         <span class="c1"># F1/F2 info</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">f1_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> .. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -279,13 +289,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">f2_str</span> <span class="o">=</span> <span class="s2">&quot;empty&quot;</span>
         <span class="n">meta</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;freq2: </span><span class="si">{</span><span class="n">f2_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">meta</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            
+
         <span class="c1"># Join</span>
         <span class="n">meta_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;,</span><span class="se">\n</span><span class="si">{</span><span class="n">indent</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">meta</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">data_str</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">indent</span><span class="si">}{</span><span class="n">meta_str</span><span class="si">}</span><span class="s2">)&quot;</span>
 
 <div class="viewcode-block" id="BifrequencyMap.plot">
@@ -307,10 +317,10 @@
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;figsize&quot;</span><span class="p">,</span> <span class="s2">&quot;dpi&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                 <span class="n">plot_kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="s2">&quot;geometry&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">plot_kwargs</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;geometry&quot;</span><span class="p">)</span>
-        
+
         <span class="c1"># Background color for masked values (e.g. below vmin in LogNorm)</span>
         <span class="c1"># Default to &#39;gray&#39; as requested</span>
         <span class="n">background_color</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;background_color&quot;</span><span class="p">,</span> <span class="s2">&quot;gray&quot;</span><span class="p">)</span>
@@ -323,12 +333,12 @@
         <span class="c1"># Labels</span>
         <span class="n">xlabel</span> <span class="o">=</span> <span class="s2">&quot;Frequency 1&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-             <span class="n">xlabel</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span>
-        
+            <span class="n">xlabel</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span>
+
         <span class="n">ylabel</span> <span class="o">=</span> <span class="s2">&quot;Frequency 2&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-             <span class="n">ylabel</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span>
-        
+            <span class="n">ylabel</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span>
+
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;xlabel&quot;</span><span class="p">,</span> <span class="n">xlabel</span><span class="p">))</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;ylabel&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">))</span>
 
@@ -341,58 +351,61 @@
         <span class="c1"># Plotting</span>
         <span class="c1"># If norm is provided (e.g. LogNorm), pcolormesh is often more robust for sparse data/zeros</span>
         <span class="k">if</span> <span class="s2">&quot;norm&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;imshow&quot;</span><span class="p">:</span>
-             <span class="c1"># We can&#39;t easily know if user *explicitly* passed &#39;imshow&#39; vs default.</span>
-             <span class="c1"># But let&#39;s assume if they want LogNorm on a map, pcolormesh is safer.</span>
-             <span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;pcolormesh&quot;</span>
+            <span class="c1"># We can&#39;t easily know if user *explicitly* passed &#39;imshow&#39; vs default.</span>
+            <span class="c1"># But let&#39;s assume if they want LogNorm on a map, pcolormesh is safer.</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;pcolormesh&quot;</span>
 
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;imshow&quot;</span><span class="p">:</span>
             <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;origin&quot;</span><span class="p">,</span> <span class="s2">&quot;lower&quot;</span><span class="p">)</span>
             <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;aspect&quot;</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">)</span>
             <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;interpolation&quot;</span><span class="p">,</span> <span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
             <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;cmap&quot;</span><span class="p">,</span> <span class="s2">&quot;inferno&quot;</span><span class="p">)</span>
-            
+
             <span class="k">if</span> <span class="s2">&quot;extent&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                 <span class="c1"># Calculate extent [x0, x1, y0, y1]</span>
                 <span class="n">x0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
                 <span class="n">x1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
                 <span class="n">y0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
                 <span class="n">y1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-                
+
                 <span class="c1"># Correct for pixel edges</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="n">df1</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="n">extent_x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x0</span> <span class="o">-</span> <span class="n">df1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">df1</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="n">extent_x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x0</span> <span class="o">-</span> <span class="n">df1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">df1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">extent_x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">]</span>
 
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="n">df2</span> <span class="o">=</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="n">extent_y</span> <span class="o">=</span> <span class="p">[</span><span class="n">y0</span> <span class="o">-</span> <span class="n">df2</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">df2</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="n">extent_y</span> <span class="o">=</span> <span class="p">[</span><span class="n">y0</span> <span class="o">-</span> <span class="n">df2</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">df2</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">extent_y</span> <span class="o">=</span> <span class="p">[</span><span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">]</span>
-                    
+
                 <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;extent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">extent_x</span> <span class="o">+</span> <span class="n">extent_y</span>
-            
+
             <span class="n">layer</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            
+
         <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;pcolormesh&quot;</span><span class="p">:</span>
             <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;cmap&quot;</span><span class="p">,</span> <span class="s2">&quot;inferno&quot;</span><span class="p">)</span>
-            <span class="c1"># pcolormesh expects bin edges or centers. </span>
+            <span class="c1"># pcolormesh expects bin edges or centers.</span>
             <span class="c1"># If we pass centers (frequency arrays), it infers edges.</span>
             <span class="c1"># However, for LogNorm, we must ensure values &lt;= 0 are masked.</span>
-            
+
             <span class="c1"># Mask zeros/negative if LogNorm is used, to avoid warning/error or invisible output</span>
             <span class="k">if</span> <span class="s2">&quot;norm&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogNorm</span>
-                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">],</span> <span class="n">LogNorm</span><span class="p">):</span>
-                     <span class="c1"># Mask &lt;= 0</span>
-                     <span class="n">val_to_plot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_less_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-                 <span class="k">else</span><span class="p">:</span>
-                     <span class="n">val_to_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
-            <span class="k">else</span><span class="p">:</span>
-                 <span class="n">val_to_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogNorm</span>
 
-            <span class="n">layer</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">val_to_plot</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">],</span> <span class="n">LogNorm</span><span class="p">):</span>
+                    <span class="c1"># Mask &lt;= 0</span>
+                    <span class="n">val_to_plot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_less_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">val_to_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">val_to_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+            <span class="n">layer</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">val_to_plot</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown plot method: </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -400,7 +413,7 @@
         <span class="c1"># Try to use unit</span>
         <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span>
-             <span class="n">label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span>
+            <span class="n">label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span>
         <span class="n">plot</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">plot</span></div>
@@ -408,7 +421,7 @@
 
 <div class="viewcode-block" id="BifrequencyMap.get_slice">
 <a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.get_slice">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">at</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;f1&#39;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">at</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;f1&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract a 1D slice (FrequencySeries) at a specific frequency on one axis.</span>
 
@@ -428,11 +441,11 @@
 <span class="sd">            The extracted 1D spectrum.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Determine target axis and slice axis</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="s1">&#39;f1&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">&quot;f1&quot;</span><span class="p">:</span>
             <span class="n">target_axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">value</span>
             <span class="n">target_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">unit</span>
             <span class="n">result_axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span>
-        <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="s1">&#39;f2&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">&quot;f2&quot;</span><span class="p">:</span>
             <span class="n">target_axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">value</span>
             <span class="n">target_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">unit</span>
             <span class="n">result_axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span>
@@ -445,13 +458,13 @@
             <span class="n">val</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">val</span> <span class="o">=</span> <span class="n">at</span>
-            
+
         <span class="c1"># Find nearest index</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">target_axis</span> <span class="o">-</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
         <span class="n">actual_val</span> <span class="o">=</span> <span class="n">target_axis</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-        
+
         <span class="c1"># Extract data</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="s1">&#39;f1&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">&quot;f1&quot;</span><span class="p">:</span>
             <span class="c1"># f1 is columns (dim 1). Fix column idx.</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span>
             <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (at f1=</span><span class="si">{</span><span class="n">actual_val</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">target_unit</span><span class="si">}</span><span class="s2">)&quot;</span>
@@ -459,13 +472,8 @@
             <span class="c1"># f2 is rows (dim 0). Fix row idx.</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (at f2=</span><span class="si">{</span><span class="n">actual_val</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">target_unit</span><span class="si">}</span><span class="s2">)&quot;</span>
-            
-        <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span>
-            <span class="n">data</span><span class="p">,</span>
-            <span class="n">frequencies</span><span class="o">=</span><span class="n">result_axis</span><span class="p">,</span>
-            <span class="n">unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">name</span>
-        <span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">result_axis</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BifrequencyMap.diagonal">
@@ -483,7 +491,7 @@
 <span class="sd">            All methods ignore NaNs in the data by default.</span>
 <span class="sd">        bins : int or array-like, optional</span>
 <span class="sd">            Number of bins or bin edges for the diagonal axis.</span>
-<span class="sd">            If None (default), it is automatically determined based on the resolution </span>
+<span class="sd">            If None (default), it is automatically determined based on the resolution</span>
 <span class="sd">            of frequency axes (max(df1, df2)).</span>
 <span class="sd">        absolute : bool, optional</span>
 <span class="sd">            If True, calculates statistics along the absolute difference ``abs(f2 - f1)``.</span>
@@ -501,39 +509,47 @@
 
         <span class="c1"># Create meshgrid for frequencies</span>
         <span class="n">f1_grid</span><span class="p">,</span> <span class="n">f2_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        
+
         <span class="c1"># Calculate diagonal axis values (f2 - f1)</span>
         <span class="n">diag_val</span> <span class="o">=</span> <span class="n">f2_grid</span> <span class="o">-</span> <span class="n">f1_grid</span>
-        
+
         <span class="k">if</span> <span class="n">absolute</span><span class="p">:</span>
             <span class="n">diag_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">diag_val</span><span class="p">)</span>
-        
+
         <span class="c1"># Determine bins automatically if None</span>
         <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Estimate resolution (df) for each axis</span>
             <span class="c1"># Use mean difference to be robust against minor numeric noise</span>
-            <span class="n">df1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">value</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">1.0</span>
-            <span class="n">df2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">value</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">1.0</span>
-            
+            <span class="n">df1</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="k">else</span> <span class="mf">1.0</span>
+            <span class="p">)</span>
+            <span class="n">df2</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="k">else</span> <span class="mf">1.0</span>
+            <span class="p">)</span>
+
             <span class="c1"># Use the coarser resolution (maximum df) to avoid oversampling</span>
             <span class="n">target_df</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">)</span>
-            
+
             <span class="c1"># Calculate range</span>
             <span class="n">min_diag</span> <span class="o">=</span> <span class="n">diag_val</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
             <span class="n">max_diag</span> <span class="o">=</span> <span class="n">diag_val</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
             <span class="n">range_diag</span> <span class="o">=</span> <span class="n">max_diag</span> <span class="o">-</span> <span class="n">min_diag</span>
-            
+
             <span class="c1"># Calculate number of bins</span>
             <span class="c1"># Ensure at least 1 bin</span>
             <span class="k">if</span> <span class="n">target_df</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">bins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">range_diag</span> <span class="o">/</span> <span class="n">target_df</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">bins</span> <span class="o">=</span> <span class="mi">100</span> <span class="c1"># Fallback if resolution is 0</span>
-            
+                <span class="n">bins</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># Fallback if resolution is 0</span>
+
             <span class="n">bins</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
 
         <span class="c1"># Flatten arrays for binning</span>
-        
+
         <span class="c1"># Flatten arrays for binning</span>
         <span class="n">diag_flat</span> <span class="o">=</span> <span class="n">diag_val</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         <span class="n">data_flat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
@@ -556,25 +572,27 @@
             <span class="n">statistic_func</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span>
         <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;percentile&quot;</span><span class="p">:</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;percentile&quot;</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
-            <span class="n">statistic_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">statistic_func</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Fallback for custom callables or unsupported strings (let binned_statistic handle)</span>
             <span class="n">statistic_func</span> <span class="o">=</span> <span class="n">method</span>
-        
+
         <span class="c1"># Calculate binned statistics</span>
         <span class="n">stat_vals</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">binned_statistic</span><span class="p">(</span>
             <span class="n">diag_flat</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">data_flat</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="n">statistic_func</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span>
         <span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;rms&quot;</span><span class="p">:</span>
             <span class="n">stat_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">stat_vals</span><span class="p">)</span>
 
         <span class="c1"># Create frequency axis for the result (center of bins)</span>
         <span class="n">bin_centers</span> <span class="o">=</span> <span class="p">(</span><span class="n">bin_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">bin_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">/</span> <span class="mi">2</span>
-        
+
         <span class="c1"># Determine unit</span>
         <span class="n">unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span>
-        
+
         <span class="c1"># Determine axis unit</span>
         <span class="n">axis_unit</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">):</span>
@@ -584,12 +602,12 @@
 
         <span class="c1"># Create FrequencySeries</span>
         <span class="n">frequencies</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">bin_centers</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">axis_unit</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span>
             <span class="n">stat_vals</span><span class="p">,</span>
             <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span>
             <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (diagonal </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (diagonal </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -598,10 +616,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">convolute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_spectrum</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convolutes the map with an input spectrum (integration along f1).</span>
-<span class="sd">        </span>
+
 <span class="sd">        Calculates:</span>
 <span class="sd">            S_out(f2) = integral( M(f2, f1) * S_in(f1) * df1 )</span>
-<span class="sd">        </span>
+
 <span class="sd">        This is similar to `propagate`, but multiplies by the frequency bin width (df)</span>
 <span class="sd">        to perform an integration rather than a simple sum.</span>
 
@@ -622,24 +640,26 @@
         <span class="c1"># Reuse propagate logic logic to get the matrix product (Sum[M*S])</span>
         <span class="c1"># We can call propagate assuming it does the matrix product part correctly.</span>
         <span class="c1"># But propagate returns a FrequencySeries, so we can just operate on it.</span>
-        
+
         <span class="c1"># However, we need to know the &#39;df&#39; used for the integration.</span>
         <span class="c1"># If we interpolate, we use the map&#39;s f1 resolution.</span>
         <span class="c1"># If we don&#39;t interpolate, we assume input matches f1.</span>
-        
+
         <span class="c1"># Let&#39;s re-implement logic lightly or call propagate?</span>
         <span class="c1"># propagate does: out = self.value @ in_val</span>
         <span class="c1"># It handles interpolation.</span>
-        
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span><span class="n">input_spectrum</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="n">interpolate</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">)</span>
-        
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span>
+            <span class="n">input_spectrum</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="n">interpolate</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span>
+        <span class="p">)</span>
+
         <span class="c1"># Now we need to multiply by df.</span>
         <span class="c1"># Which df? The df of the integration axis (f1).</span>
         <span class="c1"># We need the df of the grid used for multiplication.</span>
         <span class="c1"># In propagate:</span>
         <span class="c1">#   if interpolate: in_val is resampled to self.frequency1 -&gt; use self.frequency1 resolution.</span>
         <span class="c1">#   else: in_val must match self.shape[1] (which is len(f1)) -&gt; use self.frequency1 resolution (assuming uniform) or input&#39;s?</span>
-        
+
         <span class="c1"># Safest is to calculate df from self.frequency1 since that&#39;s what the matrix is defined on.</span>
         <span class="c1"># Assuming uniform grid for integration approximation.</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -647,19 +667,21 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Fallback if single point (df not well defined, maybe 1.0 or 0?)</span>
             <span class="c1"># If standard integration of a point source ??</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="mf">1.0</span> 
-            
+            <span class="n">df</span> <span class="o">=</span> <span class="mf">1.0</span>
+
         <span class="c1"># If self.frequency1 has unit, df should have that unit.</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">):</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">df</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">unit</span>
-            
+
         <span class="c1"># Multiply result by df</span>
         <span class="k">return</span> <span class="n">res</span> <span class="o">*</span> <span class="n">df</span></div>
 
 
 <div class="viewcode-block" id="BifrequencyMap.plot_lines">
 <a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.plot_lines">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xaxis</span><span class="o">=</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;f2&#39;</span><span class="p">,</span> <span class="n">num_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_lines</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">xaxis</span><span class="o">=</span><span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;f2&quot;</span><span class="p">,</span> <span class="n">num_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot the map as a set of lines (1D spectra).</span>
 
@@ -693,35 +715,37 @@
 <span class="sd">        matplotlib.figure.Figure or matplotlib.axes.Axes</span>
 <span class="sd">            The figure or axes where the plot was drawn.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">LineCollection</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">LineCollection</span>
 
         <span class="c1"># Determine slicing axis based on &#39;color&#39;</span>
-        <span class="k">if</span> <span class="n">color</span> <span class="o">==</span> <span class="s1">&#39;f2&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">color</span> <span class="o">==</span> <span class="s2">&quot;f2&quot;</span><span class="p">:</span>
             <span class="c1"># Slice along f2 (rows). Fixed f2, x varies (f1 usually).</span>
             <span class="n">iter_axis_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">value</span>
             <span class="n">iter_axis_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">unit</span>
-            <span class="n">data_slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="c1"># shape (nf2, nf1). Rows are f2 slices.</span>
-            
+            <span class="n">data_slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># shape (nf2, nf1). Rows are f2 slices.</span>
+
             <span class="c1"># For each slice (row), we have full f1 array.</span>
             <span class="n">base_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">value</span>
             <span class="c1"># We will need to compute x for each line potentially (if xaxis depends on f2)</span>
-            
+
             <span class="n">slice_axis_name</span> <span class="o">=</span> <span class="s2">&quot;f2&quot;</span>
-            
-        <span class="k">elif</span> <span class="n">color</span> <span class="o">==</span> <span class="s1">&#39;f1&#39;</span><span class="p">:</span>
+
+        <span class="k">elif</span> <span class="n">color</span> <span class="o">==</span> <span class="s2">&quot;f1&quot;</span><span class="p">:</span>
             <span class="c1"># Slice along f1 (columns). Fixed f1, x varies (f2 usually).</span>
             <span class="n">iter_axis_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">value</span>
             <span class="n">iter_axis_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">unit</span>
-            <span class="n">data_slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span> <span class="c1"># shape (nf1, nf2). Rows are f1 slices.</span>
-            
+            <span class="n">data_slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># shape (nf1, nf2). Rows are f1 slices.</span>
+
             <span class="c1"># For each slice (column), we have full f2 array.</span>
             <span class="n">base_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency2</span><span class="o">.</span><span class="n">value</span>
-            
+
             <span class="n">slice_axis_name</span> <span class="o">=</span> <span class="s2">&quot;f1&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coloring/Slicing by &#39;</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">&#39; is not yet implemented using slice iteration.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Coloring/Slicing by &#39;</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">&#39; is not yet implemented using slice iteration.&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># Subsample if necessary</span>
         <span class="n">n_slices</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iter_axis_vals</span><span class="p">)</span>
@@ -734,31 +758,31 @@
 
         <span class="c1"># Prepare list of (x, y) segments</span>
         <span class="n">segments</span> <span class="o">=</span> <span class="p">[]</span>
-        
+
         <span class="c1"># Pre-compute grids if needed for speed, but loop is fine for plotting usually</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">iter_axis_vals</span><span class="p">):</span>
             <span class="n">y</span> <span class="o">=</span> <span class="n">data_slices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            
+
             <span class="c1"># Determine x array for this line</span>
-            <span class="k">if</span> <span class="n">xaxis</span> <span class="o">==</span> <span class="s1">&#39;f1&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s1">&#39;f2&#39;</span><span class="p">:</span>
-                    <span class="n">x</span> <span class="o">=</span> <span class="n">base_x</span> <span class="c1"># f1 array</span>
+            <span class="k">if</span> <span class="n">xaxis</span> <span class="o">==</span> <span class="s2">&quot;f1&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s2">&quot;f2&quot;</span><span class="p">:</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">base_x</span>  <span class="c1"># f1 array</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># slice is fixed f1. x would be constant? </span>
+                    <span class="c1"># slice is fixed f1. x would be constant?</span>
                     <span class="c1"># If xaxis=&#39;f1&#39; and color=&#39;f1&#39;, each line is a vertical line at f1.</span>
                     <span class="c1"># x = np.full_like(base_x, val)</span>
                     <span class="c1"># But usually if color=&#39;f1&#39;, xaxis should be &#39;f2&#39; or &#39;diff&#39;.</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">base_x</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-                    
-            <span class="k">elif</span> <span class="n">xaxis</span> <span class="o">==</span> <span class="s1">&#39;f2&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s1">&#39;f1&#39;</span><span class="p">:</span>
-                    <span class="n">x</span> <span class="o">=</span> <span class="n">base_x</span> <span class="c1"># f2 array</span>
+
+            <span class="k">elif</span> <span class="n">xaxis</span> <span class="o">==</span> <span class="s2">&quot;f2&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s2">&quot;f1&quot;</span><span class="p">:</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">base_x</span>  <span class="c1"># f2 array</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># slice is fixed f2.</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">base_x</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-                    
-            <span class="k">elif</span> <span class="n">xaxis</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;diff&#39;</span><span class="p">,</span> <span class="s1">&#39;f2-f1&#39;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s1">&#39;f2&#39;</span><span class="p">:</span>
+
+            <span class="k">elif</span> <span class="n">xaxis</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;diff&quot;</span><span class="p">,</span> <span class="s2">&quot;f2-f1&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s2">&quot;f2&quot;</span><span class="p">:</span>
                     <span class="c1"># fixed f2 (val), variable f1 (base_x)</span>
                     <span class="c1"># x = f2 - f1</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="n">val</span> <span class="o">-</span> <span class="n">base_x</span>
@@ -766,17 +790,17 @@
                     <span class="c1"># fixed f1 (val), variable f2 (base_x)</span>
                     <span class="c1"># x = f2 - f1</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="n">base_x</span> <span class="o">-</span> <span class="n">val</span>
-                    
-            <span class="k">elif</span> <span class="n">xaxis</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;diff_inv&#39;</span><span class="p">,</span> <span class="s1">&#39;f1-f2&#39;</span><span class="p">]:</span>
-                 <span class="k">if</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s1">&#39;f2&#39;</span><span class="p">:</span>
+
+            <span class="k">elif</span> <span class="n">xaxis</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;diff_inv&quot;</span><span class="p">,</span> <span class="s2">&quot;f1-f2&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s2">&quot;f2&quot;</span><span class="p">:</span>
                     <span class="c1"># f1 - f2</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="n">base_x</span> <span class="o">-</span> <span class="n">val</span>
-                 <span class="k">else</span><span class="p">:</span>
+                <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># f1 - f2</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="n">val</span> <span class="o">-</span> <span class="n">base_x</span>
 
-            <span class="k">elif</span> <span class="n">xaxis</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;abs_diff&#39;</span><span class="p">,</span> <span class="s1">&#39;|f2-f1|&#39;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s1">&#39;f2&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">xaxis</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;abs_diff&quot;</span><span class="p">,</span> <span class="s2">&quot;|f2-f1|&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s2">&quot;f2&quot;</span><span class="p">:</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">val</span> <span class="o">-</span> <span class="n">base_x</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">base_x</span> <span class="o">-</span> <span class="n">val</span><span class="p">)</span>
@@ -784,14 +808,14 @@
                 <span class="c1"># Default to base_x if unknown? Or error?</span>
                 <span class="c1"># Assume &#39;remaining&#39; behavior if matching?</span>
                 <span class="c1"># If slice is f2, &#39;remaining&#39; is f1.</span>
-                <span class="k">if</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s1">&#39;f2&#39;</span> <span class="ow">and</span> <span class="n">xaxis</span> <span class="o">==</span> <span class="s1">&#39;remaining&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s2">&quot;f2&quot;</span> <span class="ow">and</span> <span class="n">xaxis</span> <span class="o">==</span> <span class="s2">&quot;remaining&quot;</span><span class="p">:</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="n">base_x</span>
-                <span class="k">elif</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s1">&#39;f1&#39;</span> <span class="ow">and</span> <span class="n">xaxis</span> <span class="o">==</span> <span class="s1">&#39;remaining&#39;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">slice_axis_name</span> <span class="o">==</span> <span class="s2">&quot;f1&quot;</span> <span class="ow">and</span> <span class="n">xaxis</span> <span class="o">==</span> <span class="s2">&quot;remaining&quot;</span><span class="p">:</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="n">base_x</span>
                 <span class="k">else</span><span class="p">:</span>
-                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown xaxis option: </span><span class="si">{</span><span class="n">xaxis</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown xaxis option: </span><span class="si">{</span><span class="n">xaxis</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="c1"># Filter NaNs from x and y for clean plotting? </span>
+            <span class="c1"># Filter NaNs from x and y for clean plotting?</span>
             <span class="c1"># LineCollection handles them but segments must be valid.</span>
             <span class="c1"># Convert to (N, 2) array</span>
             <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -801,46 +825,52 @@
         <span class="c1"># Ensure segments are (N, 2) not (N, 1, 2) logic check.</span>
         <span class="c1"># Correct format for LineCollection is list of (N, 2) arrays.</span>
         <span class="n">segments</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">]</span>
-        
+
         <span class="c1"># Create LineCollection</span>
-        <span class="n">lc</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span><span class="n">segments</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">iter_axis_vals</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">iter_axis_vals</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">lc</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">iter_axis_vals</span><span class="p">)</span> <span class="c1"># Set values for color mapping</span>
-        
+        <span class="n">lc</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span>
+            <span class="n">segments</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+            <span class="n">norm</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">iter_axis_vals</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">iter_axis_vals</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">lc</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">iter_axis_vals</span><span class="p">)</span>  <span class="c1"># Set values for color mapping</span>
+
         <span class="c1"># Setup plot</span>
         <span class="n">new_plot</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new_plot</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">()</span>
             <span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-        
+
         <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">lc</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">autoscale</span><span class="p">()</span>
-        
+
         <span class="c1"># Add colorbar</span>
         <span class="n">cbar_label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="n">iter_axis_unit</span><span class="p">:</span>
             <span class="n">cbar_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="n">iter_axis_unit</span><span class="si">}</span><span class="s2">]&quot;</span>
-            
+
         <span class="c1"># We need a mappable for colorbar. lc is mappable.</span>
         <span class="c1"># But we need figure.</span>
         <span class="k">if</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
-            <span class="n">cbar</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">lc</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">cbar_label</span><span class="p">)</span>
-        
+            <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">lc</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">cbar_label</span><span class="p">)</span>
+
         <span class="c1"># Set labels</span>
         <span class="n">xlabel</span> <span class="o">=</span> <span class="n">xaxis</span>
-        <span class="k">if</span> <span class="n">xaxis</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="s1">&#39;f2&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;frequency</span><span class="si">{</span><span class="n">xaxis</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">xaxis</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="s2">&quot;f2&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;frequency</span><span class="si">{</span><span class="n">xaxis</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
             <span class="n">u_</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;frequency</span><span class="si">{</span><span class="n">xaxis</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">unit</span>
-            <span class="k">if</span> <span class="n">u_</span><span class="p">:</span> <span class="n">xlabel</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="n">u_</span><span class="si">}</span><span class="s2">]&quot;</span>
-        <span class="k">elif</span> <span class="n">xaxis</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;diff&#39;</span><span class="p">,</span> <span class="s1">&#39;f2-f1&#39;</span><span class="p">,</span> <span class="s1">&#39;abs_diff&#39;</span><span class="p">,</span> <span class="s1">&#39;|f2-f1|&#39;</span><span class="p">]:</span>
-             <span class="c1"># Unit is likely same as axes</span>
-             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span>
-                 <span class="n">xlabel</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span>
-                 
+            <span class="k">if</span> <span class="n">u_</span><span class="p">:</span>
+                <span class="n">xlabel</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="n">u_</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="k">elif</span> <span class="n">xaxis</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;diff&quot;</span><span class="p">,</span> <span class="s2">&quot;f2-f1&quot;</span><span class="p">,</span> <span class="s2">&quot;abs_diff&quot;</span><span class="p">,</span> <span class="s2">&quot;|f2-f1|&quot;</span><span class="p">]:</span>
+            <span class="c1"># Unit is likely same as axes</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span>
+                <span class="n">xlabel</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span>
+
         <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-        
+
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">new_plot</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">plot</span>
         <span class="k">return</span> <span class="n">ax</span></div>
