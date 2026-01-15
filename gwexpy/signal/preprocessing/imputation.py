@@ -115,19 +115,44 @@ def impute(
         Imputation method: 'interpolate', 'ffill', 'bfill', 'mean', 'median'.
         Default is 'interpolate'.
     limit : int, optional
-        Maximum number of consecutive NaNs to fill.
+        Maximum number of consecutive NaNs to fill. For 'ffill' and 'bfill',
+        limits the forward/backward propagation. For 'interpolate', limits
+        the number of consecutive NaNs that will be filled; any excess NaNs
+        are restored to NaN after interpolation.
     times : ndarray, optional
         Time array corresponding to values. Used for time-based interpolation
-        and max_gap calculation.
+        and max_gap calculation. Must be 1D and strictly increasing.
     max_gap : float, optional
-        Maximum gap duration to fill. If a gap is larger than this, it is left as NaN.
+        Maximum gap duration (in units of ``times``) to fill. After
+        interpolation, any NaN that was within a gap larger than this
+        threshold is restored to NaN. This post-processing ensures that
+        large temporal gaps are not bridged by interpolation.
     fill_value : float, optional
-        Value to use for fill operations that don't have a source value.
+        Value to use for edge NaNs that cannot be interpolated or propagated.
+        Only applies when there are no valid values to propagate from.
 
     Returns
     -------
     imputed : ndarray
         Array with imputed values.
+
+    Notes
+    -----
+    The ``max_gap`` parameter works as follows:
+
+    1. First, standard interpolation is performed.
+    2. Then, gaps in the original ``times`` array are identified.
+    3. Any interpolated values within gaps exceeding ``max_gap`` are
+       reverted to NaN.
+
+    This "fill then restore" approach ensures that the interpolation
+    algorithm can be applied uniformly while still respecting gap constraints.
+
+    Similarly, ``limit`` for 'interpolate' method:
+
+    1. Interpolation fills all internal NaNs.
+    2. Consecutive NaN runs longer than ``limit`` have their excess positions
+       restored to NaN (forward direction).
     """
     val = np.asarray(values).copy()
     nans = np.isnan(val)
