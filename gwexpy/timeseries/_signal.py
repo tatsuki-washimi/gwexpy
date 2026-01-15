@@ -616,11 +616,189 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         lowpass: float | u.Quantity | None = None,
         lowpass_kwargs: dict[str, Any] | None = None,
         output_rate: NumberLike | u.Quantity | None = None,
+        resample_kwargs: dict[str, Any] | None = None,
         singlesided: bool = False,
     ) -> TimeSeriesSignalMixin:
         """
-        Demodulate the TimeSeries to baseband, optionally applying lowpass filter and resampling.
+        Demodulate the TimeSeries to baseband with optional lowpass and resampling.
+
+        This method performs frequency mixing (heterodyning) to shift a carrier
+        frequency to baseband (DC), optionally followed by lowpass filtering
+        and/or resampling. The processing chain is:
+
+            mix_down(f0) → [lowpass(cutoff)] → [resample(output_rate)]
+
+        Two primary modes are supported:
+
+        **Mode A (Analysis bandwidth explicit)**:
+            ``baseband(f0=fc, lowpass=cutoff, output_rate=None|...)``
+            - Applies lowpass filter after mixing to define analysis bandwidth
+            - Optionally resamples to reduce data rate
+
+        **Mode B (Downsample priority)**:
+            ``baseband(f0=fc, lowpass=None, output_rate=rate)``
+            - Skips explicit lowpass; relies on resample's anti-aliasing
+            - Useful when avoiding double-filtering
+
+        Parameters
+        ----------
+        phase : array_like or None, optional
+            Explicit phase array (radians) for mixing. Mutually exclusive
+            with f0/fdot/fddot.
+        f0 : float or Quantity, optional
+            Center frequency (Hz) for mixing. The signal at f0 is shifted to DC.
+            Must satisfy 0 < f0 < Nyquist for regular series.
+        fdot : float or Quantity, default=0.0
+            Frequency derivative (Hz/s) for chirp signals.
+        fddot : float or Quantity, default=0.0
+            Second frequency derivative (Hz/s²) for accelerating chirps.
+        phase_epoch : float or None, optional
+            Reference epoch for phase model.
+        phase0 : float, default=0.0
+            Initial phase offset (radians).
+        lowpass : float or Quantity or None, optional
+            Lowpass filter corner frequency (Hz). Defines the analysis bandwidth
+            (half-bandwidth) around baseband. Must satisfy 0 < lowpass < Nyquist.
+            If both lowpass and output_rate are specified, lowpass must be less
+            than output_rate/2 (the new Nyquist).
+        lowpass_kwargs : dict or None, optional
+            Additional arguments passed to :meth:`lowpass`. GWpy-compatible
+            options include ``type``, ``gpass``, ``gstop``, ``fstop``, ``filtfilt``.
+        output_rate : float or Quantity or None, optional
+            Output sample rate (Hz). If specified, resamples the output.
+            Must be > 0. Uses GWpy's :meth:`resample` internally.
+        resample_kwargs : dict or None, optional
+            Additional arguments passed to :meth:`resample`. GWpy-compatible
+            options include ``window``, ``ftype``, ``n``.
+        singlesided : bool, default=False
+            If True, double the amplitude (for real input signals).
+
+        Returns
+        -------
+        TimeSeries
+            Complex baseband signal.
+
+        Raises
+        ------
+        ValueError
+            If f0 <= 0.
+        ValueError
+            If f0 >= Nyquist (for regular series).
+        ValueError
+            If lowpass <= 0 or lowpass >= Nyquist.
+        ValueError
+            If output_rate <= 0.
+        ValueError
+            If both lowpass and output_rate are None.
+        ValueError
+            If lowpass >= output_rate/2 (exceeds new Nyquist).
+
+        Notes
+        -----
+        **Preprocessing**: No automatic preprocessing is applied. Users should
+        apply demean, detrend, or filtering as needed before calling. DC offset
+        and low-frequency trends can affect the baseband result.
+
+        **Lowpass vs f0**: It is generally recommended to set lowpass < f0 to
+        capture only the modulation around the carrier. However, this is not
+        enforced to allow flexibility in edge cases.
+
+        **GWpy alignment**: The lowpass and resample operations delegate to
+        GWpy's methods with their default parameters. Customization is available
+        via lowpass_kwargs and resample_kwargs.
+
+        Examples
+        --------
+        Mode A (with lowpass):
+
+        >>> ts = TimeSeries(np.cos(2 * np.pi * 100 * t), dt=0.001, unit='V')
+        >>> z = ts.baseband(f0=100, lowpass=10)  # 10 Hz analysis bandwidth
+
+        Mode B (resample only):
+
+        >>> z = ts.baseband(f0=100, lowpass=None, output_rate=50)
+
+        With both:
+
+        >>> z = ts.baseband(f0=100, lowpass=10, output_rate=50)
         """
+        # === Input validation ===
+
+        # Extract f0 value for validation
+        f0_val = None
+        if f0 is not None:
+            if isinstance(f0, u.Quantity):
+                f0_val = f0.to("Hz").value
+            else:
+                f0_val = float(f0)
+
+            if f0_val <= 0:
+                raise ValueError(f"f0 must be positive, got {f0_val}")
+
+        # Get sample rate for Nyquist checks
+        sample_rate_val = None
+        nyquist = None
+        if self.sample_rate is not None:
+            try:
+                sample_rate_val = self.sample_rate.to("Hz").value
+                nyquist = sample_rate_val / 2.0
+            except (AttributeError, u.UnitConversionError):
+                sample_rate_val = float(self.sample_rate)
+                nyquist = sample_rate_val / 2.0
+
+        # Validate f0 < Nyquist
+        if f0_val is not None and nyquist is not None:
+            if f0_val >= nyquist:
+                raise ValueError(
+                    f"f0 ({f0_val} Hz) must be less than Nyquist ({nyquist} Hz)"
+                )
+
+        # Validate lowpass
+        lowpass_val = None
+        if lowpass is not None:
+            if isinstance(lowpass, u.Quantity):
+                lowpass_val = lowpass.to("Hz").value
+            else:
+                lowpass_val = float(lowpass)
+
+            if lowpass_val <= 0:
+                raise ValueError(f"lowpass must be positive, got {lowpass_val}")
+
+            if nyquist is not None and lowpass_val >= nyquist:
+                raise ValueError(
+                    f"lowpass ({lowpass_val} Hz) must be less than Nyquist ({nyquist} Hz)"
+                )
+
+        # Validate output_rate
+        output_rate_val = None
+        if output_rate is not None:
+            if isinstance(output_rate, u.Quantity):
+                output_rate_val = output_rate.to("Hz").value
+            else:
+                output_rate_val = float(output_rate)
+
+            if output_rate_val <= 0:
+                raise ValueError(f"output_rate must be positive, got {output_rate_val}")
+
+        # At least one of lowpass or output_rate must be specified
+        if lowpass is None and output_rate is None:
+            raise ValueError(
+                "At least one of 'lowpass' or 'output_rate' must be specified. "
+                "Use lowpass to define analysis bandwidth, or output_rate to resample."
+            )
+
+        # Validate lowpass < new Nyquist when both are specified
+        if lowpass_val is not None and output_rate_val is not None:
+            new_nyquist = output_rate_val / 2.0
+            if lowpass_val >= new_nyquist:
+                raise ValueError(
+                    f"lowpass ({lowpass_val} Hz) must be less than output_rate/2 "
+                    f"({new_nyquist} Hz) to avoid aliasing"
+                )
+
+        # === Processing ===
+
+        # Step 1: Mix down
         z = self.mix_down(
             phase=phase,
             f0=f0,
@@ -631,14 +809,17 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             singlesided=singlesided,
         )
 
+        # Step 2: Lowpass (optional)
         if lowpass is not None:
             if z.sample_rate is None:
                 raise ValueError("lowpass requires defined sample rate.")
             lp_kwargs = lowpass_kwargs or {}
             z = z.lowpass(lowpass, **lp_kwargs)
 
+        # Step 3: Resample (optional)
         if output_rate is not None:
-            z = z.resample(output_rate)
+            rs_kwargs = resample_kwargs or {}
+            z = z.resample(output_rate, **rs_kwargs)
 
         return z
 
