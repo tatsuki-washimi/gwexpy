@@ -35,7 +35,12 @@ from . import io as _io  # noqa: F401
 
 
 def __getattr__(name):
-    return getattr(_gwpy_timeseries, name)
+    try:
+        return getattr(_gwpy_timeseries, name)
+    except AttributeError:
+        raise AttributeError(
+            f"module 'gwexpy.timeseries' has no attribute {name!r}"
+        ) from None
 
 
 def __dir__():
