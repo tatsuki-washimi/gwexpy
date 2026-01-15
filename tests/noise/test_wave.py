@@ -1,5 +1,7 @@
 import numpy as np
 import pytest
+
+pytest.importorskip("astropy")
 from astropy import units as u
 
 from gwexpy.frequencyseries import FrequencySeries
@@ -27,7 +29,7 @@ def test_from_asd_returns_timeseries_with_metadata():
         duration=duration,
         sample_rate=sample_rate,
         t0=t0,
-        rng=np.random.default_rng(1),
+        rng=np.random.default_rng(0),
     )
 
     assert isinstance(ts, TimeSeries)
