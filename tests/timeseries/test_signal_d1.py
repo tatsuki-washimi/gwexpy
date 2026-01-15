@@ -367,6 +367,35 @@ class TestXcorr:
 class TestHeterodyneLockIn:
     """Regression tests for heterodyne() and lock_in()."""
 
+    def test_heterodyne_default_singlesided(self):
+        """heterodyne should default to singlesided=False (GWpy compatibility)."""
+        f0 = 50.0
+        amp = 2.0
+        sample_rate = 1024.0
+        duration = 1.0
+        stride = 1.0
+
+        t = np.arange(0, duration, 1/sample_rate)
+        signal = amp * np.cos(2 * np.pi * f0 * t)
+        ts = TimeSeries(signal, dt=1/sample_rate, unit='V')
+
+        phase = 2 * np.pi * f0 * t
+
+        # Default (should be False)
+        res_default = ts.heterodyne(phase, stride=stride)
+        # Explicit False
+        res_false = ts.heterodyne(phase, stride=stride, singlesided=False)
+        # Explicit True
+        res_true = ts.heterodyne(phase, stride=stride, singlesided=True)
+
+        # Default should match False
+        np.testing.assert_allclose(res_default.value, res_false.value)
+        # True should be 2x False
+        np.testing.assert_allclose(res_true.value, 2.0 * res_false.value)
+        # For cos(wt) = 0.5(exp(iwt)+exp(-iwt)), mixing with exp(-iwt) gives 0.5.
+        # So amp * 0.5 = 2.0 * 0.5 = 1.0.
+        np.testing.assert_allclose(np.abs(res_false.value), 1.0, rtol=0.01)
+
     def test_heterodyne_dc_peak(self):
         """heterodyne(f0) should move f0 component to DC."""
         f0 = 50.0

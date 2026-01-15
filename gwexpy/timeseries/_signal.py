@@ -570,24 +570,43 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         | NDArray[np.floating]
         | NDArray[np.complexfloating],
         stride: NumberLike | u.Quantity = 1.0,
-        singlesided: bool = True,
+        singlesided: bool = False,
     ) -> TimeSeriesSignalMixin:
         """
-        Mix with phase and average over strides.
+        Compute the average magnitude and phase of the TimeSeries after
+        heterodyning with a given phase series.
+
+        This method follows the same algorithm as GWpy's `TimeSeries.heterodyne()`:
+        1. Mix the TimeSeries with a complex oscillator exp(-i * phase).
+        2. Average the result over contiguous segments (strides).
+        3. If `singlesided=True`, double the resulting amplitude (conventional for real signals).
 
         Parameters
         ----------
-        phase : `array_like` or `Series`
-            Phase to mix with (radians).
-        stride : `float` or `Quantity`, optional
-            Time step for averaging (default 1.0s).
-        singlesided : `bool`, optional
-            If True, double the amplitude (useful for real signals).
+        phase : array_like or TimeSeries
+            Phase to mix with (radians). Must have the same length as the input series.
+        stride : float or Quantity, default: 1.0
+            Time step (seconds or Quantity) for averaging. Strides are rounded to
+            the nearest number of samples (``int(stride * sample_rate)``).
+        singlesided : bool, default: False
+            If True, double the amplitude of the output. GWpy defaults to False.
 
         Returns
         -------
         TimeSeries
             Average (complex) demodulated signal.
+
+        Notes
+        -----
+        **Algorithm**:
+        The input is divided into segments of duration `stride`. For each segment,
+        the complex average (mean) is computed. Strides are calculated as
+        ``N = int(stride * sample_rate)``. Any remaining samples at the end of the
+        series that do not form a full stride are discarded (floor).
+
+        **GWpy Compatibility**:
+        This method matches the algorithm and default `singlesided=False` behavior
+        of GWpy.
         """
         # 1. Mix down
         z = self.mix_down(phase=phase, singlesided=singlesided)
@@ -844,6 +863,51 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
     ) -> Any:
         """
         Perform lock-in amplification (demodulation + averaging).
+
+        This method supports two modes of operation:
+        1. **Averaging mode** (default): Mix down and average over `stride` segments.
+        2. **Filter mode**: Mix down and apply a lowpass filter with `bandwidth`.
+
+        Parameters
+        ----------
+        f0 : float or Quantity, optional
+            Center frequency (Hz) for mixing.
+        phase : array_like, optional
+            Explicit phase array (radians) for mixing.
+        fdot, fddot : float or Quantity, default: 0.0
+            Frequency derivatives for chirped mixing.
+        phase_epoch : float, optional
+            Reference epoch for phase model.
+        phase0 : float, default: 0.0
+            Initial phase offset (radians).
+        stride : float or Quantity, optional
+            Averaging time step (seconds). Required if `bandwidth` is None.
+            Strides are contiguous and any remainder at the end is discarded.
+        bandwidth : float or Quantity, optional
+            Lowpass filter cutoff (Hz). If specified, uses `baseband` internally
+            and `stride` is ignored.
+        singlesided : bool, default: True
+            If True, double the amplitude (conventional for lock-in recovery
+            of real signals). Note that this differs from `heterodyne` default
+            which is now False to align with GWpy.
+        output : {'amp_phase', 'complex', 'iq'}, default: 'amp_phase'
+            Output format.
+        deg : bool, default: True
+            If True and output='amp_phase', return phase in degrees.
+        **kwargs
+            Passed to `baseband` when `bandwidth` is not None.
+
+        Returns
+        -------
+        out : TimeSeries or tuple
+            Demodulated result in the requested format.
+
+        Raises
+        ------
+        ValueError
+            If both `f0` and `phase` are provided or omitted.
+        ValueError
+            If `bandwidth` is None and `stride` is None.
         """
         self._check_regular("lock_in")
 
