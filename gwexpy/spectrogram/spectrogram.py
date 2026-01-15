@@ -210,6 +210,18 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
     def radian(self, unwrap: bool = False) -> Spectrogram:
         """
         Calculate the phase of this Spectrogram in radians.
+
+        Parameters
+        ----------
+        unwrap : bool, optional
+            If True, unwrap phase discontinuities along the time axis (axis=0).
+            Default is False.
+
+        Returns
+        -------
+        Spectrogram
+            Phase spectrogram with unit 'rad'. Preserves times, frequencies,
+            and epoch from the original Spectrogram.
         """
         val = np.angle(self.value)
         if unwrap:
@@ -220,13 +232,28 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         return self.__class__(
             val,
+            times=self.times,
+            frequencies=self.frequencies,
             unit="rad",
             name=name,
+            epoch=getattr(self, "epoch", None),
         )
 
     def degree(self, unwrap: bool = False) -> Spectrogram:
         """
         Calculate the phase of this Spectrogram in degrees.
+
+        Parameters
+        ----------
+        unwrap : bool, optional
+            If True, unwrap phase discontinuities along the time axis (axis=0)
+            before converting to degrees. Default is False.
+
+        Returns
+        -------
+        Spectrogram
+            Phase spectrogram with unit 'deg'. Preserves times, frequencies,
+            and epoch from the original Spectrogram.
         """
         p = self.radian(unwrap=unwrap)
         val = np.rad2deg(p.value)
@@ -235,8 +262,11 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         return self.__class__(
             val,
+            times=p.times,
+            frequencies=p.frequencies,
             unit="deg",
             name=name,
+            epoch=getattr(p, "epoch", None),
         )
 
 

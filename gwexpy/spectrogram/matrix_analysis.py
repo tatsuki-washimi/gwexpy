@@ -13,7 +13,7 @@ class SpectrogramMatrixAnalysisMixin:
         """
         Calculate the phase of the matrix in radians.
         """
-        val = np.angle(self)
+        val = np.angle(self.view(np.ndarray))
         if unwrap:
             # Unwrap along time axis (usually axis -2 in SpectrogramMatrix: (..., Time, Freq))
             val = np.unwrap(val, axis=-2)
