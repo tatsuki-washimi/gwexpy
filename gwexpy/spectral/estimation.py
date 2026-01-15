@@ -1,3 +1,16 @@
+"""
+Spectral estimation helpers for PSD and bootstrap statistics.
+
+PSD estimation in this module delegates to GWpy's Welch-style estimator with
+one-sided density normalization. For a regularly sampled series x[n] with
+sample spacing dt, the PSD Sxx(f) is defined so that the variance satisfies
+var(x) ~= integral_0^{f_N} Sxx(f) df (Parseval). The frequency axis is uniquely
+determined by dt and the FFT length: df = 1 / fftlength and f_N = 1 / (2 * dt).
+
+NaN samples are rejected because FFT-based averaging propagates NaNs and
+invalidates the normalization; callers must pre-clean data instead.
+"""
+
 import os
 import warnings
 
@@ -66,6 +79,76 @@ def _bootstrap_resample_py(data, all_indices, use_median, ignore_nan):
             else:
                 resampled_stats[i, f] = np.nanmean(col) if ignore_nan else np.mean(col)
     return resampled_stats
+
+
+def estimate_psd(
+    timeseries,
+    *,
+    fftlength=None,
+    overlap=None,
+    window="hann",
+    method="median",
+    **kwargs,
+):
+    """
+    Estimate the one-sided PSD for a regular TimeSeries.
+
+    This wraps ``TimeSeries.psd`` without changing the underlying algorithm.
+    It enforces NaN-free input and checks that fftlength does not exceed the
+    data duration so that the frequency axis (df = 1 / fftlength) is well-defined.
+
+    Parameters
+    ----------
+    timeseries : gwexpy.timeseries.TimeSeries
+        Input series for PSD estimation.
+    fftlength : float or Quantity, optional
+        FFT length in seconds. Defines df = 1 / fftlength.
+    overlap : float or Quantity, optional
+        Overlap between segments in seconds.
+    window : str or array_like, optional
+        Window function name or samples.
+    method : str, optional
+        PSD estimation method name registered in GWpy.
+
+    Returns
+    -------
+    FrequencySeries
+        One-sided PSD with unit (input unit)**2 / Hz.
+    """
+    data = np.asarray(getattr(timeseries, "value", timeseries))
+    if np.isnan(data).any():
+        raise ValueError("estimate_psd does not allow NaN samples.")
+
+    def _to_seconds(value):
+        if value is None:
+            return None
+        if hasattr(value, "to"):
+            try:
+                return float(value.to("s").value)
+            except Exception:
+                return None
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    dt_sec = _to_seconds(getattr(timeseries, "dt", None))
+    fftlength_sec = _to_seconds(fftlength)
+    if dt_sec is not None and fftlength_sec is not None:
+        duration = dt_sec * len(timeseries)
+        if duration < fftlength_sec:
+            raise ValueError("fftlength must not exceed data duration.")
+
+    res = timeseries.psd(
+        fftlength=fftlength,
+        overlap=overlap,
+        window=window,
+        method=method,
+        **kwargs,
+    )
+    if isinstance(res, FrequencySeries):
+        return res
+    return res.view(FrequencySeries)
 
 
 def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
