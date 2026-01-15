@@ -275,10 +275,12 @@ class StabilityChecker:
 
 def main():
     # Determine base path
-    # We are in gwexpy/gui/tests/test_visual_stability.py
-    # gui_path should be gwexpy/gui (script_dir.parent)
-    script_dir = Path(__file__).parent.resolve()  # gwexpy/gui/tests
-    gui_path = script_dir.parent  # gwexpy/gui
+    # We are in tests/gui/test_visual_stability.py
+    script_path = Path(__file__).resolve()
+    # Path is tests/gui/test_visual_stability.py
+    # Parent of parents (tests/gui -> tests -> root)
+    project_root = script_path.parents[2]
+    gui_path = project_root / "gwexpy" / "gui"
 
     # For StabilityChecker, we need parent of 'gui' as base
     # so that base_path / "gwexpy" / "gui" works
