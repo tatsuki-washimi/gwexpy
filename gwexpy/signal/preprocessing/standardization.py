@@ -57,7 +57,15 @@ def standardize(X, *, method="zscore", ddof=0, axis=-1, return_model=True):
     X : ndarray
         Input data.
     method : str, optional
-        Standardization method: 'zscore' or 'robust'. Default is 'zscore'.
+        Standardization method: 'zscore' or 'robust' (alias: 'mad').
+        Default is 'zscore'.
+
+        - ``'zscore'``: Uses mean and standard deviation: ``(X - mean) / std``.
+        - ``'robust'`` or ``'mad'``: Uses median and MAD (median absolute deviation):
+          ``(X - median) / (1.4826 * MAD)``. The constant 1.4826 is the reciprocal of
+          the MAD of a standard normal distribution, which ensures that the resulting
+          scale is equivalent to the standard deviation for Gaussian data.
+
     ddof : int, optional
         Delta degrees of freedom for std calculation. Default is 0.
     axis : int, optional
@@ -71,6 +79,15 @@ def standardize(X, *, method="zscore", ddof=0, axis=-1, return_model=True):
         Standardized data.
     model : StandardizationModel, optional
         Model for inverse transformation (if return_model=True).
+
+    Notes
+    -----
+    NaN values are handled using ``nanmean``/``nanstd`` for zscore and
+    ``nanmedian`` for robust methods, so NaN values in the input are ignored
+    during computation but preserved in the output.
+
+    If the scale (std or MAD) is zero, a value of 1.0 is used to avoid
+    division by zero.
     """
     if method in ("robust", "mad"):
         center = np.nanmedian(X, axis=axis, keepdims=True)
