@@ -470,7 +470,7 @@ z = ts.baseband(
 TimeSeries.heterodyne(
     phase: array_like,
     stride: float | Quantity = 1.0,
-    singlesided: bool = True
+    singlesided: bool = False
 ) -> TimeSeries
 ```
 
@@ -485,7 +485,7 @@ GWpy の `TimeSeries.heterodyne()` と**完全に同一のアルゴリズム**�
 |-----------|-----|-----------|------|
 | `phase` | array_like | - | ミキシング用位相配列（ラジアン）。`len(phase) == len(self)` が必須 |
 | `stride` | float または Quantity | 1.0 | 平均化の時間ステップ（秒）。サンプル数は `int(stride * sample_rate)` で切り捨て |
-| `singlesided` | bool | True | True の場合、振幅を2倍（実信号用）。gwexpy のデフォルトは True（GWpy は False）|
+| `singlesided` | bool | False | True の場合、振幅を2倍（実信号用）。GWpy のデフォルト（False）に準拠します |
 
 ### 戻り値
 
