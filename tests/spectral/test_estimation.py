@@ -2,7 +2,16 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-from gwexpy.spectral import bootstrap_spectrogram, calculate_correlation_factor
+pytest.importorskip("gwpy")
+pytest.importorskip("scipy")
+
+from gwexpy.frequencyseries import FrequencySeries
+from gwexpy.spectral import (
+    bootstrap_spectrogram,
+    calculate_correlation_factor,
+    estimate_psd,
+)
+from gwexpy.timeseries import TimeSeries
 
 
 class _DummySpectrogram:
@@ -75,3 +84,100 @@ def test_bootstrap_spectrogram_overlap_scales_errors():
     ratio = scaled[mask] / base[mask]
     assert np.allclose(ratio, factor, rtol=1e-12, atol=1e-12)
 
+
+def test_estimate_psd_white_noise_mean_matches_variance():
+    rng = np.random.default_rng(123)
+    n_samples = 16384
+    dt = 0.5
+    fftlength = 128.0
+
+    data = rng.normal(loc=0.0, scale=1.0, size=n_samples)
+    ts = TimeSeries(data, dt=dt)
+
+    psd = estimate_psd(
+        ts,
+        fftlength=fftlength,
+        overlap=0.0,
+        window="hann",
+        method="welch",
+    )
+
+    expected = 1.0
+    assert np.allclose(psd.mean().value, expected, rtol=0.1)
+
+
+def test_estimate_psd_frequency_axis_definition():
+    rng = np.random.default_rng(321)
+    n_samples = 4096
+    dt = 0.5
+    fftlength = 128.0
+
+    data = rng.normal(size=n_samples)
+    ts = TimeSeries(data, dt=dt)
+
+    psd = estimate_psd(
+        ts,
+        fftlength=fftlength,
+        overlap=0.0,
+        window="hann",
+        method="welch",
+    )
+
+    df = 1.0 / fftlength
+    assert psd.dx.value == pytest.approx(df)
+    assert psd.xindex[0].value == 0.0
+    assert np.allclose(np.diff(psd.xindex.value), df)
+    assert psd.xindex[-1].value == pytest.approx(0.5 / dt)
+
+
+def test_estimate_psd_rejects_nan():
+    data = np.ones(1024)
+    data[10] = np.nan
+    ts = TimeSeries(data, dt=0.5)
+
+    with pytest.raises(ValueError):
+        estimate_psd(ts, fftlength=128.0, overlap=0.0, window="hann", method="welch")
+
+
+def test_estimate_psd_rejects_short_input():
+    data = np.ones(100)
+    ts = TimeSeries(data, dt=0.5)
+
+    with pytest.raises(ValueError):
+        estimate_psd(ts, fftlength=128.0, overlap=0.0, window="hann", method="welch")
+
+
+def test_estimate_psd_rejects_irregular_series():
+    times = np.array([0.0, 1.0, 2.0, 4.0])
+    ts = TimeSeries([1.0, 2.0, 3.0, 4.0], times=times, unit=u.m)
+
+    with pytest.raises(ValueError):
+        estimate_psd(ts, fftlength=2.0, overlap=0.0, window="hann", method="welch")
+
+
+def test_estimate_psd_api_metadata():
+    rng = np.random.default_rng(7)
+    data = rng.normal(size=1024)
+
+    ts = TimeSeries(
+        data,
+        dt=0.5,
+        unit=u.m,
+        name="test-psd",
+        channel="X1:TEST",
+        epoch=1234567890,
+    )
+
+    psd = estimate_psd(
+        ts,
+        fftlength=128.0,
+        overlap=0.0,
+        window="hann",
+        method="welch",
+    )
+
+    assert isinstance(psd, FrequencySeries)
+    assert psd.unit.is_equivalent(ts.unit**2 / u.Hz)
+    assert psd.name == ts.name
+    assert psd.channel == ts.channel
+    assert psd.epoch == ts.epoch
