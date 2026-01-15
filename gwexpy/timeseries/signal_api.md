@@ -242,11 +242,13 @@ mix_down(f0) → [lowpass(cutoff)] → [resample(output_rate)]
 ### 2つの実行モード
 
 **モードA（解析帯域明示）**:
+
 - `baseband(f0=fc, lowpass=cutoff, output_rate=None|...)`
 - ミキシング後にローパスフィルタを適用して解析帯域を定義
 - オプションでリサンプルしてデータレートを削減
 
 **モードB（ダウンサンプル優先）**:
+
 - `baseband(f0=fc, lowpass=None, output_rate=rate)`
 - 明示的なローパスをスキップし、リサンプルのアンチエイリアスに依存
 - 二重フィルタを避けたい場合に有用
@@ -378,3 +380,201 @@ z = ts.baseband(
     resample_kwargs={"window": "hamming"}  # GWpy オプション
 )
 ```
+
+---
+
+## `heterodyne` （GWpy 互換）
+
+```python
+TimeSeries.heterodyne(
+    phase: array_like,
+    stride: float | Quantity = 1.0,
+    singlesided: bool = True
+) -> TimeSeries
+```
+
+### 説明
+
+GWpy の `TimeSeries.heterodyne()` と**完全に同一のアルゴリズム**を実装しています。
+入力 TimeSeries を位相系列でヘテロダインし、固定ストライドで平均化します。
+
+### パラメータ
+
+| パラメータ | 型 | デフォルト | 説明 |
+|-----------|-----|-----------|------|
+| `phase` | array_like | - | ミキシング用位相配列（ラジアン）。`len(phase) == len(self)` が必須 |
+| `stride` | float または Quantity | 1.0 | 平均化の時間ステップ（秒）。サンプル数は `int(stride * sample_rate)` で切り捨て |
+| `singlesided` | bool | True | True の場合、振幅を2倍（実信号用）。gwexpy のデフォルトは True（GWpy は False）|
+
+### 戻り値
+
+複素 `TimeSeries`。`dt = stride`、値は各ストライドでの平均振幅と位相を `mag * exp(1j * phase)` として表現。
+
+### 例外
+
+| 条件 | 例外 |
+|------|------|
+| `phase` が array_like でない（`len()` が失敗）| `TypeError` |
+| `len(phase) != len(self)` | `ValueError` |
+
+### アルゴリズム（GWpy と同一）
+
+```python
+stridesamp = int(stride * sample_rate)  # floor 切り捨て
+nsteps = int(N // stridesamp)           # 余りのサンプルは破棄
+
+for step in range(nsteps):
+    istart = stridesamp * step
+    iend = istart + stridesamp          # exclusive end
+    mixed = exp(-1j * phase[istart:iend]) * data[istart:iend]
+    out[step] = 2 * mixed.mean() if singlesided else mixed.mean()
+
+output.sample_rate = 1 / stride
+```
+
+### 使用例
+
+```python
+import numpy as np
+from gwexpy.timeseries import TimeSeries
+
+# 正弦波を生成
+A, f0, phi0 = 2.5, 30.0, np.pi/4
+sample_rate = 1024.0
+duration = 10.0
+n = int(duration * sample_rate)
+t = np.arange(n) / sample_rate
+
+data = A * np.cos(2 * np.pi * f0 * t + phi0)
+ts = TimeSeries(data, dt=1/sample_rate, unit='V')
+
+# 位相配列を作成
+phase = 2 * np.pi * f0 * t
+
+# ヘテロダイン（singlesided=True がデフォルト）
+het = ts.heterodyne(phase, stride=1.0)
+
+# 期待値: A * exp(1j * phi0)
+print(f"Amplitude: {np.mean(np.abs(het.value)):.3f}")  # ≈ 2.5
+print(f"Phase: {np.mean(np.angle(het.value)):.3f}")    # ≈ 0.785 (π/4)
+```
+
+---
+
+## `lock_in` （ロックイン増幅器）
+
+```python
+TimeSeries.lock_in(
+    f0: float | Quantity | None = None,
+    *,
+    phase: array_like | None = None,
+    fdot: float | Quantity = 0.0,
+    fddot: float | Quantity = 0.0,
+    phase_epoch: float | None = None,
+    phase0: float = 0.0,
+    stride: float | Quantity | None = None,
+    bandwidth: float | Quantity | None = None,
+    singlesided: bool = True,
+    output: str = "amp_phase",
+    deg: bool = True,
+    **kwargs
+) -> TimeSeries | tuple
+```
+
+### 説明
+
+ロックイン増幅（復調 + 平均化またはフィルタリング）を実行します。
+2つの動作モードがあり、`bandwidth` パラメータで選択されます。
+
+### 動作モード
+
+**LPF モード（`bandwidth` 指定時）**:
+
+- `baseband(lowpass=bandwidth, ...)` を使用して復調とローパスフィルタリング
+- `stride` は指定**禁止**（ValueError）
+
+**ストライド平均モード（`bandwidth` 未指定時）**:
+
+- `heterodyne(phase, stride, ...)` を使用して復調と固定ストライド平均化
+- `stride` は**必須**
+
+### パラメータ
+
+| パラメータ | 型 | デフォルト | 説明 |
+|-----------|-----|-----------|------|
+| `f0` | float または Quantity | None | 中心周波数（Hz）。`phase` と**排他** |
+| `phase` | array_like | None | 明示的位相配列（rad）。`f0` 系パラメータと**排他** |
+| `fdot` | float または Quantity | 0.0 | 周波数微分（Hz/s）|
+| `fddot` | float または Quantity | 0.0 | 周波数2階微分（Hz/s²）|
+| `phase_epoch` | float | None | 位相モデル基準エポック |
+| `phase0` | float | 0.0 | 初期位相オフセット（rad）|
+| `stride` | float または Quantity | None | 平均化時間ステップ（秒）。`bandwidth` と**排他** |
+| `bandwidth` | float または Quantity | None | LPF 帯域幅（Hz）。`stride` と**排他** |
+| `singlesided` | bool | True | True で振幅2倍 |
+| `output` | str | "amp_phase" | 出力形式: `'complex'`, `'amp_phase'`, `'iq'` |
+| `deg` | bool | True | `'amp_phase'` 時に位相を度で返すか |
+| `**kwargs` | - | - | LPF モード時に `baseband()` に渡す引数 |
+
+### 戻り値
+
+| `output` | 戻り値 |
+|----------|--------|
+| `'complex'` | 複素 TimeSeries |
+| `'amp_phase'` | `(amplitude, phase)` タプル |
+| `'iq'` | `(I, Q)` タプル（real/imag 成分）|
+
+### 例外条件
+
+| 条件 | 例外 |
+|------|------|
+| `phase` と `f0`/`fdot`/`fddot`/`phase_epoch`/`phase0` の同時指定 | `ValueError` |
+| `phase` も `f0` も未指定 | `ValueError` |
+| `bandwidth` と `stride` の同時指定 | `ValueError` |
+| `bandwidth` も `stride` も未指定 | `ValueError` |
+| `output` が無効な値 | `ValueError` |
+
+### 位相指定優先規則
+
+`phase` パラメータは**最優先**されます。`phase` を指定する場合、
+`f0`/`fdot`/`fddot`/`phase_epoch`/`phase0` パラメータは指定できません
+（デフォルト値を除く）。これにより、曖昧な設定を防止します。
+
+### 使用例
+
+**ストライド平均モード（f0 から位相生成）:**
+
+```python
+# 固定周波数での復調
+amp, phase = ts.lock_in(f0=100.0, stride=1.0, output='amp_phase')
+```
+
+**ストライド平均モード（明示的位相）:**
+
+```python
+# カスタム位相配列で復調
+phase_arr = 2 * np.pi * 100.0 * ts.times.value
+result = ts.lock_in(phase=phase_arr, stride=1.0, output='complex')
+```
+
+**LPF モード:**
+
+```python
+# ローパスフィルタを使用した復調
+amp, phase = ts.lock_in(f0=100.0, bandwidth=10.0, output='amp_phase')
+```
+
+**チャープ信号の追跡:**
+
+```python
+# 周波数変化する信号の復調
+result = ts.lock_in(f0=100.0, fdot=0.1, stride=1.0, output='complex')
+```
+
+---
+
+## 関連項目
+
+- `heterodyne()`: 位相ヘテロダインとストライド平均
+- `baseband()`: ベースバンド復調（LPF + リサンプル）
+- `mix_down()`: 複素オシレータとのミキシング（低レベル）
+- `_build_phase_series()`: 内部ヘルパー（f0 系から位相生成）
