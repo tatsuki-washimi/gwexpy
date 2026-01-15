@@ -570,6 +570,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         | NDArray[np.floating]
         | NDArray[np.complexfloating],
         stride: NumberLike | u.Quantity = 1.0,
+        *,
         singlesided: bool = False,
     ) -> TimeSeriesSignalMixin:
         """
@@ -671,6 +672,90 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         )
 
         return out
+
+    def demodulate(
+        self,
+        f: NumberLike | u.Quantity,
+        stride: NumberLike | u.Quantity = 1.0,
+        phase: float = 0.0,
+        deg: bool = True,
+        exp: bool = False,
+    ) -> Any:
+        """
+        Compute the average magnitude and phase of the TimeSeries at a
+        given frequency (GWpy-compatible).
+
+        This method replicates the GWpy ``TimeSeries.demodulate()`` algorithm.
+        It heterodynes the signal at a fixed frequency, averages over
+        strides, and returns either the complex demodulated signal or
+        (magnitude, phase) trends.
+
+        Parameters
+        ----------
+        f : float or Quantity
+            Frequency (Hz) at which to demodulate.
+        stride : float or Quantity, default: 1.0
+            Time step for averaging in seconds.
+        phase : float, default: 0.0
+            Initial phase offset in radians.
+        deg : bool, default: True
+            If True, return phase in degrees; else radians.
+        exp : bool, default: False
+            If True, return a single complex TimeSeries ($mag \cdot e^{i\phi}$).
+            If False (default), return a tuple of (magnitude, phase) TimeSeries.
+
+        Returns
+        -------
+        out : TimeSeries or tuple
+            Demodulated result. If ``exp=True``, a complex TimeSeries.
+            If ``exp=False``, a tuple of (magnitude, phase) TimeSeries.
+
+        Notes
+        -----
+        **Phase Convention (GWpy-identical)**
+        The phase model is built as $\phi(t) = 2\pi f t + \text{phase}$.
+        The mixing operation is $x(t) \cdot e^{-i\phi(t)}$.
+        The result is always multiplied by 2 (``singlesided=True``) to
+        recover the full amplitude of real signals, matching GWpy.
+
+        See Also
+        --------
+        TimeSeries.heterodyne
+            for the underlying heterodyne method with arbitrary phase.
+        TimeSeries.lock_in
+            for a more flexible lock-in amplifier interface.
+        """
+        # Build phase for a fixed frequency
+        from astropy.units import Quantity
+
+        if isinstance(f, Quantity):
+            f_val = f.to("Hz").value
+        else:
+            f_val = float(f)
+
+        dt_val = self.dt.to("s").value if hasattr(self.dt, "to") else float(self.dt)
+
+        phase_arr = 2 * np.pi * f_val * dt_val * np.arange(self.size)
+        if phase != 0.0:
+            phase_arr += float(phase)
+
+        # Call heterodyne with singlesided=True (standard for demodulate)
+        out = self.heterodyne(phase_arr, stride=stride, singlesided=True)
+
+        if exp:
+            return out
+
+        mag = out.abs()
+        ph_val = np.angle(out.value, deg=deg)
+        ph = self.__class__(
+            ph_val,
+            t0=out.t0,
+            dt=out.dt,
+            channel=self.channel,
+            name=self.name,
+        )
+        ph.override_unit("deg" if deg else "rad")
+        return mag, ph
 
     def baseband(
         self,
@@ -914,144 +999,111 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         **kwargs: Any,
     ) -> Any:
         """
-        Perform lock-in amplification (demodulation + averaging).
+        Perform lock-in amplification (demodulation + filtering/averaging).
 
-<<<<<<< HEAD
-        This method supports two modes of operation:
-        1. **Averaging mode** (default): Mix down and average over `stride` segments.
-        2. **Filter mode**: Mix down and apply a lowpass filter with `bandwidth`.
-=======
-        This method provides two operation modes determined by the ``bandwidth``
-        parameter:
+        This method extracts the complex amplitude (or magnitude and phase) of
+        a specific frequency component from the TimeSeries. It supports two
+        independent operational modes based on how the post-mixing signal is
+        smoothed:
 
-        **LPF Mode (bandwidth is not None)**
-            Uses ``baseband(lowpass=bandwidth, ...)`` to demodulate and lowpass
-            filter the signal. ``stride`` must NOT be specified in this mode.
+        **Mode 1: Stride-Average (bandwidth is None)**
+            The signal is mixed with the reference and averaged over
+            non-overlapping contiguous time intervals of length ``stride``.
+            The output sample rate becomes ``1/stride``. This mode is
+            numerically identical to GWpy's ``demodulate`` (with ``exp=True``).
 
-        **Stride-Average Mode (bandwidth is None)**
-            Uses ``heterodyne(phase, stride, ...)`` to demodulate and average
-            over fixed time strides. ``stride`` MUST be specified (or defaults
-            to 1.0s).
->>>>>>> 3bef03fe2820e5e18739ec66a1d39fda6b8736a5
+        **Mode 2: LPF-Filtering (bandwidth is not None)**
+            The signal is mixed with the reference and passed through a
+            low-pass filter with a cutoff frequency of ``bandwidth``.
+            By default, a zero-phase IIR filter is used (via ``filtfilt``).
+            The output sample rate remains the same as the input unless
+            ``output_rate`` is specified in ``**kwargs``.
 
         Parameters
         ----------
         f0 : float or Quantity, optional
-<<<<<<< HEAD
-            Center frequency (Hz) for mixing.
+            Center frequency (Hz) for the reference phase model.
+            Mutually exclusive with ``phase``.
         phase : array_like, optional
-            Explicit phase array (radians) for mixing.
-        fdot, fddot : float or Quantity, default: 0.0
-            Frequency derivatives for chirped mixing.
-        phase_epoch : float, optional
-            Reference epoch for phase model.
+            Explicit reference phase array in radians. Must have the same
+            length as the input TimeSeries. If provided, f0-based parameters
+            must NOT be specified.
+        fdot : float or Quantity, default: 0.0
+            First derivative of frequency (Hz/s) for chirped signals.
+        fddot : float or Quantity, default: 0.0
+            Second derivative of frequency (Hz/s²) for accelerating signals.
+        phase_epoch : float or Quantity, optional
+            Reference time (GPS) for the phase model. If None (default), use
+            the start time of the TimeSeries.
         phase0 : float, default: 0.0
-            Initial phase offset (radians).
+            Initial phase offset in radians at ``phase_epoch``.
         stride : float or Quantity, optional
-            Averaging time step (seconds). Required if `bandwidth` is None.
-            Strides are contiguous and any remainder at the end is discarded.
+            Averaging time step in seconds. Required for Stride-Average mode.
+            Must NOT be specified if ``bandwidth`` is provided.
         bandwidth : float or Quantity, optional
-            Lowpass filter cutoff (Hz). If specified, uses `baseband` internally
-            and `stride` is ignored.
+            Low-pass filter cutoff frequency in Hz. Required for LPF mode.
+            Defines the analysis bandwidth (half-bandwidth) around DC.
         singlesided : bool, default: True
-            If True, double the amplitude (conventional for lock-in recovery
-            of real signals). Note that this differs from `heterodyne` default
-            which is now False to align with GWpy.
+            If True (default), multiply the output by 2. This is the convention
+            for recovering the full amplitude of a real-valued input signal
+            $A \\cos(\\omega t + \\phi)$.
         output : {'amp_phase', 'complex', 'iq'}, default: 'amp_phase'
-            Output format.
+            Formatting of the returned data:
+            - ``'amp_phase'``: Returns a tuple of (amplitude, phase).
+            - ``'complex'``: Returns a complex TimeSeries ($mag \\cdot e^{i\\phi}$).
+            - ``'iq'``: Returns a tuple of (In-phase, Quadrature) TimeSeries.
         deg : bool, default: True
-            If True and output='amp_phase', return phase in degrees.
-        **kwargs
-            Passed to `baseband` when `bandwidth` is not None.
+            If True and ``output='amp_phase'``, the phase is returned in
+            degrees. Otherwise, radians.
+        **kwargs : Any
+            Additional keyword arguments passed to :meth:`baseband` in LPF mode.
+            Common options: ``type`` (filter type), ``filtfilt`` (bool).
 
         Returns
         -------
         out : TimeSeries or tuple
-            Demodulated result in the requested format.
-=======
-            Center frequency (Hz) for phase model. Mutually exclusive with
-            ``phase``.
-        phase : array_like, optional
-            Explicit phase array (radians) for mixing. Mutually exclusive with
-            ``f0``/``fdot``/``fddot``/``phase_epoch``/``phase0``. If provided,
-            these parameters must NOT be specified.
-        fdot : float or Quantity, default=0.0
-            Frequency derivative (Hz/s). Only valid when ``f0`` is used.
-        fddot : float or Quantity, default=0.0
-            Second frequency derivative (Hz/s²). Only valid when ``f0`` is used.
-        phase_epoch : float, optional
-            Reference epoch for phase model. Only valid when ``f0`` is used.
-        phase0 : float, default=0.0
-            Initial phase offset (radians). Only valid when ``f0`` is used.
-        stride : float or Quantity, optional
-            Time step for averaging in seconds. Required when ``bandwidth`` is
-            None (stride-average mode). Cannot be specified when ``bandwidth``
-            is provided (LPF mode).
-        bandwidth : float or Quantity, optional
-            Lowpass filter bandwidth (Hz). If specified, uses LPF mode with
-            ``baseband(lowpass=bandwidth, ...)``. ``stride`` must NOT be specified.
-        singlesided : bool, default=True
-            If True, double the amplitude (for real input signals).
-        output : str, default='amp_phase'
-            Output format:
-            - ``'complex'``: returns complex TimeSeries
-            - ``'amp_phase'``: returns (amplitude, phase) tuple
-            - ``'iq'``: returns (I, Q) tuple (real, imaginary components)
-        deg : bool, default=True
-            If True and ``output='amp_phase'``, phase is in degrees; else radians.
-        **kwargs
-            Additional keyword arguments passed to ``baseband()`` in LPF mode.
-
-        Returns
-        -------
-        TimeSeries or tuple
-            Depending on ``output``:
-            - ``'complex'``: complex TimeSeries
-            - ``'amp_phase'``: (amplitude TimeSeries, phase TimeSeries)
-            - ``'iq'``: (I TimeSeries, Q TimeSeries)
-
-        Raises
-        ------
-        ValueError
-            If ``phase`` and any of ``f0``/``fdot``/``fddot``/``phase_epoch``/
-            ``phase0`` (non-default) are both specified.
-        ValueError
-            If neither ``phase`` nor ``f0`` is specified.
-        ValueError
-            If ``bandwidth`` and ``stride`` are both specified.
-        ValueError
-            If ``bandwidth`` is None and ``stride`` is None.
-        ValueError
-            If ``output`` is not one of 'complex', 'amp_phase', 'iq'.
+            The demodulated signal in the requested format. Returns a tuple
+            for ``'amp_phase'`` and ``'iq'``, and a single TimeSeries for
+            ``'complex'``. Metadata like ``t0``, ``name``, and ``channel``
+            are preserved. The ``unit`` of the amplitude/complex/IQ result
+            is the same as the input signal.
 
         Notes
         -----
-        **Phase Precedence Rule**
+        **Phase Convention**
+        The mixing uses the negative exponential convention:
+        $Z(t) = 2 \\cdot \\text{LPF}\\{ x(t) \\cdot e^{-i\\phi(t)} \\}$ (if singlesided=True).
+        For a real input $x(t) = A \\cos(\\omega t + \\phi_0)$, this operation
+        correctly recovers the complex amplitude $A e^{i\\phi_0}$.
 
-        The ``phase`` parameter takes precedence. If ``phase`` is provided,
-        the ``f0``/``fdot``/``fddot``/``phase_epoch``/``phase0`` parameters
-        must NOT be specified (except for their default values). This prevents
-        ambiguous configurations.
+        **Edge Handling**
+        - **Stride mode**: Discards any remainder samples at the end that do
+          not form a full stride. The result is anchored at the start of
+          each stride.
+        - **LPF mode**: Filter transients occur at the boundaries. Using
+          ``filtfilt=True`` (default) minimizes phase distortion but
+          transients still exist. Padding the input is recommended for
+          short series.
 
-        **Mode Selection**
-
-        - ``bandwidth is not None``: LPF mode (``stride`` forbidden)
-        - ``bandwidth is None``: stride-average mode (``stride`` required)
+        **Numerical Precision**
+        The phase is calculated relative to ``phase_epoch`` to maintain
+        precision for high frequencies or long durations.
 
         Examples
         --------
-        Stride-average mode (phase from f0):
+        Recover amplitude and phase of a 100 Hz signal:
 
-        >>> result = ts.lock_in(f0=100.0, stride=1.0, output='complex')
+        >>> import numpy as np
+        >>> t = np.linspace(0, 10, 163840)
+        >>> data = np.cos(2 * np.pi * 100 * t + np.pi/4)
+        >>> ts = TimeSeries(data, sample_rate=16384, t0=0)
+        >>> amp, phase = ts.lock_in(f0=100, stride=1.0)
+        >>> print(f"Amp: {amp.value.mean():.2f}, Phase: {phase.value.mean():.2f}")
+        Amp: 1.00, Phase: 45.00
 
-        Stride-average mode (explicit phase):
+        Using LPF mode for higher time resolution:
 
-        >>> phase = 2 * np.pi * 100.0 * ts.times.value
-        >>> result = ts.lock_in(phase=phase, stride=1.0, output='complex')
-
-        LPF mode:
-
-        >>> result = ts.lock_in(f0=100.0, bandwidth=10.0, output='amp_phase')
+        >>> complex_ts = ts.lock_in(f0=100, bandwidth=5.0, output='complex')
         """
         self._check_regular("lock_in")
 
