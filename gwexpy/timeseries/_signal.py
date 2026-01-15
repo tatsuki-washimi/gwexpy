@@ -56,7 +56,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
 
     def hilbert(
         self,
-        pad: NumberLike | u.Quantity | None = None,
+        pad: NumberLike | u.Quantity = 0,
         pad_mode: str = "reflect",
         pad_value: float = 0.0,
         nan_policy: Literal["raise", "propagate"] = "raise",
@@ -65,29 +65,62 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         """
         Compute the analytic signal via Hilbert transform.
 
-        For a real input x(t), returns the complex analytic signal:
+        For a real input x(t), returns the complex analytic signal::
+
             z(t) = x(t) + i * H[x(t)]
-        where H[x] is the Hilbert transform of x.
+
+        where H[x] is the Hilbert transform of x, computed via SciPy.
 
         If input is already complex, returns a copy.
 
         Parameters
         ----------
-        pad : int or Quantity, optional
-            Number of samples (or time duration) to pad on each side.
-        pad_mode : str, optional
-            Padding mode ('reflect', 'constant', etc.). Default is 'reflect'.
-        pad_value : float, optional
+        pad : int or Quantity, default=0
+            Number of samples (or time duration) to pad on each side before
+            applying the Hilbert transform. Padding can help reduce endpoint
+            artifacts. Default is 0 (no padding).
+        pad_mode : str, default='reflect'
+            Padding mode ('reflect', 'constant', 'edge', etc.).
+        pad_value : float, default=0.0
             Value for 'constant' padding mode.
-        nan_policy : str, optional
-            How to handle NaNs: 'raise' (default) or 'propagate'.
-        copy : bool, optional
+        nan_policy : {'raise', 'propagate'}, default='raise'
+            How to handle NaNs/Infs: 'raise' raises ValueError (default),
+            'propagate' allows NaNs to propagate through.
+        copy : bool, default=True
             If input is complex, whether to return a copy.
 
         Returns
         -------
         TimeSeries
-            Complex analytic signal.
+            Complex analytic signal with the same length as input.
+
+        Raises
+        ------
+        ValueError
+            If input contains NaN or infinite values and nan_policy='raise'.
+        ValueError
+            If the TimeSeries has irregular sampling.
+
+        Notes
+        -----
+        **Preprocessing**: This method does NOT apply any automatic preprocessing.
+        Users should apply demean, detrend, filtering, or windowing as needed
+        before calling this method.
+
+        **Endpoint artifacts**: The Hilbert transform can exhibit artifacts at
+        the edges due to spectral leakage. Use padding or window the data
+        appropriately if edge effects are a concern.
+
+        **Mathematical definition**: The Hilbert transform H[x] is defined as
+        the convolution of x(t) with 1/(πt). The analytic signal z(t) has the
+        property that its Fourier transform is zero for negative frequencies.
+
+        Examples
+        --------
+        >>> ts = TimeSeries(np.sin(2 * np.pi * 10 * np.linspace(0, 1, 1000)),
+        ...                 dt=0.001, unit='V')
+        >>> analytic = ts.hilbert()
+        >>> envelope = np.abs(analytic.value)
         """
         # 1. Complex check
         if np.iscomplexobj(self.value):
@@ -108,27 +141,26 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         # 4. Padding
         data = self.value
         n_pad = 0
-        if pad is not None:
-            if isinstance(pad, u.Quantity):
-                if self.dt is None or getattr(self.times, "unit", None) is None:
-                    raise ValueError(
-                        "hilbert requires defined dt and times when padding."
-                    )
-                n_pad = int(
-                    round(
-                        pad.to(self.times.unit).value
-                        / self.dt.to(self.times.unit).value
-                    )
+        if isinstance(pad, u.Quantity):
+            if self.dt is None or getattr(self.times, "unit", None) is None:
+                raise ValueError(
+                    "hilbert requires defined dt and times when padding."
                 )
-            else:
-                n_pad = int(pad)
+            n_pad = int(
+                round(
+                    pad.to(self.times.unit).value
+                    / self.dt.to(self.times.unit).value
+                )
+            )
+        else:
+            n_pad = int(pad)
 
-            if n_pad > 0:
-                if pad_mode == "constant":
-                    pad_kwargs: dict[str, Any] = {"constant_values": pad_value}
-                else:
-                    pad_kwargs = {}
-                data = np.pad(data, n_pad, mode=pad_mode, **pad_kwargs)  # type: ignore[call-overload]
+        if n_pad > 0:
+            if pad_mode == "constant":
+                pad_kwargs: dict[str, Any] = {"constant_values": pad_value}
+            else:
+                pad_kwargs = {}
+            data = np.pad(data, n_pad, mode=pad_mode, **pad_kwargs)  # type: ignore[call-overload]
 
         # 5. Hilbert
         analytic = scipy.signal.hilbert(data)
@@ -163,25 +195,51 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         Compute the instantaneous phase of the TimeSeries via Hilbert transform.
 
         This method first computes the analytic signal using Hilbert transform,
-        then extracts the phase. Use this for real-valued signals when you need
-        the instantaneous phase.
+        then extracts the phase using np.angle(). Use this for real-valued
+        signals when you need the instantaneous phase.
 
         For complex-valued signals, consider using :meth:`radian` or :meth:`degree`
         which directly compute np.angle() without Hilbert transform.
 
         Parameters
         ----------
-        deg : bool, optional
+        deg : bool, default=False
             If True, return phase in degrees. Default is False (radians).
-        unwrap : bool, optional
-            If True, unwrap the phase. Default is False.
+        unwrap : bool, default=False
+            If True, unwrap the phase to remove discontinuities.
+            Uses period=2π for radians, period=360 for degrees.
         **kwargs
-            Passed to :meth:`hilbert`.
+            Passed to :meth:`hilbert`. Common options include `pad` for
+            reducing endpoint artifacts.
 
         Returns
         -------
         TimeSeries
-            Instantaneous phase.
+            Instantaneous phase with unit 'rad' or 'deg'.
+            The output has the same length as the input (endpoints are not trimmed).
+
+        Notes
+        -----
+        **Definition**: The instantaneous phase is computed as::
+
+            analytic = hilbert(x)
+            phase = np.angle(analytic)  # in radians
+            if unwrap:
+                phase = np.unwrap(phase, period=2*np.pi)  # or 360 for degrees
+
+        **Preprocessing**: No automatic preprocessing is applied. Users should
+        apply demean, detrend, filtering, or windowing as needed before calling.
+
+        **Endpoint artifacts**: The underlying Hilbert transform may exhibit
+        artifacts at the edges. Consider padding or windowing if edge effects
+        are a concern.
+
+        Examples
+        --------
+        >>> ts = TimeSeries(np.sin(2 * np.pi * 10 * np.linspace(0, 1, 1000)),
+        ...                 dt=0.001, unit='V')
+        >>> phase = ts.instantaneous_phase(unwrap=True)  # rad, unwrapped
+        >>> phase_deg = ts.instantaneous_phase(deg=True, unwrap=True)  # degrees
         """
         analytic = self.hilbert(**kwargs)
         phi = np.asarray(np.angle(analytic.value, deg=deg))
@@ -272,7 +330,61 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
     ) -> TimeSeriesSignalMixin:
         """
         Compute the instantaneous frequency of the TimeSeries.
-        Returns unit 'Hz'.
+
+        The instantaneous frequency is derived from the time derivative of
+        the unwrapped instantaneous phase obtained via Hilbert transform.
+
+        Parameters
+        ----------
+        unwrap : bool, default=True
+            If True, unwrap the phase before differentiation (recommended).
+            Setting to False may cause issues at phase wrap points.
+        smooth : int, Quantity, or None, default=None
+            Optional smoothing window. If int, number of samples. If Quantity,
+            time duration. Default is None (no smoothing).
+        **kwargs
+            Passed to :meth:`hilbert` via :meth:`instantaneous_phase`.
+            Common options include `pad` for reducing endpoint artifacts.
+
+        Returns
+        -------
+        TimeSeries
+            Instantaneous frequency with unit 'Hz'.
+            The output has the same length as the input (endpoints are not trimmed).
+
+        Raises
+        ------
+        ValueError
+            If the TimeSeries has no defined dt (sample rate).
+
+        Notes
+        -----
+        **Definition**: The instantaneous frequency is computed as::
+
+            phase = instantaneous_phase(unwrap=True, deg=False)  # radians
+            dphi_dt = np.gradient(phase, dt)  # time derivative
+            f_inst = dphi_dt / (2 * π)  # convert to Hz
+
+        **Preprocessing**: No automatic preprocessing is applied. Users should
+        apply demean, detrend, filtering, or windowing as needed before calling.
+
+        **Endpoint artifacts**: The underlying Hilbert transform may exhibit
+        artifacts at the edges. The endpoints of the instantaneous frequency
+        may also be less accurate due to numerical differentiation.
+        When evaluating accuracy, consider using only the central portion
+        of the output.
+
+        **Smoothing**: The `smooth` parameter provides optional post-hoc
+        smoothing via moving average. By default, no smoothing is applied.
+
+        Examples
+        --------
+        >>> t = np.linspace(0, 1, 1000)
+        >>> ts = TimeSeries(np.cos(2 * np.pi * 50 * t), dt=0.001, unit='V')
+        >>> f_inst = ts.instantaneous_frequency()
+        >>> # Central region should be close to 50 Hz
+        >>> np.median(f_inst.value[100:-100])  # doctest: +SKIP
+        50.0
         """
         # Force radians for calculation
         phi_ts = self.instantaneous_phase(deg=False, unwrap=unwrap, **kwargs)
