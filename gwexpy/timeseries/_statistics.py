@@ -242,7 +242,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     def _calculate_distance_correlation(self, x, y):
         try:
             import dcor
-        except Exception as exc:
+        except ImportError as exc:
             raise ImportError(
                 "The 'dcor' package is required for distance correlation. "
                 "Please install it via `pip install dcor` or `pip install gwexpy[stat]`."
@@ -250,4 +250,4 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         try:
             return dcor.distance_correlation(x, y)
         except Exception as exc:
-            raise ImportError("dcor failed to compute distance correlation.") from exc
+            raise RuntimeError("dcor failed to compute distance correlation.") from exc
