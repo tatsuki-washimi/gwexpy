@@ -7,7 +7,8 @@ units based on the requested physical quantity.
 ASD Functions
 -------------
 from_pygwinc : Generate ASD from pyGWINC detector noise models
-    Supported quantities: "strain" [1/sqrt(Hz)], "darm" [m/sqrt(Hz)]
+    Supported quantities: "strain" [1/sqrt(Hz)], "darm" [m/sqrt(Hz)],
+    "displacement" (alias of "darm")
 
 from_obspy : Generate ASD from ObsPy seismic/infrasound noise models
     Supported quantities: "displacement" [m/sqrt(Hz)],

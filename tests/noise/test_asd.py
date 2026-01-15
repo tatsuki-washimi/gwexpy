@@ -7,16 +7,74 @@ This test module validates:
 4. Edge cases (f=0 handling)
 """
 
+import importlib
+import sys
+import types
+
 import numpy as np
 import pytest
+
+
+def _install_gwinc_stub(monkeypatch: pytest.MonkeyPatch) -> None:
+    stub = types.ModuleType("gwinc")
+
+    class StubBudget:
+        def __init__(self, arm_length: float) -> None:
+            self.ifo = types.SimpleNamespace(
+                Infrastructure=types.SimpleNamespace(Length=arm_length)
+            )
+
+        def run(self, freq=None, **kwargs):
+            if freq is None:
+                freq = kwargs.get("freq")
+            psd = np.full_like(np.asarray(freq, dtype=float), 4.0, dtype=float)
+            return types.SimpleNamespace(psd=psd)
+
+    def load_budget(model: str) -> StubBudget:
+        return StubBudget(4000.0)
+
+    stub.load_budget = load_budget
+    monkeypatch.setitem(sys.modules, "gwinc", stub)
+
+    import gwexpy.noise.gwinc_ as gwinc_
+
+    importlib.reload(gwinc_)
+
+
+def _install_obspy_stub(monkeypatch: pytest.MonkeyPatch) -> None:
+    obspy_mod = types.ModuleType("obspy")
+    signal_mod = types.ModuleType("obspy.signal")
+    spectral_mod = types.ModuleType("obspy.signal.spectral_estimation")
+
+    periods = np.array([1.0, 0.5])
+    psd_db = np.array([-20.0, -20.0])
+
+    def _model():
+        return periods, psd_db
+
+    spectral_mod.get_nhnm = _model
+    spectral_mod.get_nlnm = _model
+    spectral_mod.get_idc_infra_hi_noise = _model
+    spectral_mod.get_idc_infra_low_noise = _model
+
+    signal_mod.spectral_estimation = spectral_mod
+    obspy_mod.signal = signal_mod
+
+    monkeypatch.setitem(sys.modules, "obspy", obspy_mod)
+    monkeypatch.setitem(sys.modules, "obspy.signal", signal_mod)
+    monkeypatch.setitem(sys.modules, "obspy.signal.spectral_estimation", spectral_mod)
+
+    import gwexpy.noise.obspy_ as obspy_
+
+    importlib.reload(obspy_)
 
 
 class TestFromPygwincQuantityValidation:
     """Test from_pygwinc quantity parameter validation."""
 
     @pytest.fixture(autouse=True)
-    def _skip_if_no_gwinc(self):
-        pytest.importorskip("gwinc")
+    def _gwinc_stub(self, monkeypatch):
+        _install_gwinc_stub(monkeypatch)
 
     def test_strain_quantity_returns_frequencyseries(self):
         """from_pygwinc with quantity='strain' returns FrequencySeries."""
@@ -28,6 +86,7 @@ class TestFromPygwincQuantityValidation:
 
     def test_strain_quantity_unit(self):
         """from_pygwinc with quantity='strain' has unit 1/sqrt(Hz)."""
+        pytest.importorskip("astropy")
         from astropy import units as u
         from gwexpy.noise.asd import from_pygwinc
 
@@ -45,6 +104,7 @@ class TestFromPygwincQuantityValidation:
 
     def test_darm_quantity_unit(self):
         """from_pygwinc with quantity='darm' has unit m/sqrt(Hz)."""
+        pytest.importorskip("astropy")
         from astropy import units as u
         from gwexpy.noise.asd import from_pygwinc
 
@@ -115,8 +175,8 @@ class TestFromObspyQuantityValidation:
     """Test from_obspy quantity parameter validation."""
 
     @pytest.fixture(autouse=True)
-    def _skip_if_no_obspy(self):
-        pytest.importorskip("obspy")
+    def _obspy_stub(self, monkeypatch):
+        _install_obspy_stub(monkeypatch)
 
     def test_acceleration_quantity_returns_frequencyseries(self):
         """from_obspy with quantity='acceleration' returns FrequencySeries."""
@@ -128,6 +188,7 @@ class TestFromObspyQuantityValidation:
 
     def test_acceleration_quantity_unit(self):
         """from_obspy with quantity='acceleration' has unit m/(s²·sqrt(Hz))."""
+        pytest.importorskip("astropy")
         from astropy import units as u
         from gwexpy.noise.asd import from_obspy
 
@@ -137,6 +198,7 @@ class TestFromObspyQuantityValidation:
 
     def test_velocity_quantity_unit(self):
         """from_obspy with quantity='velocity' has unit m/(s·sqrt(Hz))."""
+        pytest.importorskip("astropy")
         from astropy import units as u
         from gwexpy.noise.asd import from_obspy
 
@@ -146,6 +208,7 @@ class TestFromObspyQuantityValidation:
 
     def test_displacement_quantity_unit(self):
         """from_obspy with quantity='displacement' has unit m/sqrt(Hz)."""
+        pytest.importorskip("astropy")
         from astropy import units as u
         from gwexpy.noise.asd import from_obspy
 
@@ -214,6 +277,7 @@ class TestFromObspyQuantityValidation:
 
     def test_infrasound_models_work(self):
         """from_obspy with infrasound models (IDCH, IDCL) works."""
+        pytest.importorskip("astropy")
         from astropy import units as u
         from gwexpy.noise.asd import from_obspy
         from gwexpy.frequencyseries import FrequencySeries
