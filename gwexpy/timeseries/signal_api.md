@@ -224,3 +224,157 @@ f_inst = ts.instantaneous_frequency()
 - `radian()`: 複素信号の位相角（Hilbert なし）
 - `degree()`: 複素信号の位相角（度単位、Hilbert なし）
 - `unwrap_phase()`: `instantaneous_phase(unwrap=True)` のエイリアス
+
+---
+
+## Baseband 復調
+
+### 概要
+
+`baseband` メソッドは、キャリア周波数をベースバンド（DC）にシフトし、オプションでローパスフィルタとリサンプリングを適用します。
+
+処理チェーン：
+
+```
+mix_down(f0) → [lowpass(cutoff)] → [resample(output_rate)]
+```
+
+### 2つの実行モード
+
+**モードA（解析帯域明示）**:
+- `baseband(f0=fc, lowpass=cutoff, output_rate=None|...)`
+- ミキシング後にローパスフィルタを適用して解析帯域を定義
+- オプションでリサンプルしてデータレートを削減
+
+**モードB（ダウンサンプル優先）**:
+- `baseband(f0=fc, lowpass=None, output_rate=rate)`
+- 明示的なローパスをスキップし、リサンプルのアンチエイリアスに依存
+- 二重フィルタを避けたい場合に有用
+
+---
+
+## `baseband`
+
+```python
+TimeSeries.baseband(
+    *,
+    phase: array_like | None = None,
+    f0: float | Quantity | None = None,
+    fdot: float | Quantity = 0.0,
+    fddot: float | Quantity = 0.0,
+    phase_epoch: float | None = None,
+    phase0: float = 0.0,
+    lowpass: float | Quantity | None = None,
+    lowpass_kwargs: dict | None = None,
+    output_rate: float | Quantity | None = None,
+    resample_kwargs: dict | None = None,
+    singlesided: bool = False
+) -> TimeSeries
+```
+
+### 説明
+
+TimeSeries を周波数シフト（ヘテロダイン）してベースバンドに復調し、オプションでローパスフィルタとリサンプリングを適用します。
+
+### パラメータ
+
+| パラメータ | 型 | デフォルト | 説明 |
+|-----------|-----|-----------|------|
+| `phase` | array_like または None | None | ミキシング用の明示的な位相配列（ラジアン）|
+| `f0` | float または Quantity | None | ミキシングの中心周波数（Hz）。0 < f0 < Nyquist である必要あり |
+| `fdot` | float または Quantity | 0.0 | 周波数微分（Hz/s）|
+| `fddot` | float または Quantity | 0.0 | 周波数2階微分（Hz/s²）|
+| `phase_epoch` | float または None | None | 位相モデルの基準エポック |
+| `phase0` | float | 0.0 | 初期位相オフセット（ラジアン）|
+| `lowpass` | float または Quantity または None | None | ローパスフィルタのコーナー周波数（Hz）|
+| `lowpass_kwargs` | dict または None | None | `lowpass()` に渡す追加引数 |
+| `output_rate` | float または Quantity または None | None | 出力サンプルレート（Hz）|
+| `resample_kwargs` | dict または None | None | `resample()` に渡す追加引数 |
+| `singlesided` | bool | False | True の場合、振幅を2倍（実信号用）|
+
+### 戻り値
+
+複素数のベースバンド信号を含む `TimeSeries`。
+
+### 例外条件
+
+| 条件 | 例外 |
+|------|------|
+| `f0 <= 0` | `ValueError` |
+| `f0 >= Nyquist`（regular series の場合）| `ValueError` |
+| `lowpass <= 0` | `ValueError` |
+| `lowpass >= Nyquist` | `ValueError` |
+| `output_rate <= 0` | `ValueError` |
+| `lowpass` と `output_rate` の両方が None | `ValueError` |
+| `lowpass >= output_rate/2`（新 Nyquist 超過）| `ValueError` |
+
+### 注意事項
+
+⚠️ **前処理はユーザー責務**: demean、detrend、フィルタリングは自動適用されません。DC オフセットやトレンドがある場合、ベースバンド結果に影響します。
+
+⚠️ **lowpass と f0 の関係**: 一般に `lowpass < f0` が推奨されますが、強制はされません。キャリア周辺の変調のみを捉える場合は、lowpass をキャリア周波数より小さく設定してください。
+
+⚠️ **GWpy 互換**: lowpass と resample の内部処理は GWpy のメソッドに委譲されます。カスタマイズは `lowpass_kwargs` と `resample_kwargs` で可能です。
+
+---
+
+## Baseband 使用例
+
+### モードA: ローパス指定
+
+```python
+import numpy as np
+from gwexpy.timeseries import TimeSeries
+
+# 100 Hz のキャリア信号
+t = np.arange(0, 10, 0.001)  # 1000 Hz サンプリング
+signal = np.cos(2 * np.pi * 100 * t)
+ts = TimeSeries(signal, dt=0.001, unit='V')
+
+# 前処理（推奨）
+ts = ts.detrend()
+
+# ベースバンドに復調（10 Hz 解析帯域）
+z = ts.baseband(f0=100, lowpass=10)
+
+# DC 成分が支配的になる
+print(f"DC magnitude: {np.abs(np.mean(z.value)):.3f}")
+```
+
+### モードB: リサンプルのみ
+
+```python
+# リサンプルのアンチエイリアスに依存
+z = ts.baseband(f0=100, lowpass=None, output_rate=50)
+
+# 出力サンプルレートが 50 Hz になる
+print(f"Output rate: {z.sample_rate}")
+```
+
+### 両方を指定
+
+```python
+# ローパスとリサンプルの両方
+z = ts.baseband(f0=100, lowpass=10, output_rate=50)
+
+# lowpass < output_rate/2 (= 25 Hz) である必要あり
+```
+
+### GWpy kwargs の透過
+
+```python
+# ローパスフィルタのカスタマイズ
+z = ts.baseband(
+    f0=100,
+    lowpass=10,
+    lowpass_kwargs={"filtfilt": True}  # GWpy オプション
+)
+
+# リサンプルのカスタマイズ
+z = ts.baseband(
+    f0=100,
+    lowpass=None,
+    output_rate=50,
+    resample_kwargs={"window": "hamming"}  # GWpy オプション
+)
+```
