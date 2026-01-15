@@ -573,33 +573,103 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         singlesided: bool = True,
     ) -> TimeSeriesSignalMixin:
         """
-        Mix with phase and average over strides.
+        Mix with phase and average over strides (GWpy-compatible).
+
+        This method replicates the GWpy ``TimeSeries.heterodyne()`` algorithm
+        exactly. The input TimeSeries is heterodyned against a phase series
+        and averaged over fixed strides.
 
         Parameters
         ----------
-        phase : `array_like` or `Series`
-            Phase to mix with (radians).
+        phase : `array_like`
+            Phase to mix with (radians). Must have ``len(phase) == len(self)``.
         stride : `float` or `Quantity`, optional
-            Time step for averaging (default 1.0s).
+            Time step for averaging in seconds (default 1.0s).
+            The number of samples per stride is ``int(stride * sample_rate)``,
+            i.e. floor-truncated.
         singlesided : `bool`, optional
             If True, double the amplitude (useful for real signals).
+            Default is True (following gwexpy convention; GWpy default is False).
 
         Returns
         -------
         TimeSeries
-            Average (complex) demodulated signal.
+            Complex demodulated signal with ``dt = stride``.
+            The output value represents ``mag * exp(1j * phase_out)`` where
+            mag/phase are the average magnitude and phase over each stride.
+
+        Raises
+        ------
+        TypeError
+            If ``phase`` is not array_like (i.e. ``len(phase)`` fails).
+        ValueError
+            If ``len(phase) != len(self)``.
+
+        Notes
+        -----
+        **Algorithm (GWpy-identical)**
+
+        1. ``stridesamp = int(stride * self.sample_rate.value)`` (floor truncation)
+        2. ``nsteps = int(self.size // stridesamp)`` (trailing samples discarded)
+        3. For each step ``step`` in ``range(nsteps)``:
+
+           - ``istart = stridesamp * step``
+           - ``iend = istart + stridesamp`` (exclusive end)
+           - ``mixed = exp(-1j * phase[istart:iend]) * self.value[istart:iend]``
+           - ``out[step] = mixed.mean()`` if doublesided, else ``2 * mixed.mean()``
+
+        4. Output ``sample_rate = 1 / stride``
+
+        See Also
+        --------
+        TimeSeries.demodulate
+            for heterodyning at a fixed frequency (GWpy)
+        TimeSeries.lock_in
+            for a higher-level lock-in amplifier interface
         """
-        # 1. Mix down
-        z = self.mix_down(phase=phase, singlesided=singlesided)
+        # --- Phase validation (GWpy-compatible) ---
+        try:
+            phase = np.asarray(phase)  # make sure phase is a numpy array
+            if phase.ndim != 1:
+                raise TypeError(f"Phase is not array_like: ndim={phase.ndim}")
+            _ = len(phase)  # ensure len() works
+        except TypeError as e:
+            raise TypeError(f"Phase is not array_like: {e}") from e
 
-        # 2. Resample (average) to stride-based rate
-        if isinstance(stride, (float, int)):
-            stride_dt = stride * u.s
+        if len(phase) != len(self):
+            raise ValueError(
+                "Phase array must be the same length as the TimeSeries"
+            )
+
+        # --- Stride calculation ---
+        if isinstance(stride, u.Quantity):
+            stride_s = stride.to("s").value
         else:
-            stride_dt = u.Quantity(stride)
+            stride_s = float(stride)
 
-        # Use our bin-based resample to get the average
-        return z.resample(stride_dt, agg="mean")
+        stridesamp = int(stride_s * self.sample_rate.value)
+        nsteps = int(self.size // stridesamp)
+
+        # --- Heterodyne loop (GWpy-identical) ---
+        out_data = np.zeros(nsteps, dtype=complex)
+        for step in range(nsteps):
+            istart = stridesamp * step
+            iend = istart + stridesamp
+            mixed = np.exp(-1j * phase[istart:iend]) * self.value[istart:iend]
+            out_data[step] = 2 * mixed.mean() if singlesided else mixed.mean()
+
+        # --- Build output TimeSeries (GWpy-compatible) ---
+        # Use constructor with explicit sample_rate to ensure proper dt/sample_rate
+        out = self.__class__(
+            out_data,
+            t0=self.t0,
+            sample_rate=1 / stride_s,
+            unit=self.unit,
+            name=self.name,
+            channel=self.channel,
+        )
+
+        return out
 
     def baseband(
         self,
@@ -844,11 +914,153 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
     ) -> Any:
         """
         Perform lock-in amplification (demodulation + averaging).
+
+        This method provides two operation modes determined by the ``bandwidth``
+        parameter:
+
+        **LPF Mode (bandwidth is not None)**
+            Uses ``baseband(lowpass=bandwidth, ...)`` to demodulate and lowpass
+            filter the signal. ``stride`` must NOT be specified in this mode.
+
+        **Stride-Average Mode (bandwidth is None)**
+            Uses ``heterodyne(phase, stride, ...)`` to demodulate and average
+            over fixed time strides. ``stride`` MUST be specified (or defaults
+            to 1.0s).
+
+        Parameters
+        ----------
+        f0 : float or Quantity, optional
+            Center frequency (Hz) for phase model. Mutually exclusive with
+            ``phase``.
+        phase : array_like, optional
+            Explicit phase array (radians) for mixing. Mutually exclusive with
+            ``f0``/``fdot``/``fddot``/``phase_epoch``/``phase0``. If provided,
+            these parameters must NOT be specified.
+        fdot : float or Quantity, default=0.0
+            Frequency derivative (Hz/s). Only valid when ``f0`` is used.
+        fddot : float or Quantity, default=0.0
+            Second frequency derivative (Hz/s²). Only valid when ``f0`` is used.
+        phase_epoch : float, optional
+            Reference epoch for phase model. Only valid when ``f0`` is used.
+        phase0 : float, default=0.0
+            Initial phase offset (radians). Only valid when ``f0`` is used.
+        stride : float or Quantity, optional
+            Time step for averaging in seconds. Required when ``bandwidth`` is
+            None (stride-average mode). Cannot be specified when ``bandwidth``
+            is provided (LPF mode).
+        bandwidth : float or Quantity, optional
+            Lowpass filter bandwidth (Hz). If specified, uses LPF mode with
+            ``baseband(lowpass=bandwidth, ...)``. ``stride`` must NOT be specified.
+        singlesided : bool, default=True
+            If True, double the amplitude (for real input signals).
+        output : str, default='amp_phase'
+            Output format:
+            - ``'complex'``: returns complex TimeSeries
+            - ``'amp_phase'``: returns (amplitude, phase) tuple
+            - ``'iq'``: returns (I, Q) tuple (real, imaginary components)
+        deg : bool, default=True
+            If True and ``output='amp_phase'``, phase is in degrees; else radians.
+        **kwargs
+            Additional keyword arguments passed to ``baseband()`` in LPF mode.
+
+        Returns
+        -------
+        TimeSeries or tuple
+            Depending on ``output``:
+            - ``'complex'``: complex TimeSeries
+            - ``'amp_phase'``: (amplitude TimeSeries, phase TimeSeries)
+            - ``'iq'``: (I TimeSeries, Q TimeSeries)
+
+        Raises
+        ------
+        ValueError
+            If ``phase`` and any of ``f0``/``fdot``/``fddot``/``phase_epoch``/
+            ``phase0`` (non-default) are both specified.
+        ValueError
+            If neither ``phase`` nor ``f0`` is specified.
+        ValueError
+            If ``bandwidth`` and ``stride`` are both specified.
+        ValueError
+            If ``bandwidth`` is None and ``stride`` is None.
+        ValueError
+            If ``output`` is not one of 'complex', 'amp_phase', 'iq'.
+
+        Notes
+        -----
+        **Phase Precedence Rule**
+
+        The ``phase`` parameter takes precedence. If ``phase`` is provided,
+        the ``f0``/``fdot``/``fddot``/``phase_epoch``/``phase0`` parameters
+        must NOT be specified (except for their default values). This prevents
+        ambiguous configurations.
+
+        **Mode Selection**
+
+        - ``bandwidth is not None``: LPF mode (``stride`` forbidden)
+        - ``bandwidth is None``: stride-average mode (``stride`` required)
+
+        Examples
+        --------
+        Stride-average mode (phase from f0):
+
+        >>> result = ts.lock_in(f0=100.0, stride=1.0, output='complex')
+
+        Stride-average mode (explicit phase):
+
+        >>> phase = 2 * np.pi * 100.0 * ts.times.value
+        >>> result = ts.lock_in(phase=phase, stride=1.0, output='complex')
+
+        LPF mode:
+
+        >>> result = ts.lock_in(f0=100.0, bandwidth=10.0, output='amp_phase')
         """
         self._check_regular("lock_in")
 
+        # === Validation: phase vs f0 mutual exclusivity ===
+        has_phase = phase is not None
+        has_f0_params = (
+            f0 is not None
+            or fdot != 0.0
+            or fddot != 0.0
+            or phase_epoch is not None
+            or phase0 != 0.0
+        )
+
+        if has_phase and has_f0_params:
+            raise ValueError(
+                "Cannot specify both 'phase' and any of 'f0/fdot/fddot/phase_epoch/phase0'. "
+                "When 'phase' is provided, it takes precedence and the f0-based parameters "
+                "must not be specified."
+            )
+
+        if not has_phase and f0 is None:
+            raise ValueError(
+                "Either 'phase' or 'f0' must be specified. "
+                "Use 'phase' for explicit phase array, or 'f0' to build phase from frequency model."
+            )
+
+        # === Validation: bandwidth vs stride mutual exclusivity ===
+        if bandwidth is not None and stride is not None:
+            raise ValueError(
+                "Cannot specify both 'bandwidth' and 'stride'. "
+                "Use 'bandwidth' for LPF mode (with baseband), or 'stride' for stride-average mode."
+            )
+
+        if bandwidth is None and stride is None:
+            raise ValueError(
+                "Either 'bandwidth' or 'stride' must be specified. "
+                "Use 'stride' for stride-average mode (heterodyne), or 'bandwidth' for LPF mode."
+            )
+
+        # === Output validation ===
+        if output not in ("complex", "amp_phase", "iq"):
+            raise ValueError(
+                f"Unknown output format: {output}. Must be one of 'complex', 'amp_phase', 'iq'."
+            )
+
+        # === Mode dispatch ===
         if bandwidth is not None:
-            # LPF based
+            # LPF mode: use baseband
             outc = self.baseband(
                 phase=phase,
                 f0=f0,
@@ -861,8 +1073,8 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                 **kwargs,
             )
         else:
-            # Averaging based
-            stride = stride or 1.0
+            # Stride-average mode: build phase series and use heterodyne
+            assert stride is not None  # guaranteed by validation above
             phase_series = self._build_phase_series(
                 phase=phase,
                 f0=f0,
@@ -874,6 +1086,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             )
             outc = self.heterodyne(phase_series, stride=stride, singlesided=singlesided)
 
+        # === Output formatting ===
         if output == "complex":
             return outc
         elif output == "amp_phase":
@@ -887,7 +1100,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             )
             ph.override_unit("deg" if deg else "rad")
             return mag, ph
-        elif output == "iq":
+        else:  # output == "iq"
             i = self.__class__(
                 outc.value.real,
                 t0=outc.t0,
@@ -905,8 +1118,6 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                 unit=self.unit,
             )
             return i, q
-        else:
-            raise ValueError(f"Unknown output format: {output}")
 
     # ===============================
     # Cross-correlation Methods
