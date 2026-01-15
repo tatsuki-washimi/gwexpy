@@ -10,8 +10,8 @@ class TestTimeSeriesMatrixLockIn:
         times = np.arange(100) * 0.01
         tsm = TimeSeriesMatrix(data, times=times, unit='V')
 
-        # Test 1: amp_phase (tuple return)
-        res = tsm.lock_in(f0=10, output='amp_phase')
+        # Test 1: amp_phase (tuple return) - stride required
+        res = tsm.lock_in(f0=10, stride=1.0, output='amp_phase')
         assert isinstance(res, tuple)
         assert len(res) == 2
         amp, phase = res
@@ -26,8 +26,8 @@ class TestTimeSeriesMatrixLockIn:
         times = np.arange(100) * 0.01
         tsm = TimeSeriesMatrix(data, times=times, unit='V')
 
-        # Test 2: iq (tuple return)
-        i, q = tsm.lock_in(f0=10, output='iq')
+        # Test 2: iq (tuple return) - stride required
+        i, q = tsm.lock_in(f0=10, stride=1.0, output='iq')
         assert isinstance(i, TimeSeriesMatrix)
         assert isinstance(q, TimeSeriesMatrix)
 
@@ -36,8 +36,8 @@ class TestTimeSeriesMatrixLockIn:
         times = np.arange(100) * 0.01
         tsm = TimeSeriesMatrix(data, times=times, unit='V')
 
-        # Test 3: complex (single return)
-        c = tsm.lock_in(f0=10, output='complex')
+        # Test 3: complex (single return) - stride required
+        c = tsm.lock_in(f0=10, stride=1.0, output='complex')
         assert isinstance(c, TimeSeriesMatrix)
         assert np.iscomplexobj(c.value)
 
