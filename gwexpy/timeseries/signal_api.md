@@ -218,12 +218,93 @@ f_inst = ts.instantaneous_frequency()
 
 ---
 
+## `heterodyne`
+
+```python
+TimeSeries.heterodyne(
+    phase: array_like | TimeSeries,
+    stride: float | Quantity = 1.0,
+    singlesided: bool = False
+) -> TimeSeries
+```
+
+### 説明
+
+信号を指定された位相シリーズでヘテロダイン検波（復調）し、ストライドごとに平均化します。このメソッドは GWpy の `TimeSeries.heterodyne()` と同じアルゴリズムとデフォルト挙動 (`singlesided=False`) を採用しています。
+
+### パラメータ
+
+| パラメータ | 型 | デフォルト | 説明 |
+|-----------|-----|-----------|------|
+| `phase` | array_like | (必須) | 復調に使用する位相（ラジアン）。入力信号と同じ長さである必要があります |
+| `stride` | float または Quantity | 1.0 | 平均化を行う時間刻み（秒）。内部で `int(stride * sample_rate)` サンプルに丸められます |
+| `singlesided` | bool | False | True の場合、振幅を 2 倍します（実信号の規約）。GWpy のデフォルト（False）に準拠します |
+
+### 戻り値
+
+複素数の復調・平均化された信号を含む `TimeSeries`。
+
+### アルゴリズム
+
+1. 複素オシレータ $\exp(-i \cdot \text{phase})$ を乗算します。
+2. 指定された `stride` ごとにセグメントに分割し、各セグメントの複素平均（mean）を計算します。
+3. セグメント長は `int(stride * sample_rate)` として計算されます。
+4. セグメント長に満たない末尾のサンプルは破棄（floor）されます。
+5. `singlesided=True` の場合、結果を 2 倍します。
+
+---
+
+## `lock_in`
+
+```python
+TimeSeries.lock_in(
+    f0: float | Quantity | None = None,
+    *,
+    phase: array_like | None = None,
+    fdot: float | Quantity = 0.0,
+    fddot: float | Quantity = 0.0,
+    stride: float | Quantity | None = None,
+    bandwidth: float | Quantity | None = None,
+    singlesided: bool = True,
+    output: Literal["amp_phase", "complex", "iq"] = "amp_phase",
+    deg: bool = True,
+    **kwargs
+) -> TimeSeries | tuple
+```
+
+### 説明
+
+ロックインアンプ方式による復調と平均化を行います。平均化ベース（stride）とフィルタベース（bandwidth）の 2 つのモードをサポートしています。
+
+### パラメータ
+
+| パラメータ | 型 | デフォルト | 説明 |
+|-----------|-----|-----------|------|
+| `f0` | float | None | 固定周波数で復調する場合の中心周波数 (Hz) |
+| `phase` | array_like | None | 明示的な位相配列（ラジアン） |
+| `stride` | float | None | 平均化時間（秒）。`bandwidth` 未指定時に必須 |
+| `bandwidth` | float | None | ローパスフィルタの遮断周波数 (Hz)。指定時はフィルタモードで動作 |
+| `singlesided` | bool | True | True の場合、振幅を 2 倍します（ロックインの標準的な規約）。**注: `heterodyne` のデフォルト (False) とは異なります** |
+| `output` | str | "amp_phase" | 出力形式 ('amp_phase', 'complex', 'iq') |
+| `deg` | bool | True | `amp_phase` 出力時の位相単位（True で度、False でラジアン） |
+
+### 注意点
+
+- `bandwidth` が指定されていない場合は、内部的に `heterodyne` を使用して平均化を行います。
+- `bandwidth` が指定されている場合は、内部的に `baseband` を使用してフィルタリングを行います。
+- `stride` は `bandwidth` が指定されていない場合にのみ有効です。
+- 端数サンプルは `heterodyne` と同様に破棄されます。
+
+---
+
 ## 関連メソッド
 
 - `envelope()`: Hilbert 変換を用いた包絡線（振幅）の計算
 - `radian()`: 複素信号の位相角（Hilbert なし）
 - `degree()`: 複素信号の位相角（度単位、Hilbert なし）
 - `unwrap_phase()`: `instantaneous_phase(unwrap=True)` のエイリアス
+- `mix_down()`: 周波数ミキシング（複素復調）のみを実行
+- `transfer_function()`: 伝達関数の推定
 
 ---
 
