@@ -210,34 +210,76 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
     def radian(self, unwrap: bool = False) -> Spectrogram:
         """
         Calculate the phase of this Spectrogram in radians.
+
+        Parameters
+        ----------
+        unwrap : bool, optional
+            If True, unwrap the phase to remove discontinuities along the time axis.
+            Default is False.
+
+        Returns
+        -------
+        Spectrogram
+            A new Spectrogram containing the phase in radians.
+            All other metadata (times, frequencies, channel, epoch, etc.) are preserved.
         """
-        val = np.angle(self.value)
+        # Copy to preserve all metadata (times, frequencies, channel, epoch, metadata dict, etc.)
+        new = self.copy()
+        
+        # Calculate phase values
+        val = np.angle(self.view(np.ndarray))
         if unwrap:
-            # Unwrap along time axis
+            # Unwrap along time axis (axis 0 of (Time, Freq) Spectrogram)
             val = np.unwrap(val, axis=0)
 
-        name = self.name + "_phase" if self.name else "phase"
+        # If original was complex, Ensure new is real-valued to hold phase
+        if np.iscomplexobj(new):
+            new = new.real.copy()
 
-        return self.__class__(
-            val,
-            unit="rad",
-            name=name,
-        )
+        # Update data and metadata
+        # Use raw ndarray view for assignment to bypass Astropy's unit check
+        new.view(np.ndarray)[:] = val
+        new.override_unit("rad")
+        if self.name:
+            new.name = self.name + "_phase"
+        else:
+            new.name = "phase"
+            
+        return new
 
     def degree(self, unwrap: bool = False) -> Spectrogram:
         """
         Calculate the phase of this Spectrogram in degrees.
+
+        Parameters
+        ----------
+        unwrap : bool, optional
+            If True, unwrap the phase to remove discontinuities along the time axis.
+            Default is False.
+
+        Returns
+        -------
+        Spectrogram
+            A new Spectrogram containing the phase in degrees.
+            All other metadata (times, frequencies, channel, epoch, etc.) are preserved.
         """
+        # Re-use radian() implementation which handles unwrap and metadata preservation
         p = self.radian(unwrap=unwrap)
-        val = np.rad2deg(p.value)
-
-        name = self.name + "_phase_deg" if self.name else "phase_deg"
-
-        return self.__class__(
-            val,
-            unit="deg",
-            name=name,
-        )
+        
+        # Convert values to degrees
+        val = np.rad2deg(p.view(np.ndarray))
+        
+        # Create final object (p already has correct metadata and is real-valued)
+        new = p
+        # Use raw ndarray view for assignment to bypass Astropy's unit check
+        new.view(np.ndarray)[:] = val
+        new.override_unit("deg")
+        if self.name:
+            new.name = self.name + "_phase_deg"
+        else:
+            new.name = "phase_deg"
+            
+        return new
 
 
 # Import Matrix, List, and Dict to maintain backward compatibility if this file is imported
