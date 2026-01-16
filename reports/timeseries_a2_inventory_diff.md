@@ -1,6 +1,6 @@
 # Timeseries A2 Inventory Diff Report
 
-**対象 Commit Hash:** `7c7dd71d29ec97667e3ddd0e078f97db694071c4`
+**対象 Commit Hash:** `728ff79cb81c393402eef55ec90d051cabca9d2f`
 
 **実行方法:**
 ```bash
