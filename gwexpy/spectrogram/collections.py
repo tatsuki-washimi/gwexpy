@@ -201,6 +201,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         - Shape must be identical across elements.
         - Times/frequencies are compared by converting to reference (first element)
           unit using .to_value(), then requiring np.array_equal (no tolerance).
+          (Reuses gwexpy.types.seriesmatrix_validation logic).
         - Units, names, and channels may differ and are preserved per-element
           in the matrix's MetaDataMatrix.
 
@@ -217,6 +218,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         import numpy as np
 
         from gwexpy.types.metadata import MetaData, MetaDataMatrix
+        from gwexpy.types.seriesmatrix_validation import check_shape_xindex_compatibility
 
         from .matrix import SpectrogramMatrix
 
@@ -228,44 +230,30 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         times0 = s0.times
         freqs0 = s0.frequencies
 
-        # Get reference units
-        times_unit = getattr(times0, "unit", None)
-        freqs_unit = getattr(freqs0, "unit", None)
-
-        def _to_ref_unit(arr, ref_unit):
-            """Convert array to reference unit if possible."""
-            if ref_unit is None:
-                return np.asarray(arr)
-            try:
-                return arr.to_value(ref_unit)
-            except (AttributeError, TypeError, ValueError):
-                # No unit or conversion failed
-                return np.asarray(arr)
-
-        times0_vals = _to_ref_unit(times0, times_unit)
-        freqs0_vals = _to_ref_unit(freqs0, freqs_unit)
+        # Helper to reuse seriesmatrix_validation logic for arbitrary arrays
+        class AxisWrapper:
+            def __init__(self, shape, xindex):
+                self.shape = shape
+                self.xindex = xindex
 
         for i, s in enumerate(self[1:], start=1):
-            if s.shape != shape0:
-                raise ValueError(
-                    f"Shape mismatch at index {i}: expected {shape0}, got {s.shape}"
+            # Check times equality (reusing base validation logic)
+            try:
+                check_shape_xindex_compatibility(
+                    AxisWrapper(shape0, times0),
+                    AxisWrapper(s.shape, s.times)
                 )
+            except ValueError as e:
+                raise ValueError(f"Times mismatch at index {i}: {e}")
 
-            # Convert times to reference unit and compare with array_equal
+            # Check frequencies equality (reusing base validation logic)
             try:
-                times_vals = _to_ref_unit(s.times, times_unit)
-            except Exception:
-                raise ValueError(f"Times unit conversion failed at index {i}")
-            if not np.array_equal(times_vals, times0_vals):
-                raise ValueError(f"Times mismatch at index {i}")
-
-            # Convert frequencies to reference unit and compare with array_equal
-            try:
-                freqs_vals = _to_ref_unit(s.frequencies, freqs_unit)
-            except Exception:
-                raise ValueError(f"Frequencies unit conversion failed at index {i}")
-            if not np.array_equal(freqs_vals, freqs0_vals):
-                raise ValueError(f"Frequencies mismatch at index {i}")
+                check_shape_xindex_compatibility(
+                    AxisWrapper(shape0, freqs0),
+                    AxisWrapper(s.shape, s.frequencies)
+                )
+            except ValueError as e:
+                raise ValueError(f"Frequencies mismatch at index {i}: {e}")
 
         arr = np.stack([s.value for s in self])
 
@@ -550,6 +538,7 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         - Shape must be identical across elements.
         - Times/frequencies are compared by converting to reference (first element)
           unit using .to_value(), then requiring np.array_equal (no tolerance).
+          (Reuses gwexpy.types.seriesmatrix_validation logic).
         - Units, names, and channels may differ and are preserved per-element
           in the matrix's MetaDataMatrix.
 
@@ -566,6 +555,7 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         import numpy as np
 
         from gwexpy.types.metadata import MetaData, MetaDataMatrix
+        from gwexpy.types.seriesmatrix_validation import check_shape_xindex_compatibility
 
         from .matrix import SpectrogramMatrix
 
@@ -579,44 +569,30 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         times0 = s0.times
         freqs0 = s0.frequencies
 
-        # Get reference units
-        times_unit = getattr(times0, "unit", None)
-        freqs_unit = getattr(freqs0, "unit", None)
-
-        def _to_ref_unit(arr, ref_unit):
-            """Convert array to reference unit if possible."""
-            if ref_unit is None:
-                return np.asarray(arr)
-            try:
-                return arr.to_value(ref_unit)
-            except (AttributeError, TypeError, ValueError):
-                # No unit or conversion failed
-                return np.asarray(arr)
-
-        times0_vals = _to_ref_unit(times0, times_unit)
-        freqs0_vals = _to_ref_unit(freqs0, freqs_unit)
+        # Helper to reuse seriesmatrix_validation logic for arbitrary arrays
+        class AxisWrapper:
+            def __init__(self, shape, xindex):
+                self.shape = shape
+                self.xindex = xindex
 
         for i, s in enumerate(vals[1:], start=1):
-            if s.shape != shape0:
-                raise ValueError(
-                    f"Shape mismatch at key {keys[i]}: expected {shape0}, got {s.shape}"
+            # Check times equality (reusing base validation logic)
+            try:
+                check_shape_xindex_compatibility(
+                    AxisWrapper(shape0, times0),
+                    AxisWrapper(s.shape, s.times)
                 )
+            except ValueError as e:
+                raise ValueError(f"Times mismatch at key {keys[i]}: {e}")
 
-            # Convert times to reference unit and compare with array_equal
+            # Check frequencies equality (reusing base validation logic)
             try:
-                times_vals = _to_ref_unit(s.times, times_unit)
-            except Exception:
-                raise ValueError(f"Times unit conversion failed at key {keys[i]}")
-            if not np.array_equal(times_vals, times0_vals):
-                raise ValueError(f"Times mismatch at key {keys[i]}")
-
-            # Convert frequencies to reference unit and compare with array_equal
-            try:
-                freqs_vals = _to_ref_unit(s.frequencies, freqs_unit)
-            except Exception:
-                raise ValueError(f"Frequencies unit conversion failed at key {keys[i]}")
-            if not np.array_equal(freqs_vals, freqs0_vals):
-                raise ValueError(f"Frequencies mismatch at key {keys[i]}")
+                check_shape_xindex_compatibility(
+                    AxisWrapper(shape0, freqs0),
+                    AxisWrapper(s.shape, s.frequencies)
+                )
+            except ValueError as e:
+                raise ValueError(f"Frequencies mismatch at key {keys[i]}: {e}")
 
         arr = np.stack([s.value for s in vals])
 
