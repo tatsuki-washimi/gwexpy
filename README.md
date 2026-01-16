@@ -1,10 +1,22 @@
 # gwexpy: GWpy Expansions for Experiments
 
+[![CI Status](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml/badge.svg)](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml)
+[![Documentation](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/docs.yml/badge.svg)](https://tatsuki-washimi.github.io/gwexpy/)
+[![PyPI version](https://img.shields.io/pypi/v/gwexpy.svg)](https://pypi.org/project/gwexpy/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+
 **gwexpy** is an (unofficial) extension library for [**GWpy**](https://gwpy.github.io/), designed to facilitate advanced time-series analysis, matrix operations, and signal processing for experimental physics and gravitational wave data analysis. It builds upon [GWpy](https://gwpy.github.io/)'s core data objects (`TimeSeries`, `FrequencySeries`) and introduces high-level containers and methods for multivariate analysis, vectorized time conversion, auto Series creation, and interoperability with the broader Python scientific ecosystem.
 
 > ⚠️ **Note on GUI Module**: The `gwexpy.gui` module (pyaggui) is **experimental and under active development**. It is **not stable** and may change significantly. See `gwexpy/gui/README.md` for details.
 
 ## Key Features
+
+### ✨ Core Strengths
+
+- **Strict Unit Semantics**: Ensures physical correctness in spectral estimation (PSD vs Spectrum) and model fitting. All operations propagate units consistently via `astropy.units`.
+- **Exact Transformations**: IFFT/IDCT preserve amplitudes strictly (Parseval's theorem), handling GWpy's one-sided scaling automatically.
+- **Safe Calculus**: Numerically stable differentiation/integration with automatic DC/singularity handling (returns 0 instead of NaN/Inf at f=0).
 
 ### 1. Advanced Containers
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0] - 2026-01-16
+
+### Added
+- **Numerical Semantics (A2 Fixed)**:
+    - `FrequencySeries`: Added strict unit propagation for calculus methods (`differentiate`, `integrate`).
+    - `FrequencySeries`: Fixed DC component handling in time-integration to prevent singularities (returns 0 instead of NaN/Inf).
+    - `Spectral`: Enforced strict unit differentiation between PSD (`V²/Hz`) and Power Spectrum (`V²`).
+    - `Fitting`: Implemented `Fitter` class and `GLS` solver with automatic unit propagation for model evaluation.
+    - `Astro`: Validated range calculation physics and unit consistency.
+- **Transformations**:
+    - `FrequencySeriesMatrix.ifft`: Now strictly preserves amplitude by correcting the one-sided spectral scaling factor (×0.5).
+
 ## [Unreleased] - 2025-12-19
 
 ### Added
