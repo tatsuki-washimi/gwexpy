@@ -4,10 +4,37 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gwexpy"
-version = "0.1.0"
-description = "GWpy Expansions for Experiments"
+version = "0.4.0"
+description = "A Python package for gravitational-wave data analysis, extending GWpy with strict unit handling and advanced spectral methods."
 readme = "README.md"
 requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Tatsuki Washimi", email = "tatsuki.washimi@example.com"}
+]
+keywords = [
+    "gravitational-waves",
+    "gwpy",
+    "signal-processing",
+    "time-series",
+    "spectral-analysis",
+    "physics",
+    "astronomy"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Typing :: Typed",
+]
 dependencies = [
   "astropy>=5.0",
   "gwpy>=3.0.0",
@@ -24,6 +51,12 @@ dependencies = [
   "dateparser",
   "h5py"
 ]
+
+[project.urls]
+Homepage = "https://github.com/tatsuki-washimi/gwexpy"
+Repository = "https://github.com/tatsuki-washimi/gwexpy"
+Documentation = "https://tatsuki-washimi.github.io/gwexpy/"
+Changelog = "https://github.com/tatsuki-washimi/gwexpy/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [
