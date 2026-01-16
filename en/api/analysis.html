@@ -194,8 +194,18 @@ Values outside the range are set to NaN.</p></li>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.coupling.</span></span><span class="sig-name descname"><span class="pre">PercentileThreshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percentile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/analysis/coupling.html#PercentileThreshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.PercentileThreshold" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gwexpy.analysis.coupling.ThresholdStrategy" title="gwexpy.analysis.coupling.ThresholdStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdStrategy</span></code></a></p>
 <p>Checks if P_inj &gt; factor * Percentile(P_bkg_segments).</p>
-<p>This requires re-calculating the PSD spectrogram of the background
-to find the percentile at each frequency bin.</p>
+<dl class="simple">
+<dt>Statistical Assumptions:</dt><dd><ul class="simple">
+<li><p>Uses the <strong>Empirical Distribution</strong> of the background PSDs.</p></li>
+<li><p>Does not assume Gaussianity; robust against outliers and non-stationary glitches.</p></li>
+</ul>
+</dd>
+<dt>Usage:</dt><dd><ul class="simple">
+<li><p>Requires <cite>raw_bkg</cite> (time series) to compute the distribution across time segments.</p></li>
+<li><p>Higher computational cost than <cite>SigmaThreshold</cite> but more reliable for real-world non-Gaussian data.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -233,8 +243,19 @@ to calculate the distribution of PSDs across segments.</p></li>
 <dt class="sig sig-object py" id="gwexpy.analysis.coupling.RatioThreshold">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.coupling.</span></span><span class="sig-name descname"><span class="pre">RatioThreshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ratio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/analysis/coupling.html#RatioThreshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.RatioThreshold" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gwexpy.analysis.coupling.ThresholdStrategy" title="gwexpy.analysis.coupling.ThresholdStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdStrategy</span></code></a></p>
-<p>Checks if P_inj &gt; ratio * P_bkg_mean.
-Simple and fast.</p>
+<p>Checks if P_inj &gt; ratio * P_bkg_mean.</p>
+<dl class="simple">
+<dt>Statistical Assumptions:</dt><dd><ul class="simple">
+<li><p>No specific statistical distribution is assumed.</p></li>
+<li><p>Tests if injection power exceeds the background level by a fixed factor.</p></li>
+</ul>
+</dd>
+<dt>Usage:</dt><dd><ul class="simple">
+<li><p>Best for simple, physical excess screening where precise statistical significance is less critical.</p></li>
+<li><p>Extremely fast as it requires no variance estimation.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.analysis.coupling.RatioThreshold.check">
 <span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_bkg</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/analysis/coupling.html#RatioThreshold.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.RatioThreshold.check" title="Link to this definition"></a></dt>
@@ -263,8 +284,29 @@ to calculate the distribution of PSDs across segments.</p></li>
 <dt class="sig sig-object py" id="gwexpy.analysis.coupling.SigmaThreshold">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.coupling.</span></span><span class="sig-name descname"><span class="pre">SigmaThreshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/analysis/coupling.html#SigmaThreshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.SigmaThreshold" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gwexpy.analysis.coupling.ThresholdStrategy" title="gwexpy.analysis.coupling.ThresholdStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdStrategy</span></code></a></p>
-<p>Checks if P_inj &gt; P_bkg + sigma * std_error.
-Assumes Gaussian noise statistics.</p>
+<p>Checks if P_inj &gt; P_bkg + sigma * std_error.</p>
+<dl class="simple">
+<dt>Statistical Assumptions:</dt><dd><ul class="simple">
+<li><p>Background Power Spectral Density (PSD) at each bin follows a Gaussian distribution.</p></li>
+<li><p>The parameter <cite>n_avg</cite> represents the number of independent averages (e.g., in Welch’s method).</p></li>
+<li><p>Assumes standard deviation of the noise reduces as <cite>1 / sqrt(n_avg)</cite>.</p></li>
+</ul>
+</dd>
+<dt>Meaning of Threshold:</dt><dd><ul class="simple">
+<li><p><cite>threshold = mean + sigma * (mean / sqrt(n_avg))</cite></p></li>
+<li><p>This is a <strong>statistical significance判定</strong> (significance test), NOT a physical upper limit.</p></li>
+<li><p>It identifies frequencies where the injection is statistically distinguishable from background variance.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method relies heavily on the Gaussian and stationary assumptions. It may be unreliable if:
+- The background contains significant non-Gaussian features (glitches, transients).
+- <cite>n_avg</cite> is small, where the central limit theorem has not yet converged.
+- There are strong spectral lines (non-stationary or deterministic signals).</p>
+</div>
+<p>In such cases, <cite>PercentileThreshold</cite> is recommended as it uses the empirical distribution.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.analysis.coupling.SigmaThreshold.check">
 <span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_bkg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_avg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/analysis/coupling.html#SigmaThreshold.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.SigmaThreshold.check" title="Link to this definition"></a></dt>

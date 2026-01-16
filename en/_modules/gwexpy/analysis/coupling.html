@@ -154,7 +154,14 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">RatioThreshold</span><span class="p">(</span><span class="n">ThresholdStrategy</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if P_inj &gt; ratio * P_bkg_mean.</span>
-<span class="sd">    Simple and fast.</span>
+
+<span class="sd">    Statistical Assumptions:</span>
+<span class="sd">        - No specific statistical distribution is assumed.</span>
+<span class="sd">        - Tests if injection power exceeds the background level by a fixed factor.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        - Best for simple, physical excess screening where precise statistical significance is less critical.</span>
+<span class="sd">        - Extremely fast as it requires no variance estimation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">):</span>
@@ -179,7 +186,24 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SigmaThreshold</span><span class="p">(</span><span class="n">ThresholdStrategy</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if P_inj &gt; P_bkg + sigma * std_error.</span>
-<span class="sd">    Assumes Gaussian noise statistics.</span>
+
+<span class="sd">    Statistical Assumptions:</span>
+<span class="sd">        - Background Power Spectral Density (PSD) at each bin follows a Gaussian distribution.</span>
+<span class="sd">        - The parameter `n_avg` represents the number of independent averages (e.g., in Welch&#39;s method).</span>
+<span class="sd">        - Assumes standard deviation of the noise reduces as `1 / sqrt(n_avg)`.</span>
+
+<span class="sd">    Meaning of Threshold:</span>
+<span class="sd">        - `threshold = mean + sigma * (mean / sqrt(n_avg))`</span>
+<span class="sd">        - This is a **statistical significance判定** (significance test), NOT a physical upper limit.</span>
+<span class="sd">        - It identifies frequencies where the injection is statistically distinguishable from background variance.</span>
+
+<span class="sd">    WARNING:</span>
+<span class="sd">        This method relies heavily on the Gaussian and stationary assumptions. It may be unreliable if:</span>
+<span class="sd">        - The background contains significant non-Gaussian features (glitches, transients).</span>
+<span class="sd">        - `n_avg` is small, where the central limit theorem has not yet converged.</span>
+<span class="sd">        - There are strong spectral lines (non-stationary or deterministic signals).</span>
+
+<span class="sd">    In such cases, `PercentileThreshold` is recommended as it uses the empirical distribution.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">):</span>
@@ -212,8 +236,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if P_inj &gt; factor * Percentile(P_bkg_segments).</span>
 
-<span class="sd">    This requires re-calculating the PSD spectrogram of the background</span>
-<span class="sd">    to find the percentile at each frequency bin.</span>
+<span class="sd">    Statistical Assumptions:</span>
+<span class="sd">        - Uses the **Empirical Distribution** of the background PSDs.</span>
+<span class="sd">        - Does not assume Gaussianity; robust against outliers and non-stationary glitches.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        - Requires `raw_bkg` (time series) to compute the distribution across time segments.</span>
+<span class="sd">        - Higher computational cost than `SigmaThreshold` but more reliable for real-world non-Gaussian data.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
