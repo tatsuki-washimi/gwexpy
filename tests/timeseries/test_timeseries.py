@@ -23,14 +23,14 @@ class TestTimeSeries(gwpy_test_module.TestTimeSeries):  # noqa: F405
 
     @pytest.mark.xfail(
         reason="gwpy no longer emits UserWarning for median_mean with lal",
-        strict=False,
+        strict=True,
     )
     def test_psd_lal_median_mean(self, *args, **kwargs):
         return super().test_psd_lal_median_mean(*args, **kwargs)
 
     @pytest.mark.xfail(
         reason="gwpy no longer emits DeprecationWarning for median_mean with lal",
-        strict=False,
+        strict=True,
     )
     def test_spectrogram_median_mean(self, *args, **kwargs):
         return super().test_spectrogram_median_mean(*args, **kwargs)

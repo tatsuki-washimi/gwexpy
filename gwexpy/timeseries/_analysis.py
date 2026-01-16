@@ -68,12 +68,9 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         """
         from gwexpy.timeseries.preprocess import impute_timeseries
 
-        ts_in = cast(TimeSeries, self)
-        return cast(
-            TimeSeries,
-            impute_timeseries(
-                ts_in, method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs
-            ),
+        ts_in = self
+        return impute_timeseries(
+            ts_in, method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs
         )
 
     def standardize(
@@ -102,9 +99,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         """
         from gwexpy.timeseries.preprocess import standardize_timeseries
 
-        ts_std, _ = standardize_timeseries(
-            cast(TimeSeries, self), method=method, ddof=ddof, robust=robust
-        )
+        ts_std, _ = standardize_timeseries(self, method=method, ddof=ddof, robust=robust)
         return ts_std
 
     # ===============================
@@ -133,7 +128,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         """
         from gwexpy.timeseries.arima import fit_arima
 
-        return fit_arima(cast(TimeSeries, self), order=order, **kwargs)
+        return fit_arima(self, order=order, **kwargs)
 
     def hurst(self, **kwargs: Any) -> Any:
         """
