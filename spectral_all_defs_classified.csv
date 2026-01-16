@@ -1,0 +1,11 @@
+File,Class/Module,Function/Method,Category,Description
+gwexpy/spectral/estimation.py,module,estimate_psd,A2-a,Wrapper for PSD estimation (delegates to TimeSeries.psd)
+gwexpy/spectral/estimation.py,module,calculate_correlation_factor,A2-b,Variance inflation factor for Welch overlap correction
+gwexpy/spectral/estimation.py,module,bootstrap_spectrogram,A2-c,Bootstrap resampling for robust ASD/PSD with error bars
+gwexpy/spectral/estimation.py,module,_bootstrap_resample_jit,A2-c,Numba-accelerated bootstrap inner loop
+gwexpy/spectral/estimation.py,module,_bootstrap_resample_py,A2-c,Pure Python fallback for bootstrap resampling
+gwexpy/spectral/estimation.py,module,_infer_overlap_ratio,A2-b,Infer overlap ratio from spectrogram metadata
+gwexpy/signal/spectral/_scipy.py,module,*,A2-re-export,Re-export from gwpy.signal.spectral._scipy (Welch backend)
+gwexpy/signal/spectral/_lal.py,module,*,A2-re-export,Re-export from gwpy.signal.spectral._lal (LAL backend)
+gwexpy/signal/spectral/_pycbc.py,module,*,A2-re-export,Re-export from gwpy.signal.spectral._pycbc (PyCBC backend)
+gwexpy/signal/spectral/_median_mean.py,module,*,A2-re-export,Re-export from gwpy.signal.spectral._median_mean (median-mean averaging)
