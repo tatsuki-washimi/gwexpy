@@ -1,0 +1,15 @@
+File,Class/Module,Function/Method,Category,Description
+gwexpy/fitting/core.py,module,fit_series,A2-d,Main fitting entry point using iminuit
+gwexpy/fitting/core.py,ComplexLeastSquares,__,A2-b,Cost function for complex data
+gwexpy/fitting/core.py,RealLeastSquares,__,A2-b,Cost function for real data
+gwexpy/fitting/core.py,FitResult,chi2,A2-b,Chi-squared calculation
+gwexpy/fitting/core.py,FitResult,run_mcmc,A2-d,Parameter estimation via MCMC
+gwexpy/fitting/gls.py,GeneralizedLeastSquares,__,A2-d,Cost function for correlated data (GLS)
+gwexpy/fitting/gls.py,GeneralizedLeastSquares,__call__,A2-b,Mahalanobis distance (chi2) calculation
+gwexpy/fitting/models.py,module,gaussian,A2-e,Gaussian model
+gwexpy/fitting/models.py,module,exponential,A2-e,Exponential decay model
+gwexpy/fitting/models.py,module,power_law,A2-e,Power law model
+gwexpy/fitting/models.py,module,damped_oscillation,A2-e,Damped sine model
+gwexpy/fitting/models.py,module,landau,A2-e,Landau (Moyal) distribution model
+gwexpy/fitting/models.py,module,make_pol_func,A2-e,Polynomial model generator
+gwexpy/fitting/highlevel.py,module,fit_bootstrap_spectrum,A2-d,Integrated bootstrap + GLS fit pipeline

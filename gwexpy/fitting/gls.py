@@ -15,7 +15,52 @@ import numpy as np
 from iminuit import Minuit
 from iminuit.util import describe
 
-__all__ = ["GeneralizedLeastSquares"]
+__all__ = ["GeneralizedLeastSquares", "GLS"]
+
+
+class GLS:
+    """
+    Direct solver for Generalized Least Squares problems (Linear).
+
+    Parameters
+    ----------
+    X : array-like
+        Design matrix (n_samples, n_params).
+    y : array-like
+        Observation vector (n_samples,).
+    cov : array-like, optional
+        Covariance matrix (n_samples, n_samples).
+    cov_inv : array-like, optional
+        Inverse covariance matrix (n_samples, n_samples).
+    """
+
+    def __init__(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        cov: np.ndarray | None = None,
+        cov_inv: np.ndarray | None = None,
+    ):
+        self.X = np.asarray(X)
+        self.y = np.asarray(y)
+        if cov_inv is not None:
+            self.cov_inv = np.asarray(cov_inv)
+        elif cov is not None:
+            self.cov_inv = np.linalg.inv(np.asarray(cov))
+        else:
+            # Ordinary Least Squares (identity weight)
+            self.cov_inv = np.eye(len(y))
+
+    def solve(self) -> np.ndarray:
+        """
+        Solve the linear GLS problem: beta = (X.T @ W @ X)^-1 @ X.T @ W @ y
+        where W = cov_inv.
+        """
+        W = self.cov_inv
+        XTW = self.X.T @ W
+        # Use np.linalg.solve for better stability than explicit inverse
+        beta = np.linalg.solve(XTW @ self.X, XTW @ self.y)
+        return beta
 
 
 class GeneralizedLeastSquares:

@@ -6,14 +6,16 @@ from typing import TYPE_CHECKING, Any
 from gwpy.types import Series
 
 if TYPE_CHECKING:
-    from .core import FitResult, fit_series
-    from .gls import GeneralizedLeastSquares
+    from .core import Fitter, FitResult, fit_series
+    from .gls import GLS, GeneralizedLeastSquares
     from .highlevel import fit_bootstrap_spectrum
 
 __all__ = [
     "fit_series",
     "FitResult",
+    "Fitter",
     "GeneralizedLeastSquares",
+    "GLS",
     "fit_bootstrap_spectrum",
     "enable_series_fit",
     "enable_fitting_monkeypatch",
@@ -46,22 +48,26 @@ enable_fitting_monkeypatch = enable_series_fit
 
 
 def __getattr__(name: str) -> Any:
-    if name in ("fit_series", "FitResult"):
+    if name in ("fit_series", "FitResult", "Fitter"):
         try:
-            from .core import FitResult, fit_series
+            from .core import Fitter, FitResult, fit_series
         except Exception as exc:  # pragma: no cover
             raise ImportError(
                 "gwexpy.fitting requires optional dependencies (e.g. iminuit) and a working numba setup."
             ) from exc
-        return fit_series if name == "fit_series" else FitResult
-    if name == "GeneralizedLeastSquares":
+        if name == "fit_series":
+            return fit_series
+        if name == "FitResult":
+            return FitResult
+        return Fitter
+    if name in ("GeneralizedLeastSquares", "GLS"):
         try:
-            from .gls import GeneralizedLeastSquares
+            from .gls import GLS, GeneralizedLeastSquares
         except Exception as exc:  # pragma: no cover
             raise ImportError(
                 "gwexpy.fitting requires optional dependencies (e.g. iminuit)."
             ) from exc
-        return GeneralizedLeastSquares
+        return GeneralizedLeastSquares if name == "GeneralizedLeastSquares" else GLS
     if name == "fit_bootstrap_spectrum":
         try:
             from .highlevel import fit_bootstrap_spectrum
