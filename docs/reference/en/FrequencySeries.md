@@ -1915,3 +1915,17 @@ To apply a zpk filter with file poles at 100 Hz, and five zeros at
     >>> data2 = data.zpk([100]*5, [1]*5, 1e-10)
 
 
+## Numerical Semantics
+
+The following behaviors are strictly enforced by tests to ensure physical correctness:
+
+### Calculus Operations
+* **DC Handling**: When integrating (e.g., `integrate_time()`), the DC component ($f=0$) is explicitly set to **0** to avoid singularities ($1/0$), rather than returning `inf` or `NaN`.
+* **Unit Propagation**:
+    * `differentiate_time()`: Multiplies unit by $Hz$.
+    * `integrate_time()`: Multiplies unit by $s$.
+    * `group_delay()`: Always returns unit in $s$.
+
+### Transformations (IFFT)
+* **Amplitude Preservation**: `ifft()` is designed to invert GWpy's `fft()` (one-sided output). It automatically applies a **0.5 scaling factor** to non-DC/Nyquist components to strictly preserve the amplitude of the original time series (Parseval's theorem).
+

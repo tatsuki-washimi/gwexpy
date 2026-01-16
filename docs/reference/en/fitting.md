@@ -277,3 +277,15 @@ result = fit_series(ts, linear, cost_function=gls, p0={"a": 1, "b": 0})
 - `iminuit`: 必須
 - `emcee`: MCMC 機能に必要
 - `corner`: コーナープロットに必要
+
+---
+
+## Unit & Model Semantics
+
+`gwexpy.fitting` ensures unit consistency between data and models:
+
+* **Unit Propagation**: When a model is evaluated via `result.model(x)`, it automatically respects the units of the input data.
+    * If input `x` is in $Hz$, the model evaluates using frequency units.
+    * The output `y` retains the unit of the fitted data (e.g., $m$, $V^2/Hz$).
+* **Parameter Access**: `result.params['name']` returns an object with `.value` and `.error` attributes, decoupling the numerical value from statistical uncertainty.
+
