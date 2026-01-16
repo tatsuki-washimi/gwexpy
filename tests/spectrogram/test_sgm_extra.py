@@ -50,11 +50,9 @@ class TestSpectrogramMatrixExtra:
     def test_meta_arithmetic(self, sgm_basic):
         """Test if metadata names/units propagate in arithmetic."""
         res = sgm_basic + sgm_basic
-        assert res.unit == u.V
-        
-        # This should now raise UnitConversionError (captured)
-        with pytest.raises((u.UnitConversionError, ValueError)):
-             _ = sgm_basic + 10 
+        # New design: units in meta, not global. Check per-element unit.
+        assert res.meta[0, 0].unit == u.V
+        assert res.meta[1, 0].unit == u.V
              
         res2 = sgm_basic + 5*u.V
-        assert res2.unit == u.V
+        assert res2.meta[0, 0].unit == u.V
