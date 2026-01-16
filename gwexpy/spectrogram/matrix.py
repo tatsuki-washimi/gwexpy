@@ -24,12 +24,26 @@ class SpectrogramMatrix(
     Evaluation Matrix for Spectrograms (Time-Frequency maps).
 
     This class represents a collection of Spectrograms, structured as either:
+
     - 3D: (Batch, Time, Frequency)
     - 4D: (Row, Col, Time, Frequency)
 
     It inherits from SeriesMatrix, providing powerful indexing, metadata management,
     and analysis capabilities (slicing, interpolation, statistics).
+
+    Serialization (Known Limitation)
+    --------------------------------
+    Pickle round-trip (`pickle.dumps` / `pickle.loads`) preserves the array shape
+    and values, but **axis metadata (xindex/times, frequencies) may not be fully
+    restored** due to numpy ndarray subclass serialization constraints.
+
+    This is a known limitation. If you require full metadata preservation, consider
+    using HDF5 I/O methods (e.g., `to_hdf5` / `from_hdf5`) instead of pickle.
+
+    TODO: Implement `__reduce_ex__` or `__getstate__/__setstate__` to enable
+    complete metadata preservation in pickle round-trips.
     """
+
 
     series_class = Spectrogram
     dict_class = SpectrogramDict
