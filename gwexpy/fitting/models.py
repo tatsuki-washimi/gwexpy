@@ -1,6 +1,43 @@
 from inspect import Parameter, signature
+from typing import Any
 
 import numpy as np
+
+
+class Model:
+    """Base class for models to support unit propagation and iminuit interoperability."""
+
+    def __call__(self, x, *args, **kwargs):
+        raise NotImplementedError
+
+
+class Polynomial(Model):
+    """
+    Polynomial model: f(x) = c0 + c1*x + ... + cn*x^n
+    """
+
+    def __init__(self, degree: int):
+        self.degree = degree
+        self.param_names = [f"p{i}" for i in range(degree + 1)]
+
+        # Construct signature for iminuit
+        params = [Parameter("x", Parameter.POSITIONAL_OR_KEYWORD)]
+        for name in self.param_names:
+            params.append(Parameter(name, Parameter.POSITIONAL_OR_KEYWORD))
+        self.__signature__ = signature(lambda: None).replace(parameters=params)
+
+    def __call__(self, x: Any, *args: Any, **kwargs: Any) -> Any:
+        # Handle both positional and keyword arguments from iminuit
+        if kwargs:
+            p_vals = [kwargs[name] for name in self.param_names]
+        else:
+            p_vals = list(args)
+
+        res = 0
+        for i, p in enumerate(p_vals):
+            res += p * x**i
+        return res
+
 
 
 def gaussian(x, A, mu, sigma):
@@ -85,25 +122,27 @@ MODELS = {
     "damped_oscillation": damped_oscillation,
 }
 
-# Add pol0 to pol9
+# Add pol0 to pol9 as Polynomial instances
 for i in range(10):
-    MODELS[f"pol{i}"] = make_pol_func(i)
+    MODELS[f"pol{i}"] = Polynomial(i)
 
 
-def get_model(name):
+def get_model(name: str | Any) -> Any:
     """
-    Retrieve a model function by name (case-insensitive).
+    Retrieve a model function or object by name (case-insensitive).
     """
     if not isinstance(name, str):
+        if callable(name):
+            return name
         return None
 
     key = name.lower()
     if key in MODELS:
         return MODELS[key]
 
-    # Handle polN for N >= 10 if needed, though usually not recommended
+    # Handle polN for N >= 10
     if key.startswith("pol") and key[3:].isdigit():
         n = int(key[3:])
-        return make_pol_func(n)
+        return Polynomial(n)
 
     raise ValueError(f"Unknown model name: {name}. Available: {list(MODELS.keys())}")

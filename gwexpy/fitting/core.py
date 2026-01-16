@@ -1,4 +1,5 @@
 import inspect
+from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,6 +7,34 @@ from iminuit import Minuit
 from iminuit.util import describe
 
 from .models import get_model
+
+
+class ParameterValue(float):
+    """
+    Representation of a fit parameter value, supporting .value and .error attributes.
+    Inherits from float for backward compatibility with numeric operations.
+    """
+
+    def __new__(cls, value, error=None):
+        return super().__new__(cls, value)
+
+    def __init__(self, value, error=None):
+        self.value = value
+        self.error = error
+
+
+class Fitter:
+    """
+    High-level fitter class that wraps the fit_series function.
+    """
+
+    def __init__(self, model: Any):
+        self.model = model
+
+    def fit(self, series: Any, **kwargs: Any) -> "FitResult":
+        """Fit the provided series to the model."""
+        return fit_series(series, self.model, **kwargs)
+
 
 # Optional imports for MCMC
 try:
@@ -101,11 +130,15 @@ class FitResult:
         dy_data=None,
         x_fit_range=None,
         cov_inv=None,
+        unit=None,
+        x_unit=None,
     ):
         self.minuit = minuit_obj
-        self.model = model
+        self._model = model
         self.x = x
         self.y = y
+        self.unit = unit
+        self.x_unit = x_unit
         self.dy = dy
         self.cost_func = cost_func
         self.x_label = x_label
@@ -124,9 +157,47 @@ class FitResult:
             self.dy = np.ones_like(y, dtype=float)
 
     @property
+    def model(self):
+        """
+        Fitted model function.
+        Can be called as model(x) to use best-fit parameters,
+        or as model(x, **params) to use specific parameters.
+        Returns a Quantity with units if the original data had units.
+        """
+
+        def bound_model(x, **kwargs):
+            if not kwargs:
+                # Use best fit parameters
+                kwargs = {k: float(v) for k, v in self.params.items()}
+
+            # Handle X unit conversion if x is a Quantity/Series
+            if hasattr(x, "to") and self.x_unit:
+                try:
+                    x_val = x.to(self.x_unit).value
+                except Exception:
+                    # Fallback if conversion fails
+                    x_val = getattr(x, "value", np.asarray(x))
+            else:
+                x_val = getattr(x, "value", np.asarray(x))
+
+            res = self._model(x_val, **kwargs)
+
+            # Unit propagation: apply the Y-unit stored in FitResult
+            if self.unit and not hasattr(res, "unit"):
+                from astropy import units as u
+
+                return res * u.Unit(self.unit)
+            return res
+
+        return bound_model
+
+    @property
     def params(self):
-        """Best fit parameters (dict)."""
-        return {name: self.minuit.values[name] for name in self.minuit.parameters}
+        """Best fit parameters (dict of ParameterValue)."""
+        return {
+            name: ParameterValue(self.minuit.values[name], self.minuit.errors[name])
+            for name in self.minuit.parameters
+        }
 
     @property
     def errors(self):
@@ -1035,8 +1106,8 @@ def fit_series(
         model,
         x,
         y,
-        sigma_for_result,
-        cost,
+        dy=sigma_for_result,
+        cost_func=cost,
         x_label=x_label,
         y_label=y_label,
         x_kind=x_kind,
@@ -1045,4 +1116,6 @@ def fit_series(
         dy_data=sigma_full_for_plot,
         x_fit_range=x_range,
         cov_inv=cov_inv_for_result,
+        unit=getattr(target, "unit", None),
+        x_unit=getattr(target, "xunit", None),
     )
