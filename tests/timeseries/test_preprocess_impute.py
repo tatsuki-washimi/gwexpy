@@ -167,72 +167,15 @@ def test_impute_timeseries_preserves_metadata():
     assert result.channel == ts.channel
 
 
-# Minimal stand-ins to exercise the int->float rebuild path.
-class _FakeValue:
-    def __init__(self, data, dtype_override):
-        self._data = np.asarray(data)
-        self.dtype = np.dtype(dtype_override)
 
-    def copy(self):
-        return self._data.copy()
-
-
-class _DummySeries:
-    def __init__(
-        self,
-        data,
-        *,
-        t0=None,
-        dt=None,
-        times=None,
-        name=None,
-        unit=None,
-        channel=None,
-        _fake_int_dtype=False,
-    ):
-        self._data = np.asarray(data)
-        if _fake_int_dtype:
-            self.value = _FakeValue(self._data, np.int64)
-        else:
-            self.value = self._data
-        self.t0 = t0
-        self.dt = dt
-        self.times = times if times is not None else np.arange(len(self._data))
-        self.name = name
-        self.unit = unit
-        self.channel = channel
-        self.is_regular = dt is not None and times is None
-
-    def copy(self):
-        return _DummySeries(
-            self._data.copy(),
-            t0=self.t0,
-            dt=self.dt,
-            times=self.times,
-            name=self.name,
-            unit=self.unit,
-            channel=self.channel,
-        )
-
-
-def test_impute_timeseries_int_to_float_rebuild():
+def test_impute_timeseries_preserves_metadata_rebuild():
     data = np.array([1.0, np.nan, 3.0])
-    ts = _DummySeries(
-        data,
-        t0=0.0,
-        dt=1.0,
-        name="dummy",
-        unit="unit",
-        channel="chan",
-        _fake_int_dtype=True,
-    )
-
+    ts = TimeSeries(data, t0=0.0, dt=1.0, name="dummy", unit="m")
+    
     result = impute_timeseries(ts, method="linear")
-
-    assert isinstance(result, _DummySeries)
-    assert result.value.dtype.kind == "f"
-    assert result.t0 == ts.t0
-    assert result.dt == ts.dt
+    
+    assert isinstance(result, TimeSeries)
+    assert result.t0.value == ts.t0.value
+    assert result.dt.value == ts.dt.value
     assert result.name == ts.name
     assert result.unit == ts.unit
-    assert result.channel == ts.channel

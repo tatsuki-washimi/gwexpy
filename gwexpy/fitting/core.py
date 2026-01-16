@@ -165,8 +165,8 @@ class FitResult:
         Returns a Quantity with units if the original data had units.
         """
 
-        def bound_model(x, **kwargs):
-            if not kwargs:
+        def bound_model(x, *args, **kwargs):
+            if not args and not kwargs:
                 # Use best fit parameters
                 kwargs = {k: float(v) for k, v in self.params.items()}
 
@@ -180,7 +180,7 @@ class FitResult:
             else:
                 x_val = getattr(x, "value", np.asarray(x))
 
-            res = self._model(x_val, **kwargs)
+            res = self._model(x_val, *args, **kwargs)
 
             # Unit propagation: apply the Y-unit stored in FitResult
             if self.unit and not hasattr(res, "unit"):

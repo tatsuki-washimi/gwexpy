@@ -657,7 +657,11 @@ def impute_timeseries(
         val = ts.value.copy()
     else:
         ts_obj = None
-        val = np.asarray(ts).copy()
+        # Use value attribute if available (proxy objects), otherwise assume array-like
+        val = np.asarray(getattr(ts, "value", ts)).copy()
+
+    if val.ndim == 0:
+        val = val.reshape(-1)
 
     if method == "interpolate":
         method = "linear"

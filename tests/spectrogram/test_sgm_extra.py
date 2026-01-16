@@ -30,7 +30,7 @@ class TestSpectrogramMatrixExtra:
         except importError:
             pytest.skip("matplotlib not installed")
 
-    @pytest.mark.xfail(reason="Transpose causes xindex validation mismatch due to axis swap")
+    @pytest.mark.xfail(reason="Transpose causes xindex validation mismatch due to axis swap", strict=True)
     def test_structure_ops(self, sgm_basic):
         """Test structural operations like Transpose, Flatten."""
         transposed = sgm_basic.T
@@ -38,7 +38,6 @@ class TestSpectrogramMatrixExtra:
              # Just checking no crash in construction or basic access
              assert transposed.shape == (5, 10, 2)
 
-    @pytest.mark.xfail(reason="Pickle support requires __setstate__ for SpectrogramMatrix")
     def test_io_hdf5(self, sgm_basic):
         """Test I/O via hdf5/gwpy if supported."""
         import pickle
