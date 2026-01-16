@@ -1,0 +1,17 @@
+File,Class/Module,Function/Method,Category,Description
+frequencyseries.py,FrequencySeries,differentiate,A2-b,Numerical differentiation in freq domain
+frequencyseries.py,FrequencySeries,integrate,A2-b,Numerical integration in freq domain (check DC)
+frequencyseries.py,FrequencySeries,differentiate_time,A2-b,Time differentiation (* i omega)
+frequencyseries.py,FrequencySeries,integrate_time,A2-b,Time integration (/ i omega)
+frequencyseries.py,FrequencySeries,group_delay,A2-b,Group delay calculation (-d phi / df)
+frequencyseries.py,FrequencySeries,phase,A2-b,Phase calculation (angle)
+frequencyseries.py,FrequencySeries,degree,A2-b,Phase in degrees
+frequencyseries.py,FrequencySeries,ifft,A2-c,Inverse FFT (supports transient/steady modes)
+frequencyseries.py,FrequencySeries,idct,A2-c,Inverse DCT
+bifrequencymap.py,BifrequencyMap,propagate,A2-c,Matrix multiplication with freq interpolation
+bifrequencymap.py,BifrequencyMap,convolute,A2-c,Propagation with df scaling (integral approx)
+bifrequencymap.py,BifrequencyMap,inverse,A2-c,Moore-Penrose pseudo-inverse of the map
+bifrequencymap.py,BifrequencyMap,diagonal,A2-b,Extract diagonal statistics (binning)
+matrix_analysis.py,FrequencySeriesMatrix,ifft,A2-c,Matrix-wise IFFT (handles one-sided scaling)
+matrix_analysis.py,FrequencySeriesMatrix,smooth,A2-b,Smoothing logic
+collections.py,FrequencySeriesList,to_matrix,A2-c,Stacking logic (length check)
