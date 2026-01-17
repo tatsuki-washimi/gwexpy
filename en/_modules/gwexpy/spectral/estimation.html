@@ -82,7 +82,20 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gwexpy.spectral.estimation</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Spectral estimation helpers for PSD and bootstrap statistics.</span>
+
+<span class="sd">PSD estimation in this module delegates to GWpy&#39;s Welch-style estimator with</span>
+<span class="sd">one-sided density normalization. For a regularly sampled series x[n] with</span>
+<span class="sd">sample spacing dt, the PSD Sxx(f) is defined so that the variance satisfies</span>
+<span class="sd">var(x) ~= integral_0^{f_N} Sxx(f) df (Parseval). The frequency axis is uniquely</span>
+<span class="sd">determined by dt and the FFT length: df = 1 / fftlength and f_N = 1 / (2 * dt).</span>
+
+<span class="sd">NaN samples are rejected because FFT-based averaging propagates NaNs and</span>
+<span class="sd">invalidates the normalization; callers must pre-clean data instead.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -150,6 +163,79 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">resampled_stats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">if</span> <span class="n">ignore_nan</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">resampled_stats</span>
+
+
+<div class="viewcode-block" id="estimate_psd">
+<a class="viewcode-back" href="../../../api/spectral.html#gwexpy.spectral.estimate_psd">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_psd</span><span class="p">(</span>
+    <span class="n">timeseries</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate the one-sided PSD for a regular TimeSeries.</span>
+
+<span class="sd">    This wraps ``TimeSeries.psd`` without changing the underlying algorithm.</span>
+<span class="sd">    It enforces NaN-free input and checks that fftlength does not exceed the</span>
+<span class="sd">    data duration so that the frequency axis (df = 1 / fftlength) is well-defined.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    timeseries : gwexpy.timeseries.TimeSeries</span>
+<span class="sd">        Input series for PSD estimation.</span>
+<span class="sd">    fftlength : float or Quantity, optional</span>
+<span class="sd">        FFT length in seconds. Defines df = 1 / fftlength.</span>
+<span class="sd">    overlap : float or Quantity, optional</span>
+<span class="sd">        Overlap between segments in seconds.</span>
+<span class="sd">    window : str or array_like, optional</span>
+<span class="sd">        Window function name or samples.</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        PSD estimation method name registered in GWpy.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FrequencySeries</span>
+<span class="sd">        One-sided PSD with unit (input unit)**2 / Hz.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">timeseries</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;estimate_psd does not allow NaN samples.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_to_seconds</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">dt_sec</span> <span class="o">=</span> <span class="n">_to_seconds</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">fftlength_sec</span> <span class="o">=</span> <span class="n">_to_seconds</span><span class="p">(</span><span class="n">fftlength</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dt_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fftlength_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">dt_sec</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">timeseries</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">duration</span> <span class="o">&lt;</span> <span class="n">fftlength_sec</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;fftlength must not exceed data duration.&quot;</span><span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">FrequencySeries</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">FrequencySeries</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="calculate_correlation_factor">

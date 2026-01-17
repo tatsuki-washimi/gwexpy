@@ -30,4 +30,5 @@ Detailed Reference
    PCATransform
    ICATransform
    fitting
+   Spectral
    SeriesMatrix

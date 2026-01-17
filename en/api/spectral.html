@@ -56,6 +56,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Spectral</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#gwexpy.spectral.bootstrap_spectrogram"><code class="docutils literal notranslate"><span class="pre">bootstrap_spectrogram()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gwexpy.spectral.calculate_correlation_factor"><code class="docutils literal notranslate"><span class="pre">calculate_correlation_factor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.spectral.estimate_psd"><code class="docutils literal notranslate"><span class="pre">estimate_psd()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="analysis.html">Analysis</a></li>
@@ -162,6 +163,32 @@ reduced effective degrees of freedom due to correlated (overlapping) segments.</
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.spectral.estimate_psd">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.spectral.</span></span><span class="sig-name descname"><span class="pre">estimate_psd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeseries</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftlength</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hann'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'median'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwexpy/spectral/estimation.html#estimate_psd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectral.estimate_psd" title="Link to this definition"></a></dt>
+<dd><p>Estimate the one-sided PSD for a regular TimeSeries.</p>
+<p>This wraps <code class="docutils literal notranslate"><span class="pre">TimeSeries.psd</span></code> without changing the underlying algorithm.
+It enforces NaN-free input and checks that fftlength does not exceed the
+data duration so that the frequency axis (df = 1 / fftlength) is well-defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>timeseries</strong> (<a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>gwexpy.timeseries.TimeSeries</em></a>) – Input series for PSD estimation.</p></li>
+<li><p><strong>fftlength</strong> (<em>float</em><em> or </em><em>Quantity</em><em>, </em><em>optional</em>) – FFT length in seconds. Defines df = 1 / fftlength.</p></li>
+<li><p><strong>overlap</strong> (<em>float</em><em> or </em><em>Quantity</em><em>, </em><em>optional</em>) – Overlap between segments in seconds.</p></li>
+<li><p><strong>window</strong> (<em>str</em><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – Window function name or samples.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – PSD estimation method name registered in GWpy.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One-sided PSD with unit (input unit)**2 / Hz.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
 </dd>
 </dl>
 </dd></dl>

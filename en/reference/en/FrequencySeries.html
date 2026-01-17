@@ -401,6 +401,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#id119">Returns</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id120">See also</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id121">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#numerical-semantics">Numerical Semantics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#calculus-operations">Calculus Operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transformations-ifft">Transformations (IFFT)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="FrequencySeriesDict.html">FrequencySeriesDict</a></li>
@@ -424,6 +429,7 @@
 <li class="toctree-l2"><a class="reference internal" href="PCATransform.html">PCATransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fitting.html">gwexpy.fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Spectral.html">Spectral Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
 </ul>
 </li>
@@ -2207,6 +2213,29 @@ for details on how a digital ZPK-format filter is applied</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; data2 = data.zpk([100]*5, [1]*5, 1e-10)
 </pre></div>
 </div>
+</section>
+<section id="numerical-semantics">
+<h2>Numerical Semantics<a class="headerlink" href="#numerical-semantics" title="Link to this heading"></a></h2>
+<p>The following behaviors are strictly enforced by tests to ensure physical correctness:</p>
+<section id="calculus-operations">
+<h3>Calculus Operations<a class="headerlink" href="#calculus-operations" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>DC Handling</strong>: When integrating (e.g., <code class="docutils literal notranslate"><span class="pre">integrate_time()</span></code>), the DC component ($f=0$) is explicitly set to <strong>0</strong> to avoid singularities ($1/0$), rather than returning <code class="docutils literal notranslate"><span class="pre">inf</span></code> or <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p></li>
+<li><p><strong>Unit Propagation</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">differentiate_time()</span></code>: Multiplies unit by $Hz$.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">integrate_time()</span></code>: Multiplies unit by $s$.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">group_delay()</span></code>: Always returns unit in $s$.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="transformations-ifft">
+<h3>Transformations (IFFT)<a class="headerlink" href="#transformations-ifft" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Amplitude Preservation</strong>: <code class="docutils literal notranslate"><span class="pre">ifft()</span></code> is designed to invert GWpy’s <code class="docutils literal notranslate"><span class="pre">fft()</span></code> (one-sided output). It automatically applies a <strong>0.5 scaling factor</strong> to non-DC/Nyquist components to strictly preserve the amplitude of the original time series (Parseval’s theorem).</p></li>
+</ul>
+</section>
 </section>
 </section>
 

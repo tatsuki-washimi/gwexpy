@@ -19,7 +19,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="SeriesMatrix" href="SeriesMatrix.html" />
+    <link rel="next" title="Spectral Estimation" href="Spectral.html" />
     <link rel="prev" title="ICATransform" href="ICATransform.html" /> 
 </head>
 
@@ -110,8 +110,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#id15">組み込みモデル</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id16">依存関係</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unit-model-semantics">Unit &amp; Model Semantics</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="Spectral.html">Spectral Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
 </ul>
 </li>
@@ -605,6 +607,20 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">corner</span></code>: コーナープロットに必要</p></li>
 </ul>
 </section>
+<hr class="docutils" />
+<section id="unit-model-semantics">
+<h2>Unit &amp; Model Semantics<a class="headerlink" href="#unit-model-semantics" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code> ensures unit consistency between data and models:</p>
+<ul class="simple">
+<li><p><strong>Unit Propagation</strong>: When a model is evaluated via <code class="docutils literal notranslate"><span class="pre">result.model(x)</span></code>, it automatically respects the units of the input data.</p>
+<ul>
+<li><p>If input <code class="docutils literal notranslate"><span class="pre">x</span></code> is in $Hz$, the model evaluates using frequency units.</p></li>
+<li><p>The output <code class="docutils literal notranslate"><span class="pre">y</span></code> retains the unit of the fitted data (e.g., $m$, $V^2/Hz$).</p></li>
+</ul>
+</li>
+<li><p><strong>Parameter Access</strong>: <code class="docutils literal notranslate"><span class="pre">result.params['name']</span></code> returns an object with <code class="docutils literal notranslate"><span class="pre">.value</span></code> and <code class="docutils literal notranslate"><span class="pre">.error</span></code> attributes, decoupling the numerical value from statistical uncertainty.</p></li>
+</ul>
+</section>
 </section>
 
 
@@ -612,7 +628,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="ICATransform.html" class="btn btn-neutral float-left" title="ICATransform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="SeriesMatrix.html" class="btn btn-neutral float-right" title="SeriesMatrix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Spectral.html" class="btn btn-neutral float-right" title="Spectral Estimation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
