@@ -659,3 +659,162 @@ result = ts.lock_in(f0=100.0, fdot=0.1, stride=1.0, output='complex')
 - `baseband()`: ベースバンド復調（LPF + リサンプル）
 - `mix_down()`: 複素オシレータとのミキシング（低レベル）
 - `_build_phase_series()`: 内部ヘルパー（f0 系から位相生成）
+
+---
+
+# HHT (Hilbert-Huang Transform) API Reference
+
+このセクションでは、`gwexpy.timeseries.TimeSeries` の HHT 関連メソッドについて説明します。
+
+---
+
+## 概要
+
+Hilbert-Huang Transform (HHT) は、非線形・非定常な時系列データを解析するための手法です。
+以下の2ステップで構成されます：
+
+1.  **Empirical Mode Decomposition (EMD)**: 信号を固有モード関数 (IMF) と残差に分解する。
+2.  **Hilbert Spectral Analysis (HSA)**: 各 IMF に対してヒルベルト変換を適用し、瞬時振幅と瞬時周波数を計算する。
+
+`gwexpy` では、これらのステップを個別に実行するメソッド (`emd`, `hilbert_analysis`) と、一括して実行するメソッド (`hht`) を提供しています。
+
+---
+
+## `emd`
+
+```python
+TimeSeries.emd(
+    method: str = "eemd",
+    max_imf: int | None = None,
+    sift_max_iter: int = 1000,
+    stopping_criterion: Any = "default",
+    eemd_noise_std: float = 0.2,
+    eemd_trials: int = 100,
+    random_state: int | None = None,
+    return_residual: bool = True,
+    eemd_parallel: bool | None = None,
+    eemd_processes: int | None = None,
+    eemd_noise_kind: str | None = None
+) -> TimeSeriesDict
+```
+
+### 説明
+
+時系列データを EMD (Empirical Mode Decomposition) または EEMD (Ensemble EMD) を用いて IMF (Intrinsic Mode Functions) と残差に分解します。PyEMD パッケージが必要です。
+
+### パラメータ
+
+| パラメータ | 型 | デフォルト | 説明 |
+|---|---|---|---|
+| `method` | str | "eemd" | 分解手法 ('emd' または 'eemd') |
+| `max_imf` | int, None | None | 抽出する最大 IMF 数 (None は全て) |
+| `eemd_noise_std` | float | 0.2 | EEMD の付加ノイズの標準偏差 (信号の std に対する比率) |
+| `eemd_trials` | int | 100 | EEMD の試行回数 |
+| `random_state` | int, None | None | 乱数シード。EEMD は確率的な手法であるため、再現性が必要な場合に指定します。EMD は確定的であるため無視されます |
+| `return_residual` | bool | True | 結果に残差を含めるかどうか |
+| `eemd_parallel` | bool, None | None | EEMD の並列処理を有効にするか |
+| `eemd_processes` | int, None | None | EEMD の並列プロセス数 |
+
+### 戻り値
+
+`TimeSeriesDict`: キーは `'IMF1'`, `'IMF2'`, ..., `'residual'`。
+
+### 注意事項
+
+- **再現性**: EEMD は確率的なプロセスです。再現性を確保するには `random_state` を指定するか、PyEMD の `noise_seed()` を使用してください。EMD メソッドは確定的です。
+- **残差**: PyEMD のバージョンによっては残差の抽出方法が異なる場合がありますが、本メソッドは適切にハンドリングして出力します。
+
+---
+
+## `hilbert_analysis`
+
+```python
+TimeSeries.hilbert_analysis(
+    unwrap_phase: bool = True,
+    frequency_unit: str = "Hz",
+    if_smooth: int | Quantity | None = None,
+    **hilbert_kwargs
+) -> dict[str, Any]
+```
+
+### 説明
+
+ヒルベルト変換を実行し、解析信号、瞬時振幅 (IA)、瞬時位相、瞬時周波数 (IF) を計算します。
+
+### パラメータ
+
+| パラメータ | 型 | デフォルト | 説明 |
+|---|---|---|---|
+| `unwrap_phase` | bool | True | 位相のアンラップを行うかどうか |
+| `frequency_unit` | str | "Hz" | 瞬時周波数の単位 |
+| `if_smooth` | int, Quantity, None | None | 瞬時周波数の平滑化窓幅。奇数を推奨 (偶数は+1されます) |
+| `**hilbert_kwargs` | Any | - | 内部で呼ぶ `hilbert()` に渡す引数 (例: `pad`, `pad_mode`) |
+
+### 戻り値
+
+辞書形式:
+- `'analytic'`: 解析信号 (複素 TimeSeries)
+- `'amplitude'`: 瞬時振幅 (IA)
+- `'phase'`: 瞬時位相
+- `'frequency'`: 瞬時周波数 (IF)
+
+### 注意事項
+
+- **端点効果**: ヒルベルト変換と数値微分により端点不連続が生じます。`.hilbert(pad=...)` でパディングするか、解析後に端を切り落とすことを推奨します。
+- **平滑化**: 瞬時周波数はノイズに敏感です。`.hilbert_analysis(if_smooth=...)` で移動平均を適用して安定化できます。
+
+---
+
+## `hht`
+
+```python
+TimeSeries.hht(
+    emd_method: str = "eemd",
+    emd_kwargs: dict | None = None,
+    hilbert_kwargs: dict | None = None,
+    output: str = "dict",
+    n_bins: int = 100,
+    freq_bins: Any = None,
+    fmin: float | Quantity | None = None,
+    fmax: float | Quantity | None = None,
+    weight: str = "ia2",
+    if_policy: str = "drop",
+    finite_only: bool = True
+) -> dict | Spectrogram
+```
+
+### 説明
+
+HHT 解析の一連の流れ (EMD → Hilbert) を実行します。結果を辞書形式またはスペクトログラム (Hilbert Spectrum) として返します。
+
+### パラメータ
+
+**共通オプション**
+
+| パラメータ | 型 | デフォルト | 説明 |
+|---|---|---|---|
+| `output` | str | "dict" | 出力形式 ('dict' または 'spectrogram') |
+| `emd_method` | str | "eemd" | EMD 手法 |
+| `emd_kwargs` | dict | None | `emd()` に渡す引数 |
+| `hilbert_kwargs` | dict | None | `hilbert_analysis()` に渡す引数 |
+
+**スペクトログラムオプション (`output='spectrogram'`)**
+
+| パラメータ | 型 | デフォルト | 説明 |
+|---|---|---|---|
+| `n_bins` | int | 100 | 周波数ビンの数 (`freq_bins`指定時は無視) |
+| `freq_bins` | array-like | None | カスタム周波数ビンエッジ (単調増加である必要あり) |
+| `fmin`/`fmax` | float | None | 周波数範囲 |
+| `weight` | str | "ia2" | 重み付け ('ia2': エネルギー, 'ia': 振幅) |
+| `if_policy` | str | "drop" | 範囲外 IF の処理 ('drop': 無視, 'clip': 端に寄せる) |
+| `finite_only` | bool | True | **重要**: Hilbert解析後の IF/IA の NaN/Inf をビニング前に除外するか。EMD 入力の NaN を救うものではありません |
+
+### 戻り値
+
+- `output='dict'`: `{'imfs': ..., 'ia': ..., 'if': ..., 'residual': ...}`
+- `output='spectrogram'`: `gwpy.spectrogram.Spectrogram` オブジェクト (Hilbert Spectrum)
+
+### Note
+
+- **スペクトログラム**: 通常の STFT スペクトログラムとは異なり、瞬時周波数のヒストグラムとして構成されます。`.hht(weight='ia2')` がデフォルトで、エネルギースペクトル (振幅の二乗) を表します。
+- **入力バリデーション**: `if_policy` は 'drop' か 'clip' である必要があります。`freq_bins` は単調増加である必要があります。

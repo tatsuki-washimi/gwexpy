@@ -644,46 +644,174 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         eemd_trials: int = 100,
         random_state: int | None = None,
         return_residual: bool = True,
+        eemd_parallel: bool | None = None,
+        eemd_processes: int | None = None,
+        eemd_noise_kind: str | None = None,
     ) -> Any:
+        """
+        Decompose the TimeSeries using Empirical Mode Decomposition (EMD).
+
+        This method applies EMD or Ensemble EMD (EEMD) to decompose the signal
+        into Intrinsic Mode Functions (IMFs) and a residual.
+
+        Parameters
+        ----------
+        method : str, default='eemd'
+            Decomposition method. Either 'emd' or 'eemd'.
+        max_imf : int or None, default=None
+            Maximum number of IMFs to extract. If None, extracts all.
+        sift_max_iter : int, default=1000
+            Maximum iterations per sifting process.
+        stopping_criterion : Any, default='default'
+            Stopping criterion for sifting.
+        eemd_noise_std : float, default=0.2
+            Standard deviation of added noise for EEMD (ratio of signal std).
+        eemd_trials : int, default=100
+            Number of ensemble trials for EEMD.
+        random_state : int or None, default=None
+            Random seed for reproducibility. If provided and the decomposer
+            supports ``noise_seed()``, it will be used. Otherwise, NumPy's
+            random state is temporarily set and restored.
+        return_residual : bool, default=True
+            If True, include the residual in the output.
+        eemd_parallel : bool or None, default=None
+            Enable parallel processing for EEMD. If None, uses PyEMD default.
+        eemd_processes : int or None, default=None
+            Number of processes for parallel EEMD. If None, uses PyEMD default.
+        eemd_noise_kind : str or None, default=None
+            Type of noise for EEMD ('normal', 'uniform'). If None, uses default.
+
+        Returns
+        -------
+        TimeSeriesDict
+            Dictionary containing IMFs (keys: 'IMF1', 'IMF2', ...) and
+            optionally 'residual'.
+
+        Raises
+        ------
+        ImportError
+            If PyEMD is not installed.
+        ValueError
+            If an unknown method is specified or no IMFs are extracted.
+
+        Notes
+        -----
+        **Optional Dependency**: Requires the ``PyEMD`` package.
+
+        **EEMD Stochasticity**: EEMD adds noise to the signal and performs
+        multiple decompositions. Results may vary between runs unless
+        ``random_state`` is specified.
+
+        **Endpoint Artifacts**: EMD envelope extrapolation can cause artifacts
+        at signal boundaries. Consider padding or cropping edges in downstream
+        analysis.
+
+        **Residual Handling**: The residual is extracted using PyEMD's
+        ``get_imfs_and_residue()`` method if available, otherwise via the
+        ``residue`` attribute. This ensures correct IMF count.
+
+        Examples
+        --------
+        >>> ts = TimeSeries(data, dt=0.01, unit='V')
+        >>> imfs = ts.emd(method='eemd', eemd_trials=50, random_state=42)
+        >>> for key, imf in imfs.items():
+        ...     print(f"{key}: {imf.shape}")
+        """
         PyEMD = require_optional("PyEMD")
 
+        # Save and restore RNG state if needed
+        saved_rng_state = None
         if random_state is not None:
-            if isinstance(random_state, int):
-                np.random.seed(random_state)
+            saved_rng_state = np.random.get_state()
 
         data = self.value
-        if method.lower() == "eemd":
-            decomposer = PyEMD.EEMD(trials=eemd_trials, noise_width=eemd_noise_std)
-            try:
-                imfs_array = decomposer.eemd(
-                    data,
-                    T=None,
-                    max_imf=max_imf if max_imf is not None else -1,
-                )
-            except (PermissionError, OSError) as exc:
-                if isinstance(exc, OSError) and exc.errno not in (None, 13):
-                    raise
-                decomposer.parallel = False
-                decomposer.processes = 1
-                imfs_array = decomposer.eemd(
-                    data,
-                    T=None,
-                    max_imf=max_imf if max_imf is not None else -1,
-                )
-        elif method.lower() == "emd":
-            decomposer = PyEMD.EMD()
-            imfs_array = decomposer.emd(
-                data, T=None, max_imf=max_imf if max_imf is not None else -1
-            )
-        else:
-            raise ValueError(f"Unknown EMD method: {method}")
+        residual = None
 
-        n_rows = imfs_array.shape[0]
+        try:
+            if method.lower() == "eemd":
+                decomposer = PyEMD.EEMD(trials=eemd_trials, noise_width=eemd_noise_std)
+
+                # Apply optional EEMD controls
+                if eemd_parallel is not None:
+                    decomposer.parallel = eemd_parallel
+                if eemd_processes is not None:
+                    decomposer.processes = eemd_processes
+                if eemd_noise_kind is not None:
+                    decomposer.noise_kind = eemd_noise_kind
+
+                # Set random seed using decomposer's method if available
+                if random_state is not None:
+                    if hasattr(decomposer, "noise_seed"):
+                        decomposer.noise_seed(random_state)
+                    else:
+                        np.random.seed(random_state)
+
+                try:
+                    imfs_array = decomposer.eemd(
+                        data,
+                        T=None,
+                        max_imf=max_imf if max_imf is not None else -1,
+                    )
+                except (PermissionError, OSError) as exc:
+                    if isinstance(exc, OSError) and exc.errno not in (None, 13):
+                        raise
+                    # Fallback to non-parallel execution
+                    decomposer.parallel = False
+                    decomposer.processes = 1
+                    imfs_array = decomposer.eemd(
+                        data,
+                        T=None,
+                        max_imf=max_imf if max_imf is not None else -1,
+                    )
+
+                # Extract residual properly for EEMD
+                if hasattr(decomposer, "get_imfs_and_residue"):
+                    imfs_array, residual = decomposer.get_imfs_and_residue()
+                elif hasattr(decomposer, "residue") and decomposer.residue is not None:
+                    residual = decomposer.residue
+                    # imfs_array already contains only IMFs in this case
+                else:
+                    # Fallback: no separate residual available
+                    residual = None
+
+            elif method.lower() == "emd":
+                decomposer = PyEMD.EMD()
+                # EMD is deterministic; random_state is not applicable here
+                # (random_state only affects EEMD via noise_seed())
+
+                imfs_array = decomposer.emd(
+                    data, T=None, max_imf=max_imf if max_imf is not None else -1
+                )
+
+                # Extract residual properly for EMD
+                if hasattr(decomposer, "get_imfs_and_residue"):
+                    imfs_array, residual = decomposer.get_imfs_and_residue()
+                elif hasattr(decomposer, "residue") and decomposer.residue is not None:
+                    residual = decomposer.residue
+                else:
+                    residual = None
+
+            else:
+                raise ValueError(f"Unknown EMD method: {method}")
+
+        finally:
+            # Restore RNG state if we saved it
+            if saved_rng_state is not None:
+                np.random.set_state(saved_rng_state)
+
+        # Validate results
+        if imfs_array is None or imfs_array.shape[0] == 0:
+            raise ValueError(
+                f"EMD decomposition returned no IMFs. "
+                f"Check input signal quality."
+            )
+
+        n_imfs = imfs_array.shape[0]
         from .collections import TimeSeriesDict
 
         out_dict = TimeSeriesDict()
-        n_imfs = n_rows - 1
 
+        # Build IMF TimeSeries objects
         for i in range(n_imfs):
             key = f"IMF{i + 1}"
             out_dict[key] = self.__class__(
@@ -694,22 +822,100 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
                 name=f"{self.name}_{key}" if self.name else key,
                 channel=self.channel,
             )
+
+        # Add residual if requested and available
         if return_residual:
-            key = "residual"
-            out_dict[key] = self.__class__(
-                imfs_array[-1],
-                t0=self.t0,
-                dt=self.dt,
-                unit=self.unit,
-                name=f"{self.name}_{key}" if self.name else key,
-                channel=self.channel,
-            )
+            if residual is not None:
+                key = "residual"
+                out_dict[key] = self.__class__(
+                    residual,
+                    t0=self.t0,
+                    dt=self.dt,
+                    unit=self.unit,
+                    name=f"{self.name}_{key}" if self.name else key,
+                    channel=self.channel,
+                )
+            else:
+                import warnings
+                warnings.warn(
+                    "Residual requested but not available from decomposer. "
+                    "The 'residual' key will not be included in output.",
+                    UserWarning,
+                )
+
         return out_dict
 
     def hilbert_analysis(
-        self, *, unwrap_phase: bool = True, frequency_unit: str = "Hz"
+        self,
+        *,
+        unwrap_phase: bool = True,
+        frequency_unit: str = "Hz",
+        if_smooth: int | u.Quantity | None = None,
+        **hilbert_kwargs: Any,
     ) -> dict[str, Any]:
-        analytic = self.hilbert()
+        """
+        Perform Hilbert analysis to extract instantaneous amplitude, phase, and frequency.
+
+        This method computes the analytic signal via Hilbert transform and extracts
+        the instantaneous amplitude (IA), phase, and frequency (IF).
+
+        Parameters
+        ----------
+        unwrap_phase : bool, default=True
+            If True, unwrap the phase to remove discontinuities.
+        frequency_unit : str, default='Hz'
+            Unit for the instantaneous frequency output.
+        if_smooth : int, Quantity, or None, default=None
+            Optional smoothing window for instantaneous frequency.
+            If int, number of samples. If Quantity, time duration.
+            Applies a simple moving average filter. **Odd window lengths
+            are recommended**; even values are automatically incremented.
+        **hilbert_kwargs
+            Additional keyword arguments passed to :meth:`hilbert`.
+            Common options include:
+            - ``pad``: Samples or duration to pad (reduces edge effects)
+            - ``pad_mode``: Padding mode ('reflect', 'constant', etc.)
+            - ``nan_policy``: How to handle NaN values
+
+        Returns
+        -------
+        dict
+            Dictionary containing:
+            - 'analytic': Complex analytic signal
+            - 'amplitude': Instantaneous amplitude (envelope)
+            - 'phase': Instantaneous phase (radians, optionally unwrapped)
+            - 'frequency': Instantaneous frequency
+
+        Raises
+        ------
+        ValueError
+            If dt is not defined.
+
+        Notes
+        -----
+        **Edge Effects**: Both the Hilbert transform and numerical differentiation
+        introduce artifacts at signal boundaries. Use the ``pad`` parameter to
+        mitigate, or crop the output edges in downstream analysis.
+
+        **IF Calculation**: Instantaneous frequency is computed as::
+
+            IF = (1 / 2π) * d(phase) / dt
+
+        This can be noisy for complex signals. Use ``if_smooth`` to apply
+        post-hoc smoothing.
+
+        **Padding**: To reduce edge effects, pass ``pad=N`` where N is the
+        number of samples (or a duration Quantity) to pad on each side
+        before the Hilbert transform.
+
+        Examples
+        --------
+        >>> ts = TimeSeries(np.sin(2 * np.pi * 10 * t), dt=0.001, unit='V')
+        >>> result = ts.hilbert_analysis(pad=100, if_smooth=10)
+        >>> amplitude = result['amplitude']
+        >>> frequency = result['frequency']
+        """
+        analytic = self.hilbert(**hilbert_kwargs)
         amp = np.abs(analytic.value)
 
         amplitude = self.__class__(
@@ -736,6 +942,31 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         dt_val = self.dt.to("s").value
         dphi = np.gradient(pha, dt_val)
         freq_val = dphi / (2 * np.pi)
+
+        # Apply IF smoothing if requested
+        if if_smooth is not None:
+            if isinstance(if_smooth, str):
+                if_smooth = u.Quantity(if_smooth)
+
+            if isinstance(if_smooth, u.Quantity):
+                w_s = if_smooth.to("s").value
+                w_samples = int(round(w_s / dt_val))
+            else:
+                w_samples = int(if_smooth)
+
+            # Enforce odd window length for symmetric filtering
+            if w_samples > 0 and w_samples % 2 == 0:
+                w_samples += 1
+
+            if w_samples > 1:
+                window = np.ones(w_samples) / w_samples
+                freq_pad = np.pad(freq_val, w_samples // 2, mode="edge")
+                freq_smooth = np.convolve(freq_pad, window, mode="valid")
+
+                if len(freq_smooth) > len(freq_val):
+                    freq_smooth = freq_smooth[: len(freq_val)]
+                freq_val = freq_smooth
+
         frequency = self.__class__(
             freq_val,
             t0=self.t0,
@@ -760,11 +991,120 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         emd_kwargs: dict[str, Any] | None = None,
         hilbert_kwargs: dict[str, Any] | None = None,
         output: str = "dict",
+        # Spectrogram output controls (only used when output="spectrogram")
+        n_bins: int = 100,
+        freq_bins: Any = None,
+        fmin: float | u.Quantity | None = None,
+        fmax: float | u.Quantity | None = None,
+        weight: str = "ia2",
+        if_policy: str = "drop",
+        finite_only: bool = True,
     ) -> Any:
+        """
+        Perform Hilbert-Huang Transform (HHT) on the TimeSeries.
+
+        HHT combines Empirical Mode Decomposition (EMD) with Hilbert Spectral
+        Analysis to create a time-frequency representation of non-stationary
+        signals.
+
+        Parameters
+        ----------
+        emd_method : str, default='eemd'
+            EMD method to use ('emd' or 'eemd').
+        emd_kwargs : dict or None, default=None
+            Additional keyword arguments for :meth:`emd`.
+        hilbert_kwargs : dict or None, default=None
+            Additional keyword arguments for :meth:`hilbert_analysis`.
+            Common options include ``pad``, ``if_smooth``.
+        output : str, default='dict'
+            Output format: 'dict' or 'spectrogram'.
+
+        Spectrogram Options (only used when ``output='spectrogram'``)
+        -------------------------------------------------------------
+        n_bins : int, default=100
+            Number of frequency bins (used if ``freq_bins`` is None).
+        freq_bins : array-like or Quantity, optional
+            Custom frequency bin edges. If provided, overrides ``n_bins``
+            and ``fmin``/``fmax``.
+        fmin : float or Quantity, optional
+            Minimum frequency for binning (default: 0).
+        fmax : float or Quantity, optional
+            Maximum frequency for binning (default: Nyquist frequency).
+        weight : {'ia2', 'ia'}, default='ia2'
+            Weighting for the spectrogram:
+            - 'ia2': Squared instantaneous amplitude (power-like)
+            - 'ia': Instantaneous amplitude (magnitude)
+        if_policy : {'drop', 'clip'}, default='drop'
+            Policy for IF values outside frequency bins:
+            - 'drop': Ignore out-of-range values
+            - 'clip': Clip to nearest bin edge
+        finite_only : bool, default=True
+            If True, exclude NaN/Inf values in IF/IA during spectrogram
+            binning. **Note**: This does not allow NaN in the original
+            signal passed to EMD; it only affects Hilbert analysis output.
+
+        Returns
+        -------
+        dict or Spectrogram
+            If ``output='dict'``:
+                Dictionary with keys 'imfs', 'ia', 'if', 'residual'.
+            If ``output='spectrogram'``:
+                GWpy Spectrogram representing the Hilbert spectrum.
+
+        Raises
+        ------
+        ImportError
+            If PyEMD is not installed.
+        ValueError
+            If EMD returns no IMFs or unknown output format specified.
+
+        Notes
+        -----
+        **Optional Dependency**: Requires PyEMD for EMD decomposition.
+
+        **What is HHT?**: Unlike STFT or wavelet transforms, HHT provides
+        instantaneous frequency estimates that can capture rapid frequency
+        variations. The Hilbert spectrum (spectrogram output) is a binned
+        representation of these IF curves, not a power spectral density.
+
+        **Default Weighting**: The default ``weight='ia2'`` produces a
+        power-like representation where energy is proportional to amplitude
+        squared. Use ``weight='ia'`` for magnitude representation.
+
+        **Edge Artifacts**: Both EMD envelope extrapolation and Hilbert
+        transform can produce artifacts at boundaries. Consider:
+        1. Pre-padding the signal
+        2. Using ``hilbert_kwargs={'pad': N}``
+        3. Cropping edges from the result
+
+        Examples
+        --------
+        >>> ts = TimeSeries(data, dt=0.01, unit='V')
+        >>> # Dictionary output
+        >>> result = ts.hht(emd_method='eemd', output='dict')
+        >>> imfs = result['imfs']
+        >>> inst_freq = result['if']
+
+        >>> # Spectrogram output with custom settings
+        >>> spec = ts.hht(
+        ...     output='spectrogram',
+        ...     n_bins=200,
+        ...     fmin=10,
+        ...     fmax=100,
+        ...     weight='ia',
+        ...     hilbert_kwargs={'pad': 100, 'if_smooth': 10}
+        ... )
+        """
         if emd_kwargs is None:
             emd_kwargs = {}
         if hilbert_kwargs is None:
             hilbert_kwargs = {}
+
+        # Validate if_policy
+        if if_policy not in ("drop", "clip"):
+            raise ValueError(
+                f"Unknown if_policy: {if_policy!r}. Use 'drop' or 'clip'."
+            )
 
         imfs = self.emd(method=emd_method, **emd_kwargs)
         from .collections import TimeSeriesDict
@@ -775,45 +1115,143 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         if "residual" in imfs:
             residual = imfs.pop("residual")
 
+        # Prepare keywords for Hilbert analysis
+        hk = hilbert_kwargs.copy()
+        if finite_only and "nan_policy" not in hk:
+            hk["nan_policy"] = "propagate"
+
         for key, imf in imfs.items():
-            res = imf.hilbert_analysis(**hilbert_kwargs)
+            res = imf.hilbert_analysis(**hk)
             ia_dict[key] = res["amplitude"]
             if_dict[key] = res["frequency"]
 
         if output == "dict":
             return {"imfs": imfs, "ia": ia_dict, "if": if_dict, "residual": residual}
+
         elif output == "spectrogram":
-            fs_rate = self.sample_rate.to("Hz").value
-            nyquist = fs_rate / 2.0
-            n_bins = 100
-            freq_bins = np.linspace(0, nyquist, n_bins + 1)
-            n_time = len(self)
+            # Validate that we have IMFs
             keys = list(imfs.keys())
             if not keys:
-                return None
-            if_stack = np.stack([if_dict[k].value for k in keys])
-            ia_stack = np.stack([ia_dict[k].value for k in keys])
-            inds = np.digitize(if_stack, freq_bins) - 1
-            mask = (inds >= 0) & (inds < n_bins)
-            grid = np.zeros((n_time, n_bins))
+                raise ValueError(
+                    "EMD decomposition returned no IMFs. Cannot create spectrogram. "
+                    "Check input signal quality or EMD parameters."
+                )
+
+            fs_rate = self.sample_rate.to("Hz").value
+            nyquist = fs_rate / 2.0
+            n_time = len(self)
+
+            # Build frequency bin edges
+            if freq_bins is not None:
+                # Use custom frequency bins
+                if isinstance(freq_bins, u.Quantity):
+                    freq_bins_arr = freq_bins.to("Hz").value
+                else:
+                    freq_bins_arr = np.asarray(freq_bins)
+
+                # Validate monotonicity
+                if not np.all(np.diff(freq_bins_arr) > 0):
+                    raise ValueError(
+                        "freq_bins must be strictly monotonically increasing."
+                    )
+                actual_n_bins = len(freq_bins_arr) - 1
+            else:
+                # Determine fmin/fmax
+                if fmin is None:
+                    fmin_val = 0.0
+                elif isinstance(fmin, u.Quantity):
+                    fmin_val = fmin.to("Hz").value
+                else:
+                    fmin_val = float(fmin)
+
+                if fmax is None:
+                    fmax_val = nyquist
+                elif isinstance(fmax, u.Quantity):
+                    fmax_val = fmax.to("Hz").value
+                else:
+                    fmax_val = float(fmax)
+
+                freq_bins_arr = np.linspace(fmin_val, fmax_val, n_bins + 1)
+                actual_n_bins = n_bins
+
+            # Stack IF and IA from all IMFs
+            # Convert IF to Hz if needed (in case hilbert_kwargs changed unit)
+            if_stack_list = []
+            ia_stack_list = []
+            for k in keys:
+                if_ts = if_dict[k]
+                ia_ts = ia_dict[k]
+
+                # Ensure IF is in Hz for binning
+                if hasattr(if_ts, "unit") and if_ts.unit != u.Hz:
+                    if_val = if_ts.to("Hz").value
+                else:
+                    if_val = if_ts.value
+
+                if_stack_list.append(if_val)
+                ia_stack_list.append(ia_ts.value)
+
+            if_stack = np.stack(if_stack_list)
+            ia_stack = np.stack(ia_stack_list)
+
+            # Handle non-finite values if requested
+            if finite_only:
+                finite_mask = np.isfinite(if_stack) & np.isfinite(ia_stack)
+            else:
+                finite_mask = np.ones_like(if_stack, dtype=bool)
+
+            # Digitize IF values into frequency bins
+            if if_policy == "clip":
+                # Clip IF to valid range before digitizing
+                if_clipped = np.clip(
+                    if_stack, freq_bins_arr[0], freq_bins_arr[-1]
+                )
+                inds = np.digitize(if_clipped, freq_bins_arr) - 1
+                # digitize returns n_bins for values == freq_bins_arr[-1]
+                inds = np.clip(inds, 0, actual_n_bins - 1)
+                mask = finite_mask  # All valid after clipping
+            else:  # policy == "drop"
+                inds = np.digitize(if_stack, freq_bins_arr) - 1
+                mask = finite_mask & (inds >= 0) & (inds < actual_n_bins)
+
+            # Compute weights
+            if weight == "ia2":
+                weights_stack = ia_stack ** 2
+                out_unit = self.unit ** 2
+                weight_label = "power"
+            elif weight == "ia":
+                weights_stack = ia_stack
+                out_unit = self.unit
+                weight_label = "amplitude"
+            else:
+                raise ValueError(
+                    f"Unknown weight: {weight}. Use 'ia2' or 'ia'."
+                )
+
+            # Build the spectrogram grid
+            grid = np.zeros((n_time, actual_n_bins))
             for k in range(len(keys)):
                 valid = mask[k]
                 t_inds = np.arange(n_time)[valid]
                 f_inds = inds[k][valid]
-                energies = ia_stack[k][valid] ** 2
+                energies = weights_stack[k][valid]
                 np.add.at(grid, (t_inds, f_inds), energies)
 
-            from gwpy.spectrogram import Spectrogram
+            from gwexpy.types.hht_spectrogram import HHTSpectrogram
 
-            freq_centers = (freq_bins[:-1] + freq_bins[1:]) / 2.0
-            return Spectrogram(
+            freq_centers = (freq_bins_arr[:-1] + freq_bins_arr[1:]) / 2.0
+            name_suffix = "Hilbert Spectrum"
+            if weight_label == "amplitude":
+                name_suffix += " (IA)"
+
+            return HHTSpectrogram(
                 grid,
                 times=self.times,
                 frequencies=u.Quantity(freq_centers, "Hz"),
-                unit=self.unit**2,
-                name=(self.name + " Hilbert Spectrum")
+                unit=out_unit,
+                name=(self.name + " " + name_suffix)
                 if self.name
-                else "Hilbert Spectrum",
+                else name_suffix,
                 channel=self.channel,
                 epoch=self.epoch,
             )
