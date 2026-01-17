@@ -195,28 +195,86 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         return plot_summary(self, **kwargs)
 
     def to_matrix(self):
-        """Convert to SpectrogramMatrix (N, Time, Freq)."""
+        """Convert to SpectrogramMatrix (N, Time, Freq).
+
+        Validation follows SeriesMatrix base rules:
+        - Shape must be identical across elements.
+        - Times/frequencies are compared by converting to reference (first element)
+          unit using .to_value(), then requiring np.array_equal (no tolerance).
+          (Reuses gwexpy.types.seriesmatrix_validation logic).
+        - Units, names, and channels may differ and are preserved per-element
+          in the matrix's MetaDataMatrix.
+
+        Returns
+        -------
+        SpectrogramMatrix
+            3D array of (N, Time, Freq) with per-element metadata.
+
+        Raises
+        ------
+        ValueError
+            If shape or axes differ after unit conversion.
+        """
         import numpy as np
+
+        from gwexpy.types.metadata import MetaData, MetaDataMatrix
+        from gwexpy.types.seriesmatrix_validation import check_shape_xindex_compatibility
 
         from .matrix import SpectrogramMatrix
 
         if not self:
             return SpectrogramMatrix(np.empty((0, 0, 0)))
 
-        shape0 = self[0].shape
-        for s in self[1:]:
-            if s.shape != shape0:
-                raise ValueError("Shape mismatch in SpectrogramList elements")
+        s0 = self[0]
+        shape0 = s0.shape
+        times0 = s0.times
+        freqs0 = s0.frequencies
+
+        # Helper to reuse seriesmatrix_validation logic for arbitrary arrays
+        class AxisWrapper:
+            def __init__(self, shape, xindex):
+                self.shape = shape
+                self.xindex = xindex
+
+        for i, s in enumerate(self[1:], start=1):
+            # Check times equality (reusing base validation logic)
+            try:
+                check_shape_xindex_compatibility(
+                    AxisWrapper(shape0, times0),
+                    AxisWrapper(s.shape, s.times)
+                )
+            except ValueError as e:
+                raise ValueError(f"Times mismatch at index {i}: {e}")
+
+            # Check frequencies equality (reusing base validation logic)
+            try:
+                check_shape_xindex_compatibility(
+                    AxisWrapper(shape0, freqs0),
+                    AxisWrapper(s.shape, s.frequencies)
+                )
+            except ValueError as e:
+                raise ValueError(f"Frequencies mismatch at index {i}: {e}")
 
         arr = np.stack([s.value for s in self])
-        s0 = self[0]
+
+        # Build per-element metadata (N, 1) for 3D matrix
+        N = len(self)
+        meta_arr = np.empty((N, 1), dtype=object)
+        for i, s in enumerate(self):
+            meta_arr[i, 0] = MetaData(
+                name=getattr(s, "name", "") or "",
+                channel=getattr(s, "channel", "") or "",
+                unit=getattr(s, "unit", None),
+            )
+        meta_matrix = MetaDataMatrix(meta_arr)
 
         return SpectrogramMatrix(
             arr,
-            times=s0.times,
-            frequencies=s0.frequencies,
-            unit=s0.unit,
-            name=getattr(s0, "name", None),
+            times=times0,
+            frequencies=freqs0,
+            meta=meta_matrix,
+            name=None,
+            unit=None,  # No global unit; per-element units in meta
         )
 
     def to_torch(self, *args, **kwargs) -> list:
@@ -476,30 +534,88 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
     def to_matrix(self):
         """Convert to SpectrogramMatrix.
 
+        Validation follows SeriesMatrix base rules:
+        - Shape must be identical across elements.
+        - Times/frequencies are compared by converting to reference (first element)
+          unit using .to_value(), then requiring np.array_equal (no tolerance).
+          (Reuses gwexpy.types.seriesmatrix_validation logic).
+        - Units, names, and channels may differ and are preserved per-element
+          in the matrix's MetaDataMatrix.
+
         Returns
         -------
         SpectrogramMatrix
-            3D array of (N, Time, Freq).
+            3D array of (N, Time, Freq) with per-element metadata.
+
+        Raises
+        ------
+        ValueError
+            If shape or axes differ after unit conversion.
         """
         import numpy as np
+
+        from gwexpy.types.metadata import MetaData, MetaDataMatrix
+        from gwexpy.types.seriesmatrix_validation import check_shape_xindex_compatibility
 
         from .matrix import SpectrogramMatrix
 
         vals = list(self.values())
+        keys = list(self.keys())
         if not vals:
             return SpectrogramMatrix(np.empty((0, 0, 0)))
 
-        shape0 = vals[0].shape
-        for s in vals[1:]:
-            if s.shape != shape0:
-                raise ValueError("Mismatch shape")
+        s0 = vals[0]
+        shape0 = s0.shape
+        times0 = s0.times
+        freqs0 = s0.frequencies
+
+        # Helper to reuse seriesmatrix_validation logic for arbitrary arrays
+        class AxisWrapper:
+            def __init__(self, shape, xindex):
+                self.shape = shape
+                self.xindex = xindex
+
+        for i, s in enumerate(vals[1:], start=1):
+            # Check times equality (reusing base validation logic)
+            try:
+                check_shape_xindex_compatibility(
+                    AxisWrapper(shape0, times0),
+                    AxisWrapper(s.shape, s.times)
+                )
+            except ValueError as e:
+                raise ValueError(f"Times mismatch at key {keys[i]}: {e}")
+
+            # Check frequencies equality (reusing base validation logic)
+            try:
+                check_shape_xindex_compatibility(
+                    AxisWrapper(shape0, freqs0),
+                    AxisWrapper(s.shape, s.frequencies)
+                )
+            except ValueError as e:
+                raise ValueError(f"Frequencies mismatch at key {keys[i]}: {e}")
 
         arr = np.stack([s.value for s in vals])
-        s0 = vals[0]
-        matrix = SpectrogramMatrix(
-            arr, times=s0.times, frequencies=s0.frequencies, unit=s0.unit, name=None
+
+        # Build per-element metadata (N, 1) for 3D matrix
+        N = len(vals)
+        meta_arr = np.empty((N, 1), dtype=object)
+        for i, s in enumerate(vals):
+            meta_arr[i, 0] = MetaData(
+                name=getattr(s, "name", "") or "",
+                channel=getattr(s, "channel", "") or "",
+                unit=getattr(s, "unit", None),
+            )
+        meta_matrix = MetaDataMatrix(meta_arr)
+
+        return SpectrogramMatrix(
+            arr,
+            times=times0,
+            frequencies=freqs0,
+            rows=keys,
+            meta=meta_matrix,
+            name=None,
+            unit=None,  # No global unit; per-element units in meta
         )
-        return matrix
 
     def to_torch(self, *args, **kwargs) -> dict:
         """Convert each item to torch.Tensor. Returns a dict."""

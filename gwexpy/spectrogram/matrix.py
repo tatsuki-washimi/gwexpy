@@ -24,12 +24,26 @@ class SpectrogramMatrix(
     Evaluation Matrix for Spectrograms (Time-Frequency maps).
 
     This class represents a collection of Spectrograms, structured as either:
+
     - 3D: (Batch, Time, Frequency)
     - 4D: (Row, Col, Time, Frequency)
 
     It inherits from SeriesMatrix, providing powerful indexing, metadata management,
     and analysis capabilities (slicing, interpolation, statistics).
+
+    Serialization (Known Limitation)
+    --------------------------------
+    Pickle round-trip (`pickle.dumps` / `pickle.loads`) preserves the array shape
+    and values, but **axis metadata (xindex/times, frequencies) may not be fully
+    restored** due to numpy ndarray subclass serialization constraints.
+
+    This is a known limitation. If you require full metadata preservation, consider
+    using HDF5 I/O methods (e.g., `to_hdf5` / `from_hdf5`) instead of pickle.
+
+    TODO: Implement `__reduce_ex__` or `__getstate__/__setstate__` to enable
+    complete metadata preservation in pickle round-trips.
     """
+
 
     series_class = Spectrogram
     dict_class = SpectrogramDict
@@ -142,10 +156,11 @@ class SpectrogramMatrix(
             obj.cols = None
             obj.meta = None
 
-        # Apply unit to metadata if needed
+        # Apply unit to metadata if needed (only if not explicitly set in meta)
         if unit is not None and getattr(obj, "meta", None) is not None:
             for m in obj.meta.flat:
-                if m.unit is None:
+                # MetaData defaults to dimensionless_unscaled, so check for that too
+                if m.unit is None or m.unit == u.dimensionless_unscaled:
                     m.unit = unit
 
         obj.epoch = kwargs.get("epoch", 0.0)
@@ -164,7 +179,14 @@ class SpectrogramMatrix(
         """
         Override SeriesMatrix.__array_ufunc__ to correctly handle SpectrogramMatrix structure
         (Batch, Time, Freq) or (Row, Col, Time, Freq).
+
+        Per-element units are preserved in MetaDataMatrix:
+        - Scalar operations: apply ufunc to each element's unit individually
+        - Binary matrix operations: check per-element unit compatibility and raise
+          UnitConversionError if any pair is incompatible
         """
+        from gwexpy.types.metadata import MetaData, MetaDataMatrix
+
         if method != "__call__":
             # Defer to ndarray (e.g. at, reduce) - might lose metadata but SeriesMatrix does too
             args = [
@@ -175,24 +197,36 @@ class SpectrogramMatrix(
                 ufunc, method, *args, **kwargs
             )
 
-        # 1. Unpack inputs and checking units/meta
+        # Identify ufunc category for unit handling
+        _ADD_SUB_UFUNCS = {np.add, np.subtract}
+        _COMPARISON_UFUNCS = {
+            np.less, np.less_equal, np.equal, np.not_equal,
+            np.greater, np.greater_equal
+        }
+        _MUL_DIV_UFUNCS = {np.multiply, np.divide, np.floor_divide, np.true_divide}
+
+        # 1. Unpack inputs
         args = []
-        metas = []
-        shapes = []
+        sgm_inputs = []  # SpectrogramMatrix instances
+        scalar_inputs = []  # Scalars/units for unit arithmetic
         for inp in inputs:
             if isinstance(inp, SpectrogramMatrix):
                 args.append(inp.view(np.ndarray))
-                metas.append(inp.meta)
-                shapes.append(inp.shape)
+                sgm_inputs.append(inp)
             elif isinstance(inp, (u.Quantity, np.ndarray, float, int, complex)):
-                # Wrap as ndarray
                 val = getattr(inp, "value", inp)
                 args.append(np.asarray(val))
-                # Dummy meta? Scalar has no meta. Implicitly handled by ufunc logic if skipped?
-                metas.append(None)
-                shapes.append(np.shape(val))
+                scalar_inputs.append(inp)
+            elif isinstance(inp, u.UnitBase):
+                args.append(1.0)  # Unit acts as multiplier
+                scalar_inputs.append(inp)
             else:
                 return NotImplemented
+
+        if not sgm_inputs:
+            return NotImplemented
+
+        main = sgm_inputs[0]
 
         # 2. Compute Data
         try:
@@ -200,56 +234,103 @@ class SpectrogramMatrix(
         except Exception:
             return NotImplemented
 
-        # 3. Propagate Metadata (Units)
-        # We assume result has same shape structure (or broadcasted).
-        # We take self's (this instance's) non-data props (times, freqs, rows, cols).
-        # If ufunc allows, units might change.
+        # 3. Handle per-element unit propagation
+        # Determine if this is a scalar op (1 matrix) or binary matrix op (2+ matrices)
+        is_scalar_op = len(sgm_inputs) == 1
+        is_binary_matrix_op = len(sgm_inputs) >= 2
 
-        # Simple logic: if preserving unit or changing unit, update meta/unit property.
-        # This is complex to do perfectly (SeriesMatrix tries hard).
-        # For now, we take unit from first operand if it's SpectrogramMatrix, and apply ufunc to unit?
+        new_meta = None
+        if main.meta is not None:
+            meta_shape = main.meta.shape
+            new_meta_arr = np.empty(meta_shape, dtype=object)
 
-        main = [x for x in inputs if isinstance(x, SpectrogramMatrix)][0]
+            if is_scalar_op:
+                # Scalar operation: apply ufunc to each element's unit
+                # Get scalar unit(s)
+                scalar_unit = u.dimensionless_unscaled
+                for sc in scalar_inputs:
+                    if isinstance(sc, u.UnitBase):
+                        scalar_unit = sc
+                    elif isinstance(sc, u.Quantity):
+                        scalar_unit = sc.unit
+                    # else: dimensionless
 
-        # Attempt to compute new global unit
-        unit_args = []
-        for inp in inputs:
-            if hasattr(inp, "unit"):
-                unit_args.append(inp.unit if inp.unit else u.dimensionless_unscaled)
-            else:
-                unit_args.append(u.dimensionless_unscaled)
-        q_args = []
-        for x in unit_args:
-            if x is None:
-                q_args.append(1)
-            else:
-                q_args.append(u.Quantity(1, x))
+                for idx in np.ndindex(meta_shape):
+                    old_meta = main.meta[idx]
+                    old_unit = old_meta.unit if old_meta.unit else u.dimensionless_unscaled
 
-        try:
-            res_q = ufunc(*q_args)
-            new_unit = res_q.unit if hasattr(res_q, "unit") else None
-        except (TypeError, ValueError, AttributeError) as e:
-            if isinstance(e, u.UnitConversionError):
-                raise e
-            new_unit = None
+                    try:
+                        # Apply ufunc to units
+                        q_result = ufunc(
+                            u.Quantity(1, old_unit),
+                            u.Quantity(1, scalar_unit)
+                        ) if len(inputs) == 2 else ufunc(u.Quantity(1, old_unit))
+                        new_unit = q_result.unit if hasattr(q_result, "unit") else old_unit
+                    except (TypeError, ValueError, u.UnitConversionError):
+                        new_unit = old_unit
+
+                    new_meta_arr[idx] = MetaData(
+                        name=old_meta.name,
+                        channel=old_meta.channel,
+                        unit=new_unit,
+                    )
+
+            elif is_binary_matrix_op:
+                # Binary matrix operation: check per-element unit compatibility
+                other_sgm = sgm_inputs[1] if len(sgm_inputs) > 1 else None
+
+                if other_sgm is not None and other_sgm.meta is not None:
+                    # Check shape compatibility
+                    if main.meta.shape != other_sgm.meta.shape:
+                        raise ValueError(
+                            f"Metadata shape mismatch: {main.meta.shape} vs {other_sgm.meta.shape}"
+                        )
+
+                    for idx in np.ndindex(meta_shape):
+                        m1 = main.meta[idx]
+                        m2 = other_sgm.meta[idx]
+                        u1 = m1.unit if m1.unit else u.dimensionless_unscaled
+                        u2 = m2.unit if m2.unit else u.dimensionless_unscaled
+
+                        # Check strict unit equality for add/sub/comparison
+                        # Following SeriesMatrix check_add_sub_compatibility:
+                        # u0 != uk raises UnitConversionError (even for equivalent units like m vs cm)
+                        if ufunc in _ADD_SUB_UFUNCS or ufunc in _COMPARISON_UFUNCS:
+                            if u1 != u2:
+                                raise u.UnitConversionError(
+                                    f"Unit mismatch at element {idx}: {u1} vs {u2}"
+                                )
+                            new_unit = u1  # Preserve first unit for add/sub
+                            if ufunc in _COMPARISON_UFUNCS:
+                                new_unit = u.dimensionless_unscaled
+                        elif ufunc in _MUL_DIV_UFUNCS:
+                            if ufunc == np.multiply:
+                                new_unit = u1 * u2
+                            else:
+                                new_unit = u1 / u2
+                        else:
+                            # Default: try to compute
+                            try:
+                                q_result = ufunc(u.Quantity(1, u1), u.Quantity(1, u2))
+                                new_unit = q_result.unit if hasattr(q_result, "unit") else u1
+                            except (TypeError, ValueError, u.UnitConversionError) as e:
+                                if isinstance(e, u.UnitConversionError):
+                                    raise
+                                new_unit = u1
+
+                        new_meta_arr[idx] = MetaData(
+                            name=m1.name,
+                            channel=m1.channel,
+                            unit=new_unit,
+                        )
+                else:
+                    # Other matrix has no meta; keep main's meta
+                    new_meta_arr = main.meta.copy()
+
+            new_meta = MetaDataMatrix(new_meta_arr)
 
         # Reconstruct SpectrogramMatrix
-        # If shape matches main, keep rows/cols/times/freqs
-        # If shape changed (e.g. reduction), this ufunc shouldn't have been handled here (method != call usually?)
-        # Standard ufuncs like add/mul preserve shape.
-
         if result_data.shape == main.shape:
-            # Propagate meta if possible
-            new_meta = None
-            if main.meta is not None:
-                # Deep copy meta and update units
-                # Or create new MetaDataMatrix with new units
-                if new_unit is not None:
-                    # Update all cells?
-                    # Doing shallow copy of meta matrix
-                    pass
-                new_meta = main.meta  # Simplification: keep meta structure
-
             obj = self.__class__(
                 result_data,
                 times=main.times,
@@ -258,11 +339,52 @@ class SpectrogramMatrix(
                 cols=main.cols,
                 meta=new_meta,
                 name=main.name,
-                unit=new_unit,
+                unit=None,  # No global unit; per-element units in meta
             )
             return obj
 
         return result_data
+
+    def __mul__(self, other):
+        """Multiply by scalar, unit, or matrix."""
+        # Explicitly handle u.UnitBase to avoid astropy ufunc precedence issues
+        if isinstance(other, u.UnitBase):
+            return np.multiply(self, u.Quantity(1, other))
+        return np.multiply(self, other)
+
+    def __rmul__(self, other):
+        """Right multiply by scalar, unit, or matrix."""
+        if isinstance(other, u.UnitBase):
+            return np.multiply(u.Quantity(1, other), self)
+        return np.multiply(other, self)
+
+    def __truediv__(self, other):
+        """Divide by scalar, unit, or matrix."""
+        if isinstance(other, u.UnitBase):
+            return np.divide(self, u.Quantity(1, other))
+        return np.divide(self, other)
+
+    def __rtruediv__(self, other):
+        """Right divide by scalar, unit, or matrix."""
+        if isinstance(other, u.UnitBase):
+            return np.divide(u.Quantity(1, other), self)
+        return np.divide(other, self)
+
+    def __add__(self, other):
+        """Add scalar/quantity or matrix."""
+        return np.add(self, other)
+
+    def __radd__(self, other):
+        """Right add."""
+        return np.add(other, self)
+
+    def __sub__(self, other):
+        """Subtract scalar/quantity or matrix."""
+        return np.subtract(self, other)
+
+    def __rsub__(self, other):
+        """Right subtract."""
+        return np.subtract(other, self)
 
     def row_keys(self):
         return tuple(self.rows.keys()) if self.rows else tuple()

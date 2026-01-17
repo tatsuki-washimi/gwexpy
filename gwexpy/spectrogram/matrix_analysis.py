@@ -12,50 +12,91 @@ class SpectrogramMatrixAnalysisMixin:
     def radian(self, unwrap: bool = False) -> Any:
         """
         Calculate the phase of the matrix in radians.
+
+        Parameters
+        ----------
+        unwrap : bool, optional
+            If True, unwrap the phase along the time axis (axis=-2).
+
+        Returns
+        -------
+        SpectrogramMatrix
+            A new matrix with phase in radians.
         """
+        # Copy to preserve all attributes (times, frequencies, rows, cols, epoch, etc.)
+        new = self.copy()
+        
+        # Calculate phase values
         val = np.angle(self.view(np.ndarray))
         if unwrap:
-            # Unwrap along time axis (usually axis -2 in SpectrogramMatrix: (..., Time, Freq))
+            # Unwrap along time axis (Time is axis -2 for SpectrogramMatrix)
             val = np.unwrap(val, axis=-2)
 
-        new_meta = self.meta.copy() if self.meta is not None else None
-        if new_meta is not None:
-            for m in new_meta.flat:
+        # If original was complex, Ensure new is real-valued to hold phase
+        if np.iscomplexobj(new):
+            # new.real is a method in SeriesMatrix types
+            new = new.real()
+
+        # Update values
+        new.view(np.ndarray)[:] = val
+        
+        # Update metadata units/names
+        if new.meta is not None:
+            # metadata.copy() copies the array and provides new MetaData objects
+            new.meta = new.meta.copy()
+            for m in new.meta.flat:
+                # We already have new MetaData objects from meta.copy()
                 m.unit = u.rad
                 if m.name:
-                    m.name += "_phase"
+                    if ".real" in m.name:
+                         m.name = m.name.replace(".real", "_phase")
+                    else:
+                         m.name += "_phase"
+                else:
+                    m.name = "phase"
 
-        # Use constructor of the class (SpectrogramMatrix)
-        new_mat = self.__class__(
-            val,
-            times=self.times,
-            frequencies=self.frequencies,
-            unit=u.rad,
-            name=self.name + "_phase" if self.name else "phase",
-            meta=new_meta,
-        )
-        return new_mat
+        # Update global name
+        if self.name:
+            new.name = self.name + "_phase"
+        else:
+            new.name = "phase"
+            
+        return new
 
     def degree(self, unwrap: bool = False) -> Any:
         """
         Calculate the phase of the matrix in degrees.
-        """
-        p = self.radian(unwrap=unwrap)
-        val = np.rad2deg(np.asarray(p))
 
-        new_meta = p.meta.copy() if p.meta is not None else None
-        if new_meta is not None:
-            for m in new_meta.flat:
+        Parameters
+        ----------
+        unwrap : bool, optional
+            If True, unwrap the phase along the time axis (axis=-2).
+
+        Returns
+        -------
+        SpectrogramMatrix
+            A new matrix with phase in degrees.
+        """
+        # Reuse radian implementation which handles unwrap, metadata preservation and real-casting
+        p = self.radian(unwrap=unwrap)
+        
+        # Convert values to degrees
+        val = np.rad2deg(p.view(np.ndarray))
+        
+        # Create final object (p already has correct metadata structure)
+        new = p
+        new.view(np.ndarray)[:] = val
+        
+        if new.meta is not None:
+            # We already copied meta in radian(), but we need to change unit to deg
+            for m in new.meta.flat:
                 m.unit = u.deg
                 if m.name and "_phase" in m.name:
-                    m.name += "_deg"
+                    m.name = m.name.replace("_phase", "_phase_deg")
 
-        new_mat = self.__class__(
-            val,
-            times=p.times,
-            frequencies=p.frequencies,
-            unit=u.deg,
-            name=p.name + "_deg" if p.name else "phase_deg",
-            meta=new_meta,
-        )
-        return new_mat
+        if self.name:
+            new.name = self.name + "_phase_deg"
+        else:
+            new.name = "phase_deg"
+            
+        return new

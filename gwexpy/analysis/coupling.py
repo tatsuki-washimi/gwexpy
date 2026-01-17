@@ -59,7 +59,14 @@ class ThresholdStrategy(ABC):
 class RatioThreshold(ThresholdStrategy):
     """
     Checks if P_inj > ratio * P_bkg_mean.
-    Simple and fast.
+
+    Statistical Assumptions:
+        - No specific statistical distribution is assumed.
+        - Tests if injection power exceeds the background level by a fixed factor.
+
+    Usage:
+        - Best for simple, physical excess screening where precise statistical significance is less critical.
+        - Extremely fast as it requires no variance estimation.
     """
 
     def __init__(self, ratio: float = 2.0):
@@ -75,7 +82,24 @@ class RatioThreshold(ThresholdStrategy):
 class SigmaThreshold(ThresholdStrategy):
     """
     Checks if P_inj > P_bkg + sigma * std_error.
-    Assumes Gaussian noise statistics.
+
+    Statistical Assumptions:
+        - Background Power Spectral Density (PSD) at each bin follows a Gaussian distribution.
+        - The parameter `n_avg` represents the number of independent averages (e.g., in Welch's method).
+        - Assumes standard deviation of the noise reduces as `1 / sqrt(n_avg)`.
+
+    Meaning of Threshold:
+        - `threshold = mean + sigma * (mean / sqrt(n_avg))`
+        - This is a **statistical significance判定** (significance test), NOT a physical upper limit.
+        - It identifies frequencies where the injection is statistically distinguishable from background variance.
+
+    WARNING:
+        This method relies heavily on the Gaussian and stationary assumptions. It may be unreliable if:
+        - The background contains significant non-Gaussian features (glitches, transients).
+        - `n_avg` is small, where the central limit theorem has not yet converged.
+        - There are strong spectral lines (non-stationary or deterministic signals).
+
+    In such cases, `PercentileThreshold` is recommended as it uses the empirical distribution.
     """
 
     def __init__(self, sigma: float = 3.0):
@@ -99,8 +123,13 @@ class PercentileThreshold(ThresholdStrategy):
     """
     Checks if P_inj > factor * Percentile(P_bkg_segments).
 
-    This requires re-calculating the PSD spectrogram of the background
-    to find the percentile at each frequency bin.
+    Statistical Assumptions:
+        - Uses the **Empirical Distribution** of the background PSDs.
+        - Does not assume Gaussianity; robust against outliers and non-stationary glitches.
+
+    Usage:
+        - Requires `raw_bkg` (time series) to compute the distribution across time segments.
+        - Higher computational cost than `SigmaThreshold` but more reliable for real-world non-Gaussian data.
 
     Parameters
     ----------
