@@ -12,13 +12,32 @@ class SpectrogramMatrixCoreMixin:
     Core properties and metadata for SpectrogramMatrix.
     Overrides SeriesMatrix defaults to handle 4D (or 3D) Spectrogram data structure.
 
-    Structure:
+    Structure
+    ---------
     - 3D: (Batch, Time, Freq)
     - 4D: (Row, Col, Time, Freq)
 
-    xindex corresponds to Time (shape[-2] usually).
-    We add 'yindex'/'frequencies' for Frequency (shape[-1]).
+    Axis Invariants
+    ---------------
+    SpectrogramMatrix assumes a fixed axis layout:
+
+    - **Time axis**: always ``shape[-2]`` (second-to-last dimension)
+    - **Frequency axis**: always ``shape[-1]`` (last dimension)
+
+    The ``xindex`` (accessed as ``.times``) must have length equal to ``shape[-2]``,
+    and ``frequencies`` must have length equal to ``shape[-1]``.
+
+    Structural Operations (Limitation)
+    ----------------------------------
+    Because of these fixed axis semantics, **transpose / swapaxes / moveaxis**
+    operations that reorder dimensions are **not currently supported**. Applying
+    such operations breaks the xindex/frequencies length validation and produces
+    semantically invalid results.
+
+    TODO: Future 4D support may introduce axis-swap-aware metadata tracking,
+    allowing transpose to update xindex/frequencies accordingly.
     """
+
 
     @property
     def _x_axis_index(self) -> int:
