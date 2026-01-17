@@ -141,6 +141,8 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         # 4. Padding
         data = self.value
         n_pad = 0
+        if isinstance(pad, str):
+            pad = u.Quantity(pad)
         if isinstance(pad, u.Quantity):
             if self.dt is None or getattr(self.times, "unit", None) is None:
                 raise ValueError(
