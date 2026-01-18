@@ -1,6 +1,6 @@
 # TimeSeries
 
-**Inherits from:** TimeSeriesInteropMixin, TimeSeriesAnalysisMixin, TimeSeriesResamplingMixin, TimeSeriesSignalMixin, SignalAnalysisMixin, TimeSeriesSpectralMixin, StatisticsMixin, FittingMixin, PhaseMethodsMixin, RegularityMixin, TimeSeries
+**Inherits from:** TimeSeriesInteropMixin, TimeSeriesAnalysisMixin, TimeSeriesResamplingMixin, TimeSeriesSignalMixin, SignalAnalysisMixin, TimeSeriesSpectralMixin, StatisticsMixin, FittingMixin, PhaseMethodsMixin, RegularityMixin, _LegacyTimeSeries (gwpy.timeseries.TimeSeries)
 
 
 Extended TimeSeries with all gwexpy functionality.
@@ -17,23 +17,8 @@ Inherits from gwpy.timeseries.TimeSeries for full compatibility.
 
 ## Methods
 
-### `DictClass`
-
-```python
-DictClass(...)
-```
-
-Ordered key-value mapping of named `TimeSeries` objects
-
-This object is designed to hold data for many different sources (channels)
-for a single time span.
-
-The main entry points for this object are the
-:meth:`~TimeSeriesDict.read` and :meth:`~TimeSeriesDict.fetch`
-data access methods.
-
-
 ### `abs`
+
 
 ```python
 abs(self, axis=None, **kwargs)

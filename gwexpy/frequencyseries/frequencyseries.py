@@ -526,8 +526,40 @@ class FrequencySeries(
         )
 
     def idct(self, type: int = 2, norm: str = "ortho", *, n: int | None = None) -> Any:
-        # ... (docstring) ...
+        """
+        Compute the Inverse Discrete Cosine Transform (IDCT).
+
+        Reconstructs a time-domain signal from DCT coefficients.
+
+        Parameters
+        ----------
+        type : int, optional
+            DCT type (1, 2, 3, or 4). Should match the type used for
+            the forward DCT. Default is 2.
+        norm : str, optional
+            Normalization mode: 'ortho' for orthonormal, None for standard.
+            Default is 'ortho'.
+        n : int, optional
+            Length of the output time series. If None, uses the stored
+            `original_n` attribute if available.
+
+        Returns
+        -------
+        TimeSeries
+            The reconstructed time series.
+
+        Notes
+        -----
+        For a proper roundtrip, use the same `type` and `norm` as the
+        forward DCT transform.
+
+        Examples
+        --------
+        >>> fs = FrequencySeries(dct_coeffs, ...)
+        >>> ts = fs.idct()
+        """
         self._check_regular("idct")
+
         scipy_fft = require_optional("scipy.fft")
 
         # Check metadata if available

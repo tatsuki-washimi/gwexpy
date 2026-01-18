@@ -568,7 +568,53 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         chunk_size: int | None = None,
         **kwargs: Any,
     ) -> Any:
+        """
+        Compute the Continuous Wavelet Transform (CWT).
+
+        The CWT provides a time-frequency representation of the signal
+        using a wavelet basis. Unlike STFT, CWT uses wavelets of varying
+        width to achieve better time resolution at high frequencies and
+        better frequency resolution at low frequencies.
+
+        Parameters
+        ----------
+        wavelet : str, optional
+            Wavelet to use. Default is 'cmor1.5-1.0' (Complex Morlet).
+            See pywt.wavelist() for available wavelets.
+        widths : array-like, optional
+            Wavelet scales to use. Mutually exclusive with `frequencies`.
+        frequencies : array-like or Quantity, optional
+            Target frequencies in Hz. Scales are computed from these.
+            Mutually exclusive with `widths`.
+        window : str, tuple, or array-like, optional
+            Window function to apply before the transform.
+        detrend : bool, optional
+            If True, remove linear trend before the transform.
+        output : {'spectrogram', 'ndarray'}, optional
+            Output format. 'spectrogram' returns a gwpy Spectrogram.
+            'ndarray' returns (coefficients, frequencies) tuple.
+        chunk_size : int, optional
+            Number of scales to process at once for memory efficiency.
+        **kwargs
+            Additional arguments passed to pywt.cwt().
+
+        Returns
+        -------
+        Spectrogram or tuple
+            If output='spectrogram': a Spectrogram object.
+            If output='ndarray': (coefficients, frequencies) tuple.
+
+        Notes
+        -----
+        Requires the `pywt` (PyWavelets) package.
+
+        Examples
+        --------
+        >>> ts = TimeSeries(data, sample_rate=1024)
+        >>> spec = ts.cwt(frequencies=np.logspace(0, 2, 50))
+        """
         self._check_regular("cwt")
+
         pywt = require_optional("pywt")
         require_optional("scipy")  # Ensure scipy is available for prepare_data
 

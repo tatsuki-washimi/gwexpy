@@ -1,6 +1,6 @@
 # Spectrogram
 
-**Inherits from:** PhaseMethodsMixin, InteropMixin, Spectrogram
+**Inherits from:** PhaseMethodsMixin, InteropMixin, BaseSpectrogram (gwpy.spectrogram.Spectrogram)
 
 
 Extends gwpy.spectrogram.Spectrogram with additional interop methods.

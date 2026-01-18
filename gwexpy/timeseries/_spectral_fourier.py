@@ -291,7 +291,43 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         window: WindowLike | None = None,
         detrend: bool = False,
     ) -> FrequencySeries:
+        """
+        Compute the Discrete Cosine Transform (DCT).
+
+        The DCT expresses the signal as a sum of cosine functions at
+        different frequencies. It is widely used in signal compression
+        and spectral analysis due to its energy compaction properties.
+
+        Parameters
+        ----------
+        type : int, optional
+            DCT type (1, 2, 3, or 4). Default is 2 (most common).
+        norm : str, optional
+            Normalization mode: 'ortho' for orthonormal, None for standard.
+            Default is 'ortho'.
+        window : str, tuple, or array-like, optional
+            Window function to apply before the transform.
+        detrend : bool, optional
+            If True, remove linear trend before the transform.
+
+        Returns
+        -------
+        FrequencySeries
+            The DCT coefficients as a FrequencySeries. The frequencies
+            represent DCT bin indices (k / 2*N*dt).
+
+        Notes
+        -----
+        The DCT is useful for analyzing signals where edge effects are
+        a concern, as it implicitly assumes even symmetry at boundaries.
+
+        Examples
+        --------
+        >>> ts = TimeSeries(data, sample_rate=1024)
+        >>> dct_coeffs = ts.dct()
+        """
         self._check_regular("dct")
+
         try:
             import scipy.fft
         except ImportError:
@@ -335,7 +371,48 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         eps: float | None = None,
         fft_mode: str = "gwpy",
     ) -> FrequencySeries:
+        """
+        Compute the cepstrum of the time series.
+
+        The cepstrum is the inverse Fourier transform of the log spectrum.
+        It is useful for detecting periodicity in the spectrum, such as
+        for pitch detection, echo analysis, and deconvolution.
+
+        Parameters
+        ----------
+        kind : {'real', 'complex', 'power'}, optional
+            Type of cepstrum to compute:
+            - 'real': IFFT of log magnitude spectrum (default)
+            - 'complex': IFFT of log complex spectrum
+            - 'power': IFFT of log power spectrum
+        window : str, tuple, or array-like, optional
+            Window function to apply before the transform.
+        detrend : bool, optional
+            If True, remove linear trend before the transform.
+        eps : float, optional
+            Small value to add to spectrum to avoid log(0).
+        fft_mode : str, optional
+            FFT mode (reserved for future use).
+
+        Returns
+        -------
+        FrequencySeries
+            The cepstrum with quefrency axis (in seconds).
+
+        Notes
+        -----
+        The x-axis of the output is in "quefrency" (time units), which
+        represents periodicity in the spectrum. Peaks in the cepstrum
+        indicate harmonic spacing or echo delays.
+
+        Examples
+        --------
+        >>> ts = TimeSeries(data, sample_rate=1024)
+        >>> ceps = ts.cepstrum(kind='real')
+        >>> # Find fundamental period from peak in cepstrum
+        """
         try:
+
             import scipy.fft
         except ImportError:
             raise ImportError("scipy is required for cepstrum.")
