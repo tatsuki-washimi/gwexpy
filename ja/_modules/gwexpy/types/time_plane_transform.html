@@ -40,22 +40,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -92,7 +90,7 @@
 
 
 <div class="viewcode-block" id="TimePlaneTransform">
-<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.TimePlaneTransform">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.TimePlaneTransform">[ドキュメント]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TimePlaneTransform</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A container for 3D data with a preferred (time, axis1, axis2) structure,</span>
@@ -239,7 +237,7 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid axis key type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TimePlaneTransform.plane">
-<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.TimePlaneTransform.plane">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.TimePlaneTransform.plane">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plane</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drop_axis</span><span class="p">,</span> <span class="n">drop_index</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract a 2D plane by slicing at a specific index along one axis.</span>
@@ -278,7 +276,7 @@
 
 
 <div class="viewcode-block" id="TimePlaneTransform.at_time">
-<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.TimePlaneTransform.at_time">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.TimePlaneTransform.at_time">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">at_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract a Plane2D at the specific time `t`.</span>
@@ -374,7 +372,7 @@
         <span class="c1"># return self.plane(0, idx)</span>
 
 <div class="viewcode-block" id="TimePlaneTransform.at_sigma">
-<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.TimePlaneTransform.at_sigma">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.TimePlaneTransform.at_sigma">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">at_sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract a 2D plane (Spectrogram-like) at a specific sigma index (if axis1 is sigma)</span>
@@ -423,7 +421,7 @@
 
 
 <div class="viewcode-block" id="TimePlaneTransform.to_array3d">
-<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.TimePlaneTransform.to_array3d">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.TimePlaneTransform.to_array3d">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_array3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the underlying Array3D object (advanced usage).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span></div>

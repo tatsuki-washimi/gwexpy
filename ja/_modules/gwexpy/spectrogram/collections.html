@@ -40,22 +40,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -102,7 +100,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramList">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList">[ドキュメント]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpectrogramList</span><span class="p">(</span><span class="n">PhaseMethodsMixin</span><span class="p">,</span> <span class="n">UserList</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List of Spectrogram objects.</span>
@@ -138,7 +136,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
 
 <div class="viewcode-block" id="SpectrogramList.append">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.append">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.append">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Spectrogram</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">BaseSpectrogram</span><span class="p">):</span>
@@ -149,14 +147,14 @@
 
 
 <div class="viewcode-block" id="SpectrogramList.extend">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.extend">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.extend">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_items</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SpectrogramList.read">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.read">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.read">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Read spectrograms into the list from HDF5.&quot;&quot;&quot;</span>
         <span class="nb">format</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
@@ -177,7 +175,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramList.write">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.write">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.write">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write list to file.&quot;&quot;&quot;</span>
         <span class="nb">format</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
@@ -198,7 +196,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramList.crop">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.crop">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.crop">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Crop each spectrogram.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
@@ -218,7 +216,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramList.crop_frequencies">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.crop_frequencies">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.crop_frequencies">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">crop_frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Crop frequencies.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
@@ -246,7 +244,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramList.rebin">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.rebin">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.rebin">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Rebin each spectrogram.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
@@ -269,7 +267,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramList.interpolate">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.interpolate">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.interpolate">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Interpolate each spectrogram.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
@@ -291,7 +289,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramList.plot">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.plot">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.plot">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot all spectrograms stacked vertically.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
@@ -301,7 +299,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramList.plot_summary">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.plot_summary">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.plot_summary">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot List as side-by-side Spectrograms and percentile summaries.</span>
@@ -312,7 +310,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramList.to_matrix">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_matrix">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_matrix">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to SpectrogramMatrix (N, Time, Freq).</span>
 
@@ -398,42 +396,42 @@
 
 
 <div class="viewcode-block" id="SpectrogramList.to_torch">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_torch">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_torch">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert each item to torch.Tensor. Returns a list.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">to_torch</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="SpectrogramList.to_tensorflow">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_tensorflow">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_tensorflow">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tensorflow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert each item to tensorflow.Tensor. Returns a list.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">to_tensorflow</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="SpectrogramList.to_jax">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_jax">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_jax">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_jax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert each item to jax.Array. Returns a list.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">to_jax</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="SpectrogramList.to_cupy">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_cupy">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_cupy">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_cupy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert each item to cupy.ndarray. Returns a list.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">to_cupy</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="SpectrogramList.to_dask">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_dask">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_dask">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert each item to dask.array. Returns a list.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">to_dask</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="SpectrogramList.bootstrap">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.bootstrap">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.bootstrap">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimate robust ASD from each spectrogram in the list (returns FrequencySeriesList).&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesList</span>
@@ -445,14 +443,14 @@
 
 
 <div class="viewcode-block" id="SpectrogramList.radian">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.radian">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.radian">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpectrogramList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute phase (in radians) of each spectrogram.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">radian</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="n">unwrap</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="SpectrogramList.degree">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.degree">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.degree">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpectrogramList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute phase (in degrees) of each spectrogram.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="n">unwrap</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span></div>
@@ -461,7 +459,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict">[ドキュメント]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpectrogramDict</span><span class="p">(</span><span class="n">PhaseMethodsMixin</span><span class="p">,</span> <span class="n">UserDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dictionary of Spectrogram objects.</span>
@@ -487,7 +485,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
 
 <div class="viewcode-block" id="SpectrogramDict.update">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.update">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.update">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -504,7 +502,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict.read">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.read">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.read">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Read dictionary from HDF5 file keys -&gt; dict keys.&quot;&quot;&quot;</span>
         <span class="nb">format</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
@@ -523,7 +521,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict.write">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.write">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.write">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write dictionary to file.&quot;&quot;&quot;</span>
         <span class="nb">format</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
@@ -543,7 +541,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict.crop">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.crop">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.crop">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Crop each spectrogram in time.</span>
 
@@ -574,7 +572,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict.crop_frequencies">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.crop_frequencies">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.crop_frequencies">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">crop_frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Crop each spectrogram in frequency.</span>
 
@@ -613,7 +611,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict.rebin">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.rebin">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.rebin">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Rebin each spectrogram to new time/frequency resolution.</span>
 
@@ -649,7 +647,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict.interpolate">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.interpolate">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.interpolate">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Interpolate each spectrogram to new resolution.</span>
 
@@ -685,7 +683,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict.plot">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.plot">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.plot">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot all spectrograms stacked vertically.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
@@ -695,7 +693,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict.plot_summary">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.plot_summary">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.plot_summary">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot Dictionary as side-by-side Spectrograms and percentile summaries.</span>
@@ -706,7 +704,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict.to_matrix">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_matrix">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_matrix">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to SpectrogramMatrix.</span>
 
@@ -795,42 +793,42 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict.to_torch">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_torch">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_torch">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert each item to torch.Tensor. Returns a dict.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to_torch</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
 
 <div class="viewcode-block" id="SpectrogramDict.to_tensorflow">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_tensorflow">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_tensorflow">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tensorflow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert each item to tensorflow.Tensor. Returns a dict.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to_tensorflow</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
 
 <div class="viewcode-block" id="SpectrogramDict.to_jax">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_jax">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_jax">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_jax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert each item to jax.Array. Returns a dict.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to_jax</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
 
 <div class="viewcode-block" id="SpectrogramDict.to_cupy">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_cupy">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_cupy">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_cupy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert each item to cupy.ndarray. Returns a dict.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to_cupy</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
 
 <div class="viewcode-block" id="SpectrogramDict.to_dask">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_dask">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_dask">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert each item to dask.array. Returns a dict.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to_dask</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
 
 <div class="viewcode-block" id="SpectrogramDict.bootstrap">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.bootstrap">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.bootstrap">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimate robust ASD from each spectrogram in the dict (returns FrequencySeriesDict).&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span>
@@ -842,7 +840,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict.radian">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.radian">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.radian">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpectrogramDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute phase (in radians) of each spectrogram.&quot;&quot;&quot;</span>
         <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
@@ -852,7 +850,7 @@
 
 
 <div class="viewcode-block" id="SpectrogramDict.degree">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.degree">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.degree">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpectrogramDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute phase (in degrees) of each spectrogram.&quot;&quot;&quot;</span>
         <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>

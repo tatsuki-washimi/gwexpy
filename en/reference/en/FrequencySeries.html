@@ -42,17 +42,15 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Detailed Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
@@ -60,7 +58,6 @@
 <li class="toctree-l2"><a class="reference internal" href="TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">FrequencySeries</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#methods">Methods</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#dictclass"><code class="docutils literal notranslate"><span class="pre">DictClass</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#abs"><code class="docutils literal notranslate"><span class="pre">abs</span></code></a></li>
 </ul>
 </li>
@@ -434,9 +431,9 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -466,17 +463,10 @@
              
   <section id="frequencyseries">
 <h1>FrequencySeries<a class="headerlink" href="#frequencyseries" title="Link to this heading"></a></h1>
-<p><strong>Inherits from:</strong> RegularityMixin, FittingMixin, StatisticalMethodsMixin, FrequencySeries</p>
+<p><strong>Inherits from:</strong> SignalAnalysisMixin, RegularityMixin, FittingMixin, StatisticalMethodsMixin, BaseFrequencySeries (gwpy.frequencyseries.FrequencySeries)</p>
 <p>Light wrapper of gwpy’s FrequencySeries for compatibility and future extension.</p>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
-<section id="dictclass">
-<h3><code class="docutils literal notranslate"><span class="pre">DictClass</span></code><a class="headerlink" href="#dictclass" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DictClass</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Ordered mapping of <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> objects keyed by label.</p>
-</section>
 <section id="abs">
 <h3><code class="docutils literal notranslate"><span class="pre">abs</span></code><a class="headerlink" href="#abs" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>

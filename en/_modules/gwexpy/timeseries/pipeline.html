@@ -39,22 +39,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -130,7 +128,7 @@
 
 
 <div class="viewcode-block" id="Transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.Transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.Transform">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Transform</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Minimal transform interface for TimeSeries-like objects.</span>
@@ -139,21 +137,21 @@
     <span class="n">supports_inverse</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="Transform.fit">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.Transform.fit">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.Transform.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the transform to the data. Returns self.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
 <div class="viewcode-block" id="Transform.transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.Transform.transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.Transform.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the transform to data. Must be implemented by subclasses.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
 <div class="viewcode-block" id="Transform.fit_transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.Transform.fit_transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.Transform.fit_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit and transform in one step.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -161,7 +159,7 @@
 
 
 <div class="viewcode-block" id="Transform.inverse_transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.Transform.inverse_transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.Transform.inverse_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reverse the transform. Not all transforms support this.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
@@ -172,7 +170,7 @@
 
 
 <div class="viewcode-block" id="Pipeline">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.Pipeline">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.Pipeline">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Pipeline</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sequentially apply a list of transforms.</span>
@@ -194,7 +192,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="Pipeline.fit">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.Pipeline.fit">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.Pipeline.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit all transforms in sequence.&quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">x</span>
@@ -205,7 +203,7 @@
 
 
 <div class="viewcode-block" id="Pipeline.transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.Pipeline.transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.Pipeline.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply all transforms in sequence.&quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">x</span>
@@ -215,7 +213,7 @@
 
 
 <div class="viewcode-block" id="Pipeline.fit_transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.Pipeline.fit_transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.Pipeline.fit_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit and transform in one step.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -223,7 +221,7 @@
 
 
 <div class="viewcode-block" id="Pipeline.inverse_transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.Pipeline.inverse_transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.Pipeline.inverse_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply inverse transforms in reverse order.</span>
 
@@ -249,7 +247,7 @@
 
 
 <div class="viewcode-block" id="ImputeTransform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.ImputeTransform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.ImputeTransform">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ImputeTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Impute missing values using existing lower-level helpers.</span>
@@ -261,7 +259,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
 
 <div class="viewcode-block" id="ImputeTransform.transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.ImputeTransform.transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.ImputeTransform.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">impute_timeseries</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
@@ -277,7 +275,7 @@
 
 
 <div class="viewcode-block" id="StandardizeTransform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.StandardizeTransform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.StandardizeTransform">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StandardizeTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Standardize TimeSeries/Matrix objects with optional robust scaling.</span>
@@ -329,7 +327,7 @@
         <span class="k">return</span> <span class="n">center</span><span class="p">,</span> <span class="n">scale</span>
 
 <div class="viewcode-block" id="StandardizeTransform.fit">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.StandardizeTransform.fit">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.StandardizeTransform.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">data</span><span class="p">,</span> <span class="n">original</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">_to_matrix_from_collection</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">align</span><span class="p">)</span>
@@ -376,7 +374,7 @@
         <span class="k">return</span> <span class="n">new_mat</span>
 
 <div class="viewcode-block" id="StandardizeTransform.transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.StandardizeTransform.transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.StandardizeTransform.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -420,7 +418,7 @@
 
 
 <div class="viewcode-block" id="StandardizeTransform.inverse_transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.StandardizeTransform.inverse_transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.StandardizeTransform.inverse_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;StandardizeTransform has not been fitted.&quot;</span><span class="p">)</span>
@@ -473,7 +471,7 @@
 
 
 <div class="viewcode-block" id="WhitenTransform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.WhitenTransform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.WhitenTransform">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WhitenTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whitening using PCA or ZCA on TimeSeriesMatrix-like data.</span>
@@ -511,7 +509,7 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type for whitening: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="WhitenTransform.fit">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.WhitenTransform.fit">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.WhitenTransform.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">mat_data</span> <span class="o">=</span> <span class="n">x</span>
         <span class="n">original</span> <span class="o">=</span> <span class="kc">None</span>
@@ -534,7 +532,7 @@
 
 
 <div class="viewcode-block" id="WhitenTransform.transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.WhitenTransform.transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.WhitenTransform.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -561,7 +559,7 @@
 
 
 <div class="viewcode-block" id="WhitenTransform.inverse_transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.WhitenTransform.inverse_transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.WhitenTransform.inverse_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;WhitenTransform has not been fitted.&quot;</span><span class="p">)</span>
@@ -584,7 +582,7 @@
 
 
 <div class="viewcode-block" id="PCATransform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.PCATransform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.PCATransform">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PCATransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    PCA wrapper using existing decomposition helpers.</span>
@@ -619,7 +617,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="PCATransform.fit">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.PCATransform.fit">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.PCATransform.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">mat</span><span class="p">,</span> <span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multivariate</span> <span class="k">else</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span><span class="p">):</span>
@@ -632,7 +630,7 @@
 
 
 <div class="viewcode-block" id="PCATransform.transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.PCATransform.transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.PCATransform.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -644,7 +642,7 @@
 
 
 <div class="viewcode-block" id="PCATransform.inverse_transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.PCATransform.inverse_transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.PCATransform.inverse_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;PCATransform has not been fitted.&quot;</span><span class="p">)</span>
@@ -660,7 +658,7 @@
 
 
 <div class="viewcode-block" id="ICATransform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.ICATransform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.ICATransform">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ICATransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ICA wrapper using existing decomposition helpers.</span>
@@ -695,7 +693,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="ICATransform.fit">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.ICATransform.fit">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.ICATransform.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">mat</span><span class="p">,</span> <span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multivariate</span> <span class="k">else</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span><span class="p">):</span>
@@ -708,7 +706,7 @@
 
 
 <div class="viewcode-block" id="ICATransform.transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.ICATransform.transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.ICATransform.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -720,7 +718,7 @@
 
 
 <div class="viewcode-block" id="ICATransform.inverse_transform">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.ICATransform.inverse_transform">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.ICATransform.inverse_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ICATransform has not been fitted.&quot;</span><span class="p">)</span>

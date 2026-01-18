@@ -40,22 +40,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -91,7 +89,7 @@
 
 
 <div class="viewcode-block" id="AxisApiMixin">
-<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.AxisApiMixin">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.AxisApiMixin">[ドキュメント]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AxisApiMixin</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
@@ -117,7 +115,7 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AxisApiMixin.axis">
-<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.AxisApiMixin.axis">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.AxisApiMixin.axis">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">axis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AxisDescriptor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an axis descriptor by index or name.</span>
 
@@ -165,7 +163,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis key must be int or str, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AxisApiMixin.rename_axes">
-<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.AxisApiMixin.rename_axes">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.AxisApiMixin.rename_axes">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rename_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Rename axes using a mapping of old names to new names.</span>
 
@@ -208,7 +206,7 @@
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="AxisApiMixin.isel">
-<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.AxisApiMixin.isel">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.AxisApiMixin.isel">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">isel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indexers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Select by integer indices along specified axes.</span>
 
@@ -239,7 +237,7 @@
 
 
 <div class="viewcode-block" id="AxisApiMixin.sel">
-<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.AxisApiMixin.sel">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.AxisApiMixin.sel">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indexers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Select by coordinate values along specified axes.</span>
 
@@ -276,7 +274,7 @@
 
 
 <div class="viewcode-block" id="AxisApiMixin.swapaxes">
-<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.AxisApiMixin.swapaxes">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.AxisApiMixin.swapaxes">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">swapaxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">):</span>
         <span class="n">idx1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_axis_index</span><span class="p">(</span><span class="n">axis1</span><span class="p">)</span>
         <span class="n">idx2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_axis_index</span><span class="p">(</span><span class="n">axis2</span><span class="p">)</span>
@@ -286,7 +284,7 @@
 
 
 <div class="viewcode-block" id="AxisApiMixin.transpose">
-<a class="viewcode-back" href="../../../api/types.html#gwexpy.types.AxisApiMixin.transpose">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.AxisApiMixin.transpose">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">axes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Permute the dimensions of an array.&quot;&quot;&quot;</span>
         <span class="c1"># Normalize axes</span>

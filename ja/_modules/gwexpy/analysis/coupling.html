@@ -40,22 +40,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -104,12 +102,12 @@
 
 
 <div class="viewcode-block" id="ThresholdStrategy">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.ThresholdStrategy">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.ThresholdStrategy">[ドキュメント]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ThresholdStrategy</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for excess detection strategies.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ThresholdStrategy.check">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.ThresholdStrategy.check">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.ThresholdStrategy.check">[ドキュメント]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -135,7 +133,7 @@
 
 
 <div class="viewcode-block" id="ThresholdStrategy.threshold">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.ThresholdStrategy.threshold">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.ThresholdStrategy.threshold">[ドキュメント]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">threshold</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -151,7 +149,7 @@
 
 
 <div class="viewcode-block" id="RatioThreshold">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.RatioThreshold">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.RatioThreshold">[ドキュメント]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RatioThreshold</span><span class="p">(</span><span class="n">ThresholdStrategy</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if P_inj &gt; ratio * P_bkg_mean.</span>
@@ -169,13 +167,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">=</span> <span class="n">ratio</span>
 
 <div class="viewcode-block" id="RatioThreshold.check">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.RatioThreshold.check">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.RatioThreshold.check">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psd_inj</span><span class="p">,</span> <span class="n">psd_bkg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">psd_inj</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">psd_bkg</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RatioThreshold.threshold">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.RatioThreshold.threshold">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.RatioThreshold.threshold">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psd_inj</span><span class="p">,</span> <span class="n">psd_bkg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">psd_bkg</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span></div>
 </div>
@@ -183,7 +181,7 @@
 
 
 <div class="viewcode-block" id="SigmaThreshold">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.SigmaThreshold">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.SigmaThreshold">[ドキュメント]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SigmaThreshold</span><span class="p">(</span><span class="n">ThresholdStrategy</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if P_inj &gt; P_bkg + sigma * std_error.</span>
@@ -211,7 +209,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
 
 <div class="viewcode-block" id="SigmaThreshold.check">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.SigmaThreshold.check">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.SigmaThreshold.check">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psd_inj</span><span class="p">,</span> <span class="n">psd_bkg</span><span class="p">,</span> <span class="n">n_avg</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">n_avg</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">psd_inj</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -221,7 +219,7 @@
 
 
 <div class="viewcode-block" id="SigmaThreshold.threshold">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.SigmaThreshold.threshold">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.SigmaThreshold.threshold">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psd_inj</span><span class="p">,</span> <span class="n">psd_bkg</span><span class="p">,</span> <span class="n">n_avg</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">n_avg</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">psd_bkg</span><span class="o">.</span><span class="n">value</span>
@@ -232,7 +230,7 @@
 
 
 <div class="viewcode-block" id="PercentileThreshold">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.PercentileThreshold">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.PercentileThreshold">[ドキュメント]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PercentileThreshold</span><span class="p">(</span><span class="n">ThresholdStrategy</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if P_inj &gt; factor * Percentile(P_bkg_segments).</span>
@@ -259,7 +257,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">factor</span> <span class="o">=</span> <span class="n">factor</span>
 
 <div class="viewcode-block" id="PercentileThreshold.check">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.PercentileThreshold.check">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.PercentileThreshold.check">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">psd_inj</span><span class="p">,</span> <span class="n">psd_bkg</span><span class="p">,</span> <span class="n">raw_bkg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
@@ -275,7 +273,7 @@
 
 
 <div class="viewcode-block" id="PercentileThreshold.threshold">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.PercentileThreshold.threshold">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.PercentileThreshold.threshold">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">threshold</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">psd_inj</span><span class="p">,</span> <span class="n">psd_bkg</span><span class="p">,</span> <span class="n">raw_bkg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
@@ -310,7 +308,7 @@
 
 
 <div class="viewcode-block" id="CouplingResult">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.CouplingResult">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult">[ドキュメント]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CouplingResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Result object for a SINGLE Witness -&gt; Target pair.</span>
@@ -351,7 +349,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">xindex</span>
 
 <div class="viewcode-block" id="CouplingResult.plot_cf">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot_cf">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot_cf">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_cf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the Coupling Function and its Upper Limit.&quot;&quot;&quot;</span>
 
@@ -406,7 +404,7 @@
 
 
 <div class="viewcode-block" id="CouplingResult.plot">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a diagnostic plot showing ASDs and the resulting CF.</span>
@@ -744,14 +742,14 @@
 
 
 <div class="viewcode-block" id="CouplingFunctionAnalysis">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.CouplingFunctionAnalysis">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.CouplingFunctionAnalysis">[ドキュメント]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CouplingFunctionAnalysis</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Analysis class to estimate Coupling Functions (CF).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="CouplingFunctionAnalysis.compute">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.CouplingFunctionAnalysis.compute">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.CouplingFunctionAnalysis.compute">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data_inj</span><span class="p">:</span> <span class="n">TimeSeriesDict</span><span class="p">,</span>
@@ -978,7 +976,7 @@
 
 <span class="c1"># Functional interface</span>
 <div class="viewcode-block" id="estimate_coupling">
-<a class="viewcode-back" href="../../../api/analysis.html#gwexpy.analysis.coupling.estimate_coupling">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/analysis.html#gwexpy.analysis.coupling.estimate_coupling">[ドキュメント]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">estimate_coupling</span><span class="p">(</span>
     <span class="n">data_inj</span><span class="p">:</span> <span class="n">TimeSeriesDict</span><span class="p">,</span>
     <span class="n">data_bkg</span><span class="p">:</span> <span class="n">TimeSeriesDict</span><span class="p">,</span>

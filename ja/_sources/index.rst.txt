@@ -6,25 +6,21 @@ analysis utilities for time and frequency series.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Getting Started
+   :caption: Guide
 
-   installation
-   quickstart
-
-.. toctree::
-   :maxdepth: 2
-   :caption: API Reference
-
-   api/index
+   guide/installation
+   guide/quickstart
+   guide/tutorials/index
 
 .. toctree::
    :maxdepth: 2
-   :caption: Detailed Reference
+   :caption: Reference
 
+   reference/api/index
    reference/en/index
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Tutorials
+   :maxdepth: 2
+   :caption: Developers
 
-   tutorials/index
+   developers/index

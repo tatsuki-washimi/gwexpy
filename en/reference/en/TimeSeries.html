@@ -42,21 +42,18 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Detailed Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">TimeSeries</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#methods">Methods</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#dictclass"><code class="docutils literal notranslate"><span class="pre">DictClass</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#abs"><code class="docutils literal notranslate"><span class="pre">abs</span></code></a></li>
 </ul>
 </li>
@@ -786,9 +783,9 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -818,7 +815,7 @@
              
   <section id="timeseries">
 <h1>TimeSeries<a class="headerlink" href="#timeseries" title="Link to this heading"></a></h1>
-<p><strong>Inherits from:</strong> TimeSeriesInteropMixin, TimeSeriesAnalysisMixin, TimeSeriesResamplingMixin, TimeSeriesSignalMixin, SignalAnalysisMixin, TimeSeriesSpectralMixin, StatisticsMixin, FittingMixin, PhaseMethodsMixin, RegularityMixin, TimeSeries</p>
+<p><strong>Inherits from:</strong> TimeSeriesInteropMixin, TimeSeriesAnalysisMixin, TimeSeriesResamplingMixin, TimeSeriesSignalMixin, SignalAnalysisMixin, TimeSeriesSpectralMixin, StatisticsMixin, FittingMixin, PhaseMethodsMixin, RegularityMixin, _LegacyTimeSeries (gwpy.timeseries.TimeSeries)</p>
 <p>Extended TimeSeries with all gwexpy functionality.</p>
 <p>This class combines functionality from multiple modules:</p>
 <ul class="simple">
@@ -831,18 +828,6 @@
 <p>Inherits from gwpy.timeseries.TimeSeries for full compatibility.</p>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
-<section id="dictclass">
-<h3><code class="docutils literal notranslate"><span class="pre">DictClass</span></code><a class="headerlink" href="#dictclass" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DictClass</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Ordered key-value mapping of named <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects</p>
-<p>This object is designed to hold data for many different sources (channels)
-for a single time span.</p>
-<p>The main entry points for this object are the
-:meth:<code class="docutils literal notranslate"><span class="pre">~TimeSeriesDict.read</span></code> and :meth:<code class="docutils literal notranslate"><span class="pre">~TimeSeriesDict.fetch</span></code>
-data access methods.</p>
-</section>
 <section id="abs">
 <h3><code class="docutils literal notranslate"><span class="pre">abs</span></code><a class="headerlink" href="#abs" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>

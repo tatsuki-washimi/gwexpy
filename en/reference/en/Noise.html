@@ -42,17 +42,15 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Detailed Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
@@ -72,13 +70,20 @@
 <li class="toctree-l2"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Plot.html">Plot</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Noise</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy-noise-asd">gwexpy.noise.asd</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#detector-noise-models">Detector Noise Models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#colored-noise-asd">Colored Noise ASD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomagnetic-noise-models">Geomagnetic Noise Models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectral-line-shapes">Spectral Line Shapes</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#gwexpy-noise-wave">gwexpy.noise.wave</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#noise-generators">Noise Generators</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#periodic-waveforms">Periodic Waveforms</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#transient-signals">Transient Signals</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
@@ -94,9 +99,9 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -133,6 +138,91 @@ The <code class="docutils literal notranslate"><span class="pre">gwexpy.noise</s
 <li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.noise.asd</span></code>: Functions that return Amplitude Spectral Density (<code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.noise.wave</span></code>: Functions that return time-series waveforms (<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>)</p></li>
 </ul>
+<section id="gwexpy-noise-asd">
+<h2>gwexpy.noise.asd<a class="headerlink" href="#gwexpy-noise-asd" title="Link to this heading"></a></h2>
+<p>Functions for generating Amplitude Spectral Density. All functions return <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>.</p>
+<section id="detector-noise-models">
+<h3>Detector Noise Models<a class="headerlink" href="#detector-noise-models" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">from_pygwinc(ifo,</span> <span class="pre">*,</span> <span class="pre">quantity='strain',</span> <span class="pre">fmin=10,</span> <span class="pre">fmax=8192,</span> <span class="pre">df=1.0)</span></code></p></td>
+<td><p>Generate ASD from pyGWINC detector noise models (aLIGO, AdV, etc.)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">from_obspy(model,</span> <span class="pre">*,</span> <span class="pre">quantity='displacement',</span> <span class="pre">fmin=0.01,</span> <span class="pre">fmax=100)</span></code></p></td>
+<td><p>Generate ASD from ObsPy seismic noise models (NLNM, NHNM)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="colored-noise-asd">
+<h3>Colored Noise ASD<a class="headerlink" href="#colored-noise-asd" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">power_law(exponent,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">f_ref=1.0,</span> <span class="pre">frequencies=...)</span></code></p></td>
+<td><p>Generate power-law ASD (f^-exponent)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">white_noise(amplitude=1.0,</span> <span class="pre">frequencies=...)</span></code></p></td>
+<td><p>White noise ASD (flat spectrum)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pink_noise(amplitude=1.0,</span> <span class="pre">frequencies=...)</span></code></p></td>
+<td><p>Pink noise ASD (1/f^0.5)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">red_noise(amplitude=1.0,</span> <span class="pre">frequencies=...)</span></code></p></td>
+<td><p>Red/Brownian noise ASD (1/f)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="geomagnetic-noise-models">
+<h3>Geomagnetic Noise Models<a class="headerlink" href="#geomagnetic-noise-models" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">schumann_resonance(harmonics=8,</span> <span class="pre">frequencies=...)</span></code></p></td>
+<td><p>Schumann resonance model (~7.83 Hz and harmonics)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">geomagnetic_background(frequencies=...)</span></code></p></td>
+<td><p>Background geomagnetic noise model</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="spectral-line-shapes">
+<h3>Spectral Line Shapes<a class="headerlink" href="#spectral-line-shapes" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lorentzian_line(center,</span> <span class="pre">width,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">frequencies=...)</span></code></p></td>
+<td><p>Lorentzian line shape</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gaussian_line(center,</span> <span class="pre">sigma,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">frequencies=...)</span></code></p></td>
+<td><p>Gaussian line shape</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">voigt_line(center,</span> <span class="pre">sigma,</span> <span class="pre">gamma,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">frequencies=...)</span></code></p></td>
+<td><p>Voigt profile (convolution of Gaussian and Lorentzian)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
 <section id="gwexpy-noise-wave">
 <h2>gwexpy.noise.wave<a class="headerlink" href="#gwexpy-noise-wave" title="Link to this heading"></a></h2>
 <p>Functions for generating time-series waveforms. All functions return <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.</p>
@@ -217,10 +307,11 @@ The <code class="docutils literal notranslate"><span class="pre">gwexpy.noise</s
 </tbody>
 </table>
 </section>
+</section>
 <section id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h3>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">sine</span><span class="p">,</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">chirp</span><span class="p">,</span> <span class="n">from_asd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.asd</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pygwinc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.asd</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pygwinc</span><span class="p">,</span> <span class="n">schumann_resonance</span>
 
 <span class="c1"># Sine wave</span>
 <span class="n">wave</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
@@ -231,12 +322,14 @@ The <code class="docutils literal notranslate"><span class="pre">gwexpy.noise</s
 <span class="c1"># Chirp (swept sine)</span>
 <span class="n">sweep</span> <span class="o">=</span> <span class="n">chirp</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
-<span class="c1"># Noise from ASD</span>
-<span class="n">asd</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s1">&#39;aLIGO&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mf">1024.0</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="c1"># Detector strain ASD from pyGWINC</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s1">&#39;aLIGO&#39;</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s1">&#39;strain&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mf">1024.0</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
 <span class="n">noise</span> <span class="o">=</span> <span class="n">from_asd</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Schumann resonance model</span>
+<span class="n">sch_asd</span> <span class="o">=</span> <span class="n">schumann_resonance</span><span class="p">(</span><span class="n">harmonics</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
 </section>
 </section>
 

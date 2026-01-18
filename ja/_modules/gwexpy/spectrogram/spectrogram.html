@@ -40,22 +40,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -94,14 +92,14 @@
 
 
 <div class="viewcode-block" id="Spectrogram">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram">[ドキュメント]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Spectrogram</span><span class="p">(</span><span class="n">PhaseMethodsMixin</span><span class="p">,</span> <span class="n">InteropMixin</span><span class="p">,</span> <span class="n">BaseSpectrogram</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extends gwpy.spectrogram.Spectrogram with additional interop methods.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Spectrogram.plot">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.plot">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.plot">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot this Spectrogram. Delegates to gwexpy.plot.Plot.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
@@ -110,7 +108,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.bootstrap">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.bootstrap">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.bootstrap">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_boot</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
@@ -152,7 +150,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.bootstrap_asd">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.bootstrap_asd">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.bootstrap_asd">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap_asd</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_boot</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
@@ -184,7 +182,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.to_th2d">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_th2d">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_th2d">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_th2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to ROOT TH2D.</span>
@@ -195,7 +193,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.to_quantities">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_quantities">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_quantities">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_quantities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to quantities.Quantity (Elephant/Neo compatible).</span>
@@ -206,7 +204,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.from_quantities">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_quantities">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_quantities">[ドキュメント]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_quantities</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -227,7 +225,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.from_root">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_root">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_root">[ドキュメント]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_root</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">return_error</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -239,7 +237,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.to_mne">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_mne">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_mne">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_mne</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to MNE-Python object.</span>
@@ -259,7 +257,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.from_mne">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_mne">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_mne">[ドキュメント]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_mne</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tfr</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -282,7 +280,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.to_obspy">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_obspy">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_obspy">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_obspy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to Obspy Stream.</span>
@@ -297,7 +295,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.from_obspy">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_obspy">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_obspy">[ドキュメント]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_obspy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">stream</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -320,21 +318,21 @@
 
 
 <div class="viewcode-block" id="Spectrogram.imshow">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.imshow">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.imshow">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot using imshow. Inherited from gwpy.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Spectrogram.pcolormesh">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.pcolormesh">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.pcolormesh">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">pcolormesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot using pcolormesh. Inherited from gwpy.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Spectrogram.radian">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.radian">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.radian">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrogram</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the phase of this Spectrogram in radians.</span>
@@ -377,7 +375,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.degree">
-<a class="viewcode-back" href="../../../api/spectrogram.html#gwexpy.spectrogram.Spectrogram.degree">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.degree">[ドキュメント]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrogram</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the phase of this Spectrogram in degrees.</span>

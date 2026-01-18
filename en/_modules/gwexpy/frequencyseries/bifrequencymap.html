@@ -39,22 +39,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -90,7 +88,7 @@
 
 
 <div class="viewcode-block" id="BifrequencyMap">
-<a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BifrequencyMap</span><span class="p">(</span><span class="n">Array2D</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;2つの異なる周波数軸を持つマップ（応答関数や相関行列）クラス。</span>
 
@@ -108,7 +106,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">yindex</span>
 
 <div class="viewcode-block" id="BifrequencyMap.from_points">
-<a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.from_points">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.from_points">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_points</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -134,7 +132,7 @@
 
 
 <div class="viewcode-block" id="BifrequencyMap.propagate">
-<a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.propagate">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.propagate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">propagate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_spectrum</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        入力スペクトルに応答関数を適用し、出力スペクトルを計算します。</span>
@@ -209,7 +207,7 @@
 
 
 <div class="viewcode-block" id="BifrequencyMap.inverse">
-<a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.inverse">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.inverse">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BifrequencyMap&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the (pseudo-)inverse of the BifrequencyMap.</span>
@@ -299,7 +297,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">data_str</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">indent</span><span class="si">}{</span><span class="n">meta_str</span><span class="si">}</span><span class="s2">)&quot;</span>
 
 <div class="viewcode-block" id="BifrequencyMap.plot">
-<a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.plot">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;imshow&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots the data.</span>
 
@@ -420,7 +418,7 @@
 
 
 <div class="viewcode-block" id="BifrequencyMap.get_slice">
-<a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.get_slice">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.get_slice">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">at</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;f1&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract a 1D slice (FrequencySeries) at a specific frequency on one axis.</span>
@@ -477,7 +475,7 @@
 
 
 <div class="viewcode-block" id="BifrequencyMap.diagonal">
-<a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.diagonal">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.diagonal">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">diagonal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates statistics along the diagonal axis (f2 - f1).</span>
@@ -612,7 +610,7 @@
 
 
 <div class="viewcode-block" id="BifrequencyMap.convolute">
-<a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.convolute">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.convolute">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">convolute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_spectrum</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convolutes the map with an input spectrum (integration along f1).</span>
@@ -678,7 +676,7 @@
 
 
 <div class="viewcode-block" id="BifrequencyMap.plot_lines">
-<a class="viewcode-back" href="../../../api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.plot_lines">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.plot_lines">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_lines</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">xaxis</span><span class="o">=</span><span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;f2&quot;</span><span class="p">,</span> <span class="n">num_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>

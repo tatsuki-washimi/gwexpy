@@ -1,20 +1,13 @@
 # FrequencySeries
 
-**Inherits from:** RegularityMixin, FittingMixin, StatisticalMethodsMixin, FrequencySeries
+**Inherits from:** SignalAnalysisMixin, RegularityMixin, FittingMixin, StatisticalMethodsMixin, BaseFrequencySeries (gwpy.frequencyseries.FrequencySeries)
 
 Light wrapper of gwpy's FrequencySeries for compatibility and future extension.
 
 ## Methods
 
-### `DictClass`
-
-```python
-DictClass(*args: 'Any', **kwargs: 'Any')
-```
-
-Ordered mapping of `FrequencySeries` objects keyed by label.
-
 ### `abs`
+
 
 ```python
 abs(self, axis=None, **kwargs)

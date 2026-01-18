@@ -39,22 +39,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Detailed Reference</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -127,7 +125,7 @@
 
 
 <div class="viewcode-block" id="TimeSeries">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TimeSeries</span><span class="p">(</span>
     <span class="n">TimeSeriesInteropMixin</span><span class="p">,</span>  <span class="c1"># Interoperability (highest priority)</span>
     <span class="n">TimeSeriesAnalysisMixin</span><span class="p">,</span>  <span class="c1"># Analysis</span>
@@ -162,7 +160,7 @@
         <span class="p">}</span>
 
 <div class="viewcode-block" id="TimeSeries.plot">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.plot">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plot</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot this TimeSeries. Delegates to gwexpy.plot.Plot.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
@@ -200,7 +198,7 @@
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="TimeSeries.tail">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.tail">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.tail">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the last `n` samples of this series.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -212,7 +210,7 @@
 
 
 <div class="viewcode-block" id="TimeSeries.crop">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.crop">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.crop">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
@@ -239,7 +237,7 @@
 
 
 <div class="viewcode-block" id="TimeSeries.append">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.append">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.append">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">other</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">|</span> <span class="n">GwpyTimeSeries</span><span class="p">,</span>
@@ -270,7 +268,7 @@
 
 
 <div class="viewcode-block" id="TimeSeries.find_peaks">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.find_peaks">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.find_peaks">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_peaks</span><span class="p">(</span>  <span class="c1"># type: ignore[override]</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">height</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">|</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -359,7 +357,7 @@
 
 
 <div class="viewcode-block" id="TimeSeries.to_simpeg">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.to_simpeg">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.to_simpeg">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_simpeg</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">location</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -391,7 +389,7 @@
 
 
 <div class="viewcode-block" id="TimeSeries.from_simpeg">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.from_simpeg">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.from_simpeg">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_simpeg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -412,7 +410,7 @@
 
 
 <div class="viewcode-block" id="TimeSeries.from_control">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.from_control">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.from_control">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_control</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span> <span class="o">|</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -440,7 +438,7 @@
     <span class="c1"># =========================================================================</span>
 
 <div class="viewcode-block" id="TimeSeries.arima">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.arima">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.arima">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">arima</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">order</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
@@ -479,7 +477,7 @@
 
 
 <div class="viewcode-block" id="TimeSeries.ar">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.ar">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.ar">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">ar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fit an AutoRegressive AR(p) model.</span>
@@ -489,7 +487,7 @@
 
 
 <div class="viewcode-block" id="TimeSeries.ma">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.ma">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.ma">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">ma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fit a Moving Average MA(q) model.</span>
@@ -499,7 +497,7 @@
 
 
 <div class="viewcode-block" id="TimeSeries.arma">
-<a class="viewcode-back" href="../../../api/timeseries.html#gwexpy.timeseries.TimeSeries.arma">[docs]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.arma">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">arma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fit an ARMA(p, q) model.</span>
