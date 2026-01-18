@@ -73,7 +73,13 @@
 <li class="toctree-l2"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Plot.html">Plot</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Noise</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#from-asd"><code class="docutils literal notranslate"><span class="pre">from_asd</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy-noise-wave">gwexpy.noise.wave</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#noise-generators">Noise Generators</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#periodic-waveforms">Periodic Waveforms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transient-signals">Transient Signals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
@@ -122,20 +128,116 @@
   <section id="noise">
 <h1>Noise<a class="headerlink" href="#noise" title="Link to this heading"></a></h1>
 <p>Utilities for detector and environmental noise models, including ASD helpers
-and time-domain synthesis.</p>
-<section id="from-asd">
-<h2><code class="docutils literal notranslate"><span class="pre">from_asd</span></code><a class="headerlink" href="#from-asd" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">from_asd</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span>
+and time-domain synthesis.
+The <code class="docutils literal notranslate"><span class="pre">gwexpy.noise</span></code> module is organized into two submodules:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.noise.asd</span></code>: Functions that return Amplitude Spectral Density (<code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.noise.wave</span></code>: Functions that return time-series waveforms (<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>)</p></li>
+</ul>
+<section id="gwexpy-noise-wave">
+<h2>gwexpy.noise.wave<a class="headerlink" href="#gwexpy-noise-wave" title="Link to this heading"></a></h2>
+<p>Functions for generating time-series waveforms. All functions return <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.</p>
+<section id="noise-generators">
+<h3>Noise Generators<a class="headerlink" href="#noise-generators" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gaussian(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">std=1.0,</span> <span class="pre">mean=0.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Gaussian (normal) white noise</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uniform(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">low=-1.0,</span> <span class="pre">high=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Uniform white noise</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">colored(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">exponent,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Power-law colored noise</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">white_noise(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>White noise (exponent=0)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pink_noise(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Pink noise (1/f^0.5 spectrum)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">red_noise(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Red/Brownian noise (1/f spectrum)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">from_asd(asd,</span> <span class="pre">duration,</span> <span class="pre">sample_rate,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Generate colored noise from ASD</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="periodic-waveforms">
+<h3>Periodic Waveforms<a class="headerlink" href="#periodic-waveforms" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sine(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">frequency,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Sine wave</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">square(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">frequency,</span> <span class="pre">duty=0.5,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Square wave</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sawtooth(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">frequency,</span> <span class="pre">width=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Sawtooth wave</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">triangle(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">frequency,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Triangle wave</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">chirp(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">f0,</span> <span class="pre">f1,</span> <span class="pre">method='linear',</span> <span class="pre">...)</span></code></p></td>
+<td><p>Swept-frequency cosine (chirp)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="transient-signals">
+<h3>Transient Signals<a class="headerlink" href="#transient-signals" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">step(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">t_step=0.0,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Step (Heaviside) function</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">impulse(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">t_impulse=0.0,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Impulse signal</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">exponential(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">tau,</span> <span class="pre">decay=True,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Exponential (decay/growth)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">sine</span><span class="p">,</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">chirp</span><span class="p">,</span> <span class="n">from_asd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.asd</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pygwinc</span>
+
+<span class="c1"># Sine wave</span>
+<span class="n">wave</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+
+<span class="c1"># Gaussian noise</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="c1"># Chirp (swept sine)</span>
+<span class="n">sweep</span> <span class="o">=</span> <span class="n">chirp</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Noise from ASD</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s1">&#39;aLIGO&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mf">1024.0</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">from_asd</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Generate a colored noise <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> from an ASD (<code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>).</p>
-<p>Notes:</p>
-<ul class="simple">
-<li><p>Returns a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> (not a NumPy array).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">channel</span></code> are propagated from the input ASD.</p></li>
-<li><p>Output unit is <code class="docutils literal notranslate"><span class="pre">asd.unit</span> <span class="pre">*</span> <span class="pre">sqrt(Hz)</span></code>.</p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">t0</span></code> to set the start time.</p></li>
-</ul>
+</section>
 </section>
 </section>
 

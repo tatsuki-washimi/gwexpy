@@ -85,20 +85,116 @@
              
   <section id="noise">
 <h1>Noise<a class="headerlink" href="#noise" title="Link to this heading"></a></h1>
-<p>検出器・環境ノイズのモデル化とASDからの波形生成のユーティリティです。</p>
-<section id="from-asd">
-<h2><code class="docutils literal notranslate"><span class="pre">from_asd</span></code><a class="headerlink" href="#from-asd" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">from_asd</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span>
+<p>検出器・環境ノイズのモデル化とASDからの波形生成のユーティリティです。
+<code class="docutils literal notranslate"><span class="pre">gwexpy.noise</span></code> は以下の2つのサブモジュールで構成されます：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.noise.asd</span></code>: 振幅スペクトル密度(ASD)を生成する関数 (<code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> を返す)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.noise.wave</span></code>: 時系列波形を生成する関数 (<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を返す)</p></li>
+</ul>
+<section id="gwexpy-noise-wave">
+<h2>gwexpy.noise.wave<a class="headerlink" href="#gwexpy-noise-wave" title="Link to this heading"></a></h2>
+<p>時系列波形を生成する関数群です。すべての関数は <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を返します。</p>
+<section id="id1">
+<h3>ノイズ生成<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>関数</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gaussian(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">std=1.0,</span> <span class="pre">mean=0.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>ガウス（正規）分布のホワイトノイズ</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uniform(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">low=-1.0,</span> <span class="pre">high=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>一様分布のホワイトノイズ</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">colored(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">exponent,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>べき乗則に従う色付きノイズ</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">white_noise(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>ホワイトノイズ（exponent=0）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pink_noise(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>ピンクノイズ（1/f^0.5 スペクトル）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">red_noise(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>レッド/ブラウニアンノイズ（1/f スペクトル）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">from_asd(asd,</span> <span class="pre">duration,</span> <span class="pre">sample_rate,</span> <span class="pre">...)</span></code></p></td>
+<td><p>ASD から色付きノイズを生成</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id2">
+<h3>周期波形<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>関数</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sine(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">frequency,</span> <span class="pre">...)</span></code></p></td>
+<td><p>サイン波</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">square(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">frequency,</span> <span class="pre">duty=0.5,</span> <span class="pre">...)</span></code></p></td>
+<td><p>矩形波</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sawtooth(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">frequency,</span> <span class="pre">width=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>のこぎり波</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">triangle(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">frequency,</span> <span class="pre">...)</span></code></p></td>
+<td><p>三角波</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">chirp(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">f0,</span> <span class="pre">f1,</span> <span class="pre">method='linear',</span> <span class="pre">...)</span></code></p></td>
+<td><p>スウェプトサイン（周波数掃引信号）</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id3">
+<h3>過渡信号<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>関数</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">step(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">t_step=0.0,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>ステップ（ヘビサイド）関数</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">impulse(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">t_impulse=0.0,</span> <span class="pre">amplitude=1.0,</span> <span class="pre">...)</span></code></p></td>
+<td><p>インパルス信号</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">exponential(duration,</span> <span class="pre">sample_rate,</span> <span class="pre">tau,</span> <span class="pre">decay=True,</span> <span class="pre">...)</span></code></p></td>
+<td><p>指数関数（減衰/増幅）</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id4">
+<h3>使用例<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">sine</span><span class="p">,</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">chirp</span><span class="p">,</span> <span class="n">from_asd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.asd</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pygwinc</span>
+
+<span class="c1"># サイン波</span>
+<span class="n">wave</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+
+<span class="c1"># ガウスノイズ</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="c1"># スウェプトサイン</span>
+<span class="n">sweep</span> <span class="o">=</span> <span class="n">chirp</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># ASDからノイズ生成</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s1">&#39;aLIGO&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mf">1024.0</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">from_asd</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>ASD (<code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>) から色付きノイズの <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を生成します。</p>
-<p>注意:</p>
-<ul class="simple">
-<li><p>戻り値は <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>（NumPy 配列ではありません）。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> と <code class="docutils literal notranslate"><span class="pre">channel</span></code> は入力ASDから引き継がれます。</p></li>
-<li><p>出力の unit は <code class="docutils literal notranslate"><span class="pre">asd.unit</span> <span class="pre">*</span> <span class="pre">sqrt(Hz)</span></code> です。</p></li>
-<li><p>開始時刻は <code class="docutils literal notranslate"><span class="pre">t0</span></code> で指定できます。</p></li>
-</ul>
+</section>
 </section>
 </section>
 

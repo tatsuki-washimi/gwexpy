@@ -83,14 +83,33 @@
            <div itemprop="articleBody">
              
   <h1>gwexpy.noise.wave のソースコード</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;gwexpy.noise.wavegen - Generate time-series waveforms from spectral data.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;gwexpy.noise.wave - Generate time-series waveforms.</span>
+
+<span class="sd">This module provides functions for generating common time-series waveforms</span>
+<span class="sd">including noise, periodic signals, and transient signals.</span>
+
+<span class="sd">All functions return gwexpy.TimeSeries objects.</span>
+
+<span class="sd">Submodule Structure</span>
+<span class="sd">-------------------</span>
+<span class="sd">- `gwexpy.noise.asd`: ASD (FrequencySeries) を返す関数</span>
+<span class="sd">- `gwexpy.noise.wave`: 時系列波形 (TimeSeries) を返す関数</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; from gwexpy.noise.wave import sine, gaussian, chirp</span>
+<span class="sd">&gt;&gt;&gt; sine_wave = sine(duration=1.0, sample_rate=1024, frequency=10.0)</span>
+<span class="sd">&gt;&gt;&gt; noise = gaussian(duration=1.0, sample_rate=1024, std=0.1)</span>
+<span class="sd">&gt;&gt;&gt; sweep = chirp(duration=1.0, sample_rate=1024, f0=10, f1=100)</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span> <span class="k">as</span> <span class="n">scipy_signal</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.random</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
@@ -99,15 +118,825 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">..timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_timeseries</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper to create a TimeSeries from data.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+    <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span>
+        <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_times</span><span class="p">(</span><span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate time array for given duration and sample rate.&quot;&quot;&quot;</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">/</span> <span class="n">sample_rate</span>
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># Noise Generators</span>
+<span class="c1"># =============================================================================</span>
+
+
+<div class="viewcode-block" id="gaussian">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.gaussian">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">gaussian</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">mean</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">rng</span><span class="p">:</span> <span class="s2">&quot;Generator | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate Gaussian (normal) white noise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration of the output in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    std : float, optional</span>
+<span class="sd">        Standard deviation of the noise. Default is 1.0.</span>
+<span class="sd">    mean : float, optional</span>
+<span class="sd">        Mean of the noise. Default is 0.0.</span>
+<span class="sd">    t0 : float, optional</span>
+<span class="sd">        Start time. Default is 0.0.</span>
+<span class="sd">    rng : numpy.random.Generator, optional</span>
+<span class="sd">        Random number generator. If None, creates a new one.</span>
+<span class="sd">    unit : astropy.units.Unit, optional</span>
+<span class="sd">        Unit of the output.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name for the TimeSeries.</span>
+<span class="sd">    channel : str, optional</span>
+<span class="sd">        Channel name.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Gaussian noise time-series.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import gaussian</span>
+<span class="sd">    &gt;&gt;&gt; noise = gaussian(duration=1.0, sample_rate=1024, std=0.1)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
+
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">std</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_make_timeseries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="uniform">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.uniform">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">uniform</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">low</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">high</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">rng</span><span class="p">:</span> <span class="s2">&quot;Generator | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate uniform white noise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration of the output in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    low : float, optional</span>
+<span class="sd">        Lower bound of the uniform distribution. Default is -1.0.</span>
+<span class="sd">    high : float, optional</span>
+<span class="sd">        Upper bound of the uniform distribution. Default is 1.0.</span>
+<span class="sd">    t0 : float, optional</span>
+<span class="sd">        Start time. Default is 0.0.</span>
+<span class="sd">    rng : numpy.random.Generator, optional</span>
+<span class="sd">        Random number generator.</span>
+<span class="sd">    unit : astropy.units.Unit, optional</span>
+<span class="sd">        Unit of the output.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name for the TimeSeries.</span>
+<span class="sd">    channel : str, optional</span>
+<span class="sd">        Channel name.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Uniform noise time-series.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
+
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_make_timeseries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="colored">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.colored">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">colored</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">exponent</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">f_ref</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">rng</span><span class="p">:</span> <span class="s2">&quot;Generator | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate colored (power-law) noise.</span>
+
+<span class="sd">    The noise follows a power-law spectrum: ASD(f) ~ f^(-exponent).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration of the output in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    exponent : float</span>
+<span class="sd">        Power-law exponent in ASD. Common values:</span>
+<span class="sd">        - 0: white noise</span>
+<span class="sd">        - 0.5: pink noise (1/f^0.5)</span>
+<span class="sd">        - 1: red/Brownian noise (1/f)</span>
+<span class="sd">    amplitude : float, optional</span>
+<span class="sd">        Amplitude at the reference frequency. Default is 1.0.</span>
+<span class="sd">    f_ref : float, optional</span>
+<span class="sd">        Reference frequency in Hz. Default is 1.0.</span>
+<span class="sd">    t0 : float, optional</span>
+<span class="sd">        Start time. Default is 0.0.</span>
+<span class="sd">    rng : numpy.random.Generator, optional</span>
+<span class="sd">        Random number generator.</span>
+<span class="sd">    unit : astropy.units.Unit, optional</span>
+<span class="sd">        Unit of the output.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name for the TimeSeries.</span>
+<span class="sd">    channel : str, optional</span>
+<span class="sd">        Channel name.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Colored noise time-series.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import colored</span>
+<span class="sd">    &gt;&gt;&gt; pink = colored(duration=1.0, sample_rate=1024, exponent=0.5)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.asd</span><span class="w"> </span><span class="kn">import</span> <span class="n">power_law</span>
+
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
+
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">fft_freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">sample_rate</span><span class="p">)</span>
+
+    <span class="c1"># Generate power-law ASD</span>
+    <span class="n">asd</span> <span class="o">=</span> <span class="n">power_law</span><span class="p">(</span>
+        <span class="n">exponent</span><span class="o">=</span><span class="n">exponent</span><span class="p">,</span>
+        <span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span><span class="p">,</span>
+        <span class="n">f_ref</span><span class="o">=</span><span class="n">f_ref</span><span class="p">,</span>
+        <span class="n">frequencies</span><span class="o">=</span><span class="n">fft_freqs</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Handle DC component</span>
+    <span class="n">asd_vals</span> <span class="o">=</span> <span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">fft_freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">asd_vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">asd_vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">asd_vals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">amplitude</span>
+
+    <span class="c1"># Convert ASD to FFT amplitudes</span>
+    <span class="n">psd</span> <span class="o">=</span> <span class="n">asd_vals</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">psd</span> <span class="o">*</span> <span class="n">n_samples</span> <span class="o">*</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Generate random phases</span>
+    <span class="n">phases</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">fft_freqs</span><span class="p">))</span>
+    <span class="n">fft_coeffs</span> <span class="o">=</span> <span class="n">amplitudes</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">phases</span><span class="p">)</span>
+
+    <span class="c1"># DC and Nyquist must be real</span>
+    <span class="n">fft_coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">fft_coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">n_samples</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">fft_coeffs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">fft_coeffs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># Inverse FFT</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">fft_coeffs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_make_timeseries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="white_noise">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.white_noise">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">white_noise</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate white noise (flat spectrum).</span>
+
+<span class="sd">    Shortcut for colored(exponent=0).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    amplitude : float, optional</span>
+<span class="sd">        Noise amplitude. Default is 1.0.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional arguments passed to colored().</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        White noise time-series.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">colored</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="pink_noise">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.pink_noise">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">pink_noise</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate pink noise (1/f^0.5 spectrum).</span>
+
+<span class="sd">    Shortcut for colored(exponent=0.5).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    amplitude : float, optional</span>
+<span class="sd">        Noise amplitude at reference frequency. Default is 1.0.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional arguments passed to colored().</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Pink noise time-series.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">colored</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="red_noise">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.red_noise">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">red_noise</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate red/Brownian noise (1/f spectrum).</span>
+
+<span class="sd">    Shortcut for colored(exponent=1.0).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    amplitude : float, optional</span>
+<span class="sd">        Noise amplitude at reference frequency. Default is 1.0.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional arguments passed to colored().</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Red noise time-series.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">colored</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># Periodic Waveforms</span>
+<span class="c1"># =============================================================================</span>
+
+
+<div class="viewcode-block" id="sine">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.sine">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sine</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a sine wave.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    frequency : float</span>
+<span class="sd">        Frequency in Hz.</span>
+<span class="sd">    amplitude : float, optional</span>
+<span class="sd">        Amplitude. Default is 1.0.</span>
+<span class="sd">    phase : float, optional</span>
+<span class="sd">        Initial phase in radians. Default is 0.0.</span>
+<span class="sd">    t0 : float, optional</span>
+<span class="sd">        Start time. Default is 0.0.</span>
+<span class="sd">    unit : astropy.units.Unit, optional</span>
+<span class="sd">        Unit of the output.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name for the TimeSeries.</span>
+<span class="sd">    channel : str, optional</span>
+<span class="sd">        Channel name.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Sine wave time-series.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import sine</span>
+<span class="sd">    &gt;&gt;&gt; wave = sine(duration=1.0, sample_rate=1024, frequency=10.0)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">_get_times</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">frequency</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">phase</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_make_timeseries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="square">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.square">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">square</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">duty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a square wave.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    frequency : float</span>
+<span class="sd">        Frequency in Hz.</span>
+<span class="sd">    amplitude : float, optional</span>
+<span class="sd">        Amplitude. Default is 1.0.</span>
+<span class="sd">    phase : float, optional</span>
+<span class="sd">        Initial phase in radians. Default is 0.0.</span>
+<span class="sd">    duty : float, optional</span>
+<span class="sd">        Duty cycle (0 to 1). Default is 0.5.</span>
+<span class="sd">    t0 : float, optional</span>
+<span class="sd">        Start time. Default is 0.0.</span>
+<span class="sd">    unit : astropy.units.Unit, optional</span>
+<span class="sd">        Unit of the output.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name for the TimeSeries.</span>
+<span class="sd">    channel : str, optional</span>
+<span class="sd">        Channel name.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Square wave time-series.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">_get_times</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">scipy_signal</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">frequency</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">phase</span><span class="p">,</span> <span class="n">duty</span><span class="o">=</span><span class="n">duty</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_make_timeseries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="sawtooth">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.sawtooth">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sawtooth</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a sawtooth wave.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    frequency : float</span>
+<span class="sd">        Frequency in Hz.</span>
+<span class="sd">    amplitude : float, optional</span>
+<span class="sd">        Amplitude. Default is 1.0.</span>
+<span class="sd">    phase : float, optional</span>
+<span class="sd">        Initial phase in radians. Default is 0.0.</span>
+<span class="sd">    width : float, optional</span>
+<span class="sd">        Width parameter (0 to 1). 1 gives rising sawtooth, 0 gives falling.</span>
+<span class="sd">        Default is 1.0.</span>
+<span class="sd">    t0 : float, optional</span>
+<span class="sd">        Start time. Default is 0.0.</span>
+<span class="sd">    unit : astropy.units.Unit, optional</span>
+<span class="sd">        Unit of the output.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name for the TimeSeries.</span>
+<span class="sd">    channel : str, optional</span>
+<span class="sd">        Channel name.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Sawtooth wave time-series.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">_get_times</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">scipy_signal</span><span class="o">.</span><span class="n">sawtooth</span><span class="p">(</span>
+        <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">frequency</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">phase</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_make_timeseries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="triangle">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.triangle">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">triangle</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a triangle wave.</span>
+
+<span class="sd">    This is a sawtooth with width=0.5.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    frequency : float</span>
+<span class="sd">        Frequency in Hz.</span>
+<span class="sd">    amplitude : float, optional</span>
+<span class="sd">        Amplitude. Default is 1.0.</span>
+<span class="sd">    phase : float, optional</span>
+<span class="sd">        Initial phase in radians. Default is 0.0.</span>
+<span class="sd">    t0 : float, optional</span>
+<span class="sd">        Start time. Default is 0.0.</span>
+<span class="sd">    unit : astropy.units.Unit, optional</span>
+<span class="sd">        Unit of the output.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name for the TimeSeries.</span>
+<span class="sd">    channel : str, optional</span>
+<span class="sd">        Channel name.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Triangle wave time-series.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">sawtooth</span><span class="p">(</span>
+        <span class="n">duration</span><span class="p">,</span>
+        <span class="n">sample_rate</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">,</span>
+        <span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span><span class="p">,</span>
+        <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="chirp">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.chirp">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">chirp</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">f0</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">f1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">t1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a swept-frequency cosine (chirp) signal.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    f0 : float</span>
+<span class="sd">        Initial frequency in Hz.</span>
+<span class="sd">    f1 : float</span>
+<span class="sd">        Final frequency in Hz (at time t1).</span>
+<span class="sd">    t1 : float, optional</span>
+<span class="sd">        Time at which f1 is reached. Default is duration.</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        Frequency sweep method: &#39;linear&#39;, &#39;quadratic&#39;, &#39;logarithmic&#39;, &#39;hyperbolic&#39;.</span>
+<span class="sd">        Default is &#39;linear&#39;.</span>
+<span class="sd">    amplitude : float, optional</span>
+<span class="sd">        Amplitude. Default is 1.0.</span>
+<span class="sd">    phase : float, optional</span>
+<span class="sd">        Initial phase in radians. Default is 0.0.</span>
+<span class="sd">    t0 : float, optional</span>
+<span class="sd">        Start time. Default is 0.0.</span>
+<span class="sd">    unit : astropy.units.Unit, optional</span>
+<span class="sd">        Unit of the output.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name for the TimeSeries.</span>
+<span class="sd">    channel : str, optional</span>
+<span class="sd">        Channel name.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Chirp signal time-series.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import chirp</span>
+<span class="sd">    &gt;&gt;&gt; sweep = chirp(duration=1.0, sample_rate=1024, f0=10, f1=100)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">t1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">duration</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">_get_times</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">scipy_signal</span><span class="o">.</span><span class="n">chirp</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">phase</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">_make_timeseries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># Transient Signals</span>
+<span class="c1"># =============================================================================</span>
+
+
+<div class="viewcode-block" id="step">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.step">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">t_step</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a step (Heaviside) function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    t_step : float, optional</span>
+<span class="sd">        Time of the step (relative to t0). Default is 0.0.</span>
+<span class="sd">    amplitude : float, optional</span>
+<span class="sd">        Amplitude of the step. Default is 1.0.</span>
+<span class="sd">    t0 : float, optional</span>
+<span class="sd">        Start time. Default is 0.0.</span>
+<span class="sd">    unit : astropy.units.Unit, optional</span>
+<span class="sd">        Unit of the output.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name for the TimeSeries.</span>
+<span class="sd">    channel : str, optional</span>
+<span class="sd">        Channel name.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Step function time-series.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import step</span>
+<span class="sd">    &gt;&gt;&gt; s = step(duration=1.0, sample_rate=1024, t_step=0.5)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">_get_times</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t</span> <span class="o">&gt;=</span> <span class="n">t_step</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_make_timeseries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="impulse">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.impulse">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">impulse</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">t_impulse</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate an impulse (delta-like) signal.</span>
+
+<span class="sd">    The impulse is placed at the sample closest to t_impulse.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    t_impulse : float, optional</span>
+<span class="sd">        Time of the impulse (relative to t0). Default is 0.0.</span>
+<span class="sd">    amplitude : float, optional</span>
+<span class="sd">        Amplitude of the impulse. Default is 1.0.</span>
+<span class="sd">    t0 : float, optional</span>
+<span class="sd">        Start time. Default is 0.0.</span>
+<span class="sd">    unit : astropy.units.Unit, optional</span>
+<span class="sd">        Unit of the output.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name for the TimeSeries.</span>
+<span class="sd">    channel : str, optional</span>
+<span class="sd">        Channel name.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Impulse signal time-series.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import impulse</span>
+<span class="sd">    &gt;&gt;&gt; i = impulse(duration=1.0, sample_rate=1024, t_impulse=0.5)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+
+    <span class="c1"># Find nearest sample</span>
+    <span class="n">sample_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">t_impulse</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">))</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">sample_idx</span> <span class="o">&lt;</span> <span class="n">n_samples</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">sample_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">amplitude</span>
+
+    <span class="k">return</span> <span class="n">_make_timeseries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="exponential">
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.exponential">[ドキュメント]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">exponential</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">t_start</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">decay</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate an exponential signal.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration in seconds.</span>
+<span class="sd">    sample_rate : float</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    tau : float</span>
+<span class="sd">        Time constant in seconds.</span>
+<span class="sd">    amplitude : float, optional</span>
+<span class="sd">        Initial amplitude. Default is 1.0.</span>
+<span class="sd">    t_start : float, optional</span>
+<span class="sd">        Start time of the exponential (relative to t0). Default is 0.0.</span>
+<span class="sd">    decay : bool, optional</span>
+<span class="sd">        If True, decay (exp(-t/tau)). If False, growth (exp(+t/tau)).</span>
+<span class="sd">        Default is True.</span>
+<span class="sd">    t0 : float, optional</span>
+<span class="sd">        Start time. Default is 0.0.</span>
+<span class="sd">    unit : astropy.units.Unit, optional</span>
+<span class="sd">        Unit of the output.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name for the TimeSeries.</span>
+<span class="sd">    channel : str, optional</span>
+<span class="sd">        Channel name.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        Exponential signal time-series.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import exponential</span>
+<span class="sd">    &gt;&gt;&gt; decay_signal = exponential(duration=1.0, sample_rate=1024, tau=0.2)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">_get_times</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">t_rel</span> <span class="o">=</span> <span class="n">t</span> <span class="o">-</span> <span class="n">t_start</span>
+
+    <span class="k">if</span> <span class="n">decay</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t_rel</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t_rel</span> <span class="o">/</span> <span class="n">tau</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t_rel</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">t_rel</span> <span class="o">/</span> <span class="n">tau</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_make_timeseries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># ASD-based waveform generation (original function)</span>
+<span class="c1"># =============================================================================</span>
+
+
 <div class="viewcode-block" id="from_asd">
-<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.from_asd">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../api/noise.html#gwexpy.noise.wave.from_asd">[ドキュメント]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_asd</span><span class="p">(</span>
-    <span class="n">asd</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">asd</span><span class="p">:</span> <span class="s2">&quot;FrequencySeries&quot;</span><span class="p">,</span>
     <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="n">rng</span><span class="p">:</span> <span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
+    <span class="n">rng</span><span class="p">:</span> <span class="s2">&quot;Generator | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate colored noise TimeSeries from an ASD (Amplitude Spectral Density).</span>
 
@@ -135,7 +964,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; from gwexpy.noise import from_pygwinc, from_asd</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.noise.asd import from_pygwinc</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import from_asd</span>
 <span class="sd">    &gt;&gt;&gt; asd = from_pygwinc(&#39;aLIGO&#39;, fmin=4.0, fmax=1024.0, df=0.01)</span>
 <span class="sd">    &gt;&gt;&gt; noise = from_asd(asd, duration=128, sample_rate=2048, t0=0)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -183,17 +1013,31 @@
     <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">channel</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="kn">from</span><span class="w"> </span><span class="nn">..timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+    <span class="k">return</span> <span class="n">_make_timeseries</span><span class="p">(</span><span class="n">noise</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">ts_unit</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
 
-    <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span>
-        <span class="n">noise</span><span class="p">,</span>
-        <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span>
-        <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
-        <span class="n">unit</span><span class="o">=</span><span class="n">ts_unit</span><span class="p">,</span>
-        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
-    <span class="p">)</span></div>
 
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># ASD-based</span>
+    <span class="s2">&quot;from_asd&quot;</span><span class="p">,</span>
+    <span class="c1"># Noise generators</span>
+    <span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uniform&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;colored&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;white_noise&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pink_noise&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;red_noise&quot;</span><span class="p">,</span>
+    <span class="c1"># Periodic waveforms</span>
+    <span class="s2">&quot;sine&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;square&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sawtooth&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;triangle&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;chirp&quot;</span><span class="p">,</span>
+    <span class="c1"># Transient signals</span>
+    <span class="s2">&quot;step&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;impulse&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;exponential&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 </pre></div>
 
            </div>
