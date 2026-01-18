@@ -86,8 +86,9 @@
   <section id="timeseriesmatrix">
 <h1>TimeSeriesMatrix<a class="headerlink" href="#timeseriesmatrix" title="Link to this heading"></a></h1>
 <p><strong>継承元:</strong> SeriesMatrix</p>
-<p>複数の TimeSeries オブジェクトを保持する行列コンテナです。
-<code class="docutils literal notranslate"><span class="pre">dt</span></code>, <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">times</span></code> などのエイリアスを提供し、FFT を介して FrequencySeriesMatrix を構築できます。</p>
+<p>共通の時間軸を共有する複数の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> オブジェクトを保持する <strong>2次元行列コンテナ</strong> です。</p>
+<p>このクラスは、各要素が <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> データストリームに対応する 2次元配列（行 x 列）を表します。重要な点として、<strong>行列内のすべての要素は同一の時間配列（同じ <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, サンプル数）を共有</strong> します。これは、グリッド構造に配置された多変量時系列データのように振る舞います。</p>
+<p><code class="docutils literal notranslate"><span class="pre">dt</span></code>, <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">times</span></code> などのエイリアスを提供し、FFT を介して <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> を構築できます。</p>
 <section id="id1">
 <h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <section id="metadatamatrix">
