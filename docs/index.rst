@@ -18,6 +18,7 @@ analysis utilities for time and frequency series.
 
    reference/api/index
    reference/en/index
+   reference/ja/index
 
 .. toctree::
    :maxdepth: 2
