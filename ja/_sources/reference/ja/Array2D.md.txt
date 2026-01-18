@@ -1,103 +1,67 @@
 # Array2D
 
-**継承元:** AxisApiMixin, Array2D
+**継承元:** AxisApiMixin, StatisticalMethodsMixin, Array2D
 
-統合された軸 API を備えた 2次元配列です。
+統一された軸 API を持つ2次元配列。
 
-## メソッド
+## 主要プロパティ
 
-### `T`
+| プロパティ | 説明 |
+|-----------|------|
+| `dx` | X 軸のサンプル間隔 |
+| `dy` | Y 軸のサンプル間隔 |
+| `x0` / `y0` | 開始値 |
+| `T` | 転置された配列のビュー |
+| `epoch` | GPS エポック |
+| `name` | データセット名 |
+| `unit` | 物理単位 |
+| `axes` | 各次元の AxisDescriptor のタプル |
+| `axis_names` | 軸名のタプル |
 
-転置された配列のビュー。
+## 軸 API
 
-### `abs`
+| メソッド | 説明 |
+|---------|------|
+| `axis(key)` | インデックスまたは名前で軸記述子を取得 |
+| `isel(indexers)` | 指定された軸に沿って整数インデックスで選択 |
 
-要素ごとの絶対値。
+## 統計
 
-### `append`
+| メソッド | 説明 |
+|---------|------|
+| `mean()` / `std()` / `max()` / `min()` / `median()` | 統計量計算（ignore_nan オプション付き） |
+| `abs()` | 要素ごとの絶対値 |
 
-シリーズの末尾に接続します。
+## データ操作
 
-### `axes`
+| メソッド | 説明 |
+|---------|------|
+| `crop()` | X 軸の指定範囲にクロップ |
+| `append()` / `prepend()` | 別のシリーズを接続 |
+| `pad()` | 新しいサイズにパディング |
+| `diff()` | N 次離散差分を計算 |
+| `inject()` | 互換性のある2つの Series を共有 X 軸値に沿って加算 |
+| `copy()` | 配列のコピーを返す |
+| `flatten()` | 1次元に平坦化（Quantity を返す） |
 
-各次元の AxisDescriptor オブジェクトのタプル。各記述子には軸名とインデックス値が含まれます。
+## 互換性チェック
 
-### `axis`
+| メソッド | 説明 |
+|---------|------|
+| `is_compatible()` | メタデータ互換性をチェック |
+| `is_contiguous()` | 連続性をチェック（1: 末尾接続可、-1: 先頭接続可、0: 不連続） |
 
-```python
-axis(self, key: Union[int, str]) -> gwexpy.types.axis.AxisDescriptor
-```
+## 可視化
 
-インデックスまたは名前で軸記述子を取得します。
+| メソッド | 説明 |
+|---------|------|
+| `plot()` | データをプロット |
+| `imshow()` | matplotlib.axes.Axes.imshow でプロット |
+| `pcolormesh()` | matplotlib.axes.Axes.pcolormesh でプロット |
 
-### `axis_names`
+## ユーティリティ
 
-すべての軸の名前のタプル。
-
-### `copy`, `crop`, `diff`
-
-コピー、切り抜き、離散差分。
-
-### `dx`, `dy`
-
-x 軸および y 軸のサンプル間隔。
-
-### `flatten`
-
-配列を 1次元に平坦化したコピーを返します。単位情報のみ保持され、インデックス情報は削除されます。
-
-### `imshow`, `pcolormesh`
-
-matplotlib を使用したプロット。*(gwpy から継承)*
-
-### `plot`
-
-```python
-plot(self, method='imshow', **kwargs)
-```
-
-2次元データをプロットします。
-
-### `rename_axes`
-
-```python
-rename_axes(self, mapping: Dict[str, str], *, inplace=False)
-```
-
-軸の名前を変更します。
-
-### `sel`
-
-```python
-sel(self, indexers=None, *, method='nearest', **kwargs)
-```
-
-軸名と座標値を指定してサンプルを選択します。
-
-### `swapaxes`
-
-軸を入れ替えたビューを返します。
-
-### `transpose`
-
-次元の順序を入れ替えます。
-
-### `unit`
-
-データの物理単位。
-
-### `value_at`
-
-指定した座標 (x, y) における値を返します。
-
-### `write`, `read`
-
-ファイルの入出力。
-
-### `x0`, `xindex`, `xspan`, `xunit`
-
-x 軸のプロパティ。
-
-### `y0`, `yindex`, `yspan`, `yunit`
-
-y 軸のプロパティ。
+| メソッド | 説明 |
+|---------|------|
+| `override_unit()` | 単位を強制的にリセット（to() の使用推奨） |
+| `fit()` | フィッティング |

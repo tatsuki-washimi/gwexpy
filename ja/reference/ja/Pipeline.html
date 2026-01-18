@@ -84,7 +84,7 @@
   <section id="pipeline">
 <h1>Pipeline<a class="headerlink" href="#pipeline" title="Link to this heading"></a></h1>
 <p><strong>継承元:</strong> object</p>
-<p>一連の変換（Transform）を順次適用します。</p>
+<p>変換のリストを順次適用します。</p>
 <section id="id1">
 <h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <section id="init">
@@ -92,41 +92,41 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">gwexpy</span><span class="o">.</span><span class="n">timeseries</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">Transform</span><span class="p">]])</span>
 </pre></div>
 </div>
-<p>名前付きの変換ステップでパイプラインを初期化します。</p>
-<p><strong>パラメータ:</strong></p>
-<ul class="simple">
-<li><p><strong>steps</strong> : (名前, Transform) のタプルのリスト
-適用する一連の変換。</p></li>
-</ul>
+<p>名前付き変換ステップでパイプラインを初期化します。</p>
 </section>
+</section>
+<section id="id2">
+<h2>パラメータ<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>steps : list of (name, Transform) tuples
+適用する変換のシーケンス。</p>
 <section id="fit">
 <h3><code class="docutils literal notranslate"><span class="pre">fit</span></code><a class="headerlink" href="#fit" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>すべての変換を順番に適合させます。</p>
+<p>すべての変換を順番にフィットします。</p>
 </section>
 <section id="fit-transform">
 <h3><code class="docutils literal notranslate"><span class="pre">fit_transform</span></code><a class="headerlink" href="#fit-transform" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>適合と変換を一つのステップで実行します。</p>
+<p>フィットと変換を一度に実行します。</p>
 </section>
 <section id="inverse-transform">
 <h3><code class="docutils literal notranslate"><span class="pre">inverse_transform</span></code><a class="headerlink" href="#inverse-transform" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>逆変換を逆の順番で適用します。</p>
-<p><strong>パラメータ:</strong></p>
-<ul class="simple">
-<li><p><strong>y</strong> : データ
-変換されたデータ。</p></li>
-<li><p><strong>strict</strong> : bool, オプション
-Trueの場合、いずれかのステップが逆変換をサポートしていない場合にエラーをスローします。</p></li>
-</ul>
+<p>逆変換を逆順で適用します。</p>
 </section>
+</section>
+<section id="id3">
+<h2>パラメータ<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>y : data
+変換されたデータ。
+strict : bool, optional
+True の場合、逆変換をサポートしないステップがあるとエラーを発生させます。</p>
 <section id="transform">
 <h3><code class="docutils literal notranslate"><span class="pre">transform</span></code><a class="headerlink" href="#transform" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>

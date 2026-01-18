@@ -83,11 +83,11 @@
              
   <section id="spectrogramlist">
 <h1>SpectrogramList<a class="headerlink" href="#spectrogramlist" title="Link to this heading"></a></h1>
-<p><strong>継承元:</strong> UserList</p>
-<p><code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> オブジェクトのリスト。
-TimeSeriesList と同様ですが、2D の Spectrogram を対象としています。</p>
+<p><strong>継承元:</strong> PhaseMethodsMixin, UserList</p>
+<p>Spectrogram オブジェクトのリスト。
+参考: TimeSeriesList に似ていますが、2D Spectrogram 用です。</p>
 <p>.. note::
-Spectrogram オブジェクトはメモリ上で非常に大きくなる可能性があります。
+Spectrogram オブジェクトはメモリを大量に消費する可能性があります。
 ディープコピーを避けるため、可能な限り <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code> を使用してください。</p>
 <section id="id1">
 <h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
@@ -96,16 +96,22 @@ Spectrogram オブジェクトはメモリ上で非常に大きくなる可能�
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initlist</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>初期化。</p>
-<p><em>( <code class="docutils literal notranslate"><span class="pre">MutableSequence</span></code> から継承)</em></p>
+<p>self を初期化します。正確なシグネチャは help(type(self)) を参照してください。</p>
+<p><em>(PhaseMethodsMixin から継承)</em></p>
 </section>
-<section id="append">
-<h3><code class="docutils literal notranslate"><span class="pre">append</span></code><a class="headerlink" href="#append" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+<section id="angle">
+<h3><code class="docutils literal notranslate"><span class="pre">angle</span></code><a class="headerlink" href="#angle" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">deg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
 </pre></div>
 </div>
-<p>リストの末尾にアイテムを追加します。</p>
-<p><em>( <code class="docutils literal notranslate"><span class="pre">MutableSequence</span></code> から継承)</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">phase(unwrap=unwrap,</span> <span class="pre">deg=deg)</span></code> のエイリアス。</p>
+</section>
+<section id="bootstrap-asd">
+<h3><code class="docutils literal notranslate"><span class="pre">bootstrap_asd</span></code><a class="headerlink" href="#bootstrap-asd" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstrap_asd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>リスト内の各スペクトログラムからロバスト ASD を推定します（FrequencySeriesList を返します）。</p>
 </section>
 <section id="crop">
 <h3><code class="docutils literal notranslate"><span class="pre">crop</span></code><a class="headerlink" href="#crop" title="Link to this heading"></a></h3>
@@ -119,15 +125,14 @@ Spectrogram オブジェクトはメモリ上で非常に大きくなる可能�
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crop_frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>周波数軸でクロップします。</p>
+<p>周波数をクロップします。</p>
 </section>
-<section id="extend">
-<h3><code class="docutils literal notranslate"><span class="pre">extend</span></code><a class="headerlink" href="#extend" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+<section id="degree">
+<h3><code class="docutils literal notranslate"><span class="pre">degree</span></code><a class="headerlink" href="#degree" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;&#39;SpectrogramList&#39;&quot;</span>
 </pre></div>
 </div>
-<p>反復可能オブジェクトの要素を追加してリストを拡張します。</p>
-<p><em>( <code class="docutils literal notranslate"><span class="pre">MutableSequence</span></code> から継承)</em></p>
+<p>各スペクトログラムの位相（度単位）を計算します。</p>
 </section>
 <section id="interpolate">
 <h3><code class="docutils literal notranslate"><span class="pre">interpolate</span></code><a class="headerlink" href="#interpolate" title="Link to this heading"></a></h3>
@@ -136,19 +141,45 @@ Spectrogram オブジェクトはメモリ上で非常に大きくなる可能�
 </div>
 <p>各スペクトログラムを補間します。</p>
 </section>
+<section id="phase">
+<h3><code class="docutils literal notranslate"><span class="pre">phase</span></code><a class="headerlink" href="#phase" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">deg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+</pre></div>
+</div>
+<p>データの位相を計算します。</p>
+</section>
+</section>
+<section id="id2">
+<h2>パラメータ<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>unwrap : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
+<code class="docutils literal notranslate"><span class="pre">True</span></code> の場合、不連続性を除去するために位相をアンラップします。デフォルトは <code class="docutils literal notranslate"><span class="pre">False</span></code>。
+deg : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
+<code class="docutils literal notranslate"><span class="pre">True</span></code> の場合、位相を度で返します。デフォルトは <code class="docutils literal notranslate"><span class="pre">False</span></code>（ラジアン）。</p>
+</section>
+<section id="id3">
+<h2>戻り値<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Series</span></code> or <code class="docutils literal notranslate"><span class="pre">Matrix</span></code> or <code class="docutils literal notranslate"><span class="pre">Collection</span></code>
+データの位相。</p>
 <section id="plot">
 <h3><code class="docutils literal notranslate"><span class="pre">plot</span></code><a class="headerlink" href="#plot" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>すべてのスペクトログラムを垂直方向に並べてプロットします。</p>
+<p>すべてのスペクトログラムを縦に積み重ねてプロットします。</p>
 </section>
-<section id="read">
-<h3><code class="docutils literal notranslate"><span class="pre">read</span></code><a class="headerlink" href="#read" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<section id="plot-summary">
+<h3><code class="docutils literal notranslate"><span class="pre">plot_summary</span></code><a class="headerlink" href="#plot-summary" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>HDF5からスペクトログラムをリストに読み込みます。</p>
+<p>リストをスペクトログラムとパーセンタイルサマリーを並べてプロットします。</p>
+</section>
+<section id="radian">
+<h3><code class="docutils literal notranslate"><span class="pre">radian</span></code><a class="headerlink" href="#radian" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;&#39;SpectrogramList&#39;&quot;</span>
+</pre></div>
+</div>
+<p>各スペクトログラムの位相（ラジアン単位）を計算します。</p>
 </section>
 <section id="rebin">
 <h3><code class="docutils literal notranslate"><span class="pre">rebin</span></code><a class="headerlink" href="#rebin" title="Link to this heading"></a></h3>
@@ -157,13 +188,6 @@ Spectrogram オブジェクトはメモリ上で非常に大きくなる可能�
 </div>
 <p>各スペクトログラムをリビンします。</p>
 </section>
-<section id="to-cupy">
-<h3><code class="docutils literal notranslate"><span class="pre">to_cupy</span></code><a class="headerlink" href="#to-cupy" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_cupy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>各スペクトログラムを CuPy 配列に変換します。リストを返します。</p>
-</section>
 <section id="to-matrix">
 <h3><code class="docutils literal notranslate"><span class="pre">to_matrix</span></code><a class="headerlink" href="#to-matrix" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -171,19 +195,16 @@ Spectrogram オブジェクトはメモリ上で非常に大きくなる可能�
 </div>
 <p>SpectrogramMatrix (N, Time, Freq) に変換します。</p>
 </section>
-<section id="to-torch">
-<h3><code class="docutils literal notranslate"><span class="pre">to_torch</span></code><a class="headerlink" href="#to-torch" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>各スペクトログラムを PyTorch テンソルに変換します。リストを返します。</p>
+<section id="to-cupy-to-dask-to-jax-to-tensorflow-to-torch">
+<h3><code class="docutils literal notranslate"><span class="pre">to_cupy</span></code> / <code class="docutils literal notranslate"><span class="pre">to_dask</span></code> / <code class="docutils literal notranslate"><span class="pre">to_jax</span></code> / <code class="docutils literal notranslate"><span class="pre">to_tensorflow</span></code> / <code class="docutils literal notranslate"><span class="pre">to_torch</span></code><a class="headerlink" href="#to-cupy-to-dask-to-jax-to-tensorflow-to-torch" title="Link to this heading"></a></h3>
+<p>各アイテムを対応するフレームワークのテンソル/配列に変換します。リストを返します。</p>
 </section>
 <section id="write">
 <h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>リストをファイルに書き出します。</p>
+<p>リストをファイルに書き込みます。</p>
 </section>
 </section>
 </section>

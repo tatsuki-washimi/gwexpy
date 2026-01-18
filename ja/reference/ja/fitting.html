@@ -87,7 +87,7 @@
 <section id="id1">
 <h2>概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><strong>最小二乗フィッティング</strong>: 実数・複素数データ対応</p></li>
+<li><p><strong>最小二乗フィッティング</strong>: 実数・複素数データに対応</p></li>
 <li><p><strong>GLS (一般化最小二乗法)</strong>: 共分散行列を考慮したフィッティング</p></li>
 <li><p><strong>MCMC</strong>: emcee を使ったベイズ推定</p></li>
 <li><p><strong>統合パイプライン</strong>: ブートストラップ → GLS → MCMC のワンライナー API</p></li>
@@ -95,7 +95,7 @@
 </section>
 <hr class="docutils" />
 <section id="id2">
-<h2>クラス・関数一覧<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<h2>クラスと関数<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <section id="id3">
 <h3>メイン関数<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
@@ -106,7 +106,7 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fit_series()</span></code></p></td>
-<td><p>Series オブジェクトのフィッティング</p></td>
+<td><p>Series オブジェクトをフィット</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fit_bootstrap_spectrum()</span></code></p></td>
 <td><p>統合スペクトル解析パイプライン</p></td>
@@ -513,7 +513,7 @@
 <td><p>A, alpha</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">damped_oscillation</span></code></p></td>
-<td><p>A <em>exp(-t/τ)</em> cos(2πft + φ)</p></td>
+<td><p>A * exp(-t/τ) * cos(2πft + φ)</p></td>
 <td><p>A, tau, f, phi</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pol0</span></code> ~ <code class="docutils literal notranslate"><span class="pre">pol9</span></code></p></td>
@@ -538,6 +538,20 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">iminuit</span></code>: 必須</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcee</span></code>: MCMC 機能に必要</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">corner</span></code>: コーナープロットに必要</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id17">
+<h2>単位とモデルのセマンティクス<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code> はデータとモデル間の単位の整合性を保証します：</p>
+<ul class="simple">
+<li><p><strong>単位の伝播</strong>: <code class="docutils literal notranslate"><span class="pre">result.model(x)</span></code> でモデルを評価すると、入力データの単位が自動的に適用されます。</p>
+<ul>
+<li><p>入力 <code class="docutils literal notranslate"><span class="pre">x</span></code> が Hz 単位の場合、モデルは周波数単位で評価されます。</p></li>
+<li><p>出力 <code class="docutils literal notranslate"><span class="pre">y</span></code> はフィットしたデータの単位を保持します（例：m, V²/Hz）。</p></li>
+</ul>
+</li>
+<li><p><strong>パラメータアクセス</strong>: <code class="docutils literal notranslate"><span class="pre">result.params['name']</span></code> は <code class="docutils literal notranslate"><span class="pre">.value</span></code> と <code class="docutils literal notranslate"><span class="pre">.error</span></code> 属性を持つオブジェクトを返し、数値と統計的不確かさを分離します。</p></li>
 </ul>
 </section>
 </section>

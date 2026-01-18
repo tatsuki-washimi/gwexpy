@@ -1,87 +1,140 @@
 # TimeSeriesDict
 
-**継承元:** TimeSeriesDict
+**継承元:** PhaseMethodsMixin, TimeSeriesDict
 
-`TimeSeries` オブジェクトをチャンネル名をキーとして保持するマッピングコンテナです。
+TimeSeries オブジェクトの辞書。
 
 ## メソッド
 
-### `abs`, `angle`
+### `EntryClass`
 
-各要素の絶対値と位相角。
+TimeSeries を作成するためのエントリクラス。
+
+### `analytic_signal` / `hilbert`
+
+各アイテムに解析信号/ヒルベルト変換を適用します。
+
+### `angle`
+
+```python
+angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+`phase(unwrap=unwrap, deg=deg)` のエイリアス。
 
 ### `append`
 
-各要素の末尾にデータを追加します（インプレース）。
+```python
+append(self, other, copy=True, **kwargs) -> 'TimeSeriesDict'
+```
 
-### `asd`
+TimeSeries のマッピングまたは単一の TimeSeries を各アイテムに追加します。
 
-各要素の ASD（振幅スペクトル密度）を計算し、FrequencySeriesDict を返します。
+### `asd` / `psd`
 
-### `bandpass`, `highpass`, `lowpass`, `notch`, `zpk`
+```python
+asd(self, *args, **kwargs)
+psd(self, *args, **kwargs)
+```
 
-各要素に指定されたフィルタを適用します。
+辞書内の各 TimeSeries の ASD/PSD を計算します。FrequencySeriesDict を返します。
+
+### `coherence` / `coherence_matrix`
+
+コヒーレンスまたはコヒーレンス行列を計算します。
 
 ### `crop`
 
-各要素を特定の時間範囲で切り抜きます。
+```python
+crop(self, start=None, end=None, copy=False) -> 'TimeSeriesDict'
+```
 
-### `detrend`, `whiten`
+辞書内の各 TimeSeries をクロップします。gwexpy.time.to_gps がサポートするあらゆる時刻形式を受け付けます。
 
-各要素のトレンド除去およびホワイトニング。
+### `csd` / `csd_matrix`
+
+クロススペクトル密度/CSD行列を計算します。
+
+### `decimate` / `resample`
+
+各 TimeSeries をデシメート/リサンプルします。
+
+### `degree` / `radian`
+
+各アイテムの瞬時位相（度/ラジアン）を計算します。
+
+### `detrend`
+
+各 TimeSeries のトレンドを除去します。
+
+### `envelope`
+
+各アイテムのエンベロープを計算します。
 
 ### `fft`
 
-各要素の FFT を計算し、FrequencySeriesDict を返します。
+各 TimeSeries に FFT を適用します。FrequencySeriesDict を返します。
+
+### `filter` / `notch` / `gate`
+
+各 TimeSeries にフィルタ/ノッチ/ゲートを適用します。
+
+### `from_control` / `from_mne` / `from_pandas` / `from_polars`
+
+python-control、MNE、pandas、polars から TimeSeriesDict を作成します。
+
+### `heterodyne` / `baseband` / `mix_down` / `lock_in`
+
+各アイテムに信号処理メソッドを適用します。
+
+### `hht`
+
+各アイテムに Hilbert-Huang 変換を適用します。
+
+### `ica` / `pca`
+
+チャンネル間で ICA/PCA 分解を実行します。
 
 ### `impute`
 
-欠損値（NaN）の補完。
+各アイテムの欠損データを補完します。
 
-### `pca`
+### `instantaneous_frequency` / `instantaneous_phase`
 
-チャンネル間で PCA 分解を実行します。
+各アイテムの瞬時周波数/位相を計算します。
 
-### `plot`, `step`
-
-プロットまたは階段グラフを作成します。チャンネル名がデフォルトの凡例（label）として使用されます。
-
-### `psd`, `spectrogram`, `q_transform`
-
-各要素の PSD、スペクトログラム、または Q 変換を計算し、対応する Dict クラス（FrequencySeriesDict, SpectrogramDict）を返します。
-
-### `read`
+### `phase`
 
 ```python
-read(source, *args, **kwargs)
+phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
 ```
 
-指定されたソースから複数のチャンネルを読み込み TimeSeriesDict を返します。
+データの位相を計算します。
 
-### `resample`
+### `plot` / `plot_all`
 
-各要素を再サンプリングします。インプレース操作です。
+すべてのシリーズをプロットします。gwexpy.plot.Plot に委譲します。
 
-### `rms`, `std`
+### `q_transform`
 
-各要素の RMS または標準偏差を計算し、pandas.Series を返します。
+各 TimeSeries の Q 変換を計算します。SpectrogramDict を返します。
 
-### `rolling_mean`, `rolling_median`, `rolling_std`, `rolling_min`, `rolling_max`
+### `spectrogram` / `spectrogram2`
 
-各要素に移動窓計算（ローリング統計）を適用します。
+各 TimeSeries のスペクトログラムを計算します。
 
 ### `to_matrix`
 
-この辞書を TimeSeriesMatrix に変換します（時間アライメントが自動的に行われます）。
+TimeSeriesMatrix に変換します。
 
-### `to_pandas`, `to_polars`
+### `to_pandas` / `to_polars` / `to_mne`
 
-各ライブラリの DataFrame に変換します。
-
-### `to_tmultigraph`
-
-ROOT の TMultiGraph オブジェクトに変換します。
+pandas DataFrame / polars DataFrame / MNE Raw に変換します。
 
 ### `write`
 
-TimeSeriesDict をファイル（GWF, HDF5 など）に書き出します。
+```python
+write(self, target: str, *args: Any, **kwargs: Any) -> Any
+```
+
+TimeSeriesDict をファイル（HDF5, ROOT など）に書き込みます。

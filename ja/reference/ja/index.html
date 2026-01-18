@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Transform &mdash; gwexpy  ドキュメント</title>
+  <title>詳細リファレンス &mdash; gwexpy  ドキュメント</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
@@ -71,9 +71,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Transform</li>
+      <li class="breadcrumb-item active">詳細リファレンス</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/reference/ja/Transform.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/reference/ja/index.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -81,41 +81,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="transform">
-<h1>Transform<a class="headerlink" href="#transform" title="Link to this heading"></a></h1>
-<p><strong>継承元:</strong> object</p>
-<p>TimeSeries ライクなオブジェクト用の最小限の変換インターフェース。</p>
-<section id="id1">
-<h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<section id="fit">
-<h3><code class="docutils literal notranslate"><span class="pre">fit</span></code><a class="headerlink" href="#fit" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-</pre></div>
+  <section id="id1">
+<h1>詳細リファレンス<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TimeSeriesList.html">TimeSeriesList</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FrequencySeries.html">FrequencySeries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FrequencySeriesDict.html">FrequencySeriesDict</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FrequencySeriesList.html">FrequencySeriesList</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FrequencySeriesMatrix.html">FrequencySeriesMatrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SpectrogramDict.html">SpectrogramDict</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SpectrogramList.html">SpectrogramList</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SpectrogramMatrix.html">SpectrogramMatrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Array2D.html">Array2D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plot.html">Plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Noise.html">Noise</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ImputeTransform.html">ImputeTransform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StandardizeTransform.html">StandardizeTransform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="WhitenTransform.html">WhitenTransform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PCATransform.html">PCATransform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fitting.html">gwexpy.fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Spectral.html">スペクトル推定</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
+</ul>
 </div>
-<p>データに変換をフィットします。self を返します。</p>
-</section>
-<section id="fit-transform">
-<h3><code class="docutils literal notranslate"><span class="pre">fit_transform</span></code><a class="headerlink" href="#fit-transform" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>フィットと変換を一度に実行します。</p>
-</section>
-<section id="inverse-transform">
-<h3><code class="docutils literal notranslate"><span class="pre">inverse_transform</span></code><a class="headerlink" href="#inverse-transform" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>変換を逆適用します。すべての変換がこれをサポートしているわけではありません。</p>
-</section>
-<section id="id2">
-<h3><code class="docutils literal notranslate"><span class="pre">transform</span></code><a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>データに変換を適用します。サブクラスで実装する必要があります。</p>
-</section>
-</section>
 </section>
 
 

@@ -1,175 +1,67 @@
 # FrequencySeriesMatrix
 
-**継承元:** SeriesMatrix
-
-複数の FrequencySeries オブジェクトを保持する行列コンテナです。
-SeriesMatrix を継承しており、インデックスでアクセスすると FrequencySeries インスタンスを返します。
-
-## メソッド
-
-### `MetaDataMatrix`
-
-各要素のメタデータを含むメタデータ行列。
-
-### `N_samples`
-
-x軸方向のサンプル数。
-
-### `T`
-
-転置された配列のビュー。`self.transpose()` と同じです。
-
-### `abs`
-
-```python
-abs(self)
-```
-
-要素ごとの絶対値（振幅）を計算します。
-
-### `angle`
-
-```python
-angle(self, deg: bool = False)
-```
-
-要素ごとの位相角を計算します。
-
-### `append`
-
-```python
-append(self, other, inplace=True, pad=None, gap=None, resize=True)
-```
-
-サンプル軸方向に別の行列を追加します。
-
-### `apply_response`
-
-```python
-apply_response(self, response, inplace=False)
-```
-
-複素周波数応答を行列に適用します。GWpy にはない拡張メソッドで、複素フィルタリングや較正（キャリブレーション）をサポートします。
-
-**パラメータ:**
-- **response**: self.frequencies とアライメントされた複素周波数応答配列。
-
-### `astype`
-
-```python
-astype(self, dtype, copy=True)
-```
-
-行列データを指定された型にキャストします。
-
-### `channels`
-
-各要素のチャンネル識別子の 2D 配列。
-
-### `col_index`, `col_keys`
-
-列インデックスの取得とすべての列キーの取得。
-
-### `copy`
-
-ディープコピーを作成します。
-
-### `crop`
-
-```python
-crop(self, start=None, end=None, copy=False)
-```
-
-指定された範囲のサンプル軸で行列を切り抜きます。
-
-### `dagger`
-
-行列の随伴行列（エルミート共役 A†）。
-
-### `det`
-
-各サンプル点における行列の行列式を計算します。
-
-### `df`
-
-周波数間隔 (dx)。
-
-### `diagonal`
-
-対角要素を抽出します。
-
-### `diff`
-
-サンプル軸方向に離散差分を計算します。
-
-### `f0`
-
-開始周波数 (x0)。
-
-### `filter`
-
-```python
-filter(self, *filt, **kwargs)
-```
-
-FrequencySeriesMatrix にフィルタを適用します（振幅のみの応答）。複素応答を適用する場合は `apply_response()` を使用してください。
-
-### `frequencies`
-
-周波数配列 (xindex)。
-
-### `ifft`
-
-```python
-ifft(self)
-```
-
-この周波数ドメイン行列の逆FFTを計算し、TimeSeriesMatrix を返します。
-
-### `imag`, `real`
-
-虚部と実部。
-
-### `inv`
-
-逆行列を計算します。
-
-### `is_compatible`, `is_contiguous`
-
-互換性と連続性のチェック。
-
-### `loc`
-
-ラベルベースのインデクサ。
-
-### `names`
-
-各要素の名称の 2D 配列。
-
-### `pad`
-
-サンプル軸をパディングします。
-
-### `plot`
-
-プロットを作成します。
-
-### `read`, `write`
-
-ファイルの読み込みと書き出し。
-
-### `units`
-
-各要素の単位。
-
-### `update`
-
-サイズを変更せずに行列を更新します（ローリングバッファ）。
-
-### `value`
-
-基となるデータ値の numpy 配列 (3D)。
-
-### `x0`, `xindex`, `xspan`, `xunit`
-
-x 軸（周波数軸）のプロパティ。
+**継承元:** FrequencySeriesMatrixCoreMixin, FrequencySeriesMatrixAnalysisMixin, SeriesMatrix
+
+複数の FrequencySeries オブジェクト用のマトリックスコンテナ。
+
+SeriesMatrix を継承し、インデックス参照時に FrequencySeries インスタンスを返します。
+
+## 主要プロパティ
+
+| プロパティ | 説明 |
+|-----------|------|
+| `df` | 周波数間隔 |
+| `f0` | 開始周波数 |
+| `frequencies` | 周波数配列 |
+| `N_samples` | サンプル数 |
+| `channel_names` | 要素名のフラットなリスト |
+
+## スペクトル変換
+
+| メソッド | 説明 |
+|---------|------|
+| `ifft()` | 逆FFT。TimeSeriesMatrix を返す |
+| `filter()` | GWpy 互換のフィルタ適用（振幅応答のみ） |
+| `apply_response()` | 複素周波数応答の適用 |
+| `smooth()` | 周波数軸に沿った平滑化 |
+
+## 線形代数
+
+| メソッド | 説明 |
+|---------|------|
+| `det()` | 各サンプル点での行列式 |
+| `inv()` | 各サンプル点での逆行列 |
+| `trace()` | 対角要素の和 |
+| `schur()` | シュア補行列 |
+| `diagonal()` | 対角要素の抽出 |
+
+## 統計
+
+| メソッド | 説明 |
+|---------|------|
+| `mean()` / `std()` / `max()` / `min()` / `median()` / `rms()` | 統計量計算 |
+
+## 変換・相互運用
+
+| メソッド | 説明 |
+|---------|------|
+| `to_pandas()` | pandas DataFrame に変換 |
+| `to_dict()` / `to_list()` | FrequencySeriesDict / FrequencySeriesList に変換 |
+| `to_torch()` / `to_tensorflow()` / `to_jax()` / `to_cupy()` | ML フレームワークへ変換 |
+
+## 入出力
+
+| メソッド | 説明 |
+|---------|------|
+| `read()` | ファイルからマトリックスを読み込む |
+| `write()` | マトリックスをファイルに書き込む |
+| `to_hdf5()` / `to_zarr()` | HDF5/Zarr 形式で保存 |
+
+## データ操作
+
+| メソッド | 説明 |
+|---------|------|
+| `crop()` | 指定範囲でクロップ |
+| `append()` / `prepend()` | サンプル軸に沿って別のマトリックスを追加 |
+| `interpolate()` | 新しいサンプル軸に補間 |
+| `pad()` | サンプル軸に沿ってパディング |

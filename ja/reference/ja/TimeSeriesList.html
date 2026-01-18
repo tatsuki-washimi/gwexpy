@@ -83,78 +83,161 @@
              
   <section id="timeserieslist">
 <h1>TimeSeriesList<a class="headerlink" href="#timeserieslist" title="Link to this heading"></a></h1>
-<p><strong>継承元:</strong> UserList</p>
-<p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> オブジェクトのリストです。</p>
+<p><strong>継承元:</strong> PhaseMethodsMixin, TimeSeriesList</p>
+<p>TimeSeries オブジェクトのリスト。</p>
 <section id="id1">
 <h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <section id="init">
 <h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initlist</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">items</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>TimeSeriesList を初期化します。</p>
+<p>新しいリストを初期化します。</p>
 </section>
-<section id="asd">
-<h3><code class="docutils literal notranslate"><span class="pre">asd</span></code><a class="headerlink" href="#asd" title="Link to this heading"></a></h3>
-<p>各要素の ASD（振幅スペクトル密度）を計算し、FrequencySeriesList を返します。</p>
+<section id="entryclass">
+<h3><code class="docutils literal notranslate"><span class="pre">EntryClass</span></code><a class="headerlink" href="#entryclass" title="Link to this heading"></a></h3>
+<p>TimeSeries を作成するためのエントリクラス。</p>
 </section>
-<section id="bandpass-highpass-lowpass">
-<h3><code class="docutils literal notranslate"><span class="pre">bandpass</span></code>, <code class="docutils literal notranslate"><span class="pre">highpass</span></code>, <code class="docutils literal notranslate"><span class="pre">lowpass</span></code><a class="headerlink" href="#bandpass-highpass-lowpass" title="Link to this heading"></a></h3>
-<p>各要素にフィルタを適用します。</p>
+<section id="analytic-signal-hilbert">
+<h3><code class="docutils literal notranslate"><span class="pre">analytic_signal</span></code> / <code class="docutils literal notranslate"><span class="pre">hilbert</span></code><a class="headerlink" href="#analytic-signal-hilbert" title="Link to this heading"></a></h3>
+<p>各アイテムに解析信号変換を適用します。</p>
+</section>
+<section id="angle">
+<h3><code class="docutils literal notranslate"><span class="pre">angle</span></code><a class="headerlink" href="#angle" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">deg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">phase(unwrap=unwrap,</span> <span class="pre">deg=deg)</span></code> のエイリアス。</p>
+</section>
+<section id="asd-psd">
+<h3><code class="docutils literal notranslate"><span class="pre">asd</span></code> / <code class="docutils literal notranslate"><span class="pre">psd</span></code><a class="headerlink" href="#asd-psd" title="Link to this heading"></a></h3>
+<p>リスト内の各 TimeSeries の ASD/PSD を計算します。FrequencySeriesList を返します。</p>
+</section>
+<section id="coalesce">
+<h3><code class="docutils literal notranslate"><span class="pre">coalesce</span></code><a class="headerlink" href="#coalesce" title="Link to this heading"></a></h3>
+<p>このリストの連続する要素を単一オブジェクトにマージします。</p>
+</section>
+<section id="coherence-coherence-matrix">
+<h3><code class="docutils literal notranslate"><span class="pre">coherence</span></code> / <code class="docutils literal notranslate"><span class="pre">coherence_matrix</span></code><a class="headerlink" href="#coherence-coherence-matrix" title="Link to this heading"></a></h3>
+<p>コヒーレンス/コヒーレンス行列を計算します。</p>
 </section>
 <section id="crop">
 <h3><code class="docutils literal notranslate"><span class="pre">crop</span></code><a class="headerlink" href="#crop" title="Link to this heading"></a></h3>
-<p>各要素を特定の時間範囲で切り抜きます。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;TimeSeriesList&#39;</span>
+</pre></div>
+</div>
+<p>リスト内の各 TimeSeries をクロップします。gwexpy.time.to_gps がサポートするあらゆる時刻形式を受け付けます。</p>
 </section>
-<section id="detrend-whiten">
-<h3><code class="docutils literal notranslate"><span class="pre">detrend</span></code>, <code class="docutils literal notranslate"><span class="pre">whiten</span></code><a class="headerlink" href="#detrend-whiten" title="Link to this heading"></a></h3>
-<p>各要素のトレンド除去およびホワイトニング。</p>
+<section id="csd-csd-matrix">
+<h3><code class="docutils literal notranslate"><span class="pre">csd</span></code> / <code class="docutils literal notranslate"><span class="pre">csd_matrix</span></code><a class="headerlink" href="#csd-csd-matrix" title="Link to this heading"></a></h3>
+<p>CSD/CSD 行列を計算します。</p>
+</section>
+<section id="decimate-resample">
+<h3><code class="docutils literal notranslate"><span class="pre">decimate</span></code> / <code class="docutils literal notranslate"><span class="pre">resample</span></code><a class="headerlink" href="#decimate-resample" title="Link to this heading"></a></h3>
+<p>各 TimeSeries をデシメート/リサンプルします。</p>
+</section>
+<section id="degree-radian">
+<h3><code class="docutils literal notranslate"><span class="pre">degree</span></code> / <code class="docutils literal notranslate"><span class="pre">radian</span></code><a class="headerlink" href="#degree-radian" title="Link to this heading"></a></h3>
+<p>各アイテムの瞬時位相（度/ラジアン）を計算します。</p>
+</section>
+<section id="detrend">
+<h3><code class="docutils literal notranslate"><span class="pre">detrend</span></code><a class="headerlink" href="#detrend" title="Link to this heading"></a></h3>
+<p>各 TimeSeries のトレンドを除去します。</p>
+</section>
+<section id="envelope">
+<h3><code class="docutils literal notranslate"><span class="pre">envelope</span></code><a class="headerlink" href="#envelope" title="Link to this heading"></a></h3>
+<p>各アイテムのエンベロープを計算します。</p>
 </section>
 <section id="fft">
 <h3><code class="docutils literal notranslate"><span class="pre">fft</span></code><a class="headerlink" href="#fft" title="Link to this heading"></a></h3>
-<p>各要素の FFT を計算し、FrequencySeriesList を返します。</p>
+<p>各 TimeSeries に FFT を適用します。FrequencySeriesList を返します。</p>
+</section>
+<section id="filter-notch-gate">
+<h3><code class="docutils literal notranslate"><span class="pre">filter</span></code> / <code class="docutils literal notranslate"><span class="pre">notch</span></code> / <code class="docutils literal notranslate"><span class="pre">gate</span></code><a class="headerlink" href="#filter-notch-gate" title="Link to this heading"></a></h3>
+<p>各 TimeSeries にフィルタ/ノッチ/ゲートを適用します。</p>
+</section>
+<section id="heterodyne-baseband-mix-down-lock-in">
+<h3><code class="docutils literal notranslate"><span class="pre">heterodyne</span></code> / <code class="docutils literal notranslate"><span class="pre">baseband</span></code> / <code class="docutils literal notranslate"><span class="pre">mix_down</span></code> / <code class="docutils literal notranslate"><span class="pre">lock_in</span></code><a class="headerlink" href="#heterodyne-baseband-mix-down-lock-in" title="Link to this heading"></a></h3>
+<p>各アイテムに信号処理メソッドを適用します。</p>
+</section>
+<section id="ica-pca">
+<h3><code class="docutils literal notranslate"><span class="pre">ica</span></code> / <code class="docutils literal notranslate"><span class="pre">pca</span></code><a class="headerlink" href="#ica-pca" title="Link to this heading"></a></h3>
+<p>チャンネル間で ICA/PCA 分解を実行します。</p>
 </section>
 <section id="impute">
 <h3><code class="docutils literal notranslate"><span class="pre">impute</span></code><a class="headerlink" href="#impute" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">impute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span> <span class="o">=</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">overlap</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Any&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">impute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;interpolate&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">max_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>欠損値（NaN）を指定された手法で補完します。</p>
+<p>各 TimeSeries の欠損データ（NaN）を補完します。</p>
+</section>
+<section id="instantaneous-frequency-instantaneous-phase">
+<h3><code class="docutils literal notranslate"><span class="pre">instantaneous_frequency</span></code> / <code class="docutils literal notranslate"><span class="pre">instantaneous_phase</span></code><a class="headerlink" href="#instantaneous-frequency-instantaneous-phase" title="Link to this heading"></a></h3>
+<p>各アイテムの瞬時周波数/位相を計算します。</p>
 </section>
 <section id="join">
 <h3><code class="docutils literal notranslate"><span class="pre">join</span></code><a class="headerlink" href="#join" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>リスト内の TimeSeries を 1 つの TimeSeries に結合します。</p>
+<p>このリストのすべての要素を単一オブジェクトに連結します。</p>
 </section>
-<section id="plot">
-<h3><code class="docutils literal notranslate"><span class="pre">plot</span></code><a class="headerlink" href="#plot" title="Link to this heading"></a></h3>
-<p>すべてのシリーズを垂直に並べてプロットします。</p>
 </section>
-<section id="read">
-<h3><code class="docutils literal notranslate"><span class="pre">read</span></code><a class="headerlink" href="#read" title="Link to this heading"></a></h3>
-<p>ファイルから TimeSeries のリストを読み込みます。</p>
+<section id="id2">
+<h2>パラメータ<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>pad : <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional
+ソースデータのギャップを埋める値。デフォルトではギャップは <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> になります。
+gap : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
+ギャップがある場合の処理: <code class="docutils literal notranslate"><span class="pre">'raise'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ignore'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pad'</span></code></p>
+<section id="phase">
+<h3><code class="docutils literal notranslate"><span class="pre">phase</span></code><a class="headerlink" href="#phase" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">deg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+</pre></div>
+</div>
+<p>データの位相を計算します。</p>
 </section>
-<section id="resample">
-<h3><code class="docutils literal notranslate"><span class="pre">resample</span></code><a class="headerlink" href="#resample" title="Link to this heading"></a></h3>
-<p>各要素を再サンプリングします。</p>
+<section id="plot-plot-all">
+<h3><code class="docutils literal notranslate"><span class="pre">plot</span></code> / <code class="docutils literal notranslate"><span class="pre">plot_all</span></code><a class="headerlink" href="#plot-plot-all" title="Link to this heading"></a></h3>
+<p>すべてのシリーズをプロットします。</p>
 </section>
-<section id="spectrogram">
-<h3><code class="docutils literal notranslate"><span class="pre">spectrogram</span></code><a class="headerlink" href="#spectrogram" title="Link to this heading"></a></h3>
-<p>各要素のスペクトログラムを計算し、SpectrogramList を返します。</p>
+<section id="q-transform">
+<h3><code class="docutils literal notranslate"><span class="pre">q_transform</span></code><a class="headerlink" href="#q-transform" title="Link to this heading"></a></h3>
+<p>各 TimeSeries の Q 変換を計算します。SpectrogramList を返します。</p>
+</section>
+<section id="rolling-mean-rolling-median-rolling-std-rolling-min-rolling-max">
+<h3><code class="docutils literal notranslate"><span class="pre">rolling_mean</span></code> / <code class="docutils literal notranslate"><span class="pre">rolling_median</span></code> / <code class="docutils literal notranslate"><span class="pre">rolling_std</span></code> / <code class="docutils literal notranslate"><span class="pre">rolling_min</span></code> / <code class="docutils literal notranslate"><span class="pre">rolling_max</span></code><a class="headerlink" href="#rolling-mean-rolling-median-rolling-std-rolling-min-rolling-max" title="Link to this heading"></a></h3>
+<p>各要素にローリング統計を適用します。</p>
+</section>
+<section id="spectrogram-spectrogram2">
+<h3><code class="docutils literal notranslate"><span class="pre">spectrogram</span></code> / <code class="docutils literal notranslate"><span class="pre">spectrogram2</span></code><a class="headerlink" href="#spectrogram-spectrogram2" title="Link to this heading"></a></h3>
+<p>各 TimeSeries のスペクトログラムを計算します。SpectrogramList を返します。</p>
+</section>
+<section id="stlt">
+<h3><code class="docutils literal notranslate"><span class="pre">stlt</span></code><a class="headerlink" href="#stlt" title="Link to this heading"></a></h3>
+<p>各アイテムに STLT を適用します。TimePlaneTransform のリストを返します。</p>
 </section>
 <section id="to-matrix">
 <h3><code class="docutils literal notranslate"><span class="pre">to_matrix</span></code><a class="headerlink" href="#to-matrix" title="Link to this heading"></a></h3>
-<p>リストを TimeSeriesMatrix に変換します。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;intersection&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>リストをアライメント付きで TimeSeriesMatrix に変換します。</p>
 </section>
-<section id="to-tmultigraph">
-<h3><code class="docutils literal notranslate"><span class="pre">to_tmultigraph</span></code><a class="headerlink" href="#to-tmultigraph" title="Link to this heading"></a></h3>
-<p>ROOT の TMultiGraph オブジェクトに変換します。</p>
+</section>
+<section id="id3">
+<h2>パラメータ<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>align : str, optional
+アライメント戦略（'intersection', 'union' など）。デフォルトは 'intersection'。</p>
+<section id="to-pandas">
+<h3><code class="docutils literal notranslate"><span class="pre">to_pandas</span></code><a class="headerlink" href="#to-pandas" title="Link to this heading"></a></h3>
+<p>pandas DataFrame に変換します。各要素は列になります。共通の時間軸を前提とします。</p>
 </section>
 <section id="write">
 <h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
-<p>リストをファイル（HDF5 など）に書き出します。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+</pre></div>
+</div>
+<p>TimeSeriesList をファイル（HDF5, ROOT など）に書き込みます。</p>
 </section>
 </section>
 </section>

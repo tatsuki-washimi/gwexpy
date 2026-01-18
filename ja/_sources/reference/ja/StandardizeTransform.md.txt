@@ -2,7 +2,7 @@
 
 **継承元:** Transform
 
-TimeSeries/Matrix オブジェクトを標準化します。オプションでロバストスケーリングをサポートします。
+オプションのロバストスケーリング付きで TimeSeries/Matrix オブジェクトを標準化します。
 
 ## メソッド
 
@@ -12,9 +12,9 @@ TimeSeries/Matrix オブジェクトを標準化します。オプションで�
 __init__(self, method: str = 'zscore', ddof: int = 0, robust: bool = False, axis: str = 'time', *, multivariate: bool = False, align: str = 'intersection')
 ```
 
-インスタンスを初期化します。正確なシグネチャについては help(type(self)) を参照してください。
+self を初期化します。正確なシグネチャは help(type(self)) を参照してください。
 
-*( `Transform` から継承)*
+*(Transform から継承)*
 
 ### `fit`
 
@@ -22,9 +22,9 @@ __init__(self, method: str = 'zscore', ddof: int = 0, robust: bool = False, axis
 fit(self, x)
 ```
 
-変換をデータに適合させます。selfを返します。
+データに変換をフィットします。self を返します。
 
-*( `Transform` から継承)*
+*(Transform から継承)*
 
 ### `fit_transform`
 
@@ -32,7 +32,7 @@ fit(self, x)
 fit_transform(self, x)
 ```
 
-適合と変換を一つのステップで実行します。
+フィットと変換を一度に実行します。
 
 ### `inverse_transform`
 
@@ -40,9 +40,9 @@ fit_transform(self, x)
 inverse_transform(self, y)
 ```
 
-逆変換を適用します。
+変換を逆適用します。すべての変換がこれをサポートしているわけではありません。
 
-*( `Transform` から継承)*
+*(Transform から継承)*
 
 ### `transform`
 
@@ -50,6 +50,6 @@ inverse_transform(self, y)
 transform(self, x)
 ```
 
-データを変換します。
+データに変換を適用します。サブクラスで実装する必要があります。
 
-*( `Transform` から継承)*
+*(Transform から継承)*

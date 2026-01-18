@@ -84,7 +84,7 @@
   <section id="standardizetransform">
 <h1>StandardizeTransform<a class="headerlink" href="#standardizetransform" title="Link to this heading"></a></h1>
 <p><strong>継承元:</strong> Transform</p>
-<p>TimeSeries/Matrix オブジェクトを標準化します。オプションでロバストスケーリングをサポートします。</p>
+<p>オプションのロバストスケーリング付きで TimeSeries/Matrix オブジェクトを標準化します。</p>
 <section id="id1">
 <h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <section id="init">
@@ -92,39 +92,39 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;zscore&#39;</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">robust</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">multivariate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">align</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;intersection&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>インスタンスを初期化します。正確なシグネチャについては help(type(self)) を参照してください。</p>
-<p><em>( <code class="docutils literal notranslate"><span class="pre">Transform</span></code> から継承)</em></p>
+<p>self を初期化します。正確なシグネチャは help(type(self)) を参照してください。</p>
+<p><em>(Transform から継承)</em></p>
 </section>
 <section id="fit">
 <h3><code class="docutils literal notranslate"><span class="pre">fit</span></code><a class="headerlink" href="#fit" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>変換をデータに適合させます。selfを返します。</p>
-<p><em>( <code class="docutils literal notranslate"><span class="pre">Transform</span></code> から継承)</em></p>
+<p>データに変換をフィットします。self を返します。</p>
+<p><em>(Transform から継承)</em></p>
 </section>
 <section id="fit-transform">
 <h3><code class="docutils literal notranslate"><span class="pre">fit_transform</span></code><a class="headerlink" href="#fit-transform" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>適合と変換を一つのステップで実行します。</p>
+<p>フィットと変換を一度に実行します。</p>
 </section>
 <section id="inverse-transform">
 <h3><code class="docutils literal notranslate"><span class="pre">inverse_transform</span></code><a class="headerlink" href="#inverse-transform" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>逆変換を適用します。</p>
-<p><em>( <code class="docutils literal notranslate"><span class="pre">Transform</span></code> から継承)</em></p>
+<p>変換を逆適用します。すべての変換がこれをサポートしているわけではありません。</p>
+<p><em>(Transform から継承)</em></p>
 </section>
 <section id="transform">
 <h3><code class="docutils literal notranslate"><span class="pre">transform</span></code><a class="headerlink" href="#transform" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>データを変換します。</p>
-<p><em>( <code class="docutils literal notranslate"><span class="pre">Transform</span></code> から継承)</em></p>
+<p>データに変換を適用します。サブクラスで実装する必要があります。</p>
+<p><em>(Transform から継承)</em></p>
 </section>
 </section>
 </section>

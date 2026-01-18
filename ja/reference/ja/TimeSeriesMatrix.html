@@ -83,150 +83,215 @@
              
   <section id="timeseriesmatrix">
 <h1>TimeSeriesMatrix<a class="headerlink" href="#timeseriesmatrix" title="Link to this heading"></a></h1>
-<p><strong>継承元:</strong> SeriesMatrix</p>
-<p>共通の時間軸を共有する複数の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> オブジェクトを保持する <strong>2次元行列コンテナ</strong> です。</p>
-<p>このクラスは、各要素が <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> データストリームに対応する 2次元配列（行 x 列）を表します。重要な点として、<strong>行列内のすべての要素は同一の時間配列（同じ <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, サンプル数）を共有</strong> します。これは、グリッド構造に配置された多変量時系列データのように振る舞います。</p>
-<p><code class="docutils literal notranslate"><span class="pre">dt</span></code>, <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">times</span></code> などのエイリアスを提供し、FFT を介して <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> を構築できます。</p>
+<p><strong>継承元:</strong> PhaseMethodsMixin, TimeSeriesMatrixCoreMixin, TimeSeriesMatrixAnalysisMixin, TimeSeriesMatrixSpectralMixin, TimeSeriesMatrixInteropMixin, SeriesMatrix</p>
+<p><strong>共通の時間軸を共有する複数の TimeSeries オブジェクト用の2Dマトリックスコンテナ。</strong></p>
+<p>このクラスは、各要素が TimeSeries データストリームに対応する2次元配列（行 x 列）を表します。<strong>マトリックス内のすべての要素は同じ時間配列を共有します</strong>（同じ <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, サンプル数）。グリッド構造で整理された多変量時系列のように振る舞います。</p>
 <section id="id1">
-<h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<section id="metadatamatrix">
-<h3><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix</span></code><a class="headerlink" href="#metadatamatrix" title="Link to this heading"></a></h3>
-<p>各要素のメタデータ。</p>
+<h2>主要プロパティ<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>プロパティ</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dt</span></code></p></td>
+<td><p>時間間隔</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t0</span></code></p></td>
+<td><p>開始時刻</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">times</span></code></p></td>
+<td><p>時間配列</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sample_rate</span></code></p></td>
+<td><p>サンプリングレート</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">duration</span></code></p></td>
+<td><p>継続時間</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">N_samples</span></code></p></td>
+<td><p>サンプル数</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">channel_names</span></code></p></td>
+<td><p>要素名のフラットなリスト</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">channels</span></code></p></td>
+<td><p>各要素のチャンネル識別子の2D配列</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="n-samples">
-<h3><code class="docutils literal notranslate"><span class="pre">N_samples</span></code><a class="headerlink" href="#n-samples" title="Link to this heading"></a></h3>
-<p>サンプル数。</p>
+<section id="id2">
+<h2>スペクトル変換<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>メソッド</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fft()</span></code></p></td>
+<td><p>各要素の FFT を計算。FrequencySeriesMatrix を返す</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">psd()</span></code></p></td>
+<td><p>各要素の PSD を計算。FrequencySeriesMatrix を返す</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">asd()</span></code></p></td>
+<td><p>各要素の ASD を計算。FrequencySeriesMatrix を返す</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">q_transform()</span></code></p></td>
+<td><p>各要素の Q 変換を計算。SpectrogramMatrix を返す</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="t">
-<h3><code class="docutils literal notranslate"><span class="pre">T</span></code><a class="headerlink" href="#t" title="Link to this heading"></a></h3>
-<p>転置ビュー。</p>
+<section id="id3">
+<h2>信号処理<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>メソッド</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">filter()</span></code> / <code class="docutils literal notranslate"><span class="pre">bandpass()</span></code> / <code class="docutils literal notranslate"><span class="pre">highpass()</span></code> / <code class="docutils literal notranslate"><span class="pre">lowpass()</span></code> / <code class="docutils literal notranslate"><span class="pre">notch()</span></code></p></td>
+<td><p>要素ごとのフィルタ適用</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">resample()</span></code></p></td>
+<td><p>要素ごとのリサンプル</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">detrend()</span></code></p></td>
+<td><p>要素ごとのトレンド除去</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lock_in()</span></code></p></td>
+<td><p>要素ごとのロックイン増幅</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="abs-angle">
-<h3><code class="docutils literal notranslate"><span class="pre">abs</span></code>, <code class="docutils literal notranslate"><span class="pre">angle</span></code><a class="headerlink" href="#abs-angle" title="Link to this heading"></a></h3>
-<p>絶対値と位相角。</p>
+<section id="id4">
+<h2>統計・解析<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>メソッド</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mean()</span></code> / <code class="docutils literal notranslate"><span class="pre">std()</span></code> / <code class="docutils literal notranslate"><span class="pre">max()</span></code> / <code class="docutils literal notranslate"><span class="pre">min()</span></code> / <code class="docutils literal notranslate"><span class="pre">median()</span></code></p></td>
+<td><p>統計量計算</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rolling_mean()</span></code> / <code class="docutils literal notranslate"><span class="pre">rolling_std()</span></code> / <code class="docutils literal notranslate"><span class="pre">rolling_max()</span></code> / <code class="docutils literal notranslate"><span class="pre">rolling_min()</span></code></p></td>
+<td><p>ローリング統計</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pca()</span></code> / <code class="docutils literal notranslate"><span class="pre">ica()</span></code></p></td>
+<td><p>PCA/ICA 分解</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">impute()</span></code></p></td>
+<td><p>欠損値の補完</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">coherence()</span></code> / <code class="docutils literal notranslate"><span class="pre">csd()</span></code></p></td>
+<td><p>コヒーレンス/クロススペクトル計算</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="append-append-exact">
-<h3><code class="docutils literal notranslate"><span class="pre">append</span></code>, <code class="docutils literal notranslate"><span class="pre">append_exact</span></code><a class="headerlink" href="#append-append-exact" title="Link to this heading"></a></h3>
-<p>行列の追加。</p>
+<section id="id5">
+<h2>線形代数<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>メソッド</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">det()</span></code></p></td>
+<td><p>各サンプル点での行列式</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">inv()</span></code></p></td>
+<td><p>各サンプル点での逆行列</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">trace()</span></code></p></td>
+<td><p>対角要素の和</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">schur()</span></code></p></td>
+<td><p>シュア補行列</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">diagonal()</span></code></p></td>
+<td><p>対角要素の抽出</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="asd">
-<h3><code class="docutils literal notranslate"><span class="pre">asd</span></code><a class="headerlink" href="#asd" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">asd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Any&#39;</span>
-</pre></div>
-</div>
-<p>各要素の ASD（振幅スペクトル密度）を計算し、FrequencySeriesMatrix を返します。</p>
+<section id="id6">
+<h2>変換・相互運用<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>メソッド</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code></p></td>
+<td><p>pandas DataFrame に変換</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> / <code class="docutils literal notranslate"><span class="pre">to_list()</span></code></p></td>
+<td><p>TimeSeriesDict / TimeSeriesList に変換</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">to_torch()</span></code> / <code class="docutils literal notranslate"><span class="pre">to_tensorflow()</span></code> / <code class="docutils literal notranslate"><span class="pre">to_jax()</span></code> / <code class="docutils literal notranslate"><span class="pre">to_cupy()</span></code></p></td>
+<td><p>ML フレームワークへ変換</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">from_neo()</span></code></p></td>
+<td><p>neo.AnalogSignal から作成</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="auto-coherence-coherence-csd">
-<h3><code class="docutils literal notranslate"><span class="pre">auto_coherence</span></code>, <code class="docutils literal notranslate"><span class="pre">coherence</span></code>, <code class="docutils literal notranslate"><span class="pre">csd</span></code><a class="headerlink" href="#auto-coherence-coherence-csd" title="Link to this heading"></a></h3>
-<p>TimeSeries の各メソッドへの要素ごとの委譲。</p>
+<section id="id7">
+<h2>入出力<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>メソッド</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">read()</span></code></p></td>
+<td><p>ファイルからマトリックスを読み込む</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">write()</span></code></p></td>
+<td><p>マトリックスをファイルに書き込む</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code> / <code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code></p></td>
+<td><p>HDF5/Zarr 形式で保存</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="bandpass-detrend-highpass-lowpass-taper-whiten">
-<h3><code class="docutils literal notranslate"><span class="pre">bandpass</span></code>, <code class="docutils literal notranslate"><span class="pre">detrend</span></code>, <code class="docutils literal notranslate"><span class="pre">highpass</span></code>, <code class="docutils literal notranslate"><span class="pre">lowpass</span></code>, <code class="docutils literal notranslate"><span class="pre">taper</span></code>, <code class="docutils literal notranslate"><span class="pre">whiten</span></code><a class="headerlink" href="#bandpass-detrend-highpass-lowpass-taper-whiten" title="Link to this heading"></a></h3>
-<p>TimeSeries プリプロセス・フィルタメソッドへの要素ごとの委譲。</p>
-</section>
-<section id="channels">
-<h3><code class="docutils literal notranslate"><span class="pre">channels</span></code><a class="headerlink" href="#channels" title="Link to this heading"></a></h3>
-<p>チャンネル名の 2D 配列。</p>
-</section>
-<section id="crop">
-<h3><code class="docutils literal notranslate"><span class="pre">crop</span></code><a class="headerlink" href="#crop" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;&#39;TimeSeriesMatrix&#39;&quot;</span>
-</pre></div>
-</div>
-<p>指定された GPS 開始時刻と終了時刻で行列を切り抜きます。</p>
-</section>
-<section id="standardscaler-scaler">
-<h3><code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code> (他 <code class="docutils literal notranslate"><span class="pre">*Scaler</span></code>)<a class="headerlink" href="#standardscaler-scaler" title="Link to this heading"></a></h3>
-<p>スケーリング（標準化）を行うための変換器クラスです。</p>
-</section>
-<section id="pca">
-<h3><code class="docutils literal notranslate"><span class="pre">pca</span></code><a class="headerlink" href="#pca" title="Link to this heading"></a></h3>
-<p>主成分分析 (Principal Component Analysis) を行い、低次元の成分を抽出します。</p>
-</section>
-<section id="ica">
-<h3><code class="docutils literal notranslate"><span class="pre">ica</span></code><a class="headerlink" href="#ica" title="Link to this heading"></a></h3>
-<p>独立成分分析 (Independent Component Analysis) を行い、信号源を分離します。</p>
-</section>
-<section id="diagonal">
-<h3><code class="docutils literal notranslate"><span class="pre">diagonal</span></code><a class="headerlink" href="#diagonal" title="Link to this heading"></a></h3>
-<p>対角要素の抽出。</p>
-</section>
-<section id="diff">
-<h3><code class="docutils literal notranslate"><span class="pre">diff</span></code><a class="headerlink" href="#diff" title="Link to this heading"></a></h3>
-<p>離散差分。</p>
-</section>
-<section id="dt-t0-times">
-<h3><code class="docutils literal notranslate"><span class="pre">dt</span></code>, <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">times</span></code><a class="headerlink" href="#dt-t0-times" title="Link to this heading"></a></h3>
-<p>時間間隔、開始時刻、時間配列のエイリアス。</p>
-</section>
-<section id="fft">
-<h3><code class="docutils literal notranslate"><span class="pre">fft</span></code><a class="headerlink" href="#fft" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fft</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;&#39;FrequencySeriesMatrix&#39;&quot;</span>
-</pre></div>
-</div>
-<p>各要素の FFT を計算し、FrequencySeriesMatrix を返します。</p>
-</section>
-<section id="filter">
-<h3><code class="docutils literal notranslate"><span class="pre">filter</span></code><a class="headerlink" href="#filter" title="Link to this heading"></a></h3>
-<p>フィルタの適用。</p>
-</section>
-<section id="histogram">
-<h3><code class="docutils literal notranslate"><span class="pre">histogram</span></code><a class="headerlink" href="#histogram" title="Link to this heading"></a></h3>
-<p>各要素のヒストグラムを計算します。</p>
-</section>
-<section id="resample">
-<h3><code class="docutils literal notranslate"><span class="pre">resample</span></code><a class="headerlink" href="#resample" title="Link to this heading"></a></h3>
-<p>指定されたサンプリング周波数に再サンプリングします。</p>
-</section>
-<section id="spectrogram">
-<h3><code class="docutils literal notranslate"><span class="pre">spectrogram</span></code><a class="headerlink" href="#spectrogram" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spectrogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stride</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">fftlength</span><span class="p">:</span> <span class="s1">&#39;Optional[Any]&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overlap</span><span class="p">:</span> <span class="s1">&#39;Optional[Any]&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span> <span class="o">=</span> <span class="s1">&#39;hann&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Any&#39;</span>
-</pre></div>
-</div>
-<p>各要素のスペクトログラムを計算し、SpectrogramMatrix を返します。</p>
-</section>
-<section id="standardize">
-<h3><code class="docutils literal notranslate"><span class="pre">standardize</span></code><a class="headerlink" href="#standardize" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">standardize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span> <span class="o">=</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span> <span class="o">=</span> <span class="s1">&#39;zscore&#39;</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Any&#39;</span>
-</pre></div>
-</div>
-<p>行列を標準化します。</p>
-</section>
-<section id="to-dict-to-list">
-<h3><code class="docutils literal notranslate"><span class="pre">to_dict</span></code>, <code class="docutils literal notranslate"><span class="pre">to_list</span></code><a class="headerlink" href="#to-dict-to-list" title="Link to this heading"></a></h3>
-<p>TimeSeriesDict または TimeSeriesList への変換。</p>
-</section>
-<section id="to-mne-to-mne">
-<h3><code class="docutils literal notranslate"><span class="pre">to_mne</span></code>, <code class="docutils literal notranslate"><span class="pre">to_mne</span></code><a class="headerlink" href="#to-mne-to-mne" title="Link to this heading"></a></h3>
-<p>mne.io.RawArray への変換。</p>
-</section>
-<section id="to-neo">
-<h3><code class="docutils literal notranslate"><span class="pre">to_neo</span></code><a class="headerlink" href="#to-neo" title="Link to this heading"></a></h3>
-<p>neo.AnalogSignal への変換。</p>
-</section>
-<section id="to-pandas">
-<h3><code class="docutils literal notranslate"><span class="pre">to_pandas</span></code><a class="headerlink" href="#to-pandas" title="Link to this heading"></a></h3>
-<p>pandas DataFrame への変換。</p>
-</section>
-<section id="to-torch">
-<h3><code class="docutils literal notranslate"><span class="pre">to_torch</span></code><a class="headerlink" href="#to-torch" title="Link to this heading"></a></h3>
-<p>PyTorch テンソルへの変換（形状を維持）。</p>
-</section>
-<section id="whiten-channels">
-<h3><code class="docutils literal notranslate"><span class="pre">whiten_channels</span></code><a class="headerlink" href="#whiten-channels" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">whiten_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span> <span class="o">=</span> <span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="n">n_components</span><span class="p">:</span> <span class="s1">&#39;Optional[int]&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_model</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Any&#39;</span>
-</pre></div>
-</div>
-<p>行列（チャンネル/コンポーネント）をホワイトニング（白色化）します。PCA などを使用します。</p>
-</section>
-<section id="write-read-to-hdf5">
-<h3><code class="docutils literal notranslate"><span class="pre">write</span></code>, <code class="docutils literal notranslate"><span class="pre">read</span></code>, <code class="docutils literal notranslate"><span class="pre">to_hdf5</span></code><a class="headerlink" href="#write-read-to-hdf5" title="Link to this heading"></a></h3>
-<p>ファイル入出力。</p>
-</section>
-<section id="x0-xindex-xspan-xunit">
-<h3><code class="docutils literal notranslate"><span class="pre">x0</span></code>, <code class="docutils literal notranslate"><span class="pre">xindex</span></code>, <code class="docutils literal notranslate"><span class="pre">xspan</span></code>, <code class="docutils literal notranslate"><span class="pre">xunit</span></code><a class="headerlink" href="#x0-xindex-xspan-xunit" title="Link to this heading"></a></h3>
-<p>x 軸（時間軸）のプロパティ。</p>
-</section>
+<section id="id8">
+<h2>データ操作<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>メソッド</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">crop()</span></code></p></td>
+<td><p>GPS 開始/終了時刻でクロップ。gwexpy.time.to_gps がサポートする形式を使用可能</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">append()</span></code> / <code class="docutils literal notranslate"><span class="pre">prepend()</span></code></p></td>
+<td><p>サンプル軸に沿って別のマトリックスを追加</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">interpolate()</span></code></p></td>
+<td><p>新しいサンプル軸に補間</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pad()</span></code></p></td>
+<td><p>サンプル軸に沿ってパディング</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 

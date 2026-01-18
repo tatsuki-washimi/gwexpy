@@ -2,7 +2,7 @@
 
 **継承元:** Transform
 
-既存の低レベルヘルパーを使用して、欠損値の補完（イミューテーション）を行います。
+既存の低レベルヘルパーを使用して欠損値を補完します。
 
 ## メソッド
 
@@ -12,9 +12,9 @@
 __init__(self, method: str = 'interpolate', **kwargs)
 ```
 
-インスタンスを初期化します。正確なシグネチャについては help(type(self)) を参照してください。
+self を初期化します。正確なシグネチャは help(type(self)) を参照してください。
 
-*( `Transform` から継承)*
+*(Transform から継承)*
 
 ### `fit`
 
@@ -22,7 +22,7 @@ __init__(self, method: str = 'interpolate', **kwargs)
 fit(self, x)
 ```
 
-変換をデータに適合させます。selfを返します。
+データに変換をフィットします。self を返します。
 
 ### `fit_transform`
 
@@ -30,7 +30,7 @@ fit(self, x)
 fit_transform(self, x)
 ```
 
-適合と変換を一つのステップで実行します。
+フィットと変換を一度に実行します。
 
 ### `inverse_transform`
 
@@ -38,7 +38,7 @@ fit_transform(self, x)
 inverse_transform(self, y)
 ```
 
-逆変換を適用します。すべての変換がこれをサポートしているわけではありません。
+変換を逆適用します。すべての変換がこれをサポートしているわけではありません。
 
 ### `transform`
 
@@ -46,6 +46,6 @@ inverse_transform(self, y)
 transform(self, x)
 ```
 
-データを変換します。
+データに変換を適用します。サブクラスで実装する必要があります。
 
-*( `Transform` から継承)*
+*(Transform から継承)*

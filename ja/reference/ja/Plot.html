@@ -84,7 +84,9 @@
   <section id="plot">
 <h1>Plot<a class="headerlink" href="#plot" title="Link to this heading"></a></h1>
 <p><strong>継承元:</strong> Plot</p>
-<p><code class="docutils literal notranslate"><span class="pre">gwpy.plot.Plot</span></code> の拡張クラスです。<code class="docutils literal notranslate"><span class="pre">gwexpy.types.SeriesMatrix</span></code> 引数を自動的に個別の <code class="docutils literal notranslate"><span class="pre">gwpy.types.Series</span></code> オブジェクトに展開して処理し、可能な限り行列のレイアウトとメタデータを保持します。</p>
+<p>:class:<code class="docutils literal notranslate"><span class="pre">gwpy.plot.Plot</span></code> の拡張で、:class:<code class="docutils literal notranslate"><span class="pre">gwexpy.types.SeriesMatrix</span></code> 引数を
+個々の :class:<code class="docutils literal notranslate"><span class="pre">gwpy.types.Series</span></code> オブジェクトに自動展開し、
+可能な限りマトリクスのレイアウトとメタデータを保持します。</p>
 <section id="id1">
 <h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <section id="init">
@@ -92,54 +94,101 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>パラメータ:</strong></p>
-<ul class="simple">
-<li><p><strong>figsize</strong>: float のタプル (width, height) - インチ単位の図の大きさ。</p></li>
-<li><p><strong>dpi</strong>: float - 解像度（dots per inch）。</p></li>
-<li><p><strong>facecolor</strong>: 背景色。</p></li>
-<li><p><strong>edgecolor</strong>: 枠線の色。</p></li>
-<li><p><strong>linewidth</strong>: 枠線の幅。</p></li>
-<li><p><strong>layout</strong>: {'constrained', 'compressed', 'tight', None} - レイアウトメカニズム。ラベルの重なりを防ぐために 'constrained' や 'tight' が推奨されます。</p></li>
-</ul>
 </section>
+</section>
+<section id="id2">
+<h2>パラメータ<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>figsize : 2-tuple of floats, default: :rc:<code class="docutils literal notranslate"><span class="pre">figure.figsize</span></code>
+図の寸法 <code class="docutils literal notranslate"><span class="pre">(width,</span> <span class="pre">height)</span></code> (インチ単位)。</p>
+<p>dpi : float, default: :rc:<code class="docutils literal notranslate"><span class="pre">figure.dpi</span></code>
+1インチあたりのドット数。</p>
+<p>facecolor : default: :rc:<code class="docutils literal notranslate"><span class="pre">figure.facecolor</span></code>
+図パッチの表面色。</p>
+<p>edgecolor : default: :rc:<code class="docutils literal notranslate"><span class="pre">figure.edgecolor</span></code>
+図パッチの境界色。</p>
+<p>linewidth : float
+フレームの線幅（図パッチの境界線幅）。</p>
+<p>frameon : bool, default: :rc:<code class="docutils literal notranslate"><span class="pre">figure.frameon</span></code>
+<code class="docutils literal notranslate"><span class="pre">False</span></code> の場合、図の背景パッチの描画を抑制します。</p>
+<p>layout : {'constrained', 'compressed', 'tight', <code class="docutils literal notranslate"><span class="pre">.LayoutEngine</span></code>, None}
+Axes の装飾（ラベル、目盛りなど）の重複を避けるためのプロット要素配置メカニズム。</p>
+<p><em>(Figure から継承)</em></p>
 <section id="add-segments-bar">
 <h3><code class="docutils literal notranslate"><span class="pre">add_segments_bar</span></code><a class="headerlink" href="#add-segments-bar" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">add_segments_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segments</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">0.14</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">plotargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>状態情報を示すセグメントバーを図に追加します。デフォルトでは、メインの x 軸の直下（または直上）に表示されます。</p>
-<p><strong>パラメータ:</strong></p>
-<ul class="simple">
-<li><p><strong>segments</strong>: <code class="docutils literal notranslate"><span class="pre">DataQualityFlag</span></code> または <code class="docutils literal notranslate"><span class="pre">SegmentList</span></code> - 状態セグメント。</p></li>
-<li><p><strong>location</strong>: 'top' または 'bottom' - バーの配置場所。</p></li>
-</ul>
+<p>状態情報を示すセグメントバー <code class="docutils literal notranslate"><span class="pre">Plot</span></code> を追加します。</p>
 </section>
+</section>
+<section id="id3">
+<h2>パラメータ<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>segments : <code class="docutils literal notranslate"><span class="pre">~gwpy.segments.DataQualityFlag</span></code>
+データ品質フラグ、またはこの Plot に関する状態セグメントを示す <code class="docutils literal notranslate"><span class="pre">SegmentList</span></code></p>
+<p>ax : <code class="docutils literal notranslate"><span class="pre">Axes</span></code>, optional
+新しい <code class="docutils literal notranslate"><span class="pre">Axes</span></code> を配置する基準となる特定の <code class="docutils literal notranslate"><span class="pre">Axes</span></code></p>
+<p>height : <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional
+アンカー軸の割合としての新しい軸の高さ</p>
+<p>pad : <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional
+新しい軸とアンカー間のパディング（アンカー軸の寸法の割合）</p>
+<p>location : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
+新しいセグメント軸の位置。デフォルトは <code class="docutils literal notranslate"><span class="pre">'bottom'</span></code></p>
 <section id="close">
 <h3><code class="docutils literal notranslate"><span class="pre">close</span></code><a class="headerlink" href="#close" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>プロットを閉じ、メモリを解放します。</p>
+<p>プロットを閉じてメモリを解放します。</p>
 </section>
 <section id="colorbar">
 <h3><code class="docutils literal notranslate"><span class="pre">colorbar</span></code><a class="headerlink" href="#colorbar" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">colorbar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mappable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">use_axesgrid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>現在の <code class="docutils literal notranslate"><span class="pre">Plot</span></code> にカラーバーを追加します。このメソッドは、親 Axes のサイズを変更せずに、その隣に新しい Axes を描画する点が標準の <code class="docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.colorbar</span></code> と異なります。</p>
-<p><strong>パラメータ:</strong></p>
-<ul class="simple">
-<li><p><strong>mappable</strong>: カラーマッピングの対象となるデータ。</p></li>
-<li><p><strong>ax</strong>: カラーバーを配置する基準となる Axes。</p></li>
-<li><p><strong>fraction</strong>: カラーバーに使用する元の Axes の割合（デフォルト 0 はサイズ変更なし）。</p></li>
-</ul>
+<p>現在の <code class="docutils literal notranslate"><span class="pre">Plot</span></code> にカラーバーを追加します。</p>
 </section>
+</section>
+<section id="id4">
+<h2>パラメータ<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>mappable : matplotlib data collection
+色付けをマッピングするコレクション</p>
+<p>cax : <code class="docutils literal notranslate"><span class="pre">~matplotlib.axes.Axes</span></code>
+カラーバーを描画する Axes</p>
+<p>ax : <code class="docutils literal notranslate"><span class="pre">~matplotlib.axes.Axes</span></code>
+カラーバーを配置する基準となる Axes</p>
+<p>fraction : <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional
+カラーバーに使用する元の軸の割合。デフォルト (0) は元の軸をまったくリサイズしません。</p>
+<p>use_axesgrid : <code class="docutils literal notranslate"><span class="pre">bool</span></code>
+:mod:<code class="docutils literal notranslate"><span class="pre">mpl_toolkits.axes_grid1</span></code> を使用してカラーバー軸を生成</p>
+<p>emit : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
+<code class="docutils literal notranslate"><span class="pre">True</span></code> の場合、<code class="docutils literal notranslate"><span class="pre">Axes</span></code> 上のすべてのマップ可能なオブジェクトをカラーバーと同じ色付けに更新</p>
+</section>
+<section id="id5">
+<h2>戻り値<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>cbar : <code class="docutils literal notranslate"><span class="pre">~matplotlib.colorbar.Colorbar</span></code>
+新しく追加された <code class="docutils literal notranslate"><span class="pre">Colorbar</span></code></p>
 <section id="get-axes">
 <h3><code class="docutils literal notranslate"><span class="pre">get_axes</span></code><a class="headerlink" href="#get-axes" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">get_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>すべての <code class="docutils literal notranslate"><span class="pre">Axes</span></code> を検索します。オプションで投影法（projection）を指定してフィルタリングできます。</p>
+<p>すべての <code class="docutils literal notranslate"><span class="pre">Axes</span></code> を検索します（オプションで指定された投影に一致するもの）</p>
+</section>
+</section>
+<section id="id6">
+<h2>パラメータ<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>projection : <code class="docutils literal notranslate"><span class="pre">str</span></code>
+返す軸タイプの名前</p>
+</section>
+<section id="id7">
+<h2>戻り値<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p>axlist : <code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">~matplotlib.axes.Axes</span></code></p>
+<section id="plot-mmm">
+<h3><code class="docutils literal notranslate"><span class="pre">plot_mmm</span></code><a class="headerlink" href="#plot-mmm" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_mmm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">median</span><span class="p">,</span> <span class="n">min_s</span><span class="p">,</span> <span class="n">max_s</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><em>ドキュメントなし。</em></p>
 </section>
 <section id="refresh">
 <h3><code class="docutils literal notranslate"><span class="pre">refresh</span></code><a class="headerlink" href="#refresh" title="Link to this heading"></a></h3>
@@ -153,18 +202,15 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>図をディスクに保存します。<code class="docutils literal notranslate"><span class="pre">savefig</span></code> のエイリアスです。</p>
+<p>図をディスクに保存します。</p>
+<p>このメソッドは :meth:<code class="docutils literal notranslate"><span class="pre">~matplotlib.figure.Figure.savefig</span></code> のエイリアスです。</p>
 </section>
 <section id="show">
 <h3><code class="docutils literal notranslate"><span class="pre">show</span></code><a class="headerlink" href="#show" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">warn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>現在の図を表示します。</p>
-<p><strong>パラメータ:</strong></p>
-<ul class="simple">
-<li><p><strong>block</strong>: 図が閉じられるまでブロックするかどうか。</p></li>
-</ul>
+<p>図を表示します。</p>
 </section>
 </section>
 </section>
