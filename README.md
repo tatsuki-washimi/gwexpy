@@ -20,7 +20,7 @@
 
 ### 1. Advanced Containers
 
-- **`TimeSeriesMatrix`**: A 3D container `(channels, 1, time)` for handling multi-channel time-series data with shared time axes. Supports element-wise operations, slicing, PCA/ICA decomposition, and bulk processing.
+- **`TimeSeriesMatrix`**: A 2D matrix container (rows x columns) for multiple `TimeSeries` objects sharing a common time axis. Supports element-wise operations, slicing, PCA/ICA decomposition, and bulk processing. Underlying data is a 3D array `(rows, cols, time)`.
 - **`FrequencySeriesMatrix`**: A matrix container for frequency-domain data, ideal for representing Transfer Functions, CSD, and Coherence matrices.
 - **`LaplaceGram`**: A specialized container (subclass of `TimePlaneTransform`) for 2D time-frequency representations (like STLT output), supporting interpolation along the time axis.
 - **Auto-expanding `SeriesMatrix`**: Assigning to new `(row_key, col_key)` adds rows/cols automatically (e.g. `mat["H1", "Strain"] = ts`).
