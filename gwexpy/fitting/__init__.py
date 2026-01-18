@@ -32,8 +32,9 @@ def enable_series_fit() -> None:
     """
     Opt-in monkeypatch for gwpy.types.Series.fit.
 
-    This keeps import side effects minimal while providing the convenience API
-    when explicitly requested.
+    Note: standard gwexpy classes (TimeSeries, FrequencySeries) already have the .fit() method
+    via inheritance. This function is generally not needed unless you are using base gwpy objects
+    directly.
     """
     if not hasattr(Series, "fit"):
         Series.fit = _lazy_series_fit
