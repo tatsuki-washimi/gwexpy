@@ -1,197 +1,91 @@
 # TimeSeries
 
-**継承元:** TimeSeriesInteropMixin, TimeSeriesAnalysisMixin, TimeSeriesResamplingMixin, TimeSeriesSignalMixin, TimeSeriesSpectralMixin, gwpy.timeseries.TimeSeries
-
-`gwexpy` の全機能を備えた、拡張された TimeSeries クラスです。
-GWpy の TimeSeries と完全な互換性を持ちつつ、以下の機能を追加・統合しています。
-
-- **信号処理**: 解析信号 (hilbert), 周波数復調 (demodulate), 相互相関 (correlate) など。
-- **スペクトル変換**: FFT, PSD, ASD, CWT (連続ウェーブレット変換), STLT (短時間ラプラス変換), DCT (離散コサイン変換) など。
-- **データ分析**: 欠損値補完 (impute), 標準化 (standardize), 移動平均などのローリング統計 (rolling_*) など。
-- **相互運用性**: PyTorch, TensorFlow, JAX, pandas, xarray, MNE, ObsPy などの他ライブラリへの変換。
-
-## 主要メソッド
-
-### `abs`
-
-要素ごとの絶対値を計算します。
-
-
-### `asd`, `psd`
-
-ASD（振幅スペクトル密度）または PSD（パワースペクトル密度）を計算します。
-
-### `asfreq`
-
-指定された時間間隔やルール（'1s' など）に基づいて、シリーズを補間せずに再サンプリング（リインデックス）します。補間が必要な場合は `resample` を使用します。
-
-### `bandpass`, `highpass`, `lowpass`, `notch`
-
-各種フィルタ（バンドパス、ハイパス、ローパス、ノッチフィルタ）を適用します。
-
-### `cepstrum`
-
-ケプストラムを計算します。
-
-### `coherence`, `coherence_spectrogram`
-
-他の信号とのコヒーレンス、またはコヒーレンス・スペクトログラムを計算します。
-
-### `convolve`
-
-FIR フィルタとの畳み込み（overlap-save 法）を行います。
-
-### `correlate`
-
-他の信号との相互相関（SNR タイムシリーズ）を計算します。
-
-### `crop`
-
-指定した GPS 時刻の範囲で信号を切り抜きます。
-
-### `cwt`
-
-連続ウェーブレット変換 (CWT) を計算します。
-
-### `stlt`
-
-短時間ラプラス変換 (STLT) を計算します。
-(Time, Sigma, Frequency) の3次元データ (`LaplaceGram`) を返します。
-
-### `dct`
-
-離散コサイン変換 (DCT) を計算します。
-
-### `degree`
-
-位相（偏角）を「度 (degree)」単位で計算します。`np.angle(deg=True)` を使用します。
-
-### `demodulate`
-
-指定した周波数で信号を復調し、振幅と位相のトレンドを取得します。
-
-### `detrend`
-
-トレンド除去（平均値や線形成分の除去）を行います。
-
-### `fft`, `ifft`
-
-高速フーリエ変換 (FFT) および逆 FFT を実行します。
-
-### `emd`
-
-経験的モード分解 (Empirical Mode Decomposition) を行い、固有モード関数 (IMF) を抽出します。
-
-### `hht`
-
-ヒルベルト・ファン変換 (Hilbert-Huang Transform) を計算します。分析結果として、各 IMF のヒルベルト・スペクトルを取得できます。
-
-### `filter`, `filterba`
-
-一般的なデジタルフィルタ、または [b, a] 係数によるフィルタを適用します。
-
-### `find_peaks`
-
-信号内のピークを検出します。`method` ('amplitude', 'power', 'db' 等) による閾値判定が可能です。(戻り値: ピークを含む `FrequencySeries` とプロパティの辞書)
-
-### `fit`
-
-モデル関数へのフィッティングを行います（最小二乗法またはMCMC）。
-
-### `arima`, `ar`, `ma`, `arma`
-
-ARIMA（自己回帰移動平均）モデルなどの時系列モデルを適合させます。予測 (forecast) や残差分析が可能です。
-
-### `gate`
-
-指定した閾値に基づいて信号にゲート（ゼロ埋めやウィンドウ適用）をかけます。
-
-### `heterodyne`
-
-
-
-ヘテロダイン検波（デジタル復調）を行います。
-
-### `hilbert`
-
-解析信号（ヒルベルト変換）を計算し、複素数形式の信号を返します。
-
-### `lock_in`
-
-ロックインアンプ方式による復調と平均化を行います。
-
-### `mix_down`, `baseband`
-
-信号の周波数シフト（複素復調）を行い、ベースバンド信号を取得します。
-
-### `histogram`
-
-データの値のヒストグラムを計算します。
-
-### `hurst`, `local_hurst`
-
-ハースト指数を計算します。時系列の長期記憶性や自己相関の強さを評価します。`local_hurst` は時間変化するハースト指数を推定します。
-
-### `impute`
-
-NaN などの欠損値を補完します。
-
-### `interpolate`
-
-指定したサンプリングレートへ補間します。
-
-### `radian`
-
-位相（偏角）を「ラジアン (radian)」単位で計算します。`np.angle` を使用します。
-
-### `resample`
-
-信号処理的な再サンプリング、または時間軸のリサンプリングを行います。
-
-### `rms`, `std`, `mean`, `median`
-
-各種統計量（実効値、標準偏差、平均、中央値）を計算します。
-
-### `rolling_mean` (他 `rolling_*`)
-
-移動窓を用いた統計計算（平均、中央値、標準偏差、最大値、最小値）を行います。
-
-### `smooth`
-
-データを平滑化します。Boxcar (移動平均), Hanning, Gaussian などの窓関数を利用可能です。
-
-### `spectrogram`
-
-スペクトログラムを計算します。
-
-### `standardize`
-
-データを標準化（z-score など）します。
-
-### `to_torch`, `to_tensorflow`, `to_jax`, `to_cupy`
-
-各種ディープラーニング・数値計算フレームワークのテンソル/配列に変換します。
-
-### `to_pandas`, `to_xarray`, `to_polars`
-
-データ分析ライブラリの DataFrame や DataArray に変換します。
-
-### `to_mne`, `to_obspy`, `to_neo`, `to_simpeg`
-
-脳磁計/脳波計 (MNE)、地震学 (ObsPy)、地球物理学 (SimPEG) などの専門分野のデータ型に変換します。
-
-### `whiten`
-
-信号をホワイトニング（白色化）します。
-
-### `transfer_function`
-
-他の信号との間の伝達関数（TF）を推定します。
-
-### `write`, `read`
-
-各種フォーマット（GWF, HDF5, WAV, CSV, ROOT など）でファイルの読み書きを行います。
-
-### `zpk`
-
-零点・極・ゲイン形式でフィルタを適用します。
+**継承元:** TimeSeriesInteropMixin, TimeSeriesAnalysisMixin, TimeSeriesResamplingMixin, TimeSeriesSignalMixin, SignalAnalysisMixin, TimeSeriesSpectralMixin, StatisticsMixin, FittingMixin, PhaseMethodsMixin, RegularityMixin, _LegacyTimeSeries (gwpy.timeseries.TimeSeries)
+
+すべての gwexpy 機能を備えた拡張 TimeSeries。
+
+このクラスは複数のモジュールからの機能を統合します：
+- コア操作: is_regular, _check_regular, tail, crop, append, find_peaks
+- スペクトル変換: fft, psd, cwt, laplace など
+- 信号処理: hilbert, mix_down, xcorr など
+- 解析: impute, standardize, rolling_* など
+- 相互運用性: to_pandas, to_torch, to_xarray など
+
+gwpy.timeseries.TimeSeries から継承し、完全な互換性を持ちます。
+
+## 主要プロパティ
+
+| プロパティ | 説明 |
+|-----------|------|
+| `dt` | サンプル間隔 |
+| `t0` | 開始時刻 (GPS エポック) |
+| `times` | 時間配列 |
+| `sample_rate` | サンプリングレート |
+| `duration` | 継続時間 |
+| `channel` | データチャンネル |
+| `name` | データセット名 |
+| `unit` | 物理単位 |
+
+## スペクトル変換
+
+| メソッド | 説明 |
+|---------|------|
+| `fft()` | 高速フーリエ変換 |
+| `psd()` / `asd()` | パワー/振幅スペクトル密度 |
+| `spectrogram()` / `spectrogram2()` | スペクトログラム |
+| `q_transform()` | Q 変換 |
+| `cwt()` | 連続ウェーブレット変換 |
+| `cepstrum()` | ケプストラム解析 |
+
+## 信号処理
+
+| メソッド | 説明 |
+|---------|------|
+| `filter()` / `bandpass()` / `highpass()` / `lowpass()` / `notch()` | フィルタリング |
+| `resample()` / `decimate()` | リサンプリング |
+| `detrend()` | トレンド除去 |
+| `whiten()` | ホワイトニング |
+| `taper()` | テーパー処理 |
+| `hilbert()` / `analytic_signal()` | 解析信号 |
+| `heterodyne()` / `baseband()` / `mix_down()` / `lock_in()` | ヘテロダイン処理 |
+| `xcorr()` | 相互相関 |
+| `transfer_function()` / `coherence()` / `csd()` | 伝達関数/コヒーレンス/CSD |
+
+## 解析
+
+| メソッド | 説明 |
+|---------|------|
+| `mean()` / `std()` / `max()` / `min()` / `rms()` | 統計量 |
+| `rolling_mean()` / `rolling_std()` 等 | ローリング統計 |
+| `find_peaks()` | ピーク検出 |
+| `instantaneous_phase()` / `instantaneous_frequency()` | 瞬時位相/周波数 |
+| `envelope()` | 包絡線 |
+| `impute()` | 欠損値補完 |
+| `standardize()` | 標準化 |
+
+## 相互運用性
+
+| メソッド | 説明 |
+|---------|------|
+| `to_pandas()` / `from_pandas()` | pandas 変換 |
+| `to_torch()` / `to_tensorflow()` / `to_jax()` | ML フレームワーク変換 |
+| `to_xarray()` / `to_polars()` | xarray/polars 変換 |
+| `to_control()` / `from_control()` | python-control 変換 |
+| `to_pint()` | Pint 変換 |
+
+## データ操作
+
+| メソッド | 説明 |
+|---------|------|
+| `crop()` | 時間範囲でクロップ（あらゆる時刻形式対応） |
+| `append()` / `prepend()` | データ接続 |
+| `shift()` | 時間シフト |
+| `pad()` | パディング |
+| `gate()` / `mask()` | ゲート/マスク処理 |
+
+## 入出力
+
+| メソッド | 説明 |
+|---------|------|
+| `read()` / `write()` | ファイル入出力 |
+| `get()` / `fetch()` / `find()` | データ取得 (NDS, GWF) |
