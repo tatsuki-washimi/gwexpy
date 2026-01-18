@@ -3,6 +3,9 @@
 `gwexpy.noise.asd` モジュールは Amplitude Spectral Density (ASD) を生成する関数を提供します。
 すべての関数は `FrequencySeries` オブジェクトを返します。
 
+> [!NOTE]
+> `gwexpy.noise` は、ASDを生成する `.asd` サブモジュールと、時系列波形を生成する `.wave` サブモジュールに分離されています。
+
 ---
 
 ## from_pygwinc
