@@ -1,12 +1,12 @@
 # SpectrogramList
 
-**継承元:** UserList
+**継承元:** PhaseMethodsMixin, UserList
 
-`Spectrogram` オブジェクトのリスト。
-TimeSeriesList と同様ですが、2D の Spectrogram を対象としています。
+Spectrogram オブジェクトのリスト。
+参考: TimeSeriesList に似ていますが、2D Spectrogram 用です。
 
 .. note::
-   Spectrogram オブジェクトはメモリ上で非常に大きくなる可能性があります。
+   Spectrogram オブジェクトはメモリを大量に消費する可能性があります。
    ディープコピーを避けるため、可能な限り `inplace=True` を使用してください。
 
 ## メソッド
@@ -17,19 +17,25 @@ TimeSeriesList と同様ですが、2D の Spectrogram を対象としていま�
 __init__(self, initlist=None)
 ```
 
-初期化。
+self を初期化します。正確なシグネチャは help(type(self)) を参照してください。
 
-*( `MutableSequence` から継承)*
+*(PhaseMethodsMixin から継承)*
 
-### `append`
+### `angle`
 
 ```python
-append(self, item)
+angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
 ```
 
-リストの末尾にアイテムを追加します。
+`phase(unwrap=unwrap, deg=deg)` のエイリアス。
 
-*( `MutableSequence` から継承)*
+### `bootstrap_asd`
+
+```python
+bootstrap_asd(self, *args, **kwargs)
+```
+
+リスト内の各スペクトログラムからロバスト ASD を推定します（FrequencySeriesList を返します）。
 
 ### `crop`
 
@@ -45,17 +51,15 @@ crop(self, t0, t1, inplace=False)
 crop_frequencies(self, f0, f1, inplace=False)
 ```
 
-周波数軸でクロップします。
+周波数をクロップします。
 
-### `extend`
+### `degree`
 
 ```python
-extend(self, other)
+degree(self, unwrap: 'bool' = False) -> "'SpectrogramList'"
 ```
 
-反復可能オブジェクトの要素を追加してリストを拡張します。
-
-*( `MutableSequence` から継承)*
+各スペクトログラムの位相（度単位）を計算します。
 
 ### `interpolate`
 
@@ -65,21 +69,49 @@ interpolate(self, dt, df, inplace=False)
 
 各スペクトログラムを補間します。
 
+### `phase`
+
+```python
+phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+データの位相を計算します。
+
+パラメータ
+----------
+unwrap : `bool`, optional
+    `True` の場合、不連続性を除去するために位相をアンラップします。デフォルトは `False`。
+deg : `bool`, optional
+    `True` の場合、位相を度で返します。デフォルトは `False`（ラジアン）。
+
+戻り値
+-------
+`Series` or `Matrix` or `Collection`
+    データの位相。
+
 ### `plot`
 
 ```python
 plot(self, **kwargs)
 ```
 
-すべてのスペクトログラムを垂直方向に並べてプロットします。
+すべてのスペクトログラムを縦に積み重ねてプロットします。
 
-### `read`
+### `plot_summary`
 
 ```python
-read(self, source, *args, **kwargs)
+plot_summary(self, **kwargs)
 ```
 
-HDF5からスペクトログラムをリストに読み込みます。
+リストをスペクトログラムとパーセンタイルサマリーを並べてプロットします。
+
+### `radian`
+
+```python
+radian(self, unwrap: 'bool' = False) -> "'SpectrogramList'"
+```
+
+各スペクトログラムの位相（ラジアン単位）を計算します。
 
 ### `rebin`
 
@@ -89,14 +121,6 @@ rebin(self, dt, df, inplace=False)
 
 各スペクトログラムをリビンします。
 
-### `to_cupy`
-
-```python
-to_cupy(self, dtype=None)
-```
-
-各スペクトログラムを CuPy 配列に変換します。リストを返します。
-
 ### `to_matrix`
 
 ```python
@@ -105,13 +129,9 @@ to_matrix(self)
 
 SpectrogramMatrix (N, Time, Freq) に変換します。
 
-### `to_torch`
+### `to_cupy` / `to_dask` / `to_jax` / `to_tensorflow` / `to_torch`
 
-```python
-to_torch(self, device=None, dtype=None)
-```
-
-各スペクトログラムを PyTorch テンソルに変換します。リストを返します。
+各アイテムを対応するフレームワークのテンソル/配列に変換します。リストを返します。
 
 ### `write`
 
@@ -119,4 +139,4 @@ to_torch(self, device=None, dtype=None)
 write(self, target, *args, **kwargs)
 ```
 
-リストをファイルに書き出します。
+リストをファイルに書き込みます。

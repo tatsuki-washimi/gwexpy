@@ -1,12 +1,12 @@
 # SpectrogramDict
 
-**継承元:** UserDict
+**継承元:** PhaseMethodsMixin, UserDict
 
-`Spectrogram` オブジェクトのディクショナリ。
+Spectrogram オブジェクトの辞書。
 
 .. note::
-   Spectrogram オブジェクトはメモリ上で非常に大きくなる可能性があります。
-   ディープコピーを避けるため、可能な限り `inplace=True` を使用してコンテナを直接更新してください。
+   Spectrogram オブジェクトはメモリを大量に消費する可能性があります。
+   可能な限り `inplace=True` を使用してコンテナをその場で更新してください。
 
 ## メソッド
 
@@ -16,9 +16,25 @@
 __init__(self, dict=None, **kwargs)
 ```
 
-初期化。
+self を初期化します。正確なシグネチャは help(type(self)) を参照してください。
 
-*( `MutableMapping` から継承)*
+*(PhaseMethodsMixin から継承)*
+
+### `angle`
+
+```python
+angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+`phase(unwrap=unwrap, deg=deg)` のエイリアス。
+
+### `bootstrap_asd`
+
+```python
+bootstrap_asd(self, *args, **kwargs)
+```
+
+辞書内の各スペクトログラムからロバスト ASD を推定します（FrequencySeriesDict を返します）。
 
 ### `crop`
 
@@ -26,16 +42,18 @@ __init__(self, dict=None, **kwargs)
 crop(self, t0, t1, inplace=False)
 ```
 
-各スペクトログラムを時間軸でクロップします。
+各スペクトログラムを時間方向でクロップします。
 
-**パラメータ:**
-- **t0, t1** : float
-    開始時間と終了時間。
-- **inplace** : bool, オプション
-    Trueの場合、インプレースで変更します。
+パラメータ
+----------
+t0, t1 : float
+    開始時刻と終了時刻。
+inplace : bool, optional
+    True の場合、その場で変更します。
 
-**戻り値:**
-- **SpectrogramDict**
+戻り値
+-------
+SpectrogramDict
 
 ### `crop_frequencies`
 
@@ -43,16 +61,26 @@ crop(self, t0, t1, inplace=False)
 crop_frequencies(self, f0, f1, inplace=False)
 ```
 
-各スペクトログラムを周波数軸でクロップします。
+各スペクトログラムを周波数方向でクロップします。
 
-**パラメータ:**
-- **f0, f1** : float または Quantity
+パラメータ
+----------
+f0, f1 : float or Quantity
     開始周波数と終了周波数。
-- **inplace** : bool, オプション
-    Trueの場合、インプレースで変更します。
+inplace : bool, optional
+    True の場合、その場で変更します。
 
-**戻り値:**
-- **SpectrogramDict**
+戻り値
+-------
+SpectrogramDict
+
+### `degree`
+
+```python
+degree(self, unwrap: 'bool' = False) -> "'SpectrogramDict'"
+```
+
+各スペクトログラムの位相（度単位）を計算します。
 
 ### `interpolate`
 
@@ -62,16 +90,38 @@ interpolate(self, dt, df, inplace=False)
 
 各スペクトログラムを新しい解像度に補間します。
 
-**パラメータ:**
-- **dt** : float
+パラメータ
+----------
+dt : float
     新しい時間解像度。
-- **df** : float
+df : float
     新しい周波数解像度。
-- **inplace** : bool, オプション
-    Trueの場合、インプレースで変更します。
+inplace : bool, optional
+    True の場合、その場で変更します。
 
-**戻り値:**
-- **SpectrogramDict**
+戻り値
+-------
+SpectrogramDict
+
+### `phase`
+
+```python
+phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
+```
+
+データの位相を計算します。
+
+パラメータ
+----------
+unwrap : `bool`, optional
+    `True` の場合、不連続性を除去するために位相をアンラップします。デフォルトは `False`。
+deg : `bool`, optional
+    `True` の場合、位相を度で返します。デフォルトは `False`（ラジアン）。
+
+戻り値
+-------
+`Series` or `Matrix` or `Collection`
+    データの位相。
 
 ### `plot`
 
@@ -79,15 +129,23 @@ interpolate(self, dt, df, inplace=False)
 plot(self, **kwargs)
 ```
 
-すべてのスペクトログラムを垂直方向に並べてプロットします。
+すべてのスペクトログラムを縦に積み重ねてプロットします。
 
-### `read`
+### `plot_summary`
 
 ```python
-read(self, source, *args, **kwargs)
+plot_summary(self, **kwargs)
 ```
 
-HDF5ファイルからディクショナリを読み込みます。ファイルのキーがディクショナリのキーになります。
+辞書をスペクトログラムとパーセンタイルサマリーを並べてプロットします。
+
+### `radian`
+
+```python
+radian(self, unwrap: 'bool' = False) -> "'SpectrogramDict'"
+```
+
+各スペクトログラムの位相（ラジアン単位）を計算します。
 
 ### `rebin`
 
@@ -95,26 +153,20 @@ HDF5ファイルからディクショナリを読み込みます。ファイル�
 rebin(self, dt, df, inplace=False)
 ```
 
-各スペクトログラムを新しい時間/周波数解像度にリビン（再ビン化）します。
+各スペクトログラムを新しい時間/周波数解像度にリビンします。
 
-**パラメータ:**
-- **dt** : float
+パラメータ
+----------
+dt : float
     新しい時間ビンサイズ。
-- **df** : float
+df : float
     新しい周波数ビンサイズ。
-- **inplace** : bool, オプション
-    Trueの場合、インプレースで変更します。
+inplace : bool, optional
+    True の場合、その場で変更します。
 
-**戻り値:**
-- **SpectrogramDict**
-
-### `to_cupy`
-
-```python
-to_cupy(self, dtype=None)
-```
-
-CuPy配列のディクショナリに変換します。
+戻り値
+-------
+SpectrogramDict
 
 ### `to_matrix`
 
@@ -124,27 +176,14 @@ to_matrix(self)
 
 SpectrogramMatrix に変換します。
 
-**戻り値:**
-- **SpectrogramMatrix**
-    (N, Time, Freq) の 3D 配列。
+戻り値
+-------
+SpectrogramMatrix
+    (N, Time, Freq) の3D配列。
 
-### `to_torch`
+### `to_cupy` / `to_dask` / `to_jax` / `to_tensorflow` / `to_torch`
 
-```python
-to_torch(self, device=None, dtype=None)
-```
-
-PyTorch テンソルのディクショナリに変換します。
-
-### `update`
-
-```python
-update(self, other=None, **kwargs)
-```
-
-マッピングや反復可能オブジェクトからディクショナリを更新します。
-
-*( `UserDict` から継承)*
+各アイテムを対応するフレームワークのテンソル/配列に変換します。辞書を返します。
 
 ### `write`
 
@@ -152,4 +191,4 @@ update(self, other=None, **kwargs)
 write(self, target, *args, **kwargs)
 ```
 
-ディクショナリをファイルに書き出します。
+辞書をファイルに書き込みます。
