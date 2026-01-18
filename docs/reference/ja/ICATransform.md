@@ -2,7 +2,7 @@
 
 **継承元:** Transform
 
-既存の分解ヘルパーを使用した ICA（独立成分分析）のラッパーです。
+既存の分解ヘルパーを使用した ICA ラッパー。
 
 ## メソッド
 
@@ -12,9 +12,9 @@
 __init__(self, n_components: Optional[int] = None, *, multivariate: bool = True, align: str = 'intersection', **kwargs)
 ```
 
-インスタンスを初期化します。
+self を初期化します。正確なシグネチャは help(type(self)) を参照してください。
 
-*( `Transform` から継承)*
+*(Transform から継承)*
 
 ### `fit`
 
@@ -22,9 +22,9 @@ __init__(self, n_components: Optional[int] = None, *, multivariate: bool = True,
 fit(self, x)
 ```
 
-変換をデータに適合させます。selfを返します。
+データに変換をフィットします。self を返します。
 
-*( `Transform` から継承)*
+*(Transform から継承)*
 
 ### `fit_transform`
 
@@ -32,7 +32,7 @@ fit(self, x)
 fit_transform(self, x)
 ```
 
-適合と変換を一つのステップで実行します。
+フィットと変換を一度に実行します。
 
 ### `inverse_transform`
 
@@ -40,9 +40,9 @@ fit_transform(self, x)
 inverse_transform(self, y)
 ```
 
-逆変換を適用します。
+変換を逆適用します。すべての変換がこれをサポートしているわけではありません。
 
-*( `Transform` から継承)*
+*(Transform から継承)*
 
 ### `transform`
 
@@ -50,6 +50,6 @@ inverse_transform(self, y)
 transform(self, x)
 ```
 
-データを変換します。
+データに変換を適用します。サブクラスで実装する必要があります。
 
-*( `Transform` から継承)*
+*(Transform から継承)*

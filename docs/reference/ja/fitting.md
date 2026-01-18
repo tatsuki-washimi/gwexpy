@@ -4,20 +4,20 @@
 
 ## 概要
 
-- **最小二乗フィッティング**: 実数・複素数データ対応
+- **最小二乗フィッティング**: 実数・複素数データに対応
 - **GLS (一般化最小二乗法)**: 共分散行列を考慮したフィッティング
 - **MCMC**: emcee を使ったベイズ推定
 - **統合パイプライン**: ブートストラップ → GLS → MCMC のワンライナー API
 
 ---
 
-## クラス・関数一覧
+## クラスと関数
 
 ### メイン関数
 
 | 名前 | 説明 |
 |------|------|
-| `fit_series()` | Series オブジェクトのフィッティング |
+| `fit_series()` | Series オブジェクトをフィット |
 | `fit_bootstrap_spectrum()` | 統合スペクトル解析パイプライン |
 
 ### クラス
@@ -262,10 +262,10 @@ result = fit_series(ts, linear, cost_function=gls, p0={"a": 1, "b": 0})
 `gwexpy.fitting.models` で利用可能なモデル：
 
 | 名前 | 数式 | パラメータ |
-|------|------|------------|
+|------|------|-----------|
 | `gaussian` / `gaus` | A * exp(-(x-μ)²/(2σ²)) | A, mu, sigma |
 | `power_law` | A * x^α | A, alpha |
-| `damped_oscillation` | A *exp(-t/τ)* cos(2πft + φ) | A, tau, f, phi |
+| `damped_oscillation` | A * exp(-t/τ) * cos(2πft + φ) | A, tau, f, phi |
 | `pol0` ~ `pol9` | c₀ + c₁x + c₂x² + ... | p0, p1, ... |
 | `lorentzian` | A / ((x-x₀)² + γ²) | A, x0, gamma |
 | `exponential` | A * exp(-x/τ) | A, tau |
@@ -277,3 +277,14 @@ result = fit_series(ts, linear, cost_function=gls, p0={"a": 1, "b": 0})
 - `iminuit`: 必須
 - `emcee`: MCMC 機能に必要
 - `corner`: コーナープロットに必要
+
+---
+
+## 単位とモデルのセマンティクス
+
+`gwexpy.fitting` はデータとモデル間の単位の整合性を保証します：
+
+* **単位の伝播**: `result.model(x)` でモデルを評価すると、入力データの単位が自動的に適用されます。
+    * 入力 `x` が Hz 単位の場合、モデルは周波数単位で評価されます。
+    * 出力 `y` はフィットしたデータの単位を保持します（例：m, V²/Hz）。
+* **パラメータアクセス**: `result.params['name']` は `.value` と `.error` 属性を持つオブジェクトを返し、数値と統計的不確かさを分離します。
