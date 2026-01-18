@@ -1,3 +1,4 @@
+import faulthandler
 import pytest
 import os
 import logging
@@ -7,6 +8,8 @@ from PyQt5.QtWidgets import QApplication
 # Config logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
+
+faulthandler.enable(all_threads=True)
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
