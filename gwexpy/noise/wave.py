@@ -7,8 +7,8 @@ All functions return gwexpy.TimeSeries objects.
 
 Submodule Structure
 -------------------
-- `gwexpy.noise.asd`: ASD (FrequencySeries) を返す関数
-- `gwexpy.noise.wave`: 時系列波形 (TimeSeries) を返す関数
+- `gwexpy.noise.asd`: Functions that return ASD (FrequencySeries)
+- `gwexpy.noise.wave`: Functions that return time-series waveforms (TimeSeries)
 
 Examples
 --------
