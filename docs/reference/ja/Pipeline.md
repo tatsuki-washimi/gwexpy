@@ -2,7 +2,7 @@
 
 **継承元:** object
 
-一連の変換（Transform）を順次適用します。
+変換のリストを順次適用します。
 
 ## メソッド
 
@@ -12,11 +12,12 @@
 __init__(self, steps: Sequence[Tuple[str, gwexpy.timeseries.pipeline.Transform]])
 ```
 
-名前付きの変換ステップでパイプラインを初期化します。
+名前付き変換ステップでパイプラインを初期化します。
 
-**パラメータ:**
-- **steps** : (名前, Transform) のタプルのリスト
-    適用する一連の変換。
+パラメータ
+----------
+steps : list of (name, Transform) tuples
+    適用する変換のシーケンス。
 
 ### `fit`
 
@@ -24,7 +25,7 @@ __init__(self, steps: Sequence[Tuple[str, gwexpy.timeseries.pipeline.Transform]]
 fit(self, x)
 ```
 
-すべての変換を順番に適合させます。
+すべての変換を順番にフィットします。
 
 ### `fit_transform`
 
@@ -32,7 +33,7 @@ fit(self, x)
 fit_transform(self, x)
 ```
 
-適合と変換を一つのステップで実行します。
+フィットと変換を一度に実行します。
 
 ### `inverse_transform`
 
@@ -40,13 +41,14 @@ fit_transform(self, x)
 inverse_transform(self, y, *, strict: bool = True)
 ```
 
-逆変換を逆の順番で適用します。
+逆変換を逆順で適用します。
 
-**パラメータ:**
-- **y** : データ
+パラメータ
+----------
+y : data
     変換されたデータ。
-- **strict** : bool, オプション
-    Trueの場合、いずれかのステップが逆変換をサポートしていない場合にエラーをスローします。
+strict : bool, optional
+    True の場合、逆変換をサポートしないステップがあるとエラーを発生させます。
 
 ### `transform`
 

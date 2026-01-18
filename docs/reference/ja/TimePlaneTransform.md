@@ -1,15 +1,12 @@
-# TimePlaneTransform / LaplaceGram
+# TimePlaneTransform
 
 **継承元:** object
 
-時間-周波数変換などの手法によって生成される、(time, axis1, axis2) 構造を持つ 3D データを保持するためのコンテナです。
+時間-周波数変換などで生成される、(time, axis1, axis2) 構造を持つ3次元データのコンテナ。
 
-このクラスは Array3D をラップし、以下のセマンティック構造を強制します：
-- 軸 0 : "time" (時間)
-- 軸 1, 2 : 対称的な空間または周波数の次元
-
-**LaplaceGram** は STLT (短時間ラプラス変換) 用の特殊な TimePlaneTransform であり、
-軸 1 は "sigma" (実部 s)、軸 2 は "frequency" (周波数) となります。
+このクラスは Array3D をラップし、セマンティック構造を強制します：
+- 軸 0 は「時間」
+- 軸 1 と 2 は対称的な空間/周波数次元
 
 ## メソッド
 
@@ -21,14 +18,16 @@ __init__(self, data3d, *, kind='custom', meta=None)
 
 TimePlaneTransform を初期化します。
 
-**パラメータ:**
-- **data3d** : Array3D または tuple
-    基となる 3D データ。`Array3D` インスタンスを推奨します。
-    タプル形式もサポート：(value, time_axis, axis1, axis2, unit/metadata)。
-- **kind** : str, オプション
-    変換の種類を示す文字列（例: "stlt", "bispectrum"）。デフォルトは "custom"。
-- **meta** : dict, オプション
-    追加のメタデータディクショナリ。デフォルトは None（空の辞書として保存）。
+パラメータ
+----------
+data3d : Array3D or tuple
+    基盤となる3Dデータ。
+    推奨: `Array3D` インスタンス。
+    サポートされるタプル形式: (value, time_axis, axis1, axis2, unit/metadata)。
+kind : str, optional
+    変換の種類を説明する文字列 (例: "stlt", "bispectrum")。デフォルトは "custom"。
+meta : dict, optional
+    追加のメタデータ辞書。デフォルトは None (空の辞書として保存)。
 
 ### `at_sigma`
 
@@ -36,15 +35,9 @@ TimePlaneTransform を初期化します。
 at_sigma(self, sigma)
 ```
 
-特定の sigma インデックスまたは値における 2D 平面 (スペクトログラム風) を抽出します。
-(軸1が "sigma" である場合、例えば `LaplaceGram` で利用可能)。
+特定の sigma インデックス（軸1が sigma の場合）または値で2D平面 (Spectrogram ライク) を抽出します。
 
-**パラメータ:**
-- **sigma** : float または int
-    Sigma の値またはインデックス。
-
-**戻り値:**
-- **Plane2D** (スペクトログラム風)
+これは軸 1 が sigma であることを前提とします。
 
 ### `at_time`
 
@@ -52,40 +45,42 @@ at_sigma(self, sigma)
 at_time(self, t, *, method='nearest')
 ```
 
-特定の時間 `t` における Plane2D を抽出します。
+特定の時刻 `t` で Plane2D を抽出します。
 
-**パラメータ:**
-- **t** : Quantity または float
-    時間。float の場合、時間軸の単位であるとみなされます。
-- **method** : str, オプション
-    "nearest" (デフォルト)。将来のバージョンで補間をサポートする可能性があります。
+パラメータ
+----------
+t : Quantity or float
+    時刻値。float の場合、時間軸の単位であると仮定されます。
+method : str, optional
+    "nearest" (デフォルト)。将来のバージョンでは補間をサポートする可能性があります。
 
-**戻り値:**
-- **Plane2D**
+戻り値
+-------
+Plane2D
 
 ### `axes`
 
-3つの AxisDescriptor (time, axis1, axis2) を返します。
+3つの AxisDescriptor を返します: (time, axis1, axis2)。
 
 ### `axis1`
 
-第1の対称軸 (axis 1) の AxisDescriptor。
+最初の対称軸（軸 1）の AxisDescriptor。
 
 ### `axis2`
 
-第2の対称軸 (axis 2) の AxisDescriptor。
+2番目の対称軸（軸 2）の AxisDescriptor。
 
 ### `kind`
 
-変換の種類を示す文字列（'stlt', 'bispectrum' など）。
+変換の種類を説明する文字列 (例: 'stlt', 'bispectrum')。
 
 ### `meta`
 
-追加のメタデータディクショナリ。
+追加のメタデータ辞書。
 
 ### `ndim`
 
-次元数（常に 3）。
+次元数 (常に 3)。
 
 ### `plane`
 
@@ -93,24 +88,26 @@ at_time(self, t, *, method='nearest')
 plane(self, drop_axis, drop_index, *, axis1=None, axis2=None)
 ```
 
-特定の軸に沿ったインデックスでスライスし、2D 平面を抽出します。
+1つの軸に沿った特定のインデックスでスライスして2D平面を抽出します。
 
-**パラメータ:**
-- **drop_axis** : int または str
-    スライス（削除）する軸。
-- **drop_index** : int
-    `drop_axis` に沿って選択する整数のインデックス。
-- **axis1** : str または int, オプション
-    生成される Plane2D の軸1の名称またはインデックス。
-- **axis2** : str または int, オプション
-    生成される Plane2D の軸2の名称またはインデックス。
+パラメータ
+----------
+drop_axis : int or str
+    スライスする軸（削除する軸）。
+drop_index : int
+    `drop_axis` に沿って選択する整数インデックス。
+axis1 : str or int, optional
+    結果の Plane2D の汎用軸 1。
+axis2 : str or int, optional
+    結果の Plane2D の汎用軸 2。
 
-**戻り値:**
-- **Plane2D**
+戻り値
+-------
+Plane2D
 
 ### `shape`
 
-3D データ配列の形状 (time, axis1, axis2)。
+3Dデータ配列の形状 (time, axis1, axis2)。
 
 ### `times`
 
@@ -122,7 +119,7 @@ plane(self, drop_axis, drop_index, *, axis1=None, axis2=None)
 to_array3d(self)
 ```
 
-基となる Array3D オブジェクトを返します（高度な用途向け）。
+基盤となる Array3D オブジェクトを返します（上級者向け）。
 
 ### `unit`
 
@@ -130,4 +127,4 @@ to_array3d(self)
 
 ### `value`
 
-基となるデータ値を numpy 配列として返します。
+numpy 配列としての基盤データ値。
