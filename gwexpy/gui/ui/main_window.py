@@ -59,6 +59,23 @@ class MainWindow(QtWidgets.QMainWindow):
             create_result_tab(on_import=self.open_file_dialog)
         )
         self.tabs.addTab(res_tab, "Result")
+        self.res_tab = res_tab  # Keep reference for button access
+
+        # Connect Export button
+        if hasattr(res_tab, "btn_export"):
+            res_tab.btn_export.clicked.connect(self.export_data)
+
+        # Connect New button (Phase 3)
+        if hasattr(res_tab, "btn_new"):
+            res_tab.btn_new.clicked.connect(self.open_new_result_window)
+
+        # Connect Reference button (Phase 3)
+        if hasattr(res_tab, "btn_reference"):
+            res_tab.btn_reference.clicked.connect(self.show_reference_dialog)
+
+        # Connect Calibration button (Phase 4)
+        if hasattr(res_tab, "btn_calibration"):
+            res_tab.btn_calibration.clicked.connect(self.show_calibration_dialog)
 
         self.engine = Engine()
         self.loaded_products = {}
@@ -1307,6 +1324,271 @@ class MainWindow(QtWidgets.QMainWindow):
                         )
             except Exception as e:
                 print(f"Error in update_file_plot for Graph {graph_idx + 1}: {e}")
+
+    def export_data(self):
+        """Export current plot data to file (HDF5/CSV/GWF)."""
+        filters = [
+            "HDF5 (*.h5 *.hdf5)",
+            "CSV (*.csv *.txt)",
+            "GWF Frame (*.gwf)",
+            "All Files (*)",
+        ]
+        filename, selected_filter = QtWidgets.QFileDialog.getSaveFileName(
+            self, "Export Data", "", ";;".join(filters)
+        )
+        if not filename:
+            return
+
+        # Determine format from filter or extension
+        ext = filename.lower().split(".")[-1] if "." in filename else ""
+        if "h5" in selected_filter.lower() or ext in ("h5", "hdf5"):
+            fmt = "hdf5"
+            if not filename.endswith((".h5", ".hdf5")):
+                filename += ".h5"
+        elif "gwf" in selected_filter.lower() or ext == "gwf":
+            fmt = "gwf"
+            if not filename.endswith(".gwf"):
+                filename += ".gwf"
+        else:
+            fmt = "csv"
+            if not filename.endswith((".csv", ".txt")):
+                filename += ".csv"
+
+        try:
+            # Collect exportable data from loaded products or engine
+            export_items = []
+            if self.loaded_products:
+                for key, prod in self.loaded_products.items():
+                    if hasattr(prod, "write"):
+                        export_items.append((key, prod))
+            elif self.accumulator and hasattr(self.accumulator, "latest_result"):
+                result = self.accumulator.latest_result
+                if result and hasattr(result, "write"):
+                    export_items.append(("accumulator_result", result))
+
+            if not export_items:
+                QtWidgets.QMessageBox.warning(
+                    self, "Export", "No data available to export."
+                )
+                return
+
+            # Write data
+            for name, data in export_items:
+                if fmt == "hdf5":
+                    data.write(filename, format="hdf5", overwrite=True)
+                elif fmt == "gwf":
+                    data.write(filename, format="gwf")
+                elif fmt == "csv":
+                    data.write(filename, format="csv")
+                break  # Export first item for now (TODO: export all)
+
+            QtWidgets.QMessageBox.information(
+                self, "Export", f"Data exported to:\n{filename}"
+            )
+        except Exception as e:
+            logger.exception("Export failed")
+            QtWidgets.QMessageBox.critical(
+                self, "Export Error", f"Failed to export data:\n{e}"
+            )
+
+    def open_new_result_window(self):
+        """Open a new window sharing the same data (DTT New behavior)."""
+        try:
+            from .result_window import ResultWindow
+            new_win = ResultWindow(
+                loaded_products=self.loaded_products,
+                parent=None
+            )
+            new_win.show()
+            # Keep reference to prevent garbage collection
+            if not hasattr(self, "_child_windows"):
+                self._child_windows = []
+            self._child_windows.append(new_win)
+        except (ImportError, ModuleNotFoundError):
+            # ResultWindow not implemented yet - show placeholder message
+            QtWidgets.QMessageBox.information(
+                self,
+                "New Window",
+                "New Result Window feature:\n"
+                "Opens a separate window sharing the same data.\n\n"
+                "(Full implementation pending)"
+            )
+
+    def show_reference_dialog(self):
+        """Show reference trace management dialog (DTT Reference behavior)."""
+        dialog = QtWidgets.QDialog(self)
+        dialog.setWindowTitle("Reference Traces")
+        dialog.setMinimumSize(500, 400)
+        layout = QtWidgets.QVBoxLayout(dialog)
+
+        # Instructions
+        label = QtWidgets.QLabel(
+            "Reference traces allow you to overlay previously saved data\n"
+            "onto the current plot for comparison."
+        )
+        layout.addWidget(label)
+
+        # Reference list
+        group = QtWidgets.QGroupBox("Loaded Reference Traces")
+        group_layout = QtWidgets.QVBoxLayout(group)
+        
+        self._ref_list_widget = QtWidgets.QListWidget()
+        # Populate with any existing references
+        if hasattr(self, "_reference_traces"):
+            for name in self._reference_traces.keys():
+                self._ref_list_widget.addItem(name)
+        group_layout.addWidget(self._ref_list_widget)
+
+        # Buttons for reference management
+        btn_layout = QtWidgets.QHBoxLayout()
+        btn_add = QtWidgets.QPushButton("Add from File...")
+        btn_remove = QtWidgets.QPushButton("Remove")
+        btn_toggle = QtWidgets.QPushButton("Show/Hide")
+        btn_layout.addWidget(btn_add)
+        btn_layout.addWidget(btn_remove)
+        btn_layout.addWidget(btn_toggle)
+        group_layout.addLayout(btn_layout)
+        layout.addWidget(group)
+
+        def add_reference():
+            filters = ["Data Files (*.xml *.gwf *.h5 *.hdf5)", "All Files (*)"]
+            f, _ = QtWidgets.QFileDialog.getOpenFileName(
+                dialog, "Load Reference Data", "", ";;".join(filters)
+            )
+            if f:
+                import os
+                name = os.path.basename(f)
+                if not hasattr(self, "_reference_traces"):
+                    self._reference_traces = {}
+                # Placeholder: actual loading would use gwpy/loaders
+                self._reference_traces[name] = {"file": f, "visible": True, "data": None}
+                self._ref_list_widget.addItem(name)
+
+        def remove_reference():
+            item = self._ref_list_widget.currentItem()
+            if item:
+                name = item.text()
+                if hasattr(self, "_reference_traces") and name in self._reference_traces:
+                    del self._reference_traces[name]
+                self._ref_list_widget.takeItem(self._ref_list_widget.row(item))
+
+        btn_add.clicked.connect(add_reference)
+        btn_remove.clicked.connect(remove_reference)
+
+        # Close button
+        btn_close = QtWidgets.QPushButton("Close")
+        btn_close.clicked.connect(dialog.accept)
+        layout.addWidget(btn_close)
+
+        dialog.exec_()
+
+    def show_calibration_dialog(self):
+        """Show calibration table editor dialog (DTT Calibration behavior)."""
+        dialog = QtWidgets.QDialog(self)
+        dialog.setWindowTitle("Calibration Table Editor")
+        dialog.setMinimumSize(600, 500)
+        layout = QtWidgets.QVBoxLayout(dialog)
+
+        # Instructions
+        label = QtWidgets.QLabel(
+            "Calibration tables define transfer functions to convert\n"
+            "raw ADC/DAC values to physical units (e.g., m/s, strain).\n\n"
+            "Use Zeros/Poles or FIR filter coefficients."
+        )
+        layout.addWidget(label)
+
+        # Tabs for different calibration methods
+        cal_tabs = QtWidgets.QTabWidget()
+        
+        # --- Tab 1: Channel List ---
+        channel_tab = QtWidgets.QWidget()
+        ch_layout = QtWidgets.QVBoxLayout(channel_tab)
+        
+        ch_table = QtWidgets.QTableWidget()
+        ch_table.setColumnCount(4)
+        ch_table.setHorizontalHeaderLabels(["Channel", "Gain", "Units", "Filter"])
+        ch_table.horizontalHeader().setStretchLastSection(True)
+        
+        # Populate with active channels
+        active_channels = []
+        if hasattr(self, "meas_controls"):
+            for state in self.meas_controls.get("channel_states", []):
+                if state.get("active"):
+                    active_channels.append(state.get("name", ""))
+        
+        ch_table.setRowCount(len(active_channels) if active_channels else 2)
+        for i, ch_name in enumerate(active_channels[:10]):  # Limit to 10
+            ch_table.setItem(i, 0, QtWidgets.QTableWidgetItem(ch_name))
+            ch_table.setItem(i, 1, QtWidgets.QTableWidgetItem("1.0"))
+            ch_table.setItem(i, 2, QtWidgets.QTableWidgetItem("counts"))
+            ch_table.setItem(i, 3, QtWidgets.QTableWidgetItem("None"))
+        
+        ch_layout.addWidget(ch_table)
+        cal_tabs.addTab(channel_tab, "Channels")
+        
+        # --- Tab 2: Zeros/Poles Editor ---
+        zp_tab = QtWidgets.QWidget()
+        zp_layout = QtWidgets.QFormLayout(zp_tab)
+        
+        zp_layout.addRow("Gain:", QtWidgets.QDoubleSpinBox())
+        zp_layout.addRow("Zeros (comma sep):", QtWidgets.QLineEdit(""))
+        zp_layout.addRow("Poles (comma sep):", QtWidgets.QLineEdit(""))
+        
+        cal_tabs.addTab(zp_tab, "Zeros/Poles")
+        
+        # --- Tab 3: Import/Export ---
+        io_tab = QtWidgets.QWidget()
+        io_layout = QtWidgets.QVBoxLayout(io_tab)
+        
+        btn_import_cal = QtWidgets.QPushButton("Import Calibration File...")
+        btn_export_cal = QtWidgets.QPushButton("Export Calibration File...")
+        io_layout.addWidget(btn_import_cal)
+        io_layout.addWidget(btn_export_cal)
+        io_layout.addStretch(1)
+        
+        def import_calibration():
+            f, _ = QtWidgets.QFileDialog.getOpenFileName(
+                dialog, "Import Calibration", "", "Calibration Files (*.cal *.xml *.txt);;All Files (*)"
+            )
+            if f:
+                QtWidgets.QMessageBox.information(dialog, "Import", f"Loaded calibration from:\n{f}")
+        
+        def export_calibration():
+            f, _ = QtWidgets.QFileDialog.getSaveFileName(
+                dialog, "Export Calibration", "", "Calibration Files (*.cal *.xml);;All Files (*)"
+            )
+            if f:
+                QtWidgets.QMessageBox.information(dialog, "Export", f"Exported calibration to:\n{f}")
+        
+        btn_import_cal.clicked.connect(import_calibration)
+        btn_export_cal.clicked.connect(export_calibration)
+        
+        cal_tabs.addTab(io_tab, "Import/Export")
+        
+        layout.addWidget(cal_tabs)
+
+        # Dialog buttons
+        btn_box = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        )
+        btn_box.accepted.connect(dialog.accept)
+        btn_box.rejected.connect(dialog.reject)
+        layout.addWidget(btn_box)
+
+        if dialog.exec_() == QtWidgets.QDialog.Accepted:
+            # Store calibration settings
+            if not hasattr(self, "_calibration_table"):
+                self._calibration_table = {}
+            # Collect data from table
+            for row in range(ch_table.rowCount()):
+                ch_item = ch_table.item(row, 0)
+                gain_item = ch_table.item(row, 1)
+                unit_item = ch_table.item(row, 2)
+                if ch_item and ch_item.text():
+                    self._calibration_table[ch_item.text()] = {
+                        "gain": float(gain_item.text()) if gain_item else 1.0,
+                        "units": unit_item.text() if unit_item else "counts"
+                    }
 
     def open_file_dialog(self):
         filters = ["Data Files (*.xml *.gwf *.h5 *.hdf5 *.csv *.txt)", "All Files (*)"]

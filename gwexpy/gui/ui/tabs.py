@@ -851,14 +851,161 @@ def create_result_tab(on_import=None):
 
     main_layout = QtWidgets.QVBoxLayout(tab)
     main_layout.addWidget(hsplit)
+
+    # --- Phase 2: Zoom/Active/Options state management ---
+    # State variables stored in tab widget
+    tab._active_pad = 0       # 0 = Graph 1, 1 = Graph 2
+    tab._zoomed_pad = -1      # -1 = not zoomed, 0/1 = zoomed pad index
+    tab._plots = [plot1, plot2]
+    tab._panels = [info1_panel, info2_panel]
+
+    def _update_active_highlight():
+        """Update visual highlight for active pad."""
+        for idx, plot in enumerate(tab._plots):
+            if idx == tab._active_pad:
+                plot.setTitle(f"Graph {idx + 1} [Active]")
+            else:
+                plot.setTitle(f"Graph {idx + 1}")
+
+    def _toggle_zoom():
+        """Toggle maximize/restore for the active pad (DTT Zoom behavior)."""
+        if tab._zoomed_pad < 0:
+            # Not zoomed -> Zoom active pad (hide the other)
+            tab._zoomed_pad = tab._active_pad
+            for idx, plot in enumerate(tab._plots):
+                plot.setVisible(idx == tab._zoomed_pad)
+        else:
+            # Zoomed -> Restore all
+            tab._zoomed_pad = -1
+            for plot in tab._plots:
+                plot.setVisible(True)
+
+    def _cycle_active():
+        """Cycle to the next graph pad (DTT Active behavior)."""
+        num_pads = len(tab._plots)
+        tab._active_pad = (tab._active_pad + 1) % num_pads
+        _update_active_highlight()
+        # If zoomed, switch zoom to new active
+        if tab._zoomed_pad >= 0:
+            tab._zoomed_pad = tab._active_pad
+            for idx, plot in enumerate(tab._plots):
+                plot.setVisible(idx == tab._zoomed_pad)
+
+    def _show_layout_dialog():
+        """Show layout options dialog (DTT Options behavior)."""
+        dialog = QtWidgets.QDialog(tab)
+        dialog.setWindowTitle("Layout Options")
+        dialog.setModal(True)
+        layout = QtWidgets.QVBoxLayout(dialog)
+        
+        group = QtWidgets.QGroupBox("Select Layout")
+        vbox = QtWidgets.QVBoxLayout(group)
+        
+        # Radio buttons for layout options
+        rb_1x1 = QtWidgets.QRadioButton("1 x 1 (Single Graph)")
+        rb_2x1 = QtWidgets.QRadioButton("2 x 1 (Two Graphs, Vertical)")
+        rb_1x2 = QtWidgets.QRadioButton("1 x 2 (Two Graphs, Horizontal)")
+        
+        # Current layout: 2x1 (vertical stack)
+        rb_2x1.setChecked(True)
+        
+        vbox.addWidget(rb_1x1)
+        vbox.addWidget(rb_2x1)
+        vbox.addWidget(rb_1x2)
+        layout.addWidget(group)
+        
+        # Buttons
+        btn_box = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        )
+        btn_box.accepted.connect(dialog.accept)
+        btn_box.rejected.connect(dialog.reject)
+        layout.addWidget(btn_box)
+        
+        if dialog.exec_() == QtWidgets.QDialog.Accepted:
+            # Apply layout change
+            if rb_1x1.isChecked():
+                # Show only active pad
+                for idx, plot in enumerate(tab._plots):
+                    plot.setVisible(idx == tab._active_pad)
+                tab._zoomed_pad = tab._active_pad
+            elif rb_2x1.isChecked():
+                # Vertical stack (default)
+                rv.setDirection(QtWidgets.QBoxLayout.TopToBottom)
+                for plot in tab._plots:
+                    plot.setVisible(True)
+                tab._zoomed_pad = -1
+            elif rb_1x2.isChecked():
+                # Horizontal stack
+                rv.setDirection(QtWidgets.QBoxLayout.LeftToRight)
+                for plot in tab._plots:
+                    plot.setVisible(True)
+                tab._zoomed_pad = -1
+
+    # Initialize highlight
+    _update_active_highlight()
+
+    # Bottom toolbar - DTT diaggui button order
     bot_toolbar = QtWidgets.QHBoxLayout()
+
     btn_reset = QtWidgets.QPushButton("Reset")
     btn_reset.clicked.connect(lambda: (plot1.autoRange(), plot2.autoRange()))
     bot_toolbar.addWidget(btn_reset)
+
+    btn_zoom = QtWidgets.QPushButton("Zoom")
+    btn_zoom.setToolTip("Maximize/restore the active graph pad")
+    btn_zoom.clicked.connect(_toggle_zoom)
+    bot_toolbar.addWidget(btn_zoom)
+
+    btn_active = QtWidgets.QPushButton("Active")
+    btn_active.setToolTip("Cycle focus to the next graph pad")
+    btn_active.clicked.connect(_cycle_active)
+    bot_toolbar.addWidget(btn_active)
+
+    btn_new = QtWidgets.QPushButton("New")
+    btn_new.setToolTip("Open a new window sharing the same data")
+    bot_toolbar.addWidget(btn_new)
+
+    btn_options = QtWidgets.QPushButton("Options...")
+    btn_options.setToolTip("Configure graph layout (1x1, 2x1, etc.)")
+    btn_options.clicked.connect(_show_layout_dialog)
+    bot_toolbar.addWidget(btn_options)
+
     btn_import = QtWidgets.QPushButton("Import...")
     bot_toolbar.addWidget(btn_import)
     if on_import:
         btn_import.clicked.connect(on_import)
+
+    btn_export = QtWidgets.QPushButton("Export...")
+    btn_export.setToolTip("Save plot data to file")
+    bot_toolbar.addWidget(btn_export)
+
+    btn_reference = QtWidgets.QPushButton("Reference...")
+    btn_reference.setToolTip("Manage reference traces for comparison")
+    bot_toolbar.addWidget(btn_reference)
+
+    btn_calibration = QtWidgets.QPushButton("Calibration...")
+    btn_calibration.setToolTip("Edit calibration table")
+    bot_toolbar.addWidget(btn_calibration)
+
     bot_toolbar.addStretch(1)
     main_layout.addLayout(bot_toolbar)
+
+    # Store button references for external access
+    tab.btn_reset = btn_reset
+    tab.btn_zoom = btn_zoom
+    tab.btn_active = btn_active
+    tab.btn_new = btn_new
+    tab.btn_options = btn_options
+    tab.btn_import = btn_import
+    tab.btn_export = btn_export
+    tab.btn_reference = btn_reference
+    tab.btn_calibration = btn_calibration
+
+    # Expose internal functions for testing
+    tab._toggle_zoom = _toggle_zoom
+    tab._cycle_active = _cycle_active
+    tab._show_layout_dialog = _show_layout_dialog
+    tab._update_active_highlight = _update_active_highlight
+
     return tab, info1, info2, traces1, traces2
