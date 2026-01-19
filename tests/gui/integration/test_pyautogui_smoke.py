@@ -8,8 +8,8 @@ from gwexpy.gui.ui.main_window import MainWindow
 def test_pyautogui_start_stop(qtbot, log_gui_action):
     if not os.environ.get("DISPLAY"):
         pytest.skip("DISPLAY not set; run with pytest-xvfb or xvfb-run")
-    if os.environ.get("QT_QPA_PLATFORM") == "offscreen":
-        pytest.skip("QT_QPA_PLATFORM=offscreen hides the window for PyAutoGUI")
+    if os.environ.get("QT_QPA_PLATFORM") in {"offscreen", "minimal"}:
+        pytest.skip("QT_QPA_PLATFORM offscreen/minimal hides the window for PyAutoGUI")
 
     try:
         import pyautogui
