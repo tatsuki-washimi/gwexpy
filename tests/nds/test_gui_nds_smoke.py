@@ -91,16 +91,17 @@ def test_gui_nds_smoke(qtbot, nds_backend):
         print("----------------------------------")
         raise e
     
-    # 8. Check if plot curves have data
-    acquired_data = False
-    for t_list in [window.traces1, window.traces2]:
-        for t in t_list:
-            x, y = t["curve"].getData()
-            if x is not None and len(x) > 0:
-                acquired_data = True
-                break
-        if acquired_data:
-            break
+    # 8. Wait for plot curves to populate after data arrival
+    def has_plot_data():
+        for t_list in [window.traces1, window.traces2]:
+            for t in t_list:
+                x, y = t["curve"].getData()
+                if x is not None and len(x) > 0:
+                    return True
+        return False
+
+    qtbot.waitUntil(has_plot_data, timeout=20000)
+    acquired_data = has_plot_data()
     
     assert acquired_data, f"No data acquired in plots. Status: {window.status_label.text()}"
     
