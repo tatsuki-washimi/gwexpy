@@ -1076,6 +1076,21 @@ to_dask(self, chunks='auto') -> Any
 
 Convert to Dask Array.
 
+### `to_frequencyseries_list`
+
+```python
+to_frequencyseries_list(self) -> tuple[FrequencySeriesList, Quantity]
+```
+
+Convert this Spectrogram to a list of FrequencySeries, one per time bin.
+
+For a Spectrogram with shape `(ntimes, nfreqs)`, this extracts each row (time bin) as a FrequencySeries with the same frequency axis.
+
+**Returns**
+
+*   **fs_list** : `FrequencySeriesList` - A list of FrequencySeries, one for each time bin. Each FrequencySeries has length `nfreqs`.
+*   **times** : `Quantity` - The time axis of this Spectrogram (length `ntimes`).
+
 ### `to_jax`
 
 ```python
@@ -1143,6 +1158,22 @@ to_th2d(self, error=None)
 
 
 Convert to ROOT TH2D.
+
+
+### `to_timeseries_list`
+
+```python
+to_timeseries_list(self) -> tuple[TimeSeriesList, Quantity]
+```
+
+Convert this Spectrogram to a list of TimeSeries, one per frequency bin.
+
+For a Spectrogram with shape `(ntimes, nfreqs)`, this extracts each column (frequency bin) as a TimeSeries with the same time axis.
+
+**Returns**
+
+*   **ts_list** : `TimeSeriesList` - A list of TimeSeries, one for each frequency bin. Each TimeSeries has length `ntimes`.
+*   **frequencies** : `Quantity` - The frequency axis of this Spectrogram (length `nfreqs`).
 
 
 ### `to_torch`

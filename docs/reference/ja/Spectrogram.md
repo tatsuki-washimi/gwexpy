@@ -56,6 +56,8 @@
 | メソッド | 説明 |
 |---------|------|
 | `to_pandas()` | pandas 変換 |
+| `to_timeseries_list()` | 周波数ビンごとに TimeSeriesList へ変換 |
+| `to_frequencyseries_list()` | 時刻ビンごとに FrequencySeriesList へ変換 |
 | `to_torch()` / `to_tensorflow()` / `to_jax()` / `to_cupy()` | ML フレームワーク変換 |
 | `to_xarray()` | xarray 変換 |
 

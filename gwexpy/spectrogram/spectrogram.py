@@ -1,11 +1,18 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
+from astropy import units as u
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 
 from gwexpy.types.mixin import InteropMixin, PhaseMethodsMixin
+
+if TYPE_CHECKING:
+    from astropy.units import Quantity
+
+    from gwexpy.frequencyseries import FrequencySeriesList
+    from gwexpy.timeseries import TimeSeriesList
 
 
 class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
@@ -279,6 +286,147 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             new.name = "phase_deg"
             
         return new
+
+    def to_timeseries_list(self) -> tuple["TimeSeriesList", "Quantity"]:
+        """
+        Convert this Spectrogram to a list of TimeSeries, one per frequency bin.
+
+        For a Spectrogram with shape ``(ntimes, nfreqs)``, this extracts each
+        column (frequency bin) as a TimeSeries with the same time axis.
+
+        Returns
+        -------
+        ts_list : TimeSeriesList
+            A list of TimeSeries, one for each frequency bin.
+            Each TimeSeries has length ``ntimes``.
+        frequencies : Quantity
+            The frequency axis of this Spectrogram (length ``nfreqs``).
+
+        Notes
+        -----
+        - Each TimeSeries inherits ``unit``, ``epoch``, ``channel`` from this
+          Spectrogram.
+        - ``name`` is set to ``"{original_name}_f{freq}"`` or ``"f{freq}"`` if
+          the Spectrogram has no name, where ``freq`` is the frequency value.
+
+        Examples
+        --------
+        >>> spec = Spectrogram(data, t0=0, dt=0.1, f0=10, df=5, name="test")
+        >>> ts_list, freqs = spec.to_timeseries_list()
+        >>> len(ts_list)  # equals nfreqs
+        5
+        >>> ts_list[0].name
+        'test_f10.0Hz'
+        """
+        from gwexpy.frequencyseries import FrequencySeriesList
+        from gwexpy.timeseries import TimeSeries, TimeSeriesList
+
+        ntimes, nfreqs = self.shape
+        # Extract raw ndarray to avoid unit doubling
+        data_raw = self.view(np.ndarray)
+        unit = self.unit
+        times = self.times
+        frequencies = self.frequencies
+        # Convert epoch to GPS float to avoid astropy.Time interpretation issues
+        epoch = float(self.epoch.gps) if hasattr(self.epoch, "gps") else float(self.epoch)
+        channel = self.channel
+        base_name = self.name
+
+        ts_list = TimeSeriesList()
+        for i in range(nfreqs):
+            freq_val = frequencies[i]
+            # Create descriptive name
+            if base_name:
+                name = f"{base_name}_f{freq_val}"
+            else:
+                name = f"f{freq_val}"
+
+            # Extract column i (all times, single frequency)
+            ts_data = data_raw[:, i].copy()
+
+            # Create TimeSeries with explicit unit
+            ts = TimeSeries(
+                ts_data,
+                times=times,
+                unit=unit,
+                name=name,
+                channel=channel,
+                epoch=epoch,
+            )
+            # Bypass validation by using list.append
+            list.append(ts_list, ts)
+
+        return ts_list, frequencies
+
+    def to_frequencyseries_list(self) -> tuple["FrequencySeriesList", "Quantity"]:
+        """
+        Convert this Spectrogram to a list of FrequencySeries, one per time bin.
+
+        For a Spectrogram with shape ``(ntimes, nfreqs)``, this extracts each
+        row (time bin) as a FrequencySeries with the same frequency axis.
+
+        Returns
+        -------
+        fs_list : FrequencySeriesList
+            A list of FrequencySeries, one for each time bin.
+            Each FrequencySeries has length ``nfreqs``.
+        times : Quantity
+            The time axis of this Spectrogram (length ``ntimes``).
+
+        Notes
+        -----
+        - Each FrequencySeries inherits ``unit``, ``epoch``, ``channel`` from
+          this Spectrogram.
+        - ``name`` is set to ``"{original_name}_t{time}"`` or ``"t{time}"`` if
+          the Spectrogram has no name, where ``time`` is the time value.
+
+        Examples
+        --------
+        >>> spec = Spectrogram(data, t0=0, dt=0.1, f0=10, df=5, name="test")
+        >>> fs_list, times = spec.to_frequencyseries_list()
+        >>> len(fs_list)  # equals ntimes
+        10
+        >>> fs_list[0].name
+        'test_t0.0s'
+        """
+        from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList
+
+        ntimes, nfreqs = self.shape
+        # Extract raw ndarray to avoid unit doubling
+        data_raw = self.view(np.ndarray)
+        unit = self.unit
+        times = self.times
+        frequencies = self.frequencies
+        # Convert epoch to GPS float to avoid astropy.Time interpretation issues
+        epoch = float(self.epoch.gps) if hasattr(self.epoch, "gps") else float(self.epoch)
+        channel = self.channel
+        base_name = self.name
+
+        fs_list = FrequencySeriesList()
+        for j in range(ntimes):
+            time_val = times[j]
+            # Create descriptive name
+            if base_name:
+                name = f"{base_name}_t{time_val}"
+            else:
+                name = f"t{time_val}"
+
+            # Extract row j (single time, all frequencies)
+            fs_data = data_raw[j, :].copy()
+
+            # Create FrequencySeries with explicit unit
+            fs = FrequencySeries(
+                fs_data,
+                frequencies=frequencies,
+                unit=unit,
+                name=name,
+                channel=channel,
+                epoch=epoch,
+            )
+            # Bypass validation by using list.append
+            list.append(fs_list, fs)
+
+        return fs_list, times
 
 
 # Import Matrix, List, and Dict to maintain backward compatibility if this file is imported
