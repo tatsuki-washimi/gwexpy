@@ -72,17 +72,6 @@ if command -v xvfb-run >/dev/null 2>&1; then
   has_xvfb_run=1
 fi
 
-xvfb_usable=1
-if [ ! -d /tmp/.X11-unix ] || [ ! -k /tmp/.X11-unix ]; then
-  xvfb_usable=0
-fi
-
-if [ "$xvfb_usable" -eq 0 ]; then
-  echo "WARN: /tmp/.X11-unix missing sticky bit; disabling Xvfb support." >&2
-  has_xvfb_run=0
-  has_pytest_xvfb=0
-fi
-
 use_pytest_xvfb=0
 if [ "${GUI_USE_PYTEST_XVFB:-0}" = "1" ]; then
   if [ "$has_pytest_xvfb" -eq 1 ]; then
@@ -147,11 +136,7 @@ if [ "$use_pytest_xvfb" -eq 0 ]; then
   if [ "$has_xvfb_run" -eq 1 ]; then
     runner_cmd=(xvfb-run -a -s "-screen 0 1920x1080x24" "${runner_cmd[@]}")
   else
-    if [ "$xvfb_usable" -eq 0 ]; then
-      echo "WARN: Xvfb disabled; running without Xvfb." >&2
-    else
-      echo "WARN: xvfb-run not found; running without Xvfb." >&2
-    fi
+    echo "WARN: xvfb-run not found; running without Xvfb." >&2
   fi
 fi
 
