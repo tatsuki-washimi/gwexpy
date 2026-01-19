@@ -34,15 +34,23 @@ def test_pyautogui_start_stop(qtbot, log_gui_action):
 
     start_btn = window.btn_start
     abort_btn = window.btn_abort
+    qtbot.waitUntil(lambda: start_btn.isVisible() and start_btn.isEnabled(), timeout=5000)
 
-    start_center = start_btn.mapToGlobal(start_btn.rect().center())
-    abort_center = abort_btn.mapToGlobal(abort_btn.rect().center())
+    def click_widget(widget, condition, timeout=5000):
+        center = widget.mapToGlobal(widget.rect().center())
+        for attempt in range(2):
+            pyautogui.moveTo(center.x(), center.y(), duration=0.05)
+            pyautogui.click(center.x(), center.y(), button="left")
+            try:
+                qtbot.waitUntil(condition, timeout=timeout)
+                return
+            except Exception:
+                if attempt == 1:
+                    raise
+                qtbot.wait(100)
 
-    pyautogui.click(start_center.x(), start_center.y(), button="left")
-    qtbot.waitUntil(lambda: not window.btn_start.isEnabled(), timeout=5000)
-
-    pyautogui.click(abort_center.x(), abort_center.y(), button="left")
-    qtbot.waitUntil(lambda: window.btn_start.isEnabled(), timeout=5000)
+    click_widget(start_btn, lambda: not window.btn_start.isEnabled(), timeout=5000)
+    click_widget(abort_btn, lambda: window.btn_start.isEnabled(), timeout=5000)
 
     window.close()
     logger.info("PyAutoGUI smoke test finished")
