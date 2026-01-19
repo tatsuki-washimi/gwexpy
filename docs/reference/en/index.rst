@@ -19,6 +19,10 @@ Detailed Reference
    BifrequencyMap
    Array2D
    Plane2D
+   Array4D
+   Field4D
+   Field4DList
+   Field4DDict
    TimePlaneTransform
    Plot
    Noise

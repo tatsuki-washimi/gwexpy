@@ -3,8 +3,11 @@
 from .array import Array
 from .array2d import Array2D
 from .array3d import Array3D
+from .array4d import Array4D
 from .axis import AxisDescriptor, coerce_1d_quantity
 from .axis_api import AxisApiMixin
+from .field4d import Field4D
+from .field4d_collections import Field4DDict, Field4DList
 from .metadata import MetaData, MetaDataDict, MetaDataMatrix
 from .plane2d import Plane2D
 from .series_creator import as_series
@@ -28,6 +31,10 @@ __all__ = [
     "Array2D",
     "Plane2D",
     "Array3D",
+    "Array4D",
+    "Field4D",
+    "Field4DList",
+    "Field4DDict",
     "TimePlaneTransform",
 ]
 
