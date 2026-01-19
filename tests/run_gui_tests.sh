@@ -38,43 +38,72 @@ fi
 export PYTHONFAULTHANDLER=1
 export PYTHONUNBUFFERED=1
 export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
-export QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-minimal}"
 
-pytest_xvfb_mode=""
-pytest_xvfb_mode="$(python - <<'PY'
+read -r has_pytest_xvfb pytest_xvfb_arg <<< "$(python - <<'PY'
 import importlib.util
 import inspect
-import sys
 
 if not importlib.util.find_spec("pytest_xvfb"):
-    raise SystemExit(1)
+    print("0")
+    raise SystemExit(0)
 
 import pytest_xvfb
 
-src = ""
+arg = ""
 if hasattr(pytest_xvfb, "pytest_addoption"):
     try:
         src = inspect.getsource(pytest_xvfb.pytest_addoption)
     except OSError:
         src = ""
+    if 'addoption("--xvfb"' in src or "addoption('--xvfb'" in src:
+        arg = "--xvfb"
 
-if "--no-xvfb" in src:
-    print("no-xvfb")
-elif "--xvfb" in src:
-    print("xvfb")
-else:
-    print("no-xvfb")
+print("1", arg)
 PY
-)" || true
+)"
+
+pytest_xvfb_args=()
+if [ "$has_pytest_xvfb" -eq 1 ] && [ -n "$pytest_xvfb_arg" ]; then
+  pytest_xvfb_args=("$pytest_xvfb_arg")
+fi
+
+has_xvfb_run=0
+if command -v xvfb-run >/dev/null 2>&1; then
+  has_xvfb_run=1
+fi
+
+xvfb_usable=1
+if [ ! -d /tmp/.X11-unix ] || [ ! -k /tmp/.X11-unix ]; then
+  xvfb_usable=0
+fi
+
+if [ "$xvfb_usable" -eq 0 ]; then
+  echo "WARN: /tmp/.X11-unix missing sticky bit; disabling Xvfb support." >&2
+  has_xvfb_run=0
+  has_pytest_xvfb=0
+fi
 
 use_pytest_xvfb=0
-pytest_xvfb_args=()
-if [ -n "$pytest_xvfb_mode" ]; then
+if [ "${GUI_USE_PYTEST_XVFB:-0}" = "1" ]; then
+  if [ "$has_pytest_xvfb" -eq 1 ]; then
+    use_pytest_xvfb=1
+  fi
+elif [ "$has_xvfb_run" -eq 1 ]; then
+  use_pytest_xvfb=0
+elif [ "$has_pytest_xvfb" -eq 1 ]; then
   use_pytest_xvfb=1
-  if [ "$pytest_xvfb_mode" = "xvfb" ]; then
-    pytest_xvfb_args=(--xvfb)
-  elif [ "$pytest_xvfb_mode" = "no-xvfb" ]; then
-    pytest_xvfb_args=(--no-xvfb)
+fi
+
+use_xvfb=0
+if [ "$use_pytest_xvfb" -eq 1 ] || [ "$has_xvfb_run" -eq 1 ]; then
+  use_xvfb=1
+fi
+
+if [ -z "${QT_QPA_PLATFORM:-}" ]; then
+  if [ "$use_xvfb" -eq 1 ]; then
+    export QT_QPA_PLATFORM="xcb"
+  else
+    export QT_QPA_PLATFORM="minimal"
   fi
 fi
 
@@ -115,15 +144,21 @@ case "$mode" in
 esac
 
 if [ "$use_pytest_xvfb" -eq 0 ]; then
-  if command -v xvfb-run >/dev/null 2>&1; then
+  if [ "$has_xvfb_run" -eq 1 ]; then
     runner_cmd=(xvfb-run -a -s "-screen 0 1920x1080x24" "${runner_cmd[@]}")
   else
-    echo "WARN: xvfb-run not found; running without Xvfb." >&2
+    if [ "$xvfb_usable" -eq 0 ]; then
+      echo "WARN: Xvfb disabled; running without Xvfb." >&2
+    else
+      echo "WARN: xvfb-run not found; running without Xvfb." >&2
+    fi
   fi
 fi
 
 if [ "$use_pytest_xvfb" -eq 1 ]; then
   xvfb_note=" + pytest-xvfb"
+elif [ "$has_xvfb_run" -eq 1 ]; then
+  xvfb_note=" + xvfb-run"
 else
   xvfb_note=""
 fi
