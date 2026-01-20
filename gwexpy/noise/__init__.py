@@ -21,9 +21,18 @@ from __future__ import annotations
 # Import submodules for direct access
 from . import asd, wave
 
+# Re-export key functions for convenience
+from .asd import from_pygwinc, from_obspy
+from .wave import from_asd
+
 __all__ = [
     # Submodules
     "asd",
     "wave",
+    # ASD Functions
+    "from_pygwinc",
+    "from_obspy",
+    # Waveform Functions
+    "from_asd",
 ]
 

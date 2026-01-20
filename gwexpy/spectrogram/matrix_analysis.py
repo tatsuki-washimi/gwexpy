@@ -25,7 +25,7 @@ class SpectrogramMatrixAnalysisMixin:
         """
         # Copy to preserve all attributes (times, frequencies, rows, cols, epoch, etc.)
         new = self.copy()
-        
+
         # Calculate phase values
         val = np.angle(self.view(np.ndarray))
         if unwrap:
@@ -39,7 +39,7 @@ class SpectrogramMatrixAnalysisMixin:
 
         # Update values
         new.view(np.ndarray)[:] = val
-        
+
         # Update metadata units/names
         if new.meta is not None:
             # metadata.copy() copies the array and provides new MetaData objects
@@ -55,12 +55,14 @@ class SpectrogramMatrixAnalysisMixin:
                 else:
                     m.name = "phase"
 
-        # Update global name
+        # Update global name and unit
         if self.name:
             new.name = self.name + "_phase"
         else:
             new.name = "phase"
-            
+        
+        new.unit = u.rad
+
         return new
 
     def degree(self, unwrap: bool = False) -> Any:
@@ -79,14 +81,14 @@ class SpectrogramMatrixAnalysisMixin:
         """
         # Reuse radian implementation which handles unwrap, metadata preservation and real-casting
         p = self.radian(unwrap=unwrap)
-        
+
         # Convert values to degrees
         val = np.rad2deg(p.view(np.ndarray))
-        
+
         # Create final object (p already has correct metadata structure)
         new = p
         new.view(np.ndarray)[:] = val
-        
+
         if new.meta is not None:
             # We already copied meta in radian(), but we need to change unit to deg
             for m in new.meta.flat:
@@ -98,5 +100,7 @@ class SpectrogramMatrixAnalysisMixin:
             new.name = self.name + "_phase_deg"
         else:
             new.name = "phase_deg"
-            
+        
+        new.unit = u.deg
+
         return new

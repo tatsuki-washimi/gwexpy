@@ -80,6 +80,7 @@ class TestFromPygwincStub:
         _install_gwinc_stub(monkeypatch)
 
         from astropy import units as u
+
         from gwexpy.noise.asd import from_pygwinc
 
         freqs = np.array([10.0, 20.0, 30.0])
@@ -116,8 +117,8 @@ class TestFromPygwincStub:
     def test_reexports_from_asd_and_noise(self, monkeypatch):
         _install_gwinc_stub(monkeypatch)
 
-        from gwexpy.noise.asd import from_pygwinc as asd_from_pygwinc
         from gwexpy.noise import from_pygwinc as noise_from_pygwinc
+        from gwexpy.noise.asd import from_pygwinc as asd_from_pygwinc
 
         freqs = np.array([10.0, 20.0])
         asd = asd_from_pygwinc("aLIGO", frequencies=freqs, quantity="strain")
@@ -147,6 +148,7 @@ class TestFromObspyStub:
         _install_obspy_stub(monkeypatch)
 
         from astropy import units as u
+
         from gwexpy.noise.asd import from_obspy
 
         acc = from_obspy("NLNM", quantity="acceleration")
@@ -176,6 +178,7 @@ class TestFromObspyStub:
         _install_obspy_stub(monkeypatch)
 
         from astropy import units as u
+
         from gwexpy.noise.asd import from_obspy
 
         freqs = np.array([1.0, 2.0])
@@ -185,8 +188,8 @@ class TestFromObspyStub:
     def test_reexports_from_asd_and_noise(self, monkeypatch):
         _install_obspy_stub(monkeypatch)
 
-        from gwexpy.noise.asd import from_obspy as asd_from_obspy
         from gwexpy.noise import from_obspy as noise_from_obspy
+        from gwexpy.noise.asd import from_obspy as asd_from_obspy
 
         freqs = np.array([1.0, 2.0])
         asd = asd_from_obspy("NHNM", frequencies=freqs)

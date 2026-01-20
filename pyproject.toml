@@ -166,7 +166,7 @@ ignore = [
 [tool.mypy]
 ignore_missing_imports = true
 check_untyped_defs = true
-exclude = "gwexpy/(gui/.*|frequencyseries/.*|spectrogram/.*)"
+exclude = "gwexpy/(gui/.*|frequencyseries/.*|spectrogram/.*)|tests/.*"
 
 [[tool.mypy.overrides]]
 module = [

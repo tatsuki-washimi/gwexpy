@@ -30,7 +30,7 @@ from gwexpy.types.mixin import RegularityMixin, SignalAnalysisMixin
 try:
     from gwpy.types.index import SeriesType  # pragma: no cover - optional in gwpy
 except ImportError:
-    # Fallback for older GWpy versions or environments where SeriesType 
+    # Fallback for older GWpy versions or environments where SeriesType
     # is not available at this location.
 
     class SeriesType(Enum):
@@ -61,9 +61,9 @@ class FrequencySeries(
         arguments for the parent FrequencySeries constructor.
         """
         # Remove noise-generation parameters that shouldn't be passed to parent
-        for key in ['fmin', 'fmax', 'df']:
+        for key in ['fmin', 'fmax']:
             kwargs.pop(key, None)
-        
+
         return super().__new__(cls, *args, **kwargs)
 
     # --- Phase and Angle ---

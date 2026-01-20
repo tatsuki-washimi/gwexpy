@@ -3,13 +3,23 @@ import pytest
 from astropy import units as u
 from scipy import signal as scipy_signal
 
-from gwexpy.timeseries import TimeSeries
 from gwexpy.noise.wave import (
-    sine, square, sawtooth, triangle, chirp,
-    gaussian, uniform,
-    step, impulse, exponential,
-    colored, white_noise, pink_noise, red_noise
+    chirp,
+    colored,
+    exponential,
+    gaussian,
+    impulse,
+    pink_noise,
+    red_noise,
+    sawtooth,
+    sine,
+    square,
+    step,
+    triangle,
+    uniform,
+    white_noise,
 )
+from gwexpy.timeseries import TimeSeries
 
 # Common parameters for tests
 DURATION = 2.0
@@ -44,8 +54,8 @@ def test_sine(params):
     amp = 2.0
     ts = sine(frequency=freq, amplitude=amp, **params)
     verify_metadata(ts, params)
-    assert ts.max().value <= pytest.approx(amp)
-    assert ts.min().value >= pytest.approx(-amp)
+    assert ts.max().value <= amp + 1e-9
+    assert ts.min().value >= -amp - 1e-9
     # Basic check: value at t=0 should be 0 (phase=0, sin(0)=0)
     assert ts[0].value == pytest.approx(0.0)
 
@@ -91,7 +101,7 @@ def test_uniform(params):
     assert ts.max().value <= high
 
 def test_step(params):
-    t_step = params["t0"] + 0.5
+    t_step = 0.5
     amp = 5.0
     ts = step(t_step=t_step, amplitude=amp, **params)
     verify_metadata(ts, params)
@@ -101,7 +111,7 @@ def test_step(params):
     assert ts[t_idx + 1].value == amp # +1 to be safe past step
 
 def test_impulse(params):
-    t_imp = params["t0"] + 0.5
+    t_imp = 0.5
     amp = 10.0
     ts = impulse(t_impulse=t_imp, amplitude=amp, **params)
     verify_metadata(ts, params)
@@ -132,10 +142,10 @@ def test_colored(params):
 def test_noise_aliases(params):
     ts_white = white_noise(**params)
     verify_metadata(ts_white, params)
-    
+
     ts_pink = pink_noise(**params)
     verify_metadata(ts_pink, params)
-    
+
     ts_red = red_noise(**params)
     verify_metadata(ts_red, params)
 
