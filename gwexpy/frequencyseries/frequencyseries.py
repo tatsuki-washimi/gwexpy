@@ -55,7 +55,7 @@ class FrequencySeries(
     def __new__(cls, *args: Any, **kwargs: Any) -> FrequencySeries:
         """
         Create a new FrequencySeries instance.
-        
+
         This override filters out noise-generation parameters (fmin, fmax, df)
         that may be passed from gwexpy.noise functions but are not valid
         arguments for the parent FrequencySeries constructor.
@@ -101,9 +101,9 @@ class FrequencySeries(
     def angle(self, unwrap: bool = False) -> FrequencySeries:
         """
         Calculate the phase angle of this FrequencySeries.
-        
+
         Alias for `phase(unwrap=unwrap)`.
-        
+
         Parameters
         ----------
         unwrap : `bool`, optional

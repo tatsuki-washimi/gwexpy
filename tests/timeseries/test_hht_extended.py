@@ -96,8 +96,8 @@ class TestHHTExtended:
     def test_hht_finite_only(self, chirp_signal):
         """
         Test finite_only by manually injecting NaN into IF/IA arrays.
-        
-        This approach does not rely on PyEMD's NaN tolerance and directly 
+
+        This approach does not rely on PyEMD's NaN tolerance and directly
         verifies that the spectrogram binning correctly excludes non-finite values.
         """
         from unittest.mock import patch

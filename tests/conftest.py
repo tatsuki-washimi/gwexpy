@@ -13,6 +13,13 @@ from gwpy.conftest import *  # noqa: F401,F403
 from matplotlib import rcParams
 from matplotlib import use as mpl_use
 
+_PYTEST_QT_AVAILABLE = importlib.util.find_spec("pytestqt") is not None
+
+if not _PYTEST_QT_AVAILABLE:
+    @pytest.fixture
+    def qtbot():  # type: ignore[override]
+        pytest.skip("pytest-qt not installed")
+
 pytest_plugins = ["gwpy.testing.fixtures"]
 
 faulthandler.enable()

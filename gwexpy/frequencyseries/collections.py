@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from typing import Any, TypeVar
 
 import numpy as np
+from astropy import units as u
 
 from .frequencyseries import FrequencySeries, as_series_dict_class
 

@@ -163,6 +163,12 @@ class SpectrogramMatrix(
                 if m.unit is None or m.unit == u.dimensionless_unscaled:
                     m.unit = unit
 
+        # If no global unit was provided, infer it from metadata if consistent
+        if obj.unit is None and getattr(obj, "meta", None) is not None:
+            meta_units = {m.unit for m in obj.meta.flat if m is not None}
+            if len(meta_units) == 1:
+                obj.unit = next(iter(meta_units))
+
         obj.epoch = kwargs.get("epoch", 0.0)
         obj._value = obj.view(np.ndarray)
         return obj
@@ -329,6 +335,14 @@ class SpectrogramMatrix(
 
             new_meta = MetaDataMatrix(new_meta_arr)
 
+        def _infer_unit(meta):
+            if meta is None:
+                return None
+            meta_units = {m.unit for m in meta.flat if m is not None}
+            if len(meta_units) == 1:
+                return next(iter(meta_units))
+            return None
+
         # Reconstruct SpectrogramMatrix
         if result_data.shape == main.shape:
             obj = self.__class__(
@@ -339,7 +353,7 @@ class SpectrogramMatrix(
                 cols=main.cols,
                 meta=new_meta,
                 name=main.name,
-                unit=None,  # No global unit; per-element units in meta
+                unit=_infer_unit(new_meta),
             )
             return obj
 

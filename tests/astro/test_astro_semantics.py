@@ -7,12 +7,16 @@ These tests verify:
 3. Physical sanity of results
 """
 
+import importlib.util
+
 import numpy as np
 import pytest
 from astropy import units as u
 
 from gwexpy.astro import inspiral_range, sensemon_range
 from gwexpy.frequencyseries import FrequencySeries
+
+INSPIRAL_RANGE_AVAILABLE = importlib.util.find_spec("inspiral_range") is not None
 
 
 class TestAstroSemantics:
@@ -27,6 +31,10 @@ class TestAstroSemantics:
         data = np.full_like(freqs, 1e-46, dtype=float)
         return FrequencySeries(data, frequencies=freqs, unit=u.dimensionless_unscaled**2 / u.Hz)
 
+    @pytest.mark.skipif(
+        not INSPIRAL_RANGE_AVAILABLE,
+        reason="inspiral-range package is required for inspiral_range tests",
+    )
     def test_inspiral_range_units(self, aLIGO_flat_psd):
         """Test that inspiral_range returns a Quantity with length units (Mpc)."""
         # inspiraL_range returns a Quantity (usually Mpc)
@@ -46,6 +54,10 @@ class TestAstroSemantics:
         assert r.unit.is_equivalent(u.m)
         assert r.value > 0
 
+    @pytest.mark.skipif(
+        not INSPIRAL_RANGE_AVAILABLE,
+        reason="inspiral-range package is required for inspiral_range tests",
+    )
     def test_range_input_unit_robustness(self):
         """Test robustness to different PSD units (strain/Hz vs strain^2/Hz)."""
         df = 0.25
@@ -64,6 +76,10 @@ class TestAstroSemantics:
 
         assert r1 == r2
 
+    @pytest.mark.skipif(
+        not INSPIRAL_RANGE_AVAILABLE,
+        reason="inspiral-range package is required for inspiral_range tests",
+    )
     def test_range_value_sanity(self, aLIGO_flat_psd):
         """Verify range is positive and within sanity bounds."""
         r = inspiral_range(aLIGO_flat_psd)

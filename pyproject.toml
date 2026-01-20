@@ -162,11 +162,19 @@ ignore = [
 "gwexpy/*/tests/*" = ["F401", "E741"]
 # GUI code: compact style is acceptable
 "gwexpy/gui/*" = ["E701", "E702"]
+"docs/guide/tutorials/22_hht.ipynb" = ["F401"]
+"examples/advanced-methods/tutorial_Bruco.ipynb" = ["F811", "F821"]
+"examples/advanced-methods/tutorial_ShortTimeLaplaceTransformation.ipynb" = ["F404", "UP035"]
 
 [tool.mypy]
 ignore_missing_imports = true
 check_untyped_defs = true
 exclude = "gwexpy/(gui/.*|frequencyseries/.*|spectrogram/.*)|tests/.*"
+
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+testpaths = ["tests"]
+norecursedirs = ["gwexpy/gui/reference-dtt"]
 
 [[tool.mypy.overrides]]
 module = [

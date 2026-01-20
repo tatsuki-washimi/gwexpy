@@ -98,7 +98,7 @@ class TestSpectrogramPhase:
             name="wrap_test",
         )
 
-        result_wrapped = spec.radian(unwrap=False)
+        _ = spec.radian(unwrap=False)
         result_unwrapped = spec.radian(unwrap=True)
 
         # Compare with manual unwrap along axis=0

@@ -154,7 +154,7 @@ class TestSpectrogramPhaseSemantics:
 
         spec = Spectrogram(data, times=times, frequencies=frequencies)
 
-        result_no_unwrap = spec.radian(unwrap=False)
+        _ = spec.radian(unwrap=False)
         result_unwrap = spec.radian(unwrap=True)
 
         # Without unwrap, phase should wrap (have discontinuities)

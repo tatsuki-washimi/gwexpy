@@ -276,10 +276,10 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
     def spectrogram(self, *args: Any, **kwargs: Any) -> Spectrogram:
         """
         Compute the average power spectrogram.
-        
+
         This method overrides the base gwpy implementation to return
         gwexpy.spectrogram.Spectrogram instead of gwpy.spectrogram.Spectrogram.
-        
+
         Returns
         -------
         Spectrogram

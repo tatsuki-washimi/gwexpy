@@ -22,7 +22,7 @@ from __future__ import annotations
 from . import asd, wave
 
 # Re-export key functions for convenience
-from .asd import from_pygwinc, from_obspy
+from .asd import from_obspy, from_pygwinc
 from .wave import from_asd
 
 __all__ = [
@@ -35,4 +35,3 @@ __all__ = [
     # Waveform Functions
     "from_asd",
 ]
-
