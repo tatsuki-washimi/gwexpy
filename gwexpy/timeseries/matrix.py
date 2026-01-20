@@ -8,6 +8,8 @@ from astropy import units as u
 try:
     import scipy.signal  # noqa: F401 - availability check
 except ImportError:
+    # scipy.signal is checked here for availability but not strictly required
+    # for basic TimeSeriesMatrix initialization.
     pass
 
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
@@ -175,7 +177,7 @@ class TimeSeriesMatrix(
                             kwargs["names"] = cn
                     else:
                         kwargs["names"] = cn
-                except Exception:
+                except (ValueError, TypeError, AttributeError):
                     if cn.ndim == 1:
                         kwargs["names"] = cn.reshape(-1, 1)
                     else:
@@ -227,7 +229,12 @@ for _m in _TSM_TIME_DOMAIN_METHODS:
 
         _wrapper.__name__ = name
         _wrapper.__qualname__ = f"TimeSeriesMatrix.{name}"
-        _wrapper.__doc__ = f"Element-wise delegate to `TimeSeries.{name}`."
+        _wrapper.__doc__ = (
+            f"Apply `TimeSeries.{name}` element-wise to all entries in the matrix.\n\n"
+            f"This method delegates the call to the underlying `TimeSeries` objects, "
+            f"preserving the matrix structure and per-element metadata while updating "
+            f"the data values and time axis according to the operation."
+        )
         return _wrapper
 
     setattr(TimeSeriesMatrix, _m, _make_wrapper(_m))
@@ -255,7 +262,9 @@ for _m in _TSM_BIVARIATE_METHODS:
             _wrapper.__name__ = name
             _wrapper.__qualname__ = f"TimeSeriesMatrix.{name}"
             _wrapper.__doc__ = (
-                f"Element-wise delegate to `TimeSeries.{name}` with another TimeSeries."
+                f"Apply `TimeSeries.{name}` element-wise with another `TimeSeries` object.\n\n"
+                f"This method delegates the bivariate call to each `TimeSeries` in "
+                f"the matrix, using the provided `other` object as the second operand."
             )
             return _wrapper
 
@@ -270,7 +279,11 @@ for _m in _TSM_UNIVARIATE_METHODS:
 
             _wrapper.__name__ = name
             _wrapper.__qualname__ = f"TimeSeriesMatrix.{name}"
-            _wrapper.__doc__ = f"Element-wise delegate to `TimeSeries.{name}`."
+            _wrapper.__doc__ = (
+                f"Apply univariate spectral method `TimeSeries.{name}` element-wise.\n\n"
+                f"Computes the {name} for each entry in the matrix, returning a "
+                f"FrequencySeriesMatrix containing the results."
+            )
             return _wrapper
 
         setattr(TimeSeriesMatrix, _m, _make_univ_wrapper(_m))

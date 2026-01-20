@@ -1,9 +1,12 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 from astropy import units as u
+
+if TYPE_CHECKING:
+    from .matrix import TimeSeriesMatrix
 
 from .decomposition import (
     ica_fit,
@@ -29,11 +32,10 @@ def _calc_correlation_direct(ts, target, meth):
     except Exception:
         return np.nan
 
-
 class TimeSeriesMatrixAnalysisMixin:
     """Analysis and preprocessing methods for TimeSeriesMatrix."""
 
-    def _resolve_axis(self, axis):
+    def _resolve_axis(self: Any, axis):
         """Convert string axis to integer axis."""
         if axis == "time":
             return self._x_axis_norm
@@ -41,7 +43,9 @@ class TimeSeriesMatrixAnalysisMixin:
             return 0
         return axis
 
-    def skewness(self, axis: str = "time", nan_policy: str = "propagate") -> np.ndarray:
+    def skewness(
+        self: Any, axis: Any = "time", nan_policy: str = "propagate", **kwargs: Any
+    ) -> np.ndarray:
         """
         Compute the skewness of the matrix along the specified axis.
 
@@ -55,10 +59,14 @@ class TimeSeriesMatrixAnalysisMixin:
         from scipy import stats
 
         ax = self._resolve_axis(axis)
-        return stats.skew(self.value, axis=ax, nan_policy=nan_policy)
+        return stats.skew(self.value, axis=ax, nan_policy=nan_policy, **kwargs)
 
     def kurtosis(
-        self, axis: str = "time", fisher: bool = True, nan_policy: str = "propagate"
+        self: Any,
+        axis: Any = "time",
+        fisher: bool = True,
+        nan_policy: str = "propagate",
+        **kwargs: Any,
     ) -> np.ndarray:
         """
         Compute the kurtosis of the matrix along the specified axis.
@@ -75,41 +83,125 @@ class TimeSeriesMatrixAnalysisMixin:
         from scipy import stats
 
         ax = self._resolve_axis(axis)
-        return stats.kurtosis(self.value, axis=ax, fisher=fisher, nan_policy=nan_policy)
+        return stats.kurtosis(
+            self.value, axis=ax, fisher=fisher, nan_policy=nan_policy, **kwargs
+        )
 
-    def mean(self, axis: str = "time", ignore_nan: bool = False) -> np.ndarray:
+    def mean(
+        self: Any,
+        axis: Any = "time",
+        dtype: Any = None,
+        out: Any = None,
+        keepdims: bool = False,
+        *,
+        where: Any = True,
+        ignore_nan: bool = False,
+        **kwargs: Any,
+    ) -> np.ndarray:
         """Compute mean along the specified axis."""
         ax = self._resolve_axis(axis)
         func = np.nanmean if ignore_nan else np.mean
-        return func(self.value, axis=ax)
+        return func(
+            self.value,
+            axis=ax,
+            dtype=dtype,
+            out=out,
+            keepdims=keepdims,
+            where=where,
+            **kwargs,
+        )
 
     def std(
-        self, axis: str = "time", ddof: int = 0, ignore_nan: bool = False
+        self: Any,
+        axis: Any = "time",
+        dtype: Any = None,
+        out: Any = None,
+        ddof: int = 0,
+        keepdims: bool = False,
+        *,
+        where: Any = True,
+        ignore_nan: bool = False,
+        **kwargs: Any,
     ) -> np.ndarray:
         """Compute standard deviation along the specified axis."""
         ax = self._resolve_axis(axis)
         func = np.nanstd if ignore_nan else np.std
-        return func(self.value, axis=ax, ddof=ddof)
+        return func(
+            self.value,
+            axis=ax,
+            dtype=dtype,
+            out=out,
+            ddof=ddof,
+            keepdims=keepdims,
+            where=where,
+            **kwargs,
+        )
 
-    def rms(self, axis: str = "time", ignore_nan: bool = False) -> np.ndarray:
+    def rms(
+        self: Any,
+        axis: Any = "time",
+        keepdims: bool = False,
+        ignore_nan: bool = False,
+        **kwargs: Any,
+    ) -> np.ndarray:
         """Compute root-mean-square along the specified axis."""
         ax = self._resolve_axis(axis)
         func = np.nanmean if ignore_nan else np.mean
-        return np.sqrt(func(np.square(self.value), axis=ax))
+        # RMS does not support all kwargs in mean (like keepdims? No, mean supports keepdims)
+        # But base rms passes argument 'keepdims' to mean.
+        return np.sqrt(
+            func(
+                np.square(self.value), axis=ax, keepdims=keepdims, **kwargs
+            )
+        )
 
-    def min(self, axis: str = "time", ignore_nan: bool = False) -> np.ndarray:
+    def min(
+        self: Any,
+        axis: Any = "time",
+        out: Any = None,
+        keepdims: bool = False,
+        initial: Any = None,
+        where: Any = True,
+        ignore_nan: bool = False,
+        **kwargs: Any,
+    ) -> np.ndarray:
         """Compute minimum along the specified axis."""
         ax = self._resolve_axis(axis)
         func = np.nanmin if ignore_nan else np.min
-        return func(self.value, axis=ax)
+        return func(
+            self.value,
+            axis=ax,
+            out=out,
+            keepdims=keepdims,
+            initial=initial,
+            where=where,
+            **kwargs,
+        )
 
-    def max(self, axis: str = "time", ignore_nan: bool = False) -> np.ndarray:
+    def max(
+        self: Any,
+        axis: Any = "time",
+        out: Any = None,
+        keepdims: bool = False,
+        initial: Any = None,
+        where: Any = True,
+        ignore_nan: bool = False,
+        **kwargs: Any,
+    ) -> np.ndarray:
         """Compute maximum along the specified axis."""
         ax = self._resolve_axis(axis)
         func = np.nanmax if ignore_nan else np.max
-        return func(self.value, axis=ax)
+        return func(
+            self.value,
+            axis=ax,
+            out=out,
+            keepdims=keepdims,
+            initial=initial,
+            where=where,
+            **kwargs,
+        )
 
-    def _vectorized_detrend(self, detrend: str = "linear", **kwargs: Any) -> Any:
+    def _vectorized_detrend(self: Any, detrend: str = "linear", **kwargs: Any) -> Any:
         """
         Vectorized implementation of detrend.
         """
@@ -129,7 +221,7 @@ class TimeSeriesMatrixAnalysisMixin:
         new_mat.value[:] = new_data
         return new_mat
 
-    def _vectorized_taper(self, side: str = "leftright", **kwargs: Any) -> Any:
+    def _vectorized_taper(self: Any, side: str = "leftright", **kwargs: Any) -> Any:
         """
         Semi-vectorized implementation of taper to ensure consistency with GWpy.
         """
@@ -156,13 +248,13 @@ class TimeSeriesMatrixAnalysisMixin:
         new_mat.value[:] = out_data
         return new_mat
 
-    def hilbert(self, **kwargs: Any) -> Any:
+    def hilbert(self: Any, **kwargs: Any) -> Any:
         """
         Compute the analytic signal (Hilbert transform).
         """
         return self._apply_timeseries_method("hilbert", **kwargs)
 
-    def _vectorized_filter(self, *filt: Any, **kwargs: Any) -> Any:
+    def _vectorized_filter(self: Any, *filt: Any, **kwargs: Any) -> Any:
         """
         Vectorized implementation of filter (and bandpass, lowpass, etc.).
         """
@@ -193,7 +285,7 @@ class TimeSeriesMatrixAnalysisMixin:
         new_mat.value[:] = new_data
         return new_mat
 
-    def _vectorized_hilbert(self, **kwargs: Any) -> Any:
+    def _vectorized_hilbert(self: Any, **kwargs: Any) -> Any:
         """
         Vectorized implementation of Hilbert transform (analytic signal).
         """
@@ -206,7 +298,7 @@ class TimeSeriesMatrixAnalysisMixin:
         new_mat.value[:] = h_data
         return new_mat
 
-    def _vectorized_radian(self, unwrap: bool = False) -> Any:
+    def _vectorized_radian(self: Any, unwrap: bool = False) -> Any:
         """
         Vectorized implementation of radian (phase angle via np.angle).
         """
@@ -220,7 +312,7 @@ class TimeSeriesMatrixAnalysisMixin:
         new_mat.unit = u.rad
         return new_mat
 
-    def _vectorized_degree(self, unwrap: bool = False) -> Any:
+    def _vectorized_degree(self: Any, unwrap: bool = False) -> Any:
         """
         Vectorized implementation of degree (phase angle via np.angle).
         """
@@ -234,7 +326,7 @@ class TimeSeriesMatrixAnalysisMixin:
         new_mat.unit = u.deg
         return new_mat
 
-    def radian(self, unwrap: bool = False) -> Any:
+    def radian(self: Any, unwrap: bool = False) -> Any:
         """
         Calculate the phase angle of the matrix in radians.
 
@@ -253,7 +345,7 @@ class TimeSeriesMatrixAnalysisMixin:
         """
         return self._vectorized_radian(unwrap=unwrap)
 
-    def degree(self, unwrap: bool = False) -> Any:
+    def degree(self: Any, unwrap: bool = False) -> Any:
         """
         Calculate the phase angle of the matrix in degrees.
 
@@ -272,7 +364,7 @@ class TimeSeriesMatrixAnalysisMixin:
         """
         return self._vectorized_degree(unwrap=unwrap)
 
-    def resample(self, rate: Any, *args: Any, **kwargs: Any) -> Any:
+    def resample(self: Any, rate: Any, *args: Any, **kwargs: Any) -> Any:
         """
         Resample the TimeSeriesMatrix.
 
@@ -291,10 +383,10 @@ class TimeSeriesMatrixAnalysisMixin:
         else:
             # Signal processing resampling (GWpy)
             self._check_regular("Signal processing resample")
-            return super().resample(rate, *args, **kwargs)
+            return super().resample(rate, *args, **kwargs)  # type: ignore[misc]
 
     def impute(
-        self,
+        self: Any,
         *,
         method: str = "linear",
         limit: int | None = None,
@@ -311,7 +403,7 @@ class TimeSeriesMatrixAnalysisMixin:
         return new_mat
 
     def standardize(
-        self,
+        self: Any,
         *,
         axis: str = "time",
         method: str = "zscore",
@@ -322,10 +414,10 @@ class TimeSeriesMatrixAnalysisMixin:
         Standardize the matrix.
         See gwexpy.timeseries.preprocess.standardize_matrix.
         """
-        return standardize_matrix(self, axis=axis, method=method, ddof=ddof, **kwargs)
+        return standardize_matrix(cast("TimeSeriesMatrix", self), axis=cast(Literal['time', 'channel'], axis), method=method, ddof=ddof, **kwargs)
 
     def whiten_channels(
-        self,
+        self: Any,
         *,
         method: str = "pca",
         eps: float = 1e-12,
@@ -339,14 +431,14 @@ class TimeSeriesMatrixAnalysisMixin:
         See gwexpy.timeseries.preprocess.whiten_matrix.
         """
         mat, model = whiten_matrix(
-            self, method=method, eps=eps, n_components=n_components
+            cast("TimeSeriesMatrix", self), method=cast(Literal['pca', 'zca'], method), eps=eps, n_components=n_components
         )
         if return_model:
             return mat, model
         return mat
 
     def rolling_mean(
-        self,
+        self: Any,
         window: Any,
         *,
         center: bool = False,
@@ -369,7 +461,7 @@ class TimeSeriesMatrixAnalysisMixin:
         )
 
     def rolling_std(
-        self,
+        self: Any,
         window: Any,
         *,
         center: bool = False,
@@ -394,7 +486,7 @@ class TimeSeriesMatrixAnalysisMixin:
         )
 
     def rolling_median(
-        self,
+        self: Any,
         window: Any,
         *,
         center: bool = False,
@@ -417,7 +509,7 @@ class TimeSeriesMatrixAnalysisMixin:
         )
 
     def rolling_min(
-        self,
+        self: Any,
         window: Any,
         *,
         center: bool = False,
@@ -440,7 +532,7 @@ class TimeSeriesMatrixAnalysisMixin:
         )
 
     def rolling_max(
-        self,
+        self: Any,
         window: Any,
         *,
         center: bool = False,
@@ -462,7 +554,7 @@ class TimeSeriesMatrixAnalysisMixin:
             ignore_nan=ignore_nan,
         )
 
-    def crop(self, start: Any = None, end: Any = None, copy: bool = False) -> Any:
+    def crop(self: Any, start: Any = None, end: Any = None, copy: bool = False) -> Any:
         """
         Crop this matrix to the given GPS start and end times.
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
@@ -480,7 +572,7 @@ class TimeSeriesMatrixAnalysisMixin:
 
         start_float = _to_float(start)
         end_float = _to_float(end)
-        return super().crop(start=start_float, end=end_float, copy=copy)
+        return super().crop(start=start_float, end=end_float, copy=copy)  # type: ignore[misc]
 
     def pca_fit(self, **kwargs: Any) -> Any:
         """Fit PCA."""
@@ -494,7 +586,7 @@ class TimeSeriesMatrixAnalysisMixin:
         """Inverse transform PCA scores."""
         return pca_inverse_transform(pca_res, scores)
 
-    def pca(self, return_model: bool = False, **kwargs: Any) -> Any:
+    def pca(self: Any, return_model: bool = False, **kwargs: Any) -> Any:
         """Fit and transform PCA."""
         res = self.pca_fit(**kwargs)
         scores = self.pca_transform(res, n_components=kwargs.get("n_components"))
@@ -514,7 +606,7 @@ class TimeSeriesMatrixAnalysisMixin:
         """Inverse transform ICA sources."""
         return ica_inverse_transform(ica_res, sources)
 
-    def ica(self, return_model: bool = False, **kwargs: Any) -> Any:
+    def ica(self: Any, return_model: bool = False, **kwargs: Any) -> Any:
         """Fit and transform ICA."""
         res = self.ica_fit(**kwargs)
         sources = self.ica_transform(res)
@@ -523,7 +615,7 @@ class TimeSeriesMatrixAnalysisMixin:
         return sources
 
     def correlation(
-        self, other: Any = None, method: str = "pearson", **kwargs: Any
+        self: Any, other: Any = None, method: str = "pearson", **kwargs: Any
     ) -> Any:
         """
         Calculate correlation coefficients.
@@ -548,31 +640,31 @@ class TimeSeriesMatrixAnalysisMixin:
             "correlation", other, method=method, **kwargs
         )
 
-    def mic(self, other: Any, **kwargs: Any) -> Any:
+    def mic(self: Any, other: Any, **kwargs: Any) -> Any:
         """
         Calculate Maximal Information Coefficient (MIC).
         """
         return self.correlation(other, method="mic", **kwargs)
 
-    def distance_correlation(self, other: Any, **kwargs: Any) -> Any:
+    def distance_correlation(self: Any, other: Any, **kwargs: Any) -> Any:
         """
         Calculate Distance Correlation.
         """
         return self.correlation(other, method="distance", **kwargs)
 
-    def pcc(self, other: Any, **kwargs: Any) -> Any:
+    def pcc(self: Any, other: Any, **kwargs: Any) -> Any:
         """
         Calculate Pearson Correlation Coefficient.
         """
         return self.correlation(other, method="pearson", **kwargs)
 
-    def ktau(self, other: Any, **kwargs: Any) -> Any:
+    def ktau(self: Any, other: Any, **kwargs: Any) -> Any:
         """
         Calculate Kendall's Rank Correlation Coefficient.
         """
         return self.correlation(other, method="kendall", **kwargs)
 
-    def correlation_vector(self, target_timeseries, method="mic", nproc=None):
+    def correlation_vector(self: Any, target_timeseries: Any, method: str = "mic", nproc: int | None = None) -> Any:
         """
         Calculate correlation between a target TimeSeries and all channels in this Matrix.
         """

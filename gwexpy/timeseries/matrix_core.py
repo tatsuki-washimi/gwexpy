@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -16,6 +16,9 @@ from .utils import (
     _validate_common_frequency_axis,
 )
 
+if TYPE_CHECKING:
+    from .matrix import TimeSeriesMatrix
+
 
 class TimeSeriesMatrixCoreMixin:
     """Core properties and application helpers for TimeSeriesMatrix."""
@@ -25,22 +28,22 @@ class TimeSeriesMatrixCoreMixin:
     @property
     def dt(self) -> Any:
         """Time spacing (dx)."""
-        return self.dx
+        return cast("TimeSeriesMatrix", self).dx
 
     @property
     def t0(self) -> Any:
         """Start time (x0)."""
-        return self.x0
+        return cast("TimeSeriesMatrix", self).x0
 
     @property
     def times(self) -> Any:
         """Time array (xindex)."""
-        return self.xindex
+        return cast("TimeSeriesMatrix", self).xindex
 
     @property
     def span(self) -> Any:
         """Time span (xspan)."""
-        return self.xspan
+        return cast("TimeSeriesMatrix", self).xspan
 
     @property
     def sample_rate(self) -> Any:
@@ -55,28 +58,28 @@ class TimeSeriesMatrixCoreMixin:
     @sample_rate.setter
     def sample_rate(self, value: Any) -> None:
         if value is None:
-            self.xindex = None
+            cast("TimeSeriesMatrix", self).xindex = None
             return
 
         from gwpy.types.index import Index
 
         rate = value if isinstance(value, u.Quantity) else u.Quantity(value, "Hz")
         # Update dt/dx
-        new_dt = (1 / rate).to(self.xunit or u.s)
-        self.dx = new_dt
+        new_dt = (1 / rate).to(cast("TimeSeriesMatrix", self).xunit or u.s)
+        cast("TimeSeriesMatrix", self)._dx = new_dt  # type: ignore[attr-defined]
 
         # Rebuild xindex to preserve start and length
-        length = self.shape[-1]
-        if self.xindex is not None and len(self.xindex) > 0:
-            start = self.xindex[0]
+        length = cast("TimeSeriesMatrix", self).shape[-1]
+        if cast("TimeSeriesMatrix", self).xindex is not None and len(cast("TimeSeriesMatrix", self).xindex) > 0:
+            start = cast("TimeSeriesMatrix", self).xindex[0]
             if not isinstance(start, u.Quantity):
-                start = u.Quantity(start, self.xunit or new_dt.unit or u.s)
+                start = u.Quantity(start, cast("TimeSeriesMatrix", self).xunit or new_dt.unit or u.s)
         else:
-            start = u.Quantity(0, self.xunit or new_dt.unit or u.s)
+            start = u.Quantity(0, cast("TimeSeriesMatrix", self).xunit or new_dt.unit or u.s)
 
-        self.xindex = Index.define(start, new_dt, length)
+        cast("TimeSeriesMatrix", self).xindex = Index.define(start, new_dt, length)
 
-    def _get_series_kwargs(self, xindex, meta):
+    def _get_series_kwargs(self: Any, xindex: Any, meta: Any) -> dict[str, Any]:
         return {
             "times": xindex,
             "unit": meta.unit,
@@ -86,7 +89,7 @@ class TimeSeriesMatrixCoreMixin:
         }
 
     def _apply_timeseries_method(
-        self, method_name: str, *args: Any, **kwargs: Any
+        self: Any, method_name: str, *args: Any, **kwargs: Any
     ) -> Any:
         """
         Apply a TimeSeries method element-wise and rebuild a TimeSeriesMatrix.
@@ -98,9 +101,9 @@ class TimeSeriesMatrixCoreMixin:
 
         N, M, _ = self.shape
         if N == 0 or M == 0:
-            return self if kwargs.get("inplace", False) else self.copy()
+            return self if kwargs.get("inplace", False) else cast("TimeSeriesMatrix", self).copy()
 
-        if not hasattr(self.series_class, method_name):
+        if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):
             raise NotImplementedError(
                 f"Not implemented: TimeSeries has no method '{method_name}' in this GWpy version"
             )
@@ -110,7 +113,7 @@ class TimeSeriesMatrixCoreMixin:
         base_kwargs.pop("inplace", None)
 
         supports_inplace = False
-        ts_attr = getattr(self.series_class, method_name, None)
+        ts_attr = getattr(cast("TimeSeriesMatrix", self).series_class, method_name, None)
         if ts_attr is not None:
             try:
                 sig = inspect.signature(ts_attr)
@@ -125,7 +128,7 @@ class TimeSeriesMatrixCoreMixin:
 
         for i in range(N):
             for j in range(M):
-                ts = self[i, j]
+                ts = cast("TimeSeriesMatrix", self)[i, j]
                 method = getattr(ts, method_name)
                 call_kwargs = dict(base_kwargs)
                 if supports_inplace:
@@ -167,9 +170,9 @@ class TimeSeriesMatrixCoreMixin:
 
         if inplace_matrix:
             if self.shape != out_data.shape:
-                self.resize(out_data.shape, refcheck=False)
-            np.copyto(self.view(np.ndarray), out_data, casting="unsafe")
-            self._value = self.view(np.ndarray)
+                cast("TimeSeriesMatrix", self).resize(out_data.shape, refcheck=False)
+            np.copyto(cast("TimeSeriesMatrix", self).view(np.ndarray), out_data, casting="unsafe")
+            cast("TimeSeriesMatrix", self)._value = cast("TimeSeriesMatrix", self).view(np.ndarray)
             return self
 
         # New Matrix
@@ -190,7 +193,7 @@ class TimeSeriesMatrixCoreMixin:
             if isinstance(obj, type(self)):
 
                 def _getter(i, j):
-                    return obj[i, j]
+                    return cast("TimeSeriesMatrix", obj)[i, j]
 
                 return _getter
             else:
@@ -203,14 +206,14 @@ class TimeSeriesMatrixCoreMixin:
         return _getter_factory(other)
 
     def _apply_bivariate_spectral_method(
-        self, method_name: str, other: Any, *args: Any, **kwargs: Any
+        self: Any, method_name: str, other: Any, *args: Any, **kwargs: Any
     ) -> Any:
         """
         Apply a bivariate TimeSeries spectral method element-wise and return FrequencySeriesMatrix.
         """
         from gwexpy.frequencyseries import FrequencySeriesMatrix
 
-        if not hasattr(self.series_class, method_name):
+        if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):
             raise NotImplementedError(
                 f"Not implemented: TimeSeries has no method '{method_name}' in this GWpy version"
             )
@@ -226,7 +229,7 @@ class TimeSeriesMatrixCoreMixin:
 
         for i in range(N):
             for j in range(M):
-                ts_a = self[i, j]
+                ts_a = cast("TimeSeriesMatrix", self)[i, j]
                 ts_b = get_other(i, j)
                 result = getattr(ts_a, method_name)(ts_b, *args, **kwargs)
                 if not hasattr(result, "frequencies"):
@@ -277,14 +280,14 @@ class TimeSeriesMatrixCoreMixin:
         )
 
     def _apply_univariate_spectral_method(
-        self, method_name: str, *args: Any, **kwargs: Any
+        self: Any, method_name: str, *args: Any, **kwargs: Any
     ) -> Any:
         """
         Apply a univariate TimeSeries spectral method element-wise and return FrequencySeriesMatrix.
         """
         from gwexpy.frequencyseries import FrequencySeriesMatrix
 
-        if not hasattr(self.series_class, method_name):
+        if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):
             raise NotImplementedError(
                 f"Not implemented: TimeSeries has no method '{method_name}' in this GWpy version"
             )
@@ -298,7 +301,7 @@ class TimeSeriesMatrixCoreMixin:
 
         for i in range(N):
             for j in range(M):
-                ts = self[i, j]
+                ts = cast("TimeSeriesMatrix", self)[i, j]
                 result = getattr(ts, method_name)(*args, **kwargs)
                 if not hasattr(result, "frequencies"):
                     raise TypeError(
@@ -348,14 +351,14 @@ class TimeSeriesMatrixCoreMixin:
         )
 
     def _apply_spectrogram_method(
-        self, method_name: str, *args: Any, **kwargs: Any
+        self: Any, method_name: str, *args: Any, **kwargs: Any
     ) -> Any:
         """
         Apply a TimeSeries spectrogram method element-wise and return SpectrogramMatrix.
         """
         from gwexpy.spectrogram import SpectrogramMatrix
 
-        if not hasattr(self.series_class, method_name):
+        if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):
             raise NotImplementedError(
                 f"Not implemented: TimeSeries has no method '{method_name}' in this GWpy version"
             )
@@ -375,7 +378,7 @@ class TimeSeriesMatrixCoreMixin:
 
         for i in range(N):
             for j in range(M):
-                ts = self[i, j]
+                ts = cast("TimeSeriesMatrix", self)[i, j]
                 result = getattr(ts, method_name)(*args, **kwargs)
                 if not hasattr(result, "times") or not hasattr(result, "frequencies"):
                     raise TypeError(
@@ -424,11 +427,14 @@ class TimeSeriesMatrixCoreMixin:
         out_data = np.empty((N, M, n_time, n_freq), dtype=dtype)
         for i in range(N):
             for j in range(M):
-                if values[i][j].shape != (n_time, n_freq):
+                val = values[i][j]
+                if val is None:
+                    raise RuntimeError(f"Unexpected None at ({i}, {j}) in {method_name}")
+                if val.shape != (n_time, n_freq):
                     raise ValueError(
                         f"{method_name} produced inconsistent spectrogram shapes"
                     )
-                out_data[i, j, :, :] = values[i][j]
+                out_data[i, j, :, :] = val
 
         meta_matrix = MetaDataMatrix(meta_array)
 
@@ -444,14 +450,14 @@ class TimeSeriesMatrixCoreMixin:
             epoch=common_epoch,
         )
 
-    def _repr_string_(self) -> str:
-        if self.size > 0:
-            u_meta = self.meta[0, 0].unit
+    def _repr_string_(self: Any) -> str:
+        if self.size > 0:  # type: ignore[attr-defined]
+            u_meta = self.meta[0, 0].unit  # type: ignore[attr-defined]
         else:
             u_meta = None
-        return f"<TimeSeriesMatrix shape={self.shape}, dt={self.dt}, unit={u_meta}>"
+        return f"<TimeSeriesMatrix shape={self.shape}, dt={self.dt}, unit={u_meta}>"  # type: ignore[attr-defined]
 
-    def _get_meta_for_constructor(self, data, xindex):
+    def _get_meta_for_constructor(self: Any, data: Any, xindex: Any) -> dict[str, Any]:
         """Arguments to construct a TimeSeriesMatrix."""
         return {
             "data": data,
