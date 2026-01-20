@@ -78,8 +78,8 @@ class TestFromPygwincQuantityValidation:
 
     def test_strain_quantity_returns_frequencyseries(self):
         """from_pygwinc with quantity='strain' returns FrequencySeries."""
-        from gwexpy.noise.asd import from_pygwinc
         from gwexpy.frequencyseries import FrequencySeries
+        from gwexpy.noise.asd import from_pygwinc
 
         asd = from_pygwinc("aLIGO", fmin=10.0, fmax=100.0, df=10.0, quantity="strain")
         assert isinstance(asd, FrequencySeries)
@@ -88,6 +88,7 @@ class TestFromPygwincQuantityValidation:
         """from_pygwinc with quantity='strain' has unit 1/sqrt(Hz)."""
         pytest.importorskip("astropy")
         from astropy import units as u
+
         from gwexpy.noise.asd import from_pygwinc
 
         asd = from_pygwinc("aLIGO", fmin=10.0, fmax=100.0, df=10.0, quantity="strain")
@@ -96,8 +97,8 @@ class TestFromPygwincQuantityValidation:
 
     def test_darm_quantity_returns_frequencyseries(self):
         """from_pygwinc with quantity='darm' returns FrequencySeries."""
-        from gwexpy.noise.asd import from_pygwinc
         from gwexpy.frequencyseries import FrequencySeries
+        from gwexpy.noise.asd import from_pygwinc
 
         asd = from_pygwinc("aLIGO", fmin=10.0, fmax=100.0, df=10.0, quantity="darm")
         assert isinstance(asd, FrequencySeries)
@@ -106,6 +107,7 @@ class TestFromPygwincQuantityValidation:
         """from_pygwinc with quantity='darm' has unit m/sqrt(Hz)."""
         pytest.importorskip("astropy")
         from astropy import units as u
+
         from gwexpy.noise.asd import from_pygwinc
 
         asd = from_pygwinc("aLIGO", fmin=10.0, fmax=100.0, df=10.0, quantity="darm")
@@ -149,6 +151,7 @@ class TestFromPygwincQuantityValidation:
     def test_darm_strain_ratio_equals_arm_length(self):
         """darm / strain ratio equals arm length L at all frequencies."""
         import gwinc
+
         from gwexpy.noise.asd import from_pygwinc
 
         freqs = np.arange(10.0, 101.0, 10.0)
@@ -180,8 +183,8 @@ class TestFromObspyQuantityValidation:
 
     def test_acceleration_quantity_returns_frequencyseries(self):
         """from_obspy with quantity='acceleration' returns FrequencySeries."""
-        from gwexpy.noise.asd import from_obspy
         from gwexpy.frequencyseries import FrequencySeries
+        from gwexpy.noise.asd import from_obspy
 
         asd = from_obspy("NLNM", quantity="acceleration")
         assert isinstance(asd, FrequencySeries)
@@ -190,6 +193,7 @@ class TestFromObspyQuantityValidation:
         """from_obspy with quantity='acceleration' has unit m/(s²·sqrt(Hz))."""
         pytest.importorskip("astropy")
         from astropy import units as u
+
         from gwexpy.noise.asd import from_obspy
 
         asd = from_obspy("NLNM", quantity="acceleration")
@@ -200,6 +204,7 @@ class TestFromObspyQuantityValidation:
         """from_obspy with quantity='velocity' has unit m/(s·sqrt(Hz))."""
         pytest.importorskip("astropy")
         from astropy import units as u
+
         from gwexpy.noise.asd import from_obspy
 
         asd = from_obspy("NLNM", quantity="velocity")
@@ -210,6 +215,7 @@ class TestFromObspyQuantityValidation:
         """from_obspy with quantity='displacement' has unit m/sqrt(Hz)."""
         pytest.importorskip("astropy")
         from astropy import units as u
+
         from gwexpy.noise.asd import from_obspy
 
         asd = from_obspy("NLNM", quantity="displacement")
@@ -268,8 +274,8 @@ class TestFromObspyQuantityValidation:
 
     def test_nhnm_model_works(self):
         """from_obspy with NHNM model returns valid FrequencySeries."""
-        from gwexpy.noise.asd import from_obspy
         from gwexpy.frequencyseries import FrequencySeries
+        from gwexpy.noise.asd import from_obspy
 
         asd = from_obspy("NHNM")
         assert isinstance(asd, FrequencySeries)
@@ -279,8 +285,9 @@ class TestFromObspyQuantityValidation:
         """from_obspy with infrasound models (IDCH, IDCL) works."""
         pytest.importorskip("astropy")
         from astropy import units as u
-        from gwexpy.noise.asd import from_obspy
+
         from gwexpy.frequencyseries import FrequencySeries
+        from gwexpy.noise.asd import from_obspy
 
         for model in ["IDCH", "IDCL"]:
             asd = from_obspy(model)

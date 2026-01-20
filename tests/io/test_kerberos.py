@@ -1,6 +1,6 @@
 import sys
-import pytest
 
+import pytest
 from gwpy.io.tests import test_kerberos as _gwpy_test_kerberos
 from gwpy.io.tests.test_kerberos import *  # noqa: F403
 

@@ -1,7 +1,9 @@
 
-import pytest
 import numpy as np
+import pytest
+
 from gwexpy.timeseries import TimeSeries
+
 
 @pytest.fixture
 def gaussian_data():

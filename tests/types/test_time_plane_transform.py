@@ -1,7 +1,9 @@
 
 import numpy as np
 from astropy import units as u
-from gwexpy.types import TimePlaneTransform, Array3D, Plane2D
+
+from gwexpy.types import Array3D, Plane2D, TimePlaneTransform
+
 
 def test_basic_construction():
     """

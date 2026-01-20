@@ -1,7 +1,9 @@
 
-import numpy as np
-from gwexpy.frequencyseries import FrequencySeries
 import astropy.units as u
+import numpy as np
+
+from gwexpy.frequencyseries import FrequencySeries
+
 
 def test_find_peaks_basic():
     data = np.zeros(100)

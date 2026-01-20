@@ -145,6 +145,7 @@ class ImputeTransform(Transform):
         self.kwargs = kwargs
 
     def transform(self, x):
+        """Apply imputation to TimeSeries, Matrix, or Collections."""
         if isinstance(x, TimeSeries):
             return impute_timeseries(x, method=self.method, **self.kwargs)
         if isinstance(x, TimeSeriesMatrix):
@@ -207,6 +208,7 @@ class StandardizeTransform(Transform):
         return center, scale
 
     def fit(self, x):
+        """Fit standardization parameters (center, scale) for the input data."""
         data, original = (
             _to_matrix_from_collection(x, align=self.align)
             if self.multivariate
@@ -251,6 +253,7 @@ class StandardizeTransform(Transform):
         return new_mat
 
     def transform(self, x):
+        """Apply standardization using fitted parameters."""
         if self.params is None:
             self.fit(x)
 
@@ -292,6 +295,7 @@ class StandardizeTransform(Transform):
         )
 
     def inverse_transform(self, y):
+        """Reverse standardization transformation."""
         if self.params is None:
             raise ValueError("StandardizeTransform has not been fitted.")
 
@@ -377,6 +381,7 @@ class WhitenTransform(Transform):
         raise TypeError(f"Unsupported type for whitening: {type(x)}")
 
     def fit(self, x):
+        """Fit whitening parameters for the input data."""
         mat_data = x
         original = None
         if self.multivariate:
@@ -397,6 +402,7 @@ class WhitenTransform(Transform):
         return self
 
     def transform(self, x):
+        """Apply whitening transform."""
         if self.model is None:
             self.fit(x)
 
@@ -421,6 +427,7 @@ class WhitenTransform(Transform):
         return _restore_collection(new_mat, original if self.multivariate else None)
 
     def inverse_transform(self, y):
+        """Reverse whitening transformation."""
         if self.model is None:
             raise ValueError("WhitenTransform has not been fitted.")
         mat_data, original = (
@@ -473,6 +480,7 @@ class PCATransform(Transform):
         )
 
     def fit(self, x):
+        """Fit PCA model for the input data."""
         mat, collection = self._ensure_matrix(x) if self.multivariate else (x, None)
         if not isinstance(mat, TimeSeriesMatrix):
             raise TypeError(
@@ -483,6 +491,7 @@ class PCATransform(Transform):
         return self
 
     def transform(self, x):
+        """Apply PCA transformation (project to scores)."""
         if self.model is None:
             self.fit(x)
         mat, collection = self._ensure_matrix(x) if self.multivariate else (x, None)
@@ -492,6 +501,7 @@ class PCATransform(Transform):
         return _restore_collection(scores, collection if self.multivariate else None)
 
     def inverse_transform(self, y):
+        """Reverse PCA transformation (reconstruct from scores)."""
         if self.model is None:
             raise ValueError("PCATransform has not been fitted.")
         mat, collection = self._ensure_matrix(y) if self.multivariate else (y, None)
@@ -537,6 +547,7 @@ class ICATransform(Transform):
         )
 
     def fit(self, x):
+        """Fit ICA model for the input data."""
         mat, collection = self._ensure_matrix(x) if self.multivariate else (x, None)
         if not isinstance(mat, TimeSeriesMatrix):
             raise TypeError(
@@ -547,6 +558,7 @@ class ICATransform(Transform):
         return self
 
     def transform(self, x):
+        """Apply ICA transformation (project to sources)."""
         if self.model is None:
             self.fit(x)
         mat, collection = self._ensure_matrix(x) if self.multivariate else (x, None)
@@ -556,6 +568,7 @@ class ICATransform(Transform):
         return _restore_collection(sources, collection if self.multivariate else None)
 
     def inverse_transform(self, y):
+        """Reverse ICA transformation (reconstruct from sources)."""
         if self.model is None:
             raise ValueError("ICATransform has not been fitted.")
         mat, collection = self._ensure_matrix(y) if self.multivariate else (y, None)

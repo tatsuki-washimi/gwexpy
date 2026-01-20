@@ -1,6 +1,7 @@
 
-import pytest
 import numpy as np
+import pytest
+
 from gwexpy.spectrogram import Spectrogram
 
 try:

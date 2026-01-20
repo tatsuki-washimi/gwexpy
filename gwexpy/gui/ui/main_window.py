@@ -1431,7 +1431,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Reference list
         group = QtWidgets.QGroupBox("Loaded Reference Traces")
         group_layout = QtWidgets.QVBoxLayout(group)
-        
+
         self._ref_list_widget = QtWidgets.QListWidget()
         # Populate with any existing references
         if hasattr(self, "_reference_traces"):
@@ -1499,72 +1499,72 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Tabs for different calibration methods
         cal_tabs = QtWidgets.QTabWidget()
-        
+
         # --- Tab 1: Channel List ---
         channel_tab = QtWidgets.QWidget()
         ch_layout = QtWidgets.QVBoxLayout(channel_tab)
-        
+
         ch_table = QtWidgets.QTableWidget()
         ch_table.setColumnCount(4)
         ch_table.setHorizontalHeaderLabels(["Channel", "Gain", "Units", "Filter"])
         ch_table.horizontalHeader().setStretchLastSection(True)
-        
+
         # Populate with active channels
         active_channels = []
         if hasattr(self, "meas_controls"):
             for state in self.meas_controls.get("channel_states", []):
                 if state.get("active"):
                     active_channels.append(state.get("name", ""))
-        
+
         ch_table.setRowCount(len(active_channels) if active_channels else 2)
         for i, ch_name in enumerate(active_channels[:10]):  # Limit to 10
             ch_table.setItem(i, 0, QtWidgets.QTableWidgetItem(ch_name))
             ch_table.setItem(i, 1, QtWidgets.QTableWidgetItem("1.0"))
             ch_table.setItem(i, 2, QtWidgets.QTableWidgetItem("counts"))
             ch_table.setItem(i, 3, QtWidgets.QTableWidgetItem("None"))
-        
+
         ch_layout.addWidget(ch_table)
         cal_tabs.addTab(channel_tab, "Channels")
-        
+
         # --- Tab 2: Zeros/Poles Editor ---
         zp_tab = QtWidgets.QWidget()
         zp_layout = QtWidgets.QFormLayout(zp_tab)
-        
+
         zp_layout.addRow("Gain:", QtWidgets.QDoubleSpinBox())
         zp_layout.addRow("Zeros (comma sep):", QtWidgets.QLineEdit(""))
         zp_layout.addRow("Poles (comma sep):", QtWidgets.QLineEdit(""))
-        
+
         cal_tabs.addTab(zp_tab, "Zeros/Poles")
-        
+
         # --- Tab 3: Import/Export ---
         io_tab = QtWidgets.QWidget()
         io_layout = QtWidgets.QVBoxLayout(io_tab)
-        
+
         btn_import_cal = QtWidgets.QPushButton("Import Calibration File...")
         btn_export_cal = QtWidgets.QPushButton("Export Calibration File...")
         io_layout.addWidget(btn_import_cal)
         io_layout.addWidget(btn_export_cal)
         io_layout.addStretch(1)
-        
+
         def import_calibration():
             f, _ = QtWidgets.QFileDialog.getOpenFileName(
                 dialog, "Import Calibration", "", "Calibration Files (*.cal *.xml *.txt);;All Files (*)"
             )
             if f:
                 QtWidgets.QMessageBox.information(dialog, "Import", f"Loaded calibration from:\n{f}")
-        
+
         def export_calibration():
             f, _ = QtWidgets.QFileDialog.getSaveFileName(
                 dialog, "Export Calibration", "", "Calibration Files (*.cal *.xml);;All Files (*)"
             )
             if f:
                 QtWidgets.QMessageBox.information(dialog, "Export", f"Exported calibration to:\n{f}")
-        
+
         btn_import_cal.clicked.connect(import_calibration)
         btn_export_cal.clicked.connect(export_calibration)
-        
+
         cal_tabs.addTab(io_tab, "Import/Export")
-        
+
         layout.addWidget(cal_tabs)
 
         # Dialog buttons

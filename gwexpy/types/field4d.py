@@ -1,10 +1,8 @@
 """4D Field with domain states and FFT operations."""
 
 import numpy as np
-from astropy.units import Quantity, dimensionless_unscaled, Unit
 
 from .array4d import Array4D
-from .axis import coerce_1d_quantity
 
 __all__ = ["Field4D"]
 
@@ -484,8 +482,8 @@ class Field4D(Array4D):
             ax_int = self._get_axis_index(ax_name)
             if ax_int == 0:
                 raise ValueError(
-                    f"Cannot use fft_space on axis 0 (time/frequency axis). "
-                    f"Use fft_time instead."
+                    "Cannot use fft_space on axis 0 (time/frequency axis). "
+                    "Use fft_time instead."
                 )
             domain = self._space_domains.get(ax_name)
             if domain != "real":
@@ -588,7 +586,7 @@ class Field4D(Array4D):
             ax_int = self._get_axis_index(ax_name)
             if ax_int == 0:
                 raise ValueError(
-                    f"Cannot use ifft_space on axis 0. Use ifft_time instead."
+                    "Cannot use ifft_space on axis 0. Use ifft_time instead."
                 )
             domain = self._space_domains.get(ax_name)
             if domain != "k":

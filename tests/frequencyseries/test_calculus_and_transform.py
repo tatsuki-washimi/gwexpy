@@ -1,8 +1,10 @@
-import pytest
 import numpy as np
+import pytest
 from astropy import units as u
 from gwpy.timeseries import TimeSeries
+
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesMatrix
+
 
 class TestFrequencySeriesCalculus:
     """Test A2-b calculus methods in FrequencySeries."""
@@ -12,11 +14,11 @@ class TestFrequencySeriesCalculus:
         data = np.array([1.0, 2.0, 3.0])
         freqs = np.array([0.0, 1.0, 2.0])
         fs = FrequencySeries(data, frequencies=freqs, unit='m')
-        
+
         # Integrate time: should divide by (i * 2pi * f)
         # f=0 would be division by zero, expectation is 0j (DC blocking/stability)
         integ = fs.integrate_time()
-        
+
         assert integ.value[0] == 0j, "DC component must be 0j to avoid singularity"
         assert not np.isnan(integ.value).any()
         assert not np.isinf(integ.value).any()
@@ -38,9 +40,9 @@ class TestFrequencySeriesCalculus:
         phase = -2.0 * np.pi * delay * freqs
         data = np.exp(1j * phase)
         fs = FrequencySeries(data, frequencies=freqs, unit='V')
-        
+
         gd = fs.group_delay()
-        
+
         assert gd.unit == u.s
         # Check value ignoring boundaries (gradient is sensitive at edges)
         np.testing.assert_allclose(gd.value[5:-5], delay, atol=1e-5)
@@ -55,14 +57,14 @@ class TestMatrixTransform:
         """
         ts = TimeSeries([1, 0, -1, 0, 2, 0, -2, 0], sample_rate=8, unit='V')
         fs = ts.fft()
-        
-        matrix = FrequencySeriesMatrix([fs]) 
+
+        matrix = FrequencySeriesMatrix([fs])
         reconstructed = matrix.ifft()
-        
+
         # TimeSeriesMatrix returns at shape (1, 1, 8), extract first element
         # For unit check, use meta attribute; for data, use the sliced value
         recon_data = reconstructed.value[0, 0]
         recon_unit = reconstructed.meta[0, 0].unit
-        
+
         assert recon_unit == ts.unit
         np.testing.assert_allclose(recon_data, ts.value, atol=1e-7, err_msg="IFFT amplitude mismatch")

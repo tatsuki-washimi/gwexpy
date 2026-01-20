@@ -1,11 +1,14 @@
 
 import numpy as np
+
 from gwexpy.timeseries import TimeSeriesMatrix
+
 try:
     import torch  # noqa: F401 - availability check
 except ImportError:
     torch = None
 import pytest
+
 
 @pytest.mark.skipif(torch is None, reason="torch not installed")
 def test_timeseriesmatrix_to_torch():

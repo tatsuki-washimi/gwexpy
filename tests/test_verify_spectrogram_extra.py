@@ -1,10 +1,14 @@
 
-import numpy as np
 import os
+
 import matplotlib
+import numpy as np
+
 matplotlib.use('Agg')
 from gwpy.spectrogram import Spectrogram
-from gwexpy.spectrogram import SpectrogramList, SpectrogramDict
+
+from gwexpy.spectrogram import SpectrogramDict, SpectrogramList
+
 
 def test_spectrogram_extra_features():
     # Dummy Data (Time=10, Freq=5)

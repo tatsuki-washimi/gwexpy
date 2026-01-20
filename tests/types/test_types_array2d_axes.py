@@ -6,6 +6,7 @@ from astropy import units as u
 # Note: gwexpy.types.array2d.Array2D must be available.
 from gwexpy.types.array2d import Array2D
 
+
 def test_array2d_axes():
     data = np.zeros((10, 5))
     # gwpy Array2D: axis0=y (10), axis1=x (5)

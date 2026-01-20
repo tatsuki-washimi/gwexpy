@@ -370,5 +370,6 @@ except ImportError:  # fallback for gwpy versions without SeriesType
     from enum import Enum
 
     class SeriesType(Enum):  # type: ignore[no-redef]
+        """Enumeration of series axes types (TIME or FREQ)."""
         TIME = "time"
         FREQ = "freq"

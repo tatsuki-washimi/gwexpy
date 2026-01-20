@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 from gwpy.types import Series
 
 if TYPE_CHECKING:
-    from .core import Fitter, FitResult, fit_series
+    from .core import FitResult, Fitter, fit_series
     from .gls import GLS, GeneralizedLeastSquares
     from .highlevel import fit_bootstrap_spectrum
 
@@ -51,7 +51,7 @@ enable_fitting_monkeypatch = enable_series_fit
 def __getattr__(name: str) -> Any:
     if name in ("fit_series", "FitResult", "Fitter"):
         try:
-            from .core import Fitter, FitResult, fit_series
+            from .core import FitResult, Fitter, fit_series
         except Exception as exc:  # pragma: no cover
             raise ImportError(
                 "gwexpy.fitting requires optional dependencies (e.g. iminuit) and a working numba setup."

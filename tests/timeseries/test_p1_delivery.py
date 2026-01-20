@@ -1,10 +1,11 @@
 
-import pytest
 import numpy as np
+import pytest
 from astropy import units as u
+
+from gwexpy.interop.mt_ import to_mth5
 from gwexpy.timeseries import TimeSeries
 from gwexpy.types.time_plane_transform import TimePlaneTransform
-from gwexpy.interop.mt_ import to_mth5
 
 # --- P1-1: TimePlaneTransform at_time interpolation ---
 

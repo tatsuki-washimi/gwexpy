@@ -14,7 +14,7 @@ This module integrates all Mixins into a single TimeSeries class.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -82,6 +82,21 @@ class TimeSeries(
         return Plot(self, **kwargs)
 
     def __new__(cls, data: ArrayLike, *args: Any, **kwargs: Any) -> TimeSeries:
+        """
+        Create a new TimeSeries.
+
+        This constructor extends the standard gwpy.timeseries.TimeSeries constructor
+        by adding support for automatic GPS time coercion for 't0' and 'epoch' parameters.
+
+        Parameters
+        ----------
+        data : array_like
+            The data values for the series.
+        *args
+            Additional positional arguments passed to the parent constructor.
+        **kwargs
+            Additional keyword arguments passed to the parent constructor.
+        """
         from gwexpy.timeseries.utils import _coerce_t0_gps
 
         should_coerce = True
@@ -217,9 +232,11 @@ class TimeSeries(
             if dist is not None and hasattr(dist, "to"):
                 dist = int(dist.to("s").value * fs)
 
-            if np.iterable(wid):
+            if np.iterable(wid) and not isinstance(wid, (str, bytes)):
+                # help mypy know it is iterable
+                wid_iter = cast(Any, wid)
                 new_wid = []
-                for w in wid:
+                for w in wid_iter:
                     if hasattr(w, "to"):
                         new_wid.append(w.to("s").value * fs)
                     else:

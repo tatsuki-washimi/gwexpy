@@ -1,6 +1,8 @@
 import os
 import socket
+
 import pytest
+
 
 def resolve_nds_endpoint():
     """
@@ -9,10 +11,10 @@ def resolve_nds_endpoint():
     """
     host = os.getenv("GWEXPY_NDS_HOST")
     port = os.getenv("GWEXPY_NDS_PORT")
-    
+
     if host and port:
         return host, int(port)
-    
+
     # Try NDSSERVER (port 8088/NDS1) first as it is more likely to be the online source at KAGRA
     nds1_server = os.getenv("NDSSERVER")
     if nds1_server:
@@ -25,7 +27,7 @@ def resolve_nds_endpoint():
                 return h, int(p)
             else:
                 return entry, 8088
-    
+
     # Try NDS2SERVER: "host1:port1,host2:port2"
     nds2_server = os.getenv("NDS2SERVER")
     if nds2_server:
@@ -38,7 +40,7 @@ def resolve_nds_endpoint():
                 return h, int(p)
             else:
                 return entry, 31200
-                
+
     # Fallback
     return "nds.ligo.caltech.edu", 31200
 
@@ -50,14 +52,14 @@ def nds_available():
     """
     if os.getenv("GWEXPY_ENABLE_NDS_TESTS") != "1":
         return False, "GWEXPY_ENABLE_NDS_TESTS is not set to 1"
-    
+
     try:
         import nds2
     except ImportError:
         return False, "nds2-client is not installed"
-    
+
     host, port = resolve_nds_endpoint()
-    
+
     try:
         # Set explicit timeout to avoid long hangs on network issues
         socket.setdefaulttimeout(10)
@@ -69,7 +71,7 @@ def nds_available():
         return False, f"Failed to connect to NDS server {host}:{port}"
     finally:
         socket.setdefaulttimeout(None)
-        
+
     return True, ""
 
 @pytest.fixture
@@ -80,7 +82,7 @@ def nds_backend(nds_available):
     available, reason = nds_available
     if not available:
         pytest.skip(f"NDS not available: {reason}")
-    
+
     host, port = resolve_nds_endpoint()
     return {
         "host": host,

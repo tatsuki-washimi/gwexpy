@@ -3,8 +3,8 @@ import importlib
 import numpy as np
 import pytest
 
-from gwexpy.timeseries import TimeSeries
 from gwexpy.interop import torch_dataset
+from gwexpy.timeseries import TimeSeries
 
 
 @pytest.mark.skipif(importlib.util.find_spec("torch") is None, reason="torch not installed")

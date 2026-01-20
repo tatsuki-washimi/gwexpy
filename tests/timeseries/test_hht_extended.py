@@ -1,9 +1,10 @@
 
-import pytest
 import numpy as np
+import pytest
 from astropy import units as u
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 from gwpy.spectrogram import Spectrogram
+
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 PYEMD_AVAILABLE = False
 try:
@@ -33,7 +34,7 @@ class TestHHTExtended:
         # Count IMFs
         imf_keys = [k for k in res_emd.keys() if k.startswith("IMF")]
         assert len(imf_keys) > 0
-        
+
         # EEMD
         res_eemd = chirp_signal.emd(method="eemd", eemd_trials=10, return_residual=True)
         assert "residual" in res_eemd
@@ -46,7 +47,7 @@ class TestHHTExtended:
         res1 = chirp_signal.emd(method="eemd", eemd_trials=5, random_state=42)
         res2 = chirp_signal.emd(method="eemd", eemd_trials=5, random_state=42)
         res3 = chirp_signal.emd(method="eemd", eemd_trials=5, random_state=43)
-        
+
         assert np.allclose(res1["IMF1"].value, res2["IMF1"].value)
         assert not np.allclose(res1["IMF1"].value, res3["IMF1"].value)
 
@@ -54,7 +55,7 @@ class TestHHTExtended:
         # Test pad
         res_no_pad = chirp_signal.hilbert_analysis(pad=0)
         res_pad = chirp_signal.hilbert_analysis(pad=100)
-        
+
         # Padding should change values near edges
         assert not np.allclose(res_no_pad["frequency"].value[:10], res_pad["frequency"].value[:10])
         # Use more relaxed tolerance for middle check as padding can have small global effects
@@ -88,7 +89,7 @@ class TestHHTExtended:
         assert spec_ia2.unit == chirp_signal.unit ** 2
         assert spec_ia.unit == chirp_signal.unit
         # For a single chirp, ia2 should be approx ia^2. Use loose tolerance due to possible binning/residue effects.
-        assert np.allclose(spec_ia2.value, spec_ia.value ** 2, atol=1e-1) 
+        assert np.allclose(spec_ia2.value, spec_ia.value ** 2, atol=1e-1)
 
 
     @pytest.mark.skipif(not PYEMD_AVAILABLE, reason="PyEMD not installed")
@@ -100,14 +101,14 @@ class TestHHTExtended:
         verifies that the spectrogram binning correctly excludes non-finite values.
         """
         from unittest.mock import patch
-        
+
         # First do a normal HHT to get the shape
         spec_normal = chirp_signal.hht(output="spectrogram", emd_method="emd", finite_only=True)
-        
+
         # Now test with patched hilbert_analysis that injects NaN
         original_hilbert_analysis = type(chirp_signal).hilbert_analysis
         call_count = [0]
-        
+
         def patched_hilbert_analysis(self, **kwargs):
             result = original_hilbert_analysis(self, **kwargs)
             # Inject NaN into the middle of IF/IA
@@ -115,17 +116,17 @@ class TestHHTExtended:
             result["frequency"].value[500] = np.nan
             result["amplitude"].value[500] = np.nan
             return result
-        
+
         with patch.object(type(chirp_signal), "hilbert_analysis", patched_hilbert_analysis):
             spec_with_nan = chirp_signal.hht(output="spectrogram", finite_only=True, emd_method="emd")
-        
+
         # The spectrogram should have no NaN (finite_only excludes them)
         assert not np.any(np.isnan(spec_with_nan.value))
-        
+
         # The sum should be slightly less due to dropped NaN points
         # (comparing at matching time index)
         assert spec_with_nan.value.sum() <= spec_normal.value.sum()
-    
+
     @pytest.mark.skipif(not PYEMD_AVAILABLE, reason="PyEMD not installed")
     def test_hht_if_policy_clip_vs_drop(self, chirp_signal):
         # Test if_policy='clip' includes more energy than 'drop' for restricted range

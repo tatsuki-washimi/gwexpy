@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 from astropy import units as u
 from astropy.units import UnitConversionError
-from gwexpy.spectrogram import SpectrogramMatrix, Spectrogram, SpectrogramList
+
+from gwexpy.spectrogram import Spectrogram, SpectrogramList, SpectrogramMatrix
 
 
 class TestSpectrogramMatrixFeatures:
@@ -14,10 +15,10 @@ class TestSpectrogramMatrixFeatures:
         freqs = np.arange(5) * 10 * u.Hz
         data = np.random.rand(2, 10, 5)
         return SpectrogramMatrix(
-            data, 
-            times=times, 
-            frequencies=freqs, 
-            rows=['ch1', 'ch2'], 
+            data,
+            times=times,
+            frequencies=freqs,
+            rows=['ch1', 'ch2'],
             name="TestSGM",
             unit=u.V
         )
@@ -29,10 +30,10 @@ class TestSpectrogramMatrixFeatures:
         freqs = np.arange(5)
         data = np.random.rand(2, 2, 10, 5)
         return SpectrogramMatrix(
-            data, 
-            times=times, 
-            frequencies=freqs, 
-            rows=['R1', 'R2'], 
+            data,
+            times=times,
+            frequencies=freqs,
+            rows=['R1', 'R2'],
             cols=['C1', 'C2']
         )
 
@@ -59,7 +60,7 @@ class TestSpectrogramMatrixFeatures:
         assert sub.name == "TestSGM" # Inherits name? Or access metadata?
         # Metadata logic in SeriesMatrix creates dummy names 's00' if not provided for elements.
         # But SpectrogramMatrix.__new__ populates rows/cols metadata.
-        
+
         # 2. Slice batch by label
         sub_label = sgm_3d_basic['ch2']
         assert isinstance(sub_label, Spectrogram)
@@ -75,20 +76,20 @@ class TestSpectrogramMatrixFeatures:
         """Test slicing on 4D matrix."""
         # 1. Single element Access (Row, Col)
         # Should return Spectrogram
-        spec = sgm_4d_basic[0, 1] 
+        spec = sgm_4d_basic[0, 1]
         assert isinstance(spec, Spectrogram)
         assert spec.shape == (10, 5)
-        
+
         # 2. Label access
         spec_lbl = sgm_4d_basic['R2', 'C1']
         assert isinstance(spec_lbl, Spectrogram)
-        
+
         # 3. Partial Slice (Row only) -> Returns SpectrogramMatrix 4D (1, 2, 10, 5) or reduced 3D?
         # Standard numpy slicing: [0] -> (2, 10, 5).
         # SeriesMatrix usually preserves dimensionality if possible or reduces?
         # Let's see what happens.
-        
-        sub_row = sgm_4d_basic[0] 
+
+        sub_row = sgm_4d_basic[0]
         # Numpy behavior: returns subarray of shape (2, 10, 5).
         # For SpectrogramMatrix, this is effectively a 3D matrix (Col, Time, Freq).
         # We assume it downgrades to 3D matrix where "Batch" = "Col".
@@ -98,10 +99,10 @@ class TestSpectrogramMatrixFeatures:
         # If it becomes 3D, 'rows' should become the 'cols' of the original?
         # This behavior depends on how __array_finalize__ and SeriesMatrix handles dim reduction.
         # This is a bit complex. Let's inspect rows.
-        # If we sliced row 0, the remaining dims are (Col, T, F). 
+        # If we sliced row 0, the remaining dims are (Col, T, F).
         # So new rows should be C1, C2.
-        # assert list(sub_row.row_keys()) == ['C1', 'C2'] 
-        
+        # assert list(sub_row.row_keys()) == ['C1', 'C2']
+
     def test_crop_time(self, sgm_3d_basic):
         """Test cropping along time axis (-2)."""
         # Crop 2s to 8s
@@ -116,22 +117,22 @@ class TestSpectrogramMatrixFeatures:
         # Split into two
         part1 = sgm_3d_basic.crop(end=5*u.s)
         part2 = sgm_3d_basic.crop(start=5*u.s)
-        
+
         # Append
         rejoined = part1.append(part2, inplace=False)
-        
+
         assert rejoined.shape == sgm_3d_basic.shape
         assert np.allclose(rejoined.times.value, sgm_3d_basic.times.value)
         assert np.allclose(rejoined.value, sgm_3d_basic.value)
-        
+
     def test_math_stats(self, sgm_3d_basic):
         """Test statistical methods."""
         # Mean over time (axis -2)
         # Note: SeriesMatrix.mean might default to flattening if axis=None.
         # SeriesMatrix inherited mean usually supports axis.
-        
+
         # Axis -2 is time.
-        mean_time = sgm_3d_basic.mean(axis=-2) 
+        mean_time = sgm_3d_basic.mean(axis=-2)
         # Result shape: (2, 5) -> (Batch, Freq)
         assert mean_time.shape == (2, 5)
         # Should return FrequencySeriesMatrix-like structure?
@@ -140,11 +141,11 @@ class TestSpectrogramMatrixFeatures:
         # StatisticalMethodsMixin.mean returns result of func.
         # func is np.nanmean. returns ndarray/Quantity.
         assert isinstance(mean_time, (u.Quantity, np.ndarray))
-        
+
         # Mean over freq (axis -1)
         mean_freq = sgm_3d_basic.mean(axis=-1)
         assert mean_freq.shape == (2, 10) # (Batch, Time) -> TimeSeriesMatrix-like?
-        
+
     def test_arithmetic(self, sgm_3d_basic):
         """Test arithmetic operations."""
         # Multiply by scalar
@@ -153,13 +154,13 @@ class TestSpectrogramMatrixFeatures:
         # Check per-element unit is preserved (new design: units in meta, not global)
         assert doubled.meta[0, 0].unit == u.V
         assert doubled.meta[1, 0].unit == u.V
-        
+
         # Multiply by unit
         volts_sq = sgm_3d_basic * u.V
         # Each element should be V * V = V^2
         assert volts_sq.meta[0, 0].unit.is_equivalent(u.V**2)
         assert volts_sq.meta[1, 0].unit.is_equivalent(u.V**2)
-        
+
         # Add constant
         offset = sgm_3d_basic + 10*u.V
         assert np.allclose(offset.value, sgm_3d_basic.value + 10)

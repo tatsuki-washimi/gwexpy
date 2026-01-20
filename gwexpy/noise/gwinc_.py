@@ -162,6 +162,15 @@ def from_pygwinc(
         asd = strain_asd
         unit = "1 / sqrt(Hz)"
 
+    # Remove known noise-generation parameters from kwargs
+    # to avoid TypeError in FrequencySeries constructor
+    for k in ["fmin", "fmax", "df"]:
+        kwargs.pop(k, None)
+
+    # If there are still problematic keys, print them (will show up in sphinx-build output/logs)
+    if any(k in kwargs for k in ["fmin", "fmax", "df"]):
+        print(f"CRITICAL: Key found in kwargs even after pop: {[k for k in ['fmin', 'fmax', 'df'] if k in kwargs]}")
+
     return FrequencySeries(
         asd, frequencies=frequencies, unit=unit, name=model, **kwargs
     )

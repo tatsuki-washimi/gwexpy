@@ -1,7 +1,9 @@
 
-import numpy as np
-from gwexpy.timeseries import TimeSeriesMatrix
 import astropy.units as u
+import numpy as np
+
+from gwexpy.timeseries import TimeSeriesMatrix
+
 
 class TestTimeSeriesMatrixLockIn:
     def test_lock_in_amp_phase(self):

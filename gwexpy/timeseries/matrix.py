@@ -63,6 +63,31 @@ class TimeSeriesMatrix(
         epoch: Any = None,
         **kwargs: Any,
     ) -> TimeSeriesMatrix:
+        """
+        Create a new TimeSeriesMatrix.
+
+        Parameters
+        ----------
+        data : array_like, optional
+            The data values for the matrix. Should be of shape (rows, cols, samples).
+        times : array_like, optional
+            The time values corresponding to each sample. If provided, `dt` and `t0` are ignored.
+        dt : float, astropy.units.Quantity, optional
+            The time step between samples.
+        t0 : float, astropy.units.Quantity, optional
+            The start time of the data.
+        sample_rate : float, astropy.units.Quantity, optional
+            The sample rate of the data (1/dt).
+        epoch : float, astropy.units.Quantity, optional
+            The epoch of the data.
+        **kwargs
+            Additional keyword arguments.
+            Supported: `channel_names`, `xunit`, `unit`, `name`, `meta`.
+
+        Returns
+        -------
+        TimeSeriesMatrix
+        """
         import warnings
 
         from gwexpy.timeseries.utils import _coerce_t0_gps

@@ -1,6 +1,8 @@
 import numpy as np
 from astropy import units as u
+
 from gwexpy.timeseries import TimeSeries
+
 
 def test_timeseries_smooth_mixin():
     """Test that SignalAnalysisMixin works for TimeSeries too."""

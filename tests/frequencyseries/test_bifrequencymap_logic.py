@@ -1,7 +1,9 @@
-import pytest
 import numpy as np
+import pytest
 from astropy import units as u
-from gwexpy.frequencyseries import FrequencySeries, BifrequencyMap
+
+from gwexpy.frequencyseries import BifrequencyMap, FrequencySeries
+
 
 class TestBifrequencyMapLogic:
     """Test A2-c logic in BifrequencyMap."""
@@ -15,7 +17,7 @@ class TestBifrequencyMapLogic:
     def test_propagate_exact_match(self, simple_map):
         input_fs = FrequencySeries([1, 3], frequencies=[10, 20], unit='V')
         output_fs = simple_map.propagate(input_fs)
-        
+
         np.testing.assert_array_equal(output_fs.value, [2, 6])
         assert output_fs.unit == u.m
         np.testing.assert_array_equal(output_fs.frequencies.value, simple_map.yindex.value)

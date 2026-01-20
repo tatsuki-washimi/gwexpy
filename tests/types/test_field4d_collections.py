@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-from gwexpy.types import Field4D, Field4DList, Field4DDict
+from gwexpy.types import Field4D, Field4DDict, Field4DList
 
 
 class TestField4DListBasic:

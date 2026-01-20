@@ -897,23 +897,23 @@ def create_result_tab(on_import=None):
         dialog.setWindowTitle("Layout Options")
         dialog.setModal(True)
         layout = QtWidgets.QVBoxLayout(dialog)
-        
+
         group = QtWidgets.QGroupBox("Select Layout")
         vbox = QtWidgets.QVBoxLayout(group)
-        
+
         # Radio buttons for layout options
         rb_1x1 = QtWidgets.QRadioButton("1 x 1 (Single Graph)")
         rb_2x1 = QtWidgets.QRadioButton("2 x 1 (Two Graphs, Vertical)")
         rb_1x2 = QtWidgets.QRadioButton("1 x 2 (Two Graphs, Horizontal)")
-        
+
         # Current layout: 2x1 (vertical stack)
         rb_2x1.setChecked(True)
-        
+
         vbox.addWidget(rb_1x1)
         vbox.addWidget(rb_2x1)
         vbox.addWidget(rb_1x2)
         layout.addWidget(group)
-        
+
         # Buttons
         btn_box = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
@@ -921,7 +921,7 @@ def create_result_tab(on_import=None):
         btn_box.accepted.connect(dialog.accept)
         btn_box.rejected.connect(dialog.reject)
         layout.addWidget(btn_box)
-        
+
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             # Apply layout change
             if rb_1x1.isChecked():

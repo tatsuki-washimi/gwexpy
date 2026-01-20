@@ -1,9 +1,10 @@
 
-import pytest
 import numpy as np
+import pytest
 from astropy import units as u
+
+from gwexpy.interop._time import LeapSecondConversionError, gps_to_datetime_utc
 from gwexpy.timeseries import TimeSeries
-from gwexpy.interop._time import gps_to_datetime_utc, LeapSecondConversionError
 
 # --- P0-1 Tests (TimeSeries Imputation) ---
 

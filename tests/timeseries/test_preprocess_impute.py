@@ -171,9 +171,9 @@ def test_impute_timeseries_preserves_metadata():
 def test_impute_timeseries_preserves_metadata_rebuild():
     data = np.array([1.0, np.nan, 3.0])
     ts = TimeSeries(data, t0=0.0, dt=1.0, name="dummy", unit="m")
-    
+
     result = impute_timeseries(ts, method="linear")
-    
+
     assert isinstance(result, TimeSeries)
     assert result.t0.value == ts.t0.value
     assert result.dt.value == ts.dt.value

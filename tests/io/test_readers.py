@@ -1,7 +1,8 @@
+from datetime import datetime
+from datetime import timezone as dt_timezone
+
 import numpy as np
 import pytest
-from datetime import datetime, timezone as dt_timezone
-
 from gwpy.time import to_gps
 
 from gwexpy.timeseries import TimeSeriesDict

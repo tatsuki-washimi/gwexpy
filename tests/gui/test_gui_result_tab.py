@@ -1,9 +1,10 @@
 
-import pytest
-from PyQt5 import QtWidgets, QtCore
-from unittest.mock import patch, MagicMock
-from pathlib import Path
 import faulthandler
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
+from PyQt5 import QtCore, QtWidgets
 
 faulthandler.enable()
 
@@ -29,7 +30,7 @@ def test_result_tab_buttons_existence(window):
     # Switch to Result tab (index 3)
     window.tabs.setCurrentIndex(3)
     res_tab = window.res_tab
-    
+
     expected_buttons = [
         ("btn_reset", "Reset"),
         ("btn_zoom", "Zoom"),
@@ -41,13 +42,13 @@ def test_result_tab_buttons_existence(window):
         ("btn_reference", "Reference..."),
         ("btn_calibration", "Calibration...")
     ]
-    
+
     for btn_attr, btn_text in expected_buttons:
         assert hasattr(res_tab, btn_attr), f"Missing button attribute: {btn_attr}"
         btn = getattr(res_tab, btn_attr)
         assert isinstance(btn, QtWidgets.QPushButton)
         assert btn.text() == btn_text
-        
+
     # Check tooltips (for the ones we added)
     assert res_tab.btn_zoom.toolTip() == "Maximize/restore the active graph pad"
     assert res_tab.btn_export.toolTip() == "Save plot data to file"
@@ -67,7 +68,7 @@ def test_export_data_dialog_flow(window):
     with patch.object(QtWidgets.QFileDialog, 'getSaveFileName', return_value=("", "HDF5 (*.h5 *.hdf5)")):
         window.export_data()
         # Should return early without warning/error if cancelled
-        
+
     # 2. Test Export with no data
     window.loaded_products = {}
     with patch.object(QtWidgets.QFileDialog, 'getSaveFileName', return_value=("test.h5", "HDF5 (*.h5 *.hdf5)")):
@@ -79,7 +80,7 @@ def test_export_data_dialog_flow(window):
     # 3. Test Successful Export Mock (HDF5)
     mock_data = MagicMock()
     window.loaded_products = {"test_ch": mock_data}
-    
+
     with patch.object(QtWidgets.QFileDialog, 'getSaveFileName', return_value=("test_export.h5", "HDF5 (*.h5 *.hdf5)")):
         with patch.object(QtWidgets.QMessageBox, 'information') as mock_info:
             window.export_data()

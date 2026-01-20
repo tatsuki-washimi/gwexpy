@@ -1,7 +1,9 @@
 
-import pytest
 import numpy as np
+import pytest
+
 from gwexpy.frequencyseries import FrequencySeries
+
 
 def test_to_mne_spectrum():
     mne = pytest.importorskip("mne")

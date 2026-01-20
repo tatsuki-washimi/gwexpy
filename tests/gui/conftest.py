@@ -1,8 +1,9 @@
 import faulthandler
-import pytest
-import os
 import logging
+import os
 import sys
+
+import pytest
 from PyQt5.QtWidgets import QApplication
 
 # Config logging
@@ -18,7 +19,7 @@ def pytest_runtest_makereport(item, call):
     """
     outcome = yield
     report = outcome.get_result()
-    
+
     if report.when == "call" and report.failed:
         # Check if we have a Qt application
         qt_app = QApplication.instance()
@@ -32,10 +33,10 @@ def pytest_runtest_makereport(item, call):
             cur_dir = os.path.dirname(os.path.abspath(__file__))
             screenshot_dir = os.path.join(cur_dir, "screenshots")
             os.makedirs(screenshot_dir, exist_ok=True)
-            
+
             filename = f"{item.name}_failed.png"
             path = os.path.join(screenshot_dir, filename)
-            
+
             # Use grabWindow or grab() on main window if possible
             # Grab all screens or primary
             screen = qt_app.primaryScreen()
@@ -45,7 +46,7 @@ def pytest_runtest_makereport(item, call):
                 print(f"[Screenshot Hook] Saved failure screenshot to: {path}")
             else:
                 print("[Screenshot Hook] No primary screen found.")
-                
+
         except Exception as e:
             print(f"[Screenshot Hook] Failed to capture screenshot: {e}")
 

@@ -1,6 +1,8 @@
-import pytest
 import numpy as np
+import pytest
+
 from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
+
 
 def test_pcc_linear():
     """Test Pearson Correlation with linear data."""

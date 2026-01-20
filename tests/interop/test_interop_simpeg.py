@@ -1,14 +1,15 @@
 
-import pytest
 import numpy as np
-from gwexpy.timeseries import TimeSeries
+import pytest
+
 from gwexpy.frequencyseries import FrequencySeries
+from gwexpy.timeseries import TimeSeries
 
 try:
     import simpeg
-    from simpeg.electromagnetics import time_domain as tdem
-    from simpeg.electromagnetics import frequency_domain as fdem
     from simpeg.data import Data
+    from simpeg.electromagnetics import frequency_domain as fdem
+    from simpeg.electromagnetics import time_domain as tdem
 except ImportError:
     simpeg = None
 

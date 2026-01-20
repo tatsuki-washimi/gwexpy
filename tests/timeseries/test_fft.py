@@ -1,5 +1,4 @@
 import numpy as np
-
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 
 from gwexpy.timeseries import TimeSeries
@@ -81,19 +80,19 @@ def test_fft_reflect_padding_smoke():
 def test_fft_transient_nyquist_even():
     """Verify Nyquist component is NOT doubled for even-length data."""
     import pytest
-    
+
     # Even-length data: 8 samples, fs=8Hz
     # For constant signal, DC = 1.0, all others = 0
     data = np.ones(8)
     ts = TimeSeries(data, sample_rate=8.0)
     fs = ts.fft(mode="transient")
-    
+
     # rfft(8) returns 5 elements: [0, 1, 2, 3, 4] Hz
     # DC (index 0) = sum/N = 8/8 = 1.0
     # Nyquist at 4Hz (index 4) = 0 (no doubled error)
     assert fs.value[0].real == pytest.approx(1.0)
     assert fs.value[-1].real == pytest.approx(0.0)  # Nyquist
-    
+
     # Verify IFFT reconstruction works correctly
     reconstructed = np.fft.irfft(fs.value / 2.0 * 8, n=8)
     # Undo the amplitude correction for IFFT
@@ -106,16 +105,16 @@ def test_fft_transient_nyquist_even():
 def test_fft_transient_nyquist_odd():
     """Verify correct amplitude correction for odd-length data."""
     import pytest
-    
+
     # Odd-length data: 7 samples, fs=7Hz
     data = np.ones(7)
     ts = TimeSeries(data, sample_rate=7.0)
     fs = ts.fft(mode="transient")
-    
+
     # rfft(7) returns 4 elements: no Nyquist
     # DC = sum/N = 7/7 = 1.0
     assert fs.value[0].real == pytest.approx(1.0)
-    
+
     # All non-DC components should be zero (constant signal)
     for i in range(1, len(fs)):
         assert np.abs(fs.value[i]) == pytest.approx(0.0, abs=1e-10)
@@ -124,7 +123,7 @@ def test_fft_transient_nyquist_odd():
 def test_fft_transient_sine_even():
     """Verify sine wave amplitude is correctly preserved in transient FFT (even length)."""
     import pytest
-    
+
     # 1 Hz sine wave, amplitude 1.0, sampled at 16Hz for 1 second
     fs_val = 16.0
     n_samples = 16  # Even length
@@ -132,13 +131,13 @@ def test_fft_transient_sine_even():
     freq = 1.0  # 1 Hz
     amplitude = 3.0
     data = amplitude * np.sin(2 * np.pi * freq * t)
-    
+
     ts = TimeSeries(data, sample_rate=fs_val)
     spectrum = ts.fft(mode="transient")
-    
+
     # Find the bin closest to 1 Hz
     freq_bin = int(round(freq / spectrum.df.value))
-    
+
     # For a sine wave with amplitude A, FFT gives complex amplitude A/2 at ±f.
     # After doubling for one-sided spectrum, we should see amplitude A.
     measured_amp = np.abs(spectrum.value[freq_bin])

@@ -683,7 +683,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         deg: bool = True,
         exp: bool = False,
     ) -> Any:
-        """
+        r"""
         Compute the average magnitude and phase of the TimeSeries at a
         given frequency (GWpy-compatible).
 
@@ -735,6 +735,8 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         else:
             f_val = float(f)
 
+        if self.dt is None:
+            raise ValueError("demodulate requires defined dt")
         dt_val = self.dt.to("s").value if hasattr(self.dt, "to") else float(self.dt)
 
         phase_arr = 2 * np.pi * f_val * dt_val * np.arange(self.size)
@@ -777,7 +779,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         resample_kwargs: dict[str, Any] | None = None,
         singlesided: bool = False,
     ) -> TimeSeriesSignalMixin:
-        """
+        r"""
         Demodulate the TimeSeries to baseband with optional lowpass and resampling.
 
         This method performs frequency mixing (heterodyning) to shift a carrier

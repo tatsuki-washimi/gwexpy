@@ -44,8 +44,9 @@ def test_as_series_angular_frequency_quantity_uses_hz_axis():
 
 
 def test_as_series_datetime_array():
-    from gwexpy.types import as_series
     from datetime import datetime
+
+    from gwexpy.types import as_series
 
     times = [datetime(2020, 1, 1, 0, 0, 0), datetime(2020, 1, 1, 0, 0, 1)]
     ts = as_series(times)

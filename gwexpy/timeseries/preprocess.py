@@ -2,7 +2,16 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Literal, SupportsIndex, TypeVar, cast, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Literal,
+    SupportsIndex,
+    TypeAlias,
+    TypeVar,
+    cast,
+    overload,
+)
 
 import numpy as np
 import numpy.typing as npt
@@ -23,9 +32,9 @@ if TYPE_CHECKING:
 TimeSeriesT = TypeVar("TimeSeriesT", bound="TimeSeries")
 TimeSeriesSequence = Sequence["TimeSeries"]
 
-NumericArray = npt.NDArray[np.number[Any]]
-BoolArray = npt.NDArray[np.bool_]
-SliceKey = SupportsIndex | slice | npt.NDArray[np.integer[Any]]
+NumericArray: TypeAlias = npt.NDArray[np.number[Any]]
+BoolArray: TypeAlias = npt.NDArray[np.bool_]
+SliceKey: TypeAlias = "SupportsIndex | slice | npt.NDArray[np.integer[Any]]"
 BaseImputeMethod = Literal[
     "linear",
     "nearest",

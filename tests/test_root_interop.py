@@ -1,11 +1,13 @@
-import numpy as np
 import os
+
+import numpy as np
 import pytest
 from astropy import units as u
 
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
 from gwexpy.spectrogram import Spectrogram, SpectrogramDict
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
+
 
 def get_root():
     try:

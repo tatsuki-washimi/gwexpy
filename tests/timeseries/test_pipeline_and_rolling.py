@@ -3,12 +3,12 @@ import pytest
 from astropy import units as u
 
 from gwexpy.timeseries import (
+    ImputeTransform,
+    PCATransform,
+    Pipeline,
+    StandardizeTransform,
     TimeSeries,
     TimeSeriesMatrix,
-    Pipeline,
-    ImputeTransform,
-    StandardizeTransform,
-    PCATransform,
 )
 
 
