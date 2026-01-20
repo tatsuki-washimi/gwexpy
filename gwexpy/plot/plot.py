@@ -363,6 +363,12 @@ class Plot(BasePlot):
             if k in kwargs:
                 layout_kwargs[k] = kwargs.pop(k)
 
+        # Handle logx/logy aliases
+        if kwargs.pop("logx", False):
+            layout_kwargs["xscale"] = "log"
+        if kwargs.pop("logy", False):
+            layout_kwargs["yscale"] = "log"
+
         fig_params = {}
         for k in [
             "figsize",
@@ -392,6 +398,8 @@ class Plot(BasePlot):
         labels_list = None
         if "label" in kwargs and isinstance(kwargs["label"], (list, tuple)):
             labels_list = kwargs.pop("label")
+        elif "labels" in kwargs:
+            labels_list = kwargs.pop("labels")
 
         super().__init__(*final_args, **layout_kwargs, **fig_params, **kwargs)
 

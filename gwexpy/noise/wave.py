@@ -807,6 +807,7 @@ def from_asd(
     sample_rate: float,
     t0: float = 0.0,
     rng: "Generator | None" = None,
+    **kwargs: Any,
 ) -> "TimeSeries":
     """
     Generate colored noise TimeSeries from an ASD (Amplitude Spectral Density).
@@ -827,6 +828,9 @@ def from_asd(
     rng : numpy.random.Generator, optional
         Random number generator instance. If None, a new default generator
         is created.
+    **kwargs
+        Additional arguments passed to TimeSeries constructor (e.g., name, channel, unit).
+        If provided, these override values derived from the ASD.
 
     Returns
     -------
@@ -872,19 +876,25 @@ def from_asd(
     # Inverse FFT to get time-series
     noise = np.fft.irfft(fft_coeffs, n=n_samples)
 
-    unit = getattr(asd, "unit", None)
-    ts_unit = None
-    if unit is not None:
-        try:
-            unit = u.Unit(unit)
-            ts_unit = unit * (u.Hz**0.5)
-        except Exception:
-            ts_unit = unit
+    # Determine metadata (kwargs override derived values)
+    if "unit" not in kwargs:
+        unit = getattr(asd, "unit", None)
+        ts_unit = None
+        if unit is not None:
+            try:
+                unit = u.Unit(unit)
+                ts_unit = unit * (u.Hz**0.5)
+            except Exception:
+                ts_unit = unit
+        kwargs["unit"] = ts_unit
 
-    name = getattr(asd, "name", None)
-    channel = getattr(asd, "channel", None)
+    if "name" not in kwargs:
+        kwargs["name"] = getattr(asd, "name", None)
+    
+    if "channel" not in kwargs:
+        kwargs["channel"] = getattr(asd, "channel", None)
 
-    return _make_timeseries(noise, sample_rate, t0, ts_unit, name, channel)
+    return _make_timeseries(noise, sample_rate, t0, **kwargs)
 
 
 __all__ = [

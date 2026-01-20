@@ -273,15 +273,29 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         res = super().coherence(*args, **kwargs)  # type: ignore[safe-super]
         return res.view(FrequencySeries)
 
+    def spectrogram(self, *args: Any, **kwargs: Any) -> Spectrogram:
+        """
+        Compute the average power spectrogram.
+        
+        This method overrides the base gwpy implementation to return
+        gwexpy.spectrogram.Spectrogram instead of gwpy.spectrogram.Spectrogram.
+        
+        Returns
+        -------
+        Spectrogram
+            gwexpy.spectrogram.Spectrogram instance
+        """
+        from gwexpy.spectrogram import Spectrogram
+
+        res = super().spectrogram(*args, **kwargs)  # type: ignore[safe-super]
+        return res.view(Spectrogram)
+
     def spectrogram2(self, *args: Any, **kwargs: Any) -> Spectrogram:
         """
         Compute an alternative spectrogram (spectrogram2).
         Returns Spectrogram.
         """
-        from gwexpy.spectrogram import Spectrogram
-
-        res = self.spectrogram(*args, **kwargs)
-        return res.view(Spectrogram)
+        return self.spectrogram(*args, **kwargs)
 
     def dct(
         self,

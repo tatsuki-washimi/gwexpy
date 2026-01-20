@@ -370,7 +370,7 @@ class FitResult:
             ax.set_ylabel(self.y_label)
 
         ax.legend()
-        return ax
+        return ax.figure
 
     def bode_plot(self, ax=None, num_points=1000, **kwargs):
         """

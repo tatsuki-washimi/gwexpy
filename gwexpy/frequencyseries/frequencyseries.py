@@ -30,6 +30,8 @@ from gwexpy.types.mixin import RegularityMixin, SignalAnalysisMixin
 try:
     from gwpy.types.index import SeriesType  # pragma: no cover - optional in gwpy
 except ImportError:
+    # Fallback for older GWpy versions or environments where SeriesType 
+    # is not available at this location.
 
     class SeriesType(Enum):
         TIME = "time"
@@ -49,6 +51,20 @@ class FrequencySeries(
     BaseFrequencySeries,
 ):
     """Light wrapper of gwpy's FrequencySeries for compatibility and future extension."""
+
+    def __new__(cls, *args: Any, **kwargs: Any) -> FrequencySeries:
+        """
+        Create a new FrequencySeries instance.
+        
+        This override filters out noise-generation parameters (fmin, fmax, df)
+        that may be passed from gwexpy.noise functions but are not valid
+        arguments for the parent FrequencySeries constructor.
+        """
+        # Remove noise-generation parameters that shouldn't be passed to parent
+        for key in ['fmin', 'fmax', 'df']:
+            kwargs.pop(key, None)
+        
+        return super().__new__(cls, *args, **kwargs)
 
     # --- Phase and Angle ---
 
@@ -83,7 +99,22 @@ class FrequencySeries(
         )
 
     def angle(self, unwrap: bool = False) -> FrequencySeries:
-        """Alias for `phase(unwrap=unwrap)`."""
+        """
+        Calculate the phase angle of this FrequencySeries.
+        
+        Alias for `phase(unwrap=unwrap)`.
+        
+        Parameters
+        ----------
+        unwrap : `bool`, optional
+            If `True`, unwrap the phase to remove discontinuities.
+            Default is `False`.
+
+        Returns
+        -------
+        `FrequencySeries`
+            The phase of the series, in radians.
+        """
         return self.phase(unwrap=unwrap)
 
     def degree(self, unwrap: bool = False) -> FrequencySeries:
@@ -736,6 +767,55 @@ class FrequencySeries(
             frequencies=self.frequencies,
             unit="s",
             name=self.name + "_group_delay" if self.name else "group_delay",
+            channel=self.channel,
+            epoch=self.epoch,
+        )
+
+    def rebin(self, width: float | u.Quantity) -> FrequencySeries:
+        """
+        Rebin the FrequencySeries to a new resolution.
+
+        Parameters
+        ----------
+        width : `float` or `Quantity`
+            New bin width in Hz.
+
+        Returns
+        -------
+        `FrequencySeries`
+            The rebinned series.
+        """
+        if isinstance(width, u.Quantity):
+            width = width.to("Hz").value
+
+        df = self.df.to("Hz").value if hasattr(self.df, "to") else self.df
+        bin_size = int(round(width / df))
+
+        if bin_size <= 1:
+            return self.copy()
+
+        data = self.value
+        n_freq = len(data)
+        n_freq_new = n_freq // bin_size
+
+        # Truncate
+        if n_freq_new * bin_size != n_freq:
+            data = data[: n_freq_new * bin_size]
+
+        # Rebin
+        data_rebinned = data.reshape(n_freq_new, bin_size).mean(axis=1)
+
+        # New frequency axis
+        freqs = self.frequencies
+        if n_freq_new * bin_size != n_freq:
+            freqs = freqs[: n_freq_new * bin_size]
+        freqs_rebinned = freqs.reshape(n_freq_new, bin_size).mean(axis=1)
+
+        return self.__class__(
+            data_rebinned,
+            frequencies=freqs_rebinned,
+            unit=self.unit,
+            name=self.name,
             channel=self.channel,
             epoch=self.epoch,
         )
