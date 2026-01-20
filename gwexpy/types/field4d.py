@@ -64,6 +64,7 @@ class Field4D(Array4D):
     _metadata_slots = Array4D._metadata_slots + (
         "_axis0_domain",
         "_space_domains",
+        "_axis0_offset",  # Preserved during fft_time for ifft_time reconstruction
     )
 
     # Axis name conventions
@@ -166,6 +167,9 @@ class Field4D(Array4D):
                     self._axis2_name: "real",
                     self._axis3_name: "real",
                 }
+
+        if getattr(self, "_axis0_offset", None) is None:
+            self._axis0_offset = getattr(obj, "_axis0_offset", None)
 
     @property
     def axis0_domain(self):
@@ -298,12 +302,43 @@ class Field4D(Array4D):
     # Time FFT (axis=0, GWpy TimeSeries.fft compatible)
     # =========================================================================
 
+    def _validate_axis_for_fft(self, axis_index, axis_name, domain_name):
+        """Validate that an axis is suitable for FFT.
+
+        Parameters
+        ----------
+        axis_index : Quantity
+            The axis coordinate array.
+        axis_name : str
+            Name of the axis for error messages.
+        domain_name : str
+            Domain name ('time', 'frequency', etc.) for error messages.
+
+        Raises
+        ------
+        ValueError
+            If axis length < 2 or axis is not regularly spaced.
+        """
+        if len(axis_index) < 2:
+            raise ValueError(
+                f"FFT requires {domain_name} axis length >= 2, "
+                f"got length {len(axis_index)} for axis '{axis_name}'"
+            )
+        # Check regularity using AxisDescriptor
+        from .axis import AxisDescriptor
+        ax_desc = AxisDescriptor(axis_name, axis_index)
+        if not ax_desc.regular:
+            raise ValueError(
+                f"FFT requires regularly spaced {domain_name} axis, "
+                f"but axis '{axis_name}' is irregular"
+            )
+
     def fft_time(self, nfft=None):
         """Compute FFT along time axis (axis 0).
 
         This method applies the same normalization as GWpy's
         ``TimeSeries.fft()``: rfft / nfft, with DC-excluded bins
-        multiplied by 2.
+        multiplied by 2 (except Nyquist bin for even nfft).
 
         Parameters
         ----------
@@ -319,6 +354,10 @@ class Field4D(Array4D):
         ------
         ValueError
             If ``axis0_domain`` is not 'time'.
+        ValueError
+            If time axis length < 2 or is irregularly spaced.
+        TypeError
+            If input data is complex-valued.
 
         See Also
         --------
@@ -329,13 +368,36 @@ class Field4D(Array4D):
                 f"fft_time requires axis0_domain='time', got '{self._axis0_domain}'"
             )
 
+        # Validate axis regularity and length
+        self._validate_axis_for_fft(
+            self._axis0_index, self._axis0_name, "time"
+        )
+
+        # Reject complex input (rfft expects real-valued signals)
+        if np.iscomplexobj(self.value):
+            raise TypeError(
+                "fft_time requires real-valued input. "
+                "For complex data, use a full FFT approach."
+            )
+
         if nfft is None:
             nfft = self.shape[0]
 
+        # Preserve time-axis origin for later ifft_time reconstruction
+        t0 = self._axis0_index[0]
+
         # rfft along axis 0, normalized
         dft = np.fft.rfft(self.value, n=nfft, axis=0) / nfft
-        # Multiply non-DC bins by 2 (one-sided spectrum correction)
-        dft[1:, ...] *= 2.0
+
+        # Multiply non-DC, non-Nyquist bins by 2 (one-sided spectrum correction)
+        # For even nfft: Nyquist bin is at index -1, should NOT be doubled
+        # For odd nfft: there is no Nyquist bin, double all bins from 1:
+        if nfft % 2 == 0:
+            # Even: double bins 1 to -1 (exclusive of Nyquist)
+            dft[1:-1, ...] *= 2.0
+        else:
+            # Odd: double bins 1 onwards (no Nyquist bin)
+            dft[1:, ...] *= 2.0
 
         # Compute frequency axis
         dt = self._axis0_index[1] - self._axis0_index[0]
@@ -345,7 +407,7 @@ class Field4D(Array4D):
         freqs_value = np.fft.rfftfreq(nfft, d=dt_value)
         freqs = freqs_value * (1 / dt_unit)
 
-        return Field4D(
+        result = Field4D(
             dft,
             unit=self.unit,
             axis0=freqs,
@@ -361,6 +423,9 @@ class Field4D(Array4D):
             axis0_domain="frequency",
             space_domain=self._space_domains,
         )
+        # Store the original time offset in metadata
+        result._axis0_offset = t0
+        return result
 
     def ifft_time(self, nout=None):
         """Compute inverse FFT along frequency axis (axis 0).
@@ -383,6 +448,8 @@ class Field4D(Array4D):
         ------
         ValueError
             If ``axis0_domain`` is not 'frequency'.
+        ValueError
+            If frequency axis length < 2 or is irregularly spaced.
 
         See Also
         --------
@@ -394,12 +461,22 @@ class Field4D(Array4D):
                 f"got '{self._axis0_domain}'"
             )
 
+        # Validate axis regularity and length
+        self._validate_axis_for_fft(
+            self._axis0_index, self._axis0_name, "frequency"
+        )
+
         if nout is None:
             nout = (self.shape[0] - 1) * 2
 
-        # Undo normalization: divide non-DC by 2, multiply by nout
+        # Undo normalization: divide non-DC, non-Nyquist by 2, multiply by nout
         array = self.value.copy()
-        array[1:, ...] /= 2.0
+        if nout % 2 == 0:
+            # Even nout: Nyquist was not doubled, so only undo for 1:-1
+            array[1:-1, ...] /= 2.0
+        else:
+            # Odd nout: no Nyquist, undo for all bins 1:
+            array[1:, ...] /= 2.0
         dift = np.fft.irfft(array * nout, n=nout, axis=0)
 
         # Compute time axis
@@ -411,7 +488,13 @@ class Field4D(Array4D):
         dt_value = 1.0 / (nout * df_value)
         dt_unit = 1 / df_unit
 
-        times = np.arange(nout) * dt_value * dt_unit
+        # Restore time-axis origin if preserved from fft_time
+        t0_offset = getattr(self, "_axis0_offset", None)
+        if t0_offset is not None:
+            t0_value = t0_offset.value
+            times = (np.arange(nout) * dt_value + t0_value) * dt_unit
+        else:
+            times = np.arange(nout) * dt_value * dt_unit
 
         return Field4D(
             dift,
@@ -491,12 +574,24 @@ class Field4D(Array4D):
                     f"Axis '{ax_name}' is not in 'real' domain (current: {domain}). "
                     f"Cannot apply fft_space."
                 )
-            # Check uniform spacing
+            # Check uniform spacing and length
             ax_desc = self.axis(ax_name)
+            if ax_desc.size < 2:
+                raise ValueError(
+                    f"FFT requires axis length >= 2, "
+                    f"got length {ax_desc.size} for axis '{ax_name}'"
+                )
             if not ax_desc.regular:
                 raise ValueError(
                     f"Axis '{ax_name}' is not uniformly spaced. "
                     f"Cannot apply FFT."
+                )
+            # Check strict monotonicity
+            diffs = np.diff(ax_desc.index.value)
+            if not (np.all(diffs > 0) or np.all(diffs < 0)):
+                raise ValueError(
+                    f"Axis '{ax_name}' is not strictly monotonic. "
+                    f"Spatial axes must be strictly ascending or descending."
                 )
             target_axes_int.append(ax_int)
 
@@ -518,13 +613,18 @@ class Field4D(Array4D):
 
         for ax_name, ax_int in zip(axes, target_axes_int):
             ax_desc = self.axis(ax_name)
-            dx_value = ax_desc.delta.value
+            # Use signed delta to preserve axis direction
+            dx_value = ax_desc.delta.value  # Already signed from diff
             dx_unit = ax_desc.delta.unit
 
             npts = dft.shape[ax_int]
 
-            # Angular wavenumber: k = 2π * fftfreq(n, d=dx)
-            k_values = 2 * np.pi * np.fft.fftfreq(npts, d=dx_value)
+            # Angular wavenumber: k = 2π * fftfreq(n, d=|dx|)
+            # Use abs(dx) for fftfreq (expects positive spacing)
+            k_values = 2 * np.pi * np.fft.fftfreq(npts, d=abs(dx_value))
+            # If original axis was descending (dx < 0), flip k-axis sign
+            if dx_value < 0:
+                k_values = -k_values
             k_unit = 1 / dx_unit
             new_indices[ax_int] = k_values * k_unit
 
@@ -622,21 +722,28 @@ class Field4D(Array4D):
             npts = dift.shape[ax_int]
 
             # Compute real-space coordinates from k-space
-            # k = 2π * fftfreq(n, d=dx)  =>  dx = 2π / (n * dk)
+            # k = 2π * fftfreq(n, d=dx)  =>  dx = 2π / (n * |dk|)
             k_axis = self.axis(ax_name).index
-            if len(k_axis) > 1:
-                dk = np.abs(k_axis[1] - k_axis[0])
-                dk_value = dk.value
-                dk_unit = dk.unit
-            else:
-                dk_value = 1.0
-                dk_unit = k_axis.unit
+            if len(k_axis) < 2:
+                raise ValueError(
+                    f"ifft_space requires axis length >= 2, "
+                    f"got length {len(k_axis)} for axis '{ax_name}'"
+                )
 
-            # dx = 2π / (n * dk)
-            dx_value = 2 * np.pi / (npts * dk_value)
+            dk_raw = k_axis[1] - k_axis[0]
+            dk_value = dk_raw.value
+            dk_unit = dk_raw.unit
+
+            # dx = 2π / (n * |dk|)
+            dx_value = 2 * np.pi / (npts * abs(dk_value))
             dx_unit = 1 / dk_unit
 
-            x_values = np.arange(npts) * dx_value * dx_unit
+            # If k-axis was effectively "descending" (dk < 0),
+            # the reconstructed x-axis should also be descending
+            if dk_value < 0:
+                x_values = np.arange(npts - 1, -1, -1) * (-dx_value) * dx_unit
+            else:
+                x_values = np.arange(npts) * dx_value * dx_unit
             new_indices[ax_int] = x_values
 
             new_names[ax_int] = real_name
