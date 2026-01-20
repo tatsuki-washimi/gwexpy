@@ -20,7 +20,9 @@ def power_law(
     ASD(f) = amplitude * (f / f_ref) ** (-exponent)
     """
     if frequencies is None:
-        if "df" in kwargs and ("N" in kwargs or "f0" in kwargs):
+        if "df" in kwargs and (
+            "N" in kwargs or "f0" in kwargs or ("fmin" in kwargs and "fmax" in kwargs)
+        ):
             fmin = kwargs.pop("fmin", 0.0)
             fmax = kwargs.pop("fmax", 100.0)
             df = kwargs.pop("df", 1.0)

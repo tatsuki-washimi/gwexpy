@@ -26,6 +26,22 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         return Plot(self, **kwargs)
 
+    def __getitem__(self, item: Any) -> Any:
+        """
+        Custom getitem to handle 1D views safely.
+
+        In some environments (e.g. newer matplotlib/astropy), iterating over a
+        2D Spectrogram yields 1D Spectrogram views. GWpy's Array2D.__getitem__
+        implementation expects 2D data and fails with a ValueError when
+        unpacking slices for ndim=1. This override detects ndim=1 and falls
+        back to the parent (Series) implementation.
+        """
+        if self.ndim == 1:
+            from gwpy.types.series import Series
+
+            return Series.__getitem__(self, item)
+        return super().__getitem__(item)
+
     def bootstrap(
         self,
         n_boot=1000,
@@ -205,6 +221,70 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         from gwexpy.interop import from_obspy
 
         return from_obspy(cls, stream, **kwargs)
+
+    def rebin(
+        self, dt: float | u.Quantity | None = None, df: float | u.Quantity | None = None
+    ) -> Spectrogram:
+        """
+        Rebin the spectrogram in time and/or frequency.
+
+        Parameters
+        ----------
+        dt : float or Quantity, optional
+            New time bin width in seconds.
+        df : float or Quantity, optional
+            New frequency bin width in Hz.
+
+        Returns
+        -------
+        Spectrogram
+            The rebinned spectrogram.
+        """
+        data = self.value
+        times = self.times
+        freqs = self.frequencies
+
+        # Frequency rebinning
+        if df is not None:
+            if hasattr(df, "to"):
+                df = df.to("Hz").value
+            orig_df = self.df.to("Hz").value if hasattr(self.df, "to") else self.df
+            bin_size = int(round(df / orig_df))
+            if bin_size > 1:
+                nt, nf = data.shape
+                nf_new = nf // bin_size
+                data = (
+                    data[:, : nf_new * bin_size]
+                    .reshape(nt, nf_new, bin_size)
+                    .mean(axis=2)
+                )
+                freqs = freqs[: nf_new * bin_size].reshape(nf_new, bin_size).mean(axis=1)
+
+        # Time rebinning
+        if dt is not None:
+            if hasattr(dt, "to"):
+                dt = dt.to("s").value
+            orig_dt = self.dt.to("s").value if hasattr(self.dt, "to") else self.dt
+            bin_size = int(round(dt / orig_dt))
+            if bin_size > 1:
+                nt, nf = data.shape
+                nt_new = nt // bin_size
+                data = (
+                    data[: nt_new * bin_size, :]
+                    .reshape(nt_new, bin_size, nf)
+                    .mean(axis=1)
+                )
+                times = times[: nt_new * bin_size].reshape(nt_new, bin_size).mean(axis=1)
+
+        return self.__class__(
+            data,
+            times=times,
+            frequencies=freqs,
+            unit=self.unit,
+            name=self.name,
+            channel=self.channel,
+            epoch=self.epoch,
+        )
 
     def imshow(self, **kwargs):
         """Plot using imshow. Inherited from gwpy."""
