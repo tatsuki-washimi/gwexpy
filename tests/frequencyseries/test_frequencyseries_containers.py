@@ -3,7 +3,11 @@ import pytest
 from astropy import units as u
 from gwpy.plot import Plot
 
-from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict, FrequencySeriesList
+from gwexpy.frequencyseries import (
+    FrequencySeries,
+    FrequencySeriesDict,
+    FrequencySeriesList,
+)
 
 
 def _make_frequencyseries(scale: float = 1.0, name: str = "fs") -> FrequencySeries:

@@ -1,8 +1,10 @@
-import pytest
 import numpy as np
+import pytest
 from astropy import units as u
-from gwexpy.timeseries import TimeSeries
+
 from gwexpy.frequencyseries import FrequencySeries
+from gwexpy.timeseries import TimeSeries
+
 
 class TestLaplace:
     @pytest.fixture

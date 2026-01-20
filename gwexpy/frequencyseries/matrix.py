@@ -16,9 +16,15 @@ class FrequencySeriesMatrix(
     FrequencySeriesMatrixCoreMixin, FrequencySeriesMatrixAnalysisMixin, SeriesMatrix
 ):
     """
-    Matrix container for multiple FrequencySeries objects.
+    2D Matrix container for multiple FrequencySeries objects sharing a common frequency axis.
 
-    Inherits from SeriesMatrix and returns FrequencySeries instances when indexed.
+    This class represents a 2-dimensional array (rows x columns) where each element 
+    is a `FrequencySeries`. All elements in the matrix share the same frequency array 
+    (same `f0`, `df`, and number of frequency bins). It is typically used to represent 
+    multi-channel spectral data, such as CSD matrices or multi-channel PSDs.
+
+    Inherits from `SeriesMatrix` and returns `FrequencySeries` instances when indexed 
+    per-channel.
     """
 
     series_class = FrequencySeries
@@ -30,6 +36,27 @@ class FrequencySeriesMatrix(
     _default_plot_method = "plot"
 
     def __new__(cls, data=None, frequencies=None, df=None, f0=None, **kwargs):
+        """
+        Create a new FrequencySeriesMatrix.
+
+        Parameters
+        ----------
+        data : array_like, optional
+            The data values for the matrix.
+        frequencies : array_like, optional
+            The frequency values corresponding to each bin.
+        df : float, astropy.units.Quantity, optional
+            The frequency resolution.
+        f0 : float, astropy.units.Quantity, optional
+            The start frequency.
+        **kwargs
+            Additional keyword arguments.
+            Supported: `channel_names`, `xunit`, `unit`, `name`, `meta`.
+
+        Returns
+        -------
+        FrequencySeriesMatrix
+        """
         channel_names = kwargs.pop("channel_names", None)
 
         # Map frequency-specific arguments to SeriesMatrix generic arguments
@@ -70,12 +97,11 @@ class FrequencySeriesMatrix(
                             kwargs["names"] = cn
                     else:
                         kwargs["names"] = cn
-                except Exception:
+                except (ValueError, TypeError, AttributeError):
                     if cn.ndim == 1:
                         kwargs["names"] = cn.reshape(-1, 1)
                     else:
                         kwargs["names"] = cn
-
         obj = super().__new__(cls, data, **kwargs)
         return obj
 

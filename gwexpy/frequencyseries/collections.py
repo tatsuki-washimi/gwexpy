@@ -330,6 +330,16 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             new_dict[key] = fs.smooth(*args, **kwargs)
         return new_dict
 
+    def rebin(self, width: float | u.Quantity) -> FrequencySeriesDict:
+        """
+        Rebin each FrequencySeries in the dict.
+        Returns a new FrequencySeriesDict.
+        """
+        new_dict = self.__class__()
+        for key, fs in self.items():
+            new_dict[key] = fs.rebin(width)
+        return new_dict
+
     # ===============================
     # 4. Time Domain Conversion
     # ===============================
@@ -705,6 +715,16 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
         new_list = self.__class__()
         for fs in self:
             list.append(new_list, fs.smooth(*args, **kwargs))
+        return new_list
+
+    def rebin(self, width: float | u.Quantity) -> FrequencySeriesList:
+        """
+        Rebin each FrequencySeries in the list.
+        Returns a new FrequencySeriesList.
+        """
+        new_list = self.__class__()
+        for fs in self:
+            list.append(new_list, fs.rebin(width))
         return new_list
 
     # ===============================

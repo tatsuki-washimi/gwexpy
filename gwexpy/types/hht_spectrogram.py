@@ -1,6 +1,7 @@
 
 from gwpy.spectrogram import Spectrogram
 
+
 class HHTSpectrogram(Spectrogram):
     """
     A Spectrogram specifically for Hilbert-Huang Transform results.
@@ -21,10 +22,10 @@ class HHTSpectrogram(Spectrogram):
         **kwargs
             Additional keyword arguments passed to the plotter.
         """
-        from gwpy.plot import Plot
-        import matplotlib.pyplot as plt
         import matplotlib.colors as mcolors
+        import matplotlib.pyplot as plt
         import numpy as np
+        from gwpy.plot import Plot
 
         # Extract HHT-specific defaults or from user input
         yscale = kwargs.pop("yscale", "log")
@@ -52,7 +53,7 @@ class HHTSpectrogram(Spectrogram):
             cmap = plt.get_cmap(cmap).copy()
         else:
             cmap = cmap.copy() if hasattr(cmap, 'copy') else cmap
-        
+
         # Set 'under' and 'bad' values to the bottom color of the colormap
         # This prevents white areas for zeros or out-of-range values in log scale
         bottom_color = cmap(0.0)
@@ -65,7 +66,7 @@ class HHTSpectrogram(Spectrogram):
         # For log norm, compute reasonable vmin/vmax from positive data if not set
         vmin = kwargs.pop("vmin", None)
         vmax = kwargs.pop("vmax", None)
-        
+
         if norm == "log" and vmin is None:
             # Get positive minimum from data
             data_array = np.asarray(self.value)
@@ -74,7 +75,7 @@ class HHTSpectrogram(Spectrogram):
                 vmin = np.min(positive_data)
             else:
                 vmin = 1e-10  # fallback
-        
+
         if norm == "log" and vmax is None:
             data_array = np.asarray(self.value)
             positive_data = data_array[data_array > 0]
@@ -94,7 +95,7 @@ class HHTSpectrogram(Spectrogram):
             mappable = getattr(ax, method)(self, norm=norm_obj, cmap=cmap, **kwargs)
         else:
             mappable = getattr(ax, method)(self, cmap=cmap, **kwargs)
-        
+
         # Apply HHT Styles
         if yscale:
             ax.set_yscale(yscale)
@@ -121,7 +122,7 @@ class HHTSpectrogram(Spectrogram):
                 label = f"{label} [{u_str}]"
             elif self.unit:
                 label = f"Amplitude/Power [{self.unit}]"
-            
+
             if hasattr(plot, "colorbar"):
                 plot.colorbar(mappable, ax=ax, label=label)
 

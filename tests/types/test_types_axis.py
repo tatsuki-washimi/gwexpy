@@ -1,11 +1,12 @@
 
-import pytest
 import numpy as np
-from astropy.units import Quantity
+import pytest
 from astropy import units as u
+from astropy.units import Quantity
 from gwpy.types.index import Index
 
 from gwexpy.types.axis import AxisDescriptor
+
 
 def test_axis_descriptor_irregular():
     idx = Quantity([0, 1, 1.5, 3], "Hz")

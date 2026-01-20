@@ -7,7 +7,7 @@ def test_control_frd_roundtrip():
     pytest.importorskip("control")
 
     from gwexpy.frequencyseries import FrequencySeries
-    from gwexpy.interop.control_ import to_control_frd, from_control_frd
+    from gwexpy.interop.control_ import from_control_frd, to_control_frd
 
     fs = FrequencySeries([1 + 0j, 2 + 0j, 3 + 0j], f0=1, df=1)
     frd = to_control_frd(fs, frequency_unit="rad/s")

@@ -1,7 +1,7 @@
 
+import gwpy.frequencyseries._fdcommon as fd
 import numpy as np
 import pytest
-import gwpy.frequencyseries._fdcommon as fd
 
 
 def test_parse_filter_zpk():

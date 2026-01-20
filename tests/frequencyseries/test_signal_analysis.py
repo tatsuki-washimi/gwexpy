@@ -1,7 +1,9 @@
 
 import numpy as np
 from astropy import units as u
+
 from gwexpy.frequencyseries import FrequencySeries
+
 
 def test_smooth_amplitude():
     # Simple step

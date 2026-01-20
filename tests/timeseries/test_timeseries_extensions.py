@@ -1,6 +1,8 @@
-import pytest
 import numpy as np
+import pytest
+
 from gwexpy.timeseries import TimeSeries
+
 
 class TestTimeSeriesExtensions:
     def test_fft_default(self):

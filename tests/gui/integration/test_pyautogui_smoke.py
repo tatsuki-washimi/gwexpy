@@ -1,6 +1,7 @@
 import os
 
 import pytest
+
 from gwexpy.gui.ui.main_window import MainWindow
 
 

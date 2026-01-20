@@ -7,12 +7,13 @@ invariants of the preprocessing algorithms (imputation, standardization, whiteni
 
 import numpy as np
 import pytest
+
 from gwexpy.signal.preprocessing import (
-    whiten,
-    standardize,
-    impute,
-    WhiteningModel,
     StandardizationModel,
+    WhiteningModel,
+    impute,
+    standardize,
+    whiten,
 )
 
 

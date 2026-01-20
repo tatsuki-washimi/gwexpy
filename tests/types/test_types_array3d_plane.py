@@ -1,9 +1,11 @@
 
-import pytest
 import numpy as np
+import pytest
 from astropy import units as u
+
 from gwexpy.types.array3d import Array3D
 from gwexpy.types.plane2d import Plane2D
+
 
 @pytest.fixture
 def arr3d():

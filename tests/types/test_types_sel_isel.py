@@ -1,7 +1,9 @@
 
 import numpy as np
 from astropy import units as u
+
 from gwexpy.types.array3d import Array3D
+
 
 def test_sel_irregular_nearest():
     # Irregular freq axis

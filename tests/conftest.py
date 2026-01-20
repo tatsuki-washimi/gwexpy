@@ -5,14 +5,13 @@ import os
 import socket
 from pathlib import Path
 
-import pytest
-import numpy as np
-from matplotlib import rcParams
-from matplotlib import use as mpl_use
-
 import gwpy.conftest as _gwpy_conftest
 import gwpy.time._tconvert as _tconvert
+import numpy as np
+import pytest
 from gwpy.conftest import *  # noqa: F401,F403
+from matplotlib import rcParams
+from matplotlib import use as mpl_use
 
 pytest_plugins = ["gwpy.testing.fixtures"]
 
@@ -110,6 +109,7 @@ if not os.environ.get("NUMBA_CACHE_DIR"):
 
 try:
     import sqlite3
+
     from IPython.core import history as _ip_hist
 
     _orig_end_session = _ip_hist.HistoryManager.end_session

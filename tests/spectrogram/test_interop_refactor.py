@@ -1,6 +1,8 @@
 
 import numpy as np
+
 from gwexpy.spectrogram import Spectrogram, SpectrogramMatrix
+
 try:
     import torch  # noqa: F401 - availability check
 except ImportError:

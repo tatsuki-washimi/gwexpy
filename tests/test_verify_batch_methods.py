@@ -2,8 +2,9 @@ import numpy as np
 import pandas as pd
 from astropy import units as u
 
-from gwexpy.timeseries import TimeSeries, TimeSeriesList, TimeSeriesDict
-from gwexpy.frequencyseries import FrequencySeriesList, FrequencySeriesDict
+from gwexpy.frequencyseries import FrequencySeriesDict, FrequencySeriesList
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
+
 
 def test_timeseries_batch():
     print("=== Testing TimeSeries Batch Operations ===")

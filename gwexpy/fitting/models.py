@@ -111,7 +111,7 @@ def make_pol_func(n):
 
 
 # Predefined dictionary
-MODELS = {
+MODELS: dict[str, Any] = {
     "gaus": gaussian,
     "gaussian": gaussian,
     "exp": exponential,

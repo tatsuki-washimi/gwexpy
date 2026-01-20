@@ -4,8 +4,8 @@ Tests inherited from gwpy.timeseries.tests.test_timeseries.
 Some tests may be marked as xfail due to upstream API changes.
 """
 import socket
-import pytest
 
+import pytest
 from gwpy.timeseries.tests import test_timeseries as gwpy_test_module
 from gwpy.timeseries.tests.test_timeseries import *  # noqa: F401,F403
 

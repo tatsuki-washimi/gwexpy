@@ -1,7 +1,9 @@
 
 import numpy as np
 from astropy import units as u
+
 from gwexpy.types.plane2d import Plane2D
+
 
 def test_plane2d_init():
     data = np.zeros((10, 10))

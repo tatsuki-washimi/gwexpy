@@ -1,7 +1,9 @@
 
-import pytest
 import numpy as np
+import pytest
+
 from gwexpy.spectrogram import Spectrogram
+
 
 def test_to_mne_tfr():
     mne = pytest.importorskip("mne")

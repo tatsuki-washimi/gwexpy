@@ -1,12 +1,15 @@
 
-import pytest
-import numpy as np
-from astropy import units as u
 from datetime import datetime
+
+import numpy as np
+import pytest
+from astropy import units as u
+
+from gwexpy.time import to_gps
 from gwexpy.timeseries import TimeSeries
 from gwexpy.timeseries.preprocess import align_timeseries_collection
 from gwexpy.types.series_creator import as_series
-from gwexpy.time import to_gps
+
 
 def test_align_mixed_dimensionless_unit():
     # Test case: one series is dimensionless, another is in seconds

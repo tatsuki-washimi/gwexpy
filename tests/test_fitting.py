@@ -1,8 +1,10 @@
 import numpy as np
-from gwexpy.timeseries import TimeSeries
+
+from gwexpy.fitting import enable_fitting_monkeypatch, fit_series
+from gwexpy.fitting.models import damped_oscillation, gaussian, power_law
 from gwexpy.frequencyseries import FrequencySeries
-from gwexpy.fitting import fit_series, enable_fitting_monkeypatch
-from gwexpy.fitting.models import gaussian, damped_oscillation, power_law
+from gwexpy.timeseries import TimeSeries
+
 
 def test_fit_series_direct():
     # Gaussian test

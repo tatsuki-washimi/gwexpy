@@ -1,8 +1,10 @@
 
-import pytest
 import numpy as np
+import pytest
 from astropy import units as u
+
 from gwexpy.spectrogram import Spectrogram
+
 
 def test_spectrogram_quantities():
     pq = pytest.importorskip("quantities")

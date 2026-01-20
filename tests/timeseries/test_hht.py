@@ -1,8 +1,8 @@
-import pytest
 import numpy as np
+import pytest
+from gwpy.spectrogram import Spectrogram
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
-from gwpy.spectrogram import Spectrogram
 
 PYEMD_AVAILABLE = False
 try:

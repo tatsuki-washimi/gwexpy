@@ -312,7 +312,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         """
         # Copy to preserve all metadata (times, frequencies, channel, epoch, metadata dict, etc.)
         new = self.copy()
-        
+
         # Calculate phase values
         val = np.angle(self.view(np.ndarray))
         if unwrap:
@@ -331,7 +331,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             new.name = self.name + "_phase"
         else:
             new.name = "phase"
-            
+
         return new
 
     def degree(self, unwrap: bool = False) -> Spectrogram:
@@ -351,10 +351,10 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         """
         # Re-use radian() implementation which handles unwrap and metadata preservation
         p = self.radian(unwrap=unwrap)
-        
+
         # Convert values to degrees
         val = np.rad2deg(p.view(np.ndarray))
-        
+
         # Create final object (p already has correct metadata and is real-valued)
         new = p
         # Use raw ndarray view for assignment to bypass Astropy's unit check
@@ -364,10 +364,10 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             new.name = self.name + "_phase_deg"
         else:
             new.name = "phase_deg"
-            
+
         return new
 
-    def to_timeseries_list(self) -> tuple["TimeSeriesList", "Quantity"]:
+    def to_timeseries_list(self) -> tuple[TimeSeriesList, Quantity]:
         """
         Convert this Spectrogram to a list of TimeSeries, one per frequency bin.
 
@@ -398,7 +398,6 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         >>> ts_list[0].name
         'test_f10.0Hz'
         """
-        from gwexpy.frequencyseries import FrequencySeriesList
         from gwexpy.timeseries import TimeSeries, TimeSeriesList
 
         ntimes, nfreqs = self.shape
@@ -438,7 +437,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         return ts_list, frequencies
 
-    def to_frequencyseries_list(self) -> tuple["FrequencySeriesList", "Quantity"]:
+    def to_frequencyseries_list(self) -> tuple[FrequencySeriesList, Quantity]:
         """
         Convert this Spectrogram to a list of FrequencySeries, one per time bin.
 

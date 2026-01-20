@@ -15,7 +15,6 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-
 # =============================================================================
 # 1. Tests for Spectrogram.radian() / Spectrogram.degree()
 # =============================================================================

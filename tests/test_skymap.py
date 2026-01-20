@@ -1,6 +1,8 @@
-import pytest
 import numpy as np
+import pytest
+
 from gwexpy.plot import SkyMap
+
 
 def test_skymap_init():
     """Test SkyMap initialization."""

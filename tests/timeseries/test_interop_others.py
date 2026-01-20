@@ -1,11 +1,14 @@
 
-import numpy as np
-import pytest
-import tempfile
 import os
 import sqlite3
+import tempfile
+
+import numpy as np
+import pytest
 from gwpy.time import LIGOTimeGPS
+
 from gwexpy.timeseries import TimeSeries
+
 
 def test_sqlite_interop():
     t0 = LIGOTimeGPS(1234567890, 0)

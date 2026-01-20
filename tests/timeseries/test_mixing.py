@@ -1,6 +1,8 @@
 
 import numpy as np
+
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+
 
 def test_lock_in_constant_freq():
     amp = 1.0

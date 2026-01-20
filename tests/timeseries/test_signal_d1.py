@@ -14,8 +14,8 @@ Target functions in TimeSeriesSignalMixin:
 
 import numpy as np
 import pytest
-from gwexpy.timeseries import TimeSeries
 
+from gwexpy.timeseries import TimeSeries
 
 # =============================================================================
 # radian / degree tests

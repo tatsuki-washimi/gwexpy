@@ -1,8 +1,10 @@
 
-import pytest
 import numpy as np
+import pytest
 from astropy import units as u
+
 from gwexpy.frequencyseries import FrequencySeries
+
 
 def test_to_quantities():
     pq = pytest.importorskip("quantities")

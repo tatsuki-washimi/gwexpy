@@ -1,9 +1,10 @@
 
-import pytest
 import numpy as np
+import pytest
 from astropy import units as u
-from gwexpy.timeseries import TimeSeries
+
 from gwexpy.analysis.bruco import Bruco
+from gwexpy.timeseries import TimeSeries
 
 # Mocking Bruco dependencies if necessary, but here we can test the logic directly
 # We need TimeSeries for Bruco input

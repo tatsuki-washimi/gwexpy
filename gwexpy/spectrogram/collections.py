@@ -218,7 +218,9 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         import numpy as np
 
         from gwexpy.types.metadata import MetaData, MetaDataMatrix
-        from gwexpy.types.seriesmatrix_validation import check_shape_xindex_compatibility
+        from gwexpy.types.seriesmatrix_validation import (
+            check_shape_xindex_compatibility,
+        )
 
         from .matrix import SpectrogramMatrix
 
@@ -555,7 +557,9 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         import numpy as np
 
         from gwexpy.types.metadata import MetaData, MetaDataMatrix
-        from gwexpy.types.seriesmatrix_validation import check_shape_xindex_compatibility
+        from gwexpy.types.seriesmatrix_validation import (
+            check_shape_xindex_compatibility,
+        )
 
         from .matrix import SpectrogramMatrix
 

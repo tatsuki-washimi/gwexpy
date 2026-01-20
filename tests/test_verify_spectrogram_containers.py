@@ -3,7 +3,9 @@ import numpy as np
 import pytest
 from astropy import units as u
 from gwpy.spectrogram import Spectrogram
-from gwexpy.spectrogram import SpectrogramList, SpectrogramDict, SpectrogramMatrix
+
+from gwexpy.spectrogram import SpectrogramDict, SpectrogramList, SpectrogramMatrix
+
 
 def create_mock_spectrogram(name="spec", shape=(10, 10)):
     # Create a 10x10 spectrogram

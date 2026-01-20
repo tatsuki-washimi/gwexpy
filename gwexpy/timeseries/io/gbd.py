@@ -32,6 +32,7 @@ HEADER_SIZE_PATTERN = re.compile(r"HeaderSiz[e]?\s*[:=]\s*(\d+)", re.IGNORECASE)
 
 @dataclass
 class GBDHeader:
+    """Header information extracted from a GBD (GRAPHTEC) file."""
     header_size: int
     start_local: str
     stop_local: str

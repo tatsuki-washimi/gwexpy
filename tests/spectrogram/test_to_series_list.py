@@ -85,7 +85,7 @@ class TestToTimeSeriesList:
                 expected = float(spec.epoch.gps)
             else:
                 expected = float(spec.epoch)
-            
+
             if hasattr(ts.epoch, "gps"):
                 actual = float(ts.epoch.gps)
             else:
@@ -216,7 +216,7 @@ class TestToFrequencySeriesList:
                 expected = float(spec.epoch.gps)
             else:
                 expected = float(spec.epoch)
-            
+
             if hasattr(fs.epoch, "gps"):
                 actual = float(fs.epoch.gps)
             else:

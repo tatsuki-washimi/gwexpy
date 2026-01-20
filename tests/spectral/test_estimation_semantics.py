@@ -7,16 +7,16 @@ These tests fix the specification for:
 3. Averaging methods and error handling
 """
 
-import pytest
 import numpy as np
+import pytest
 from astropy import units as u
 
 pytest.importorskip("gwpy")
 pytest.importorskip("scipy")
 
-from gwexpy.timeseries import TimeSeries
 from gwexpy.frequencyseries import FrequencySeries
-from gwexpy.spectral import estimate_psd, bootstrap_spectrogram
+from gwexpy.spectral import bootstrap_spectrogram, estimate_psd
+from gwexpy.timeseries import TimeSeries
 
 
 class TestSpectralSemantics:
@@ -45,14 +45,14 @@ class TestSpectralSemantics:
         """Test that frequency axis is consistent with fftlength."""
         fftlength = 1.0  # 1 second -> df = 1 Hz
         psd = estimate_psd(noise_ts, fftlength=fftlength)
-        
+
         # df should be 1/fftlength
         expected_df = 1.0 / fftlength
         assert psd.df.value == pytest.approx(expected_df)
-        
+
         # First frequency should be 0 Hz (DC)
         assert psd.frequencies[0].value == 0.0
-        
+
         # Nyquist frequency should be sample_rate / 2
         nyquist = 1024 / 2
         assert psd.frequencies[-1].value == pytest.approx(nyquist)
@@ -61,12 +61,12 @@ class TestSpectralSemantics:
         """Test that output units scale correctly with input units."""
         np.random.seed(123)
         data = np.random.randn(4096)
-        
+
         # Test with different units
         for input_unit in ['m', 's', 'V', 'm/s']:
             ts = TimeSeries(data, sample_rate=256, unit=input_unit)
             psd = estimate_psd(ts, fftlength=1.0)
-            
+
             expected_unit = u.Unit(input_unit)**2 / u.Hz
             assert psd.unit.is_equivalent(expected_unit), \
                 f"For input {input_unit}, expected {expected_unit}, got {psd.unit}"
@@ -122,7 +122,7 @@ class TestBootstrapSemantics:
     def test_bootstrap_has_error_attributes(self, dummy_spectrogram):
         """Test that bootstrap result has error_low and error_high attributes."""
         result = bootstrap_spectrogram(dummy_spectrogram, n_boot=50)
-        
+
         assert hasattr(result, 'error_low')
         assert hasattr(result, 'error_high')
         assert isinstance(result.error_low, FrequencySeries)
@@ -131,14 +131,14 @@ class TestBootstrapSemantics:
     def test_bootstrap_error_units(self, dummy_spectrogram):
         """Test that error bars have same units as result."""
         result = bootstrap_spectrogram(dummy_spectrogram, n_boot=50)
-        
+
         assert result.error_low.unit == result.unit
         assert result.error_high.unit == result.unit
 
     def test_bootstrap_frequency_consistency(self, dummy_spectrogram):
         """Test that output frequencies match input."""
         result = bootstrap_spectrogram(dummy_spectrogram, n_boot=50)
-        
+
         np.testing.assert_array_equal(
             result.frequencies.value,
             dummy_spectrogram.frequencies.value
@@ -150,12 +150,12 @@ class TestBootstrapSemantics:
         median_result = bootstrap_spectrogram(
             dummy_spectrogram, n_boot=100, method='median'
         )
-        
+
         np.random.seed(42)
         mean_result = bootstrap_spectrogram(
             dummy_spectrogram, n_boot=100, method='mean'
         )
-        
+
         # Results should be different (though may be close for normal-ish data)
         # At minimum, they should both be valid
         assert not np.allclose(median_result.value, mean_result.value)
@@ -163,11 +163,11 @@ class TestBootstrapSemantics:
     def test_bootstrap_rebin_reduces_frequency_bins(self, dummy_spectrogram):
         """Test that rebin_width reduces the number of frequency bins."""
         original_nfreq = len(dummy_spectrogram.frequencies)
-        
+
         result = bootstrap_spectrogram(
             dummy_spectrogram, n_boot=50, rebin_width=32.0
         )
-        
+
         # With rebinning, should have fewer frequency bins
         assert len(result.frequencies) < original_nfreq
 
@@ -180,7 +180,7 @@ class TestEstimatePsdEdgeCases:
         data = np.ones(1024)
         data[100] = np.nan
         ts = TimeSeries(data, sample_rate=256)
-        
+
         with pytest.raises(ValueError, match="NaN"):
             estimate_psd(ts, fftlength=1.0)
 
@@ -188,7 +188,7 @@ class TestEstimatePsdEdgeCases:
         """Test that fftlength > duration raises ValueError."""
         data = np.ones(256)  # 1 second at 256 Hz
         ts = TimeSeries(data, sample_rate=256)
-        
+
         with pytest.raises(ValueError, match="fftlength"):
             estimate_psd(ts, fftlength=2.0)  # Request 2 seconds
 
@@ -197,7 +197,7 @@ class TestEstimatePsdEdgeCases:
         np.random.seed(42)
         data = np.random.randn(4096)
         ts = TimeSeries(data, sample_rate=256)  # No unit specified
-        
+
         psd = estimate_psd(ts, fftlength=1.0)
         # Should be 1/Hz (dimensionless^2 / Hz)
         assert psd.unit.is_equivalent(1 / u.Hz)

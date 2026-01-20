@@ -9,7 +9,7 @@ pytest.importorskip("astropy")
 from astropy import units as u
 
 from gwexpy.frequencyseries import FrequencySeries
-from gwexpy.noise.colored import power_law, pink_noise, red_noise, white_noise
+from gwexpy.noise.colored import pink_noise, power_law, red_noise, white_noise
 from gwexpy.noise.magnetic import geomagnetic_background, schumann_resonance
 from gwexpy.noise.peaks import gaussian_line, lorentzian_line, voigt_line
 from gwexpy.noise.wave import from_asd

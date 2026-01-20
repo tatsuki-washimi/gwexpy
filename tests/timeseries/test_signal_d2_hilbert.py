@@ -16,8 +16,8 @@ Specification (fixed):
 
 import numpy as np
 import pytest
-from gwexpy.timeseries import TimeSeries
 
+from gwexpy.timeseries import TimeSeries
 
 # =============================================================================
 # hilbert: NaN/inf exception tests

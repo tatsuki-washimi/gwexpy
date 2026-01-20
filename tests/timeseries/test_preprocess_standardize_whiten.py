@@ -7,15 +7,16 @@ This module tests the specifications defined in the API documentation:
 - whiten_matrix: PCA outputs flat, ZCA preserves shape, output dimensionless
 """
 
+import warnings
+
 import numpy as np
 import pytest
-import warnings
 from astropy import units as u
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 from gwexpy.timeseries.preprocess import (
-    standardize_timeseries,
     standardize_matrix,
+    standardize_timeseries,
     whiten_matrix,
 )
 

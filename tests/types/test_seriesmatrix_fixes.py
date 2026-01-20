@@ -8,11 +8,13 @@ Unit tests for SeriesMatrix key fixes:
 """
 
 import numpy as np
-from astropy import units as u
 import pytest
-from gwexpy.types.seriesmatrix import SeriesMatrix
-from gwexpy.types.metadata import MetaDataMatrix, MetaData
+from astropy import units as u
 from gwpy.detector import Channel
+
+from gwexpy.types.metadata import MetaData, MetaDataMatrix
+from gwexpy.types.seriesmatrix import SeriesMatrix
+
 
 def test_value_internal_storage():
     """Test that _value is internal storage for shape references."""

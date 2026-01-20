@@ -848,8 +848,8 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         # Validate results
         if imfs_array is None or imfs_array.shape[0] == 0:
             raise ValueError(
-                f"EMD decomposition returned no IMFs. "
-                f"Check input signal quality."
+                "EMD decomposition returned no IMFs. "
+                "Check input signal quality."
             )
 
         n_imfs = imfs_array.shape[0]

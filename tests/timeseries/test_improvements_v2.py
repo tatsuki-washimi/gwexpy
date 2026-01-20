@@ -1,7 +1,9 @@
 import numpy as np
 from astropy import units as u
-from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
+
 from gwexpy.frequencyseries import FrequencySeriesMatrix
+from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
+
 
 def test_tsm_impute_vectorized():
     # Create matrix with same NaNs across channels

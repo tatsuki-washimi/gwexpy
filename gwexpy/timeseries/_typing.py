@@ -1,13 +1,11 @@
 from __future__ import annotations
 
+import typing
 from typing import Any, Protocol
 
 import numpy as np
 import numpy.typing as npt
 from astropy import units as u
-
-
-import typing
 
 if typing.TYPE_CHECKING:
     from typing import Protocol
