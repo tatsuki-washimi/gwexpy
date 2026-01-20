@@ -1,6 +1,7 @@
 
-import pytest
 import numpy as np
+import pytest
+
 from gwexpy.frequencyseries import FrequencySeries
 
 try:
@@ -37,9 +38,12 @@ def test_to_obspy_trace():
 def test_from_obspy_trace():
     """Test conversion from Obspy Trace to FrequencySeries."""
     # Create a trace that mimics spectral data
-    header = {'delta': 0.5, 'starttime': 100.0, 'station': 'OBSPY_TR', 'channel': 'CH1'}
     data = np.random.rand(20)
-    tr = obspy.Trace(data=data, header=header)
+    tr = obspy.Trace(data=data)
+    tr.stats.delta = 0.5
+    tr.stats.starttime = 100.0
+    tr.stats.station = 'OBSPY_TR'
+    tr.stats.channel = 'CH1'
 
     fs = FrequencySeries.from_obspy(tr)
 

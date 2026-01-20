@@ -40,7 +40,7 @@ def _make_timeseries(
     unit: Any = None,
     name: str | None = None,
     channel: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """Helper to create a TimeSeries from data."""
     from ..timeseries import TimeSeries
 
@@ -71,11 +71,12 @@ def gaussian(
     std: float = 1.0,
     mean: float = 0.0,
     t0: float = 0.0,
-    rng: "Generator | None" = None,
+    rng: Generator | None = None,
+    seed: int | None = None,
     unit: Any = None,
     name: str | None = None,
     channel: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate Gaussian (normal) white noise.
 
@@ -111,7 +112,7 @@ def gaussian(
     >>> noise = gaussian(duration=1.0, sample_rate=1024, std=0.1)
     """
     if rng is None:
-        rng = np.random.default_rng()
+        rng = np.random.default_rng(seed)
 
     n_samples = int(duration * sample_rate)
     data = rng.normal(loc=mean, scale=std, size=n_samples)
@@ -125,11 +126,12 @@ def uniform(
     low: float = -1.0,
     high: float = 1.0,
     t0: float = 0.0,
-    rng: "Generator | None" = None,
+    rng: Generator | None = None,
+    seed: int | None = None,
     unit: Any = None,
     name: str | None = None,
     channel: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate uniform white noise.
 
@@ -160,7 +162,7 @@ def uniform(
         Uniform noise time-series.
     """
     if rng is None:
-        rng = np.random.default_rng()
+        rng = np.random.default_rng(seed)
 
     n_samples = int(duration * sample_rate)
     data = rng.uniform(low=low, high=high, size=n_samples)
@@ -175,11 +177,12 @@ def colored(
     amplitude: float = 1.0,
     f_ref: float = 1.0,
     t0: float = 0.0,
-    rng: "Generator | None" = None,
+    rng: Generator | None = None,
+    seed: int | None = None,
     unit: Any = None,
     name: str | None = None,
     channel: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate colored (power-law) noise.
 
@@ -224,7 +227,7 @@ def colored(
     from .asd import power_law
 
     if rng is None:
-        rng = np.random.default_rng()
+        rng = np.random.default_rng(seed)
 
     n_samples = int(duration * sample_rate)
     fft_freqs = np.fft.rfftfreq(n_samples, d=1.0 / sample_rate)
@@ -266,7 +269,7 @@ def white_noise(
     sample_rate: float,
     amplitude: float = 1.0,
     **kwargs: Any,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate white noise (flat spectrum).
 
@@ -296,7 +299,7 @@ def pink_noise(
     sample_rate: float,
     amplitude: float = 1.0,
     **kwargs: Any,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate pink noise (1/f^0.5 spectrum).
 
@@ -326,7 +329,7 @@ def red_noise(
     sample_rate: float,
     amplitude: float = 1.0,
     **kwargs: Any,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate red/Brownian noise (1/f spectrum).
 
@@ -366,7 +369,7 @@ def sine(
     unit: Any = None,
     name: str | None = None,
     channel: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate a sine wave.
 
@@ -418,7 +421,7 @@ def square(
     unit: Any = None,
     name: str | None = None,
     channel: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate a square wave.
 
@@ -467,7 +470,7 @@ def sawtooth(
     unit: Any = None,
     name: str | None = None,
     channel: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate a sawtooth wave.
 
@@ -518,7 +521,7 @@ def triangle(
     unit: Any = None,
     name: str | None = None,
     channel: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate a triangle wave.
 
@@ -577,7 +580,7 @@ def chirp(
     unit: Any = None,
     name: str | None = None,
     channel: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate a swept-frequency cosine (chirp) signal.
 
@@ -642,7 +645,7 @@ def step(
     unit: Any = None,
     name: str | None = None,
     channel: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate a step (Heaviside) function.
 
@@ -690,7 +693,7 @@ def impulse(
     unit: Any = None,
     name: str | None = None,
     channel: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate an impulse (delta-like) signal.
 
@@ -747,7 +750,7 @@ def exponential(
     unit: Any = None,
     name: str | None = None,
     channel: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate an exponential signal.
 
@@ -802,13 +805,14 @@ def exponential(
 
 
 def from_asd(
-    asd: "FrequencySeries",
+    asd: FrequencySeries,
     duration: float,
     sample_rate: float,
     t0: float = 0.0,
-    rng: "Generator | None" = None,
+    rng: Generator | None = None,
+    seed: int | None = None,
     **kwargs: Any,
-) -> "TimeSeries":
+) -> TimeSeries:
     """
     Generate colored noise TimeSeries from an ASD (Amplitude Spectral Density).
 
@@ -845,7 +849,7 @@ def from_asd(
     >>> noise = from_asd(asd, duration=128, sample_rate=2048, t0=0)
     """
     if rng is None:
-        rng = np.random.default_rng()
+        rng = np.random.default_rng(seed)
 
     n_samples = int(duration * sample_rate)
     fft_freqs = np.fft.rfftfreq(n_samples, d=1.0 / sample_rate)
@@ -890,7 +894,7 @@ def from_asd(
 
     if "name" not in kwargs:
         kwargs["name"] = getattr(asd, "name", None)
-    
+
     if "channel" not in kwargs:
         kwargs["channel"] = getattr(asd, "channel", None)
 
