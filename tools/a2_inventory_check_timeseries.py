@@ -138,7 +138,7 @@ class FunctionExtractor(ast.NodeVisitor):
             elif isinstance(dec, ast.Attribute):
                 # Handle property.setter etc
                 parts = []
-                current = dec
+                current: ast.expr = dec
                 while isinstance(current, ast.Attribute):
                     parts.append(current.attr)
                     current = current.value

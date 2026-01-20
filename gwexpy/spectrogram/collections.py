@@ -270,13 +270,18 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
             )
         meta_matrix = MetaDataMatrix(meta_arr)
 
+        global_unit = (
+            s0.unit
+            if all(s.unit == s0.unit for s in self)
+            else None
+        )
         return SpectrogramMatrix(
             arr,
             times=times0,
             frequencies=freqs0,
             meta=meta_matrix,
             name=None,
-            unit=None,  # No global unit; per-element units in meta
+            unit=global_unit,
         )
 
     def to_torch(self, *args, **kwargs) -> list:
@@ -611,6 +616,11 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
             )
         meta_matrix = MetaDataMatrix(meta_arr)
 
+        global_unit = (
+            s0.unit
+            if all(s.unit == s0.unit for s in vals)
+            else None
+        )
         return SpectrogramMatrix(
             arr,
             times=times0,
@@ -618,7 +628,7 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
             rows=keys,
             meta=meta_matrix,
             name=None,
-            unit=None,  # No global unit; per-element units in meta
+            unit=global_unit,
         )
 
     def to_torch(self, *args, **kwargs) -> dict:

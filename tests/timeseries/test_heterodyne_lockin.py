@@ -78,7 +78,6 @@ class TestHeterodyneGWpyCompatibility:
         stride = 0.33  # 33 samples (not exact)
 
         n_samples = int(duration * sample_rate)
-        t = np.arange(n_samples) / sample_rate
         data = np.ones(n_samples)
         ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
         phase = np.zeros(n_samples)
@@ -96,7 +95,6 @@ class TestHeterodyneGWpyCompatibility:
         n_samples = 1005  # Not divisible by stride
         stride = 1.0
 
-        t = np.arange(n_samples) / sample_rate
         data = np.ones(n_samples)
         ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
         phase = np.zeros(n_samples)

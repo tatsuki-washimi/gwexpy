@@ -47,7 +47,7 @@ class TestCrossModuleA2Integration:
     def test_psd_density_vs_spectrum_units(self):
         """
         Verify that scaling='density' and 'spectrum' return correct units.
-        Contract: 
+        Contract:
           - density -> [Y]^2 / Hz
           - spectrum -> [Y]^2
         """

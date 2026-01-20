@@ -18,12 +18,12 @@ class FrequencySeriesMatrix(
     """
     2D Matrix container for multiple FrequencySeries objects sharing a common frequency axis.
 
-    This class represents a 2-dimensional array (rows x columns) where each element 
-    is a `FrequencySeries`. All elements in the matrix share the same frequency array 
-    (same `f0`, `df`, and number of frequency bins). It is typically used to represent 
+    This class represents a 2-dimensional array (rows x columns) where each element
+    is a `FrequencySeries`. All elements in the matrix share the same frequency array
+    (same `f0`, `df`, and number of frequency bins). It is typically used to represent
     multi-channel spectral data, such as CSD matrices or multi-channel PSDs.
 
-    Inherits from `SeriesMatrix` and returns `FrequencySeries` instances when indexed 
+    Inherits from `SeriesMatrix` and returns `FrequencySeries` instances when indexed
     per-channel.
     """
 

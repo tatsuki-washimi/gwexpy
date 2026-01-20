@@ -36,10 +36,10 @@ class TimeSeriesMatrix(
 ):
     """
     2D Matrix container for multiple TimeSeries objects sharing a common time axis.
-    
-    This class represents a 2-dimensional array (rows x columns) where each element corresponds 
-    to a TimeSeries data stream. Crucially, **all elements in the matrix share the same time array** 
-    (same `t0`, `dt`, and number of samples). It behaves like a multivariate time series 
+
+    This class represents a 2-dimensional array (rows x columns) where each element corresponds
+    to a TimeSeries data stream. Crucially, **all elements in the matrix share the same time array**
+    (same `t0`, `dt`, and number of samples). It behaves like a multivariate time series
     organized in a grid structure.
 
     Provides dt, t0, times aliases and constructs FrequencySeriesMatrix via FFT.

@@ -61,7 +61,7 @@ def test_spectral_accumulator_channel_delay():
     # logical step: _process_buffers checks ALL active traces for readiness.
 
     res_a = results[0]
-    res_b = results[1]
+    _ = results[1]
 
     print(f"DEBUG: Res A is {res_a}")
 

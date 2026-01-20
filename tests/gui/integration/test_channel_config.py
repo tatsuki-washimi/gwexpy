@@ -32,11 +32,11 @@ def test_channel_selection_and_banking(qtbot, log_gui_action):
     refs = window.meas_controls["grid_refs"]
     # It turns out ref[2] is a QLineEdit, not a QComboBox (bug or design in tabs.py)
     assert refs[0][2].text() == "CH0"
-    assert refs[0][1].isChecked() == True
+    assert refs[0][1].isChecked()
     assert refs[1][2].text() == "CH1"
-    assert refs[1][1].isChecked() == False
+    assert not refs[1][1].isChecked()
     assert refs[15][2].text() == "CH15"
-    assert refs[15][1].isChecked() == True
+    assert refs[15][1].isChecked()
 
     # Find Bank Radio Buttons
     radio_buttons = window.findChildren(QtCore.QObject, options=QtCore.Qt.FindChildrenRecursively)
@@ -59,7 +59,7 @@ def test_channel_selection_and_banking(qtbot, log_gui_action):
     # Check internal model
     states = window.meas_controls["channel_states"]
     assert states[16]["name"] == "CH16"
-    assert states[16]["active"] == True
+    assert states[16]["active"]
 
     # Switch back to Bank 0
     rb0 = next(rb for rb in banks_rb if "0 to 15" in rb.text())

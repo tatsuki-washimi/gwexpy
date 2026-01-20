@@ -54,7 +54,7 @@ class TestSpectrogramMatrixExtra:
         try:
             import matplotlib.pyplot as plt
 
-            p = sgm_basic.plot(show=False)
+            _ = sgm_basic.plot(show=False)
             plt.close("all")
         except ImportError:
             pytest.skip("matplotlib not installed")

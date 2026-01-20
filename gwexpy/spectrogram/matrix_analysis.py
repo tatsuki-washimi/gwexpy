@@ -37,6 +37,10 @@ class SpectrogramMatrixAnalysisMixin:
             # new.real is a method in SeriesMatrix types
             new = new.real()
 
+        # Restore axis metadata in case copy/real dropped it
+        new.times = self.times
+        new.frequencies = self.frequencies
+
         # Update values
         new.view(np.ndarray)[:] = val
 
@@ -60,7 +64,7 @@ class SpectrogramMatrixAnalysisMixin:
             new.name = self.name + "_phase"
         else:
             new.name = "phase"
-        
+
         new.unit = u.rad
 
         return new
@@ -100,7 +104,7 @@ class SpectrogramMatrixAnalysisMixin:
             new.name = self.name + "_phase_deg"
         else:
             new.name = "phase_deg"
-        
+
         new.unit = u.deg
 
         return new
