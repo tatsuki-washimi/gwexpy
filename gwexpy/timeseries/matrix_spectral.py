@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -8,6 +8,9 @@ from astropy import units as u
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
 
 from .utils import _extract_axis_info, _validate_common_axis
+
+if TYPE_CHECKING:
+    from .matrix import TimeSeriesMatrix
 
 
 class TimeSeriesMatrixSpectralMixin:
@@ -20,11 +23,11 @@ class TimeSeriesMatrixSpectralMixin:
         from gwexpy.frequencyseries import FrequencySeriesMatrix
 
         # We assume regular sampling for vectorized FFT
-        self._check_regular("Vectorized FFT")
+        cast("TimeSeriesMatrix", self)._check_regular("Vectorized FFT")
 
         # Handle n-dimensional array (N, M, T)
         # np.fft.rfft handles axis
-        data = np.asarray(self.value)
+        data = np.asarray(cast("TimeSeriesMatrix", self).value)
         n = data.shape[-1]
 
         # Pass kwargs to rfft (like n)
@@ -32,17 +35,17 @@ class TimeSeriesMatrixSpectralMixin:
         fs_data = np.fft.rfft(data, n=rfft_len, axis=-1)
 
         # Calculate frequencies
-        freqs = np.fft.rfftfreq(rfft_len, d=self.dt.value) * u.Hz
+        freqs = np.fft.rfftfreq(rfft_len, d=cast("TimeSeriesMatrix", self).dt.value) * u.Hz
 
         # Metadata logic: simplified for now, uses same meta for all
         return FrequencySeriesMatrix(
             fs_data,
             frequencies=freqs,
-            meta=self.meta,
-            rows=self.rows,
-            cols=self.cols,
-            name=self.name,
-            epoch=self.epoch,
+            meta=cast("TimeSeriesMatrix", self).meta,
+            rows=cast("TimeSeriesMatrix", self).rows,
+            cols=cast("TimeSeriesMatrix", self).cols,
+            name=cast("TimeSeriesMatrix", self).name,
+            epoch=cast("TimeSeriesMatrix", self).epoch,
         )
 
     def _vectorized_psd(self, **kwargs: Any) -> Any:
@@ -53,10 +56,10 @@ class TimeSeriesMatrixSpectralMixin:
 
         from gwexpy.frequencyseries import FrequencySeriesMatrix
 
-        self._check_regular("Vectorized PSD")
+        cast("TimeSeriesMatrix", self)._check_regular("Vectorized PSD")
 
-        data = np.asarray(self.value)
-        fs = 1.0 / self.dt.value
+        data = np.asarray(cast("TimeSeriesMatrix", self).value)
+        fs = 1.0 / cast("TimeSeriesMatrix", self).dt.value
 
         # Adjust kwargs to match scipy.signal.welch
         nperseg = kwargs.pop("fftlength", kwargs.pop("nperseg", None))
@@ -69,11 +72,11 @@ class TimeSeriesMatrixSpectralMixin:
         return FrequencySeriesMatrix(
             psd_data,
             frequencies=freqs * u.Hz,
-            meta=self.meta,
-            rows=self.rows,
-            cols=self.cols,
-            name=self.name,
-            epoch=self.epoch,
+            meta=cast("TimeSeriesMatrix", self).meta,
+            rows=cast("TimeSeriesMatrix", self).rows,
+            cols=cast("TimeSeriesMatrix", self).cols,
+            name=cast("TimeSeriesMatrix", self).name,
+            epoch=cast("TimeSeriesMatrix", self).epoch,
         )
 
     def _vectorized_asd(self, **kwargs: Any) -> Any:
@@ -97,11 +100,11 @@ class TimeSeriesMatrixSpectralMixin:
 
         from gwexpy.frequencyseries import FrequencySeriesMatrix
 
-        self._check_regular("Vectorized CSD")
+        cast("TimeSeriesMatrix", self)._check_regular("Vectorized CSD")
 
-        data = np.asarray(self.value)
+        data = np.asarray(cast("TimeSeriesMatrix", self).value)
         other_data = np.asarray(other.value)
-        fs = 1.0 / self.dt.value
+        fs = 1.0 / cast("TimeSeriesMatrix", self).dt.value
 
         nperseg = kwargs.pop("fftlength", kwargs.pop("nperseg", None))
         noverlap = kwargs.pop("overlap", kwargs.pop("noverlap", None))
@@ -119,11 +122,11 @@ class TimeSeriesMatrixSpectralMixin:
         return FrequencySeriesMatrix(
             csd_data,
             frequencies=freqs * u.Hz,
-            meta=self.meta,
-            rows=self.rows,
-            cols=self.cols,
-            name=self.name,
-            epoch=self.epoch,
+            meta=cast("TimeSeriesMatrix", self).meta,
+            rows=cast("TimeSeriesMatrix", self).rows,
+            cols=cast("TimeSeriesMatrix", self).cols,
+            name=cast("TimeSeriesMatrix", self).name,
+            epoch=cast("TimeSeriesMatrix", self).epoch,
         )
 
     def _vectorized_coherence(self, other: Any, **kwargs: Any) -> Any:
@@ -134,11 +137,11 @@ class TimeSeriesMatrixSpectralMixin:
 
         from gwexpy.frequencyseries import FrequencySeriesMatrix
 
-        self._check_regular("Vectorized Coherence")
+        cast("TimeSeriesMatrix", self)._check_regular("Vectorized Coherence")
 
-        data = np.asarray(self.value)
+        data = np.asarray(cast("TimeSeriesMatrix", self).value)
         other_data = np.asarray(other.value)
-        fs = 1.0 / self.dt.value
+        fs = 1.0 / cast("TimeSeriesMatrix", self).dt.value
 
         nperseg = kwargs.pop("fftlength", kwargs.pop("nperseg", None))
         noverlap = kwargs.pop("overlap", kwargs.pop("noverlap", None))
@@ -156,11 +159,11 @@ class TimeSeriesMatrixSpectralMixin:
         return FrequencySeriesMatrix(
             coh_data,
             frequencies=freqs * u.Hz,
-            meta=self.meta,
-            rows=self.rows,
-            cols=self.cols,
-            name=self.name,
-            epoch=self.epoch,
+            meta=cast("TimeSeriesMatrix", self).meta,
+            rows=cast("TimeSeriesMatrix", self).rows,
+            cols=cast("TimeSeriesMatrix", self).cols,
+            name=cast("TimeSeriesMatrix", self).name,
+            epoch=cast("TimeSeriesMatrix", self).epoch,
         )
 
     def lock_in(self, **kwargs: Any) -> Any:
@@ -176,11 +179,11 @@ class TimeSeriesMatrixSpectralMixin:
         output = kwargs.get("output", "amp_phase")
         expect_tuple = output in ["amp_phase", "iq"]
 
-        N, M, _ = self.shape
+        N, M, _ = cast("TimeSeriesMatrix", self).shape
         if N == 0 or M == 0:
             if expect_tuple:
-                return self.copy(), self.copy()
-            return self.copy()
+                return cast("TimeSeriesMatrix", self).copy(), cast("TimeSeriesMatrix", self).copy()
+            return cast("TimeSeriesMatrix", self).copy()
 
         vals1 = [[None for _ in range(M)] for _ in range(N)]
         vals2 = [[None for _ in range(M)] for _ in range(N)] if expect_tuple else None
@@ -195,10 +198,12 @@ class TimeSeriesMatrixSpectralMixin:
 
         for i in range(N):
             for j in range(M):
-                ts = self[i, j]
+                ts = cast("TimeSeriesMatrix", self)[i, j]
                 res = ts.lock_in(**kwargs)
 
                 if expect_tuple:
+                    assert vals2 is not None
+                    assert meta2 is not None
                     r1, r2 = res
                     vals1[i][j] = np.asarray(r1.value)
                     meta1[i, j] = MetaData(
@@ -243,7 +248,7 @@ class TimeSeriesMatrixSpectralMixin:
             for r in range(N):
                 for c in range(M):
                     out[r, c, :] = v[r][c]
-            new_mat = self.__class__(
+            new_mat = cast("TimeSeriesMatrix", self).__class__(
                 out,
                 xindex=common_axis,
                 xunit=common_axis.unit if isinstance(common_axis, u.Quantity) else None,
@@ -283,21 +288,21 @@ class TimeSeriesMatrixSpectralMixin:
         Compute spectrogram of each element.
         Returns SpectrogramMatrix.
         """
-        return self._apply_spectrogram_method("spectrogram", *args, **kwargs)
+        return cast("TimeSeriesMatrix", self)._apply_spectrogram_method("spectrogram", *args, **kwargs)
 
     def spectrogram2(self, *args: Any, **kwargs: Any) -> Any:
         """
         Compute spectrogram2 of each element.
         Returns SpectrogramMatrix.
         """
-        return self._apply_spectrogram_method("spectrogram2", *args, **kwargs)
+        return cast("TimeSeriesMatrix", self)._apply_spectrogram_method("spectrogram2", *args, **kwargs)
 
     def q_transform(self, *args: Any, **kwargs: Any) -> Any:
         """
         Compute Q-transform of each element.
         Returns SpectrogramMatrix.
         """
-        return self._apply_spectrogram_method("q_transform", *args, **kwargs)
+        return cast("TimeSeriesMatrix", self)._apply_spectrogram_method("q_transform", *args, **kwargs)
 
     def _run_spectral_method(self, method_name: str, **kwargs: Any) -> Any:
         """
@@ -305,10 +310,10 @@ class TimeSeriesMatrixSpectralMixin:
         """
         from gwexpy.frequencyseries import FrequencySeriesMatrix
 
-        N, M, K = self.shape
+        N, M, K = cast("TimeSeriesMatrix", self).shape
 
         # Run first element to determine frequency axis and output properties
-        ts0 = self[0, 0]
+        ts0 = cast("TimeSeriesMatrix", self)[0, 0]
         method = getattr(ts0, method_name)
         fs0 = method(**kwargs)
 
@@ -328,7 +333,7 @@ class TimeSeriesMatrixSpectralMixin:
                 if i == 0 and j == 0:
                     fs = fs0
                 else:
-                    ts = self[i, j]
+                    ts = cast("TimeSeriesMatrix", self)[i, j]
                     fs = getattr(ts, method_name)(**kwargs)
 
                 out_data[i, j, :] = fs.value
@@ -342,8 +347,8 @@ class TimeSeriesMatrixSpectralMixin:
             units=out_units,
             names=out_names,
             channels=out_channels,
-            rows=self.rows,
-            cols=self.cols,
+            rows=cast("TimeSeriesMatrix", self).rows,
+            cols=cast("TimeSeriesMatrix", self).cols,
             name=getattr(self, "name", ""),
             epoch=getattr(self, "epoch", None),
         )

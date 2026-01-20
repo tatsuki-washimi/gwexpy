@@ -172,11 +172,6 @@ exclude = "gwexpy/(gui/.*|frequencyseries/.*|spectrogram/.*)"
 module = [
   "gwexpy.frequencyseries.*",
   "gwexpy.spectrogram.*",
-  "gwexpy.timeseries.matrix",
-  "gwexpy.timeseries.matrix_analysis",
-  "gwexpy.timeseries.matrix_core",
-  "gwexpy.timeseries.matrix_interop",
-  "gwexpy.timeseries.matrix_spectral",
   "gwexpy.types.seriesmatrix_base",
   "gwexpy.types.seriesmatrix_validation",
   "gwexpy.types.seriesmatrix",
@@ -193,7 +188,6 @@ ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = [
-  "gwexpy.types.metadata",
   "gwexpy.analysis.*",
   "gwexpy.timeseries.pipeline",
   "gwexpy.timeseries.io.win",

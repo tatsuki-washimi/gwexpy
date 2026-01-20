@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
+
+if TYPE_CHECKING:
+    from .matrix import TimeSeriesMatrix
 
 
 class TimeSeriesMatrixInteropMixin:
@@ -40,7 +43,8 @@ class TimeSeriesMatrixInteropMixin:
         """Convert to mne.io.RawArray."""
         from gwexpy.interop import to_mne_rawarray
 
-        tsd = self.to_dict_flat()
-        if not isinstance(tsd, self.dict_class):
-            tsd = self.dict_class(tsd)
+        self_typed = cast("TimeSeriesMatrix", self)
+        tsd = self_typed.to_dict_flat()
+        if not isinstance(tsd, self_typed.dict_class):
+            tsd = self_typed.dict_class(tsd)
         return to_mne_rawarray(tsd, info=info)
