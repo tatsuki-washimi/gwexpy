@@ -4,6 +4,12 @@
 
 A dictionary-like collection of `Field4D` objects.
 
+## Validation
+
+When `validate=True`, the dict checks that all values share:
+- Unit, axis names, axis0 domain, and space domains.
+- Axis coordinate arrays (shape, unit, and values within tolerance).
+
 ## Methods
 
 ### `fft_time_all`

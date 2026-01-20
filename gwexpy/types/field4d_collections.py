@@ -1,8 +1,14 @@
 """Collections for Field4D objects."""
 
+import numpy as np
+
 from .field4d import Field4D
 
 __all__ = ["Field4DList", "Field4DDict"]
+
+# Tolerance for axis coordinate comparison
+_AXIS_RTOL = 1e-9
+_AXIS_ATOL = 1e-12
 
 
 class Field4DList(list):
@@ -36,7 +42,16 @@ class Field4DList(list):
             self._validate()
 
     def _validate(self):
-        """Validate that all items are Field4D with compatible metadata."""
+        """Validate that all items are Field4D with compatible metadata.
+
+        Checks that all items have matching:
+        - Type (Field4D)
+        - Unit
+        - Axis names
+        - Axis0 domain
+        - Space domains
+        - Axis coordinate arrays (within numerical tolerance)
+        """
         if not self:
             return
 
@@ -48,6 +63,14 @@ class Field4DList(list):
         ref_axis_names = first.axis_names
         ref_axis0_domain = first.axis0_domain
         ref_space_domains = first.space_domains
+
+        # Reference axis indices
+        ref_axes = [
+            first._axis0_index,
+            first._axis1_index,
+            first._axis2_index,
+            first._axis3_index,
+        ]
 
         for i, item in enumerate(self[1:], 1):
             if not isinstance(item, Field4D):
@@ -72,6 +95,33 @@ class Field4DList(list):
                     f"Item {i}: Inconsistent space_domains. "
                     f"Expected {ref_space_domains}, got {item.space_domains}"
                 )
+
+            # Validate axis coordinate arrays
+            item_axes = [
+                item._axis0_index,
+                item._axis1_index,
+                item._axis2_index,
+                item._axis3_index,
+            ]
+            for ax_idx, (ref_ax, item_ax) in enumerate(zip(ref_axes, item_axes)):
+                if ref_ax.shape != item_ax.shape:
+                    raise ValueError(
+                        f"Item {i}: Axis {ax_idx} shape mismatch. "
+                        f"Expected {ref_ax.shape}, got {item_ax.shape}"
+                    )
+                if ref_ax.unit != item_ax.unit:
+                    raise ValueError(
+                        f"Item {i}: Axis {ax_idx} unit mismatch. "
+                        f"Expected {ref_ax.unit}, got {item_ax.unit}"
+                    )
+                if not np.allclose(
+                    ref_ax.value, item_ax.value,
+                    rtol=_AXIS_RTOL, atol=_AXIS_ATOL
+                ):
+                    raise ValueError(
+                        f"Item {i}: Axis {ax_idx} coordinate mismatch. "
+                        f"Axis values differ beyond tolerance."
+                    )
 
     def fft_time_all(self, **kwargs):
         """Apply fft_time to all fields.
@@ -168,7 +218,16 @@ class Field4DDict(dict):
             self._validate()
 
     def _validate(self):
-        """Validate that all values are Field4D with compatible metadata."""
+        """Validate that all values are Field4D with compatible metadata.
+
+        Checks that all items have matching:
+        - Type (Field4D)
+        - Unit
+        - Axis names
+        - Axis0 domain
+        - Space domains
+        - Axis coordinate arrays (within numerical tolerance)
+        """
         if not self:
             return
 
@@ -181,6 +240,14 @@ class Field4DDict(dict):
         ref_axis_names = first.axis_names
         ref_axis0_domain = first.axis0_domain
         ref_space_domains = first.space_domains
+
+        # Reference axis indices
+        ref_axes = [
+            first._axis0_index,
+            first._axis1_index,
+            first._axis2_index,
+            first._axis3_index,
+        ]
 
         for key, item in list(self.items())[1:]:
             if not isinstance(item, Field4D):
@@ -205,6 +272,33 @@ class Field4DDict(dict):
                     f"Key '{key}': Inconsistent space_domains. "
                     f"Expected {ref_space_domains}, got {item.space_domains}"
                 )
+
+            # Validate axis coordinate arrays
+            item_axes = [
+                item._axis0_index,
+                item._axis1_index,
+                item._axis2_index,
+                item._axis3_index,
+            ]
+            for ax_idx, (ref_ax, item_ax) in enumerate(zip(ref_axes, item_axes)):
+                if ref_ax.shape != item_ax.shape:
+                    raise ValueError(
+                        f"Key '{key}': Axis {ax_idx} shape mismatch. "
+                        f"Expected {ref_ax.shape}, got {item_ax.shape}"
+                    )
+                if ref_ax.unit != item_ax.unit:
+                    raise ValueError(
+                        f"Key '{key}': Axis {ax_idx} unit mismatch. "
+                        f"Expected {ref_ax.unit}, got {item_ax.unit}"
+                    )
+                if not np.allclose(
+                    ref_ax.value, item_ax.value,
+                    rtol=_AXIS_RTOL, atol=_AXIS_ATOL
+                ):
+                    raise ValueError(
+                        f"Key '{key}': Axis {ax_idx} coordinate mismatch. "
+                        f"Axis values differ beyond tolerance."
+                    )
 
     def fft_time_all(self, **kwargs):
         """Apply fft_time to all fields.

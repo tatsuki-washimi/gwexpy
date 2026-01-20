@@ -18,7 +18,7 @@ fft_time(self, nfft=None)
 
 Compute FFT along time axis (axis 0).
 
-This method applies the same normalization as GWpy's ``TimeSeries.fft()``: rfft / nfft, with DC-excluded bins multiplied by 2.
+This method applies the same normalization as GWpy's ``TimeSeries.fft()``: rfft / nfft, with DC-excluded bins multiplied by 2 (Nyquist bin is not doubled when nfft is even).
 
 Parameters
 ----------
@@ -29,6 +29,11 @@ Returns
 -------
 Field4D
     Transformed field with axis0_domain='frequency'.
+
+Notes
+-----
+- Requires a real-valued, regularly spaced time axis with length >= 2.
+- Preserves the time-axis origin for later reconstruction in ``ifft_time``.
 
 ### `ifft_time`
 
@@ -49,6 +54,11 @@ Returns
 -------
 Field4D
     Transformed field with axis0_domain='time'.
+
+Notes
+-----
+- Requires a regularly spaced frequency axis with length >= 2.
+- Restores the time-axis origin if it was preserved by ``fft_time``.
 
 ### `fft_space`
 
@@ -72,6 +82,11 @@ Returns
 Field4D
     Transformed field with specified axes in 'k' domain.
 
+Notes
+-----
+- Requires spatial axes to be regularly spaced, strictly monotonic, and length >= 2.
+- Descending spatial axes yield a k-axis with flipped sign to preserve direction.
+
 ### `ifft_space`
 
 ```python
@@ -91,6 +106,11 @@ Returns
 -------
 Field4D
     Transformed field with specified axes in 'real' domain.
+
+Notes
+-----
+- Requires k-space axes with length >= 2.
+- Descending k-axes reconstruct descending real-space axes.
 
 ### `wavelength`
 

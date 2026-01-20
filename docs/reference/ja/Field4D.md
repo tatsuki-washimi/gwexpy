@@ -16,7 +16,7 @@ fft_time(self, nfft=None)
 
 時間軸（第0軸）に沿って FFT を計算します。
 
-GWpy の ``TimeSeries.fft()`` と同様の正規化（rfft / nfft、および DC 成分以外の 2 倍補正）を適用します。
+GWpy の ``TimeSeries.fft()`` と同様の正規化（rfft / nfft、および DC 成分以外の 2 倍補正。偶数 nfft の Nyquist ビンは 2 倍しない）を適用します。
 
 引数
 ----------
@@ -27,6 +27,11 @@ nfft : int, optional
 -------
 Field4D
     ``axis0_domain='frequency'`` に遷移した新しい Field4D。
+
+注記
+-----
+- 実数値かつ等間隔、長さ >= 2 の時間軸が必要です。
+- ``ifft_time`` で復元できるよう時間軸の原点を保存します。
 
 ### `ifft_time`
 
@@ -47,6 +52,11 @@ nout : int, optional
 -------
 Field4D
     ``axis0_domain='time'`` に戻った新しい Field4D。
+
+注記
+-----
+- 等間隔、長さ >= 2 の周波数軸が必要です。
+- ``fft_time`` が保存した時間軸原点を復元します。
 
 ### `fft_space`
 
@@ -70,6 +80,11 @@ n : tuple of int, optional
 Field4D
     指定された軸が 'k' ドメインに遷移した新しい Field4D。
 
+注記
+-----
+- 空間軸は等間隔かつ単調増加/減少、長さ >= 2 が必要です。
+- 軸が降順の場合は方向を保つため k 軸の符号を反転します。
+
 ### `ifft_space`
 
 ```python
@@ -89,6 +104,11 @@ n : tuple of int, optional
 -------
 Field4D
     指定された軸が 'real' ドメインに戻った新しい Field4D。
+
+注記
+-----
+- k 空間軸は長さ >= 2 が必要です。
+- k 軸が降順の場合、復元される実空間軸も降順になります。
 
 ### `wavelength`
 
