@@ -98,6 +98,7 @@ def _ffill_numpy(val: NumericArray, limit: int | None = None) -> NumericArray:
             if not have_last:
                 continue
             if limit is None or run < limit:
+                assert last_val is not None
                 out[i] = last_val
             run += 1
         else:
@@ -117,6 +118,7 @@ def _bfill_numpy(val: NumericArray, limit: int | None = None) -> NumericArray:
             if not have_next:
                 continue
             if limit is None or run < limit:
+                assert next_val is not None
                 out[i] = next_val
             run += 1
         else:

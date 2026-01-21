@@ -438,7 +438,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         phase: (
             Sequence[NumberLike]
             | NDArray[np.floating]
-            | NDArray[np.complexfloating]
+            | NDArray[np.complex128]
             | None
         ) = None,
         f0: NumberLike | u.Quantity | None = None,
@@ -447,7 +447,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         phase_epoch: NumberLike | None = None,
         phase0: float = 0.0,
         prefer_dt: bool = True,
-    ) -> NDArray[np.float_]:
+    ) -> NDArray[np.floating]:
         """Internal helper to build phase series in radians."""
         if (f0 is None and phase is None) or (f0 is not None and phase is not None):
             raise ValueError("Exactly one of 'f0' or 'phase' must be provided.")
@@ -766,7 +766,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         *,
         phase: Sequence[NumberLike]
         | NDArray[np.floating]
-        | NDArray[np.complexfloating]
+        | NDArray[np.complex128]
         | None = None,
         f0: NumberLike | u.Quantity | None = None,
         fdot: NumberLike | u.Quantity = 0.0,

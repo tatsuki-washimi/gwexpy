@@ -9,11 +9,12 @@ Matplotlib の Agg バックエンドを使用し、GUIなしで画像を生成�
 """
 
 import matplotlib
+
 matplotlib.use('Agg')  # ヘッドレスバックエンド
 
+import matplotlib.pyplot as plt
 import numpy as np
 from astropy import units as u
-import matplotlib.pyplot as plt
 
 from gwexpy.types import Field4D
 
@@ -23,7 +24,7 @@ def create_sample_field():
     np.random.seed(42)
 
     # 軸定義
-    nt, nx, ny, nz = 10, 32, 32, 1
+    nt, nx, ny, _ = 10, 32, 32, 1
     t = np.linspace(0, 1, nt) * u.s
     x = np.linspace(-5, 5, nx) * u.m
     y = np.linspace(-5, 5, ny) * u.m

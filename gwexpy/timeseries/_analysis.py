@@ -68,7 +68,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         """
         from gwexpy.timeseries.preprocess import impute_timeseries
 
-        ts_in = self
+        ts_in = cast("TimeSeries", self)
         return impute_timeseries(
             ts_in, method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs
         )
