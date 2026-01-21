@@ -21,6 +21,12 @@ from ._typing import TimeSeriesAttrs
 
 NumberLike: TypeAlias = int | float | np.number
 QuantityLike: TypeAlias = ArrayLike | u.Quantity
+PhaseLike: TypeAlias = (
+    Sequence[NumberLike]
+    | NDArray[np.floating]
+    | NDArray[np.complex128]
+    | None
+)
 
 try:
     import scipy.signal  # noqa: F401 - availability check
@@ -435,12 +441,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
     def _build_phase_series(
         self,
         *,
-        phase: (
-            Sequence[NumberLike]
-            | NDArray[np.floating]
-            | NDArray[np.complex128]
-            | None
-        ) = None,
+        phase: PhaseLike = None,
         f0: NumberLike | u.Quantity | None = None,
         fdot: NumberLike | u.Quantity = 0.0,
         fddot: NumberLike | u.Quantity = 0.0,
@@ -518,10 +519,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
     def mix_down(
         self,
         *,
-        phase: Sequence[NumberLike]
-        | NDArray[np.floating]
-        | NDArray[np.complexfloating]
-        | None = None,
+        phase: PhaseLike = None,
         f0: NumberLike | u.Quantity | None = None,
         fdot: NumberLike | u.Quantity = 0.0,
         fddot: NumberLike | u.Quantity = 0.0,
@@ -534,7 +532,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         Mix the TimeSeries with a complex oscillator.
         """
         phase_series = self._build_phase_series(
-            phase=phase,
+            phase=phase,  # type: ignore[arg-type]
             f0=f0,
             fdot=fdot,
             fddot=fddot,
@@ -570,7 +568,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         self,
         phase: Sequence[NumberLike]
         | NDArray[np.floating]
-        | NDArray[np.complexfloating],
+        | NDArray[np.complex128],
         stride: NumberLike | u.Quantity = 1.0,
         *,
         singlesided: bool = False,
@@ -764,10 +762,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
     def baseband(
         self,
         *,
-        phase: Sequence[NumberLike]
-        | NDArray[np.floating]
-        | NDArray[np.complex128]
-        | None = None,
+        phase: PhaseLike = None,
         f0: NumberLike | u.Quantity | None = None,
         fdot: NumberLike | u.Quantity = 0.0,
         fddot: NumberLike | u.Quantity = 0.0,
@@ -987,10 +982,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         self,
         f0: NumberLike | u.Quantity | None = None,
         *,
-        phase: Sequence[NumberLike]
-        | NDArray[np.floating]
-        | NDArray[np.complexfloating]
-        | None = None,
+        phase: PhaseLike = None,
         fdot: NumberLike | u.Quantity = 0.0,
         fddot: NumberLike | u.Quantity = 0.0,
         phase_epoch: NumberLike | None = None,
@@ -1157,7 +1149,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         if bandwidth is not None:
             # LPF mode: use baseband
             outc = self.baseband(
-                phase=phase,
+                phase=phase,  # type: ignore[arg-type]
                 f0=f0,
                 fdot=fdot,
                 fddot=fddot,
@@ -1171,7 +1163,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             # Stride-average mode: build phase series and use heterodyne
             assert stride is not None  # guaranteed by validation above
             phase_series = self._build_phase_series(
-                phase=phase,
+                phase=phase,  # type: ignore[arg-type]
                 f0=f0,
                 fdot=fdot,
                 fddot=fddot,
