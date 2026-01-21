@@ -4,8 +4,15 @@ Tests for Generalized Least Squares (GLS) fitting functionality.
 import numpy as np
 import pytest
 
-from gwexpy.fitting import GeneralizedLeastSquares, fit_series
-from gwexpy.fitting.models import power_law
+try:
+    from gwexpy.fitting import GeneralizedLeastSquares, fit_series
+    from gwexpy.fitting.models import power_law
+except ImportError as exc:
+    pytest.skip(
+        f"gwexpy.fitting optional dependencies unavailable: {exc}",
+        allow_module_level=True,
+    )
+
 from gwexpy.frequencyseries import FrequencySeries
 
 

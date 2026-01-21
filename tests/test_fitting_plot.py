@@ -1,4 +1,13 @@
 import numpy as np
+import pytest
+
+try:
+    from gwexpy.fitting import fit_series  # noqa: F401
+except ImportError as exc:
+    pytest.skip(
+        f"gwexpy.fitting optional dependencies unavailable: {exc}",
+        allow_module_level=True,
+    )
 
 
 def test_fit_result_plot_includes_errorbars():

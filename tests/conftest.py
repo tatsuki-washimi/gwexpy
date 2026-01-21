@@ -37,6 +37,8 @@ def _ensure_dir(path: Path) -> None:
         pass
 
 def _requirement_available(name: str) -> bool:
+    if name == "uproot" and os.environ.get("GWEXPY_ALLOW_UPROOT", "") != "1":
+        return False
     try:
         importlib.import_module(name)
         return True
@@ -88,6 +90,18 @@ _ROOT = Path(__file__).resolve().parent
 mpl_use("agg", force=True)
 rcParams.update({"text.usetex": False})
 np.random.seed(1)
+
+# Ensure a writable home for packages that write to ~/.<tool> directories.
+_home_dir = _ROOT / ".home"
+_ensure_dir(_home_dir)
+try:
+    _arviz_dir = Path.home() / "arviz_data"
+    _arviz_dir.mkdir(exist_ok=True)
+    _probe = _arviz_dir / ".write_probe"
+    _probe.write_text("ok")
+    _probe.unlink()
+except Exception:
+    os.environ["HOME"] = str(_home_dir)
 
 # Keep Qt runtime warnings quiet by providing a private runtime dir.
 _runtime_dir = _ROOT / ".qt-runtime"

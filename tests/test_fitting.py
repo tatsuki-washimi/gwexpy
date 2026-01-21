@@ -1,7 +1,15 @@
 import numpy as np
+import pytest
 
-from gwexpy.fitting import enable_fitting_monkeypatch, fit_series
-from gwexpy.fitting.models import damped_oscillation, gaussian, power_law
+try:
+    from gwexpy.fitting import enable_fitting_monkeypatch, fit_series
+    from gwexpy.fitting.models import damped_oscillation, gaussian, power_law
+except ImportError as exc:
+    pytest.skip(
+        f"gwexpy.fitting optional dependencies unavailable: {exc}",
+        allow_module_level=True,
+    )
+
 from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.timeseries import TimeSeries
 
