@@ -62,6 +62,29 @@ GWpy's `Spectrogram` (Array2D) can behave inconsistently when sliced to 1D. It m
             from gwpy.types.series import Series
             return Series.__getitem__(self, item)
         return super().__getitem__(item)
+
+### 5. Multi-dimensional Structure Maintenance (e.g. Field4D)
+
+When dealing with N-dimensional fields where you want to prevent dimension reduction during indexing (e.g., keeping a 4D structure even when selecting a single time/point), convert integer indices to length-1 slices in `__getitem__`.
+
+**Pattern for Structure Maintenance:**
+
+```python
+    def _force_ndim_item(self, item):
+        # Convert int indices to slice(i, i+1) to keep dimension
+        result = []
+        for i, idx in enumerate(normalized_item):
+            if isinstance(idx, int):
+                result.append(slice(idx, idx + 1))
+            else:
+                result.append(idx)
+        return tuple(result)
+
+    def __getitem__(self, item):
+        forced_item = self._force_ndim_item(item)
+        return self._reconstruct_subclass(super().__getitem__(forced_item))
+```
+
 ```
 
 ## Checklist
