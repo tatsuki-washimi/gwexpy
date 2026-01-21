@@ -1768,3 +1768,146 @@ class Field4D(Array4D):
                 cbar.set_label(f"{mode} [{self.unit}]")
 
         return fig, ax
+
+    # =========================================================================
+    # Signal Processing Methods (Phase 3)
+    # =========================================================================
+
+    def compute_psd(self, point_or_region, **kwargs):
+        """Compute power spectral density using Welch's method.
+
+        This is a convenience wrapper around :func:`~gwexpy.types.compute_psd`.
+
+        Parameters
+        ----------
+        point_or_region : tuple, list of tuples, or dict
+            Spatial location(s) to extract:
+            - Single point: ``(x, y, z)`` tuple of Quantities
+            - Multiple points: list of ``(x, y, z)`` tuples
+            - Region dict: ``{'x': slice or value, 'y': ..., 'z': ...}``
+        **kwargs
+            Additional keyword arguments passed to compute_psd:
+            nperseg, noverlap, window, detrend, scaling, average.
+
+        Returns
+        -------
+        FrequencySeries or FrequencySeriesList
+            PSD estimate(s).
+
+        See Also
+        --------
+        gwexpy.types.compute_psd : Full documentation.
+        """
+        from .field4d_signal import compute_psd
+
+        return compute_psd(self, point_or_region, **kwargs)
+
+    def freq_space_map(self, axis, at=None, **kwargs):
+        """Compute frequency-space map along a spatial axis.
+
+        This is a convenience wrapper around :func:`~gwexpy.types.freq_space_map`.
+
+        Parameters
+        ----------
+        axis : str
+            Spatial axis to scan along ('x', 'y', or 'z').
+        at : dict, optional
+            Fixed values for the other two spatial axes.
+        **kwargs
+            Additional keyword arguments passed to freq_space_map.
+
+        Returns
+        -------
+        Field4D
+            2D frequency-space map.
+
+        See Also
+        --------
+        gwexpy.types.freq_space_map : Full documentation.
+        """
+        from .field4d_signal import freq_space_map
+
+        return freq_space_map(self, axis, at=at, **kwargs)
+
+    def compute_xcorr(self, point_a, point_b, **kwargs):
+        """Compute cross-correlation between two spatial points.
+
+        This is a convenience wrapper around :func:`~gwexpy.types.compute_xcorr`.
+
+        Parameters
+        ----------
+        point_a, point_b : tuple of Quantity
+            Spatial coordinates (x, y, z) for the two points.
+        **kwargs
+            Additional keyword arguments passed to compute_xcorr.
+
+        Returns
+        -------
+        TimeSeries
+            Cross-correlation function with lag axis.
+
+        See Also
+        --------
+        gwexpy.types.compute_xcorr : Full documentation.
+        """
+        from .field4d_signal import compute_xcorr
+
+        return compute_xcorr(self, point_a, point_b, **kwargs)
+
+    def time_delay_map(self, ref_point, plane="xy", at=None, **kwargs):
+        """Compute time delay map from a reference point.
+
+        This is a convenience wrapper around :func:`~gwexpy.types.time_delay_map`.
+
+        Parameters
+        ----------
+        ref_point : tuple of Quantity
+            Reference point coordinates (x, y, z).
+        plane : str
+            2D plane to map: 'xy', 'xz', or 'yz'. Default 'xy'.
+        at : dict, optional
+            Fixed value for the axis not in the plane.
+        **kwargs
+            Additional keyword arguments passed to time_delay_map.
+
+        Returns
+        -------
+        Field4D
+            Time delay map.
+
+        See Also
+        --------
+        gwexpy.types.time_delay_map : Full documentation.
+        """
+        from .field4d_signal import time_delay_map
+
+        return time_delay_map(self, ref_point, plane=plane, at=at, **kwargs)
+
+    def coherence_map(self, ref_point, plane="xy", at=None, **kwargs):
+        """Compute coherence map from a reference point.
+
+        This is a convenience wrapper around :func:`~gwexpy.types.coherence_map`.
+
+        Parameters
+        ----------
+        ref_point : tuple of Quantity
+            Reference point coordinates (x, y, z).
+        plane : str
+            2D plane to map: 'xy', 'xz', or 'yz'. Default 'xy'.
+        at : dict, optional
+            Fixed value for the axis not in the plane.
+        **kwargs
+            Additional keyword arguments passed to coherence_map.
+
+        Returns
+        -------
+        Field4D or Field4DDict
+            Coherence map.
+
+        See Also
+        --------
+        gwexpy.types.coherence_map : Full documentation.
+        """
+        from .field4d_signal import coherence_map
+
+        return coherence_map(self, ref_point, plane=plane, at=at, **kwargs)
