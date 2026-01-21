@@ -131,7 +131,15 @@ class SkyMap(Plot):
                 if not coord.dec.isscalar
                 else float(coord.dec.rad)
             )
-            ax.text(tx, ty, f" {label}", transform=ax.get_transform("world"))
+            # Fallback for standard Matplotlib geo projections if ligo.skymap is missing
+            try:
+                transform = ax.get_transform("world")
+            except (AttributeError, TypeError):
+                transform = ax.transData
+                # Shift RA to [-π, π] for standard geo axes
+                if tx > np.pi:
+                    tx -= 2 * np.pi
+            ax.text(tx, ty, f" {label}", transform=transform)
 
     # ------------------------------------------------------------------
     # Heatmap overlay
