@@ -14,14 +14,19 @@ This skill analyzes a proposed implementation plan or task description to estima
     * Assess the difficulty of each phase (Low / Medium / High).
 
 2. **Time Estimation**:
-    * Estimate the total time (in minutes) required for the assistant to think and execute, based on task scale and complexity.
+    * Estimate the total time (in minutes) required for the assistant.
+    * **LLM-Native Benchmarks**:
+        * **Detailed Plan Boost**: If the input Markdown plan specifies method names, logic, and tests, assume implementation is 10-20x faster than human equivalent (e.g., 4 hours -> 15 mins).
+        * **Ambiguity Penalty**: Clear requirements = 10-20 mins. Vague research tasks = 30-60 mins.
+        * **Test Loop**: Assume pytest-driven debugging is near-instantaneous.
+    * Use "Wall-clock time" (actual AI thinking/execution time) for the estimate.
 
 3. **Quota Estimation**:
     * Predict token consumption based on the following criteria:
-        * **High**: Large-scale file creation/replacement, multiple research calls (`search_web`, `grep_search`), complex logic discussions.
-        * **Medium**: Small fixes to existing code, standard test execution.
-        * **Low**: Reading only, simple renaming, short response generation.
-    * Account for variations between models (e.g., Gemini Pro 1.5 vs. Flash).
+        * **High**: Large-scale file edits, many tool calls (`run_command`, `replace_file_content`), or long context reads. Note: High Quota != Long Time.
+        * **Medium**: Targeted fixes, standard unit tests.
+        * **Low**: Information retrieval only, simple renaming.
+    * Account for model-specific behavior (e.g., Claude Opus is "Heavy", Gemini Flash is "Light").
 
 4. **Efficiency Evaluation**:
     * Evaluate the Return on Investment (ROI) by comparing predicted results with costs (time/quota).
