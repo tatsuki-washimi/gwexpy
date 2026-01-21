@@ -15,12 +15,12 @@ description: 登録されているスキル一覧をカテゴリー別に分類�
 
 2. **カテゴリー分類**:
     以下のカテゴリーに従ってスキルを分類します：
-    * **1. 開発・実装**: `add_type`, `extend_gwpy`, `refactor_nb`
-    * **2. 解析・リサーチ**: `analyze_code`, `compare_methods`, `profile`
-    * **3. 品質保証・テスト**: `lint`, `test_code`, `test_notebooks`, `test_gui`, `review_repo`, `check_deps`, `fix_notebook`, `fix_notebook_local`
+    * **1. 開発・実装**: `add_type`, `extend_gwpy`, `refactor_nb`, `visualize_fields`
+    * **2. 解析・リサーチ**: `analyze_code`, `compare_methods`, `profile`, `calc_bode`
+    * **3. 品質保証・テスト**: `lint`, `test_code`, `test_notebooks`, `test_gui`, `review_repo`, `check_deps`, `fix_notebook`, `fix_mypy`
     * **4. ドキュメント**: `build_docs`, `sync_docs`, `make_notebook`
-    * **5. ワークフロー**: `git_commit`, `ignore`, `organize`, `prep_release`, `wrap_up`, `estimate_effort`
-    * **6. サイエンス**: `check_physics`, `calc_bode`, `debug_axes`
+    * **5. ワークフロー**: `git_commit`, `ignore`, `organize`, `prep_release`, `wrap_up`, `wrap_up_gwexpy`, `estimate_effort`, `setup_plan`, `archive_plan`, `archive_work`, `conversation_report`
+    * **6. サイエンス**: `check_physics`, `debug_axes`
     * **7. メタ**: `list_skills`, `suggest_skill`, `suggest_model`, `learn_skill`, `recover_quota`, `refactor_skills`
 
 3. **表示**:
