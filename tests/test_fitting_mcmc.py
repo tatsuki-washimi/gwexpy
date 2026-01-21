@@ -4,9 +4,16 @@ Tests for MCMC functionality with GLS support.
 import numpy as np
 import pytest
 
-# Skip all tests if emcee is not installed
-pytest.importorskip("emcee")
-pytest.importorskip("corner")
+# Skip all tests if optional dependencies are unavailable.
+try:
+    import emcee  # noqa: F401
+except Exception as exc:
+    pytest.skip(f"emcee unavailable: {exc}", allow_module_level=True)
+
+try:
+    import corner  # noqa: F401
+except Exception as exc:
+    pytest.skip(f"corner/arviz unavailable: {exc}", allow_module_level=True)
 
 
 def test_mcmc_with_gls_covariance():

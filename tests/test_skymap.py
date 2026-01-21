@@ -1,5 +1,14 @@
 import numpy as np
 import pytest
+from matplotlib.projections import get_projection_class
+
+try:
+    get_projection_class("astro hours mollweide")
+except Exception as exc:
+    pytest.skip(
+        f"sky map projection unavailable: {exc}",
+        allow_module_level=True,
+    )
 
 from gwexpy.plot import SkyMap
 

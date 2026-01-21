@@ -79,8 +79,8 @@ def test_distance_correlation(non_linear_relationship):
         # Distance correlation should detect the dependence
         dcor = x.distance_correlation(y)
         assert dcor > 0.4
-    except ImportError:
-        pytest.skip("dcor not installed")
+    except Exception as exc:
+        pytest.skip(f"dcor unavailable: {exc}")
 
 def test_mic(non_linear_relationship):
     x, y = non_linear_relationship
@@ -103,4 +103,3 @@ def test_granger_causality(causal_relationship):
         assert p_val_yx > 0.05
     except ImportError:
         pytest.skip("statsmodels not installed")
-

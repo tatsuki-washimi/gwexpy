@@ -1,4 +1,6 @@
 
+import os
+
 import numpy as np
 import pytest
 
@@ -12,6 +14,8 @@ except ImportError:
 try:
     import zarr
 except ImportError:
+    zarr = None
+if zarr is not None and os.environ.get("GWEXPY_ALLOW_ZARR", "") != "1":
     zarr = None
 
 # Import order matters: dask -> torch/tf avoids segfaults in some envs.

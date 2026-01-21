@@ -6,6 +6,13 @@ import pytest
 
 # Skip if optional dependencies are not available
 pytest.importorskip("iminuit")
+try:
+    from gwexpy.fitting import fit_series  # noqa: F401
+except ImportError as exc:
+    pytest.skip(
+        f"gwexpy.fitting optional dependencies unavailable: {exc}",
+        allow_module_level=True,
+    )
 
 
 def test_fit_bootstrap_spectrum_basic():
