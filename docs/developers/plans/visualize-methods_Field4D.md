@@ -35,7 +35,7 @@
 * MVP は `method="nearest"` のみ対応でよい
 * `nearest_index` を呼び `slice_from_index` へ
 
-#### DoD
+### Phase 0.1 DoD
 
 * unit不一致、範囲外、tie-break がテストで固定される
 
@@ -48,7 +48,7 @@
 * `power` は `abs(data)**2`（単位は unit^2 になることに注意）
 * デフォルト：`real`（または `abs`。方針を固定して実装。推奨：time-domainは real、frequency/k-domain は abs 既定でもよいが、最初は一律 real でよい）
 
-#### DoD
+### Phase 0.2 DoD
 
 * 複素入力で mode ごとに数値が一致するテスト
 * `power` の unit の扱いが破綻しない（単位付きQuantityなら unit^2）
@@ -76,7 +76,7 @@
 * planeの2軸は残し、他2軸は length=1 のスライスにする
 * 返り値は Field4D（axis length=1規約を維持）
 
-#### DoD
+### Phase 0.3 DoD
 
 * `extract_points` の返す各時系列の長さが t 軸と一致
 * `slice_map2d` 後に plane 以外の2軸が length=1
@@ -99,7 +99,7 @@
 * pcolormesh 既定（不等間隔に強い）
 * 軸ラベルに unit を付与（例：`x [m]`）
 
-#### DoD
+### Phase 1.1 DoD
 
 * `slice_map2d(...).plot_map2d(...)` が動作する
 * 軸ラベルに unit が含まれる
@@ -112,7 +112,7 @@
 * 内部は `extract_points` を呼ぶのみ
 * `labels` がなければ自動生成
 
-#### DoD
+### Phase 1.2 DoD
 
 * 複数点で line が複数本描画される
 * ラベルが自動で入る（legendはオプションでも可）
@@ -123,7 +123,7 @@
 
 * 内部は `extract_profile` を呼ぶのみ
 
-#### DoD
+### Phase 1.3 DoD
 
 * 指定 axis に沿った1Dプロファイルが描画される
 
@@ -148,7 +148,7 @@
 
 **描画**：差分は `plot_map2d` に流す（`plot_map2d_diff` は不要）
 
-#### DoD
+### Phase 2.1 DoD
 
 * diff/ratio の unit が正しい
 * zscore の baseline 指定が範囲外で例外
@@ -162,7 +162,7 @@
 * 結果は t 軸を length=1 にして返す（時間要約済み）
 * 表示は `plot_map2d` に流用
 
-#### DoD
+### Phase 2.2 DoD
 
 * t_range 指定で正しい期間が使われる
 * statごとに期待値と一致する小テスト
@@ -177,7 +177,7 @@
 * 出力は (t, x) の2Dデータ（最小は numpy array + (t,x)のQuantity）
 * 描画は `plot_map2d` 相当関数に流せる形にする
 
-#### DoD
+### Phase 2.3 DoD
 
 * (t, x) のshapeが期待通り
 * t/x の軸ラベルが描画で正しい

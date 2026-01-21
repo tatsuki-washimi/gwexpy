@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -26,13 +26,13 @@ from .timeseries import TimeSeries
 from .utils import SeriesType
 
 
-class TimeSeriesMatrix(
+class TimeSeriesMatrix(  # type: ignore
     PhaseMethodsMixin,
     TimeSeriesMatrixCoreMixin,
-    TimeSeriesMatrixAnalysisMixin,
+    TimeSeriesMatrixAnalysisMixin,  # type: ignore[misc]
     TimeSeriesMatrixSpectralMixin,
     TimeSeriesMatrixInteropMixin,
-    SeriesMatrix,
+    SeriesMatrix,  # type: ignore[misc]
 ):
     """
     2D Matrix container for multiple TimeSeries objects sharing a common time axis.
@@ -50,7 +50,7 @@ class TimeSeriesMatrix(
     list_class = TimeSeriesList
     series_type = SeriesType.TIME
     default_xunit = "s"
-    default_yunit = None
+    default_yunit: str | u.Unit | None = None
     _default_plot_method = "plot"
 
     def __new__(
@@ -210,7 +210,7 @@ class TimeSeriesMatrix(
 
         obj = super().__new__(cls, data, **kwargs)
 
-        return obj
+        return cast("TimeSeriesMatrix", obj)
 
     def plot(self, **kwargs: Any) -> Any:
         """Plot the matrix data."""

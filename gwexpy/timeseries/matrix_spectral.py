@@ -185,8 +185,8 @@ class TimeSeriesMatrixSpectralMixin:
                 return cast("TimeSeriesMatrix", self).copy(), cast("TimeSeriesMatrix", self).copy()
             return cast("TimeSeriesMatrix", self).copy()
 
-        vals1 = [[None for _ in range(M)] for _ in range(N)]
-        vals2 = [[None for _ in range(M)] for _ in range(N)] if expect_tuple else None
+        vals1: list[list[Any]] = [[None for _ in range(M)] for _ in range(N)]
+        vals2: list[list[Any]] | None = [[None for _ in range(M)] for _ in range(N)] if expect_tuple else None
 
         meta1 = np.empty((N, M), dtype=object)
         meta2 = np.empty((N, M), dtype=object) if expect_tuple else None
@@ -205,7 +205,7 @@ class TimeSeriesMatrixSpectralMixin:
                     assert vals2 is not None
                     assert meta2 is not None
                     r1, r2 = res
-                    vals1[i][j] = np.asarray(r1.value)
+                    cast(list[list[Any]], vals1)[i][j] = np.asarray(r1.value)
                     meta1[i, j] = MetaData(
                         unit=str(r1.unit), name=r1.name, channel=r1.channel
                     )
@@ -215,7 +215,7 @@ class TimeSeriesMatrixSpectralMixin:
                         else r1.value.dtype
                     )
 
-                    vals2[i][j] = np.asarray(r2.value)
+                    cast(list[list[Any]], vals2)[i][j] = np.asarray(r2.value)
                     meta2[i, j] = MetaData(
                         unit=str(r2.unit), name=r2.name, channel=r2.channel
                     )
@@ -228,7 +228,7 @@ class TimeSeriesMatrixSpectralMixin:
                     ax_infos.append(_extract_axis_info(r1))
                 else:
                     # Single return
-                    vals1[i][j] = np.asarray(res.value)
+                    cast(list[list[Any]], vals1)[i][j] = np.asarray(res.value)
                     meta1[i, j] = MetaData(
                         unit=str(res.unit), name=res.name, channel=res.channel
                     )

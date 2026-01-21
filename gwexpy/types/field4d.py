@@ -1137,6 +1137,7 @@ class Field4D(Array4D):
         >>> fig, ax = field.plot_map2d('xy', at={'t': 0.5 * u.s, 'z': 0.0 * u.m})
         """
         import matplotlib.pyplot as plt
+
         from gwexpy.plot._coord import select_value
 
         # Get the 2D slice
@@ -1322,6 +1323,7 @@ class Field4D(Array4D):
         ... )
         """
         import matplotlib.pyplot as plt
+
         from gwexpy.plot._coord import select_value
 
         axis_index, values = self.extract_profile(axis, at)
@@ -1453,6 +1455,7 @@ class Field4D(Array4D):
         >>> zscore_field = field.zscore(baseline_t=(0 * u.s, 1 * u.s))
         """
         from astropy import units as u
+
         from gwexpy.plot._coord import nearest_index
 
         if self._axis0_domain != "time":
@@ -1619,7 +1622,7 @@ class Field4D(Array4D):
         >>> from astropy import units as u
         >>> t, x, data = field.time_space_map('x', at={'y': 0 * u.m, 'z': 0 * u.m})
         """
-        from gwexpy.plot._coord import nearest_index, slice_from_index, select_value
+        from gwexpy.plot._coord import nearest_index, select_value, slice_from_index
 
         # Map axis name to integer index
         axis_int = self._get_axis_index(axis)

@@ -61,7 +61,8 @@ z = np.array([0]) * u.m  # 2D case
 
 ## 4. 検証計画
 
-- [x] **T5**: 分割された各ノートブックを `jupyter nbconvert --execute` で一括実行し、全セルがエラーなく終了すること。✅ PASSED
+* [x] **T5**: 分割された各ノートブックを `jupyter nbconvert --execute` で一括実行し、全セルがエラーなく終了すること。✅ PASSED
+
 * [x] **T6**: FFT不変量チェックセルの Assertion が全てパスすること。✅ PASSED
 * [x] **T7**: 静止画スクリプトがエラーなく `.png` を出力すること。✅ PASSED
 

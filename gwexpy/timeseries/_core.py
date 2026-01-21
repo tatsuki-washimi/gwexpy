@@ -150,16 +150,18 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
                 dist = int(dist.to("s").value * fs)
 
             # If width is quantity (or tuple of quantities)
-            if wid is not None and np.iterable(wid):
+            if wid is not None and isinstance(wid, Iterable) and not isinstance(wid, (str, bytes)):
                 new_wid: list[float] = []
                 for w in wid:
                     if hasattr(w, "to"):
-                        new_wid.append(w.to("s").value * fs)
+                        new_wid.append(float(w.to("s").value * fs))
+                    elif hasattr(w, "value"):
+                        new_wid.append(float(w.value))
                     else:
-                        new_wid.append(w)
+                        new_wid.append(float(w))  # type: ignore[arg-type]
                 wid = tuple(new_wid) if isinstance(wid, tuple) else new_wid
             elif wid is not None and hasattr(wid, "to"):
-                wid = wid.to("s").value * fs
+                wid = float(wid.to("s").value * fs)
 
         # Call scipy
         peaks_indices, props = find_peaks(

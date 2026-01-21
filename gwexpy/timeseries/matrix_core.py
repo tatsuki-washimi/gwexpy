@@ -123,7 +123,7 @@ class TimeSeriesMatrixCoreMixin:
 
         dtype = None
         axis_infos = []
-        values = [[None for _ in range(M)] for _ in range(N)]
+        values: list[list[np.ndarray | None]] = [[None for _ in range(M)] for _ in range(N)]
         meta_array = np.empty((N, M), dtype=object)
 
         for i in range(N):
@@ -221,7 +221,7 @@ class TimeSeriesMatrixCoreMixin:
         get_other = self._coerce_other_timeseries_input(other, method_name)
 
         N, M, _ = self.shape
-        values = [[None for _ in range(M)] for _ in range(N)]
+        values: list[list[np.ndarray | None]] = [[None for _ in range(M)] for _ in range(N)]
         meta_array = np.empty((N, M), dtype=object)
         freq_infos = []
         epochs = []
@@ -293,7 +293,7 @@ class TimeSeriesMatrixCoreMixin:
             )
 
         N, M, _ = self.shape
-        values = [[None for _ in range(M)] for _ in range(N)]
+        values: list[list[np.ndarray | None]] = [[None for _ in range(M)] for _ in range(N)]
         meta_array = np.empty((N, M), dtype=object)
         freq_infos = []
         epochs = []
@@ -367,7 +367,7 @@ class TimeSeriesMatrixCoreMixin:
         if N == 0 or M == 0:
             return SpectrogramMatrix(np.empty((N, M, 0, 0)))
 
-        values = [[None for _ in range(M)] for _ in range(N)]
+        values: list[list[np.ndarray | None]] = [[None for _ in range(M)] for _ in range(N)]
         meta_array = np.empty((N, M), dtype=object)
         time_infos = []
         freq_infos = []

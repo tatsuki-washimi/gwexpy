@@ -21,7 +21,7 @@ __all__ = [
 ]
 
 
-def nearest_index(axis_index: "Quantity", value: "Quantity") -> int:
+def nearest_index(axis_index: Quantity, value: Quantity) -> int:
     """Find the nearest index for a given coordinate value.
 
     Parameters
@@ -130,8 +130,8 @@ def slice_from_index(i: int) -> slice:
 
 
 def slice_from_value(
-    axis_index: "Quantity",
-    value: "Quantity",
+    axis_index: Quantity,
+    value: Quantity,
     method: str = "nearest",
 ) -> slice:
     """Convert a coordinate value to a dimension-preserving slice.
@@ -174,9 +174,9 @@ def slice_from_value(
 
 
 def select_value(
-    data: np.ndarray | "Quantity",
+    data: np.ndarray | Quantity,
     mode: str = "real",
-) -> np.ndarray | "Quantity":
+) -> np.ndarray | Quantity:
     """Extract real/imag/abs/angle/power component from potentially complex data.
 
     This function provides a unified interface for extracting scalar
@@ -222,13 +222,14 @@ def select_value(
         raise ValueError(f"Invalid mode '{mode}'. Must be one of {valid_modes}.")
 
     # Handle Quantity
-    is_quantity = isinstance(data, u.Quantity)
-    if is_quantity:
+    if isinstance(data, u.Quantity):
         values = data.value
         unit = data.unit
+        is_quantity = True
     else:
         values = np.asarray(data)
         unit = None
+        is_quantity = False
 
     # Extract component
     if mode == "real":
