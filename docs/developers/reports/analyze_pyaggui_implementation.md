@@ -47,9 +47,45 @@ This report summarizes the UI structure, functionality, and simulation logic imp
     * Uses `SpectralAccumulator` for data accumulation.
     * Includes logic to generate and inject simulation (Excitation) signals in real-time, not just acquired data.
 
+<<<<<<< HEAD
 # 3. UI Component Details
 
 ## 3.1 Tab Configuration (`gwexpy/gui/ui/tabs.py`)
+=======
+# 3. バックエンドロジック詳細
+
+## 3.1 計算エンジン (`gwexpy/gui/engine.py`)
+
+オフライン解析やワンショット計算を担当するコアモジュール。
+
+* **gwpyラッパー**: ユーザー設定（BW, Avg, Window）を `gwpy` 互換のパラメータ（FFT長, オーバーラップ秒数）に変換する `_get_fft_kwargs` を実装。
+* **計算機能**:
+  * `compute` メソッドにて、ASD/PSD, Coherence, Squared Coherence, Transfer Function, Cross Spectral Density, Spectrogram の計算を一括処理。
+  * `gain` パラメータの適用や、データ長不足時のスキップ処理も実装済み。
+
+## 3.2 ストリーミング処理 (`gwexpy/gui/streaming.py`)
+
+リアルタイム解析のための中核クラス `SpectralAccumulator` を実装。
+
+* **バッファリング**: 受信パケットのタイムスタンプに基づくアライメントと、FFT長を満たすまでのデータ蓄積 (`deque` 利用)。
+* **平均化ロジック**:
+  * **Fixed**: 指定回数分の平均で停止。
+  * **Infinite / Accumulative**: 累積移動平均。
+  * **Exponential**: 指数移動平均 (EMA)。内部状態 (`self.state`) を保持して逐次更新。
+* **スペクトログラム履歴**: 時間・周波数・強度の履歴をリングバッファで保持し、リアルタイムのウォーターフォール表示をサポート。
+
+## 3.3 チャンネルブラウザ (`gwexpy/gui/ui/channel_browser.py`)
+
+* **NDS連携**: `ChannelListWorker` スレッドを用いてお、バックグラウンドでチャンネルリストを取得・キャッシュ。
+* **GUI機能**:
+  * **Search**: グロブパターン検索、Slow/Fastフィルタ。
+  * **Tree**: チャンネル名（`:` や `-` 区切り）解析による階層ツリー表示。
+  * **UX**: 16Hz以下のチャンネルを緑色、高速チャンネルを青色で表示するDTT独自の配色を再現。
+
+# 4. UIコンポーネント詳細
+
+## 4.1 タブ構成 (`gwexpy/gui/ui/tabs.py`)
+>>>>>>> da2e212825e70e47a730bf274f44fff243e0f1e5
 
 Detailed configuration screens that mimic the DTT UI are constructed.
 
@@ -66,7 +102,11 @@ Detailed configuration screens that mimic the DTT UI are constructed.
     * Graph area split into top and bottom (`pg.PlotWidget`).
     * The `GraphPanel` (detailed settings) that should be placed on the right side of the screen is implemented as being stored in the left panel of the `QSplitter`.
 
+<<<<<<< HEAD
 ## 3.2 Graph Panel (`gwexpy/gui/ui/graph_panel.py`)
+=======
+## 4.2 グラフパネル (`gwexpy/gui/ui/graph_panel.py`)
+>>>>>>> da2e212825e70e47a730bf274f44fff243e0f1e5
 
 Custom widget for configuring detailed settings per graph. Controls `pyqtgraph` functionality from the UI.
 
@@ -76,7 +116,11 @@ Custom widget for configuring detailed settings per graph. Controls `pyqtgraph` 
 * **Cursor Tab**: Coordinate display and delta measurement function for 2 cursors (vertical, horizontal, cross). Snap function (attraction to data points) is also implemented.
 * **Style Tab**: Graph title, font, margin settings.
 
+<<<<<<< HEAD
 # 4. Simulation Logic (`gwexpy/gui/excitation/generator.py`)
+=======
+# 6. シミュレーションロジック (`gwexpy/gui/excitation/generator.py`)
+>>>>>>> da2e212825e70e47a730bf274f44fff243e0f1e5
 
 * **Role**: Generates waveform data corresponding to a specified time array based on `GeneratorParams`.
 * **Implemented Waveforms**:
@@ -87,6 +131,7 @@ Custom widget for configuring detailed settings per graph. Controls `pyqtgraph` 
 * **Features**:
   * Maintains filter internal state (`zi`) between frames through state retention (`filter_states`), achieving continuous filtering output (corresponding to NDS chunk processing).
 
+<<<<<<< HEAD
 # 5. Analysis Summary
 
 * **Completeness**: High. Most of DTT's main GUI functionality (parameter settings, multiple tabs, detailed graph control) has already been re-implemented in Python/Qt.
@@ -98,3 +143,18 @@ Custom widget for configuring detailed settings per graph. Controls `pyqtgraph` 
   * Based on `pyqtgraph`, so rendering performance for large amounts of data is also considered.
 
 **Conclusion**: `pyaggui` has gone beyond a mere prototype and is in a state where it can function as the foundation for a practical diagnostic tool. Future challenges will be complete integration with the actual DTT kernel logic (advanced analysis calculations in the `Result` tab, etc.) and edge case bug fixes.
+=======
+# 7. 分析まとめ
+
+* **完成度**: **極めて高い (100% Analysis Complete)**。
+  * UI層だけでなく、バックエンドの計算エンジン (`engine.py`)、ストリーミング蓄積 (`streaming.py`)、データIO層まで一貫して実装されていることが確認された。
+  * 特にストリーミング処理における「指数平均」や「バッファリング」の実装は、リアルタイム診断ツールとしての要件を十分に満たしている。
+* **DTTとの互換性**:
+  * XMLデータのインポートロジック (`open_file`) があり、既存のDTT設定ファイルの読み込みを意識している。
+  * チャンネルブラウザの挙動や各種パラメータ（BW, Avg, Window）もDTTに準拠している。
+* **拡張性**:
+  * NDS接続だけでなく、シミュレーションモードやPCオーディオ入力など、DTTにはない（または使いにくい）機能も統合されている。
+  * `pyqtgraph` ベースのため、大量データの描画パフォーマンスも考慮されている。
+
+**結論**: `pyaggui` はプロトタイプではなく、実用段階にあるアプリケーションである。主要な機能欠損は見当たらず、DTT（`diaggui`）の Python 移植版として機能的にほぼ完成していると判断できる。
+>>>>>>> da2e212825e70e47a730bf274f44fff243e0f1e5

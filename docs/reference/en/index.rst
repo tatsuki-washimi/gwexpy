@@ -20,9 +20,9 @@ Detailed Reference
    Array2D
    Plane2D
    Array4D
-   Field4D
-   Field4DList
-   Field4DDict
+   ScalarField
+   FieldList
+   FieldDict
    TimePlaneTransform
    Plot
    Noise

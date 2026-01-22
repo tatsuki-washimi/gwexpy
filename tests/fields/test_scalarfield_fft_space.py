@@ -1,26 +1,26 @@
-"""Tests for Field4D spatial FFT - two-sided signed FFT with angular wavenumber."""
+"""Tests for ScalarField spatial FFT - two-sided signed FFT with angular wavenumber."""
 
 import numpy as np
 import pytest
 from astropy import units as u
 from numpy.testing import assert_allclose
 
-from gwexpy.types import Field4D
+from gwexpy.fields import ScalarField
 
 
-class TestField4DFftSpaceBasic:
+class TestScalarFieldFftSpaceBasic:
     """Test basic fft_space functionality."""
 
     @pytest.fixture
     def real_space_field(self):
-        """Create a real-space Field4D."""
+        """Create a real-space ScalarField."""
         np.random.seed(42)
         data = np.random.randn(10, 16, 16, 16)
         t = np.arange(10) * 0.1 * u.s
         x = np.arange(16) * 0.5 * u.m
         y = np.arange(16) * 0.5 * u.m
         z = np.arange(16) * 0.5 * u.m
-        return Field4D(
+        return ScalarField(
             data,
             unit=u.V,
             axis0=t,
@@ -36,7 +36,7 @@ class TestField4DFftSpaceBasic:
         """Test basic fft_space execution."""
         result = real_space_field.fft_space()
 
-        assert isinstance(result, Field4D)
+        assert isinstance(result, ScalarField)
 
     def test_fft_space_all_axes(self, real_space_field):
         """Test fft_space on all spatial axes."""
@@ -87,13 +87,13 @@ class TestField4DFftSpaceBasic:
         assert result.axis0_domain == "time"
 
 
-class TestField4DFftSpaceWavenumber:
+class TestScalarFieldFftSpaceWavenumber:
     """Test angular wavenumber generation."""
 
     def test_k_axis_contains_negative_and_positive(self):
         """Test that k axis contains both negative and positive values."""
         data = np.random.randn(4, 16, 16, 16)
-        field = Field4D(
+        field = ScalarField(
             data,
             axis1=np.arange(16) * 0.5 * u.m,
             axis2=np.arange(16) * 0.5 * u.m,
@@ -112,7 +112,7 @@ class TestField4DFftSpaceWavenumber:
         n = 16
         dx = 0.5  # m
         data = np.random.randn(4, n, n, n)
-        field = Field4D(
+        field = ScalarField(
             data,
             axis1=np.arange(n) * dx * u.m,
             axis2=np.arange(n) * dx * u.m,
@@ -129,7 +129,7 @@ class TestField4DFftSpaceWavenumber:
     def test_k_axis_unit(self):
         """Test k axis unit is 1/m (rad/m)."""
         data = np.random.randn(4, 8, 8, 8)
-        field = Field4D(
+        field = ScalarField(
             data,
             axis1=np.arange(8) * 1.0 * u.m,
             axis2=np.arange(8) * 1.0 * u.m,
@@ -142,13 +142,13 @@ class TestField4DFftSpaceWavenumber:
         assert result._axis1_index.unit == (1 / u.m)
 
 
-class TestField4DFftSpaceErrors:
+class TestScalarFieldFftSpaceErrors:
     """Test fft_space error conditions."""
 
     def test_fft_space_on_k_domain_raises(self):
         """Test fft_space raises if axis already in k domain."""
         data = np.random.randn(4, 8, 8, 8)
-        field = Field4D(
+        field = ScalarField(
             data,
             axis_names=["t", "kx", "y", "z"],
             space_domain={"kx": "k", "y": "real", "z": "real"},
@@ -159,7 +159,7 @@ class TestField4DFftSpaceErrors:
 
     def test_fft_space_on_axis0_raises(self):
         """Test fft_space raises if axis 0 specified."""
-        field = Field4D(np.zeros((10, 4, 4, 4)), axis_names=["t", "x", "y", "z"])
+        field = ScalarField(np.zeros((10, 4, 4, 4)), axis_names=["t", "x", "y", "z"])
 
         with pytest.raises(ValueError, match="Cannot use fft_space on axis 0"):
             field.fft_space(axes=["t"])
@@ -169,7 +169,7 @@ class TestField4DFftSpaceErrors:
         # Non-uniform x axis
         x = np.array([0, 1, 3, 6, 10, 15, 21, 28]) * u.m  # non-uniform
         data = np.random.randn(4, 8, 4, 4)
-        field = Field4D(
+        field = ScalarField(
             data,
             axis1=x,
             axis2=np.arange(4) * 1.0 * u.m,
@@ -183,7 +183,7 @@ class TestField4DFftSpaceErrors:
 
     def test_fft_space_no_axes_raises(self):
         """Test fft_space raises if no axes to transform."""
-        field = Field4D(
+        field = ScalarField(
             np.zeros((4, 8, 8, 8)),
             axis_names=["t", "kx", "ky", "kz"],
             space_domain="k",
@@ -193,14 +193,14 @@ class TestField4DFftSpaceErrors:
             field.fft_space()
 
 
-class TestField4DIfftSpaceBasic:
+class TestScalarFieldIfftSpaceBasic:
     """Test basic ifft_space functionality."""
 
     @pytest.fixture
     def k_space_field(self):
-        """Create a k-space Field4D."""
+        """Create a k-space ScalarField."""
         data = np.random.randn(4, 16, 16, 16)
-        field = Field4D(
+        field = ScalarField(
             data,
             axis1=np.arange(16) * 0.5 * u.m,
             axis2=np.arange(16) * 0.5 * u.m,
@@ -214,7 +214,7 @@ class TestField4DIfftSpaceBasic:
         """Test basic ifft_space execution."""
         result = k_space_field.ifft_space()
 
-        assert isinstance(result, Field4D)
+        assert isinstance(result, ScalarField)
 
     def test_ifft_space_domain_transition(self, k_space_field):
         """Test ifft_space changes domain k -> real."""
@@ -231,7 +231,7 @@ class TestField4DIfftSpaceBasic:
         assert result.axis_names == ("t", "x", "y", "z")
 
 
-class TestField4DFftIfftSpaceReversibility:
+class TestScalarFieldFftIfftSpaceReversibility:
     """Test spatial FFT/IFFT reversibility."""
 
     def test_ifft_fft_space_reversible(self):
@@ -240,7 +240,7 @@ class TestField4DFftIfftSpaceReversibility:
         data = np.random.randn(4, 16, 16, 16)
         x = np.arange(16) * 0.5 * u.m
 
-        original = Field4D(
+        original = ScalarField(
             data,
             unit=u.V,
             axis1=x,
@@ -261,7 +261,7 @@ class TestField4DFftIfftSpaceReversibility:
         np.random.seed(789)
         data = np.random.randn(4, 8, 8, 8)
 
-        original = Field4D(
+        original = ScalarField(
             data,
             axis1=np.arange(8) * 1.0 * u.m,
             axis2=np.arange(8) * 1.0 * u.m,
@@ -277,12 +277,12 @@ class TestField4DFftIfftSpaceReversibility:
         assert_allclose(recovered.value, original.value, rtol=1e-10)
 
 
-class TestField4DIfftSpaceErrors:
+class TestScalarFieldIfftSpaceErrors:
     """Test ifft_space error conditions."""
 
     def test_ifft_space_on_real_domain_raises(self):
         """Test ifft_space raises if axis is in real domain."""
-        field = Field4D(
+        field = ScalarField(
             np.zeros((4, 8, 8, 8)),
             axis_names=["t", "x", "y", "z"],
             space_domain="real",
@@ -292,13 +292,13 @@ class TestField4DIfftSpaceErrors:
             field.ifft_space(axes=["x"])
 
 
-class TestField4DWavelength:
+class TestScalarFieldWavelength:
     """Test wavelength computation from k-space."""
 
     def test_wavelength_basic(self):
         """Test wavelength = 2π / |k|."""
         data = np.zeros((4, 8, 8, 8))
-        field = Field4D(
+        field = ScalarField(
             data,
             axis1=np.arange(8) * 1.0 * u.m,
             axis2=np.arange(8) * 1.0 * u.m,
@@ -318,7 +318,7 @@ class TestField4DWavelength:
     def test_wavelength_zero_k_is_inf(self):
         """Test wavelength is inf for k=0."""
         data = np.zeros((4, 8, 8, 8))
-        field = Field4D(
+        field = ScalarField(
             data,
             axis1=np.arange(8) * 1.0 * u.m,
             axis2=np.arange(8) * 1.0 * u.m,
@@ -339,7 +339,7 @@ class TestField4DWavelength:
     def test_wavelength_unit(self):
         """Test wavelength unit is correct."""
         data = np.zeros((4, 8, 8, 8))
-        field = Field4D(
+        field = ScalarField(
             data,
             axis1=np.arange(8) * 1.0 * u.m,
             axis2=np.arange(8) * 1.0 * u.m,
@@ -356,7 +356,7 @@ class TestField4DWavelength:
 
     def test_wavelength_real_domain_raises(self):
         """Test wavelength raises if axis is in real domain."""
-        field = Field4D(
+        field = ScalarField(
             np.zeros((4, 8, 8, 8)),
             axis_names=["t", "x", "y", "z"],
             space_domain="real",

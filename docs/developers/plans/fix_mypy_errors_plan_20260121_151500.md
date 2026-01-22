@@ -22,7 +22,7 @@
 ### [前処理・検証スクリプト]
 
 - `gwexpy/timeseries/preprocess.py`: `_ffill_numpy` 等における `None` 代入の可能性を排除するためのアサーションを追加しました。
-- `scripts/verify_field4d_physics.py`: 軸インデックスが `None` の場合に `.unit` へアクセスしないようチェックを追加しました。
+- `scripts/verify_scalarfield_physics.py`: 軸インデックスが `None` の場合に `.unit` へアクセスしないようチェックを追加しました。
 
 ### [ドキュメントとメタデータ]
 
@@ -36,4 +36,4 @@
 ## 検証計画
 
 - `mypy` による該当ファイルのチェック。
-- `pytest tests/timeseries` および `python3 scripts/verify_field4d_physics.py` による回帰テストの実行。
+- `pytest tests/timeseries` および `python3 scripts/verify_scalarfield_physics.py` による回帰テストの実行。

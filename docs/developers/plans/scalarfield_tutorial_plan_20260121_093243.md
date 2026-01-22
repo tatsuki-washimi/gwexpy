@@ -1,12 +1,12 @@
-# Field4D チュートリアルノートブック作成計画 (2026-01-21 09:32:43)
+# ScalarField チュートリアルノートブック作成計画 (2026-01-21 09:32:43)
 
-この計画は、`Field4D` クラスとそのコレクションのためのチュートリアルノートブックの作成について概説します。このノートブックは、ユーザーに `gwexpy` における 4D フィールド処理のコア機能を案内します。
+この計画は、`ScalarField` クラスとそのコレクションのためのチュートリアルノートブックの作成について概説します。このノートブックは、ユーザーに `gwexpy` における 4D フィールド処理のコア機能を案内します。
 
 ## 提案される変更点
 
 ### ドキュメント/例
 
-#### [NEW] [intro_Field4D.ipynb](file:///home/washimi/work/gwexpy/examples/tutorials/intro_Field4D.ipynb)
+#### [NEW] [intro_ScalarField.ipynb](file:///home/washimi/work/gwexpy/examples/tutorials/intro_ScalarField.ipynb)
 
 以下の内容をカバーする新しい Jupyter ノートブック：
 
@@ -14,7 +14,7 @@
 - 4D 構造を維持するスライシング。
 - 時間-周波数変換（軸 0）。
 - 実空間-K 空間変換（空間軸）。
-- `Field4DList` と `Field4DDict` のバッチ操作。
+- `FieldList` と `FieldDict` のバッチ操作。
 
 ## 使用モデルとリソース最適化
 

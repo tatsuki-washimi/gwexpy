@@ -1,20 +1,22 @@
-"""4D Field with domain states and FFT operations."""
+"""4D ScalarField with domain states and FFT operations."""
+
+from typing import Any
 
 import numpy as np
 
-from .array4d import Array4D
+from .base import FieldBase
 
-__all__ = ["Field4D"]
+__all__ = ["ScalarField"]
 
 
-class Field4D(Array4D):
+class ScalarField(FieldBase):
     """4D Field with domain states and FFT operations.
 
     This class extends :class:`Array4D` to represent physical fields that
     can exist in different domains (time/frequency for axis 0, real/k-space
     for spatial axes 1-3).
 
-    **Key feature**: All indexing operations return a Field4D, maintaining
+    **Key feature**: All indexing operations return a ScalarField, maintaining
     4D structure. Integer indices result in axes with length 1 rather than
     being dropped.
 
@@ -53,142 +55,27 @@ class Field4D(Array4D):
     --------
     >>> import numpy as np
     >>> from astropy import units as u
-    >>> from gwexpy.types import Field4D
+    >>> from gwexpy.fields import ScalarField
     >>> data = np.random.randn(100, 32, 32, 32)
     >>> times = np.arange(100) * 0.01 * u.s
     >>> x = np.arange(32) * 1.0 * u.m
-    >>> field = Field4D(data, axis0=times, axis1=x, axis2=x, axis3=x,
+    >>> field = ScalarField(data, axis0=times, axis1=x, axis2=x, axis3=x,
     ...                 axis_names=['t', 'x', 'y', 'z'])
     """
 
-    _metadata_slots = Array4D._metadata_slots + (
-        "_axis0_domain",
-        "_space_domains",
-        "_axis0_offset",  # Preserved during fft_time for ifft_time reconstruction
-    )
-
-    # Axis name conventions
-    _TIME_AXIS_NAME = "t"
-    _FREQ_AXIS_NAME = "f"
-    _REAL_AXIS_NAMES = ("x", "y", "z")
-    _K_AXIS_NAMES = ("kx", "ky", "kz")
-
-    def __new__(
-        cls,
-        data,
-        unit=None,
-        axis0=None,
-        axis1=None,
-        axis2=None,
-        axis3=None,
-        axis_names=None,
-        axis0_domain="time",
-        space_domain="real",
-        **kwargs,
-    ):
-        # Set default axis names based on domain
-        if axis_names is None:
-            if axis0_domain == "time":
-                time_name = cls._TIME_AXIS_NAME
-            else:
-                time_name = cls._FREQ_AXIS_NAME
-
-            if isinstance(space_domain, dict):
-                # Derive names from domain dict
-                space_names = ["x", "y", "z"]  # defaults
-            elif space_domain == "k":
-                space_names = list(cls._K_AXIS_NAMES)
-            else:
-                space_names = list(cls._REAL_AXIS_NAMES)
-            axis_names = [time_name] + space_names
-
-        obj = super().__new__(
-            cls,
-            data,
-            unit=unit,
-            axis0=axis0,
-            axis1=axis1,
-            axis2=axis2,
-            axis3=axis3,
-            axis_names=axis_names,
-            **kwargs,
-        )
-
-        # Set domain states
-        if axis0_domain not in ("time", "frequency"):
-            raise ValueError(
-                f"axis0_domain must be 'time' or 'frequency', got '{axis0_domain}'"
-            )
-        obj._axis0_domain = axis0_domain
-
-        # Handle space_domain: str -> all same, dict -> per-axis
-        if isinstance(space_domain, str):
-            if space_domain not in ("real", "k"):
-                raise ValueError(
-                    f"space_domain must be 'real' or 'k', got '{space_domain}'"
-                )
-            obj._space_domains = {
-                obj._axis1_name: space_domain,
-                obj._axis2_name: space_domain,
-                obj._axis3_name: space_domain,
-            }
-        elif isinstance(space_domain, dict):
-            # Validate dict values
-            for name, dom in space_domain.items():
-                if dom not in ("real", "k"):
-                    raise ValueError(
-                        f"space_domain values must be 'real' or 'k', "
-                        f"got '{dom}' for '{name}'"
-                    )
-            obj._space_domains = dict(space_domain)
-        else:
-            raise TypeError(
-                f"space_domain must be str or dict, got {type(space_domain)}"
-            )
-
-        return obj
-
-    def __array_finalize__(self, obj):
-        super().__array_finalize__(obj)
-        if obj is None:
-            return
-
-        if getattr(self, "_axis0_domain", None) is None:
-            self._axis0_domain = getattr(obj, "_axis0_domain", "time")
-
-        if getattr(self, "_space_domains", None) is None:
-            parent_domains = getattr(obj, "_space_domains", None)
-            if parent_domains is not None:
-                self._space_domains = dict(parent_domains)
-            else:
-                # Default all to real
-                self._space_domains = {
-                    self._axis1_name: "real",
-                    self._axis2_name: "real",
-                    self._axis3_name: "real",
-                }
-
-        if getattr(self, "_axis0_offset", None) is None:
-            self._axis0_offset = getattr(obj, "_axis0_offset", None)
-
-    @property
-    def axis0_domain(self):
-        """Domain of axis 0: 'time' or 'frequency'."""
-        return self._axis0_domain
-
-    @property
-    def space_domains(self):
-        """Mapping of spatial axis names to domains."""
-        return dict(self._space_domains)
+    _axis0_index: Any
+    _axis1_index: Any
+    _axis2_index: Any
+    _axis3_index: Any
 
     def __getitem__(self, item):
-        """Get item, always returning Field4D (4D maintained).
+        """Get item, always returning ScalarField (4D maintained).
 
         Integer indices are converted to length-1 slices to maintain
         4D structure.
         """
         forced_item = self._force_4d_item(item)
-        return self._getitem_field4d(forced_item)
+        return self._getitem_scalarfield(forced_item)
 
     def _force_4d_item(self, item):
         """Convert int indices to slice(i, i+1) to maintain 4D."""
@@ -235,8 +122,8 @@ class Field4D(Array4D):
 
         return tuple(result)
 
-    def _getitem_field4d(self, item):
-        """Perform getitem with Field4D reconstruction.
+    def _getitem_scalarfield(self, item):
+        """Perform getitem with ScalarField reconstruction.
 
         item should already be normalized (all slices, length 4).
         """
@@ -279,7 +166,7 @@ class Field4D(Array4D):
             else:
                 new_space_domains[name] = "real"
 
-        return Field4D(
+        return ScalarField(
             value,
             unit=unit,
             axis_names=[n for n, _ in new_axes],
@@ -294,9 +181,9 @@ class Field4D(Array4D):
         )
 
     def _isel_tuple(self, item_tuple):
-        """Internal isel using Field4D getitem logic."""
+        """Internal isel using ScalarField getitem logic."""
         forced_item = self._force_4d_item(item_tuple)
-        return self._getitem_field4d(forced_item)
+        return self._getitem_scalarfield(forced_item)
 
     # =========================================================================
     # Time FFT (axis=0, GWpy TimeSeries.fft compatible)
@@ -325,7 +212,7 @@ class Field4D(Array4D):
                 f"got length {len(axis_index)} for axis '{axis_name}'"
             )
         # Check regularity using AxisDescriptor
-        from .axis import AxisDescriptor
+        from ..types.axis import AxisDescriptor
         ax_desc = AxisDescriptor(axis_name, axis_index)
         if not ax_desc.regular:
             raise ValueError(
@@ -347,7 +234,7 @@ class Field4D(Array4D):
 
         Returns
         -------
-        Field4D
+        ScalarField
             Transformed field with ``axis0_domain='frequency'``.
 
         Raises
@@ -407,7 +294,7 @@ class Field4D(Array4D):
         freqs_value = np.fft.rfftfreq(nfft, d=dt_value)
         freqs = freqs_value * (1 / dt_unit)
 
-        result = Field4D(
+        result = ScalarField(
             dft,
             unit=self.unit,
             axis0=freqs,
@@ -425,6 +312,7 @@ class Field4D(Array4D):
         )
         # Store the original time offset in metadata
         result._axis0_offset = t0
+        result._validate_domain_units()
         return result
 
     def ifft_time(self, nout=None):
@@ -441,7 +329,7 @@ class Field4D(Array4D):
 
         Returns
         -------
-        Field4D
+        ScalarField
             Transformed field with ``axis0_domain='time'``.
 
         Raises
@@ -496,7 +384,7 @@ class Field4D(Array4D):
         else:
             times = np.arange(nout) * dt_value * dt_unit
 
-        return Field4D(
+        result = ScalarField(
             dift,
             unit=self.unit,
             axis0=times,
@@ -512,6 +400,8 @@ class Field4D(Array4D):
             axis0_domain="time",
             space_domain=self._space_domains,
         )
+        result._validate_domain_units()
+        return result
 
     # =========================================================================
     # Spatial FFT (axes 1-3, two-sided signed FFT)
@@ -533,7 +423,7 @@ class Field4D(Array4D):
 
         Returns
         -------
-        Field4D
+        ScalarField
             Transformed field with specified axes in 'k' domain.
 
         Raises
@@ -614,8 +504,13 @@ class Field4D(Array4D):
         for ax_name, ax_int in zip(axes, target_axes_int):
             ax_desc = self.axis(ax_name)
             # Use signed delta to preserve axis direction
-            dx_value = ax_desc.delta.value  # Already signed from diff
-            dx_unit = ax_desc.delta.unit
+            delta = ax_desc.delta
+            if delta is None:
+                raise ValueError(
+                    f"Axis '{ax_name}' does not have a defined spacing (delta)"
+                )
+            dx_value = delta.value  # Already signed from diff
+            dx_unit = delta.unit
 
             npts = dft.shape[ax_int]
 
@@ -636,7 +531,7 @@ class Field4D(Array4D):
             del new_space_domains[ax_name]
             new_space_domains[new_name] = "k"
 
-        return Field4D(
+        result = ScalarField(
             dft,
             unit=self.unit,
             axis0=new_indices[0],
@@ -647,6 +542,8 @@ class Field4D(Array4D):
             axis0_domain=self._axis0_domain,
             space_domain=new_space_domains,
         )
+        result._validate_domain_units()
+        return result
 
     def ifft_space(self, axes=None, n=None):
         """Compute inverse FFT along k-space axes.
@@ -661,7 +558,7 @@ class Field4D(Array4D):
 
         Returns
         -------
-        Field4D
+        ScalarField
             Transformed field with specified axes in 'real' domain.
 
         Raises
@@ -752,7 +649,7 @@ class Field4D(Array4D):
             del new_space_domains[ax_name]
             new_space_domains[real_name] = "real"
 
-        return Field4D(
+        result = ScalarField(
             dift,
             unit=self.unit,
             axis0=new_indices[0],
@@ -763,6 +660,8 @@ class Field4D(Array4D):
             axis0_domain=self._axis0_domain,
             space_domain=new_space_domains,
         )
+        result._validate_domain_units()
+        return result
 
     def wavelength(self, axis):
         """Compute wavelength from wavenumber axis.
@@ -996,8 +895,8 @@ class Field4D(Array4D):
 
         Returns
         -------
-        Field4D
-            A Field4D with the non-plane axes having length=1.
+        ScalarField
+            A ScalarField with the non-plane axes having length=1.
 
         Raises
         ------
@@ -1357,11 +1256,11 @@ class Field4D(Array4D):
     # =========================================================================
 
     def diff(self, other, mode="diff"):
-        """Compute difference or ratio between two Field4D objects.
+        """Compute difference or ratio between two ScalarField objects.
 
         Parameters
         ----------
-        other : Field4D
+        other : ScalarField
             The field to compare against.
         mode : str, optional
             Comparison mode:
@@ -1372,7 +1271,7 @@ class Field4D(Array4D):
 
         Returns
         -------
-        Field4D
+        ScalarField
             Result field. For 'diff', unit is same as input.
             For 'ratio' and 'percent', unit is dimensionless.
 
@@ -1413,7 +1312,7 @@ class Field4D(Array4D):
         else:
             raise ValueError(f"Invalid mode '{mode}'")
 
-        return Field4D(
+        return ScalarField(
             result_data,
             unit=result_unit,
             axis0=self._axis0_index,
@@ -1439,7 +1338,7 @@ class Field4D(Array4D):
 
         Returns
         -------
-        Field4D
+        ScalarField
             Z-score normalized field (dimensionless).
 
         Raises
@@ -1486,7 +1385,7 @@ class Field4D(Array4D):
             zscore_data = (self.value - mean) / std
             zscore_data = np.nan_to_num(zscore_data, nan=0.0, posinf=0.0, neginf=0.0)
 
-        return Field4D(
+        return ScalarField(
             zscore_data,
             unit=u.dimensionless_unscaled,
             axis0=self._axis0_index,
@@ -1517,7 +1416,7 @@ class Field4D(Array4D):
 
         Returns
         -------
-        Field4D
+        ScalarField
             Result field with time axis reduced to length=1.
 
         Raises
@@ -1570,7 +1469,7 @@ class Field4D(Array4D):
         else:
             mean_time = (self._axis0_index[0] + self._axis0_index[-1]) / 2
 
-        result = Field4D(
+        result = ScalarField(
             result_data,
             unit=self.unit,
             axis0=np.array([mean_time.value]) * mean_time.unit,
@@ -1776,7 +1675,7 @@ class Field4D(Array4D):
     def compute_psd(self, point_or_region, **kwargs):
         """Compute power spectral density using Welch's method.
 
-        This is a convenience wrapper around :func:`~gwexpy.types.compute_psd`.
+        This is a convenience wrapper around :func:`~gwexpy.fields.signal.compute_psd`.
 
         Parameters
         ----------
@@ -1796,16 +1695,16 @@ class Field4D(Array4D):
 
         See Also
         --------
-        gwexpy.types.compute_psd : Full documentation.
+        gwexpy.fields.signal.compute_psd : Full documentation.
         """
-        from .field4d_signal import compute_psd
+        from .signal import compute_psd
 
         return compute_psd(self, point_or_region, **kwargs)
 
     def freq_space_map(self, axis, at=None, **kwargs):
         """Compute frequency-space map along a spatial axis.
 
-        This is a convenience wrapper around :func:`~gwexpy.types.freq_space_map`.
+        This is a convenience wrapper around :func:`~gwexpy.fields.signal.freq_space_map`.
 
         Parameters
         ----------
@@ -1818,21 +1717,21 @@ class Field4D(Array4D):
 
         Returns
         -------
-        Field4D
+        ScalarField
             2D frequency-space map.
 
         See Also
         --------
-        gwexpy.types.freq_space_map : Full documentation.
+        gwexpy.fields.signal.freq_space_map : Full documentation.
         """
-        from .field4d_signal import freq_space_map
+        from .signal import freq_space_map
 
         return freq_space_map(self, axis, at=at, **kwargs)
 
     def compute_xcorr(self, point_a, point_b, **kwargs):
         """Compute cross-correlation between two spatial points.
 
-        This is a convenience wrapper around :func:`~gwexpy.types.compute_xcorr`.
+        This is a convenience wrapper around :func:`~gwexpy.fields.signal.compute_xcorr`.
 
         Parameters
         ----------
@@ -1848,16 +1747,16 @@ class Field4D(Array4D):
 
         See Also
         --------
-        gwexpy.types.compute_xcorr : Full documentation.
+        gwexpy.fields.signal.compute_xcorr : Full documentation.
         """
-        from .field4d_signal import compute_xcorr
+        from .signal import compute_xcorr
 
         return compute_xcorr(self, point_a, point_b, **kwargs)
 
     def time_delay_map(self, ref_point, plane="xy", at=None, **kwargs):
         """Compute time delay map from a reference point.
 
-        This is a convenience wrapper around :func:`~gwexpy.types.time_delay_map`.
+        This is a convenience wrapper around :func:`~gwexpy.fields.signal.time_delay_map`.
 
         Parameters
         ----------
@@ -1872,21 +1771,21 @@ class Field4D(Array4D):
 
         Returns
         -------
-        Field4D
+        ScalarField
             Time delay map.
 
         See Also
         --------
-        gwexpy.types.time_delay_map : Full documentation.
+        gwexpy.fields.signal.time_delay_map : Full documentation.
         """
-        from .field4d_signal import time_delay_map
+        from .signal import time_delay_map
 
         return time_delay_map(self, ref_point, plane=plane, at=at, **kwargs)
 
     def coherence_map(self, ref_point, plane="xy", at=None, **kwargs):
         """Compute coherence map from a reference point.
 
-        This is a convenience wrapper around :func:`~gwexpy.types.coherence_map`.
+        This is a convenience wrapper around :func:`~gwexpy.fields.signal.coherence_map`.
 
         Parameters
         ----------
@@ -1901,13 +1800,13 @@ class Field4D(Array4D):
 
         Returns
         -------
-        Field4D or Field4DDict
+        ScalarField or FieldDict
             Coherence map.
 
         See Also
         --------
-        gwexpy.types.coherence_map : Full documentation.
+        gwexpy.fields.signal.coherence_map : Full documentation.
         """
-        from .field4d_signal import coherence_map
+        from .signal import coherence_map
 
         return coherence_map(self, ref_point, plane=plane, at=at, **kwargs)

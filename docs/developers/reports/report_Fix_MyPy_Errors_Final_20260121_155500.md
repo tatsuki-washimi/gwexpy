@@ -30,7 +30,7 @@
 - `gwexpy/timeseries/matrix_spectral.py`
 - `gwexpy/timeseries/matrix.py`
 - `gwexpy/timeseries/preprocess.py`
-- `scripts/verify_field4d_physics.py`
+- `scripts/verify_scalarfield_physics.py`
 - `.agent/skills/fix_mypy/SKILL.md` (新規)
 
 ## 検証結果
