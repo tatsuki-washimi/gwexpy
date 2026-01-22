@@ -16,7 +16,7 @@ isel(self, indexers=None, **kwargs)
 
 指定された軸に沿って整数インデックスで選択します。
 
-`AxisApiMixin` から継承されています。Array4D では、整数インデックスを指定すると次元が削減されます（Field4D とは異なり、通常の配列の挙動を示します）。
+`AxisApiMixin` から継承されています。Array4D では、整数インデックスを指定すると次元が削減されます（ScalarField とは異なり、通常の配列の挙動を示します）。
 
 ### `sel`
 

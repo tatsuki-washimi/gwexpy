@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-from gwexpy.types import Field4D
+from gwexpy.fields import ScalarField as Field4D
 
 
 class TestField4DSlicingMaintains4D:

@@ -1,11 +1,11 @@
-# 作業報告：Field4D 可視化（1D/2D）強化の実装
+# 作業報告：ScalarField 可視化（1D/2D）強化の実装
 
 **日付**: 2026-01-21T13:11 JST  
 **担当**: Antigravity (Claude Opus 4.5 連携)
 
 ## 1. 概要
 
-`docs/developers/plans/visualize-methods_Field4D.md` に基づき、`Field4D` クラスの可視化および解析機能を大幅に強化しました。空間・時間データの柔軟な抽出と、物理単位を維持した高度な描画機能を実現しました。
+`docs/developers/plans/visualize-methods_ScalarField.md` に基づき、`ScalarField` クラスの可視化および解析機能を大幅に強化しました。空間・時間データの柔軟な抽出と、物理単位を維持した高度な描画機能を実現しました。
 
 ## 2. 実施内容
 
@@ -48,7 +48,7 @@
 - `gwexpy/types/field4d.py` (機能追加)
 - `tests/plot/test_coord.py` (新規テスト)
 - `tests/types/test_field4d_visualization.py` (新規テスト)
-- `docs/developers/plans/visualize-methods_Field4D.md` (進捗追記・リント修正)
+- `docs/developers/plans/visualize-methods_ScalarField.md` (進捗追記・リント修正)
 
 ---
 **ステータス**: Phase 0-2 完了。Phase 3 (相関解析等) は今後の拡張として予約。

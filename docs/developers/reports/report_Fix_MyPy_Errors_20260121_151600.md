@@ -32,8 +32,8 @@
 - `gwexpy/timeseries/preprocess.py`
 - `scripts/verify_field4d_physics.py`
 - `gwexpy/.agent/skills/extend_gwpy/SKILL.md` (修復)
-- `docs/developers/plans/visualize-Field4D-docs.md` (修復)
-- `docs/developers/plans/visualize-methods_Field4D.md`
+- `docs/developers/plans/visualize-ScalarField-docs.md` (修復)
+- `docs/developers/plans/visualize-methods_ScalarField.md`
 
 ## 検証結果
 

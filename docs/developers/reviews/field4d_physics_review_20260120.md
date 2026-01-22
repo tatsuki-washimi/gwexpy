@@ -1,8 +1,8 @@
-# Field4D Physics Review (2026-01-20)
+# ScalarField Physics Review (2026-01-20)
 
 ## Scope
 
-- Targets: `Field4D`, `Field4DList`, `Field4DDict`
+- Targets: `ScalarField`, `ScalarFieldList`, `ScalarFieldDict`
 - Focus: FFT domain transitions, axis handling, physical unit consistency
 - Files reviewed: `gwexpy/types/field4d.py`, `gwexpy/types/field4d_collections.py`, `gwexpy/types/axis.py`, `gwexpy/types/array4d.py`
 
@@ -17,7 +17,7 @@ The core FFT workflows are conceptually aligned with GWpy conventions, but there
 - Medium: One-sided normalization doubles all non-DC bins; for even-length FFTs the Nyquist bin should not be doubled. (`gwexpy/types/field4d.py:337`)
 - Medium: `rfft/irfft` implicitly assume real-valued signals and Hermitian frequency data, but no validation enforces that constraint. (`gwexpy/types/field4d.py:335`, `gwexpy/types/field4d.py:403`)
 - Low: Spatial axis monotonicity is not enforced, and `fft_space` uses signed `dx` while `ifft_space` uses `abs(dk)`; descending axes can lead to inconsistent k-axis direction and reconstruction. (`gwexpy/types/axis.py:54`, `gwexpy/types/field4d.py:521`, `gwexpy/types/field4d.py:628`)
-- Low: `Field4DList`/`Field4DDict` validation checks only units/domains/names, not the coordinate arrays, so batched FFT operations can mix mismatched samplings. (`gwexpy/types/field4d_collections.py:38`, `gwexpy/types/field4d_collections.py:170`)
+- Low: `ScalarFieldList`/`ScalarFieldDict` validation checks only units/domains/names, not the coordinate arrays, so batched FFT operations can mix mismatched samplings. (`gwexpy/types/field4d_collections.py:38`, `gwexpy/types/field4d_collections.py:170`)
 
 ## Code Fix Plan
 

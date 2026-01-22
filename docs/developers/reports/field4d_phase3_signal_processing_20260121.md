@@ -1,4 +1,4 @@
-# Field4D Phase 3 Signal Processing Extensions - 実装完了レポート
+# ScalarField Phase 3 Signal Processing Extensions - 実装完了レポート
 
 **日時**: 2026-01-21T18:40  
 **担当**: Claude Opus 4.5
@@ -19,7 +19,7 @@
 | ファイル | 変更内容 |
 |---------|---------|
 | `gwexpy/types/__init__.py` | 新規関数のエクスポート追加 |
-| `gwexpy/types/field4d.py` | Field4D クラスにメソッドラッパー追加（compute_psd, freq_space_map など） |
+| `gwexpy/types/field4d.py` | ScalarField クラスにメソッドラッパー追加（compute_psd, freq_space_map など） |
 
 ---
 
@@ -29,7 +29,7 @@
 
 | 関数 | 説明 |
 |------|------|
-| `make_demo_field4d(pattern, ...)` | 決定論的デモField4D生成（gaussian/sine/standing/noise） |
+| `make_demo_field4d(pattern, ...)` | 決定論的デモScalarField生成（gaussian/sine/standing/noise） |
 | `make_propagating_gaussian(**kw)` | 伝搬ガウシアンパルス（エイリアス） |
 | `make_sinusoidal_wave(**kw)` | 正弦波（エイリアス） |
 | `make_standing_wave(**kw)` | 定在波（エイリアス） |
@@ -45,7 +45,7 @@
 | `time_delay_map(field, ref_point, plane, at, **kwargs)` | 時間遅延マップ |
 | `coherence_map(field, ref_point, *, plane, at, band, **kwargs)` | コヒーレンスマップ |
 
-### Field4D メソッドラッパー
+### ScalarField メソッドラッパー
 
 | メソッド | 説明 |
 |---------|------|
@@ -63,7 +63,7 @@
 
 ```python
 def compute_psd(
-    field: Field4D,
+    field: ScalarField,
     point_or_region: tuple | list | dict,
     *,
     nperseg: int | None = None,
@@ -93,18 +93,18 @@ def compute_psd(
 
 ```python
 def freq_space_map(
-    field: Field4D,
+    field: ScalarField,
     axis: str,
     at: dict | None = None,
     *,
     method: Literal["welch", "fft"] = "welch",
     ...
-) -> Field4D:
+) -> ScalarField:
     """Compute frequency-space map along a spatial axis.
 
     Returns
     -------
-    Field4D
+    ScalarField
         Shape: (n_freq, n_x, 1, 1) など。axis0_domain='frequency'。
     """
 ```
@@ -113,7 +113,7 @@ def freq_space_map(
 
 ```python
 def compute_xcorr(
-    field: Field4D,
+    field: ScalarField,
     point_a: tuple,
     point_b: tuple,
     *,
@@ -136,7 +136,7 @@ def compute_xcorr(
 
 ```python
 def time_delay_map(
-    field: Field4D,
+    field: ScalarField,
     ref_point: tuple,
     plane: str = "xy",
     at: dict | None = None,
@@ -146,12 +146,12 @@ def time_delay_map(
     roi: dict | None = None,
     normalize: bool = True,
     detrend: bool = True,
-) -> Field4D:
+) -> ScalarField:
     """Compute time delay map from a reference point.
 
     Returns
     -------
-    Field4D
+    ScalarField
         遅延値を保持するスライス。Unit は時間単位（例: s）。
     """
 ```
@@ -160,7 +160,7 @@ def time_delay_map(
 
 ```python
 def coherence_map(
-    field: Field4D,
+    field: ScalarField,
     ref_point: tuple,
     *,  # 注意: plane, atはキーワード専用
     plane: str = "xy",
@@ -170,14 +170,14 @@ def coherence_map(
     noverlap: int | None = None,
     window: str = "hann",
     stride: int = 1,
-) -> Field4D | Field4DDict:
+) -> ScalarField | ScalarFieldDict:
     """Compute magnitude-squared coherence map from a reference point.
 
     Returns
     -------
-    Field4D or Field4DDict
-        - band指定時: スカラーコヒーレンス値の Field4D
-        - band=None: 周波数軸を持つ Field4D
+    ScalarField or ScalarFieldDict
+        - band指定時: スカラーコヒーレンス値の ScalarField
+        - band=None: 周波数軸を持つ ScalarField
     """
 ```
 
@@ -224,7 +224,7 @@ def coherence_map(
 
 #### 正常系
 
-- [ ] 返り値が Field4D で axis0_domain='frequency'
+- [ ] 返り値が ScalarField で axis0_domain='frequency'
 - [ ] shape が (n_freq, n_x, 1, 1) など期待どおり
 - [ ] at 指定なしでも length=1 軸は自動使用
 
@@ -249,7 +249,7 @@ def coherence_map(
 
 #### 正常系
 
-- [ ] 返り値が Field4D
+- [ ] 返り値が ScalarField
 - [ ] 遅延値の単位が時間単位（s など）
 - [ ] stride によりサブサンプリングされた shape
 
@@ -265,8 +265,8 @@ def coherence_map(
 
 #### 正常系
 
-- [ ] band 指定時: スカラー Field4D（shape に time 軸が 1）
-- [ ] band=None 時: 周波数軸付き Field4D（axis0_domain='frequency'）
+- [ ] band 指定時: スカラー ScalarField（shape に time 軸が 1）
+- [ ] band=None 時: 周波数軸付き ScalarField（axis0_domain='frequency'）
 - [ ] コヒーレンス値が [0, 1] 範囲
 
 #### 合成信号検証
@@ -282,12 +282,12 @@ def coherence_map(
 
 #### 単位整合性
 
-- [ ] 入力 Field4D の単位が出力に正しく反映される
+- [ ] 入力 ScalarField の単位が出力に正しく反映される
 - [ ] 軸座標の単位変換（m→km など）が正常
 
 #### 4D shape 保持
 
-- [ ] 返り値 Field4D が常に 4 次元
+- [ ] 返り値 ScalarField が常に 4 次元
 
 ---
 

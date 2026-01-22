@@ -11,7 +11,7 @@ class TestField4DExtractPoints:
     @pytest.fixture
     def sample_field(self):
         """Create a sample Field4D for testing."""
-        from gwexpy.types import Field4D
+        from gwexpy.fields import ScalarField as Field4D
 
         # Create 4D test data: (t=10, x=5, y=5, z=5)
         np.random.seed(42)
@@ -79,7 +79,7 @@ class TestField4DSliceMap2D:
     @pytest.fixture
     def sample_field(self):
         """Create a sample Field4D for testing."""
-        from gwexpy.types import Field4D
+        from gwexpy.fields import ScalarField as Field4D
 
         data = np.random.randn(10, 8, 8, 8)
         times = np.arange(10) * 0.1 * u.s
@@ -154,7 +154,7 @@ class TestField4DPlotMap2D:
     @pytest.fixture
     def sample_field(self):
         """Create a sample Field4D for testing."""
-        from gwexpy.types import Field4D
+        from gwexpy.fields import ScalarField as Field4D
 
         data = np.random.randn(10, 8, 8, 8)
         times = np.arange(10) * 0.1 * u.s
@@ -231,7 +231,7 @@ class TestField4DPlotTimeseriesPoints:
     @pytest.fixture
     def sample_field(self):
         """Create a sample Field4D for testing."""
-        from gwexpy.types import Field4D
+        from gwexpy.fields import ScalarField as Field4D
 
         data = np.random.randn(10, 5, 5, 5)
         times = np.arange(10) * 0.1 * u.s
@@ -282,7 +282,7 @@ class TestField4DPlotProfile:
     @pytest.fixture
     def sample_field(self):
         """Create a sample Field4D for testing."""
-        from gwexpy.types import Field4D
+        from gwexpy.fields import ScalarField as Field4D
 
         data = np.random.randn(10, 8, 8, 8)
         times = np.arange(10) * 0.1 * u.s
@@ -337,7 +337,7 @@ class TestField4DDiff:
     @pytest.fixture
     def sample_fields(self):
         """Create two sample Field4D objects for comparison."""
-        from gwexpy.types import Field4D
+        from gwexpy.fields import ScalarField as Field4D
 
         np.random.seed(42)
         data1 = np.ones((10, 5, 5, 5)) * 10.0
@@ -384,7 +384,7 @@ class TestField4DDiff:
 
     def test_shape_mismatch_raises(self, sample_fields):
         """Test that shape mismatch raises ValueError."""
-        from gwexpy.types import Field4D
+        from gwexpy.fields import ScalarField as Field4D
 
         field1, _ = sample_fields
         # Create field with different shape
@@ -406,7 +406,7 @@ class TestField4DZscore:
     @pytest.fixture
     def sample_field(self):
         """Create a sample Field4D with known statistics."""
-        from gwexpy.types import Field4D
+        from gwexpy.fields import ScalarField as Field4D
 
         # Create data with known mean=5, std=2 pattern
         np.random.seed(42)
@@ -451,7 +451,7 @@ class TestField4DTimeStatMap:
     @pytest.fixture
     def sample_field(self):
         """Create a sample Field4D for testing."""
-        from gwexpy.types import Field4D
+        from gwexpy.fields import ScalarField as Field4D
 
         # Create data where mean along time = 5
         data = np.ones((10, 4, 4, 4)) * 5.0
@@ -493,7 +493,7 @@ class TestField4DTimeSpaceMap:
     @pytest.fixture
     def sample_field(self):
         """Create a sample Field4D for testing."""
-        from gwexpy.types import Field4D
+        from gwexpy.fields import ScalarField as Field4D
 
         data = np.random.randn(10, 8, 4, 4)
 

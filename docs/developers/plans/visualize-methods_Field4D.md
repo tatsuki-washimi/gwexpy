@@ -1,8 +1,8 @@
-# Field4D 可視化（1D/2D）強化ロードマップ
+# ScalarField 可視化（1D/2D）強化ロードマップ
 
 ## 前提（既存仕様の尊重）
 
-* Field4D は **4D維持**（整数indexも slice(i,i+1) に変換し axis length=1 を保つ）
+* ScalarField は **4D維持**（整数indexも slice(i,i+1) に変換し axis length=1 を保つ）
 * 軸 index は `Quantity` 配列が正
 * 空間FFTは符号付き両側、波数は角波数 `k = 2π/λ`
 * 時間FFTは GWpy `TimeSeries.fft()` 準拠（既実装）
@@ -57,24 +57,24 @@
 
 ### 0.3 抽出API（解析メソッド；plotの基盤）
 
-**新規**：`Field4D.extract_points(...) -> TimeSeriesList`
+**新規**：`ScalarField.extract_points(...) -> TimeSeriesList`
 
 * `points`: list[tuple[x,y,z]]（Quantity推奨）
 * `interp="nearest"`（MVPはnearestのみ）
 * 戻り値：`TimeSeriesList`（各要素が1点抽出の時系列）
 * ラベル（metadata）に座標情報を保存（`(x=...,y=...,z=...)`）
 
-**新規**：`Field4D.extract_profile(...) -> (Quantity_axis, Quantity_values)` または `Series`
+**新規**：`ScalarField.extract_profile(...) -> (Quantity_axis, Quantity_values)` または `Series`
 
 * `axis`: "x|y|z"
 * `at`: dict で他軸を固定（例：`{"t":..., "y":..., "z":...}`）
 * `reduce`: None または簡易平均（次フェーズでも可）
 * MVPは `reduce=None`（一点断面）のみでよい
 
-**新規**：`Field4D.slice_map2d(plane="xy|xz|yz", at={...}) -> Field4D`
+**新規**：`ScalarField.slice_map2d(plane="xy|xz|yz", at={...}) -> ScalarField`
 
 * planeの2軸は残し、他2軸は length=1 のスライスにする
-* 返り値は Field4D（axis length=1規約を維持）
+* 返り値は ScalarField（axis length=1規約を維持）
 
 ### Phase 0.3 DoD
 
@@ -86,10 +86,10 @@
 
 ## フェーズ1：最小描画（研究即戦力）
 
-### 1.1 2Dヒートマップ：`Field4D.plot_map2d(...)`
+### 1.1 2Dヒートマップ：`ScalarField.plot_map2d(...)`
 
 **新規**：`gwexpy/plot/field4d.py` を作り、実処理を集約
-`Field4D.plot_map2d` は薄いラッパ（内部で plot モジュール関数を呼ぶ）
+`ScalarField.plot_map2d` は薄いラッパ（内部で plot モジュール関数を呼ぶ）
 
 #### 推奨シグネチャ（MVP）
 
@@ -107,7 +107,7 @@
 
 ---
 
-### 1.2 1D重ね書き：`Field4D.plot_timeseries_points(...)`
+### 1.2 1D重ね書き：`ScalarField.plot_timeseries_points(...)`
 
 * 内部は `extract_points` を呼ぶのみ
 * `labels` がなければ自動生成
@@ -119,7 +119,7 @@
 
 ---
 
-### 1.3 1D線プロファイル：`Field4D.plot_profile(...)`
+### 1.3 1D線プロファイル：`ScalarField.plot_profile(...)`
 
 * 内部は `extract_profile` を呼ぶのみ
 
@@ -133,7 +133,7 @@
 
 ### 2.1 フィールド差分／比：解析メソッド
 
-**新規**：`Field4D.diff(other, mode="diff|ratio|percent") -> Field4D`
+**新規**：`ScalarField.diff(other, mode="diff|ratio|percent") -> ScalarField`
 
 * modeの意味を固定
 * unit の扱い：
@@ -141,7 +141,7 @@
   * diff：同unit
   * ratio/percent：dimensionless
 
-**新規**：`Field4D.zscore(baseline_t=(t1,t2), ...) -> Field4D`
+**新規**：`ScalarField.zscore(baseline_t=(t1,t2), ...) -> ScalarField`
 
 * baseline の抽出は axis0_domain="time" の時のみ
 * baseline 期間の平均/標準偏差で zscore
@@ -157,7 +157,7 @@
 
 ### 2.2 時間要約マップ
 
-**新規**：`Field4D.time_stat_map(stat="mean|std|rms|max", t_range=(t1,t2), plane="xy", at={...}) -> Field4D`
+**新規**：`ScalarField.time_stat_map(stat="mean|std|rms|max", t_range=(t1,t2), plane="xy", at={...}) -> ScalarField`
 
 * 結果は t 軸を length=1 にして返す（時間要約済み）
 * 表示は `plot_map2d` に流用
@@ -171,7 +171,7 @@
 
 ### 2.3 time–space map（ムービー代替）
 
-**新規**：`Field4D.time_space_map(axis="x|y|z", at={...}, mode="real", reduce=None) -> Array2D相当 or Field4D`
+**新規**：`ScalarField.time_space_map(axis="x|y|z", at={...}, mode="real", reduce=None) -> Array2D相当 or ScalarField`
 
 * MVP：reduce=None（一点断面）
 * 出力は (t, x) の2Dデータ（最小は numpy array + (t,x)のQuantity）
@@ -189,8 +189,8 @@
 ### 3.1 xcorr / delay / coherence（解析→map→plot）
 
 * `compute_xcorr(point_a, point_b, max_lag, ...) -> lag-series`
-* `time_delay_map(ref_point, plane, at, ...) -> Field4D`
-* `coherence_map(ref_point, band=(f1,f2), ...) -> Field4D`
+* `time_delay_map(ref_point, plane, at, ...) -> ScalarField`
+* `coherence_map(ref_point, band=(f1,f2), ...) -> ScalarField`
 * 表示は `plot_map2d` に統一
 
 **注意**：このフェーズは計算コストが大きいので `stride` や `roi` を必須オプションにすること。
@@ -259,7 +259,7 @@
 
 ## 推奨スキル
 
-1. **`extend_gwpy`**: `Field4D` の GWpy/Astropy 継承におけるスライス操作での単位消失防止ガイド
+1. **`extend_gwpy`**: `ScalarField` の GWpy/Astropy 継承におけるスライス操作での単位消失防止ガイド
 2. **`check_physics`**: 空間FFTの波数（k）や Nyquist 周波数の扱い、物理単位の整合性検証
 3. **`test_code`**: T0〜T4 テストの自動実行によるリグレッション防止
 4. **`make_notebook`**: 可視化機能のチュートリアルノートブック作成
@@ -296,23 +296,23 @@
 
 | 項目 | メソッド | 状態 |
 | :--- | :--- | :--- |
-| 抽出API | `Field4D.extract_points()` | ✅ 実装済み |
-| 抽出API | `Field4D.extract_profile()` | ✅ 実装済み |
-| 抽出API | `Field4D.slice_map2d()` | ✅ 実装済み |
-| 2Dヒートマップ | `Field4D.plot_map2d()` | ✅ 実装済み |
-| 1D重ね書き | `Field4D.plot_timeseries_points()` | ✅ 実装済み |
-| 1D線プロファイル | `Field4D.plot_profile()` | ✅ 実装済み |
+| 抽出API | `ScalarField.extract_points()` | ✅ 実装済み |
+| 抽出API | `ScalarField.extract_profile()` | ✅ 実装済み |
+| 抽出API | `ScalarField.slice_map2d()` | ✅ 実装済み |
+| 2Dヒートマップ | `ScalarField.plot_map2d()` | ✅ 実装済み |
+| 1D重ね書き | `ScalarField.plot_timeseries_points()` | ✅ 実装済み |
+| 1D線プロファイル | `ScalarField.plot_profile()` | ✅ 実装済み |
 | T1-T2 テスト | `tests/types/test_field4d_visualization.py` | ✅ 17テスト通過 |
 
 ### ✅ Phase 2: 比較・要約（完了）
 
 | 項目 | メソッド | 状態 |
 | :--- | :--- | :--- |
-| 差分/比率 | `Field4D.diff()` | ✅ 実装済み |
-| Z-score | `Field4D.zscore()` | ✅ 実装済み |
-| 時間要約マップ | `Field4D.time_stat_map()` | ✅ 実装済み |
-| 時間-空間マップ | `Field4D.time_space_map()` | ✅ 実装済み |
-| 時間-空間描画 | `Field4D.plot_time_space_map()` | ✅ 実装済み |
+| 差分/比率 | `ScalarField.diff()` | ✅ 実装済み |
+| Z-score | `ScalarField.zscore()` | ✅ 実装済み |
+| 時間要約マップ | `ScalarField.time_stat_map()` | ✅ 実装済み |
+| 時間-空間マップ | `ScalarField.time_space_map()` | ✅ 実装済み |
+| 時間-空間描画 | `ScalarField.plot_time_space_map()` | ✅ 実装済み |
 | T3-T4 テスト | `tests/types/test_field4d_visualization.py` | ✅ 11テスト通過 |
 
 ### ⏳ Phase 3: 重い信号処理（未着手）
