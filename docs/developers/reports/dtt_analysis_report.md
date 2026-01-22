@@ -1,7 +1,7 @@
-# DTT (Diagnostic Test Tools) 包括的分析レポート
+# DTT (Diagnostic Test Tools) Comprehensive Analysis Report
 
-**作成日:** 2026-01-22
-**対象:** `gwexpy/gui/reference-dtt/dtt-master/`
+**Created:** 2026-01-22
+**Target:** `gwexpy/gui/reference-dtt/dtt-master/`
 **Author:** Antigravity Agent
 
 ---
@@ -138,9 +138,9 @@ This is the most complex measurement mode and is **not currently implemented in 
 
 # Part 3: Deep Dive Analysis
 
-## 3.1 Swept Sine 詳細アルゴリズム
+## 3.1 Swept Sine Detailed Algorithm
 
-### スイープ点の生成
+### Sweep Point Generation
 
 ```cpp
 switch (sweepType) {
@@ -159,30 +159,30 @@ switch (sweepType) {
 }
 ```
 
-### 同期検波 (`sinedet`)
+### Synchronous Detection (`sinedet`)
 
-各周波数点において、応答信号から励起周波数成分を抽出します。
+At each frequency point, the excitation frequency component is extracted from the response signal.
 
-**`sineAnalyze` の推定ロジック:**
+**Estimated Logic of `sineAnalyze`:**
 
 ```
 X[k] = (2/N) * Σ x[n] * exp(-j * 2π * f_target * n / fs)
 ```
 
-これは離散フーリエ変換の特定周波数ビン計算と等価で、`scipy.signal` や `numpy` で実装可能。
+This is equivalent to computing a specific frequency bin of the Discrete Fourier Transform and can be implemented using `scipy.signal` or `numpy`.
 
-## 3.2 Zoom FFT (高分解能スペクトル)
+## 3.2 Zoom FFT (High-Resolution Spectrum)
 
-通常のFFTでは `df = fs / N` であり、広い周波数範囲と高分解能を同時に得ることが困難です。Zoom FFT は複素ヘテロダイン変換により、特定の狭い周波数帯域を高分解能で解析します。
+With standard FFT, `df = fs / N`, making it difficult to simultaneously achieve a wide frequency range and high resolution. Zoom FFT uses complex heterodyne transformation to analyze a specific narrow frequency band with high resolution.
 
-### アルゴリズム
+### Algorithm
 
-1. **ヘテロダイン（周波数シフト）**: `x_shifted[n] = x[n] * exp(-j * 2π * f_zoom * n / fs)`
-2. **デシメーション（ダウンサンプリング）**: ナイキスト周波数が新しい帯域幅に合うようにサンプリングレートを下げる
-3. **FFT 実行**: シフト＆デシメーション後のデータに対してFFTを実行
-4. **データ回転**: 周波数軸を元の位置に戻す
+1. **Heterodyne (Frequency Shift)**: `x_shifted[n] = x[n] * exp(-j * 2π * f_zoom * n / fs)`
+2. **Decimation (Downsampling)**: Reduce sampling rate so that Nyquist frequency matches the new bandwidth
+3. **FFT Execution**: Perform FFT on the shifted & decimated data
+4. **Data Rotation**: Restore the frequency axis to its original position
 
-### gwexpy への実装プラン
+### Implementation Plan for gwexpy
 
 ```python
 def zoom_fft(ts: TimeSeries, f_center: float, bandwidth: float, 
@@ -212,9 +212,9 @@ def zoom_fft(ts: TimeSeries, f_center: float, bandwidth: float,
 
 ## 3.3 Burst Noise Measurement
 
-通常のFFT測定では励起信号が連続的に印加されますが、Burst Noise モードでは励起信号を断続的（ゲート）にし、静寂時間を設けて応答のリンギングを捉えます。
+In standard FFT measurements, the excitation signal is applied continuously, but in Burst Noise mode, the excitation signal is intermittent (gated), with quiet periods to capture the response ringing.
 
-### タイミング図
+### Timing Diagram
 
 ```
 |<-- pitch -->|<-- pitch -->|<-- pitch -->|
@@ -227,26 +227,26 @@ def zoom_fft(ts: TimeSeries, f_center: float, bandwidth: float,
 
 ## 4.1 `stdtest` Base Class
 
-`stdtest` は、DTT のすべての測定タイプ（FFT, Swept Sine, Sine Response, Time Series）の共通基底クラスです。
+`stdtest` is the common base class for all measurement types in DTT (FFT, Swept Sine, Sine Response, Time Series).
 
-### 主要なインナークラスとデータ型
+### Key Inner Classes and Data Types
 
 ```cpp
 class stimulus {
-   std::string name;          // 励起チャンネル名
-   bool isReadback;           // リードバック使用フラグ
-   AWG_WaveType waveform;     // 波形タイプ (Sine, Square, Noise, etc.)
-   double freq, ampl, offs, phas;  // 周波数, 振幅, オフセット, 位相
+   std::string name;          // Excitation channel name
+   bool isReadback;           // Readback usage flag
+   AWG_WaveType waveform;     // Waveform type (Sine, Square, Noise, etc.)
+   double freq, ampl, offs, phas;  // Frequency, amplitude, offset, phase
 };
 
 class measurementchannel {
-   std::string name;          // チャンネル名
-   gdsChnInfo_t info;         // チャンネル情報
-   partitionlist partitions;  // データパーティション
+   std::string name;          // Channel name
+   gdsChnInfo_t info;         // Channel information
+   partitionlist partitions;  // Data partitions
 };
 ```
 
-### 仮想メソッド: 測定ライフサイクル
+### Virtual Methods: Measurement Lifecycle
 
 ```
 begin() → setup() → [syncAction() → analyze()] * N → end()
@@ -258,20 +258,20 @@ begin() → setup() → [syncAction() → analyze()] * N → end()
 
 ## 4.2 AWG (Arbitrary Waveform Generator) API
 
-### 主要関数
+### Key Functions
 
-| 関数 | 説明 |
+| Function | Description |
 |---|---|
-| `awg_client()` | AWG クライアントインターフェース初期化 |
-| `awgSetChannel(name)` | チャンネル名をスロットに関連付け |
-| `awgAddWaveform(slot, comp, num)` | 波形コンポーネントを追加 |
-| `awgSetWaveform(slot, y, len)` | 任意波形をダウンロード |
-| `awgSendWaveform(slot, time, epoch, y, len)` | ストリームデータ送信 |
-| `awgStopWaveform(slot, terminate, time)` | 波形停止（reset/freeze/phase-out） |
-| `awgSetGain(slot, gain, time)` | 全体ゲイン設定（ランプ可能） |
-| `awgSetFilter(slot, y, len)` | IIR フィルタ設定（SOS形式） |
+| `awg_client()` | Initialize AWG client interface |
+| `awgSetChannel(name)` | Associate channel name with slot |
+| `awgAddWaveform(slot, comp, num)` | Add waveform component |
+| `awgSetWaveform(slot, y, len)` | Download arbitrary waveform |
+| `awgSendWaveform(slot, time, epoch, y, len)` | Send stream data |
+| `awgStopWaveform(slot, terminate, time)` | Stop waveform (reset/freeze/phase-out) |
+| `awgSetGain(slot, gain, time)` | Set overall gain (ramp capable) |
+| `awgSetFilter(slot, y, len)` | Set IIR filter (SOS format) |
 
-### 波形タイプ (`AWG_WaveType`)
+### Waveform Types (`AWG_WaveType`)
 
 ```cpp
 enum AWG_WaveType {
@@ -291,22 +291,22 @@ enum AWG_WaveType {
 
 ## 4.3 NDS2 Data Input
 
-`nds2input.hh` / `nds2input.cc` は、NDS2 (Network Data Server v2) からリアルタイムまたはアーカイブデータを取得するクライアントを実装しています。
+`nds2input.hh` / `nds2input.cc` implements a client that retrieves real-time or archive data from NDS2 (Network Data Server v2).
 
-### 主要クラス
+### Key Classes
 
-- **`nds2Manager`**: NDS2 接続の管理、チャンネルの追加/削除、データフローの開始/停止
-- **`NDS2Connection`**: 単一の NDS2 接続インスタンス、非同期データ読み込みスレッド
+- **`nds2Manager`**: Manages NDS2 connections, adding/removing channels, starting/stopping data flow
+- **`NDS2Connection`**: Single NDS2 connection instance, asynchronous data reading thread
 
 ---
 
 # Part 5: Additional Modules Analysis
 
-## 5.1 Foton - フィルタ設計ツール
+## 5.1 Foton - Filter Design Tool
 
-Foton (Filter Online Tool) は、LIGO/KAGRA で使用される IIR フィルタを設計するための GUI ツールです。
+Foton (Filter Online Tool) is a GUI tool for designing IIR filters used in LIGO/KAGRA.
 
-### gwexpy への関連
+### Relevance to gwexpy
 
 ```python
 class FotonFilter:
@@ -320,15 +320,15 @@ class FotonFilter:
         ...
 ```
 
-## 5.2 StripChart - リアルタイムプロット
+## 5.2 StripChart - Real-Time Plotting
 
-StripChart は、時間変化するデータをリアルタイムでプロットするためのウィジェットです。
+StripChart is a widget for plotting time-varying data in real-time.
 
 ## 5.3 DFM - Data Flow Manager
 
-DFM (Data Flow Manager) は、複数のデータソース（NDS, ファイル, 共有メモリ, テープ）へのアクセスを統一的に提供する抽象化レイヤーです。
+DFM (Data Flow Manager) is an abstraction layer that provides unified access to multiple data sources (NDS, File, Shared Memory, Tape).
 
-### データサービスタイプ
+### Data Service Types
 
 ```cpp
 enum dataservicetype {
@@ -347,26 +347,26 @@ enum dataservicetype {
 
 # Part 6: External Dependencies & Python Integration
 
-## 6.1 dttxml パッケージ - Python での DTT データアクセス
+## 6.1 dttxml Package - DTT Data Access in Python
 
-`dttxml` は、DTT (diaggui) が出力する XML ファイルを解析する Python ライブラリです。
+`dttxml` is a Python library for parsing XML files output by DTT (diaggui).
 
 ```python
 from dttxml import DiagAccess
 
 da = DiagAccess('measurement.xml')
 
-# PSD (ASD) を取得
+# Get PSD (ASD)
 asd = da.asd('K1:PEM-MIC_BOOTH_ENV_OUT_DQ')
 
-# 伝達関数を取得
+# Get Transfer Function
 tf = da.xfer('K1:SAS-ITMY_TM_OPLEV_SERVO_OUT', 'K1:SUS-ITMX_SUS_OUT')
 
-# コヒーレンスを取得
+# Get Coherence
 coh = da.coherence('Channel1', 'Channel2')
 ```
 
-## 6.2 sineAnalyze の Python 再実装
+## 6.2 Python Re-implementation of sineAnalyze
 
 ```python
 import numpy as np
@@ -422,15 +422,15 @@ def sine_analyze(data: np.ndarray, fs: float, freq: float,
 
 ## 7.2 Implementation Roadmap
 
-| フェーズ | 目標 | 工数見積もり |
+| Phase | Goal | Effort Estimate |
 |---|---|---|
-| **Phase 1** | PSD/CSD/Coherence 正規化検証 | 2-4時間 |
-| **Phase 2** | Zoom FFT 実装 | 1-2日 |
-| **Phase 3** | MeasurementState JSON スキーマ | 1-2日 |
-| **Phase 4** | BaseMeasurement 抽象クラス設計 | 2-3日 |
-| **Phase 5** | Swept Sine プロトタイプ（シミュレーション） | 1週間 |
-| **Phase 6** | AWG API Python バインディング | 1-2週間 |
-| **Phase 7** | NDS2 リアルタイム統合 | 1週間 |
+| **Phase 1** | PSD/CSD/Coherence Normalization Verification | 2-4 hours |
+| **Phase 2** | Zoom FFT Implementation | 1-2 days |
+| **Phase 3** | MeasurementState JSON Schema | 1-2 days |
+| **Phase 4** | BaseMeasurement Abstract Class Design | 2-3 days |
+| **Phase 5** | Swept Sine Prototype (Simulation) | 1 week |
+| **Phase 6** | AWG API Python Bindings | 1-2 weeks |
+| **Phase 7** | NDS2 Real-Time Integration | 1 week |
 
 ## 7.3 Recommendations
 
@@ -442,7 +442,7 @@ def sine_analyze(data: np.ndarray, fs: float, freq: float,
 
 # Part 8: Data Flow & Class Interaction Diagrams
 
-## 8.1 クラス相互作用図
+## 8.1 Class Interaction Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -473,48 +473,48 @@ def sine_analyze(data: np.ndarray, fs: float, freq: float,
      └────────────┘      └────────────┘      └────────────┘
 ```
 
-## 8.2 データフロー図
+## 8.2 Data Flow Diagram
 
 ```
 [NDS2/RTDD/File]
        │
        ▼
 ┌──────────────┐
-│  dataBroker  │  ─────  チャンネル購読/データ受信
+│  dataBroker  │  ─────  Channel subscription/data reception
 └──────┬───────┘
        │
        ▼
 ┌──────────────┐
-│ chnCallback  │  ─────  コールバックによるデータ配信
+│ chnCallback  │  ─────  Data delivery via callback
 └──────┬───────┘
        │
        ▼
 ┌──────────────┐              ┌──────────────┐
 │  gdsStorage  │ ◄──────────► │  gdsDatum    │
-│              │              │  (データ)    │
+│              │              │  (Data)      │
 │  - Results   │              └──────────────┘
 │  - Index     │
 │  - Test      │              ┌──────────────┐
 │  - References│ ◄──────────► │ gdsParameter │
-│              │              │  (設定)      │
+│              │              │  (Settings)  │
 └──────────────┘              └──────────────┘
        │
        ▼
 ┌──────────────┐
-│   PlotSet    │  ─────  プロットデータ管理
+│   PlotSet    │  ─────  Plot data management
 └──────┬───────┘
        │
        ▼
-    [XML 保存]
+    [XML Save]
 ```
 
 ---
 
 # Part 9: File Analysis Summary
 
-## 9.1 分析完了ファイル (31件)
+## 9.1 Analyzed Files (31 items)
 
-| カテゴリ | ファイル | 行数 | 状態 |
+| Category | File | Lines | Status |
 |---|---|---|---|
 | **Core Tests** | ffttools.hh/.cc | 379/1272 | ✅ |
 | | sweptsine.hh/.cc | 396/1356 | ✅ |
@@ -542,16 +542,16 @@ def sine_analyze(data: np.ndarray, fs: float, freq: float,
 
 # Part 10: Conclusion
 
-DTT リポジトリの全ソースコード分析を完了しました。
+The complete source code analysis of the DTT repository has been finished.
 
-**主要な発見:**
+**Key Findings:**
 
-1. **クラス階層**: `diagtest → stdtest → {ffttest, sweptsine, timeseries, sineresponse}`
-2. **データ構造**: `gdsDatum` を基底とした多次元データ管理
-3. **測定フロー**: パラメータ読み込み → 時間計算 → 測定設定 → コールバック解析
-4. **外部依存**: `gdsalgorithm.h` (libgds) は非公開だが、アルゴリズムは再実装可能
-5. **Python 統合**: `dttxml` パッケージで DTT XML データの読み込みが可能
+1. **Class Hierarchy**: `diagtest → stdtest → {ffttest, sweptsine, timeseries, sineresponse}`
+2. **Data Structures**: Multi-dimensional data management based on `gdsDatum`
+3. **Measurement Flow**: Parameter reading → Time calculation → Measurement setup → Callback analysis
+4. **External Dependencies**: `gdsalgorithm.h` (libgds) is non-public, but algorithms can be re-implemented
+5. **Python Integration**: DTT XML data can be loaded using the `dttxml` package
 
 ---
 
-*この分析により、DTT のコアアーキテクチャと信号処理パイプラインの全体像が把握できました。*
+*This analysis provides a comprehensive understanding of the core architecture and signal processing pipeline of DTT.*
