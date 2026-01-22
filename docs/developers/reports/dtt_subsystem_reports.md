@@ -1,103 +1,103 @@
-# DTT サブシステム詳細分析レポート
+# DTT Subsystem Detailed Analysis Report
 
-**作成日:** 2026-01-22
-**対象:** `gwexpy/gui/reference-dtt/dtt-master/src/dtt/`
+**Created:** 2026-01-22
+**Target:** `gwexpy/gui/reference-dtt/dtt-master/src/dtt/`
 **Author:** Antigravity Agent
 
 ---
 
-# Section 1: GUI ロジック詳細分析
+# Section 1: GUI Logic Detailed Analysis
 
-## 1.1 概要
+## 1.1 Overview
 
-本セクションでは、DTT (Diagnostic Test Tools) のGUI実装、特にメインウィンドウの構造、イベント処理、データバインディング、および描画ロジックに関する詳細なコード分析の結果をまとめる。
+This section summarizes the results of a detailed code analysis of the DTT (Diagnostic Test Tools) GUI implementation, focusing specifically on the main window structure, event handling, data binding, and rendering logic.
 
-## 1.2 ウィンドウ構造とレイアウト
+## 1.2 Window Structure and Layout
 
-アプリケーションのメインウィンドウは `DiagMainWindow` クラス（ROOTの `TGMainFrame` を継承）によって定義されている。
+The application's main window is defined by the `DiagMainWindow` class (inheriting from ROOT's `TGMainFrame`).
 
-* **メニューバー (`TGMenuBar`)**:
-  * File, Edit, Measurement, Plot, Window, Help などの標準的な構成。
-* **メインコントロールエリア**:
-  * `DiagTabControl` を使用して機能をタブで分割。
-  * **設定タブ**: Input, Measurement, Excitation などのパラメータ設定用。
-  * **表示タブ**: 結果表示用の `TLGMultiPad` を含む。
-* **ボタンバー**:
-  * テスト実行制御用のボタン群（Start, Pause, Resume, Abort）。
-* **ステータスバー (`TGStatusBar`)**:
-  * プログラムの状態、ハートビート、進捗状況を表示。
+* **Menu Bar (`TGMenuBar`)**:
+  * Standard configuration including File, Edit, Measurement, Plot, Window, Help, etc.
+* **Main Control Area**:
+  * Functions are divided into tabs using `DiagTabControl`.
+  * **Configuration Tab**: For parameter settings such as Input, Measurement, Excitation.
+  * **Display Tab**: Contains `TLGMultiPad` for result display.
+* **Button Bar**:
+  * Button group for test execution control (Start, Pause, Resume, Abort).
+* **Status Bar (`TGStatusBar`)**:
+  * Displays program status, heartbeat, and progress.
 
-## 1.3 ウィジェットクラス階層
+## 1.3 Widget Class Hierarchy
 
-ROOTフレームワークをベースに、LIGO特有の要件を満たすカスタムクラス（`TLG` プレフィックス）が拡張されている。
+Based on the ROOT framework, custom classes with the `TLG` prefix are extended to meet LIGO-specific requirements.
 
-* **コンテナ**:
+* **Containers**:
   * `TGMainFrame` -> `DiagMainWindow`
   * `TGCompositeFrame` -> `TLGPad`, `TLGMultiPad`, `DiagTabControl`
-* **カスタムコントロール** (`src/dtt/gui/dttgui/`):
-  * **`TLGTextEntry` / `TLGNumericEntry`**: バリデーション、単位入力、増減ボタンなどを備えた入力フィールド。
-  * **`TLGChannelBox`**: LIGOチャンネル選択用の階層型コンボボックス（Site -> IFO -> System）。
-* **描画ウィジェット**:
-  * **`TLGPad`**: `TRootEmbeddedCanvas` をラップし、グラフ (`TGraph`, `TH1`)、軸、凡例、オプションパネルの描画を管理する単一の描画領域。
-  * **`TLGMultiPad`**: 複数の `TLGPad` をグリッド状（例：2x2）に配置・管理するコンテナ。
+* **Custom Controls** (`src/dtt/gui/dttgui/`):
+  * **`TLGTextEntry` / `TLGNumericEntry`**: Input fields with validation, unit input, increment/decrement buttons.
+  * **`TLGChannelBox`**: Hierarchical combo box for LIGO channel selection (Site -> IFO -> System).
+* **Drawing Widgets**:
+  * **`TLGPad`**: Wraps `TRootEmbeddedCanvas`, managing a single drawing area for graphs (`TGraph`, `TH1`), axes, legends, and option panels.
+  * **`TLGMultiPad`**: Container that arranges and manages multiple `TLGPad` instances in a grid layout (e.g., 2x2).
 
-## 1.4 イベント処理パターン
+## 1.4 Event Handling Patterns
 
-ROOTのメッセージマップとディスパッチ関数を利用した標準的なイベント駆動モデルを採用している。
+Adopts a standard event-driven model using ROOT's message maps and dispatch functions.
 
-* **メッセージ処理**:
-  * `ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)` が中央処理ハブとして機能。
-  * `kC_COMMAND` (ボタン、メニュー), `kC_STATUS`, `kC_NOTIFY` などのメッセージタイプに応じて、`ProcessButton`, `ProcessMenu` などのハンドラに振り分けられる。
-* **タイマー処理**:
-  * **Heartbeat (`fHeartbeat`)**: 100msごとのタイマー。バックエンドからの通知キュー (`fNotifyMsgs`) をチェックし、UIの更新（テスト完了通知など）をトリガーする。
-  * **Watchdog (`fXExitTimer`)**: X11ディスプレイ接続を監視。
-* **バックエンド通信**:
-  * GUIは直接計算を行わず、`basic_commandline` インターフェースを通じてコマンド（"run", "save"など）を送信し、状態を取得するクライアント・サーバー（または分離カーネル）モデルに近い構造。
+* **Message Processing**:
+  * `ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)` functions as the central processing hub.
+  * Dispatches to handlers such as `ProcessButton`, `ProcessMenu` based on message types like `kC_COMMAND` (button, menu), `kC_STATUS`, `kC_NOTIFY`.
+* **Timer Processing**:
+  * **Heartbeat (`fHeartbeat`)**: 100ms interval timer. Checks the notification queue (`fNotifyMsgs`) from the backend and triggers UI updates (such as test completion notifications).
+  * **Watchdog (`fXExitTimer`)**: Monitors X11 display connection.
+* **Backend Communication**:
+  * The GUI does not perform calculations directly. It follows a client-server (or separated kernel) model structure, sending commands ("run", "save", etc.) through the `basic_commandline` interface and retrieving state.
 
-## 1.5 データバインディングとフロー
+## 1.5 Data Binding and Flow
 
-データフローは、ポーリングとコマンド応答モデルに基づいている。
+Data flow is based on a polling and command-response model.
 
-* **設定**:
-  * `TestParam_t` 構造体が全てのテスト設定を保持。
-  * `TransferParameters` メソッドにより、GUIウィジェットと構造体の間で値を同期。
-* **データ発見プロセス**:
-  * `AddDataFromIndex` が `basic_commandline` にインデックスを問い合わせ、利用可能なデータ（時系列、PSD、伝達関数など）を発見する。
-  * テキストベースの階層構造（例: `Result.IndexEntry[1] = ...`）をパースして解析。
-* **データ記述子**:
-  * **`DiagDataDescriptor`**: 実データへのアクセサ。描画が必要になった時点で `cmd->getData` を呼び出し、遅延ロードを行う。
-  * **`PlotDescriptor`**: データ (`BasicDataDescriptor`) とメタデータ、キャリブレーション情報を紐付ける。
+* **Configuration**:
+  * The `TestParam_t` structure holds all test settings.
+  * The `TransferParameters` method synchronizes values between GUI widgets and the structure.
+* **Data Discovery Process**:
+  * `AddDataFromIndex` queries the `basic_commandline` for an index to discover available data (time series, PSD, transfer functions, etc.).
+  * Parses text-based hierarchical structures (e.g., `Result.IndexEntry[1] = ...`) for analysis.
+* **Data Descriptors**:
+  * **`DiagDataDescriptor`**: Accessor for actual data. Calls `cmd->getData` when drawing is needed, performing lazy loading.
+  * **`PlotDescriptor`**: Associates data (`BasicDataDescriptor`) with metadata and calibration information.
 
-## 1.6 描画ロジック
+## 1.6 Rendering Logic
 
-描画システムは `PlotSet` コンテナによってメインウィンドウから分離されている。
+The drawing system is separated from the main window by the `PlotSet` container.
 
-1. **リポジトリ (`PlotSet`)**:
-    * 利用可能な全プロットデータを管理する中央レジストリ。グラフタイプやチャンネル名で整理される。
-2. **更新サイクル**:
-    * ハートビートタイマーが「新しいテスト結果」を検知すると、`UpdatePlot` が発火。
-    * 新規データをスキャンし、`PlotSet` に追加。
-3. **レンダリング**:
-    * `fPlot->Update()` が実行され、登録された `TLGPad` を反復処理。
-    * データ更新がある場合、`TLGPad` は `DiagDataDescriptor` 経由で配列データを取得し、ROOTオブジェクト (`TGraph`) を更新。
-    * ユーザーの表示設定（Mag, Phase, dBなど）に基づき、複素数データの変換を行ってから描画する。
+1. **Repository (`PlotSet`)**:
+    * Central registry managing all available plot data. Organized by graph type and channel name.
+2. **Update Cycle**:
+    * When the heartbeat timer detects "new test results", `UpdatePlot` fires.
+    * Scans for new data and adds to `PlotSet`.
+3. **Rendering**:
+    * `fPlot->Update()` is executed, iterating through registered `TLGPad` instances.
+    * If there are data updates, `TLGPad` retrieves array data via `DiagDataDescriptor` and updates ROOT objects (`TGraph`).
+    * Performs complex number data transformation based on user display settings (Mag, Phase, dB, etc.) before rendering.
 
-## 1.7 補助機能とダイアログ
+## 1.7 Auxiliary Functions and Dialogs
 
-### メニューシステム (`mainmenu.cc`, `TLGMainMenu`)
+### Menu System (`mainmenu.cc`, `TLGMainMenu`)
 
-* **構成**: `TLGMainMenu` クラスがメニューバーの構築とコールバックの初期処理を担当。
-* **機能**:
-  * ファイル操作 (`New`, `Open`, `Save`, `Import`, `Export`, `Print`)
-  * ウィンドウ操作 (`Zoom`, `Layout`, `Active`)
-  * 外部ツール起動（`Launch` メニュー）: `mainmenu.cc` は `launch_client` クラスを使用して、`dataviewer`, `foton` などの外部プロセスを起動するランチャー機能も兼ねている。
+* **Configuration**: The `TLGMainMenu` class handles menu bar construction and initial callback processing.
+* **Functions**:
+  * File operations (`New`, `Open`, `Save`, `Import`, `Export`, `Print`)
+  * Window operations (`Zoom`, `Layout`, `Active`)
+  * External tool launch (`Launch` menu): `mainmenu.cc` also serves as a launcher function that uses the `launch_client` class to start external processes such as `dataviewer`, `foton`.
 
-### エクスポートと保存 (`TLGExport`, `TLGSave`)
+### Export and Save (`TLGExport`, `TLGSave`)
 
-* **形式**: 主に LIGO独自の **XSIL (XML)** 形式と汎用テキスト形式をサポート。
-* **ロジック**:
-  * `TLGExport::ExportToFileXML`: `PlotSet` 内のデータを走査し、XMLタグ構造 (`<XSIL>`) を生成。
-  * **データ変換 (`DoConversion`)**: 生データ（複素数など）をユーザー指定の形式（振幅、dB、位相、実部/虚部）に変換してからファイルに書き出す。
+* **Formats**: Primarily supports LIGO's proprietary **XSIL (XML)** format and generic text formats.
+* **Logic**:
+  * `TLGExport::ExportToFileXML`: Scans data in `PlotSet` and generates XML tag structure (`<XSIL>`).
+  * **Data Conversion (`DoConversion`)**: Converts raw data (complex numbers, etc.) to user-specified formats (amplitude, dB, phase, real/imaginary parts) before writing to file.
 
 ---
 
@@ -265,65 +265,65 @@ Foton (Filter Online Tool) is the primary logic for designing, visualizing, and 
 
 # Section 5: AWG GUI Logic Analysis
 
-## 5.1 概要
+## 5.1 Overview
 
-本セクションでは、LIGO診断ツール群における波形生成（Excitation/AWG）に関するGUIの実装を解析した結果をまとめる。解析対象には、独立した波形生成ツールである **AWG GUI** (`awggui.cc`) と、診断テストの一部として波形生成を行う **DTT GUI Excitation Tab** (`diagctrl.cc`) の双方が含まれる。
+This section summarizes the analysis results of the GUI implementation for waveform generation (Excitation/AWG) in the LIGO diagnostic tool suite. The analysis covers both the standalone waveform generation tool **AWG GUI** (`awggui.cc`) and the **DTT GUI Excitation Tab** (`diagctrl.cc`), which generates waveforms as part of diagnostic tests.
 
-## 5.2 AWG GUI (`awggui.cc`) の詳細解析
+## 5.2 Detailed Analysis of AWG GUI (`awggui.cc`)
 
-AWG GUIは、リアルタイムで任意の波形信号を制御・出力するためのスタンドアロンアプリケーション（または独立ウィンドウ）である。
+The AWG GUI is a standalone application (or independent window) for controlling and outputting arbitrary waveform signals in real-time.
 
-### クラス・データ構造
+### Classes and Data Structures
 
-* **メインクラス:** `AwgMainFrame` (`TGMainFrame` を継承)
-* **データ構造:** `struct awg` (グローバル変数 `awgCmd` としてインスタンス化)
-* **設定保存:** `struct configuration`
+* **Main Class:** `AwgMainFrame` (inherits from `TGMainFrame`)
+* **Data Structure:** `struct awg` (instantiated as global variable `awgCmd`)
+* **Configuration Storage:** `struct configuration`
 
-### バックエンド通信ロジック
+### Backend Communication Logic
 
-AWG GUIは、`awgapi.h` で定義されたAPI関数を使用してバックエンド（AWGサーバー、`awgtpman` 等）と直接通信を行う。
+The AWG GUI communicates directly with the backend (AWG server, `awgtpman`, etc.) using API functions defined in `awgapi.h`.
 
-1. **チャンネル確保 (`ReadChannel`)**:
-    * `awgSetChannel(const char* channelName)`: スロット番号を取得。
-    * `awgRemoveChannel(int slotNum)`: チャンネルの割り当てを解除。
+1. **Channel Acquisition (`ReadChannel`)**:
+    * `awgSetChannel(const char* channelName)`: Obtains a slot number.
+    * `awgRemoveChannel(int slotNum)`: Releases channel assignment.
 
-2. **コマンド送信 (`HandleButtons` - "Set/Run")**:
-    * **コマンド例:** `set <slotNum> sine <freq> <amp> <offset> <phase>`
-    * `awgcmdline(const char* command)`: コマンドを送信・実行。
+2. **Command Transmission (`HandleButtons` - "Set/Run")**:
+    * **Command Example:** `set <slotNum> sine <freq> <amp> <offset> <phase>`
+    * `awgcmdline(const char* command)`: Sends and executes the command.
 
-### 主要な機能
+### Key Features
 
-* **波形タイプ:** Sine, Square, Ramp, Triangle, Offset (DC), Uniform (Noise), Normal (Gaussian Noise), Arbitrary, Sweep。
-* **フィルタ:** `foton` ツールを動的にロードしてフィルタ係数を生成・適用可能。
-* **制御:** ゲイン調整、ランプ時間設定、停止。
+* **Waveform Types:** Sine, Square, Ramp, Triangle, Offset (DC), Uniform (Noise), Normal (Gaussian Noise), Arbitrary, Sweep.
+* **Filter:** Can dynamically load the `foton` tool to generate and apply filter coefficients.
+* **Control:** Gain adjustment, ramp time setting, stop.
 
-## 5.3 DTT GUI Excitation Tab (`diagctrl.cc`) の詳細解析
+## 5.3 Detailed Analysis of DTT GUI Excitation Tab (`diagctrl.cc`)
 
-DTT GUIのExcitationタブは、伝達関数測定などの診断テストを実行する際に、被測定系に与える刺激（Stimulus）信号を設定するためのインターフェースである。
+The Excitation tab in DTT GUI is an interface for configuring stimulus signals applied to the system under test when executing diagnostic tests such as transfer function measurements.
 
-### バックエンド通信ロジック
+### Backend Communication Logic
 
-DTTでは、「テスト実行時の一括設定」というモデルを採用している。
+DTT adopts a "batch configuration at test execution" model.
 
-1. **パラメータ設定 (`DiagMainWindow::WriteParam`)**:
-    * `fCmdLine->putVar(...)` メソッドを使用してバックエンドの変数を更新。
+1. **Parameter Setting (`DiagMainWindow::WriteParam`)**:
+    * Uses the `fCmdLine->putVar(...)` method to update backend variables.
 
-2. **実行**:
-    * 全てのパラメータがセットされた後、`fCmdLine->parse("run")` が実行される。
+2. **Execution**:
+    * After all parameters are set, `fCmdLine->parse("run")` is executed.
 
-## 5.4 比較とまとめ
+## 5.4 Comparison and Summary
 
-| 特徴 | AWG GUI (`awggui.cc`) | DTT GUI Excitation (`diagctrl.cc`) |
+| Feature | AWG GUI (`awggui.cc`) | DTT GUI Excitation (`diagctrl.cc`) |
 | :--- | :--- | :--- |
-| **主な目的** | 任意のタイミング・波形での手動信号出力 | 診断テスト（FFT/SweptSine等）のための刺激信号設定 |
-| **通信タイミング** | ユーザー操作時に即時送信 | テスト開始時に一括送信 |
-| **通信API** | `awgcmdline()` (テキストコマンド直接送信) | `fCmdLine->putVar()` (変数設定) -> `run` |
-| **チャンネル管理** | `awgSetChannel` で動的にスロット確保 | `basic_commandline` の設定変数として管理 |
-| **柔軟性** | 高い（Addによる重ね合わせ、即時停止等） | テストシーケンスに従属 |
+| **Primary Purpose** | Manual signal output at arbitrary timing and waveform | Stimulus signal configuration for diagnostic tests (FFT/SweptSine, etc.) |
+| **Communication Timing** | Immediate transmission on user operation | Batch transmission at test start |
+| **Communication API** | `awgcmdline()` (direct text command transmission) | `fCmdLine->putVar()` (variable setting) -> `run` |
+| **Channel Management** | Dynamically acquires slots with `awgSetChannel` | Managed as configuration variables in `basic_commandline` |
+| **Flexibility** | High (overlay with Add, immediate stop, etc.) | Subordinate to test sequence |
 
-**結論:**
-AWG GUIは**手続き型・即時実行型**の制御を行っており、DTT GUIは**宣言型・バッチ実行型**のアプローチをとっている。
+**Conclusion:**
+The AWG GUI performs **procedural, immediate execution** control, while the DTT GUI takes a **declarative, batch execution** approach.
 
 ---
 
-*このレポートにより、DTT の各サブシステムの実装詳細が把握できました。*
+*This report provides an understanding of the implementation details of each DTT subsystem.*
