@@ -11,30 +11,30 @@
 
 | ファイル | 概要 |
 |---------|------|
-| `gwexpy/types/field4d_demo.py` | デモデータ生成関数（make_demo_field4d 等） |
-| `gwexpy/types/field4d_signal.py` | 信号処理コア関数（PSD, 相互相関, コヒーレンス等） |
+| `gwexpy/fields/demo.py` | デモデータ生成関数（make_demo_scalar_field 等） |
+| `gwexpy/fields/signal.py` | 信号処理コア関数（PSD, 相互相関, コヒーレンス等） |
 
 ### 2. 変更ファイル
 
 | ファイル | 変更内容 |
 |---------|---------|
-| `gwexpy/types/__init__.py` | 新規関数のエクスポート追加 |
-| `gwexpy/types/field4d.py` | ScalarField クラスにメソッドラッパー追加（compute_psd, freq_space_map など） |
+| `gwexpy/fields/__init__.py` | 新規関数のエクスポート追加 |
+| `gwexpy/fields/scalar.py` | ScalarField クラスにメソッドラッパー追加（compute_psd, freq_space_map など） |
 
 ---
 
 ## 追加・変更した Public API 一覧
 
-### デモデータ生成 (`gwexpy.types`)
+### デモデータ生成 (`gwexpy.fields.demo`)
 
 | 関数 | 説明 |
 |------|------|
-| `make_demo_field4d(pattern, ...)` | 決定論的デモScalarField生成（gaussian/sine/standing/noise） |
+| `make_demo_scalar_field(pattern, ...)` | 決定論的デモScalarField生成（gaussian/sine/standing/noise） |
 | `make_propagating_gaussian(**kw)` | 伝搬ガウシアンパルス（エイリアス） |
 | `make_sinusoidal_wave(**kw)` | 正弦波（エイリアス） |
 | `make_standing_wave(**kw)` | 定在波（エイリアス） |
 
-### 信号処理関数 (`gwexpy.types`)
+### 信号処理関数 (`gwexpy.fields.signal`)
 
 | 関数 | 説明 |
 |------|------|
@@ -170,12 +170,12 @@ def coherence_map(
     noverlap: int | None = None,
     window: str = "hann",
     stride: int = 1,
-) -> ScalarField | ScalarFieldDict:
+) -> ScalarField | FieldDict:
     """Compute magnitude-squared coherence map from a reference point.
 
     Returns
     -------
-    ScalarField or ScalarFieldDict
+    ScalarField or FieldDict
         - band指定時: スカラーコヒーレンス値の ScalarField
         - band=None: 周波数軸を持つ ScalarField
     """
@@ -185,11 +185,11 @@ def coherence_map(
 
 ## テスト担当へ渡す「テスト観点」メモ
 
-### 1. デモデータ生成 (`field4d_demo.py`)
+### 1. デモデータ生成 (`demo.py`)
 
 #### 機能テスト
 
-- [ ] `make_demo_field4d` の全パターン（'gaussian', 'sine', 'standing', 'noise'）が正常に生成される
+- [ ] `make_demo_scalar_field` の全パターン（'gaussian', 'sine', 'standing', 'noise'）が正常に生成される
 - [ ] seed を固定した場合、同じデータが再生成される（決定論性）
 - [ ] 軸メタデータ（times, x, y, z）が正しい単位を持つ
 - [ ] `axis0_domain='time'`、`space_domain='real'` が設定される

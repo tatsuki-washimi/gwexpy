@@ -8,7 +8,7 @@
 
 # 詳細なロードマップ（Phase単位）
 - **Phase 1: 構造リファクタ**
-  - `gwexpy/fields/` パッケージを新設し、ScalarField を ScalarField にリネーム/移動。ScalarFieldList/Dict → FieldList/FieldDict。公開 import を `gwexpy.fields` に統一。
+  - `gwexpy/fields/` パッケージを新設し、旧4Dフィールドクラスを ScalarField として移動/整理。ScalarFieldList/Dict → FieldList/FieldDict。公開 import を `gwexpy.fields` に統一。
   - 既存 `types/array4d.py` 等の低レベルは温存し、内部参照を更新。
   - CI 影響範囲のモジュール import 修正。
 - **Phase 2: ベースクラスとドメインメタデータ**

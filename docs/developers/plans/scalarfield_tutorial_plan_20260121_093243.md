@@ -14,7 +14,7 @@
 - 4D 構造を維持するスライシング。
 - 時間-周波数変換（軸 0）。
 - 実空間-K 空間変換（空間軸）。
-- `ScalarFieldList` と `ScalarFieldDict` のバッチ操作。
+- `FieldList` と `FieldDict` のバッチ操作。
 
 ## 使用モデルとリソース最適化
 

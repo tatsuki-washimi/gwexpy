@@ -6,7 +6,7 @@ This repository is optimized for collaboration with **AI Coding Agents** (e.g., 
 
 When working on this repository, all agents should adhere to the following principles:
 - **Physical Consistency**: Ensure that units (`astropy.units`), frequency normalization, and coordinate systems are preserved across transformations.
-- **Metadata Preservation**: Maintain axis information and attributes when manipulating `Field4D`, `TimeSeries`, and `FrequencySeries` objects.
+- **Metadata Preservation**: Maintain axis information and attributes when manipulating `ScalarField`, `TimeSeries`, and `FrequencySeries` objects.
 - **Documentation First**: Sync changes with `docstrings` and maintain tutorials in the `examples/` and `docs/` directories.
 - **Quality Assurance**: Always run `Ruff` and `MyPy` before completing a task.
 
