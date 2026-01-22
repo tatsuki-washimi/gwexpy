@@ -5,7 +5,7 @@ import pytest
 from astropy import units as u
 from numpy.testing import assert_allclose
 
-from gwexpy.types import Field4D
+from gwexpy.fields import ScalarField as Field4D
 
 
 class TestField4DFftTimeBasic:

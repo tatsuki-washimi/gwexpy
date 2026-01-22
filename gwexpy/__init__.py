@@ -36,6 +36,7 @@ from . import (
     types,
 )
 from ._version import __version__
+from .fields import FieldDict, FieldList, ScalarField, TensorField, VectorField
 from .frequencyseries import (
     FrequencySeries,
     FrequencySeriesDict,
@@ -94,6 +95,11 @@ __all__ = [
     "SpectrogramDict",
     "SpectrogramMatrix",
     # Types
+    "ScalarField",
+    "VectorField",
+    "TensorField",
+    "FieldList",
+    "FieldDict",
     "SeriesMatrix",
     "MetaData",
     "MetaDataDict",

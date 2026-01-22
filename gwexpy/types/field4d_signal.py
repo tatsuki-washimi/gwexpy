@@ -1,4 +1,4 @@
-"""Signal processing utilities for Field4D.
+"""Signal processing utilities for ScalarField.
 
 This module provides spectral analysis, correlation, and coherence tools
 for 4D field data, following the Phase 3 signal processing extension plan.
@@ -10,7 +10,7 @@ Key features:
 - Coherence analysis
 
 All functions preserve axis metadata and units, returning gwexpy-compatible
-data containers (FrequencySeries, TimeSeries, Field4D).
+data containers (FrequencySeries, TimeSeries, ScalarField).
 """
 
 from __future__ import annotations
@@ -23,11 +23,10 @@ from astropy import units as u
 if TYPE_CHECKING:
     from astropy.units import Quantity
 
+    from gwexpy.fields import ScalarField
+    from gwexpy.fields.collections import FieldDict
     from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList
     from gwexpy.timeseries import TimeSeries
-
-    from .field4d import Field4D
-    from .field4d_collections import Field4DDict
 
 __all__ = [
     "compute_psd",
@@ -39,8 +38,8 @@ __all__ = [
 ]
 
 
-def _validate_regular_time_axis(field: "Field4D") -> tuple[float, u.Unit]:
-    """Validate that Field4D has a regular time axis suitable for FFT/PSD.
+def _validate_regular_time_axis(field: ScalarField) -> tuple[float, u.Unit]:
+    """Validate that ScalarField has a regular time axis suitable for FFT/PSD.
 
     Returns
     -------
@@ -75,8 +74,8 @@ def _validate_regular_time_axis(field: "Field4D") -> tuple[float, u.Unit]:
 
 
 def _extract_timeseries_1d(
-    field: "Field4D",
-    point: tuple["Quantity", "Quantity", "Quantity"],
+    field: ScalarField,
+    point: tuple[Quantity, Quantity, Quantity],
 ) -> tuple[np.ndarray, float, u.Unit]:
     """Extract 1D time series at a spatial point.
 
@@ -100,10 +99,10 @@ def _extract_timeseries_1d(
 
 
 def compute_psd(
-    field: "Field4D",
+    field: ScalarField,
     point_or_region: (
-        tuple["Quantity", "Quantity", "Quantity"]
-        | list[tuple["Quantity", "Quantity", "Quantity"]]
+        tuple[Quantity, Quantity, Quantity]
+        | list[tuple[Quantity, Quantity, Quantity]]
         | dict[str, Any]
     ),
     *,
@@ -114,7 +113,7 @@ def compute_psd(
     scaling: Literal["density", "spectrum"] = "density",
     average: Literal["mean", "median"] = "mean",
     return_onesided: bool = True,
-) -> "FrequencySeries | FrequencySeriesList":
+) -> FrequencySeries | FrequencySeriesList:
     """Compute power spectral density using Welch's method.
 
     Extracts time series from one or more spatial points/regions and
@@ -122,7 +121,7 @@ def compute_psd(
 
     Parameters
     ----------
-    field : Field4D
+    field : ScalarField
         Input 4D field with axis0_domain='time'.
     point_or_region : tuple, list of tuples, or dict
         Spatial location(s) to extract:
@@ -237,7 +236,7 @@ def compute_psd(
 
 
 def _extract_region_average(
-    field: "Field4D",
+    field: ScalarField,
     region: dict[str, Any],
 ) -> np.ndarray:
     """Extract time series averaged over a spatial region.
@@ -280,9 +279,9 @@ def _extract_region_average(
 
 
 def freq_space_map(
-    field: "Field4D",
+    field: ScalarField,
     axis: str,
-    at: dict[str, "Quantity"] | None = None,
+    at: dict[str, Quantity] | None = None,
     *,
     method: Literal["welch", "fft"] = "welch",
     nperseg: int | None = None,
@@ -290,7 +289,7 @@ def freq_space_map(
     window: str = "hann",
     detrend: str | bool = "constant",
     scaling: Literal["density", "spectrum"] = "density",
-) -> "Field4D":
+) -> ScalarField:
     """Compute frequency-space map along a spatial axis.
 
     Scans along the specified spatial axis, computing PSD at each position
@@ -299,7 +298,7 @@ def freq_space_map(
 
     Parameters
     ----------
-    field : Field4D
+    field : ScalarField
         Input 4D field with axis0_domain='time'.
     axis : str
         Spatial axis to scan along ('x', 'y', or 'z').
@@ -321,8 +320,8 @@ def freq_space_map(
 
     Returns
     -------
-    Field4D
-        2D frequency-space map stored as Field4D with:
+    ScalarField
+        2D frequency-space map stored as ScalarField with:
         - axis0: frequency (with axis0_domain='frequency')
         - axis1: spatial coordinate
         - axis2, axis3: length-1 dummy axes
@@ -447,9 +446,9 @@ def freq_space_map(
     else:
         psd_unit = u.dimensionless_unscaled
 
-    from .field4d import Field4D
+    from gwexpy.fields import ScalarField
 
-    return Field4D(
+    return ScalarField(
         psd_4d,
         unit=psd_unit,
         axis0=freq_axis,
@@ -467,16 +466,16 @@ compute_freq_space = freq_space_map
 
 
 def compute_xcorr(
-    field: "Field4D",
-    point_a: tuple["Quantity", "Quantity", "Quantity"],
-    point_b: tuple["Quantity", "Quantity", "Quantity"],
+    field: ScalarField,
+    point_a: tuple[Quantity, Quantity, Quantity],
+    point_b: tuple[Quantity, Quantity, Quantity],
     *,
-    max_lag: int | "Quantity" | None = None,
+    max_lag: int | Quantity | None = None,
     mode: Literal["full", "same", "valid"] = "full",
     normalize: bool = True,
     detrend: bool = True,
     window: str | None = None,
-) -> "TimeSeries":
+) -> TimeSeries:
     """Compute cross-correlation between two spatial points.
 
     Calculates the normalized (or unnormalized) cross-correlation function
@@ -484,7 +483,7 @@ def compute_xcorr(
 
     Parameters
     ----------
-    field : Field4D
+    field : ScalarField
         Input 4D field with axis0_domain='time'.
     point_a, point_b : tuple of Quantity
         Spatial coordinates (x, y, z) for the two points.
@@ -582,17 +581,17 @@ def compute_xcorr(
 
 
 def time_delay_map(
-    field: "Field4D",
-    ref_point: tuple["Quantity", "Quantity", "Quantity"],
+    field: ScalarField,
+    ref_point: tuple[Quantity, Quantity, Quantity],
     plane: str = "xy",
-    at: dict[str, "Quantity"] | None = None,
+    at: dict[str, Quantity] | None = None,
     *,
-    max_lag: int | "Quantity" | None = None,
+    max_lag: int | Quantity | None = None,
     stride: int = 1,
     roi: dict[str, slice] | None = None,
     normalize: bool = True,
     detrend: bool = True,
-) -> "Field4D":
+) -> ScalarField:
     """Compute time delay map from a reference point to a 2D slice.
 
     For each point in the specified plane, computes cross-correlation
@@ -600,7 +599,7 @@ def time_delay_map(
 
     Parameters
     ----------
-    field : Field4D
+    field : ScalarField
         Input 4D field with axis0_domain='time'.
     ref_point : tuple of Quantity
         Reference point coordinates (x, y, z).
@@ -623,8 +622,8 @@ def time_delay_map(
 
     Returns
     -------
-    Field4D
-        Time delay map as Field4D slice with delay values in time units.
+    ScalarField
+        Time delay map as ScalarField slice with delay values in time units.
         Shape matches the input plane dimensions (with stride applied).
 
     Examples
@@ -747,7 +746,7 @@ def time_delay_map(
             delay_samples = search_lags[peak_idx]
             delay_values[i1, i2] = delay_samples * dt_value
 
-    # Build output Field4D
+    # Build output ScalarField
     # Shape: (1, n1 or 1, n2 or 1, 1) depending on plane
     shape_4d = [1, 1, 1, 1]
     shape_4d[ax1_int] = n1
@@ -767,9 +766,9 @@ def time_delay_map(
     axes_out[ax2_int] = ax2_out
     axes_out[fix_int] = fix_index[fix_idx : fix_idx + 1]
 
-    from .field4d import Field4D
+    from gwexpy.fields import ScalarField
 
-    return Field4D(
+    return ScalarField(
         delay_4d,
         unit=dt_unit,
         axis0=np.array([0.0]) * u.s,  # Dummy time axis
@@ -783,17 +782,17 @@ def time_delay_map(
 
 
 def coherence_map(
-    field: "Field4D",
-    ref_point: tuple["Quantity", "Quantity", "Quantity"],
+    field: ScalarField,
+    ref_point: tuple[Quantity, Quantity, Quantity],
     *,
     plane: str = "xy",
-    at: dict[str, "Quantity"] | None = None,
-    band: tuple["Quantity", "Quantity"] | None = None,
+    at: dict[str, Quantity] | None = None,
+    band: tuple[Quantity, Quantity] | None = None,
     nperseg: int | None = None,
     noverlap: int | None = None,
     window: str = "hann",
     stride: int = 1,
-) -> "Field4D | Field4DDict":
+) -> ScalarField | FieldDict:
     """Compute magnitude-squared coherence map from a reference point.
 
     Calculates coherence between the reference time series and all points
@@ -801,7 +800,7 @@ def coherence_map(
 
     Parameters
     ----------
-    field : Field4D
+    field : ScalarField
         Input 4D field with axis0_domain='time'.
     ref_point : tuple of Quantity
         Reference point coordinates (x, y, z).
@@ -823,10 +822,10 @@ def coherence_map(
 
     Returns
     -------
-    Field4D or Field4DDict
-        - If band is specified: Field4D with scalar coherence values (0-1).
-        - If band is None: Field4DDict with keys as frequency indices,
-          or a single Field4D with frequency as axis0.
+    ScalarField or FieldDict
+        - If band is specified: ScalarField with scalar coherence values (0-1).
+        - If band is None: FieldDict with keys as frequency indices,
+          or a single ScalarField with frequency as axis0.
 
     Examples
     --------
@@ -960,9 +959,9 @@ def coherence_map(
         axes_out[ax2_int] = ax2_out
         axes_out[fix_int] = fix_index[fix_idx : fix_idx + 1]
 
-        from .field4d import Field4D
+        from gwexpy.fields import ScalarField
 
-        return Field4D(
+        return ScalarField(
             coh_4d,
             unit=u.dimensionless_unscaled,
             axis0=np.array([0.0]) * u.s,
@@ -992,9 +991,9 @@ def coherence_map(
         axes_out[ax2_int] = ax2_out
         axes_out[fix_int] = fix_index[fix_idx : fix_idx + 1]
 
-        from .field4d import Field4D
+        from gwexpy.fields import ScalarField
 
-        return Field4D(
+        return ScalarField(
             coh_4d,
             unit=u.dimensionless_unscaled,
             axis0=freq_axis,

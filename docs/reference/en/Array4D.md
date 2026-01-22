@@ -16,7 +16,7 @@ isel(self, indexers=None, **kwargs)
 
 Select by integer indices along specified axes.
 
-Inherited from `AxisApiMixin`. For Array4D, specifying an integer index for a dimension will reduce the dimensionality (returning a lower-dimensional array or Quantity), unlike `Field4D` which always maintains 4 dimensions.
+Inherited from `AxisApiMixin`. For Array4D, specifying an integer index for a dimension will reduce the dimensionality (returning a lower-dimensional array or Quantity), unlike `ScalarField` which always maintains 4 dimensions.
 
 ### `sel`
 
