@@ -8,7 +8,7 @@
 
 ## 1. Background and Motivation
 
-The current implementation uses a `ScalarField` class located under `gwexpy.types`.  
+The legacy implementation used a `ScalarField` class under `gwexpy.types`; the current API lives under `gwexpy.fields`.  
 However:
 
 - `types/` is intended for low-level or abstract infrastructure.

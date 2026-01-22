@@ -5,7 +5,7 @@ CIや画像出力用の最小限のプロットスクリプト。
 Matplotlib の Agg バックエンドを使用し、GUIなしで画像を生成します。
 
 使用例:
-    python plot_field4d_demo.py  # -> field4d_demo.png を出力
+    python plot_scalarfield_demo.py  # -> scalarfield_demo.png を出力
 """
 
 import matplotlib
@@ -77,7 +77,7 @@ def main():
     axes[1, 1].set_title('Time-Space Map')
 
     plt.tight_layout()
-    output_path = 'field4d_demo.png'
+    output_path = 'scalarfield_demo.png'
     fig.savefig(output_path, dpi=150)
     print(f'Saved: {output_path}')
     plt.close(fig)

@@ -88,7 +88,7 @@
 
 ### 1.1 2Dヒートマップ：`ScalarField.plot_map2d(...)`
 
-**新規**：`gwexpy/plot/field4d.py` を作り、実処理を集約
+**新規**：`gwexpy/plot/scalarfield.py` を作り、実処理を集約
 `ScalarField.plot_map2d` は薄いラッパ（内部で plot モジュール関数を呼ぶ）
 
 #### 推奨シグネチャ（MVP）
@@ -302,7 +302,7 @@
 | 2Dヒートマップ | `ScalarField.plot_map2d()` | ✅ 実装済み |
 | 1D重ね書き | `ScalarField.plot_timeseries_points()` | ✅ 実装済み |
 | 1D線プロファイル | `ScalarField.plot_profile()` | ✅ 実装済み |
-| T1-T2 テスト | `tests/types/test_field4d_visualization.py` | ✅ 17テスト通過 |
+| T1-T2 テスト | `tests/fields/test_scalarfield_visualization.py` | ✅ 17テスト通過 |
 
 ### ✅ Phase 2: 比較・要約（完了）
 
@@ -313,7 +313,7 @@
 | 時間要約マップ | `ScalarField.time_stat_map()` | ✅ 実装済み |
 | 時間-空間マップ | `ScalarField.time_space_map()` | ✅ 実装済み |
 | 時間-空間描画 | `ScalarField.plot_time_space_map()` | ✅ 実装済み |
-| T3-T4 テスト | `tests/types/test_field4d_visualization.py` | ✅ 11テスト通過 |
+| T3-T4 テスト | `tests/fields/test_scalarfield_visualization.py` | ✅ 11テスト通過 |
 
 ### ⏳ Phase 3: 重い信号処理（未着手）
 

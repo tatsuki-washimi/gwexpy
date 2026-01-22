@@ -57,7 +57,7 @@ def _validate_regular_time_axis(field: ScalarField) -> tuple[float, u.Unit]:
             f"got '{field.axis0_domain}'"
         )
 
-    from .axis import AxisDescriptor
+    from ..types.axis import AxisDescriptor
 
     ax = AxisDescriptor(field._axis0_name, field._axis0_index)
     if not ax.regular:
@@ -70,6 +70,11 @@ def _validate_regular_time_axis(field: ScalarField) -> tuple[float, u.Unit]:
         raise ValueError("Time axis must have at least 2 points for spectral analysis.")
 
     dt = ax.delta
+    if dt is None:
+        raise ValueError(
+            "Time axis must be regularly spaced for spectral analysis. "
+            "Consider resampling the data to a uniform time grid."
+        )
     return dt.value, dt.unit
 
 
@@ -560,7 +565,7 @@ def compute_xcorr(
 
     # Apply max_lag truncation
     if max_lag is not None:
-        if hasattr(max_lag, "unit"):
+        if isinstance(max_lag, u.Quantity):
             max_lag_samples = int(max_lag.to_value(dt_unit) / dt_value)
         else:
             max_lag_samples = int(max_lag)
@@ -706,7 +711,7 @@ def time_delay_map(
 
     # Max lag in samples
     if max_lag is not None:
-        if hasattr(max_lag, "unit"):
+        if isinstance(max_lag, u.Quantity):
             max_lag_samples = int(max_lag.to_value(dt_unit) / dt_value)
         else:
             max_lag_samples = int(max_lag)

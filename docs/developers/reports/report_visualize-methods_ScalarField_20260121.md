@@ -15,19 +15,19 @@
 - **スライスユーティリティ**: 4D構造を維持（軸の長さを1として残す）するための `slice_from_index`, `slice_from_value` を作成。
 - **データ成分抽出**: 複素数データから `real`, `imag`, `abs`, `angle`, `power` を一元的に抽出する `select_value` 関数を実装（`power` 時の単位二乗も考慮）。
 
-### 2.2 抽出APIの実装 (`gwexpy/types/field4d.py`)
+### 2.2 抽出APIの実装 (`gwexpy/fields/scalar.py`)
 
 - `extract_points()`: 指定した3次元座標群から時系列を抽出し、`TimeSeriesList` として返す機能。
 - `extract_profile()`: 指定した軸に沿った1Dプロファイルを抽出。
 - `slice_map2d()`: 指定した平面（xy, xz, yz, tx 等）を 4D 構造を維持したまま抽出。
 
-### 2.3 可視化機能の実装 (`gwexpy/types/field4d.py`)
+### 2.3 可視化機能の実装 (`gwexpy/fields/scalar.py`)
 
 - `plot_map2d()`: 高機能な2Dヒートマップ描画。不均一軸に強い `pcolormesh` を既定とし、自動カラーバー、単位付きラベルに対応。
 - `plot_timeseries_points()`: 抽出した複数点の時系列を一括プロット。
 - `plot_profile()`: 指定軸の1D物理量分布をプロット。
 
-### 2.4 比較・要約解析メソッドの実装 (`gwexpy/types/field4d.py`)
+### 2.4 比較・要約解析メソッドの実装 (`gwexpy/fields/scalar.py`)
 
 - `diff()`: フィールド間の差分、比率、パーセント変化の計算（単位系の正確な伝播）。
 - `zscore()`: 指定したベースライン期間による標準化。
@@ -45,9 +45,9 @@
 ## 4. 作成・修正ファイル
 
 - `gwexpy/plot/_coord.py` (新規)
-- `gwexpy/types/field4d.py` (機能追加)
+- `gwexpy/fields/scalar.py` (機能追加)
 - `tests/plot/test_coord.py` (新規テスト)
-- `tests/types/test_field4d_visualization.py` (新規テスト)
+- `tests/fields/test_scalarfield_visualization.py` (新規テスト)
 - `docs/developers/plans/visualize-methods_ScalarField.md` (進捗追記・リント修正)
 
 ---

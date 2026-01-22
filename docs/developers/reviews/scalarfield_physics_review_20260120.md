@@ -2,9 +2,9 @@
 
 ## Scope
 
-- Targets: `ScalarField`, `ScalarFieldList`, `ScalarFieldDict`
+- Targets: `ScalarField`, `FieldList`, `FieldDict`
 - Focus: FFT domain transitions, axis handling, physical unit consistency
-- Files reviewed: `gwexpy/types/field4d.py`, `gwexpy/types/field4d_collections.py`, `gwexpy/types/axis.py`, `gwexpy/types/array4d.py`
+- Files reviewed: `gwexpy/fields/scalar.py`, `gwexpy/fields/collections.py`, `gwexpy/types/axis.py`, `gwexpy/types/array4d.py`
 
 ## Summary
 
@@ -12,12 +12,12 @@ The core FFT workflows are conceptually aligned with GWpy conventions, but there
 
 ## Findings
 
-- High: `fft_time`/`ifft_time` compute `dt`/`df` from the first two samples without validating axis regularity or size >= 2, so irregular or length-1 axes yield physically incorrect frequency/time axes. (`gwexpy/types/field4d.py:341`, `gwexpy/types/field4d.py:406`)
-- Medium: Time and space inverse transforms rebuild axes with a zero origin, ignoring any original offset; this changes the physical coordinate system and can introduce phase errors. (`gwexpy/types/field4d.py:345`, `gwexpy/types/field4d.py:414`, `gwexpy/types/field4d.py:639`)
-- Medium: One-sided normalization doubles all non-DC bins; for even-length FFTs the Nyquist bin should not be doubled. (`gwexpy/types/field4d.py:337`)
-- Medium: `rfft/irfft` implicitly assume real-valued signals and Hermitian frequency data, but no validation enforces that constraint. (`gwexpy/types/field4d.py:335`, `gwexpy/types/field4d.py:403`)
-- Low: Spatial axis monotonicity is not enforced, and `fft_space` uses signed `dx` while `ifft_space` uses `abs(dk)`; descending axes can lead to inconsistent k-axis direction and reconstruction. (`gwexpy/types/axis.py:54`, `gwexpy/types/field4d.py:521`, `gwexpy/types/field4d.py:628`)
-- Low: `ScalarFieldList`/`ScalarFieldDict` validation checks only units/domains/names, not the coordinate arrays, so batched FFT operations can mix mismatched samplings. (`gwexpy/types/field4d_collections.py:38`, `gwexpy/types/field4d_collections.py:170`)
+- High: `fft_time`/`ifft_time` compute `dt`/`df` from the first two samples without validating axis regularity or size >= 2, so irregular or length-1 axes yield physically incorrect frequency/time axes. (`gwexpy/fields/scalar.py:341`, `gwexpy/fields/scalar.py:406`)
+- Medium: Time and space inverse transforms rebuild axes with a zero origin, ignoring any original offset; this changes the physical coordinate system and can introduce phase errors. (`gwexpy/fields/scalar.py:345`, `gwexpy/fields/scalar.py:414`, `gwexpy/fields/scalar.py:639`)
+- Medium: One-sided normalization doubles all non-DC bins; for even-length FFTs the Nyquist bin should not be doubled. (`gwexpy/fields/scalar.py:337`)
+- Medium: `rfft/irfft` implicitly assume real-valued signals and Hermitian frequency data, but no validation enforces that constraint. (`gwexpy/fields/scalar.py:335`, `gwexpy/fields/scalar.py:403`)
+- Low: Spatial axis monotonicity is not enforced, and `fft_space` uses signed `dx` while `ifft_space` uses `abs(dk)`; descending axes can lead to inconsistent k-axis direction and reconstruction. (`gwexpy/types/axis.py:54`, `gwexpy/fields/scalar.py:521`, `gwexpy/fields/scalar.py:628`)
+- Low: `FieldList`/`FieldDict` validation checks only units/domains/names, not the coordinate arrays, so batched FFT operations can mix mismatched samplings. (`gwexpy/fields/collections.py:38`, `gwexpy/fields/collections.py:170`)
 
 ## Code Fix Plan
 

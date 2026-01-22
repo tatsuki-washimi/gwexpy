@@ -39,6 +39,9 @@
   - Robust support for 3D `(Batch, Time, Freq)` and 4D `(Row, Col, Time, Freq)` data structures.
   - Added `to_series_1Dlist()` and `to_series_2Dlist()` conversion methods.
 
+### Removed
+- **Legacy 4D Field API**: Removed the legacy 4D field API; `ScalarField` is now the sole field API.
+
 ### Improved
 - **ROOT Interoperability**: Significantly optimized `to_th1d`, `to_th2d`, and `from_root` using vectorization, improving performance for large arrays.
 - **Noise Module**: Refactored `gwexpy.noise.magnetic` and `gwexpy.noise.peaks` for better maintenance and accuracy.

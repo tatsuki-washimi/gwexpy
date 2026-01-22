@@ -1,15 +1,15 @@
 # 作業報告: ScalarField への統一リファクタ (2026-01-22)
 
 ## 概要
-- Field4D 系 API を `gwexpy.fields` の `ScalarField`/`FieldList`/`FieldDict` に統一し、ドメインメタデータのバリデーションを追加。
+- ScalarField 系 API を `gwexpy.fields` の `ScalarField`/`FieldList`/`FieldDict` に統一し、ドメインメタデータのバリデーションを追加。
 - ドキュメント、チュートリアル、テストを新 API に更新。
 - 全テスト・lint・型チェックを実行し合格。
 
 ## 変更点
 - `gwexpy/fields/` に FieldBase/ScalarField/collections を追加し、FFT 後のドメイン/単位整合を検証。
-- `gwexpy/__init__.py` から新フィールド API を公開、`types/field4d.py` はレガシー shim に。
-- テスト: 新規 `tests/fields/test_scalarfield_domain.py` でドメイン/単位伝播を検証。既存 Field4D* テストを新 API import に更新。
-- ドキュメント/例: ScalarField 参照ページを追加、Field4D* 参照ページを削除。ノートブック・デモ・開発ドキュメントを新名称に置換。
+- `gwexpy/__init__.py` から新フィールド API を公開し、旧フィールド shim を削除。
+- テスト: 新規 `tests/fields/test_scalarfield_domain.py` でドメイン/単位伝播を検証。既存の旧フィールド系テストを新 API import に更新。
+- ドキュメント/例: ScalarField 参照ページを追加し、旧フィールド参照ページを削除。ノートブック・デモ・開発ドキュメントを新名称に置換。
 
 ## 検証
 - `ruff check` : pass

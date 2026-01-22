@@ -1,4 +1,4 @@
-"""Tests for Field4D visualization utilities (Phase 0.1)."""
+"""Tests for ScalarField visualization utilities (Phase 0.1)."""
 
 import numpy as np
 import pytest

@@ -30,7 +30,7 @@
 - `gwexpy/timeseries/matrix_spectral.py`
 - `gwexpy/timeseries/matrix.py`
 - `gwexpy/timeseries/preprocess.py`
-- `scripts/verify_field4d_physics.py`
+- `scripts/verify_scalarfield_physics.py`
 - `gwexpy/.agent/skills/extend_gwpy/SKILL.md` (修復)
 - `docs/developers/plans/visualize-ScalarField-docs.md` (修復)
 - `docs/developers/plans/visualize-methods_ScalarField.md`

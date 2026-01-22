@@ -1,18 +1,18 @@
-"""Tests for Field4D extraction and visualization methods (Phase T1-T2)."""
+"""Tests for ScalarField extraction and visualization methods (Phase T1-T2)."""
 
 import numpy as np
 import pytest
 from astropy import units as u
 
+from gwexpy.fields import ScalarField
 
-class TestField4DExtractPoints:
-    """Tests for Field4D.extract_points method."""
+
+class TestScalarFieldExtractPoints:
+    """Tests for ScalarField.extract_points method."""
 
     @pytest.fixture
     def sample_field(self):
-        """Create a sample Field4D for testing."""
-        from gwexpy.fields import ScalarField as Field4D
-
+        """Create a sample ScalarField for testing."""
         # Create 4D test data: (t=10, x=5, y=5, z=5)
         np.random.seed(42)
         data = np.random.randn(10, 5, 5, 5)
@@ -22,7 +22,7 @@ class TestField4DExtractPoints:
         y = np.arange(5) * 1.0 * u.m
         z = np.arange(5) * 1.0 * u.m
 
-        return Field4D(
+        return ScalarField(
             data,
             unit=u.V,
             axis0=times,
@@ -73,21 +73,19 @@ class TestField4DExtractPoints:
         assert "z=" in result[0].name
 
 
-class TestField4DSliceMap2D:
-    """Tests for Field4D.slice_map2d method."""
+class TestScalarFieldSliceMap2D:
+    """Tests for ScalarField.slice_map2d method."""
 
     @pytest.fixture
     def sample_field(self):
-        """Create a sample Field4D for testing."""
-        from gwexpy.fields import ScalarField as Field4D
-
+        """Create a sample ScalarField for testing."""
         data = np.random.randn(10, 8, 8, 8)
         times = np.arange(10) * 0.1 * u.s
         x = np.arange(8) * 1.0 * u.m
         y = np.arange(8) * 1.0 * u.m
         z = np.arange(8) * 1.0 * u.m
 
-        return Field4D(
+        return ScalarField(
             data,
             unit=u.V,
             axis0=times,
@@ -132,7 +130,7 @@ class TestField4DSliceMap2D:
         assert sliced.shape[3] == 1   # z
 
     def test_slice_preserves_unit(self, sample_field):
-        """Test that sliced Field4D preserves unit."""
+        """Test that sliced ScalarField preserves unit."""
         sliced = sample_field.slice_map2d(
             "xy", at={"t": 0.5 * u.s, "z": 3.0 * u.m}
         )
@@ -148,21 +146,19 @@ class TestField4DSliceMap2D:
         assert sliced.shape[3] == 1
 
 
-class TestField4DPlotMap2D:
-    """Tests for Field4D.plot_map2d method."""
+class TestScalarFieldPlotMap2D:
+    """Tests for ScalarField.plot_map2d method."""
 
     @pytest.fixture
     def sample_field(self):
-        """Create a sample Field4D for testing."""
-        from gwexpy.fields import ScalarField as Field4D
-
+        """Create a sample ScalarField for testing."""
         data = np.random.randn(10, 8, 8, 8)
         times = np.arange(10) * 0.1 * u.s
         x = np.arange(8) * 1.0 * u.m
         y = np.arange(8) * 1.0 * u.m
         z = np.arange(8) * 1.0 * u.m
 
-        return Field4D(
+        return ScalarField(
             data,
             unit=u.V,
             axis0=times,
@@ -225,13 +221,13 @@ class TestField4DPlotMap2D:
         plt.close(fig)
 
 
-class TestField4DPlotTimeseriesPoints:
-    """Tests for Field4D.plot_timeseries_points method."""
+class TestScalarFieldPlotTimeseriesPoints:
+    """Tests for ScalarField.plot_timeseries_points method."""
 
     @pytest.fixture
     def sample_field(self):
-        """Create a sample Field4D for testing."""
-        from gwexpy.fields import ScalarField as Field4D
+        """Create a sample ScalarField for testing."""
+        from gwexpy.fields import ScalarField as ScalarField
 
         data = np.random.randn(10, 5, 5, 5)
         times = np.arange(10) * 0.1 * u.s
@@ -239,7 +235,7 @@ class TestField4DPlotTimeseriesPoints:
         y = np.arange(5) * 1.0 * u.m
         z = np.arange(5) * 1.0 * u.m
 
-        return Field4D(
+        return ScalarField(
             data,
             unit=u.V,
             axis0=times,
@@ -276,13 +272,13 @@ class TestField4DPlotTimeseriesPoints:
         plt.close(fig)
 
 
-class TestField4DPlotProfile:
-    """Tests for Field4D.plot_profile method."""
+class TestScalarFieldPlotProfile:
+    """Tests for ScalarField.plot_profile method."""
 
     @pytest.fixture
     def sample_field(self):
-        """Create a sample Field4D for testing."""
-        from gwexpy.fields import ScalarField as Field4D
+        """Create a sample ScalarField for testing."""
+        from gwexpy.fields import ScalarField as ScalarField
 
         data = np.random.randn(10, 8, 8, 8)
         times = np.arange(10) * 0.1 * u.s
@@ -290,7 +286,7 @@ class TestField4DPlotProfile:
         y = np.arange(8) * 1.0 * u.m
         z = np.arange(8) * 1.0 * u.m
 
-        return Field4D(
+        return ScalarField(
             data,
             unit=u.V,
             axis0=times,
@@ -331,13 +327,13 @@ class TestField4DPlotProfile:
 # =============================================================================
 
 
-class TestField4DDiff:
-    """Tests for Field4D.diff method."""
+class TestScalarFieldDiff:
+    """Tests for ScalarField.diff method."""
 
     @pytest.fixture
     def sample_fields(self):
-        """Create two sample Field4D objects for comparison."""
-        from gwexpy.fields import ScalarField as Field4D
+        """Create two sample ScalarField objects for comparison."""
+        from gwexpy.fields import ScalarField as ScalarField
 
         np.random.seed(42)
         data1 = np.ones((10, 5, 5, 5)) * 10.0
@@ -348,11 +344,11 @@ class TestField4DDiff:
         y = np.arange(5) * 1.0 * u.m
         z = np.arange(5) * 1.0 * u.m
 
-        field1 = Field4D(
+        field1 = ScalarField(
             data1, unit=u.V, axis0=times, axis1=x, axis2=y, axis3=z,
             axis_names=["t", "x", "y", "z"]
         )
-        field2 = Field4D(
+        field2 = ScalarField(
             data2, unit=u.V, axis0=times, axis1=x, axis2=y, axis3=z,
             axis_names=["t", "x", "y", "z"]
         )
@@ -384,11 +380,11 @@ class TestField4DDiff:
 
     def test_shape_mismatch_raises(self, sample_fields):
         """Test that shape mismatch raises ValueError."""
-        from gwexpy.fields import ScalarField as Field4D
+        from gwexpy.fields import ScalarField as ScalarField
 
         field1, _ = sample_fields
         # Create field with different shape
-        field_small = Field4D(
+        field_small = ScalarField(
             np.ones((5, 3, 3, 3)),
             axis0=np.arange(5) * 0.1 * u.s,
             axis1=np.arange(3) * u.m,
@@ -400,13 +396,13 @@ class TestField4DDiff:
             field1.diff(field_small)
 
 
-class TestField4DZscore:
-    """Tests for Field4D.zscore method."""
+class TestScalarFieldZscore:
+    """Tests for ScalarField.zscore method."""
 
     @pytest.fixture
     def sample_field(self):
-        """Create a sample Field4D with known statistics."""
-        from gwexpy.fields import ScalarField as Field4D
+        """Create a sample ScalarField with known statistics."""
+        from gwexpy.fields import ScalarField as ScalarField
 
         # Create data with known mean=5, std=2 pattern
         np.random.seed(42)
@@ -417,7 +413,7 @@ class TestField4DZscore:
         y = np.arange(4) * 1.0 * u.m
         z = np.arange(4) * 1.0 * u.m
 
-        return Field4D(
+        return ScalarField(
             data, unit=u.V, axis0=times, axis1=x, axis2=y, axis3=z,
             axis_names=["t", "x", "y", "z"]
         )
@@ -445,13 +441,13 @@ class TestField4DZscore:
 # =============================================================================
 
 
-class TestField4DTimeStatMap:
-    """Tests for Field4D.time_stat_map method."""
+class TestScalarFieldTimeStatMap:
+    """Tests for ScalarField.time_stat_map method."""
 
     @pytest.fixture
     def sample_field(self):
-        """Create a sample Field4D for testing."""
-        from gwexpy.fields import ScalarField as Field4D
+        """Create a sample ScalarField for testing."""
+        from gwexpy.fields import ScalarField as ScalarField
 
         # Create data where mean along time = 5
         data = np.ones((10, 4, 4, 4)) * 5.0
@@ -461,7 +457,7 @@ class TestField4DTimeStatMap:
         y = np.arange(4) * 1.0 * u.m
         z = np.arange(4) * 1.0 * u.m
 
-        return Field4D(
+        return ScalarField(
             data, unit=u.V, axis0=times, axis1=x, axis2=y, axis3=z,
             axis_names=["t", "x", "y", "z"]
         )
@@ -487,13 +483,13 @@ class TestField4DTimeStatMap:
         assert result.shape[0] == 1
 
 
-class TestField4DTimeSpaceMap:
-    """Tests for Field4D.time_space_map method."""
+class TestScalarFieldTimeSpaceMap:
+    """Tests for ScalarField.time_space_map method."""
 
     @pytest.fixture
     def sample_field(self):
-        """Create a sample Field4D for testing."""
-        from gwexpy.fields import ScalarField as Field4D
+        """Create a sample ScalarField for testing."""
+        from gwexpy.fields import ScalarField as ScalarField
 
         data = np.random.randn(10, 8, 4, 4)
 
@@ -502,7 +498,7 @@ class TestField4DTimeSpaceMap:
         y = np.arange(4) * 1.0 * u.m
         z = np.arange(4) * 1.0 * u.m
 
-        return Field4D(
+        return ScalarField(
             data, unit=u.V, axis0=times, axis1=x, axis2=y, axis3=z,
             axis_names=["t", "x", "y", "z"]
         )
@@ -516,4 +512,3 @@ class TestField4DTimeSpaceMap:
         assert len(t_axis) == 10  # time axis length
         assert len(x_axis) == 8   # x axis length
         assert data.shape == (10, 8)  # (t, x)
-

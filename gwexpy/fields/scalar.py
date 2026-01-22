@@ -75,7 +75,7 @@ class ScalarField(FieldBase):
         4D structure.
         """
         forced_item = self._force_4d_item(item)
-        return self._getitem_field4d(forced_item)
+        return self._getitem_scalarfield(forced_item)
 
     def _force_4d_item(self, item):
         """Convert int indices to slice(i, i+1) to maintain 4D."""
@@ -122,7 +122,7 @@ class ScalarField(FieldBase):
 
         return tuple(result)
 
-    def _getitem_field4d(self, item):
+    def _getitem_scalarfield(self, item):
         """Perform getitem with ScalarField reconstruction.
 
         item should already be normalized (all slices, length 4).
@@ -183,7 +183,7 @@ class ScalarField(FieldBase):
     def _isel_tuple(self, item_tuple):
         """Internal isel using ScalarField getitem logic."""
         forced_item = self._force_4d_item(item_tuple)
-        return self._getitem_field4d(forced_item)
+        return self._getitem_scalarfield(forced_item)
 
     # =========================================================================
     # Time FFT (axis=0, GWpy TimeSeries.fft compatible)
@@ -1675,7 +1675,7 @@ class ScalarField(FieldBase):
     def compute_psd(self, point_or_region, **kwargs):
         """Compute power spectral density using Welch's method.
 
-        This is a convenience wrapper around :func:`~gwexpy.types.compute_psd`.
+        This is a convenience wrapper around :func:`~gwexpy.fields.signal.compute_psd`.
 
         Parameters
         ----------
@@ -1695,16 +1695,16 @@ class ScalarField(FieldBase):
 
         See Also
         --------
-        gwexpy.types.compute_psd : Full documentation.
+        gwexpy.fields.signal.compute_psd : Full documentation.
         """
-        from ..types.field4d_signal import compute_psd
+        from .signal import compute_psd
 
         return compute_psd(self, point_or_region, **kwargs)
 
     def freq_space_map(self, axis, at=None, **kwargs):
         """Compute frequency-space map along a spatial axis.
 
-        This is a convenience wrapper around :func:`~gwexpy.types.freq_space_map`.
+        This is a convenience wrapper around :func:`~gwexpy.fields.signal.freq_space_map`.
 
         Parameters
         ----------
@@ -1722,16 +1722,16 @@ class ScalarField(FieldBase):
 
         See Also
         --------
-        gwexpy.types.freq_space_map : Full documentation.
+        gwexpy.fields.signal.freq_space_map : Full documentation.
         """
-        from ..types.field4d_signal import freq_space_map
+        from .signal import freq_space_map
 
         return freq_space_map(self, axis, at=at, **kwargs)
 
     def compute_xcorr(self, point_a, point_b, **kwargs):
         """Compute cross-correlation between two spatial points.
 
-        This is a convenience wrapper around :func:`~gwexpy.types.compute_xcorr`.
+        This is a convenience wrapper around :func:`~gwexpy.fields.signal.compute_xcorr`.
 
         Parameters
         ----------
@@ -1747,16 +1747,16 @@ class ScalarField(FieldBase):
 
         See Also
         --------
-        gwexpy.types.compute_xcorr : Full documentation.
+        gwexpy.fields.signal.compute_xcorr : Full documentation.
         """
-        from ..types.field4d_signal import compute_xcorr
+        from .signal import compute_xcorr
 
         return compute_xcorr(self, point_a, point_b, **kwargs)
 
     def time_delay_map(self, ref_point, plane="xy", at=None, **kwargs):
         """Compute time delay map from a reference point.
 
-        This is a convenience wrapper around :func:`~gwexpy.types.time_delay_map`.
+        This is a convenience wrapper around :func:`~gwexpy.fields.signal.time_delay_map`.
 
         Parameters
         ----------
@@ -1776,16 +1776,16 @@ class ScalarField(FieldBase):
 
         See Also
         --------
-        gwexpy.types.time_delay_map : Full documentation.
+        gwexpy.fields.signal.time_delay_map : Full documentation.
         """
-        from ..types.field4d_signal import time_delay_map
+        from .signal import time_delay_map
 
         return time_delay_map(self, ref_point, plane=plane, at=at, **kwargs)
 
     def coherence_map(self, ref_point, plane="xy", at=None, **kwargs):
         """Compute coherence map from a reference point.
 
-        This is a convenience wrapper around :func:`~gwexpy.types.coherence_map`.
+        This is a convenience wrapper around :func:`~gwexpy.fields.signal.coherence_map`.
 
         Parameters
         ----------
@@ -1800,13 +1800,13 @@ class ScalarField(FieldBase):
 
         Returns
         -------
-        ScalarField or ScalarFieldDict
+        ScalarField or FieldDict
             Coherence map.
 
         See Also
         --------
-        gwexpy.types.coherence_map : Full documentation.
+        gwexpy.fields.signal.coherence_map : Full documentation.
         """
-        from ..types.field4d_signal import coherence_map
+        from .signal import coherence_map
 
         return coherence_map(self, ref_point, plane=plane, at=at, **kwargs)
