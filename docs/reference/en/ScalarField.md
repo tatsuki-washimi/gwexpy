@@ -1,49 +1,52 @@
 # ScalarField
 
-**Inherits from:** FieldBase, Array4D, AxisApiMixin, StatisticalMethodsMixin, Array
+**Inherits from:** `FieldBase`, `Array4D`, `AxisApiMixin`, `StatisticalMethodsMixin`, `GwpyArray`
 
 4D scalar field with explicit axis domains and FFT operations.
 
 ScalarField represents physical fields that can exist in different domains (time/frequency for axis 0, real/k-space for spatial axes 1-3). Shape is invariant `(axis0, x, y, z)`; slicing keeps all axes (length-1 for indexed axes) and preserves domain/unit metadata.
 
-**Key features**
-- Explicit domains: `axis0_domain in {time, frequency}`, spatial domains in `{real, k}` per axis.
-- Unit/domain consistency is validated at construction and after FFTs.
-- Indexing preserves 4D structure (axes never dropped).
+## Key features
 
-## Methods (selected)
+- **Explicit domains**: `axis0_domain in {time, frequency}`, spatial domains in `{real, k}` per axis.
+- **Physics-aware slicing**: Indexing preserves 4D structure (axes are never dropped, keeping metadata alive).
+- **Unit/domain consistency**: Validated at construction and after FFT transitions.
+- **Signal Processing**: Built-in support for PSD, coherence, and cross-correlation.
 
-### `fft_time`
+## Methods
 
-```python
-fft_time(self, nfft=None)
-```
+### FFT Operations
 
-Compute FFT along time axis (axis 0), applying the same normalization as GWpy's `TimeSeries.fft()`: rfft / nfft, with non-DC/non-Nyquist bins doubled. Domain is updated to `frequency`.
+#### `fft_time(nfft=None)`
 
-### `ifft_time`
+Compute FFT along time axis (axis 0). Applies GWpy-style normalization: `rfft / nfft`, with non-DC/non-Nyquist bins doubled. Domain is updated to `frequency`.
 
-```python
-ifft_time(self, nout=None)
-```
+#### `ifft_time(nout=None)`
 
-Inverse of `fft_time`, restoring `axis0_domain='time'` and reconstructing the time axis (length `nout` by default to two-sided real length).
+Inverse of `fft_time`. Restores `axis0_domain='time'` and reconstructs the time axis (using stored `_axis0_offset`).
 
-### `fft_space`
+#### `fft_space(axes=None, n=None)`
 
-```python
-fft_space(self, axes=None, n=None)
-```
+Compute signed two-sided FFT along spatial axes. Transformed axes flip domain `real -> k` and axis names `x -> kx`, etc. Wavenumber is computed as $k = 2\pi/\lambda$.
 
-Compute signed two-sided FFT along spatial axes (subset allowed). Transformed axes flip domain `real -> k` and axis names `x->kx`, etc. Non-transformed axes remain unchanged.
+#### `ifft_space(axes=None, n=None)`
 
-### `ifft_space`
+Inverse spatial FFT for axes in `k` domain, restoring `real` domain.
 
-```python
-ifft_space(self, axes=None, n=None)
-```
+### Signal Processing
 
-Inverse spatial FFT for axes currently in `k` domain, restoring `real` domain and spatial axis names.
+These functions are available in `gwexpy.fields`:
+
+- `compute_psd(field, point_or_region, ...)`: Compute Welch PSD at spatial locations.
+- `coherence_map(field, ref_point, ...)`: Mapping coherence between a reference and a slice.
+- `compute_xcorr(field, point_a, point_b, ...)`: Cross-correlation between two points.
+- `time_delay_map(field, ref_point, ...)`: Estimated time delay map.
+
+### Demo Data Generation
+
+- `make_demo_scalar_field(...)`: General purpose 4D field generation.
+- `make_propagating_gaussian(...)`: Propagating wave packet.
+- `make_sinusoidal_wave(...)`: Plane wave simulation.
 
 ## Collections
 
