@@ -7,6 +7,7 @@ API Reference
    timeseries
    frequencyseries
    spectrogram
+   fields
    spectral
    analysis
    noise
