@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-"""Field4D 描画デモスクリプト（ヘッドレス環境対応）
+"""ScalarField 描画デモスクリプト（ヘッドレス環境対応）
 
 CIや画像出力用の最小限のプロットスクリプト。
 Matplotlib の Agg バックエンドを使用し、GUIなしで画像を生成します。
 
 使用例:
-    python plot_field4d_demo.py  # -> field4d_demo.png を出力
+    python plot_scalarfield_demo.py  # -> scalarfield_demo.png を出力
 """
 
 import matplotlib
@@ -16,11 +16,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from astropy import units as u
 
-from gwexpy.types import Field4D
+from gwexpy.fields import ScalarField
 
 
 def create_sample_field():
-    """再現性のあるサンプルField4Dを生成."""
+    """再現性のあるサンプルScalarFieldを生成."""
     np.random.seed(42)
 
     # 軸定義
@@ -36,7 +36,7 @@ def create_sample_field():
     data = 10.0 * np.exp(-((X - x_center)**2 + Y**2) / 2)
     data = data[:, :, :, np.newaxis]
 
-    return Field4D(
+    return ScalarField(
         data,
         unit=u.V,
         axis0=t,
@@ -77,7 +77,7 @@ def main():
     axes[1, 1].set_title('Time-Space Map')
 
     plt.tight_layout()
-    output_path = 'field4d_demo.png'
+    output_path = 'scalarfield_demo.png'
     fig.savefig(output_path, dpi=150)
     print(f'Saved: {output_path}')
     plt.close(fig)

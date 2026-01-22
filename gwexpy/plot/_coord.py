@@ -1,7 +1,7 @@
-"""Coordinate-to-index conversion utilities for Field4D visualization.
+"""Coordinate-to-index conversion utilities for ScalarField visualization.
 
 This module provides functions for converting between physical coordinates
-(with units) and array indices, following the Field4D slicing convention.
+(with units) and array indices, following the ScalarField slicing convention.
 """
 
 from __future__ import annotations
@@ -107,7 +107,7 @@ def nearest_index(axis_index: Quantity, value: Quantity) -> int:
 def slice_from_index(i: int) -> slice:
     """Convert an integer index to a slice maintaining array dimension.
 
-    This follows the Field4D convention of keeping axes at length=1
+    This follows the ScalarField convention of keeping axes at length=1
     instead of reducing dimensions.
 
     Parameters

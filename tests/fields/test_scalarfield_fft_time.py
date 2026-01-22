@@ -1,24 +1,24 @@
-"""Tests for Field4D time FFT - GWpy TimeSeries.fft compatible."""
+"""Tests for ScalarField time FFT - GWpy TimeSeries.fft compatible."""
 
 import numpy as np
 import pytest
 from astropy import units as u
 from numpy.testing import assert_allclose
 
-from gwexpy.types import Field4D
+from gwexpy.fields import ScalarField
 
 
-class TestField4DFftTimeBasic:
+class TestScalarFieldFftTimeBasic:
     """Test basic fft_time functionality."""
 
     @pytest.fixture
     def time_domain_field(self):
-        """Create a time-domain Field4D."""
+        """Create a time-domain ScalarField."""
         np.random.seed(42)
         data = np.random.randn(64, 4, 4, 4)
         t = np.arange(64) * 0.01 * u.s  # 100 Hz sample rate
         x = np.arange(4) * 1.0 * u.m
-        return Field4D(
+        return ScalarField(
             data,
             unit=u.V,
             axis0=t,
@@ -33,7 +33,7 @@ class TestField4DFftTimeBasic:
         """Test basic fft_time execution."""
         result = time_domain_field.fft_time()
 
-        assert isinstance(result, Field4D)
+        assert isinstance(result, ScalarField)
         assert result.axis0_domain == "frequency"
 
     def test_fft_time_shape(self, time_domain_field):
@@ -80,14 +80,14 @@ class TestField4DFftTimeBasic:
         assert result.space_domains == time_domain_field.space_domains
 
 
-class TestField4DFftTimeNormalization:
+class TestScalarFieldFftTimeNormalization:
     """Test fft_time normalization matches GWpy."""
 
     def test_dc_not_doubled(self):
         """Test that DC component is not doubled."""
         # Constant signal
         data = np.ones((64, 2, 2, 2)) * 3.0
-        field = Field4D(
+        field = ScalarField(
             data,
             axis0=np.arange(64) * 0.01 * u.s,
             axis0_domain="time",
@@ -115,7 +115,7 @@ class TestField4DFftTimeNormalization:
         # Broadcast to 4D
         data = signal[:, np.newaxis, np.newaxis, np.newaxis] * np.ones((n, 1, 1, 1))
 
-        field = Field4D(data, axis0=t * u.s, axis0_domain="time")
+        field = ScalarField(data, axis0=t * u.s, axis0_domain="time")
         result = field.fft_time()
 
         # Find the bin closest to the target frequency
@@ -128,12 +128,12 @@ class TestField4DFftTimeNormalization:
         assert_allclose(measured_amp, amp, rtol=1e-10)
 
 
-class TestField4DFftTimeErrors:
+class TestScalarFieldFftTimeErrors:
     """Test fft_time error conditions."""
 
     def test_fft_time_wrong_domain_raises(self):
         """Test fft_time raises if not in time domain."""
-        field = Field4D(
+        field = ScalarField(
             np.zeros((10, 4, 4, 4)),
             axis0_domain="frequency",
         )
@@ -142,16 +142,16 @@ class TestField4DFftTimeErrors:
             field.fft_time()
 
 
-class TestField4DIfftTimeBasic:
+class TestScalarFieldIfftTimeBasic:
     """Test basic ifft_time functionality."""
 
     @pytest.fixture
     def freq_domain_field(self):
-        """Create a frequency-domain Field4D."""
+        """Create a frequency-domain ScalarField."""
         # Create from fft_time
         np.random.seed(42)
         data = np.random.randn(64, 4, 4, 4)
-        field = Field4D(
+        field = ScalarField(
             data,
             axis0=np.arange(64) * 0.01 * u.s,
             axis0_domain="time",
@@ -162,7 +162,7 @@ class TestField4DIfftTimeBasic:
         """Test basic ifft_time execution."""
         result = freq_domain_field.ifft_time()
 
-        assert isinstance(result, Field4D)
+        assert isinstance(result, ScalarField)
         assert result.axis0_domain == "time"
 
     def test_ifft_time_axis_name_changes(self, freq_domain_field):
@@ -178,7 +178,7 @@ class TestField4DIfftTimeBasic:
         assert result.shape[0] == 64
 
 
-class TestField4DFftIfftReversibility:
+class TestScalarFieldFftIfftReversibility:
     """Test FFT/IFFT reversibility."""
 
     def test_ifft_fft_reversible(self):
@@ -187,7 +187,7 @@ class TestField4DFftIfftReversibility:
         data = np.random.randn(64, 4, 4, 4)
         times = np.arange(64) * 0.01 * u.s
 
-        original = Field4D(data, axis0=times, axis0_domain="time", unit=u.m)
+        original = ScalarField(data, axis0=times, axis0_domain="time", unit=u.m)
 
         # Round trip
         freq = original.fft_time()
@@ -206,7 +206,7 @@ class TestField4DFftIfftReversibility:
         for n in [32, 64, 100, 128]:
             np.random.seed(n)
             data = np.random.randn(n, 2, 2, 2)
-            field = Field4D(
+            field = ScalarField(
                 data, axis0=np.arange(n) * 0.01 * u.s, axis0_domain="time"
             )
 
@@ -214,24 +214,24 @@ class TestField4DFftIfftReversibility:
             assert_allclose(recovered.value, data, rtol=1e-10)
 
 
-class TestField4DIfftTimeErrors:
+class TestScalarFieldIfftTimeErrors:
     """Test ifft_time error conditions."""
 
     def test_ifft_time_wrong_domain_raises(self):
         """Test ifft_time raises if not in frequency domain."""
-        field = Field4D(np.zeros((10, 4, 4, 4)), axis0_domain="time")
+        field = ScalarField(np.zeros((10, 4, 4, 4)), axis0_domain="time")
 
         with pytest.raises(ValueError, match="requires axis0_domain='frequency'"):
             field.ifft_time()
 
 
-class TestField4DFftTimeWithNfft:
+class TestScalarFieldFftTimeWithNfft:
     """Test fft_time with explicit nfft parameter."""
 
     def test_fft_time_nfft_larger(self):
         """Test fft_time with nfft larger than data."""
         data = np.random.randn(32, 2, 2, 2)
-        field = Field4D(
+        field = ScalarField(
             data, axis0=np.arange(32) * 0.01 * u.s, axis0_domain="time"
         )
 
@@ -243,7 +243,7 @@ class TestField4DFftTimeWithNfft:
     def test_fft_time_nfft_smaller(self):
         """Test fft_time with nfft smaller than data (truncation)."""
         data = np.random.randn(64, 2, 2, 2)
-        field = Field4D(
+        field = ScalarField(
             data, axis0=np.arange(64) * 0.01 * u.s, axis0_domain="time"
         )
 
@@ -253,12 +253,12 @@ class TestField4DFftTimeWithNfft:
         assert result.shape[0] == 17
 
 
-class TestField4DFftTimeDomainTransition:
+class TestScalarFieldFftTimeDomainTransition:
     """Test domain state transitions during FFT."""
 
     def test_time_to_frequency_domain(self):
         """Test transition from time to frequency domain."""
-        field = Field4D(
+        field = ScalarField(
             np.zeros((16, 4, 4, 4)),
             axis_names=["t", "x", "y", "z"],
             axis0_domain="time",
@@ -271,7 +271,7 @@ class TestField4DFftTimeDomainTransition:
 
     def test_frequency_to_time_domain(self):
         """Test transition from frequency to time domain."""
-        field = Field4D(
+        field = ScalarField(
             np.zeros((16, 4, 4, 4)),
             axis_names=["t", "x", "y", "z"],
             axis0_domain="time",

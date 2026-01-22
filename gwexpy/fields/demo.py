@@ -1,6 +1,6 @@
-"""Demo data generation utilities for Field4D testing and tutorials.
+"""Demo data generation utilities for ScalarField testing and tutorials.
 
-This module provides deterministic Field4D generators with known waveforms
+This module provides deterministic ScalarField generators with known waveforms
 for testing, documentation, and reproducible examples.
 """
 
@@ -11,17 +11,17 @@ from typing import Literal
 import numpy as np
 from astropy import units as u
 
-from .field4d import Field4D
+from .scalar import ScalarField
 
 __all__ = [
-    "make_demo_field4d",
+    "make_demo_scalar_field",
     "make_propagating_gaussian",
     "make_sinusoidal_wave",
     "make_standing_wave",
 ]
 
 
-def make_demo_field4d(
+def make_demo_scalar_field(
     pattern: Literal["gaussian", "sine", "standing", "noise"] = "gaussian",
     nt: int = 100,
     nx: int = 16,
@@ -34,10 +34,10 @@ def make_demo_field4d(
     unit: u.Unit = u.m / u.s,
     seed: int = 42,
     **kwargs,
-) -> Field4D:
-    """Generate a deterministic demo Field4D with known waveforms.
+) -> ScalarField:
+    """Generate a deterministic demo ScalarField with known waveforms.
 
-    This function provides reproducible Field4D data for testing, tutorials,
+    This function provides reproducible ScalarField data for testing, tutorials,
     and examples. All generated fields have proper axis metadata and units.
 
     Parameters
@@ -70,20 +70,20 @@ def make_demo_field4d(
 
     Returns
     -------
-    Field4D
+    ScalarField
         Deterministic demo field with proper metadata.
 
     Examples
     --------
-    >>> from gwexpy.types import make_demo_field4d
-    >>> field = make_demo_field4d('gaussian', nt=50, nx=32)
+    >>> from gwexpy.fields.demo import make_demo_scalar_field
+    >>> field = make_demo_scalar_field('gaussian', nt=50, nx=32)
     >>> field.shape
     (50, 32, 16, 16)
     >>> field.axis0_domain
     'time'
 
     >>> # White noise for PSD testing
-    >>> noise_field = make_demo_field4d('noise', seed=123)
+    >>> noise_field = make_demo_scalar_field('noise', seed=123)
     """
     if dy is None:
         dy = dx
@@ -119,7 +119,7 @@ def make_demo_field4d(
             "'gaussian', 'sine', 'standing', 'noise'."
         )
 
-    return Field4D(
+    return ScalarField(
         data,
         unit=unit,
         axis0=times,
@@ -306,16 +306,16 @@ def _generate_standing_wave(
 
 
 # Convenience aliases
-def make_propagating_gaussian(**kw) -> Field4D:
-    """Generate a propagating Gaussian demo field. See make_demo_field4d."""
-    return make_demo_field4d("gaussian", **kw)
+def make_propagating_gaussian(**kw) -> ScalarField:
+    """Generate a propagating Gaussian demo field. See make_demo_scalar_field."""
+    return make_demo_scalar_field("gaussian", **kw)
 
 
-def make_sinusoidal_wave(**kw) -> Field4D:
-    """Generate a sinusoidal wave demo field. See make_demo_field4d."""
-    return make_demo_field4d("sine", **kw)
+def make_sinusoidal_wave(**kw) -> ScalarField:
+    """Generate a sinusoidal wave demo field. See make_demo_scalar_field."""
+    return make_demo_scalar_field("sine", **kw)
 
 
-def make_standing_wave(**kw) -> Field4D:
-    """Generate a standing wave demo field. See make_demo_field4d."""
-    return make_demo_field4d("standing", **kw)
+def make_standing_wave(**kw) -> ScalarField:
+    """Generate a standing wave demo field. See make_demo_scalar_field."""
+    return make_demo_scalar_field("standing", **kw)

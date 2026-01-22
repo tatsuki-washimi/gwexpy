@@ -5,8 +5,8 @@
 ## 実施内容
 
 ### 1) 物理レビュー・調査
-- Field4D 系（`Field4D`, `Field4DList`, `Field4DDict`）の物理/数学妥当性レビューを実施
-- 結果と修正計画を保存: `docs/developers/reviews/field4d_physics_review_20260120.md`
+- ScalarField 系（`ScalarField`, `FieldList`, `FieldDict`）の物理/数学妥当性レビューを実施
+- 結果と修正計画を保存: `docs/developers/reviews/scalarfield_physics_review_20260120.md`
 
 ### 2) 工数見積
 - 上記修正計画に対して `estimate_effort` を実施
@@ -24,7 +24,7 @@
   - 結果: **全件パス**
 
 ### 6) ドキュメント同期
-- 既存の Field4D 関連ドキュメント更新は不要と判断（変更内容は主にテスト安定化）
+- 既存の ScalarField 関連ドキュメント更新は不要と判断（変更内容は主にテスト安定化）
 
 ### 7) ディレクトリ整理・無視設定
 - 生成物 `tests/.home/` を削除
@@ -38,4 +38,4 @@
 - リモートに対して: 3コミット先行
 
 ## 参考
-- 物理レビュー結果: `docs/developers/reviews/field4d_physics_review_20260120.md`
+- 物理レビュー結果: `docs/developers/reviews/scalarfield_physics_review_20260120.md`
