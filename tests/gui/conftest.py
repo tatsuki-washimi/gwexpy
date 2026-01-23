@@ -4,52 +4,74 @@ import os
 import sys
 
 import pytest
-from PyQt5.QtWidgets import QApplication
+
+QT_AVAILABLE = True
+if os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD"):
+    QT_AVAILABLE = False
+    pytestmark = pytest.mark.skip("GUI tests skipped (plugin autoload disabled)")
+    collect_ignore_glob = ["test_*.py", "integration/test_*.py"]
+try:
+    import pytestqt  # noqa: F401
+    from PyQt5.QtWidgets import QApplication
+    import faulthandler
+except Exception:  # pragma: no cover - guard for headless/CI
+    QT_AVAILABLE = False
+    pytestmark = pytest.mark.skip("GUI tests skipped (pytest-qt/Qt not available)")
+
+if QT_AVAILABLE:
+    faulthandler.enable(all_threads=True)
 
 # Config logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 faulthandler.enable(all_threads=True)
 
-@pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    """
-    Hook to capture screenshot on test failure.
-    """
-    outcome = yield
-    report = outcome.get_result()
 
-    if report.when == "call" and report.failed:
-        # Check if we have a Qt application
-        qt_app = QApplication.instance()
-        print(f"\n[Screenshot Hook] Detected failure in {item.name}. App instance: {qt_app}")
-        if qt_app is None:
-            return
+if QT_AVAILABLE:
 
-        # Attempt to grab screenshot
-        try:
-            # We must use absolute path for saving
-            cur_dir = os.path.dirname(os.path.abspath(__file__))
-            screenshot_dir = os.path.join(cur_dir, "screenshots")
-            os.makedirs(screenshot_dir, exist_ok=True)
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_runtest_makereport(item, call):
+        """
+        Hook to capture screenshot on test failure.
+        """
+        outcome = yield
+        report = outcome.get_result()
 
-            filename = f"{item.name}_failed.png"
-            path = os.path.join(screenshot_dir, filename)
+        if report.when == "call" and report.failed:
+            # Check if we have a Qt application
+            qt_app = QApplication.instance()
+            print(
+                f"\n[Screenshot Hook] Detected failure in {item.name}. App instance: {qt_app}"
+            )
+            if qt_app is None:
+                return
 
-            # Use grabWindow or grab() on main window if possible
-            # Grab all screens or primary
-            screen = qt_app.primaryScreen()
-            if screen:
-                screenshot = screen.grabWindow(0)
-                screenshot.save(path)
-                print(f"[Screenshot Hook] Saved failure screenshot to: {path}")
-            else:
-                print("[Screenshot Hook] No primary screen found.")
+            # Attempt to grab screenshot
+            try:
+                # We must use absolute path for saving
+                cur_dir = os.path.dirname(os.path.abspath(__file__))
+                screenshot_dir = os.path.join(cur_dir, "screenshots")
+                os.makedirs(screenshot_dir, exist_ok=True)
 
-        except Exception as e:
-            print(f"[Screenshot Hook] Failed to capture screenshot: {e}")
+                filename = f"{item.name}_failed.png"
+                path = os.path.join(screenshot_dir, filename)
 
-@pytest.fixture(autouse=True)
-def log_gui_action(qtbot):
-    return logger
+                # Use grabWindow or grab() on main window if possible
+                # Grab all screens or primary
+                screen = qt_app.primaryScreen()
+                if screen:
+                    screenshot = screen.grabWindow(0)
+                    screenshot.save(path)
+                    print(f"[Screenshot Hook] Saved failure screenshot to: {path}")
+                else:
+                    print("[Screenshot Hook] No primary screen found.")
+
+            except Exception as e:
+                print(f"[Screenshot Hook] Failed to capture screenshot: {e}")
+
+    @pytest.fixture(autouse=True)
+    def log_gui_action(qtbot):
+        return logger
