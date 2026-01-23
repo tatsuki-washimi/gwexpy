@@ -117,19 +117,22 @@ class FieldBase(Array4D):
         if obj is None:
             return
 
+        # Copy domains from parent if available
         if getattr(self, "_axis0_domain", None) is None:
             self._axis0_domain = getattr(obj, "_axis0_domain", "time")
 
-        if getattr(self, "_space_domains", None) is None:
-            parent_domains = getattr(obj, "_space_domains", None)
-            if parent_domains is not None:
-                self._space_domains = dict(parent_domains)
-            else:
-                self._space_domains = {
-                    self._axis1_name: "real",
-                    self._axis2_name: "real",
-                    self._axis3_name: "real",
-                }
+        parent_domains = getattr(obj, "_space_domains", None)
+        if parent_domains is not None:
+            # Check if axis names match. If they don't, we need to map keys.
+            # But usually if we just copied names in super().__array_finalize__, 
+            # they should match.
+            self._space_domains = dict(parent_domains)
+        elif getattr(self, "_space_domains", None) is None:
+            self._space_domains = {
+                self._axis1_name: "real",
+                self._axis2_name: "real",
+                self._axis3_name: "real",
+            }
 
         if getattr(self, "_axis0_offset", None) is None:
             self._axis0_offset = getattr(obj, "_axis0_offset", None)

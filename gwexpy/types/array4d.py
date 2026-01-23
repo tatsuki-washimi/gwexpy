@@ -119,12 +119,11 @@ class Array4D(Array):
             return
 
         def copy_attr(name, default):
-            if getattr(self, name, None) is None:
-                val = getattr(obj, name, None)
-                if val is not None:
-                    setattr(self, name, val)
-                else:
-                    setattr(self, name, default)
+            val = getattr(obj, name, None)
+            if val is not None:
+                setattr(self, name, val)
+            elif getattr(self, name, None) is None:
+                setattr(self, name, default)
 
         copy_attr("_axis0_name", "axis0")
         copy_attr("_axis1_name", "axis1")

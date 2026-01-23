@@ -93,19 +93,35 @@ class FieldList(list):
 
     def fft_time_all(self, **kwargs):
         """Apply fft_time to all fields, returning FieldList."""
-        return FieldList([f.fft_time(**kwargs) for f in self])
+        return self.__class__([f.fft_time(**kwargs) for f in self])
 
     def ifft_time_all(self, **kwargs):
         """Apply ifft_time to all fields, returning FieldList."""
-        return FieldList([f.ifft_time(**kwargs) for f in self])
+        return self.__class__([f.ifft_time(**kwargs) for f in self])
 
     def fft_space_all(self, axes=None, **kwargs):
         """Apply fft_space to all fields, returning FieldList."""
-        return FieldList([f.fft_space(axes=axes, **kwargs) for f in self])
+        return self.__class__([f.fft_space(axes=axes, **kwargs) for f in self])
 
     def ifft_space_all(self, axes=None, **kwargs):
         """Apply ifft_space to all fields, returning FieldList."""
-        return FieldList([f.ifft_space(axes=axes, **kwargs) for f in self])
+        return self.__class__([f.ifft_space(axes=axes, **kwargs) for f in self])
+
+    def resample_all(self, rate, **kwargs):
+        """Apply resample to all fields, returning FieldList."""
+        return self.__class__([f.resample(rate, **kwargs) for f in self])
+
+    def filter_all(self, *args, **kwargs):
+        """Apply filter to all fields, returning FieldList."""
+        return self.__class__([f.filter(*args, **kwargs) for f in self])
+
+    def sel_all(self, **kwargs):
+        """Apply sel to all fields, returning FieldList."""
+        return self.__class__([f.sel(**kwargs) for f in self])
+
+    def isel_all(self, **kwargs):
+        """Apply isel to all fields, returning FieldList."""
+        return self.__class__([f.isel(**kwargs) for f in self])
 
 
 class FieldDict(dict):
@@ -117,6 +133,38 @@ class FieldDict(dict):
         super().__init__(items)
         if validate:
             self._validate()
+
+    def copy(self) -> "FieldDict":
+        """Return a copy of this FieldDict."""
+        return self.__class__({k: v.copy() for k, v in self.items()})
+
+    def __mul__(self, other):
+        if np.isscalar(other):
+            return self.__class__({k: v * other for k, v in self.items()})
+        return NotImplemented
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __add__(self, other):
+        if np.isscalar(other):
+            return self.__class__({k: v + other for k, v in self.items()})
+        # Note: If other is FieldDict, we might want to Zip add?
+        # But for now, stick to scalar as per plan Phase 2.
+        return NotImplemented
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __sub__(self, other):
+        if np.isscalar(other):
+            return self.__class__({k: v - other for k, v in self.items()})
+        return NotImplemented
+
+    def __rsub__(self, other):
+        if np.isscalar(other):
+            return self.__class__({k: other - v for k, v in self.items()})
+        return NotImplemented
 
     def _validate(self):
         """Validate that all values are ScalarField with compatible metadata."""
@@ -191,16 +239,32 @@ class FieldDict(dict):
 
     def fft_time_all(self, **kwargs):
         """Apply fft_time to all fields, returning FieldDict."""
-        return FieldDict({k: v.fft_time(**kwargs) for k, v in self.items()})
+        return self.__class__({k: v.fft_time(**kwargs) for k, v in self.items()})
 
     def ifft_time_all(self, **kwargs):
         """Apply ifft_time to all fields, returning FieldDict."""
-        return FieldDict({k: v.ifft_time(**kwargs) for k, v in self.items()})
+        return self.__class__({k: v.ifft_time(**kwargs) for k, v in self.items()})
 
     def fft_space_all(self, axes=None, **kwargs):
         """Apply fft_space to all fields, returning FieldDict."""
-        return FieldDict({k: v.fft_space(axes=axes, **kwargs) for k, v in self.items()})
+        return self.__class__({k: v.fft_space(axes=axes, **kwargs) for k, v in self.items()})
 
     def ifft_space_all(self, axes=None, **kwargs):
         """Apply ifft_space to all fields, returning FieldDict."""
-        return FieldDict({k: v.ifft_space(axes=axes, **kwargs) for k, v in self.items()})
+        return self.__class__({k: v.ifft_space(axes=axes, **kwargs) for k, v in self.items()})
+
+    def resample_all(self, rate, **kwargs):
+        """Apply resample to all fields, returning FieldDict."""
+        return self.__class__({k: v.resample(rate, **kwargs) for k, v in self.items()})
+
+    def filter_all(self, *args, **kwargs):
+        """Apply filter to all fields, returning FieldDict."""
+        return self.__class__({k: v.filter(*args, **kwargs) for k, v in self.items()})
+
+    def sel_all(self, **kwargs):
+        """Apply sel to all fields, returning FieldDict."""
+        return self.__class__({k: v.sel(**kwargs) for k, v in self.items()})
+
+    def isel_all(self, **kwargs):
+        """Apply isel to all fields, returning FieldDict."""
+        return self.__class__({k: v.isel(**kwargs) for k, v in self.items()})

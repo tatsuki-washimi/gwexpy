@@ -1,8 +1,9 @@
-"""4D ScalarField with domain states and FFT operations."""
+from __future__ import annotations
 
 from typing import Any
 
 import numpy as np
+from astropy import units as u
 
 from .base import FieldBase
 
@@ -698,7 +699,7 @@ class ScalarField(FieldBase):
     # =========================================================================
 
     @classmethod
-    def simulate(cls, method: str, *args, **kwargs) -> "ScalarField":
+    def simulate(cls, method: str, *args, **kwargs) -> ScalarField:
         """Generate a simulated ScalarField.
 
         Parameters
@@ -1768,6 +1769,116 @@ class ScalarField(FieldBase):
         from .signal import freq_space_map
 
         return freq_space_map(self, axis, at=at, **kwargs)
+
+    def resample(self, rate, **kwargs) -> ScalarField:
+        """Resample the field along the time axis (axis 0).
+
+        Parameters
+        ----------
+        rate : float, Quantity
+            The new sampling rate (e.g., in Hz).
+        **kwargs
+            Additional arguments passed to :meth:`gwpy.timeseries.TimeSeries.resample`.
+
+        Returns
+        -------
+        ScalarField
+            Resampled field.
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("resample requires axis0_domain='time'")
+
+        # Reshape to (time, points)
+        orig_shape = self.shape
+        data_2d = self.value.reshape(orig_shape[0], -1)
+
+        # Use scipy.signal.resample for efficient array resampling
+        # We need to compute the new number of samples
+        dt = (self._axis0_index[1] - self._axis0_index[0])
+        if hasattr(rate, "to"):
+            new_fs = rate.to("Hz").value
+            new_dt = (1.0 / new_fs) * u.s
+        else:
+            new_fs = float(rate)
+            new_dt = (1.0 / new_fs) * dt.unit
+
+        duration = (orig_shape[0] * dt).to(new_dt.unit).value
+        new_nt = int(round(duration * new_fs))
+
+        import scipy.signal
+        new_data_2d = scipy.signal.resample(data_2d, new_nt, axis=0)
+
+        new_times = np.arange(new_nt) * (1.0 / new_fs) * new_dt.unit + self._axis0_index[0]
+
+        # Reshape back
+        new_shape = [new_nt] + list(orig_shape[1:])
+        return ScalarField(
+            new_data_2d.reshape(new_shape),
+            unit=self.unit,
+            axis0=new_times,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=self.axis_names,
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
+
+    def filter(self, *args, **kwargs) -> ScalarField:
+        """Apply a filter along the time axis (axis 0).
+
+        Parameters
+        ----------
+        *args, **kwargs
+            Filter specification. Supports same arguments as
+            :meth:`gwpy.timeseries.TimeSeries.filter`.
+
+        Returns
+        -------
+        ScalarField
+            Filtered field.
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("filter requires axis0_domain='time'")
+
+
+        # Reshape to (time, points)
+        orig_shape = self.shape
+        data_2d = self.value.reshape(orig_shape[0], -1)
+
+        # Use gwpy to parse the filter
+        # We need sample rate
+        fs = (1.0 / (self._axis0_index[1] - self._axis0_index[0])).to("Hz").value
+        from gwpy.signal import filter_design
+        from scipy import signal as scipy_signal
+
+        form, filt = filter_design.parse_filter(
+            args,
+            analog=kwargs.pop('analog', False),
+            sample_rate=fs,
+        )
+        filtfilt = kwargs.pop("filtfilt", True)  # Default to True for phase consistency
+
+        # Apply filter along axis 0
+        if form == 'zpk':
+            sos = scipy_signal.zpk2sos(*filt)
+            new_data_2d = scipy_signal.sosfiltfilt(sos, data_2d, axis=0) if filtfilt else scipy_signal.sosfilt(sos, data_2d, axis=0)
+        else:
+            b, a = filt
+            new_data_2d = scipy_signal.filtfilt(b, a, data_2d, axis=0) if filtfilt else scipy_signal.lfilter(b, a, data_2d, axis=0)
+
+        # Reshape back
+        return ScalarField(
+            new_data_2d.reshape(orig_shape),
+            unit=self.unit,
+            axis0=self._axis0_index,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=self.axis_names,
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
 
     def compute_xcorr(self, point_a, point_b, **kwargs):
         """Compute cross-correlation between two spatial points.
