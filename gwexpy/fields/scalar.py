@@ -694,6 +694,44 @@ class ScalarField(FieldBase):
         return wavelength_values * (1 / k_index.unit)
 
     # =========================================================================
+    # Simulation
+    # =========================================================================
+
+    @classmethod
+    def simulate(cls, method: str, *args, **kwargs) -> "ScalarField":
+        """Generate a simulated ScalarField.
+
+        Parameters
+        ----------
+        method : str
+            Name of the generator from ``gwexpy.noise.field``.
+            (e.g., 'gaussian', 'plane_wave').
+        *args, **kwargs
+            Arguments passed to the generator.
+
+        Returns
+        -------
+        ScalarField
+            Generated field.
+
+        Examples
+        --------
+        >>> from gwexpy.fields import ScalarField
+        >>> field = ScalarField.simulate('gaussian', shape=(100, 10, 10, 10))
+        """
+        from gwexpy.noise import field
+
+        if not hasattr(field, method):
+            raise ValueError(
+                f"Unknown simulation method '{method}'. "
+                f"Available methods in gwexpy.noise.field: "
+                f"{[m for m in dir(field) if not m.startswith('_')]}"
+            )
+
+        func = getattr(field, method)
+        return func(*args, **kwargs)
+
+    # =========================================================================
     # Extraction API (Phase 0.3)
     # =========================================================================
 
@@ -1107,7 +1145,9 @@ class ScalarField(FieldBase):
                 vmin=vmin, vmax=vmax, cmap=cmap, **kwargs
             )
         else:
-            raise ValueError(f"Unknown method '{method}'. Use 'pcolormesh' or 'imshow'.")
+            raise ValueError(
+                f"Unknown method '{method}'. Use 'pcolormesh' or 'imshow'."
+            )
 
         # Labels with units
         ax.set_xlabel(f"{ax2_name} [{ax2_index.unit}]")
@@ -1704,7 +1744,8 @@ class ScalarField(FieldBase):
     def freq_space_map(self, axis, at=None, **kwargs):
         """Compute frequency-space map along a spatial axis.
 
-        This is a convenience wrapper around :func:`~gwexpy.fields.signal.freq_space_map`.
+        This is a convenience wrapper around
+        :func:`~gwexpy.fields.signal.freq_space_map`.
 
         Parameters
         ----------
@@ -1731,7 +1772,8 @@ class ScalarField(FieldBase):
     def compute_xcorr(self, point_a, point_b, **kwargs):
         """Compute cross-correlation between two spatial points.
 
-        This is a convenience wrapper around :func:`~gwexpy.fields.signal.compute_xcorr`.
+        This is a convenience wrapper around
+        :func:`~gwexpy.fields.signal.compute_xcorr`.
 
         Parameters
         ----------
@@ -1756,7 +1798,8 @@ class ScalarField(FieldBase):
     def time_delay_map(self, ref_point, plane="xy", at=None, **kwargs):
         """Compute time delay map from a reference point.
 
-        This is a convenience wrapper around :func:`~gwexpy.fields.signal.time_delay_map`.
+        This is a convenience wrapper around
+        :func:`~gwexpy.fields.signal.time_delay_map`.
 
         Parameters
         ----------
@@ -1785,7 +1828,8 @@ class ScalarField(FieldBase):
     def coherence_map(self, ref_point, plane="xy", at=None, **kwargs):
         """Compute coherence map from a reference point.
 
-        This is a convenience wrapper around :func:`~gwexpy.fields.signal.coherence_map`.
+        This is a convenience wrapper around
+        :func:`~gwexpy.fields.signal.coherence_map`.
 
         Parameters
         ----------
@@ -1810,3 +1854,79 @@ class ScalarField(FieldBase):
         from .signal import coherence_map
 
         return coherence_map(self, ref_point, plane=plane, at=at, **kwargs)
+
+    # =========================================================================
+    # Spectral Density (Phase 2)
+    # =========================================================================
+
+    def spectral_density(self, axis=0, **kwargs):
+        """Compute spectral density along any axis.
+
+        Generalized spectral density function that works on time axis (0)
+        or spatial axes (1-3). Returns a new ScalarField with the transformed
+        axis in spectral domain.
+
+        Parameters
+        ----------
+        axis : int or str
+            Axis to transform. Default 0 (time axis).
+        **kwargs
+            Additional arguments passed to
+            :func:`~gwexpy.fields.signal.spectral_density`.
+            See that function for full parameter list.
+
+        Returns
+        -------
+        ScalarField
+            Spectral density field with transformed axis.
+
+        Examples
+        --------
+        >>> # Time PSD
+        >>> psd_field = field.spectral_density(axis=0)
+        >>> psd_field.axis0_domain  # 'frequency'
+
+        >>> # Spatial wavenumber spectrum
+        >>> kx_spec = field.spectral_density(axis='x')
+
+        See Also
+        --------
+        gwexpy.fields.signal.spectral_density : Full documentation.
+        psd : Convenience alias for time-axis PSD.
+        """
+        from .signal import spectral_density
+
+        return spectral_density(self, axis=axis, **kwargs)
+
+    def psd(self, **kwargs):
+        """Compute power spectral density along time axis.
+
+        Convenience method equivalent to ``spectral_density(axis=0)``.
+        Uses Welch's method by default for robust PSD estimation.
+
+        Parameters
+        ----------
+        **kwargs
+            Keyword arguments passed to :func:`~gwexpy.fields.signal.spectral_density`.
+            Common options:
+            - method : {'welch', 'fft'}, default 'welch'
+            - nperseg : int, segment length
+            - window : str, window function
+            - scaling : {'density', 'spectrum'}
+
+        Returns
+        -------
+        ScalarField
+            PSD field with axis0_domain='frequency'.
+
+        Examples
+        --------
+        >>> from astropy import units as u
+        >>> psd_field = field.psd(nperseg=512)
+        >>> psd_field.shape  # (n_freq, nx, ny, nz)
+
+        See Also
+        --------
+        spectral_density : Generalized spectral density for any axis.
+        """
+        return self.spectral_density(axis=0, **kwargs)

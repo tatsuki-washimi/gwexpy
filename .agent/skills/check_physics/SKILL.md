@@ -20,7 +20,9 @@ This skill performs a review of the code specifically focusing on physics and ma
     * Check edge cases (e.g., $f=0$, infinite limits).
 
 3. **Sanity Checks**:
-    * Create a small script to test conservation laws (e.g., Parseval's theorem for FFT).
+    * **Conservation Laws**: Create a script to verify energy conservation (Parseval's theorem) for FFT/PSD transformations. Ratio of frequency-domain energy to time-domain energy should be ~1.0.
+    * **Theoretical Benchmarks**: Use known signals (Sine wave, Gaussian noise) to verify peak frequency, amplitude, and spectral flatness.
+    * **Multi-domain Verification**: For multi-dimensional fields, verify transformations along *all* applicable axes (e.g., spatial FFT as well as temporal FFT).
     * Verify that reasonable inputs produce physically reasonable outputs.
 
 4. **Report**:
