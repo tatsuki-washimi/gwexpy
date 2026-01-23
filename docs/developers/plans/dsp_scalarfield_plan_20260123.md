@@ -13,26 +13,27 @@
 - [x] `ScalarField.simulate()` クラスメソッド実装。
 - [x] `scripts/verify_scalarfield_noise.py` による検証。
 
-### Phase 2: 汎用的 Spectral Density 推定 (40分)
-- [ ] **汎用コア実装**: `compute_spectral_density(field, axis, method='welch', ...)`
+### Phase 2: 汎用的 Spectral Density 推定 (完了)
+- [x] **汎用コア実装**: `compute_spectral_density(field, axis, method='welch', ...)`
     - 指定した軸（時間 0 or 空間 1-3）に対してスペクトル密度を計算する汎用ロジック。
     - メモリ効率を意識した内部実装。
-- [ ] **ユーザーAPI (Aliases)**:
+- [x] **ユーザーAPI (Aliases)**:
     - `ScalarField.psd()`: `axis=0` (時間) 固定のエイリアス。
     - `ScalarField.csd()` (Cross Spectral Density): 参照点との比較用。
-- [ ] **全点変換のデフォルト化**:
+- [x] **全点変換のデフォルト化**:
     - まずは全空間点に対する変換を実装し、4D構造を維持した `ScalarField` を返す。
     - メモリ節約オプション（特定の空間ラインのみ変換など）は後続ステップで検討。
 
-### Phase 3: 相関解析と参照点マッピング (40分)
-- [ ] **Coherence/Correlation with Ref Point**:
+### Phase 3: 相関解析と参照点マッピング (完了)
+- [x] **Coherence/Correlation with Ref Point**:
     - `field.coherence(ref_point, ...)`: 参照点と全空間点のコヒーレンスを計算し、空間 3D/2D マップ（`ScalarField`）として返す。
     - `field.xcorr(ref_point, ...)`: 同様に相互相関。
-- [ ] **帯域平均化**:
+- [x] **帯域平均化**:
     - 指定した周波数帯域で平均した「コヒーレンスマップ（スカラーマップ）」を生成する機能。
 
-### Phase 4: 検証とドキュメント (20分)
-- [ ] 物理整合性チェック（単位、Parsevalの定理、波数定義）。
+### Phase 4: 検証とドキュメント (一部完了)
+- [x] 物理整合性チェック（単位、Parsevalの定理、波数定義）。
+- [x] pytest による自動検証。
 - [ ] チュートリアルノートブックの作成。
 
 ## テスト・検証計画
