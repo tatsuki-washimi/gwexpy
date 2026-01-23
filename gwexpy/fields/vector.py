@@ -179,3 +179,141 @@ class VectorField(FieldDict):
             The projected scalar field.
         """
         return self.dot(direction) / direction.norm()
+
+    # ------------------------------------------------------------------
+    # Visualization
+    # ------------------------------------------------------------------
+    def plot_magnitude(self, x=None, y=None, **kwargs):
+        """Plot the magnitude (norm) of the vector field.
+
+        Parameters
+        ----------
+        x : str, optional
+            X-axis name.
+        y : str, optional
+            Y-axis name.
+        **kwargs
+            Fixed coordinates and arguments passed to ScalarField.plot.
+        """
+        return self.norm().plot(x=x, y=y, **kwargs)
+
+    def quiver(self, x=None, y=None, **kwargs):
+        """Plot the vector field using arrows (quiver).
+
+        Parameters
+        ----------
+        x : str, optional
+            X-axis name.
+        y : str, optional
+            Y-axis name.
+        **kwargs
+            Fixed coordinates and arguments passed to FieldPlot.add_vector.
+        """
+        # Defer import
+        from ..plot.field import FieldPlot
+
+        fp = FieldPlot()
+        
+        # Split kwargs
+        # We need access to axis names to know which are fixed coords
+        # Since VectorField is a collection, we check keys of the first component
+        first_field = next(iter(self.values()))
+        all_axes = [
+            first_field._axis0_name,
+            first_field._axis1_name,
+            first_field._axis2_name,
+            first_field._axis3_name
+        ]
+        
+        slice_kwargs = {}
+        plot_kwargs = {}
+        for k, v in kwargs.items():
+            if k in all_axes:
+                slice_kwargs[k] = v
+            else:
+                plot_kwargs[k] = v
+        
+        fp.add_vector(self, x=x, y=y, mode='quiver', slice_kwargs=slice_kwargs, **plot_kwargs)
+        return fp
+
+    def streamline(self, x=None, y=None, **kwargs):
+        """Plot the vector field using streamlines.
+
+        Parameters
+        ----------
+        x : str, optional
+            X-axis name.
+        y : str, optional
+            Y-axis name.
+        **kwargs
+            Fixed coordinates and arguments passed to FieldPlot.add_vector.
+        """
+        from ..plot.field import FieldPlot
+
+        fp = FieldPlot()
+        
+        first_field = next(iter(self.values()))
+        all_axes = [
+            first_field._axis0_name,
+            first_field._axis1_name,
+            first_field._axis2_name,
+            first_field._axis3_name
+        ]
+        
+        slice_kwargs = {}
+        plot_kwargs = {}
+        for k, v in kwargs.items():
+            if k in all_axes:
+                slice_kwargs[k] = v
+            else:
+                plot_kwargs[k] = v
+        
+        fp.add_vector(self, x=x, y=y, mode='streamline', slice_kwargs=slice_kwargs, **plot_kwargs)
+        return fp
+
+    def plot(self, x=None, y=None, **kwargs):
+        """Plot magnitude and overlay quiver.
+
+        This is a convenience method combining plot_magnitude and quiver.
+        """
+        # Split kwargs for scalar (magnitude) plot vs quiver plot?
+        # A bit tricky. For now, pass most to scalar plot, add quiver with default black
+        
+        # Defer
+        from ..plot.field import FieldPlot
+        
+        fp = FieldPlot()
+        
+        first_field = next(iter(self.values()))
+        all_axes = [
+            first_field._axis0_name,
+            first_field._axis1_name,
+            first_field._axis2_name,
+            first_field._axis3_name
+        ]
+        
+        slice_kwargs = {}
+        plot_kwargs = {}
+        for k, v in kwargs.items():
+            if k in all_axes:
+                slice_kwargs[k] = v
+            else:
+                plot_kwargs[k] = v
+
+        # Calculate norm
+        norm_field = self.norm()
+        norm_field.name = "Magnitude"
+        
+        # Add scalar magnitude
+        fp.add_scalar(norm_field, x=x, y=y, slice_kwargs=slice_kwargs, **plot_kwargs)
+        
+        # Add vector quiver (black by default for visibility)
+        quiver_args = {'color': 'white', 'alpha': 0.7} # white arrows on colored map
+        
+        # If user passed stride for quiver, extract it
+        if 'stride' in plot_kwargs:
+            quiver_args['stride'] = plot_kwargs['stride']
+            
+        fp.add_vector(self, x=x, y=y, mode='quiver', slice_kwargs=slice_kwargs, **quiver_args)
+        
+        return fp
