@@ -14,6 +14,7 @@
     - `TensorField @ TensorField -> TensorField`
 - **Batch Processing**: `fft_time_all()`, `filter_all()`, `resample_all()`, etc.
 - **Arithmetic**: Scalar multiplication, addition, and subtraction
+- **Visualization**: `plot_components()` (Plot all components in grid)
 - **Export**: `to_array()` for NumPy interoperability (exports 6D array for rank-2)
 
 ## Basic Usage

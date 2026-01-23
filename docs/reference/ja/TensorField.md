@@ -14,6 +14,7 @@
     - `TensorField @ TensorField -> TensorField`
 - **バッチ処理**: `fft_time_all()`, `filter_all()`, `resample_all()` など、全コンポーネントへの一括適用
 - **算術演算**: スカラーとの乗算、加算、減算
+- **可視化**: `plot_components()` (全成分をグリッド表示)
 - **エクスポート**: NumPy との相互運用のための `to_array()` (ランク2の場合は6次元配列を出力)
 
 ## 基本的な使い方

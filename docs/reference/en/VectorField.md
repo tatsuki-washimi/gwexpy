@@ -11,6 +11,7 @@
 - **Geometric Operations**: `dot()`, `cross()`, `project()`, `norm()`
 - **Batch Processing**: `fft_time_all()`, `filter_all()`, `resample_all()`, etc.
 - **Arithmetic**: Scalar multiplication, addition, and subtraction
+- **Visualization**: `plot()` (Magnitude+Quiver), `quiver()` (arrow plot), `streamline()` (streamline plot)
 - **Export**: `to_array()` for NumPy interoperability
 
 ## Basic Usage
