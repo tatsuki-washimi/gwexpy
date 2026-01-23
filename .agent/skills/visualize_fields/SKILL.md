@@ -27,11 +27,9 @@ description: 多次元フィールドデータ（Field4D/Matrix等）の抽出�
 ユーザーが直接呼び出す描画メソッドです。
 
 - **命名規約**: `plot_map2d`, `plot_profile`, `plot_timeseries_points` 等。
-- **インターフェース**:
-  - 必ず `ax=None` 引数を受け取り、既存の Axes へのプロットを可能にする。
-  - `fig, ax` タプルを返す。
-  - 軸ラベルには必ず単位（`[unit]`）を付与する。
-- **実装形態**: 内部で「抽出API」を呼び出し、得られたデータをプロットするのみの薄いラッパーとします。
+- **Spectral Visualization**:
+  - `freq_space_map` (Waterfall等) は、時間軸を周波数軸に置換した2Dマップです。
+  - スペクトル密度（PSD）をプロットする際は、対数スケール (`norm=LogNorm` または `set_yscale('log')`) をデフォルトで考慮します。
 
 ## 物理的整合性のチェックリスト
 

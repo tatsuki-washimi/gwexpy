@@ -28,9 +28,8 @@ This skill guides the implementation of new array/field types in `gwexpy`, ensur
 *   **`__array_finalize__`**:
     *   Handle 3 creation scenarios: `obj` is None (explicit new), `obj` is subclass (view casting), `obj` is different type (copy/slice).
     *   Copy metadata from `obj` to `self`.
-*   **`__getitem__`**:
-    *   Override if special slicing behavior is needed (e.g., maintaining dimensionality like `Field4D` or handling named axes).
-    *   Ensure metadata is correctly propagated or updated (e.g., slicing an axis index).
+*   **Metadata-Preserving Indexing**: 
+    `Field4D` 等の多次元クラスでは、インデックス操作 (`__getitem__`) 時に次元を落とさないことが推奨されます。整数インデックス `i` を `slice(i, i+1)` に変換して処理することで、軸の数とメタデータ（軸名称や単位）を一貫して維持できます。詳細は `manage_field_metadata` スキルを参照してください。
 *   **Transpose/Swapaxes**:
     *   Override to update axis-dependent metadata if applicable.
 

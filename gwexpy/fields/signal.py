@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from gwexpy.timeseries import TimeSeries
 
 __all__ = [
+    "spectral_density",
     "compute_psd",
     "freq_space_map",
     "compute_freq_space",
@@ -76,6 +77,269 @@ def _validate_regular_time_axis(field: ScalarField) -> tuple[float, u.Unit]:
             "Consider resampling the data to a uniform time grid."
         )
     return dt.value, dt.unit
+
+
+def _validate_axis_for_spectral(
+    field: ScalarField, axis: int | str
+) -> tuple[int, float, u.Unit, str]:
+    """Validate axis for spectral density computation.
+
+    Returns
+    -------
+    tuple
+        (axis_int, delta_value, delta_unit, domain): axis index, sample spacing,
+        spacing unit, and current domain ('time' or 'real').
+    """
+    from ..types.axis import AxisDescriptor
+
+    # Resolve axis name to index
+    if isinstance(axis, str):
+        axis_int = field._get_axis_index(axis)
+    else:
+        axis_int = axis
+
+    if axis_int < 0 or axis_int > 3:
+        raise ValueError(f"axis must be 0-3, got {axis_int}")
+
+    # Get axis info
+    axis_mapping = {
+        0: (field._axis0_name, field._axis0_index, field._axis0_domain),
+        1: (
+            field._axis1_name,
+            field._axis1_index,
+            field._space_domains.get(field._axis1_name, "real"),
+        ),
+        2: (
+            field._axis2_name,
+            field._axis2_index,
+            field._space_domains.get(field._axis2_name, "real"),
+        ),
+        3: (
+            field._axis3_name,
+            field._axis3_index,
+            field._space_domains.get(field._axis3_name, "real"),
+        ),
+    }
+    ax_name, ax_index, domain = axis_mapping[axis_int]
+
+    # Validate regular spacing
+    ax_desc = AxisDescriptor(ax_name, ax_index)
+    if not ax_desc.regular:
+        raise ValueError(
+            f"Axis '{ax_name}' must be regularly spaced for spectral analysis. "
+            f"Consider resampling to a uniform grid."
+        )
+    if ax_desc.size < 2:
+        raise ValueError(f"Axis '{ax_name}' must have at least 2 points.")
+
+    delta = ax_desc.delta
+    if delta is None:
+        raise ValueError(f"Axis '{ax_name}' does not have a defined spacing.")
+
+    # Check domain is appropriate
+    if axis_int == 0:
+        if domain == "frequency":
+            raise ValueError(
+                "spectral_density requires axis0_domain='time'. "
+                "Use ifft_time first to transform to time domain."
+            )
+    else:
+        if domain == "k":
+            raise ValueError(
+                f"spectral_density requires axis '{ax_name}' in 'real' domain. "
+                f"Use ifft_space first to transform to real space."
+            )
+
+    return axis_int, delta.value, delta.unit, domain
+
+
+def spectral_density(
+    field: ScalarField,
+    axis: int | str = 0,
+    *,
+    method: Literal["welch", "fft"] = "welch",
+    nperseg: int | None = None,
+    noverlap: int | None = None,
+    window: str = "hann",
+    detrend: str | bool = "constant",
+    scaling: Literal["density", "spectrum"] = "density",
+    average: Literal["mean", "median"] = "mean",
+) -> ScalarField:
+    """Compute spectral density along any axis.
+
+    This is the generalized spectral density function that works on:
+    - Time axis (axis=0): Returns power spectral density vs frequency
+    - Space axes (axis=1,2,3): Returns spatial spectral density vs wavenumber
+
+    The output maintains 4D shape, with the specified axis transformed
+    from its original domain (time->frequency, position->wavenumber).
+
+    Parameters
+    ----------
+    field : ScalarField
+        Input 4D field. For time axis, axis0_domain must be 'time'.
+        For space axes, the axis must be in 'real' domain.
+    axis : int or str
+        Axis to transform. Can be integer (0-3) or axis name.
+        Default is 0 (time axis).
+    method : {'welch', 'fft'}
+        Estimation method. 'welch' for averaged periodogram,
+        'fft' for direct FFT magnitude squared. Default 'welch'.
+    nperseg : int, optional
+        Segment length for Welch method. Default min(256, axis_length).
+    noverlap : int, optional
+        Overlap for Welch. Default nperseg // 2.
+    window : str
+        Window function. Default 'hann'.
+    detrend : str or bool
+        Detrending: 'constant', 'linear', or False. Default 'constant'.
+    scaling : {'density', 'spectrum'}
+        'density' divides by frequency/wavenumber resolution,
+        'spectrum' gives total power in each bin. Default 'density'.
+    average : {'mean', 'median'}
+        Averaging for Welch. Default 'mean'.
+
+    Returns
+    -------
+    ScalarField
+        Spectral density field with the specified axis transformed:
+        - axis0: frequency (if axis=0) or unchanged
+        - axis0_domain: 'frequency' (if axis=0)
+        - space_domains: 'k' for transformed spatial axis
+
+    Raises
+    ------
+    ValueError
+        If axis is already in spectral domain, or is irregular.
+
+    Examples
+    --------
+    >>> from astropy import units as u
+    >>> from gwexpy.fields import ScalarField
+    >>> # Time PSD (all spatial points)
+    >>> psd_field = spectral_density(field, axis=0)
+    >>> psd_field.axis0_domain  # 'frequency'
+
+    >>> # Spatial wavenumber spectrum along x
+    >>> kx_spec = spectral_density(field, axis='x')
+
+    Notes
+    -----
+    For time axis (axis=0), this is equivalent to applying Welch PSD
+    estimation to every spatial point independently.
+
+    For spatial axes, this computes the spatial power spectrum,
+    where the output unit is ``field.unit**2 / (1/dx.unit)`` assuming
+    density scaling.
+
+    The wavenumber definition follows the convention k = 1/λ (not angular).
+    To get angular wavenumber (2π/λ), multiply the output axis by 2π.
+    """
+    from scipy.signal import welch
+
+    axis_int, delta, delta_unit, domain = _validate_axis_for_spectral(field, axis)
+
+    n_axis = field.shape[axis_int]
+    if nperseg is None:
+        nperseg = min(256, n_axis)
+    if noverlap is None:
+        noverlap = nperseg // 2
+
+    fs = 1.0 / delta  # Sampling frequency (temporal or spatial)
+
+    # Apply Welch along specified axis
+    if method == "welch":
+        freqs, psd = welch(
+            field.value,
+            fs=fs,
+            axis=axis_int,
+            window=window,
+            nperseg=nperseg,
+            noverlap=noverlap,
+            detrend=detrend,
+            scaling=scaling,
+            average=average,
+            return_onesided=True,  # Real-valued input assumed
+        )
+    else:  # fft method
+        # Direct FFT-based PSD
+        n = field.shape[axis_int]
+        fft_result = np.fft.rfft(field.value, axis=axis_int)
+        psd = (np.abs(fft_result) ** 2) / n**2
+
+        # One-sided correction
+        slices = [slice(None)] * 4
+        slices[axis_int] = slice(1, -1 if n % 2 == 0 else None)
+        psd[tuple(slices)] *= 2
+
+        if scaling == "density":
+            df = fs / n
+            psd = psd / df
+
+        freqs = np.fft.rfftfreq(n, d=delta)
+
+    # Determine output unit
+    freq_unit = 1 / delta_unit
+    if field.unit is not None:
+        if scaling == "density":
+            psd_unit = field.unit ** 2 / freq_unit
+        else:
+            psd_unit = field.unit ** 2
+    else:
+        psd_unit = u.dimensionless_unscaled
+
+    # Build output ScalarField
+    freq_axis = freqs * freq_unit
+
+    # Determine new axis names and domains
+    if axis_int == 0:
+        new_axis0_domain = "frequency"
+        new_axis_names = [
+            "f", field._axis1_name, field._axis2_name, field._axis3_name
+        ]
+        new_space_domains = dict(field._space_domains)
+        new_axes = {
+            0: freq_axis,
+            1: field._axis1_index,
+            2: field._axis2_index,
+            3: field._axis3_index,
+        }
+    else:
+        new_axis0_domain = field._axis0_domain
+        new_axis_names = list(field.axis_names)
+        new_space_domains = dict(field._space_domains)
+
+        # Rename spatial axis to k-variant
+        old_name = new_axis_names[axis_int]
+        new_name = f"k{old_name}"
+        new_axis_names[axis_int] = new_name
+
+        # Update domain
+        if old_name in new_space_domains:
+            del new_space_domains[old_name]
+        new_space_domains[new_name] = "k"
+
+        new_axes = {
+            0: field._axis0_index,
+            1: field._axis1_index,
+            2: field._axis2_index,
+            3: field._axis3_index,
+        }
+        new_axes[axis_int] = freq_axis
+
+    from gwexpy.fields import ScalarField as SF
+
+    return SF(
+        psd,
+        unit=psd_unit,
+        axis0=new_axes[0],
+        axis1=new_axes[1],
+        axis2=new_axes[2],
+        axis3=new_axes[3],
+        axis_names=new_axis_names,
+        axis0_domain=new_axis0_domain,
+        space_domain=new_space_domains,
+    )
 
 
 def _extract_timeseries_1d(
