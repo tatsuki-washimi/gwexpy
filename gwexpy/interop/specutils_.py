@@ -33,7 +33,7 @@ def to_specutils(data, **kwargs):
         # Actually typically we construct Quantity manually if needed.
         try:
             flux = value * data.unit
-        except Exception:
+        except (TypeError, ValueError):
             # Fallback if unit multiplication fails or simple numpy array
             flux = value * astropy_units.dimensionless_unscaled
     else:

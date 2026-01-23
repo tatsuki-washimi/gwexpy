@@ -69,7 +69,7 @@ class SkyMap(Plot):
                 import scipy.integrate
 
                 scipy.integrate.trapz = getattr(scipy.integrate, "trapezoid", None)
-            except Exception:
+            except (ImportError, AttributeError):
                 raise ImportError(
                     "ligo.skymap is required for add_healpix. Install with: pip install ligo.skymap"
                 )
@@ -113,7 +113,7 @@ class SkyMap(Plot):
         # Prefer gwpy's ``plot_coord`` if available; otherwise fall back to scatter.
         try:
             ax.plot_coord(coord, **kwargs)
-        except Exception:
+        except (AttributeError, TypeError, ValueError):
             # Matplotlib expects radians for Mollweide
             ra_rad = coord.ra.to(u.rad).value
             dec_rad = coord.dec.to(u.rad).value
