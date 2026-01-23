@@ -128,19 +128,16 @@ class TestScalarFieldSpectralDensity:
     def test_time_delay_map(self):
         """Test time delay map with a shifted signal."""
         # Create a field where x=1 leads x=0 by 0.1s
-        # BUT: simulate requires careful setup.
-        # Let's verify our understanding of 'lead' vs 'lag'.
-        # If sig2(t) = sig1(t - delay), then sig2 is delayed.
-        # correlate(sig1, sig2) peak should show lag.
+        # Using 5 samples (0.05s, 1/4 period) avoids phase ambiguity (half-period shift acts like inversion).
         
         t = np.arange(100) * 0.01  # 100 Hz
         sig = np.sin(2 * np.pi * 5 * t)  # 5 Hz
         
-        # sig_delayed is shifted by +10 samples.
-        # sig_delayed[i] = sig[i - 10]
-        sig_delayed = np.roll(sig, 10)
-        # Fix wrap-around artifacts for cleanliness (optional but good)
-        sig_delayed[:10] = 0
+        # sig_delayed is shifted by +5 samples (0.05s).
+        shift = 5
+        sig_delayed = np.roll(sig, shift)
+        # Fix wrap-around artifacts
+        sig_delayed[:shift] = 0
         
         data = np.zeros((100, 2, 1, 1))
         data[:, 0, 0, 0] = sig          # Ref point
@@ -164,19 +161,11 @@ class TestScalarFieldSpectralDensity:
         assert isinstance(delay_map, ScalarField)
         
         # x=1 is delayed. delay_val is time of peak correlation.
-        # correlate(ref, test). Ref matches Test when Test is shifted back?
-        # If test(t) ~ ref(t-tau), then test needs shift -tau to match.
-        # Actually verify the sign convention:
-        # positive delay usually means 'leads'.
-        # Let's check magnitude first.
         delay_val = delay_map.value[0, 1, 0, 0]
         
-        # The test failed with 0.1 vs 0.02.
-        # Likely delay_val was 0.0 because roll w/o zeroing produces periodic signal?
-        # Or maybe xcorr logic is finding wrong peak.
-        # With roll, it should detect 10 samples (0.1s).
-        
-        assert abs(abs(delay_val) - 0.1) < 0.02
+        # Expect delay of 0.05s
+        # Note: Depending on lead/lag definition, could be + or -
+        assert abs(abs(delay_val) - 0.05) < 0.02
 
     def test_coherence_map(self, gaussian_field):
         """Test coherence map generation."""
