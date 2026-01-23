@@ -271,7 +271,7 @@ class FieldBase(Array4D):
 
         return data_slice * self.unit, x_index, y_index, x_axis, y_axis
 
-    def plot(self, x=None, y=None, **kwargs):
+    def plot(self, x=None, y=None, slices=None, **kwargs):
         """Plot the field as a 2D slice.
 
         Wrapper around FieldPlot.
@@ -282,6 +282,9 @@ class FieldBase(Array4D):
             X-axis name.
         y : str, optional
             Y-axis name.
+        slices : dict, optional
+            Dictionary of axis names to coordinate values for slicing.
+            Useful to resolve conflicts when an axis name matches a parameter name.
         **kwargs
             Fixed coordinates (e.g. z=0) and plotting keyword arguments.
         """
@@ -297,6 +300,9 @@ class FieldBase(Array4D):
         # Heuristic: if arg is an axis name, it's a fixed coord.
         
         slice_kwargs = {}
+        if slices is not None:
+            slice_kwargs.update(slices)
+
         plot_kwargs = {}
         
         all_axes = [self._axis0_name, self._axis1_name, self._axis2_name, self._axis3_name]
