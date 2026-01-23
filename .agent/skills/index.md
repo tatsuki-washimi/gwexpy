@@ -1,10 +1,10 @@
-# Agent Skills Index
+# エージェントスキル インデックス
 
-## List of Available Agent Skills
+## 利用可能なエージェントスキル一覧
 
-### 1. Agent & Meta
-Skills for improving agent capabilities, management, and meta-organization of skills.
-| Skill Name | Description |
+### 1. エージェント & メタ (Agent & Meta)
+エージェントの能力向上、管理、およびスキルのメタ的な整理を行うためのスキルです。
+| スキル名 | 説明 |
 | :--- | :--- |
 | `list_skills` | 登録されているスキル一覧をカテゴリー別に分類して表示する |
 | `suggest_skill` | 現在の状況に合わせて、次に活用すべきスキルを提案する |
@@ -13,9 +13,9 @@ Skills for improving agent capabilities, management, and meta-organization of sk
 | `refactor_skills` | スキルの体系的な整理や統廃合を行い、エージェントの能力を洗練させる |
 | `recover_quota` | LLMの利用制限（クオータ）を管理し、効率的な作業を継続するための戦略を実行する |
 
-### 2. Workflow & Planning
-Integrated management of the sequence from task initialization and interactive design to handover and completion reporting.
-| Skill Name | Description |
+### 2. ワークフロー & 計画 (Workflow & Planning)
+タスクの初期化、対話的設計から、引継ぎ、完了報告に至るまでの一連の流れを統合的に管理します。
+| スキル名 | 説明 |
 | :--- | :--- |
 | `setup_plan` | ユーザーの要求から具体的な作業計画を作成し、モデル・スキル・工数を提案する |
 | `collaborative_design` | 実装方針・作業内容の吟味をユーザーとの対話で行い、承認を得るまでコードを変更しない |
@@ -26,9 +26,9 @@ Integrated management of the sequence from task initialization and interactive d
 | `conversation_report` | 会話全体の作業レポートをタイムスタンプ付きで保存する |
 | `wrap_up` | 検証、テスト、リント、ドキュメント更新、コミットの一連の終了処理を自動化する |
 
-### 3. General Coding
-General skills applicable across any repository for programming, research, and media manipulation.
-| Skill Name | Description |
+### 3. 一般的なコーディング (General Coding)
+プログラミング、調査、メディア操作など、あらゆるリポジトリで適用可能な汎用スキルです。
+| スキル名 | 説明 |
 | :--- | :--- |
 | `search_web_research` | Webからの情報収集、最新の技術トレンド調査、ドキュメント分析を行う |
 | `analyze_code` | 外部ライブラリや他言語で書かれたコードの実装を分析して知見を得る |
@@ -40,9 +40,9 @@ General skills applicable across any repository for programming, research, and m
 | `ignore` | 不要なファイルやディレクトリを無視設定（.gitignore等）に追加・管理する |
 | `prep_release` | バージョン更新やCHANGELOG整備など、リリースに向けてプロジェクトを整える |
 
-### 4. Code Quality Control
-Ensuring code quality through testing, static analysis, debugging, and verification of physical domains.
-| Skill Name | Description |
+### 4. コード品質管理 (Code Quality Control)
+テスト、静的解析、デバッグ、および物理ドメインの検証を通じて、コード品質を保証します。
+| スキル名 | 説明 |
 | :--- | :--- |
 | `check_physics` | 実装内容が数学的・物理学的に妥当か検証する（Parsevalの定理等の一般則） |
 | `test_code` | pytest等を使用してプロジェクトのテストスイートを実行・検証する |
@@ -54,9 +54,9 @@ Ensuring code quality through testing, static analysis, debugging, and verificat
 | `debug_axes` | プロットのスケール、目盛、表示範囲などの可視化上の問題を診断・修正する |
 | `check_deps` | インポート文とプロジェクトの依存関係の整合性をチェックする |
 
-### 5. Documentation & Visualization
-Preparation of documentation for developers and users, as well as generation of presentation materials and notebooks.
-| Skill Name | Description |
+### 5. ドキュメント & 可視化 (Documentation & Visualization)
+開発者・ユーザー向けのドキュメント整備、およびプレゼン資料やノートブックの生成を行います。
+| スキル名 | 説明 |
 | :--- | :--- |
 | `presentation_management` | PowerPoint (.pptx) の自動生成・編集、および Google Slides との連携（設計案作成）を行う |
 | `build_docs` | Sphinx等を使用してプロジェクトのドキュメントをビルドする |
@@ -65,9 +65,9 @@ Preparation of documentation for developers and users, as well as generation of 
 | `refactor_nb` | ノートブック内の要素（import文、コードセル等）を一括置換・リファクタリングする |
 | `fix_notebook` | ノートブック自体のエラーやスキーマの不整合を修正する |
 
-### 6. GWExPy Specific
-Specialized skills deeply dependent on repository-specific data structures (ScalarField, Matrix, etc.) and physical domains.
-| Skill Name | Description |
+### 6. GWExPy 固有 (GWExPy Specific)
+リポジトリ固有のデータ構造（ScalarField, Matrix等）や物理ドメインに深く依存した専門的なスキルです。
+| スキル名 | 説明 |
 | :--- | :--- |
 | `add_type` | gwexpyに新しい配列型（Array/Series/Field）とコレクションを実装する |
 | `extend_gwpy` | GWpy/Astropyクラスの安全な継承と拡張のためのガイドライン |
@@ -79,4 +79,4 @@ Specialized skills deeply dependent on repository-specific data structures (Scal
 
 ---
 
-*This file is managed manually and through tasks related to `list_skills`.*
+*このファイルは手動、または `list_skills` 関連のタスクを通じて管理されています。*
