@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import warnings
 
 import numpy as np
@@ -306,13 +305,6 @@ class MetaDataDict(OrderedDict):
                     MetaData(**entry) if isinstance(entry, dict) else entry
                 )
             # Dict insertion order is guaranteed in Python 3.7+ as part of language spec.
-            # For Python 3.6 or lower, explicitly suggest OrderedDict if order matters.
-            if isinstance(entries, dict) and sys.version_info < (3, 7):
-                warnings.warn(
-                    "Order of a standard dict is not guaranteed; consider using OrderedDict",
-                    RuntimeWarning,
-                    stacklevel=2,
-                )
 
         elif pd is not None and isinstance(entries, pd.DataFrame):
             actual_size = len(entries)

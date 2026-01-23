@@ -78,11 +78,11 @@ class SeriesMatrixValidationMixin:
             try:
                 lhs = lhs.to_value(base_unit)
                 rhs = rhs.to_value(base_unit)
-            except Exception:
+            except (u.UnitConversionError, AttributeError):
                 pass
         try:
             equal = np.array_equal(lhs, rhs)
-        except Exception:
+        except (ValueError, TypeError, AttributeError):
             equal = lhs == rhs
         if not equal:
             raise ValueError(f"xindex does not match: {self.xindex} vs {other.xindex}")

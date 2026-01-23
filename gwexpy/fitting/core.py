@@ -3,6 +3,7 @@ from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
+from astropy import units as u
 from iminuit import Minuit
 from iminuit.util import describe
 
@@ -174,7 +175,7 @@ class FitResult:
             if hasattr(x, "to") and self.x_unit:
                 try:
                     x_val = x.to(self.x_unit).value
-                except Exception:
+                except (AttributeError, u.UnitConversionError):
                     # Fallback if conversion fails
                     x_val = getattr(x, "value", np.asarray(x))
             else:
@@ -184,8 +185,6 @@ class FitResult:
 
             # Unit propagation: apply the Y-unit stored in FitResult
             if self.unit and not hasattr(res, "unit"):
-                from astropy import units as u
-
                 return res * u.Unit(self.unit)
             return res
 
@@ -260,7 +259,7 @@ class FitResult:
                 import gwpy.plot.gps  # noqa: F401  (registers GPS scales)
 
                 ax.set_xscale("auto-gps")
-            except Exception:
+            except (ImportError, ValueError):
                 pass
         elif xscale is not None:
             ax.set_xscale(xscale)
@@ -361,7 +360,7 @@ class FitResult:
             from gwpy.plot.gps import GPS_SCALES
 
             uses_gps_x = ax.get_xscale() in GPS_SCALES
-        except Exception:
+        except ImportError:
             uses_gps_x = False
 
         if self.x_label and not uses_gps_x:
@@ -634,8 +633,10 @@ class FitResult:
             except (ValueError, TypeError, ZeroDivisionError):
                 # Expected numerical errors
                 return -np.inf
-            except Exception:
-                # Unexpected errors
+            except Exception as e:
+                # Unexpected errors - log them
+                import logging
+                logging.debug(f"Unexpected error in MCMC log_prob: {e}")
                 return -np.inf
 
         # Initial state: small ball around minuit result
@@ -1047,7 +1048,7 @@ def fit_series(
         # Handle potential negative values from numerical issues
         dy = np.sqrt(np.maximum(diag_cov, 0))
         sigma_for_result = dy
-        sigma_full_for_plot = None  # TODO: crop to full range if needed
+        sigma_full_for_plot = None  # Full-range sigma not available for GLS yet
 
         cost = GeneralizedLeastSquares(x, y, cov_inv, model)
         cov_inv_for_result = cov_inv  # Save for MCMC

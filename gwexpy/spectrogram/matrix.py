@@ -237,7 +237,7 @@ class SpectrogramMatrix(
         # 2. Compute Data
         try:
             result_data = ufunc(*args, **kwargs)
-        except Exception:
+        except (TypeError, ValueError, u.UnitConversionError):
             return NotImplemented
 
         # 3. Handle per-element unit propagation
@@ -612,7 +612,7 @@ class SpectrogramMatrix(
                     else:
                         # complex slicing?
                         pass
-                except Exception:
+                except (IndexError, TypeError, KeyError):
                     pass
 
         return ret
