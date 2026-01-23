@@ -41,6 +41,10 @@ def __array_finalize__(self, obj):
             setattr(self, attr, val)
 ```
 
+**CRITICAL PITFALL**: If `__new__` sets default values (e.g., `self.attr = "default"`), then `__array_finalize__` might see those defaults and decide not to copy from `obj`.
+*   **Solution**: Initialize custom attributes to `None` in `__new__` and handle default logic within `__array_finalize__`.
+*   **Reference**: See `gwexpy/types/array4d.py` for how it handles `_axis0_index`. It defers setting the `arange` default until after it fails to find an index on `obj`.
+
 **Note**: Be careful if the metadata depends on the axis names or shape, which might have changed (though ufuncs usually preserve these). Use the pattern in `Array4D` and `FieldBase` as a reference.
 
 ### 5. Type Preservation in Collections
