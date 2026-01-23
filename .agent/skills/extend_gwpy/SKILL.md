@@ -24,6 +24,30 @@ class MyTimeSeries(TimeSeries):
 
 Always ensure that mathematical operations preserve units.
 
-### 3. Slicing Safety
+### 4. Metadata Preservation in `__array_finalize__`
 
-Override `__getitem__` if special metadata needs to be updated upon slicing.
+When using NumPy ufuncs (like `+`, `*`) or arithmetic operations, NumPy creates new instances and calls `__array_finalize__(self, obj)`. `obj` is the original instance. You must copy your custom metadata from `obj` to preserve it.
+
+```python
+def __array_finalize__(self, obj):
+    super().__array_finalize__(obj)
+    if obj is None:
+        return
+    
+    # Preserve custom attributes
+    for attr in ["_my_meta", "_domain_label"]:
+        val = getattr(obj, attr, None)
+        if val is not None:
+            setattr(self, attr, val)
+```
+
+**Note**: Be careful if the metadata depends on the axis names or shape, which might have changed (though ufuncs usually preserve these). Use the pattern in `Array4D` and `FieldBase` as a reference.
+
+### 5. Type Preservation in Collections
+
+When implementing batch methods in collection classes (like `FieldList` or `FieldDict`), use `self.__class__` to ensure that subclasses return instances of their own type.
+
+```python
+def map_all(self, func):
+    return self.__class__([func(item) for item in self])
+```
