@@ -1,6 +1,14 @@
 import os
 
+import os
+
 import pytest
+
+if os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD"):
+    pytest.skip(
+        "GUI/qtbot tests skipped (plugin autoload disabled)", allow_module_level=True
+    )
+pytest.importorskip("pytestqt")
 from PyQt5 import QtCore
 
 from gwexpy.gui.ui.main_window import MainWindow
@@ -20,6 +28,7 @@ def test_gui_nds_smoke(qtbot, nds_backend):
 
     # 2. Capture Error Signals
     last_error = []
+
     def on_error(msg):
         print(f"[GUI Error Signal] {msg}")
         last_error.append(msg)
@@ -29,7 +38,7 @@ def test_gui_nds_smoke(qtbot, nds_backend):
             window.nds_cache.signal_error.connect(on_error)
 
     # 3. Configure NDS Source (NDS vs NDS2 based on port)
-    is_nds2 = (nds_backend["port"] == 31200)
+    is_nds2 = nds_backend["port"] == 31200
     mode_str = "NDS2" if is_nds2 else "NDS"
     idx = window.input_controls["ds_combo"].findText(mode_str)
     if idx != -1:
@@ -89,7 +98,9 @@ def test_gui_nds_smoke(qtbot, nds_backend):
 
         print(f"NDS Mode used: {actual_mode}")
         print(f"NDS Server used in GUI: {srv}")
-        print(f"Measurement Channels Active: {[s['name'] for s in window.meas_controls['channel_states'] if s['active']]}")
+        print(
+            f"Measurement Channels Active: {[s['name'] for s in window.meas_controls['channel_states'] if s['active']]}"
+        )
         print(f"nds_latest_raw is None: {window.nds_latest_raw is None}")
         print("----------------------------------")
         raise e
@@ -106,7 +117,9 @@ def test_gui_nds_smoke(qtbot, nds_backend):
     qtbot.waitUntil(has_plot_data, timeout=20000)
     acquired_data = has_plot_data()
 
-    assert acquired_data, f"No data acquired in plots. Status: {window.status_label.text()}"
+    assert acquired_data, (
+        f"No data acquired in plots. Status: {window.status_label.text()}"
+    )
 
     # 9. Stop and Close
     qtbot.mouseClick(window.btn_abort, QtCore.Qt.LeftButton)

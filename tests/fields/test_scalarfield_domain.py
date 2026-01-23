@@ -3,6 +3,7 @@
 import numpy as np
 import pytest
 from astropy import units as u
+from numpy.testing import assert_allclose
 
 from gwexpy.fields import ScalarField
 
@@ -70,3 +71,69 @@ def test_ifft_space_restores_real_domains():
     restored = k_field.ifft_space(axes=["kx"])
     assert restored.space_domains["x"] == "real"
     assert restored.axis_names[1] == "x"
+
+
+def test_chained_operations_domain_propagation():
+    """Verify domain metadata survives slice -> FFT -> slice."""
+    field = make_scalar_field(shape=(16, 8, 8, 8))
+
+    # Slice first
+    sliced = field[4:12, 2:6, :, :]
+    assert sliced.axis0_domain == "time"
+
+    # FFT
+    freq = sliced.fft_time()
+    assert freq.axis0_domain == "frequency"
+    assert freq.shape[0] == (12 - 4) // 2 + 1  # rfft of 8 samples -> 5
+
+    # Slice frequency domain
+    sub_freq = freq[1:4, :, :, :]
+    assert sub_freq.axis0_domain == "frequency"
+    assert sub_freq.shape[0] == 3
+    assert_allclose(sub_freq._axis0_index.value, freq._axis0_index.value[1:4])
+
+
+def test_repeated_fft_cycles_domain():
+    """Verify repeated FFT/IFFT cycles don't corrupt domain state."""
+    field = make_scalar_field()
+
+    # Time -> Freq -> Time -> Freq
+    f1 = field.fft_time()
+    t1 = f1.ifft_time()
+    f2 = t1.fft_time()
+
+    assert f2.axis0_domain == "frequency"
+    assert f2.axis_names[0] == "f"
+    assert_allclose(f2._axis0_index.value, f1._axis0_index.value)
+
+
+def test_grid_spacing_verification():
+    """Explicitly assert grid spacing / resolution is correct after transforms."""
+    field = make_scalar_field(shape=(10, 4, 4, 4))
+    # Original dt = 0.1 s
+
+    freq = field.fft_time()
+    # df = 1 / (n * dt) = 1 / (10 * 0.1) = 1 Hz
+    df = freq._axis0_index[1] - freq._axis0_index[0]
+    assert_allclose(df.value, 1.0)
+    assert df.unit == u.Hz
+
+    k_field = field.fft_space(axes=["x"])
+    # Original dx = 1.0 m
+    # dk = 2pi / (n * dx) = 2pi / (4 * 1.0) = pi/2 rad/m
+    dk = k_field._axis1_index[1] - k_field._axis1_index[0]
+    assert_allclose(dk.value, np.pi / 2)
+
+
+def test_axis_ordering_and_labels_integrity():
+    """Verify axis ordering remains 4D and labels are correct."""
+    field = make_scalar_field()
+
+    # Transpose is not explicitly supported by ScalarField to maintain 4D axis semantics,
+    # but we check that standard operations don't shuffle them.
+    freq_k = field.fft_time().fft_space(axes=["x", "y", "z"])
+
+    assert freq_k.axis_names == ("f", "kx", "ky", "kz")
+    assert freq_k.ndim == 4
+    assert freq_k.shape[0] == field.shape[0] // 2 + 1
+    assert freq_k.shape[1:] == field.shape[1:]
