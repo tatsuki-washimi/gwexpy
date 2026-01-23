@@ -1,0 +1,82 @@
+# Agent Skills Index
+
+## List of Available Agent Skills
+
+### 1. Agent & Meta
+Skills for improving agent capabilities, management, and meta-organization of skills.
+| Skill Name | Description |
+| :--- | :--- |
+| `list_skills` | 登録されているスキル一覧をカテゴリー別に分類して表示する |
+| `suggest_skill` | 現在の状況に合わせて、次に活用すべきスキルを提案する |
+| `suggest_model` | タスクの内容（コーディング、リサーチ、推論等）に応じて最適なAIモデルを提案する |
+| `learn_skill` | 作業内容や会話から再利用可能なパターンを抽出し、スキルを生成・更新する |
+| `refactor_skills` | スキルの体系的な整理や統廃合を行い、エージェントの能力を洗練させる |
+| `recover_quota` | LLMの利用制限（クオータ）を管理し、効率的な作業を継続するための戦略を実行する |
+
+### 2. Workflow & Planning
+Integrated management of the sequence from task initialization and interactive design to handover and completion reporting.
+| Skill Name | Description |
+| :--- | :--- |
+| `setup_plan` | ユーザーの要求から具体的な作業計画を作成し、モデル・スキル・工数を提案する |
+| `collaborative_design` | 実装方針・作業内容の吟味をユーザーとの対話で行い、承認を得るまでコードを変更しない |
+| `estimate_effort` | 作業内容から必要な時間とリソース消費の見積もりを算出する |
+| `archive_plan` | 実装計画を正式な計画書として保存・管理する |
+| `handover_session` | AIモデル間や作業セッション間での円滑な引継ぎプログラミングを支援する |
+| `archive_work` | 作業完了後の成果を要約・記録し、知見をスキルとして固定化する |
+| `conversation_report` | 会話全体の作業レポートをタイムスタンプ付きで保存する |
+| `wrap_up` | 検証、テスト、リント、ドキュメント更新、コミットの一連の終了処理を自動化する |
+
+### 3. General Coding
+General skills applicable across any repository for programming, research, and media manipulation.
+| Skill Name | Description |
+| :--- | :--- |
+| `search_web_research` | Webからの情報収集、最新の技術トレンド調査、ドキュメント分析を行う |
+| `analyze_code` | 外部ライブラリや他言語で書かれたコードの実装を分析して知見を得る |
+| `multimedia_analysis` | 動画・音声ファイルの内容、メタデータ、およびストリーム情報の分析を行う |
+| `office_document_analysis` | PDF, Word, Excel, PowerPoint 等のファイルからデータや構造を抽出して分析する |
+| `profile` | コードの実行速度をプロファイリングし、ボトルネックを特定する |
+| `organize` | ディレクトリ構造を整理し、配置ミスのファイルをクリーンアップする |
+| `git_commit` | 不要な一時ファイルを削除し、適切なメッセージと共に変更をコミットする |
+| `ignore` | 不要なファイルやディレクトリを無視設定（.gitignore等）に追加・管理する |
+| `prep_release` | バージョン更新やCHANGELOG整備など、リリースに向けてプロジェクトを整える |
+
+### 4. Code Quality Control
+Ensuring code quality through testing, static analysis, debugging, and verification of physical domains.
+| Skill Name | Description |
+| :--- | :--- |
+| `check_physics` | 実装内容が数学的・物理学的に妥当か検証する（Parsevalの定理等の一般則） |
+| `test_code` | pytest等を使用してプロジェクトのテストスイートを実行・検証する |
+| `test_notebooks` | プロジェクト内の全てのノートブックを順次実行し、不具合がないか確認する |
+| `test_gui` | GUIアプリケーションの動作試験・デバッグを行う |
+| `lint` | RuffやMyPyなどの静的解析ツールを使用してコード品質をチェックする |
+| `fix_mypy` | 静的解析エラー（MyPy）を効率的に解決するパターン集 |
+| `review_repo` | リポジトリ全体を構造、コード品質、テスト、ドキュメントの観点から体系的にレビューする |
+| `debug_axes` | プロットのスケール、目盛、表示範囲などの可視化上の問題を診断・修正する |
+| `check_deps` | インポート文とプロジェクトの依存関係の整合性をチェックする |
+
+### 5. Documentation & Visualization
+Preparation of documentation for developers and users, as well as generation of presentation materials and notebooks.
+| Skill Name | Description |
+| :--- | :--- |
+| `presentation_management` | PowerPoint (.pptx) の自動生成・編集、および Google Slides との連携（設計案作成）を行う |
+| `build_docs` | Sphinx等を使用してプロジェクトのドキュメントをビルドする |
+| `sync_docs` | 実装（docstring）や仕様の変更をドキュメントファイルに同期させる |
+| `make_notebook` | 機能を解説し、実行可能なチュートリアル（Jupyter Notebook）を生成する |
+| `refactor_nb` | ノートブック内の要素（import文、コードセル等）を一括置換・リファクタリングする |
+| `fix_notebook` | ノートブック自体のエラーやスキーマの不整合を修正する |
+
+### 6. GWExPy Specific
+Specialized skills deeply dependent on repository-specific data structures (ScalarField, Matrix, etc.) and physical domains.
+| Skill Name | Description |
+| :--- | :--- |
+| `add_type` | gwexpyに新しい配列型（Array/Series/Field）とコレクションを実装する |
+| `extend_gwpy` | GWpy/Astropyクラスの安全な継承と拡張のためのガイドライン |
+| `manage_field_metadata` | 多次元フィールドの4D構造維持、ドメイン変換、物理単位の整合性を管理する |
+| `visualize_fields` | 多次元フィールドデータの抽出ロジックと描画APIを物理的整合性を保ちながら実装する |
+| `compare_methods` | gwexpy内の類似した信号処理手法の位置づけ、技術的・物理的な違いを分析する |
+| `calc_bode` | 制御理論を用いたメカニカルシステムの状態空間モデルから伝達関数を計算・表示する |
+| `wrap_up_gwexpy` | gwexpy向けの一連の検証・整理・コミット手順をまとめて実行する |
+
+---
+
+*This file is managed manually and through tasks related to `list_skills`.*

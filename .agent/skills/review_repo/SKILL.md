@@ -5,33 +5,33 @@ description: リポジトリ全体を構造、コード品質、テスト、ド�
 
 # Review Repository
 
-リポジトリ全体の品質と構造を評価し、改善のロードマップを作成します。
+Evaluates the overall quality and structure of the repository and creates an improvement roadmap.
 
-## 手順
+## Procedure
 
-1.  **ディレクトリ構造の把握**:
-    *   `list_dir` を使用して、プロジェクトの全体像（`gwexpy`, `tests`, `docs`, `examples` など）を確認する。
-    *   `find_by_name` で主要なファイル形式（`.py`, `.ipynb`, `.md`, `.toml`）の分布を確認する。
+1.  **Understand Directory Structure**:
+    *   Use `list_dir` to obtain an overview of the project (e.g., `gwexpy`, `tests`, `docs`, `examples`).
+    *   Use `find_by_name` to check the distribution of major file formats (`.py`, `.ipynb`, `.md`, `.toml`).
 
-2.  **設計・依存関係の確認**:
-    *   `README.md` を読み、プロジェクトの目的と主要機能を理解する。
-    *   `pyproject.toml` や `setup.py` を確認し、依存関係とビルド設定を把握する。
+2.  **Verify Design and Dependencies**:
+    *   Read `README.md` to understand the project's purpose and key features.
+    *   Check `pyproject.toml` or `setup.py` to grasp dependencies and build configurations.
 
-3.  **コード品質のスクリーニング**:
-    *   `grep_search` で以下のアンチパターンや残存項目を検索する：
-        *   `except Exception:` (広範すぎる例外キャッチ)
-        *   `pass` (空のブロック)
+3.  **Code Quality Screening**:
+    *   Use `grep_search` to find anti-patterns or lingering items:
+        *   `except Exception:` (Overly broad exception catching)
+        *   `pass` (Empty blocks)
         *   `TODO`, `FIXME`, `XXX`
-        *   古いPythonバージョンへの対応コード (`sys.version_info`)
-    *   `view_file_outline` で主要クラスのメソッドが型ヒントや docstring を持っているか確認する。
+        *   Support code for older Python versions (`sys.version_info`)
+    *   Use `view_file_outline` to check if methods in major classes have type hints and docstrings.
 
-4.  **テスト・品質管理の検証**:
-    *   `run_tests` スキルや `run_command` (`pytest --collect-only`) でテストの規模と状態を確認する。
-    *   GitHub Actions (`.github/workflows`) などのCI設定を確認する。
+4.  **Verification of Testing and QA**:
+    *   Assess the scale and status of tests using the `run_tests` skill or `run_command` (`pytest --collect-only`).
+    *   Check CI configurations such as GitHub Actions (`.github/workflows`).
 
-5.  **レポートの生成とタスク化**:
-    *   以下のセクションを含むレポートを作成する：
-        *   **概要**: プロジェクトの規模と現在の状態。
-        *   **長所**: 良い実装や設計のポイント。
-        *   **改善点 (P1:高, P2:中, P3:低)**: 優先度順に整理された具体的な問題点。
-    *   レポートを元に、AIが理解しやすい「改善タスク用プロンプト」を `.agent/` ディレクトリにマークダウン形式で保存する。
+5.  **Report Generation and Task Creation**:
+    *   Create a report including the following sections:
+        *   **Overview**: Project scale and current state.
+        *   **Strengths**: Points of good implementation and design.
+        *   **Improvements (P1: High, P2: Med, P3: Low)**: Specific issues organized by priority.
+    *   Based on the report, save a "Markdown-formatted improvement task prompt" in the `.agent/` directory that is easy for the AI to understand.

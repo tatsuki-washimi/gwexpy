@@ -11,12 +11,12 @@ This skill audits and organizes the project file structure.
 
 1.  **Audit**:
     *   List files in the root directory.
-    *   Check for test files inside the package directory (`gwexpy/`) instead of `tests/`.
-    *   Check for source files in the root instead of the package directory.
+    *   Check for test files inside the package source directory instead of the `tests/` directory.
+    *   Check for source files in the root instead of the proper package directory.
 
 2.  **Action**:
     *   Move misplaced files to their correct locations.
-    *   **Update Imports**: If a file is moved, check standard imports within it and imports *of* it in other files.
+    *   **Update Imports**: If a file is moved, check and update imports within it and references to it in other files.
 
 3.  **Cleanup**:
-    *   Suggest removal of empty directories or obsolete configuration files.
+    *   Suggest removal of empty directories or obsolete configuration/temporary files.

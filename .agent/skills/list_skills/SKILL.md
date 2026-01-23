@@ -5,30 +5,23 @@ description: 登録されているスキル一覧をカテゴリー別に分類�
 
 # List Skills
 
-このスキルは、プロジェクトで利用可能なすべてのエージェントスキルをスキャンし、目的別に分類して表示します。
+This skill scans all available agent skills in the project and displays them categorized by purpose.
 
 ## Instructions
 
-1. **スキャン**:
-    * `.agent/skills/` ディレクトリ内の全サブディレクトリを確認します。
-    * 各ディレクトリの `SKILL.md` から `name` と `description` (YAML frontmatter) を読み取ります。
+1. **Scan**:
+    * Check all subdirectories within the `.agent/skills/` directory.
+    * Read the `name` and `description` from each directory's `SKILL.md`.
 
-2. **カテゴリー分類**:
-    以下のカテゴリーに従ってスキルを分類します：
-    * **1. 開発・実装**: `add_type`, `extend_gwpy`, `refactor_nb`, `visualize_fields`
-    * **2. 解析・リサーチ**: `analyze_code`, `compare_methods`, `profile`, `calc_bode`
-    * **3. 品質保証・テスト**: `lint`, `test_code`, `test_notebooks`, `test_gui`, `review_repo`, `check_deps`, `fix_notebook`, `fix_mypy`
-    * **4. ドキュメント**: `build_docs`, `sync_docs`, `make_notebook`
-    * **5. ワークフロー**: `git_commit`, `ignore`, `organize`, `prep_release`, `wrap_up`, `wrap_up_gwexpy`, `estimate_effort`, `setup_plan`, `archive_plan`, `archive_work`, `conversation_report`
-    * **6. サイエンス**: `check_physics`, `debug_axes`
-    * **7. メタ**: `list_skills`, `suggest_skill`, `suggest_model`, `learn_skill`, `recover_quota`, `refactor_skills`
+2. **Categorize**:
+    Categorize skills according to the latest categories defined in the project's `index.md` (Workflow, Development, Science, QA, Documentation, etc.).
 
-3. **表示**:
-    * カテゴリーごとに見出しを作成し、各スキルをテーブル形式またはリスト形式で表示します。
-    * フォーマット例:
+3. **Display**:
+    * Create a heading for each category and display the skills in a table format.
+    * Format example:
 
-      ### [カテゴリー名]
+      ### [Category Name]
 
-        | スキル名 | 説明 |
+        | Skill Name | Description |
         | :--- | :--- |
-        | `skill_name` | 説明文 |
+        | `skill_name` | Description text |

@@ -19,7 +19,8 @@ Examples
 from __future__ import annotations
 
 # Import submodules for direct access
-from . import asd, wave
+# Import submodules for direct access
+from . import asd, field, wave
 
 # Re-export key functions for convenience
 from .asd import from_obspy, from_pygwinc
@@ -28,6 +29,7 @@ from .wave import from_asd
 __all__ = [
     # Submodules
     "asd",
+    "field",
     "wave",
     # ASD Functions
     "from_pygwinc",
