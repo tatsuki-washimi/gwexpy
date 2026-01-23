@@ -5,22 +5,22 @@ description: Webからの情報収集、最新の技術トレンド調査、お�
 
 # Search & Web Research
 
-Web検索、URLコンテンツの読み取り、およびブラウザ操作を通じて、情報収集と分析を行います。
+Collect and analyze information through web search, URL content reading, and browser interaction.
 
-## 指針とワークフロー
+## Guidelines and Workflow
 
-### 1. Web検索 (`search_web`)
-*   **クエリの最適化**: 具体的かつ英語での検索を組み合わせることで、最新かつ広範な情報を取得します。
-*   **ソースの評価**: 公式ドキュメント（GitHub, PyPI, 公式Wiki）を優先的に参照します。
+### 1. Web Search (`search_web`)
+*   **Query Optimization**: Combine specific and English searches to obtain the latest and most comprehensive information.
+*   **Source Evaluation**: Prioritize official documentation (GitHub, PyPI, official wikis).
 
-### 2. コンテンツの精査 (`read_url_content` / `browser_subagent`)
-*   **静的分析**: `read_url_content` で Markdown 変換されたテキストを高速に読み取ります。
-*   **動的分析**: CSR (Client Side Rendering) のサイトや、対話的な操作が必要な場合は `browser_subagent` を活用します。
+### 2. Content Examination (`read_url_content` / `browser_subagent`)
+*   **Static Analysis**: Rapidly read Markdown-converted text using `read_url_content`.
+*   **Dynamic Analysis**: Utilize `browser_subagent` for sites with CSR (Client Side Rendering) or those requiring interactive operation.
 
-### 3. 情報の要約と統合
-*   収集した情報をそのまま出力するのではなく、現在のプロジェクトのコンテキストに合わせて「どう適用できるか」を要約して提供します。
-*   引用元 (Citations) を明示し、ユーザーが追検証できるようにします。
+### 3. Summarization and Integration of Information
+*   Instead of outputting collected information as-is, provide a summary tailored to the current project context on "how it can be applied."
+*   Clarify citations so that users can perform follow-up verification.
 
-## 注意事項
-*   認証が必要なプライベートな情報の収集は行いません（ブラウザツールは認証済みのセッションを共有していません）。
-*   情報の鮮度（Date）を常に確認し、古いAPIや非推奨のライブラリを推奨しないよう留意します。
+## Precautions
+*   Do not collect private information requiring authentication (browser tools do not share authenticated sessions).
+*   Always check the freshness of information (Date) and be careful not to recommend outdated APIs or deprecated libraries.

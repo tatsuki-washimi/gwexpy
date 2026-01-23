@@ -5,16 +5,16 @@ description: 多次元フィールド（ScalarField等）の4D構造維持、ド
 
 # Manage Field Metadata
 
-`gwexpy` における多次元フィールドデータ（`ScalarField` など）を扱う際、次元の欠落を防ぎ、物理的な整合性（ドメインと単位）を維持するための設計パターンを提供します。
+Provides design patterns for maintaining physical consistency (domains and units) and preventing dimensionality loss when handling multi-dimensional field data (such as `ScalarField`) in `gwexpy`.
 
-## 1. 4次元構造の維持 (Metadata-Preserving Indexing)
+## 1. Metadata-Preserving Indexing (4D Structure Maintenance)
 
-スライス操作時、特定の次元が長さ1になっても軸を削除せず、常に4次元を維持することでメタデータの消失を防ぎます。
+Ensures that during slicing operations, even if a specific dimension becomes length 1, the axis is not removed, and the 4-dimensional structure is maintained to prevent the loss of metadata.
 
-*   **実装パターン**:
+*   **Implementation Pattern**:
     ```python
     def _force_4d_item(self, item):
-        # 整数インデックスを slice(i, i+1) に変換して次元を維持
+        # Convert integer indices to slice(i, i+1) to preserve dimensions
         new_item = list(item)
         for i, val in enumerate(new_item):
             if isinstance(val, int):
@@ -22,31 +22,31 @@ description: 多次元フィールド（ScalarField等）の4D構造維持、ド
         return tuple(new_item)
     ```
 
-## 2. ドメイン変換と座標の更新
+## 2. Domain Conversion and Coordinate Updates
 
-FFTやPSDによってドメインが変換される際（Time -> Frequency, Real -> K-space）、以下の4要素をセットで更新します。
+When domains are transformed via FFT or PSD (e.g., Time -> Frequency, Real -> K-space), the following four elements are updated as a set:
 
-1.  **データ値**: 変換アルゴリズムの適用。
-2.  **軸座標 (Index)**: $1/(\Delta x)$ に基づく新しいサンプリング座標の生成。
-3.  **軸名称 (Name)**: `t` -> `f`, `x` -> `kx` などのプレフィックス/名称変更。
-4.  **ドメイン状態 (Domain State)**: `axis0_domain` や `space_domains` メタデータの更新。
+1.  **Data Values**: Application of the transformation algorithm.
+2.  **Axis Coordinates (Index)**: Generation of new sampling coordinates based on $1/(\Delta x)$.
+3.  **Axis Names (Name)**: Prefixes/name changes such as `t` -> `f`, `x` -> `kx`.
+4.  **Domain State**: Update of `axis0_domain` or `space_domains` metadata.
 
-## 3. 物理単位の伝播 (Spectral Unit Tracking)
+## 3. Spectral Unit Tracking (Physical Unit Propagation)
 
-変換後の単位を自動的に計算します。
+Automatically calculates units after transformation.
 
-*   **PSD (Density scaling)**: $[unit]^2 / [1/axis\_unit]$ (例: $V^2/Hz$)
+*   **PSD (Density scaling)**: $[unit]^2 / [1/axis\_unit]$ (e.g., $V^2/Hz$)
 *   **PSD (Spectrum scaling)**: $[unit]^2$
-*   **Wavenumber**: $[axis\_unit]^{-1}$ (例: $1/m$)
+*   **Wavenumber**: $[axis\_unit]^{-1}$ (e.g., $1/m$)
 
-## 4. 汎用軸処理のバリデーション
+## 4. Validation for Generalized Axis Processing
 
-信号処理メソッド（`spectral_density` 等）は、対象軸が以下の条件を満たしているか確認する必要があります。
+Signal processing methods (such as `spectral_density`) must verify that the target axis meets the following conditions:
 
-*   **等間隔性**: `AxisDescriptor.regular` であること。
-*   **サイズ**: 変換に十分なデータ長があること（通常 2 以上）。
-*   **現在のドメイン**: すでに変換済みでないか（例: 周波数ドメインに再び PSD をかけようとしていないか）。
+*   **Regularity**: Must be `AxisDescriptor.regular`.
+*   **Size**: Sufficient data length for the transform (typically 2 or more).
+*   **Current Domain**: Must not already be transformed (e.g., trying to apply PSD to an already frequency-domain axis).
 
-## 知見の活用例
-- `gwexpy/fields/scalar.py` の `spectral_density` メソッド
-- `gwexpy/fields/signal.py` の `_validate_axis_for_spectral` 内部関数
+## Application Examples
+- `spectral_density` method in `gwexpy/fields/scalar.py`
+- `_validate_axis_for_spectral` internal function in `gwexpy/fields/signal.py`

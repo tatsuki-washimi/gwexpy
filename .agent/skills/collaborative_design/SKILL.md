@@ -5,30 +5,30 @@ description: 実装方針・作業内容の吟味・修正を、ユーザーとA
 
 # Collaborative Design & Planning
 
-このスキルは、AIが独断で実装を進めるのではなく、ユーザーと対話しながら最適な設計・方針を決定するためのガイドラインです。
+This skill serves as a guideline for ensuring the AI does not proceed with implementation unilaterally, but instead determines the optimal design and policy through dialogue with the user.
 
-## 基本原則: 対話優先 (Conversation First)
+## Core Principle: Conversation First
 
-高度な設計判断（APIの設計、複雑な物理ロジックの選択、大規模なリファクタリング）が必要な場合、AIはまず**プロポーザル（提案）**を行い、ユーザーの承認を得ることを最優先します。
+When high-level design decisions (API design, selection of complex physical logic, large-scale refactoring) are required, the AI prioritizes making a **proposal** and obtaining user approval above all else.
 
-### 1. 実装前の「吟味」プロセス
-- **選択肢の提示**: 案A（一括処理・シンプル） vs 案B（抽出ベース・メモリ効率）などのトレードオフを明示し、メリット・デメリットを整理してユーザーに提示します。
-- **物理・数学的妥当性の確認**: 実装前に「この数式/正規化で物理的に正しいか？」をユーザーと議論します。
-- **APIの使い勝手（UX）**: ユーザーがそのコードをどう呼び出すか（例：`field.psd()` か `compute_psd(field)` か）を事前にすり合わせます。
+### 1. Pre-implementation "Review" Process
+- **Presentation of Choices**: Clearly state trade-offs such as Proposal A (Batch processing/Simple) vs. Proposal B (Extraction-based/Memory-efficient), and present the pros and cons to the user.
+- **Verification of Physical/Mathematical Validity**: Discuss with the user whether the equations or normalizations are physically correct before implementation.
+- **User Experience (UX) of the API**: Align beforehand on how the user will call the code (e.g., `field.psd()` vs. `compute_psd(field)`).
 
-### 2. 作業開始のトリガー (Explicit Approval)
-- 計画や設計について議論している間は、どれだけ確信があっても**プロジェクトのソースコードを書き換えてはいけません。**
-- `setup_plan` や `archive_plan` を用いて計画書を更新・共有し、「この計画で進めてもよろしいでしょうか？」とユーザーに明示的に確認します。
-- ユーザーから「進めて」「Go」「承認」などの肯定的な指示があって初めて、コーディング用ツール（`write_to_file`等）を使用します。
+### 2. Trigger for Starting Work (Explicit Approval)
+- While discussing plans or designs, **do not modify the project's source code**, no matter how confident you are.
+- Update and share the implementation plan using `setup_plan` or `archive_plan`, and explicitly ask the user, "May I proceed with this plan?"
+- Only use coding tools (e.g., `write_to_file`) after receiving affirmative instructions from the user, such as "Proceed," "Go," or "Approved."
 
-### 3. 許可される「先行作業」
-議論・分析の精度を高めるための、非破壊的な作業は並行して実施可能です。
-- **既存コードの分析**: `view_file` や `grep_search` による現状把握。
-- **プロトタイプ検証**: 一時的な検証スクリプトの作成と実行（プロジェクト本体は変更しない）。
-- **スキルの更新**: 対話を通じて得られた知見をスキル化する作業。
+### 3. Permitted "Pre-work"
+Non-destructive tasks to enhance the accuracy of discussion and analysis can be performed in parallel.
+- **Analysis of Existing Code**: Understand the current state using `view_file` or `grep_search`.
+- **Prototype Verification**: Create and execute temporary verification scripts (without modifying the project core).
+- **Skill Updates**: Solidify knowledge gained through dialogue into agent skills.
 
-## 作業の進め方
-1.  **Listen**: ユーザーの要求と背景にある意図を深く理解します。
-2.  **Propose**: 計画案や設計案を Markdown 形式で提示します。
-3.  **Refine**: ユーザーのフィードバックを受け、納得いくまで案を修正・改善します。
-4.  **Commitment**: 承認を得た後、一気に実装を完遂します。
+## Workflow
+1.  **Listen**: Deeply understand the user's requirements and the underlying intent.
+2.  **Propose**: Present plan or design proposals in Markdown format.
+3.  **Refine**: Receive user feedback and revise/improve the proposal until satisfied.
+4.  **Commitment**: After obtaining approval, complete the implementation in one go.

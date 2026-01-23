@@ -1,10 +1,10 @@
 # Agent Skills Index
 
-## 利用可能なエージェントスキル一覧
+## List of Available Agent Skills
 
-### 1. エージェント・メタ (Agent & Meta)
-エージェント自身の能力向上、管理、およびスキルのメタ的な整理を行うためのスキルです。
-| スキル名 | 説明 |
+### 1. Agent & Meta
+Skills for improving agent capabilities, management, and meta-organization of skills.
+| Skill Name | Description |
 | :--- | :--- |
 | `list_skills` | 登録されているスキル一覧をカテゴリー別に分類して表示する |
 | `suggest_skill` | 現在の状況に合わせて、次に活用すべきスキルを提案する |
@@ -13,9 +13,9 @@
 | `refactor_skills` | スキルの体系的な整理や統廃合を行い、エージェントの能力を洗練させる |
 | `recover_quota` | LLMの利用制限（クオータ）を管理し、効率的な作業を継続するための戦略を実行する |
 
-### 2. ワークフロー・計画 (Workflow & Planning)
-タスクの初期化、対話型設計、モデル間引継ぎ、完了報告までの一連の流れを統合管理します。
-| スキル名 | 説明 |
+### 2. Workflow & Planning
+Integrated management of the sequence from task initialization and interactive design to handover and completion reporting.
+| Skill Name | Description |
 | :--- | :--- |
 | `setup_plan` | ユーザーの要求から具体的な作業計画を作成し、モデル・スキル・工数を提案する |
 | `collaborative_design` | 実装方針・作業内容の吟味をユーザーとの対話で行い、承認を得るまでコードを変更しない |
@@ -26,9 +26,9 @@
 | `conversation_report` | 会話全体の作業レポートをタイムスタンプ付きで保存する |
 | `wrap_up` | 検証、テスト、リント、ドキュメント更新、コミットの一連の終了処理を自動化する |
 
-### 3. 一般的なコーディング (General Coding)
-リポジトリを問わず、プログラミング、リサーチ、およびメディア操作において一般的に適用できるスキルです。
-| スキル名 | 説明 |
+### 3. General Coding
+General skills applicable across any repository for programming, research, and media manipulation.
+| Skill Name | Description |
 | :--- | :--- |
 | `search_web_research` | Webからの情報収集、最新の技術トレンド調査、ドキュメント分析を行う |
 | `analyze_code` | 外部ライブラリや他言語で書かれたコードの実装を分析して知見を得る |
@@ -40,9 +40,9 @@
 | `ignore` | 不要なファイルやディレクトリを無視設定（.gitignore等）に追加・管理する |
 | `prep_release` | バージョン更新やCHANGELOG整備など、リリースに向けてプロジェクトを整える |
 
-### 4. コード品質管理 (Code Quality Control)
-テスト、静的解析、デバッグ、および物理ドメインの検証を通じてコードの品質を保証します。
-| スキル名 | 説明 |
+### 4. Code Quality Control
+Ensuring code quality through testing, static analysis, debugging, and verification of physical domains.
+| Skill Name | Description |
 | :--- | :--- |
 | `check_physics` | 実装内容が数学的・物理学的に妥当か検証する（Parsevalの定理等の一般則） |
 | `test_code` | pytest等を使用してプロジェクトのテストスイートを実行・検証する |
@@ -54,9 +54,9 @@
 | `debug_axes` | プロットのスケール、目盛、表示範囲などの可視化上の問題を診断・修正する |
 | `check_deps` | インポート文とプロジェクトの依存関係の整合性をチェックする |
 
-### 5. ドキュメント・可視化 (Documentation & Visualization)
-開発者・ユーザー向けのドキュメント整備や、プレゼン資料、Notebookの生成を行います。
-| スキル名 | 説明 |
+### 5. Documentation & Visualization
+Preparation of documentation for developers and users, as well as generation of presentation materials and notebooks.
+| Skill Name | Description |
 | :--- | :--- |
 | `presentation_management` | PowerPoint (.pptx) の自動生成・編集、および Google Slides との連携（設計案作成）を行う |
 | `build_docs` | Sphinx等を使用してプロジェクトのドキュメントをビルドする |
@@ -65,18 +65,18 @@
 | `refactor_nb` | ノートブック内の要素（import文、コードセル等）を一括置換・リファクタリングする |
 | `fix_notebook` | ノートブック自体のエラーやスキーマの不整合を修正する |
 
-### 6. gwexpy 特有েরスキル (GWExPy Specific)
-このリポジトリ固有のデータ構造（ScalarField, Matrix等）や物理ドメインに深く依存する専門スキルです。
-| スキル名 | 説明 |
+### 6. GWExPy Specific
+Specialized skills deeply dependent on repository-specific data structures (ScalarField, Matrix, etc.) and physical domains.
+| Skill Name | Description |
 | :--- | :--- |
 | `add_type` | gwexpyに新しい配列型（Array/Series/Field）とコレクションを実装する |
 | `extend_gwpy` | GWpy/Astropyクラスの安全な継承と拡張のためのガイドライン |
 | `manage_field_metadata` | 多次元フィールドの4D構造維持、ドメイン変換、物理単位の整合性を管理する |
 | `visualize_fields` | 多次元フィールドデータの抽出ロジックと描画APIを物理的整合性を保ちながら実装する |
-| `compare_methods` | gwexpy内の類似した信号処理手法の技術的・物理的な違いを分析する |
+| `compare_methods` | gwexpy内の類似した信号処理手法の位置づけ、技術的・物理的な違いを分析する |
 | `calc_bode` | 制御理論を用いたメカニカルシステムの状態空間モデルから伝達関数を計算・表示する |
 | `wrap_up_gwexpy` | gwexpy向けの一連の検証・整理・コミット手順をまとめて実行する |
 
 ---
 
-*このファイルは手動および `list_skills` 系のタスクによって管理されています。*
+*This file is managed manually and through tasks related to `list_skills`.*

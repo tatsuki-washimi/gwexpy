@@ -5,23 +5,23 @@ description: 登録されているスキル一覧をカテゴリー別に分類�
 
 # List Skills
 
-このスキルは、プロジェクトで利用可能なすべてのエージェントスキルをスキャンし、目的別に分類して表示します。
+This skill scans all available agent skills in the project and displays them categorized by purpose.
 
 ## Instructions
 
-1. **スキャン**:
-    * `.agent/skills/` ディレクトリ内の全サブディレクトリを確認します。
-    * 各ディレクトリの `SKILL.md` から `name` と `description` を読み取ります。
+1. **Scan**:
+    * Check all subdirectories within the `.agent/skills/` directory.
+    * Read the `name` and `description` from each directory's `SKILL.md`.
 
-2. **カテゴリー分類**:
-    プロジェクト全体の `index.md` に定義されている最新のカテゴリー（ワークフロー、開発、サイエンス、QA、ドキュメント等）に従ってスキルを分類します。
+2. **Categorize**:
+    Categorize skills according to the latest categories defined in the project's `index.md` (Workflow, Development, Science, QA, Documentation, etc.).
 
-3. **表示**:
-    * カテゴリーごとに見出しを作成し、各スキルをテーブル形式で表示します。
-    * フォーマット例:
+3. **Display**:
+    * Create a heading for each category and display the skills in a table format.
+    * Format example:
 
-      ### [カテゴリー名]
+      ### [Category Name]
 
-        | スキル名 | 説明 |
+        | Skill Name | Description |
         | :--- | :--- |
-        | `skill_name` | 説明文 |
+        | `skill_name` | Description text |

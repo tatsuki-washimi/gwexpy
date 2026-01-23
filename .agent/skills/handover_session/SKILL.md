@@ -5,68 +5,69 @@ description: AIモデル間や作業セッション間での円滑な引継ぎ�
 
 # Handover Session Skill
 
-AIコーディングツールや異なるLLMモデル間で作業をバトンタッチする際、コンテキストの欠落を防ぎ、スムーズに作業を継続させるための引継ぎプロンプト・ドキュメントを作成します。
+Create handover prompts and documentation to prevent loss of context and ensure smooth continuation of work when handing over tasks between AI coding tools or different LLM models.
 
-## 引継ぎパッケージの構成要素
+## Components of a Handover Package
 
-高品質な引継ぎには、以下の情報を網羅したプロンプトを含める必要があります。
+A high-quality handover prompt should encompass the following information:
 
-### 1. 現在のステータスと達成事項
-- 計画のうちどこまで完了したか（Phase X 完了など）。
-- 直近で作成・修正したファイルの一覧。
-- 物理検証やテストのパス状況。
+### 1. Current Status and Accomplishments
+- Progress relative to the plan (e.g., Phase X completed).
+- List of files recently created or modified.
+- Status of physics verification and tests.
 
-### 2. 資料・リソースへの参照
-- **計画書**: `docs/developers/plans/` 下の最新の計画書パス。
-- **作業報告書**: `docs/developers/reports/` 下の直近レポートパス。
-- **課題・未完了タスク**: 計画書内の未チェック項目や、新しく発見されたバグ。
+### 2. References to Materials and Resources
+- **Plans**: Latest plan path under `docs/developers/plans/`.
+- **Work Reports**: Most recent report path under `docs/developers/reports/`.
+- **Issues and Pending Tasks**: Unchecked items in the plan or newly discovered bugs.
 
-### 3. 次の作業者（モデル）への具体的指示
-- 次に作成・修正すべきファイル。
-- 実行すべきテストコマンド。
-- 注意すべき実装上の制約や、前任者（モデル）がハマったポイント。
+### 3. Specific Instructions for the Next Worker (Model)
+- Files to be created or modified next.
+- Test commands to be executed.
+- Implementation constraints or pitfalls encountered by the predecessor.
 
-### 4. デバッグ情報の共有
-- 直近で失敗したテストのログ（もしあれば）。
-- 現在残っている Lint エラーの内容。
+### 4. Shared Debug Information
+- Logs of recently failed tests (if any).
+- Details of remaining Lint errors.
 
-## 実装手順 (Handover Workflow)
+## Handover Workflow
 
-1.  **情報の集約**: `archive_work` を実行して、最新の状態をレポートにまとめます。
-2.  **プロンプト構築**:
-    *   `### 次のモデルへの引継ぎ指示` というセクションを作成します。
-    *   前述の「構成要素」に従って情報を埋めます。
-3.  **モデル特性に応じた調整**:
-    *   論理思考が得意なモデル（Claude Opus/Thinking）には「物理・数学的整合性の検証」を重視して引き継ぐ。
-    *   高速・多量なコード生成が得意なモデル（GPT/Codex/Flash）には「テストケースの量産」や「定型的なリファクタリング」を指示する。
+1.  **Consolidate Information**: Execute `archive_work` to summarize the latest state in a report.
+2.  **Construct Prompt**:
+    *   Create a section titled `### Handover Instructions for the Next Model`.
+    *   Fill in the information according to the "Components" outlined above.
+3.  **Adjustment Based on Model Characteristics**:
+    *   For models strong in logical reasoning (Claude Opus/Thinking), emphasize "Verification of physical/mathematical consistency."
+    *   For models strong in rapid/high-volume code generation (GPT/Codex/Flash), instruct on "Mass production of test cases" or "Standard refactoring."
 
-## 引継ぎ文の具体例
+## Example Handover Prompt
 
 ```markdown
-### [Model Name] への引継ぎ指示
+### Handover Instructions for [Model Name]
 
-**1. 参照資料**
-- 計画書: `/path/to/plan_2026MMDD.md`
-- 作業報告書: `/path/to/report_2026MMDD.md`
+**1. Reference Materials**
+- Plan: `/path/to/plan_2026MMDD.md`
+- Work Report: `/path/to/report_2026MMDD.md`
 
-**2. 現在の状態**
-- Phase 1 & 2 実装完了。物理検証スクリプト `verify_*.py` は全Pass。
-- 現在、`tests/test_foo.py` の実行で Attribute量Error が2件発生しており、修正の中途です。
+**2. Current State**
+- Phase 1 & 2 implementation complete. Physics verification script `verify_*.py` passed all checks.
+- Currently, two `AttributeError`s occur when running `tests/test_foo.py`, and the fix is in progress.
 
-**3. 作業指示**
-- `tests/test_foo.py` のエラーを、ScalarField の新プロパティに合わせて修正してください。
-- 修正が完了したら、`pytest` 全体を実行してカバレッジを確認してください。
-- 最後に、変更内容をコミットして作業を完了させてください。
+**3. Tasks**
+- Fix the errors in `tests/test_foo.py` according to the new properties in ScalarField.
+- Once fixed, run the entire `pytest` suite to verify coverage.
+- Finally, commit the changes to finalize the task.
 ```
-## 重大なルール: 排他的なコーディング作業制御
 
-引継ぎが発生した際、環境の不整合やコンフリクトを防ぐため、以下のルールを厳守してください。
+## Critical Rule: Exclusive Coding Task Control
 
--   **作業の静止**: 引継ぎ先のコーディング作業（ファイルの作成・修正・削除）が完了したことが明示されるまで、**勝手にコーディング作業を再開してはいけません。**
--   **許可される並行作業**: コーディング以外のタスクについては、待機中であっても実行可能です。
-    -   ユーザーとの相談・要件の深掘り
-    -   コードベースの分析・リサーチ
-    -   エージェントスキルの作成・更新・整理
-    -   ドキュメントの推敲
+To prevent environment inconsistency and conflicts during handover, strictly adhere to the following rules:
 
-この分離により、メインのコーディング作業者のコンテキストを乱すことなく、エージェントの能力向上や理解の深化を並行して進めることができます。
+-   **Halt Work**: **Do not resume coding tasks unilaterally** (creating, modifying, or deleting files) until it is explicitly stated that the successor's coding work is finished.
+-   **Permitted Concurrent Tasks**: Tasks other than coding can still be performed while waiting.
+    -   Discussion/Requirement elicitation with the user.
+    -   Codebase analysis/research.
+    -   Creating/updating/organizing agent skills.
+    -   Reviewing/refining documentation.
+
+This separation allows for improving agent capabilities and deepening understanding in parallel without disrupting the context of the main coding worker.
