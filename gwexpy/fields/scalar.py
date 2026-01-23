@@ -1907,8 +1907,12 @@ class ScalarField(FieldBase):
         Parameters
         ----------
         **kwargs
-            Keyword arguments passed to :func:`~gwexpy.fields.signal.spectral_density`.
+            Keyword arguments passed to :func:`~gwexpy.fields.signal.spectral_density`
+            or :func:`~gwexpy.fields.signal.compute_psd` (if point_or_region is used).
             Common options:
+            - point_or_region : tuple or list, optional
+                If provided, computes PSD at specific spatial point(s) or region
+                average instead of full field. Returns FrequencySeries(List).
             - method : {'welch', 'fft'}, default 'welch'
             - nperseg : int, segment length
             - window : str, window function
@@ -1929,4 +1933,9 @@ class ScalarField(FieldBase):
         --------
         spectral_density : Generalized spectral density for any axis.
         """
+        if "point_or_region" in kwargs:
+            from .signal import compute_psd
+            point_or_region = kwargs.pop("point_or_region")
+            return compute_psd(self, point_or_region, **kwargs)
+
         return self.spectral_density(axis=0, **kwargs)
