@@ -1,6 +1,6 @@
 ---
 name: archive_work
-description: 作業完了後にタイムスタンプをつけて報告書を作成・保存し、必要に応じてagent skillsを追加・更新する
+description: 作業完了後にタイムスタンプをつけて報告書を作成・保存し、必要に応じてエージェントスキルを追加・更新する
 ---
 
 # Archive Work Workflow
@@ -20,8 +20,8 @@ description: 作業完了後にタイムスタンプをつけて報告書を作�
 
 3. **知見の抽出とスキル化 (`learn_skill` / `refactor_skills`)**:
     * 作業中に発見された「再利用可能なパターン」「独自の設計思想」「注意すべきハマり所」がないか振り返ります。
-    * 新しいスキルとして `.agent/skills/` に追加し、カテゴリ分け（`list_skills` 参照）を行います。
-    * 既存のスキル（`extend_gwpy`, `estimate_effort` 等）に追記が必要な場合は更新します。
+    * 新しいスキルとして `.agent/skills/` に追加し、カテゴリ分け（`index.md` 参照）を行います。
+    * 既存のスキルに追記が必要な場合は更新します。
 
 4. **継続・終了の提案**:
-    * アーカイブが完了したことをユーザーに報告し、次のタスク（`setup_plan`）へ進むか、現在のセッションを終了（`git_commit` / `wrap_up_gwexpy`）するかを提案します。
+    * アーカイブが完了したことをユーザーに報告し、次のタスク（`setup_plan` / `collaborative_design` 等）へ進むか、現在のセッションを終了（`git_commit` / `wrap_up` 等）するかを提案します。
