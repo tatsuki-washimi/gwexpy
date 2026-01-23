@@ -83,22 +83,22 @@ class Array4D(Array):
 
         # Axis indices
         if axis0 is None:
-            obj._axis0_index = None
+            obj._axis0_index = np.arange(obj.shape[0]) * dimensionless_unscaled
         else:
             obj._axis0_index = coerce_1d_quantity(axis0)
 
         if axis1 is None:
-            obj._axis1_index = None
+            obj._axis1_index = np.arange(obj.shape[1]) * dimensionless_unscaled
         else:
             obj._axis1_index = coerce_1d_quantity(axis1)
 
         if axis2 is None:
-            obj._axis2_index = None
+            obj._axis2_index = np.arange(obj.shape[2]) * dimensionless_unscaled
         else:
             obj._axis2_index = coerce_1d_quantity(axis2)
 
         if axis3 is None:
-            obj._axis3_index = None
+            obj._axis3_index = np.arange(obj.shape[3]) * dimensionless_unscaled
         else:
             obj._axis3_index = coerce_1d_quantity(axis3)
 
@@ -133,7 +133,7 @@ class Array4D(Array):
         if self.ndim >= 1: # Always check axis 0 if dimension exists
             val = getattr(obj, "_axis0_index", None)
             current = getattr(self, "_axis0_index", None)
-            
+
             if val is not None and getattr(obj, "ndim", 0) >= 1 and obj.shape[0] == self.shape[0]:
                  # Force copy if self is default or None?
                  if current is None:
@@ -142,7 +142,7 @@ class Array4D(Array):
                  elif hasattr(current, 'unit') and current.unit == dimensionless_unscaled:
                      if hasattr(val, 'unit') and val.unit != dimensionless_unscaled:
                          self._axis0_index = val
-            
+
             # Default fallback
             if getattr(self, "_axis0_index", None) is None:
                 self._axis0_index = np.arange(self.shape[0]) * dimensionless_unscaled
@@ -171,7 +171,7 @@ class Array4D(Array):
                  elif hasattr(current, 'unit') and current.unit == dimensionless_unscaled:
                      if hasattr(val, 'unit') and val.unit != dimensionless_unscaled:
                          self._axis2_index = val
-            
+
             if getattr(self, "_axis2_index", None) is None:
                 self._axis2_index = np.arange(self.shape[2]) * dimensionless_unscaled
 

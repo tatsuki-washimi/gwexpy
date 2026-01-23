@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+
 import numpy as np
 from astropy import units as u
 
@@ -124,7 +125,7 @@ class FieldBase(Array4D):
         parent_domains = getattr(obj, "_space_domains", None)
         if parent_domains is not None:
             # Check if axis names match. If they don't, we need to map keys.
-            # But usually if we just copied names in super().__array_finalize__, 
+            # But usually if we just copied names in super().__array_finalize__,
             # they should match.
             self._space_domains = dict(parent_domains)
         elif getattr(self, "_space_domains", None) is None:
@@ -180,7 +181,7 @@ class FieldBase(Array4D):
             self._axis2_name,
             self._axis3_name,
         ]
-        
+
         # Resolve x/y axes if not provided
         if x_axis is None or y_axis is None:
             # Simple heuristic: try to find spatial axes (x, y) usually axis1, axis2
@@ -198,23 +199,23 @@ class FieldBase(Array4D):
         # 2. Build selector dictionary for isel/sel
         # We want to perform ONE selection operation.
         # But 'sel' (value based) and 'isel' (index based) are mixed if we just pick default 0.
-        # Ideally, we primarily use 'sel' (nearest) for user inputs, 
+        # Ideally, we primarily use 'sel' (nearest) for user inputs,
         # and 'isel' for defaults (index 0 or center).
-        
+
         # Current AxisApiMixin provides sel/isel.
         # Let's map everything to 'sel' with method='nearest' if user provided value,
         # or 'isel' if we pick default.
         # However, mixing them requires two calls or converting everything to one type.
-        # Easier to convert defaults to 'sel' via axis index values if possible, 
+        # Easier to convert defaults to 'sel' via axis index values if possible,
         # OR just iterate and slice.
-        
+
         # Strategy: Construct a slice object for the 4D array
-        slices = [slice(None)] * 4
-        
+        slices: list[Any] = [slice(None)] * 4
+
         for i, ax_name in enumerate(all_axes):
             if ax_name == x_axis or ax_name == y_axis:
                 continue
-            
+
             # This axis needs to be fixed
             if ax_name in fixed_coords:
                 val = fixed_coords[ax_name]
@@ -238,15 +239,15 @@ class FieldBase(Array4D):
                 # Let's pivot to default to 0 for time, center for space?
                 # For simplicity in this iteration: index 0
                 slices[i] = 0
-        
+
         # 3. Apply slice
         # Use basic numpy slicing to get data
         # Note: slices list contains ints or slice(None)
-        
+
         # We need to ensure we return a 2D object, not 4D with size 1 dims
         # The numpy slice will drop dimensions that are ints
         data_slice = self.value[tuple(slices)]
-        
+
         # 4. Identify x/y data
         # We need the index arrays for the chosen x/y axes
         try:
@@ -254,20 +255,20 @@ class FieldBase(Array4D):
             y_idx_pos = all_axes.index(y_axis)
         except ValueError:
              raise ValueError(f"Invalid axis name. Available: {all_axes}")
-        
+
         x_index = getattr(self, f"_axis{x_idx_pos}_index")
         y_index = getattr(self, f"_axis{y_idx_pos}_index")
-        
+
         # If x_axis / y_axis were sliced (they shouldn't be, based on logic above),
-        # data_slice would be scalar. 
+        # data_slice would be scalar.
         # But `slices` only puts specific indices for non-x, non-y axes.
         # So x and y should remain as full dimensions.
-        
+
         # Verify shape
         if data_slice.ndim != 2:
             # It's possible we have >2 free axes if user didn't fix enough?
             # Or <2 if user fixed x or y?
-            pass 
+            pass
 
         return data_slice * self.unit, x_index, y_index, x_axis, y_axis
 
@@ -290,29 +291,29 @@ class FieldBase(Array4D):
         """
         # Defer import to avoid circular dependency
         from ..plot.field import FieldPlot
-        
+
         # Initialize empty FieldPlot, then add scalar
         fp = FieldPlot()
-        
+
         # Separate slice kwargs from plot kwargs
         # Slice kwargs: axis names and coordinate values
         # Plot kwargs: cmap, vmin, vmax, etc.
         # Heuristic: if arg is an axis name, it's a fixed coord.
-        
+
         slice_kwargs = {}
         if slices is not None:
             slice_kwargs.update(slices)
 
         plot_kwargs = {}
-        
+
         all_axes = [self._axis0_name, self._axis1_name, self._axis2_name, self._axis3_name]
-        
+
         for k, v in kwargs.items():
             if k in all_axes:
                 slice_kwargs[k] = v
             else:
                 plot_kwargs[k] = v
-        
+
         fp.add_scalar(self, x=x, y=y, slice_kwargs=slice_kwargs, **plot_kwargs)
         return fp
 
@@ -338,6 +339,7 @@ class FieldBase(Array4D):
             The animation object.
         """
         from matplotlib.animation import FuncAnimation
+
         from ..plot.field import FieldPlot
 
         # Identify axis to loop
@@ -346,23 +348,23 @@ class FieldBase(Array4D):
             loop_idx_pos = all_axes.index(axis)
         except ValueError:
             raise ValueError(f"Animation axis '{axis}' not found in {all_axes}")
-            
+
         loop_axis_index = getattr(self, f"_axis{loop_idx_pos}_index")
-        
+
         # Determine fixed params for other axes
         slice_kwargs = {}
         plot_kwargs = {}
-        
+
         for k, v in kwargs.items():
             if k in all_axes:
                 slice_kwargs[k] = v
             else:
                 plot_kwargs[k] = v
-                
+
         # Initialize Plot
         fp = FieldPlot()
         ax = fp.gca()
-        
+
         # Pre-calculate common arguments to avoid overhead
         # We need to decide proper vmin/vmax if not provided, to keep scale steady
         if 'vmin' not in plot_kwargs or 'vmax' not in plot_kwargs:
@@ -381,17 +383,17 @@ class FieldBase(Array4D):
             # Update slice kwargs with current frame value
             current_slice_kwargs = slice_kwargs.copy()
             current_slice_kwargs[axis] = frame_val
-            
+
             # Add scalar plot
             fp.add_scalar(self, x=x, y=y, slice_kwargs=current_slice_kwargs, **plot_kwargs)
-            
+
             # Set title
             if isinstance(frame_val, u.Quantity):
                 title = f"{axis} = {frame_val:.3g}"
             else:
                 title = f"{axis} = {frame_val}"
             ax.set_title(title)
-            
+
         # Create animation
         # frames should be values from the loop axis
         # To avoid too many frames, maybe downsample?
@@ -401,17 +403,17 @@ class FieldBase(Array4D):
              # Heuristic: limit frames for default smoothness
              # User should pre-slice if they want specific range
              pass # Use all for correctness
-             
+
         ani = FuncAnimation(fp.figure, update, frames=frames, interval=interval)
-        
+
         # Attach figure to ani to prevent gc?
         ani._fig = fp.figure
-        
+
         # Close static plot to prevent display of empty frame 0 if using inline?
         # plt.close(fp.figure) # No, we need it open for animation display depending on backend
-        
+
         return ani
-    
+
     # ------------------------------------------------------------------
     # Domain/unit validation
     # ------------------------------------------------------------------
