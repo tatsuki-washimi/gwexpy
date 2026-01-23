@@ -5,23 +5,23 @@ description: PowerPoint (.pptx) の自動生成・編集、および Google Slid
 
 # Presentation Management
 
-スライド資料の構成案作成、PowerPoint ファイルのプログラムによる自動生成、および既存資料の編集をサポートします。
+Supports the creation of slide proposals, automated generation of PowerPoint files via programming, and editing of existing materials.
 
-## 1. 構成案とストーリーボードの作成 (Design Phase)
-*   いきなりファイルを作成するのではなく、まずは Markdown でスライドごとの構成（タイトル、キーメッセージ、図解案、スピーカーノート）を作成し、ユーザーと `collaborative_design` を行います。
+## 1. Creation of Proposals and Storyboards (Design Phase)
+*   Instead of creating files immediately, first create the structure for each slide (title, key message, diagram proposal, speaker notes) in Markdown and perform `collaborative_design` with the user.
 
-## 2. PowerPoint (.pptx) の自動生成と編集
-*   `python-pptx` ライブラリを使用して、以下を自動化します。
-    *   マスターテンプレートの適用
-    *   スライドの動的追加
-    *   テキスト、画像、グラフ（matplotlib連携）、シェイプの配置
-*   既存のファイルを開き、特定の箇所のテキスト置換やデータの更新を行うことも可能です。
+## 2. Automated Generation and Editing of PowerPoint (.pptx)
+*   Use the `python-pptx` library to automate the following:
+    *   Application of master templates
+    *   Dynamic addition of slides
+    *   Placement of text, images, charts (via matplotlib integration), and shapes
+*   Existing files can also be opened to perform text replacement or data updates at specific locations.
 
-## 3. Google Slides との連携
-*   **注記**: 直接的な API 連携にはサービスアカウントや OAuth 認証が必要なため、通常は以下のワークフローを推奨します。
-    *   **pptx 経由**: ローカルで生成した .pptx をユーザーに提供し、それを Google Slides で開いてもらう。
-    *   **Apps Script 提案**: Google Apps Script (GAS) コードを生成し、ユーザーの環境で実行してもらう。
+## 3. Integration with Google Slides
+*   **Note**: Since direct API integration requires service accounts or OAuth authentication, the following workflow is typically recommended:
+    *   **Via pptx**: Provide a locally generated .pptx to the user and have them open it in Google Slides.
+    *   **Apps Script Proposal**: Generate Google Apps Script (GAS) code and have the user execute it in their environment.
 
-## デザインのベストプラクティス
-*   **1 Slide, 1 Message**: 情報を詰め込みすぎず、視覚的に伝わるレイアウトを設計します。
-*   **自動化の利点**: 数万行のデータから要約グラフを生成し、それをスライドに埋め込むなどの「データ駆動型プレゼン作成」に強みを発揮します。
+## Design Best Practices
+*   **1 Slide, 1 Message**: Designed layouts that are visually communicative without overcrowding them with information.
+*   **Advantages of Automation**: Particularly effective for "data-driven presentation creation," such as generating summary charts from tens of thousands of rows of data and embedding them into slides.

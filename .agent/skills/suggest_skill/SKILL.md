@@ -5,17 +5,17 @@ description: 現在の状況やタスクに合わせて、今使うべきおス�
 
 # Suggest Skill
 
-現在の作業状況、直近のコマンド実行結果、またはユーザーの意図を分析し、利用可能なエージェントスキルの中から最適なものを提案します。
+Analyze the current work status, recent command execution results, or user intent to suggest the optimal agent skill from those available.
 
-## 手順
+## Procedure
 
-1.  **コンテキストの把握**:
-    *   直前に実行したコマンド（テストの失敗、ビルドエラーなど）を確認します。
-    *   現在のファイル編集状況（ソースコードの変更、ドキュメントの更新など）を確認します。
+1.  **Understand Context**:
+    *   Check recently executed commands (e.g., test failures, build errors).
+    *   Check the current file editing status (e.g., source code changes, documentation updates).
 
-2.  **スキルの選定**:
-    *   `list_skills` スキルで定義されている全スキルの中から、次のアクションとして妥当なものを複数提案します。
-    *   例: テストが通った直後なら `wrap_up` を提案。
+2.  **Select Skill**:
+    *   Propose several appropriate next actions from all skills defined in the `list_skills` skill.
+    *   Example: Suggest `wrap_up` immediately after tests pass.
 
-3.  **提案理由の提示**:
-    *   なぜそのスキルをおススメするのか、どのようなメリットがあるのかを簡潔に説明します。
+3.  **Present Rationale**:
+    *   Briefly explain why the skill is recommended and what its benefits are.

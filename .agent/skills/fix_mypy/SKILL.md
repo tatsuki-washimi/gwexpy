@@ -5,35 +5,35 @@ description: 静的解析エラー（MyPy）を効率的に解決するパター
 
 # Fix MyPy Skills
 
-コードベースにおける静的解析エラー（MyPy）の解消に特化した知見をまとめています。
+This skill consolidates specialized knowledge for resolving static analysis errors (MyPy) within the codebase.
 
-## 典型的なエラーと解決策
+## Typical Errors and Solutions
 
-### 1. 外部ライブラリ内部型（NumPy等）のエラー
+### 1. Errors in Third-party Library Internal Types (e.g., NumPy)
 
-**症状**: `Name "_NBit1" is not defined` や、型ヒントに覚えのない内部型が含まれる。
-**解決策**: 抽象的な型ヒント（例: `np.complexfloating`, `np.number`）を、具体的な型（例: `np.complex128`, `np.floating` またはその Union）に置き換えることで、MyPy が内部表現に踏み込むのを防ぎます。
+**Symptoms**: `Name "_NBit1" is not defined` or unknown internal types appearing in type hints.
+**Solution**: Replace abstract type hints (e.g., `np.complexfloating`, `np.number`) with concrete types (e.g., `np.complex128`, `np.floating`, or a Union thereof). This prevents MyPy from descending into internal representations.
 
-### 2. 多重継承によるメソッド衝突
+### 2. Method Conflicts due to Multiple Inheritance
 
-**症状**: `Definition of 'mean' in base class ... is incompatible with ...`
-**解決策**: 衝突しているクラス定義に対し、クラス全体に `# type: ignore` を付与するか、対立する定義を持つミックスイン行に `# type: ignore[misc]` を追加します。
+**Symptoms**: `Definition of 'mean' in base class ... is incompatible with ...`
+**Solution**: Apply `# type: ignore` to the target class definition or add `# type: ignore[misc]` to the conflicting mixin line.
 
-### 3. 動的生成リストへの配列代入
+### 3. Array Assignment to Dynamically Generated Lists
 
-**症状**: `None` で初期化された `vals[i][j]` への代入でエラー。
-**解決策**: 初期化時に具体的な型（例: `list[list[Any]]`）として明示的にアノテーションするか、代入時に `cast` を使用します。
+**Symptoms**: Errors in assignments like `vals[i][j]` when initialized with `None`.
+**Solution**: Annotate explicitly with a concrete type during initialization (e.g., `list[list[Any]]`) or use `cast`.
 
-### 4. ミックスインにおける self の型
+### 4. Self Type in Mixins
 
-**症状**: ミックスイン内で `self` を具象クラスを期待する関数に渡すと型不一致。
-**解決策**: `cast` を使用して、実行時の型を MyPy に伝えます（例: `cast("TargetClass", self)`）。
+**Symptoms**: Type mismatch when passing `self` within a mixin to a function expecting a concrete class.
+**Solution**: Use `cast` to inform MyPy of the runtime type (e.g., `cast("TargetClass", self)`).
 
-### 5. 外部オブジェクト（Quantity等）の型絞り込み
+### 5. Type Narrowing of External Objects (e.g., Quantity)
 
-**症状**: フラグ等を使用しても、属性へのアクセスでエラーが出る。
-**解決策**: `isinstance` を直接 `if` 文で使用することで、型絞り込みを確実に機能させます。
+**Symptoms**: Errors accessing attributes even when using flags.
+**Solution**: Use `isinstance` directly within `if` statements for reliable type narrowing.
 
-### 6. 型エイリアスの活用
+### 6. Utilization of Type Aliases
 
-**解決策**: 複雑な Union 型を `TypeAlias` として定義し、リポジトリ全体で使い回します。これにより、具体的な型への一括置換などが安全かつ確実に行えるようになります。
+**Solution**: Define complex Union types as `TypeAlias` and reuse them throughout the repository. This enables safe and reliable bulk replacement of concrete types.

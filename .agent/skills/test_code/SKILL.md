@@ -27,9 +27,9 @@ pytest tests/ -k "metadata" # or relevant pattern
 ## Implementation Patterns
 
 ### Physics-First TDD (P-TDD)
-数値計算や信号処理などの物理ロジックを実装する場合、`pytest` スイートに追加する前に、**独立した検証スクリプト** (`scripts/verify_*.py`) を作成します。
+When implementing physical logic such as numerical calculations or signal processing, create an **independent verification script** (`scripts/verify_*.py`) before adding it to the `pytest` suite.
 
-1.  **理論値検証**: Parsevalの定理、既知の振幅・周波数ピーク、単位の次元解析などを実行。
-2.  **成功確認後**: 検証スクリプトからアサーションを抽出し、正式な `pytest` ファイル (`tests/fields/test_*.py`) へ移植・昇格させる。
+1.  **Theoretical Verification**: Execute Parseval's theorem, check known amplitude/frequency peaks, and perform dimensional analysis of units.
+2.  **Promotion to Pytest**: After success is confirmed, extract assertions from the verification script and migrate/elevate them to a formal `pytest` file (e.g., `tests/fields/test_*.py`).
 
-これにより、環境依存の `AttributeError` やロジックエラーを、CIに統合する前のクリーンな環境で切り分けることが可能です。
+This allows environment-dependent `AttributeError`s or logic errors to be isolated in a clean environment before integration into CI.

@@ -5,23 +5,23 @@ description: 作業完了後にタイムスタンプをつけて報告書を作�
 
 # Archive Work Workflow
 
-このスキルは、一連のタスクが完了した際に、成果の記録（レポート作成）と知見の固定化（スキルの更新）を同時に行います。
+This skill ensures that once a series of tasks are completed, the results are recorded (report creation) and knowledge is solidified (skill updates) simultaneously.
 
 ## Instructions
 
-1. **作業レポートの作成**:
-    * この会話（または一連のタスク）で実施した内容を詳しく要約します。
-    * 修正・追加されたファイル、実行されたテスト、解決されたバグ、パフォーマンス改善などを網羅します。
-    * メタデータとして、使用したLLMモデルや実際の所要時間を含めます。
+1. **Create Work Report**:
+    * Provide a detailed summary of what was implemented during this conversation (or series of tasks).
+    * Include modified/added files, executed tests, resolved bugs, and performance improvements.
+    * Include metadata such as the LLM model(s) used and the actual time taken.
 
-2. **報告書の保存**:
-    * `docs/developers/reports/` ディレクトリに、タイムスタンプ付きのファイル名（例: `report_TaskName_YYYYMMDD_HHMMSS.md`）で保存します。
-    * 保存したパスをユーザーに通知します。
+2. **Save the Report**:
+    * Save to the `docs/developers/reports/` directory with a timestamped filename (e.g., `report_TaskName_YYYYMMDD_HHMMSS.md`).
+    * Notify the user of the saved path.
 
-3. **知見の抽出とスキル化 (`learn_skill` / `refactor_skills`)**:
-    * 作業中に発見された「再利用可能なパターン」「独自の設計思想」「注意すべきハマり所」がないか振り返ります。
-    * 新しいスキルとして `.agent/skills/` に追加し、カテゴリ分け（`index.md` 参照）を行います。
-    * 既存のスキルに追記が必要な場合は更新します。
+3. **Knowledge Extraction and Skillification (`learn_skill` / `refactor_skills`)**:
+    * Reflect on whether any "reusable patterns," "unique design philosophies," or "pitfalls to watch out for" were discovered during the work.
+    * Add new skills to `.agent/skills/` and categorize them (refer to `index.md`).
+    * Update existing skills if they require additional notes.
 
-4. **継続・終了の提案**:
-    * アーカイブが完了したことをユーザーに報告し、次のタスク（`setup_plan` / `collaborative_design` 等）へ進むか、現在のセッションを終了（`git_commit` / `wrap_up` 等）するかを提案します。
+4. **Suggest Continuation or Conclusion**:
+    * Report the completion of archiving to the user and suggest whether to proceed to the next task (e.g., `setup_plan` / `collaborative_design`) or terminate the current session (e.g., `git_commit` / `wrap_up`).

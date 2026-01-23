@@ -5,23 +5,23 @@ description: PDF, Word, Excel, PowerPoint などのオフィスドキュメン�
 
 # Office Document Analysis
 
-バイナリ形式のオフィス向けファイルを、ライブラリやコマンドラインツールを用いてテキストまたは構造化データとして抽出・分析します。
+Extract and analyze text or structured data from binary office files using libraries or command-line tools.
 
-## 1. PDF 分析
-*   **テキスト抽出**: `pdfminer.six` や `PyPDF2` を使用してテキスト情報を読み取ります。
-*   **テーブル抽出**: `tabula-py` や `camelot-py` を用いて、PDF内の表形式データを収集します。
-*   **画像・メタデータ**: `PyMuPDF (fitz)` を使用して、埋め込まれた画像や文書タイトル、著者情報等を取得します。
+## 1. PDF Analysis
+*   **Text Extraction**: Use `pdfminer.six` or `PyPDF2` to read text information.
+*   **Table Extraction**: Use `tabula-py` or `camelot-py` to collect tabular data from PDFs.
+*   **Images and Metadata**: Use `PyMuPDF (fitz)` to retrieve embedded images, document titles, author information, etc.
 
-## 2. Excel (xlsx/csv) 分析
-*   `pandas` の `read_excel` や `read_csv` を活用し、データフレームとして高度な集計・統計分析を行います。
-*   シート構成、名前付き範囲、数式等のメタ情報が必要な場合は `openpyxl` を使用します。
+## 2. Excel (xlsx/csv) Analysis
+*   Utilize `pandas` `read_excel` or `read_csv` for advanced aggregation and statistical analysis.
+*   Use `openpyxl` if metadata such as sheet structure, named ranges, or formulas are required.
 
-## 3. Word (docx) 分析
-*   `python-docx` を使用して、章立て、段落、スタイル（太字・箇所書き）、およびテーブル構造を保持したままテキストを抽出します。
+## 3. Word (docx) Analysis
+*   Use `python-docx` to extract text while maintaining chapter headings, paragraphs, styles (bold/bullets), and table structures.
 
-## 4. PowerPoint (pptx) 分析
-*   `python-pptx` を使用して、スライドのタイトル、本文、ノート、およびシェイプ内に含まれるテキストをスキャンします。
+## 4. PowerPoint (pptx) Analysis
+*   Use `python-pptx` to scan slide titles, body text, notes, and text contained within shapes.
 
-## ワークフローのヒント
-*   **中間形式への変換**: 大規模なファイルの場合、一旦テキスト (txt) や CSV 形式に変換し、プロジェクト内の `tmp/` 等に保存して分析を進めます。
-*   **OCR**: スキャンされたPDFや画像化されたドキュメントの場合は、`Tesseract` や `EasyOCR` などの OCR ツールの導入を提案します。
+## Workflow Tips
+*   **Convert to Intermediate Formats**: For large files, consider converting them to text (.txt) or CSV format first and saving them to `tmp/` within the project for analysis.
+*   **OCR**: For scanned PDFs or documents converted to images, propose the introduction of OCR tools such as `Tesseract` or `EasyOCR`.

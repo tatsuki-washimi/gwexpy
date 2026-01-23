@@ -5,30 +5,30 @@ description: ユーザーの要求から具体的な作業計画を作成し、�
 
 # Setup Plan Workflow
 
-このスキルは、新しいタスクの開始時に、要求の理解からモデル選定、計画書の作成・更新までを一貫して行うワークフローを起動します。
+This skill initiates a workflow that consistently handles understanding requirements, model selection, and creating/updating plans at the start of a new task.
 
 ## Instructions
 
-1. **要求の理解と分解**:
-    * ユーザーからのチャット要求や提示された計画書（Markdown）を読み解き、具体的な作業ステップに分解します。
-    * 実装が必要なクラス、メソッド、テスト項目を特定します。
+1. **Requirement Understanding and Decomposition**:
+    * Read and interpret chat requests or provided plans (Markdown), decomposing them into specific work steps.
+    * Identify classes, methods, and test items that require implementation.
 
-2. **AIアシスタントの戦略策定**:
-    * 以下のスキルを順に呼び出し、タスクの特性を分析します。
-        * `suggest_model`: タスクの難易度に応じた最適なLLMを提案。
-        * `suggest_skill`: 開発中に使用すべき補助スキルを提案。
-        * `estimate_effort`: 必要な時間とクオータ消費量を予測。
+2. **AI Assistant Strategy Formulation**:
+    * Call the following skills in order to analyze task characteristics:
+        * `suggest_model`: Propose the optimal LLM based on task difficulty.
+        * `suggest_skill`: Propose auxiliary skills to be used during development.
+        * `estimate_effort`: Predict the required time and quota consumption.
 
-3. **計画書の作成または更新**:
-    * `docs/developers/plans/` ディレクトリに、タイムスタンプ付きで詳細な計画書（`.md`）を作成または更新します。
-    * 以下のセクションを含めます：
-        * **目的・目標**
-        * **詳細なロードマップ（Phase単位）**
-        * **テスト・検証計画**
-        * **使用モデル・推奨スキル・工数見積もり**（ステップ2の結果を反映）
+3. **Creation or Update of Plan**:
+    * Create or update a timestamped detailed plan (`.md`) in the `docs/developers/plans/` directory.
+    * Include the following sections:
+        * **Objectives & Goals**
+        * **Detailed Roadmap (by Phase)**
+        * **Testing & Verification Plan**
+        * **Models, Recommended Skills, and Effort Estimates** (reflecting results of step 2)
 
-4. **モデル選択の待機**:
-    * ユーザーに分析結果を提示し、**LLMモデルの選択（またはプランの承認）が行われるまで次のステップに進まず、ユーザーの承認を待ちます**。
+4. **Await Model Selection**:
+    * Present the analysis results to the user and **wait for user approval** (selection of LLM model or plan approval) before proceeding to the next step.
 
-5. **継続確認**:
-    * 承認が得られたら、最初のフェーズの実行に移るか、次の指示を仰ぎます。
+5. **Confirmation for Continuation**:
+    * Upon obtaining approval, proceed to execute the first phase or ask for further instructions.

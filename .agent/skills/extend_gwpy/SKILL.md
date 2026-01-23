@@ -1,3 +1,8 @@
+---
+name: extend_gwpy
+description: GWpy/Astropyクラスの安全な継承と拡張のためのガイドライン
+---
+
 # Extend GWpy Class
 
 This skill provides guidelines and patterns for safely inheriting from and extending GWpy/Astropy classes (TimeSeries, FrequencySeries, Spectrogram, etc.).

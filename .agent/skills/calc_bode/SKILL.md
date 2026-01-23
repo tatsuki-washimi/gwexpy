@@ -3,34 +3,34 @@ name: calc_bode
 description: python-controlを使用して、メカニカルシステムの状態空間モデルから伝達関数（Bode Plot）を計算・表示する
 ---
 
-# `calc_bode_control`
+# `calc_bode`
 
-このスキルは、質量行列(M)や剛性行列(K)を持つ力学系から状態空間モデル(State Space)を構築し、`python-control`ライブラリを用いて周波数応答（Bode Plot）を生成します。
+This skill builds a state-space model from a mechanical system defined by mass (M), stiffness (K), and damping (C) matrices, and generates a frequency response (Bode Plot) using the `python-control` library.
 
-## ワークフロー
+## Workflow
 
-1.  **システム行列の取得**:
-    -   物理モデルや線形化ツールから $M$ 行列と $K$ 行列を抽出します。
-    -   必要に応じて減衰行列 $C$ (通常は剛性に比例、またはモード減衰) を定義します。
+1.  **System Matrix Acquisition**:
+    - Extract the $M$ and $K$ matrices from a physical model or linearization tool.
+    - Define the damping matrix $C$ as needed (typically proportional to stiffness or using modal damping).
 
-2.  **状態空間の構築**:
-    -   状態ベクトルを $x = [q, v]^T$ ( $q$: 変位, $v$: 速度) と定義します。
-    -   システムの運動方程式 $M \ddot{q} + C \dot{q} + K q = F u$ を、標準的な状態空間形式 $\dot{x} = Ax + Bu$ に変換します。
-    -   $A = \begin{bmatrix} 0 & I \\ -M^{-1}K & -M^{-1}C \end{bmatrix}$
-    -   $B = \begin{bmatrix} 0 \\ M^{-1}F \end{bmatrix}$
+2.  **State-Space Construction**:
+    - Define the state vector as $x = [q, v]^T$, where $q$ is displacement and $v$ is velocity.
+    - Transform the system's equation of motion $M \ddot{q} + C \dot{q} + K q = F u$ into the standard state-space form $\dot{x} = Ax + Bu$:
+    - $A = \begin{bmatrix} 0 & I \\ -M^{-1}K & -M^{-1}C \end{bmatrix}$
+    - $B = \begin{bmatrix} 0 \\ M^{-1}F \end{bmatrix}$
 
-3.  **python-control の利用**:
-    -   `import control as ct` を行います。
-    -   `sys = ct.ss(A, B, C, D)` でシステムオブジェクトを作成します。
+3.  **Application of `python-control`**:
+    - Import the library: `import control as ct`.
+    - Create the system object: `sys = ct.ss(A, B, C, D)`.
 
-4.  **IO選択 (MIMOの場合)**:
-    -   `sys_siso = sys[output_idx, input_idx]` を使用して、目的の入出力チャネルを選択します。
+4.  **IO Selection (for MIMO systems)**:
+    - Use `sys_siso = sys[output_idx, input_idx]` to select the desired input/output channel.
 
-5.  **プロットと分析**:
-    -   `ct.bode_plot(sys_siso, ...)` を使用してBodeプロットを生成します。
-    -   `Hz=True`, `dB=True`, `deg=True` などのフラグを活用します。
-    -   必要に応じて `sys.poles()` を確認して安定性をチェックします。
+5.  **Plotting and Analysis**:
+    - Generate the Bode plot: `ct.bode_plot(sys_siso, ...)`.
+    - Utilize flags such as `Hz=True`, `dB=True`, and `deg=True`.
+    - Check stability if necessary via `sys.poles()`.
 
-## 注意事項
-- KAGRAのトップステージのような逆振子 (Inverted Pendulum) を含む系では、安定化制御をかける前の開ループ極が不安定側に存在することがあるため注意が必要です。
-- 周波数範囲は `np.logspace(np.log10(start_hz * 2*np.pi), np.log10(end_hz * 2*np.pi), n_points)` のように角周波数(rad/s)で指定し、`bode_plot` 側で `Hz=True` を指定するのが確実です。
+## Precautions
+- In systems including inverted pendulums, such as the KAGRA top stage, open-loop poles may exist in the unstable region before applying stabilization control.
+- Ensure frequency ranges are specified in angular frequency (rad/s) such as `np.logspace(np.log10(start_hz * 2*np.pi), np.log10(end_hz * 2*np.pi), n_points)`, while specifying `Hz=True` in `bode_plot`.

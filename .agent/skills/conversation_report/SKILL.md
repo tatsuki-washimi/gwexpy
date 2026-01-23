@@ -21,9 +21,9 @@ This skill creates a Markdown report summarizing all work done in the current co
    * Save to `docs/developers/reviews/` with filename `conversation_work_report_<timestamp>.md`.
 
 4. **Report Structure (Markdown)**
-   * Title: `作業レポート（この会話全体）`
+   * Title: `Conversation Work Report`
    * Timestamp line
-   * Sections: `実施内容`, `現在の状態`, `参考`
+   * Sections: `Accomplishments`, `Current Status`, `References`
 
 5. **Confirm**
    * Tell the user the file path.
