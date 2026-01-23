@@ -33,7 +33,17 @@ Compute signed two-sided FFT along spatial axes. Transformed axes flip domain `r
 
 Inverse spatial FFT for axes in `k` domain, restoring `real` domain.
 
-### Signal Processing
+### Signal Processing (on instance)
+
+#### `filter(*args, **kwargs)`
+
+Apply a digital filter along the time axis (axis 0). Accepts filters designed with `gwpy.signal.filter_design`. By default, uses `filtfilt` for zero-phase distortion.
+
+#### `resample(rate, **kwargs)`
+
+Resample the field along the time axis to a new sampling rate. Uses `scipy.signal.resample` internally and preserves all axis metadata and units.
+
+### Signal Processing (High-level API)
 
 These functions are available in `gwexpy.fields`:
 

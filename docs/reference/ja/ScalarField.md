@@ -31,7 +31,17 @@
 
 `k` ドメインの空間軸を実空間に戻し、`real` ドメインを復元。
 
-### 信号処理 (Signal Processing)
+### 信号処理（インスタンスメソッド）
+
+#### `filter(*args, **kwargs)`
+
+時間軸（axis 0）に対してデジタルフィルタを適用します。`gwpy.signal.filter_design` で設計したフィルタを受け取ります。デフォルトでは位相歪みを防ぐため `filtfilt` を使用します。
+
+#### `resample(rate, **kwargs)`
+
+フィールドを時間軸方向にリサンプリングします。内部的に `scipy.signal.resample` を使用し、すべての軸メタデータと単位を保持します。
+
+### 信号処理解析 (High-level API)
 
 以下の関数が `gwexpy.fields` から利用可能です：
 
