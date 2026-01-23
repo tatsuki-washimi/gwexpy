@@ -13,3 +13,11 @@ Fields
 .. autoclass:: gwexpy.fields.FieldDict
    :members:
    :show-inheritance:
+
+.. autoclass:: gwexpy.fields.VectorField
+   :members:
+   :show-inheritance:
+
+.. autoclass:: gwexpy.fields.TensorField
+   :members:
+   :show-inheritance:

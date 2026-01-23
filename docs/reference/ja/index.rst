@@ -21,6 +21,8 @@
    Plane2D
    Array4D
    ScalarField
+   VectorField
+   TensorField
    FieldList
    FieldDict
    TimePlaneTransform
