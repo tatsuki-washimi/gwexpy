@@ -314,3 +314,72 @@ class TensorField(FieldDict):
                     processed_pairs.add((j, i))
 
         return TensorField(new_components, rank=2, validate=False)
+
+    def plot_components(self, x=None, y=None, **kwargs):
+        """Plot the tensor components in a grid layout.
+
+        Parameters
+        ----------
+        x : str, optional
+            X-axis name.
+        y : str, optional
+            Y-axis name.
+        **kwargs
+            Fixed coordinates and arguments passed to FieldPlot.add_scalar.
+        """
+        if self.rank != 2:
+             raise NotImplementedError("plot_components only supports rank-2 tensors")
+
+        from ..plot.field import FieldPlot
+
+        # Determine dimensions
+        indices_i = {k[0] for k in self.keys()}
+        indices_j = {k[1] for k in self.keys()}
+        dim_i = (max(indices_i) + 1) if indices_i else 1
+        dim_j = (max(indices_j) + 1) if indices_j else 1
+
+        # Separate slice kwargs and plot kwargs
+        # This is repeated logic, maybe move to FieldBase static helper if needed often?
+        # But 'all_axes' info is needed.
+        first = next(iter(self.values()))
+        all_axes = [first._axis0_name, first._axis1_name, first._axis2_name, first._axis3_name]
+
+        slice_kwargs = {}
+        plot_kwargs = {}
+        for k, v in kwargs.items():
+            if k in all_axes:
+                slice_kwargs[k] = v
+            else:
+                plot_kwargs[k] = v
+
+        # We need to construct a flat list of items or use Plot capability
+        # FieldPlot is a Plot. We can utilize separate=True logic or construct axes manually.
+        # But FieldPlot.add_scalar works on single ax usually (gca).
+        
+        # We'll use subplots geometry
+        # Pass geometry to FieldPlot constructor
+        
+        fp = FieldPlot(geometry=(dim_i, dim_j), sharex=True, sharey=True)
+        
+        for i in range(dim_i):
+            for j in range(dim_j):
+                ax = fp.axes[i * dim_j + j]
+                # Set current axes to this one
+                # Matplotlib's sca(ax) affects plt.gca()
+                import matplotlib.pyplot as plt
+                plt.sca(ax)
+                
+                if (i, j) in self:
+                    comp = self[(i, j)]
+                    # Use add_scalar but ensure it uses gca (which we set)
+                    # Label component
+                    label = f"T_{{{i}{j}}}"
+                    # Pass label to kwargs? no add_scalar has logic.
+                    # Add title?
+                    
+                    fp.add_scalar(comp, x=x, y=y, slice_kwargs=slice_kwargs, label=label, **plot_kwargs)
+                    ax.set_title(label)
+                else:
+                    ax.axis('off')
+
+        return fp
