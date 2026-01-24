@@ -76,7 +76,9 @@ def _validate_regular_time_axis(field: ScalarField) -> tuple[float, u.Unit]:
             "Time axis must be regularly spaced for spectral analysis. "
             "Consider resampling the data to a uniform time grid."
         )
-    return dt.value, dt.unit
+    dt_value = getattr(dt, "value", dt)
+    dt_unit = getattr(dt, "unit", u.dimensionless_unscaled)
+    return dt_value, dt_unit
 
 
 def _validate_axis_for_spectral(
@@ -150,7 +152,9 @@ def _validate_axis_for_spectral(
                 f"Use ifft_space first to transform to real space."
             )
 
-    return axis_int, delta.value, delta.unit, domain
+    delta_value = getattr(delta, "value", delta)
+    delta_unit = getattr(delta, "unit", u.dimensionless_unscaled)
+    return axis_int, delta_value, delta_unit, domain
 
 
 def spectral_density(
@@ -1023,8 +1027,13 @@ def time_delay_map(
     delay_4d = delay_values.reshape(shape_4d)
 
     # Build axis arrays
-    ax1_out = ax1_index.value[list(ax1_indices)] * ax1_index.unit
-    ax2_out = ax2_index.value[list(ax2_indices)] * ax2_index.unit
+    ax1_val = getattr(ax1_index, "value", ax1_index)
+    ax1_unit = getattr(ax1_index, "unit", u.dimensionless_unscaled)
+    ax2_val = getattr(ax2_index, "value", ax2_index)
+    ax2_unit = getattr(ax2_index, "unit", u.dimensionless_unscaled)
+
+    ax1_out = ax1_val[list(ax1_indices)] * ax1_unit
+    ax2_out = ax2_val[list(ax2_indices)] * ax2_unit
 
     axes_out = {
         1: field._axis1_index[:1],
@@ -1216,8 +1225,13 @@ def coherence_map(
         shape_4d[ax2_int] = n2
         coh_4d = coh_band.reshape(shape_4d)
 
-        ax1_out = ax1_index.value[list(ax1_indices)] * ax1_index.unit
-        ax2_out = ax2_index.value[list(ax2_indices)] * ax2_index.unit
+        ax1_val = getattr(ax1_index, "value", ax1_index)
+        ax1_unit = getattr(ax1_index, "unit", u.dimensionless_unscaled)
+        ax2_val = getattr(ax2_index, "value", ax2_index)
+        ax2_unit = getattr(ax2_index, "unit", u.dimensionless_unscaled)
+
+        ax1_out = ax1_val[list(ax1_indices)] * ax1_unit
+        ax2_out = ax2_val[list(ax2_indices)] * ax2_unit
 
         axes_out = {
             1: field._axis1_index[:1],
@@ -1248,8 +1262,13 @@ def coherence_map(
         shape_4d[ax2_int] = n2
         coh_4d = coh_3d.reshape(shape_4d)
 
-        ax1_out = ax1_index.value[list(ax1_indices)] * ax1_index.unit
-        ax2_out = ax2_index.value[list(ax2_indices)] * ax2_index.unit
+        ax1_val = getattr(ax1_index, "value", ax1_index)
+        ax1_unit = getattr(ax1_index, "unit", u.dimensionless_unscaled)
+        ax2_val = getattr(ax2_index, "value", ax2_index)
+        ax2_unit = getattr(ax2_index, "unit", u.dimensionless_unscaled)
+
+        ax1_out = ax1_val[list(ax1_indices)] * ax1_unit
+        ax2_out = ax2_val[list(ax2_indices)] * ax2_unit
 
         axes_out = {
             1: field._axis1_index[:1],
