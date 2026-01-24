@@ -1,11 +1,6 @@
 from __future__ import annotations
 
-from collections import UserList
-
-try:
-    from collections import UserDict
-except ImportError:
-    from collections.abc import MutableMapping as UserDict
+from collections import UserDict, UserList
 
 from astropy import units as u
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram

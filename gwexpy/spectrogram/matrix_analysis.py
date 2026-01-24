@@ -1,15 +1,33 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 import numpy as np
 from astropy import units as u
+
+if TYPE_CHECKING:
+    from gwexpy.types.metadata import MetaDataMatrix
+
+
+class _SpectrogramMatrixLike(Protocol):
+    """Protocol defining the interface expected by SpectrogramMatrixAnalysisMixin."""
+
+    meta: MetaDataMatrix | None
+    name: str | None
+    unit: u.Unit | None
+    times: Any
+    frequencies: Any
+
+    def copy(self) -> _SpectrogramMatrixLike: ...
+    def view(self, dtype: type) -> np.ndarray: ...
+    def real(self) -> _SpectrogramMatrixLike: ...
+    def radian(self, unwrap: bool = False) -> Any: ...
 
 
 class SpectrogramMatrixAnalysisMixin:
     """Analysis methods for SpectrogramMatrix (Phase calculations)."""
 
-    def radian(self, unwrap: bool = False) -> Any:
+    def radian(self: _SpectrogramMatrixLike, unwrap: bool = False) -> Any:
         """
         Calculate the phase of the matrix in radians.
 
@@ -47,8 +65,9 @@ class SpectrogramMatrixAnalysisMixin:
         # Update metadata units/names
         if new.meta is not None:
             # metadata.copy() copies the array and provides new MetaData objects
-            new.meta = new.meta.copy()
-            for m in new.meta.flat:
+            # Use temporary variable to satisfy type checker
+            temp_meta = new.meta.copy()
+            for m in temp_meta.flat:
                 # We already have new MetaData objects from meta.copy()
                 m.unit = u.rad
                 if m.name:
@@ -58,6 +77,7 @@ class SpectrogramMatrixAnalysisMixin:
                          m.name += "_phase"
                 else:
                     m.name = "phase"
+            new.meta = temp_meta
 
         # Update global name and unit
         if self.name:
@@ -69,7 +89,7 @@ class SpectrogramMatrixAnalysisMixin:
 
         return new
 
-    def degree(self, unwrap: bool = False) -> Any:
+    def degree(self: _SpectrogramMatrixLike, unwrap: bool = False) -> Any:
         """
         Calculate the phase of the matrix in degrees.
 
