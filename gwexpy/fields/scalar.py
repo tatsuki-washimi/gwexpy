@@ -1,11 +1,15 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from astropy import units as u
+from scipy import fft as sp_fft
 
 from .base import FieldBase
+
+if TYPE_CHECKING:
+    from gwexpy.timeseries import TimeSeriesList
 
 __all__ = ["ScalarField"]
 
@@ -275,7 +279,8 @@ class ScalarField(FieldBase):
         t0 = self._axis0_index[0]
 
         # rfft along axis 0, normalized
-        dft = np.fft.rfft(self.value, n=nfft, axis=0) / nfft
+        import scipy.fft as sp_fft
+        dft = sp_fft.rfft(self.value, n=nfft, axis=0) / nfft
 
         # Multiply non-DC, non-Nyquist bins by 2 (one-sided spectrum correction)
         # For even nfft: Nyquist bin is at index -1, should NOT be doubled
@@ -366,7 +371,7 @@ class ScalarField(FieldBase):
         else:
             # Odd nout: no Nyquist, undo for all bins 1:
             array[1:, ...] /= 2.0
-        dift = np.fft.irfft(array * nout, n=nout, axis=0)
+        dift = sp_fft.irfft(array * nout, n=nout, axis=0)
 
         # Compute time axis
         df = self._axis0_index[1] - self._axis0_index[0]
@@ -408,10 +413,10 @@ class ScalarField(FieldBase):
     # Spatial FFT (axes 1-3, two-sided signed FFT)
     # =========================================================================
 
-    def fft_space(self, axes=None, n=None):
+    def fft_space(self, axes=None, n=None, overwrite=False):
         """Compute FFT along spatial axes.
 
-        This method uses two-sided FFT (numpy.fft.fftn) and produces
+        This method uses two-sided FFT (scipy.fft.fftn) and produces
         angular wavenumber (k = 2π·fftfreq).
 
         Parameters
@@ -421,6 +426,9 @@ class ScalarField(FieldBase):
             transforms all spatial axes in 'real' domain.
         n : tuple of int, optional
             FFT lengths for each axis.
+        overwrite : bool, optional
+            If True, perform FFT in-place on a temporary copy of the data
+            to reduce peak memory usage. Default is False.
 
         Returns
         -------
@@ -490,7 +498,15 @@ class ScalarField(FieldBase):
         s = None
         if n is not None:
             s = tuple(n)
-        dft = np.fft.fftn(self.value, s=s, axes=target_axes_int)
+        
+        import scipy.fft as sp_fft
+        if overwrite:
+            # Create explicit copy to allow overwrite_x optimization
+            # This avoids creating internal temporary buffers in sp_fft
+            work_data = self.value.copy()
+            dft = sp_fft.fftn(work_data, s=s, axes=target_axes_int, overwrite_x=True)
+        else:
+            dft = sp_fft.fftn(self.value, s=s, axes=target_axes_int)
 
         # Build new axis metadata
         new_indices = [
@@ -546,7 +562,7 @@ class ScalarField(FieldBase):
         result._validate_domain_units()
         return result
 
-    def ifft_space(self, axes=None, n=None):
+    def ifft_space(self, axes=None, n=None, overwrite=False):
         """Compute inverse FFT along k-space axes.
 
         Parameters
@@ -556,6 +572,8 @@ class ScalarField(FieldBase):
             transforms all spatial axes in 'k' domain.
         n : tuple of int, optional
             Output lengths for each axis.
+        overwrite : bool, optional
+            If True, perform IFFT in-place on a temporary copy.
 
         Returns
         -------
@@ -598,7 +616,13 @@ class ScalarField(FieldBase):
         s = None
         if n is not None:
             s = tuple(n)
-        dift = np.fft.ifftn(self.value, s=s, axes=target_axes_int)
+        
+        import scipy.fft as sp_fft
+        if overwrite:
+            work_data = self.value.copy()
+            dift = sp_fft.ifftn(work_data, s=s, axes=target_axes_int, overwrite_x=True)
+        else:
+            dift = sp_fft.ifftn(self.value, s=s, axes=target_axes_int)
 
         # Build new axis metadata
         new_indices = [
