@@ -8,7 +8,7 @@ Extends gwpy.frequencyseries with matrix support and future extensibility.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import numpy as np
 from astropy import units as u
@@ -27,13 +27,18 @@ from gwexpy.interop._optional import require_optional
 from gwexpy.types._stats import StatisticalMethodsMixin
 from gwexpy.types.mixin import RegularityMixin, SignalAnalysisMixin
 
-try:
-    from gwpy.types.index import SeriesType  # pragma: no cover - optional in gwpy
-except ImportError:
-    # Fallback for older GWpy versions or environments where SeriesType
-    # is not available at this location.
+if TYPE_CHECKING:
+    try:
+        from gwpy.types.index import SeriesType
+    except ImportError:
+        pass
 
-    class SeriesType(Enum):
+# Runtime fallback for SeriesType if not available from gwpy
+try:
+    from gwpy.types.index import SeriesType  # pragma: no cover
+except ImportError:
+
+    class SeriesType(Enum):  # type: ignore[no-redef]
         TIME = "time"
         FREQ = "freq"
 
