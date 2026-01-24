@@ -125,7 +125,8 @@ def estimate_psd(
         if hasattr(value, "to"):
             try:
                 return float(value.to("s").value)
-            except Exception:
+            except (AttributeError, TypeError, ValueError):
+                # Handle unit conversion failures or incompatible types
                 return None
         try:
             return float(value)
@@ -196,9 +197,9 @@ def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
                 return 1.0
         else:
             win_array = get_window(window, nperseg)
-    except Exception:
+    except (ValueError, TypeError) as e:
         warnings.warn(
-            f"Could not generate window '{window}'. Assuming independent segments (factor=1.0)."
+            f"Could not generate window '{window}': {e}. Assuming independent segments (factor=1.0)."
         )
         return 1.0
 
@@ -236,7 +237,8 @@ def _infer_overlap_ratio(spectrogram):
     try:
         stride_val = stride.value
         duration = 1.0 / resolution.value
-    except Exception:
+    except (AttributeError, ZeroDivisionError):
+        # Handle missing .value attribute or division by zero
         return None
     if stride_val <= 0 or duration <= 0:
         return None
@@ -404,7 +406,13 @@ def bootstrap_spectrogram(
             resampled_stats = _bootstrap_resample_jit(
                 data, all_indices, use_median, ignore_nan
             )
-        except Exception:
+        except Exception as e:
+            # Numba can fail for various reasons (compilation, runtime)
+            # Fallback to pure Python implementation
+            warnings.warn(
+                f"Numba JIT execution failed: {e}. Falling back to pure Python.",
+                RuntimeWarning,
+            )
             resampled_stats = _bootstrap_resample_py(
                 data, all_indices, use_median, ignore_nan
             )

@@ -403,7 +403,12 @@ class SeriesMatrix(
                 # Compute resulting meta once
                 res_meta_obj = ufunc(*uniform_metas, **ufunc_kwargs)
                 result_meta = np.full((N, M), res_meta_obj, dtype=object)
-            except Exception:
+            except Exception as e:
+                # Optimize: vectorized meta-ufunc failed, use fallback
+                warnings.warn(
+                    f"MetaData ufunc optimization failed: {e}. Using element-wise calculation.",
+                    PerformanceWarning,
+                )
                 all_uniform = False
 
         if not all_uniform:
