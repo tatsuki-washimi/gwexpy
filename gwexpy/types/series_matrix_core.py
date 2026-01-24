@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -10,9 +11,30 @@ from gwpy.types.series import Series
 if TYPE_CHECKING:
     from gwexpy.types.metadata import MetaDataMatrix
 
+logger = logging.getLogger(__name__)
+
 
 class SeriesMatrixCoreMixin:
     """Core properties and basic conversion methods for SeriesMatrix."""
+
+    if TYPE_CHECKING:
+        _value: np.ndarray
+        meta: MetaDataMatrix
+        _xindex: Any
+        _x0: Any
+        _dx: Any
+        rows: Any
+        cols: Any
+        name: str | None
+        epoch: float | int | None
+        attrs: dict[str, Any]
+        unit: u.Unit | None
+        list_class: type[Any]
+        series_class: type[Any] | None
+
+        def view(self, dtype: type[Any]) -> Any: ...
+        def __getitem__(self, key: Any) -> Any: ...
+        def __setitem__(self, key: Any, value: Any) -> None: ...
 
     @property
     def _x_axis_index(self) -> int:
@@ -63,6 +85,7 @@ class SeriesMatrixCoreMixin:
             try:
                 n_samples = self._value.shape[self._x_axis_index]
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+                logger.debug("Could not determine n_samples for xindex length check.", exc_info=True)
                 n_samples = None
             suppress = getattr(self, "_suppress_xindex_check", False)
             if (
@@ -87,7 +110,10 @@ class SeriesMatrixCoreMixin:
         except AttributeError:
             try:
                 self._x0 = self.xindex[0]
-            except (AttributeError, IndexError):
+            except (u.UnitConversionError, AttributeError):
+                logger.debug("Could not determine x0 from xindex, falling back to 0.", exc_info=True)
+                self._x0 = u.Quantity(0, self.xunit)
+            except (IndexError):
                 self._x0 = u.Quantity(0, self.xunit)
             return self._x0
 

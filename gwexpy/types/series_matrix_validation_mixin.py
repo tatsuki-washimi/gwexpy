@@ -1,21 +1,28 @@
 from __future__ import annotations
 
-from typing import Any
+import logging
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from astropy import units as u
+
+if TYPE_CHECKING:
+    from gwexpy.types.metadata import MetaDataMatrix
+
+logger = logging.getLogger(__name__)
 
 
 class SeriesMatrixValidationMixin:
     """Mixin for SeriesMatrix compatibility and contiguity checks."""
 
-    _value: np.ndarray
-    meta: Any
-    xindex: Any
-    rows: Any
-    cols: Any
-    dx: Any
-    xspan: Any
+    if TYPE_CHECKING:
+        _value: np.ndarray
+        meta: MetaDataMatrix
+        xindex: Any
+        rows: Any
+        cols: Any
+        dx: Any
+        xspan: Any
 
     def is_contiguous(self, other: Any, tol: float = 1 / 2.0**18) -> int:
         """Check if this matrix is contiguous with another."""
@@ -89,6 +96,7 @@ class SeriesMatrixValidationMixin:
                 lhs = lhs.to_value(base_unit)
                 rhs = rhs.to_value(base_unit)
             except (u.UnitConversionError, AttributeError):
+                logger.debug("Automatic xindex conversion failed, using raw values.", exc_info=True)
                 pass
         try:
             equal = np.array_equal(lhs, rhs)

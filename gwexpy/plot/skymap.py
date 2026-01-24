@@ -1,5 +1,6 @@
 import astropy.units as u
 import numpy as np
+import logging
 from astropy.coordinates import SkyCoord
 
 from .plot import Plot
@@ -22,6 +23,9 @@ try:
 
     HAS_LIGO_SKYMAP = True
 except (ImportError, AttributeError):
+    logging.getLogger(__name__).debug(
+        "ligo.skymap not found or could not be patched. SkyMap features will be limited."
+    )
     HAS_LIGO_SKYMAP = False
 
 __all__ = ["SkyMap"]
