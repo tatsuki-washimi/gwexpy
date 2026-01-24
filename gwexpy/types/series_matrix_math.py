@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any, cast
+
 import numpy as np
 from astropy import units as u
 
@@ -8,6 +10,20 @@ from .metadata import MetaData, MetaDataMatrix
 
 class SeriesMatrixMathMixin:
     """Mixin for SeriesMatrix math operations (linear algebra)."""
+
+    _value: np.ndarray
+    meta: MetaDataMatrix
+    xindex: Any
+    rows: Any
+    cols: Any
+    name: str | None
+    epoch: float | int | None
+    attrs: dict[str, Any]
+    row_index: Any
+    col_index: Any
+    dx: Any
+    xspan: Any
+    series_class: type[Any] | None
 
     def _all_element_units_equivalent(self) -> tuple[bool, u.Unit | None]:
         """Check whether all element units are mutually equivalent."""
@@ -84,7 +100,7 @@ class SeriesMatrixMathMixin:
         # Compute metadata (units)
         # Result unit at (i, j) is sum_k (self[i, k].unit * other[k, j].unit)
         # We assume for each (i, j), the units for all k are equivalent.
-        res_meta = np.empty((N, M), dtype=object)
+        res_meta: np.ndarray = np.empty((N, M), dtype=object)
         for i in range(N):
             for j in range(M):
                 # Calculate the unit of the first term k=0
@@ -98,7 +114,8 @@ class SeriesMatrixMathMixin:
                         )
                 res_meta[i, j] = MetaData(unit=u0)
 
-        return type(self)(
+        matrix_cls = cast(type[Any], type(self))
+        return matrix_cls(
             res_vals,
             xindex=self.xindex,
             rows=self.rows,
@@ -126,12 +143,14 @@ class SeriesMatrixMathMixin:
         summed = np.sum(diag_values, axis=0)
 
         # Result is a Series. Need to find base Series class.
-        series_class = getattr(self, "series_class", None)
-        if series_class is None:
-            from gwpy.types.series import Series as series_class
+        series_cls = getattr(self, "series_class", None)
+        if series_cls is None:
+            from gwpy.types.series import Series as _Series
+
+            series_cls = _Series
 
         name = f"trace({self.name})" if getattr(self, "name", "") else "trace"
-        return series_class(summed, xindex=self.xindex, unit=ref_unit, name=name)
+        return series_cls(summed, xindex=self.xindex, unit=ref_unit, name=name)
 
     def diagonal(self, output: str = "list"):
         """Extract diagonal elements from the matrix."""
@@ -141,14 +160,16 @@ class SeriesMatrixMathMixin:
         n = min(nrow, ncol)
         diag_series = []
 
-        series_class = getattr(self, "series_class", None)
-        if series_class is None:
-            from gwpy.types.series import Series as series_class
+        series_cls = getattr(self, "series_class", None)
+        if series_cls is None:
+            from gwpy.types.series import Series as _Series
+
+            series_cls = _Series
 
         for i in range(n):
             meta = self.meta[i, i]
             diag_series.append(
-                series_class(
+                series_cls(
                     self._value[i, i],
                     xindex=self.xindex,
                     unit=meta.unit,
@@ -172,7 +193,8 @@ class SeriesMatrixMathMixin:
             cols_dict = MetaDataDict(
                 {"diag": MetaData()}, expected_size=1, key_prefix="col"
             )
-            return self.__class__(
+            matrix_cls = cast(type[Any], self.__class__)
+            return matrix_cls(
                 values,
                 xindex=self.xindex,
                 rows=rows_dict,
@@ -187,7 +209,8 @@ class SeriesMatrixMathMixin:
             values = np.zeros_like(self._value)
             for i in range(n):
                 values[i, i] = self._value[i, i]
-            return self.__class__(
+            matrix_cls = cast(type[Any], self.__class__)
+            return matrix_cls(
                 values,
                 xindex=self.xindex,
                 rows=self.rows,
@@ -212,17 +235,20 @@ class SeriesMatrixMathMixin:
             raise u.UnitConversionError(
                 "All element units must be equivalent for det()"
             )
+        assert ref_unit is not None
         common = self._to_common_unit_values(ref_unit)
         mats = np.moveaxis(common, 2, 0)
         det_vals = np.linalg.det(mats)
         result_unit = ref_unit**nrow
 
-        series_class = getattr(self, "series_class", None)
-        if series_class is None:
-            from gwpy.types.series import Series as series_class
+        series_cls = getattr(self, "series_class", None)
+        if series_cls is None:
+            from gwpy.types.series import Series as _Series
+
+            series_cls = _Series
 
         name = f"det({self.name})" if getattr(self, "name", "") else "det"
-        return series_class(det_vals, xindex=self.xindex, unit=result_unit, name=name)
+        return series_cls(det_vals, xindex=self.xindex, unit=result_unit, name=name)
 
     def inv(self, swap_rowcol: bool = True):
         """Compute the matrix inverse at each sample point."""
@@ -238,6 +264,7 @@ class SeriesMatrixMathMixin:
             raise u.UnitConversionError(
                 "All element units must be equivalent for inv()"
             )
+        assert ref_unit is not None
         common = self._to_common_unit_values(ref_unit)
         mats = np.moveaxis(common, 2, 0)
         inv_stack = np.linalg.inv(mats)
@@ -267,7 +294,8 @@ class SeriesMatrixMathMixin:
             else _copy_meta_dict(self.cols, "col")
         )
 
-        return self.__class__(
+        matrix_cls = cast(type[Any], self.__class__)
+        return matrix_cls(
             inv_vals,
             xindex=self.xindex,
             rows=rows_out,
@@ -364,7 +392,8 @@ class SeriesMatrixMathMixin:
         rows_out = _subset_meta_dict(self.rows, keep_rows_idx, "row")
         cols_out = _subset_meta_dict(self.cols, keep_cols_idx, "col")
 
-        return self.__class__(
+        matrix_cls = cast(type[Any], self.__class__)
+        return matrix_cls(
             result_vals,
             xindex=self.xindex,
             rows=rows_out,

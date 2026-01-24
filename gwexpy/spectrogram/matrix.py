@@ -31,17 +31,13 @@ class SpectrogramMatrix(
     It inherits from SeriesMatrix, providing powerful indexing, metadata management,
     and analysis capabilities (slicing, interpolation, statistics).
 
-    Serialization (Known Limitation)
-    --------------------------------
-    Pickle round-trip (`pickle.dumps` / `pickle.loads`) preserves the array shape
-    and values, but **axis metadata (xindex/times, frequencies) may not be fully
-    restored** due to numpy ndarray subclass serialization constraints.
-
-    This is a known limitation. If you require full metadata preservation, consider
-    using HDF5 I/O methods (e.g., `to_hdf5` / `from_hdf5`) instead of pickle.
-
-    TODO: Implement `__reduce_ex__` or `__getstate__/__setstate__` to enable
-    complete metadata preservation in pickle round-trips.
+    Serialization
+    -------------
+    Pickle round-trips are supported via a custom ``__reduce__``/``__setstate__``
+    that appends ``__dict__`` to the ndarray state. This preserves axis metadata
+    such as ``times``/``frequencies``, ``rows``/``cols``, and ``meta`` as long as
+    they live in ``__dict__``. Attributes stored elsewhere or pointing to external
+    resources still require higher-level I/O (e.g., HDF5) for full fidelity.
     """
 
 
@@ -709,14 +705,14 @@ class SpectrogramMatrix(
     def __reduce__(self):
         """
         Customize pickle serialization to ensure metadata preservation.
-        
+
         Returns standard numpy reduce tuple but appends __dict__ only if not automatically handled.
         """
         picked = list(super().__reduce__())
         # picked is [func, args, state]
         # state is (version, shape, dtype, isFortran, rawdata)
         state = picked[2]
-        
+
         # Append our __dict__ to state tuple to ensure it's saved
         full_state = state + (self.__dict__,)
         picked[2] = full_state
@@ -728,9 +724,9 @@ class SpectrogramMatrix(
         """
         # The last element contains our __dict__
         my_dict = state[-1]
-        
+
         # The rest is for numpy
         np_state = state[:-1]
-        
+
         super().__setstate__(np_state)
         self.__dict__.update(my_dict)

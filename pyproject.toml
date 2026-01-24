@@ -196,10 +196,8 @@ module = [
   "gwexpy.types.series_matrix_core",
   "gwexpy.types.series_matrix_indexing",
   "gwexpy.types.series_matrix_io",
-  "gwexpy.types.series_matrix_math",
   "gwexpy.types.series_matrix_analysis",
   "gwexpy.types.series_matrix_structure",
-  "gwexpy.types.series_matrix_validation_mixin",
   "gwexpy.types.series_matrix_visualization",
 ]
 ignore_errors = true
@@ -216,9 +214,24 @@ ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = [
-  "gwexpy.types.*",
   "gwexpy.interop.*",
   "gwexpy.io.*",
   "gwexpy.conftest",
+]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+  "gwexpy.types.series_matrix_math",
+  "gwexpy.types.series_matrix_validation_mixin",
+]
+ignore_errors = false
+
+[[tool.mypy.overrides]]
+module = [
+  "gwexpy.types.mixin.mixin_legacy",
+  "gwexpy.types.mixin.signal_interop",
+  "gwexpy.types.axis_api",
+  "gwexpy.types.array3d",
 ]
 ignore_errors = true

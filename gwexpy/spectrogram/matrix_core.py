@@ -56,10 +56,8 @@ class SpectrogramMatrixCoreMixin:
     Because of these fixed axis semantics, **transpose / swapaxes / moveaxis**
     operations that reorder dimensions are **not currently supported**. Applying
     such operations breaks the xindex/frequencies length validation and produces
-    semantically invalid results.
-
-    TODO: Future 4D support may introduce axis-swap-aware metadata tracking,
-    allowing transpose to update xindex/frequencies accordingly.
+    semantically invalid results. If axis-reordering support becomes necessary,
+    it must update xindex/frequencies in lockstep (design note; not scheduled).
     """
 
 

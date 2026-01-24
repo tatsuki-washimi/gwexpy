@@ -1,4 +1,5 @@
 import inspect
+import logging
 from typing import Any
 
 import matplotlib.pyplot as plt
@@ -8,6 +9,8 @@ from iminuit import Minuit
 from iminuit.util import describe
 
 from .models import get_model
+
+logger = logging.getLogger(__name__)
 
 
 class ParameterValue(float):
@@ -633,10 +636,9 @@ class FitResult:
             except (ValueError, TypeError, ZeroDivisionError):
                 # Expected numerical errors
                 return -np.inf
-            except Exception as e:
-                # Unexpected errors - log them
-                import logging
-                logging.debug(f"Unexpected error in MCMC log_prob: {e}")
+            except Exception:
+                # Unexpected errors - log full context but keep the walker alive
+                logger.exception("Unexpected error in MCMC log_prob")
                 return -np.inf
 
         # Initial state: small ball around minuit result
