@@ -134,67 +134,96 @@ class SpectralAccumulator:
             buf["data"].append(data)
             buf["current_len"] += len(data)
 
-            # 3. Update Display History (Deque)
-            if ch not in self.display_history:
-                # Default to 30s history if nds_win not in params
-                win_sec = self.params.get("nds_win", 30.0)
-                maxlen = int(win_sec / dt)
-                self.display_history[ch] = deque(maxlen=maxlen)
-
-            self.display_history[ch].extend(data)
-
         self._process_buffers()
 
     def _process_buffers(self):
         """
-        Process each channel's buffer independently.
-        Channels that have enough data are processed immediately,
-        without waiting for slower channels.
+        Process buffers synchronously.
+        Only proceed if ALL available channels have enough data for a segment.
         """
         if not self.buffers:
             return
 
+        # Which channels do we need?
+        # If available_channels is set, we wait for all of them.
+        # Otherwise, we wait for all channels currently in buffers.
+        # Channels that are mentioned in active_traces but not in available_channels
+        # should also be considered if we want strict safety.
+        targets = (
+            self.available_channels
+            if self.available_channels
+            else set(self.buffers.keys())
+        )
+
+        # If some target channel has not even appeared in buffers yet, we must wait.
+        # Note: Simulation mode might only feed a subset, so we should be careful.
+        # But if they are in available_channels, we assume they will come.
+        for ch in targets:
+            if ch not in self.buffers:
+                return
+
         # Get dt from any available buffer
-        any_ch = list(self.buffers.keys())[0]
+        any_ch = list(targets)[0]
         dt = self.buffers[any_ch]["dt"]
 
         required_samples = int(self.fftlength / dt)
         stride_samples = int(self.stride / dt)
 
-        # Process each channel independently
+        # Process each segment step by step for ALL channels
         processed_any = True
         while processed_any:
             processed_any = False
+
+            # Check if ALL targets are ready for the next segment
+            all_ready = True
+            for ch in targets:
+                if self.buffers[ch]["current_len"] < required_samples:
+                    all_ready = False
+                    break
+
+            if not all_ready:
+                break
+
             segment_map = {}
 
-            # Check each buffer and extract segments for channels that are ready
-            for ch, b in list(self.buffers.items()):
-                if b["current_len"] >= required_samples:
-                    # Concatenate buffer data if needed
-                    if len(b["data"]) > 1:
-                        full_arr = np.concatenate(b["data"])
-                        b["data"] = [full_arr]
-                    else:
-                        full_arr = b["data"][0]
+            # Extract segments for all targets
+            for ch in targets:
+                b = self.buffers[ch]
 
-                    # Extract segment
-                    seg_data = full_arr[:required_samples]
+                # Concatenate buffer data if needed
+                if len(b["data"]) > 1:
+                    full_arr = np.concatenate(b["data"])
+                    b["data"] = [full_arr]
+                else:
+                    full_arr = b["data"][0]
 
-                    # Create TimeSeries
-                    ts = TimeSeries(seg_data, dt=b["dt"], t0=b["t0"])
-                    segment_map[ch] = ts
+                # Extract segment
+                seg_data = full_arr[:required_samples]
 
-                    # Update buffer: shift by stride
-                    remaining = full_arr[stride_samples:]
-                    b["data"] = [remaining]
-                    b["current_len"] = len(remaining)
-                    b["t0"] += stride_samples * b["dt"]
-                    processed_any = True
+                # Create TimeSeries
+                ts = TimeSeries(seg_data, dt=b["dt"], t0=b["t0"])
+                segment_map[ch] = ts
 
-            # If we extracted any segments, update spectra
+                # Update Display History (Deque) - Synchronized
+                if ch not in self.display_history:
+                    # Default to 30s history if nds_win not in params
+                    win_sec = self.params.get("nds_win", 30.0)
+                    maxlen = int(win_sec / b["dt"])
+                    self.display_history[ch] = deque(maxlen=maxlen)
+
+                self.display_history[ch].extend(seg_data)
+
+                # Update buffer: shift by stride
+                remaining = full_arr[stride_samples:]
+                b["data"] = [remaining]
+                b["current_len"] = len(remaining)
+                b["t0"] += stride_samples * b["dt"]
+
+            # If we extracted segments, update spectra
             if segment_map:
                 self._update_spectra(segment_map)
                 self.state["count"] += 1
+                processed_any = True
 
                 # Check stop condition for Fixed averaging
                 if self.params.get("avg_type") == "Fixed":

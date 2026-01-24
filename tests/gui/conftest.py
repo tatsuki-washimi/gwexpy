@@ -76,3 +76,39 @@ if QT_AVAILABLE:
     @pytest.fixture(autouse=True)
     def log_gui_action(qtbot):
         return logger
+
+    @pytest.fixture
+    def gui_deps():
+        """Ensure GUI dependencies are available."""
+        pytest.importorskip("PyQt5")
+        pytest.importorskip("pyqtgraph")
+        pytest.importorskip("qtpy")
+        return True
+
+    @pytest.fixture
+    def main_window(qtbot, gui_deps, stub_source):
+        """Initialize the pyaggui main window with a stub backend."""
+        from gwexpy.gui.ui.main_window import MainWindow
+
+        # Create window without preload to speed up tests
+        window = MainWindow(enable_preload=False, data_backend=stub_source)
+
+        # Setup basic NDS environment for tests by default
+        window.input_controls["ds_combo"].setCurrentText("NDS")
+        window.meas_controls["set_all_channels"](
+            [{"name": "TEST:CHAN1", "active": True}]
+        )
+        window.graph_info1["traces"][0]["active"].setChecked(True)
+        window.graph_info1["traces"][0]["chan_a"].setCurrentText("TEST:CHAN1")
+
+        qtbot.addWidget(window)
+        window.show()
+        qtbot.waitExposed(window)
+        return window
+
+    @pytest.fixture
+    def stub_source(gui_deps):
+        """A data source for testing error modes and deterministic data."""
+        from gwexpy.gui.data_sources import StubDataSource
+
+        return StubDataSource(channels=["TEST:CHAN1", "TEST:CHAN2"])

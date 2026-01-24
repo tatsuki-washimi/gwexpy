@@ -112,6 +112,7 @@ def test_vectorfield_dot():
     # 1*1 + 2*2 = 5
     assert np.all(dot12.value == 5)
     assert isinstance(dot12, ScalarField)
+    assert dot12.unit == u.V**2
 
 def test_vectorfield_cross():
     f_x = ScalarField(np.ones((10, 4, 4, 4)), unit=u.m) # i
@@ -119,7 +120,7 @@ def test_vectorfield_cross():
     f_z = ScalarField(np.zeros((10, 4, 4, 4)), unit=u.m)
 
     v1 = VectorField({'x': f_x, 'y': f_z, 'z': f_z}) # (1, 0, 0)
-    v2 = VectorField({'x': f_z, 'y': f_x, 'z': f_z}) # (0, 1, 0)
+    v2 = VectorField({'x': f_z, 'y': f_y, 'z': f_z}) # (0, 1, 0)
 
     # i x j = k
     v3 = v1.cross(v2)
@@ -130,10 +131,91 @@ def test_vectorfield_cross():
 
 def test_vectorfield_project():
     f_1 = ScalarField(np.ones((10, 4, 4, 4)), unit=u.m)
-    v1 = VectorField({'x': f_1 * 5, 'y': f_1 * 0}) # (5, 0)
-    v2 = VectorField({'x': f_1, 'y': f_1}) # (1, 1) -> norm = sqrt(2)
+    v1 = VectorField({"x": f_1 * 5, "y": f_1 * 0})  # (5, 0)
+    v2 = VectorField({"x": f_1, "y": f_1})  # (1, 1) -> norm = sqrt(2)
 
     # proj = (5*1 + 0*1) / sqrt(2) = 5 / sqrt(2)
     proj = v1.project(v2)
     assert np.allclose(proj.value, 5 / np.sqrt(2))
     assert isinstance(proj, ScalarField)
+
+
+def test_vectorfield_complex_norm():
+    # Test norm of complex data (e.g. after FFT)
+    data = np.ones((10, 4, 4, 4), dtype=complex) * (3 + 4j)
+    f = ScalarField(data, unit=u.V)
+    vf = VectorField({"x": f})
+
+    n = vf.norm()
+    # abs(3+4j) = 5
+    assert np.allclose(n.value, 5)
+    assert n.unit == u.V
+    assert n._axis0_index is not None
+
+
+def test_vectorfield_errors():
+    # Empty VectorField
+    vf_empty = VectorField({})
+    with pytest.raises(ValueError, match="Cannot compute norm"):
+        vf_empty.norm()
+
+    with pytest.raises(ValueError, match="Cannot compute dot"):
+        vf_empty.dot(vf_empty)
+
+    f = ScalarField(np.ones((10, 4, 4, 4)))
+    v = VectorField({"x": f})
+
+    # Dot with non-VectorField
+    with pytest.raises(TypeError, match="dot expects VectorField"):
+        v.dot(f)
+
+    # Mismatched components
+    v2 = VectorField({"y": f})
+    with pytest.raises(ValueError, match="Component 'x' missing"):
+        v.dot(v2)
+
+    # Cross product dim error
+    with pytest.raises(ValueError, match="only defined for 3-component"):
+        v.cross(v2)
+
+
+def test_vectorfield_axis_validation():
+    # Different axis0 lengths
+    f1 = ScalarField(np.ones((10, 4, 4, 4)))
+    f2 = ScalarField(np.ones((11, 4, 4, 4)))
+
+    with pytest.raises(ValueError, match="Axis 0 shape mismatch"):
+        VectorField({"x": f1, "y": f2})
+
+
+def test_vectorfield_norm_complex_components_preserves_metadata():
+    axis0 = np.linspace(0, 1, 4, endpoint=False) * u.s
+    data_x = np.array([1 + 2j, -2 + 0.5j, 0.3 - 1j, -0.1 + 0.0j])
+    data_y = np.array([2 - 1j, 1 + 1j, -0.5 + 0.2j, 0.2 - 0.3j])
+
+    data_x = data_x[:, None, None, None]
+    data_y = data_y[:, None, None, None]
+
+    fx = ScalarField(data_x, axis0=axis0, unit=u.V)
+    fy = ScalarField(data_y, axis0=axis0, unit=u.V)
+
+    vf = VectorField({'x': fx, 'y': fy})
+    norm = vf.norm()
+
+    expected = np.sqrt(np.abs(data_x) ** 2 + np.abs(data_y) ** 2)
+    assert np.allclose(norm.value, expected)
+    assert norm.unit == u.V
+    assert norm.axis0_domain == fx.axis0_domain
+    assert norm.axis_names == fx.axis_names
+    assert norm.space_domains == fx.space_domains
+
+
+def test_vectorfield_axis_mismatch_raises():
+    axis_long = np.linspace(0, 1, 5) * u.s
+    axis_short = np.linspace(0, 1, 4) * u.s
+
+    f_long = ScalarField(np.ones((5, 2, 2, 2)), axis0=axis_long, unit=u.m)
+    f_short = ScalarField(np.ones((4, 2, 2, 2)), axis0=axis_short, unit=u.m)
+
+    with pytest.raises(ValueError, match="Axis 0 shape mismatch"):
+        VectorField({'x': f_long, 'y': f_short})
