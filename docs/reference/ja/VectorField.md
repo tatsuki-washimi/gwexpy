@@ -60,6 +60,7 @@ vf_resampled = vf.resample_all(50)  # 50 Hz
 
 ## 関連項目
 
+- [FFTの仕様とコンベンション](FFT_Conventions.md) - 数学的詳細
 - [ScalarField](ScalarField.md) - 基底となるスカラー場クラス
 - [TensorField](TensorField.md) - テンソル値フィールド用
 - [FieldDict](FieldDict.md) - 基底コレクションクラス

@@ -17,6 +17,8 @@ ScalarField represents physical fields that can exist in different domains (time
 
 ### FFT Operations
 
+See [FFT Specifications and Conventions](FFT_Conventions.md) for mathematical details on normalization and sign definitions.
+
 #### `fft_time(nfft=None)`
 
 Compute FFT along time axis (axis 0). Applies GWpy-style normalization: `rfft / nfft`, with non-DC/non-Nyquist bins doubled. Domain is updated to `frequency`.

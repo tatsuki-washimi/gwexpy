@@ -60,6 +60,7 @@ result_v = tf @ v  # Returns VectorField
 
 ## See Also
 
+- [FFT Specifications and Conventions](FFT_Conventions.md) - Mathematical details
 - [ScalarField](ScalarField.md) - The underlying scalar field class
 - [VectorField](VectorField.md) - For vector-valued fields
 - [FieldDict](FieldDict.md) - The base collection class
