@@ -89,6 +89,10 @@ class VectorField(FieldDict):
             else:
                 sq_sum += term
 
+        if sq_sum is None:
+            # Should be unreachable given 'if not self' check
+            raise ValueError("Unexpected error: no components processed for norm computation")
+
         # Reconstruction using metadata from the first component
         first = next(iter(self.values()))
         return ScalarField(

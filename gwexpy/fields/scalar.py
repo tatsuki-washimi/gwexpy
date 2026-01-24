@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, Iterable, Sequence, cast
 
 import numpy as np
 from astropy import units as u
 from scipy import fft as sp_fft
 
 from .base import FieldBase
+
+if TYPE_CHECKING:
+    from gwexpy.types.typing import ArrayLike, IndexLike, UnitLike
 
 __all__ = ["ScalarField"]
 
@@ -65,12 +68,12 @@ class ScalarField(FieldBase):
     ...                 axis_names=['t', 'x', 'y', 'z'])
     """
 
-    _axis0_index: Any
-    _axis1_index: Any
-    _axis2_index: Any
-    _axis3_index: Any
+    _axis0_index: IndexLike
+    _axis1_index: IndexLike
+    _axis2_index: IndexLike
+    _axis3_index: IndexLike
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: Any) -> ScalarField:
         """Get item, always returning ScalarField (4D maintained).
 
         Integer indices are converted to length-1 slices to maintain
@@ -79,7 +82,7 @@ class ScalarField(FieldBase):
         forced_item = self._force_4d_item(item)
         return self._getitem_scalarfield(forced_item)
 
-    def _force_4d_item(self, item):
+    def _force_4d_item(self, item: Any) -> tuple[Any, ...]:
         """Convert int indices to slice(i, i+1) to maintain 4D."""
         if not isinstance(item, tuple):
             item = (item,)
@@ -124,7 +127,7 @@ class ScalarField(FieldBase):
 
         return tuple(result)
 
-    def _getitem_scalarfield(self, item):
+    def _getitem_scalarfield(self, item: tuple[Any, ...]) -> ScalarField:
         """Perform getitem with ScalarField reconstruction.
 
         item should already be normalized (all slices, length 4).
@@ -182,7 +185,7 @@ class ScalarField(FieldBase):
             **meta,
         )
 
-    def _isel_tuple(self, item_tuple):
+    def _isel_tuple(self, item_tuple: tuple[Any, ...]) -> ScalarField:
         """Internal isel using ScalarField getitem logic."""
         forced_item = self._force_4d_item(item_tuple)
         return self._getitem_scalarfield(forced_item)
@@ -191,7 +194,9 @@ class ScalarField(FieldBase):
     # Time FFT (axis=0, GWpy TimeSeries.fft compatible)
     # =========================================================================
 
-    def _validate_axis_for_fft(self, axis_index, axis_name, domain_name):
+    def _validate_axis_for_fft(
+        self, axis_index: IndexLike, axis_name: str, domain_name: str
+    ) -> None:
         """Validate that an axis is suitable for FFT.
 
         Parameters
@@ -222,7 +227,7 @@ class ScalarField(FieldBase):
                 f"but axis '{axis_name}' is irregular"
             )
 
-    def fft_time(self, nfft=None):
+    def fft_time(self, nfft: int | None = None) -> ScalarField:
         """Compute FFT along time axis (axis 0).
 
         This method applies the same normalization as GWpy's
@@ -291,8 +296,8 @@ class ScalarField(FieldBase):
 
         # Compute frequency axis
         dt = self._axis0_index[1] - self._axis0_index[0]
-        dt_value = dt.value
-        dt_unit = dt.unit
+        dt_value = getattr(dt, "value", dt)
+        dt_unit = getattr(dt, "unit", u.dimensionless_unscaled)
 
         freqs_value = np.fft.rfftfreq(nfft, d=dt_value)
         freqs = freqs_value * (1 / dt_unit)
@@ -318,7 +323,7 @@ class ScalarField(FieldBase):
         result._validate_domain_units()
         return result
 
-    def ifft_time(self, nout=None):
+    def ifft_time(self, nout: int | None = None) -> ScalarField:
         """Compute inverse FFT along frequency axis (axis 0).
 
         This method applies the inverse normalization of
@@ -372,8 +377,8 @@ class ScalarField(FieldBase):
 
         # Compute time axis
         df = self._axis0_index[1] - self._axis0_index[0]
-        df_value = df.value
-        df_unit = df.unit
+        df_value = getattr(df, "value", df)
+        df_unit = getattr(df, "unit", u.dimensionless_unscaled)
 
         # dt = 1 / (nout * df)
         dt_value = 1.0 / (nout * df_value)
@@ -410,7 +415,12 @@ class ScalarField(FieldBase):
     # Spatial FFT (axes 1-3, two-sided signed FFT)
     # =========================================================================
 
-    def fft_space(self, axes=None, n=None, overwrite=False):
+    def fft_space(
+        self,
+        axes: Iterable[str] | None = None,
+        n: Sequence[int] | None = None,
+        overwrite: bool = False,
+    ) -> ScalarField:
         """Compute FFT along spatial axes.
 
         This method uses two-sided FFT (scipy.fft.fftn) and produces
@@ -523,8 +533,8 @@ class ScalarField(FieldBase):
                 raise ValueError(
                     f"Axis '{ax_name}' does not have a defined spacing (delta)"
                 )
-            dx_value = delta.value  # Already signed from diff
-            dx_unit = delta.unit
+            dx_value = getattr(delta, "value", delta)  # Already signed from diff
+            dx_unit = getattr(delta, "unit", u.dimensionless_unscaled)
 
             npts = dft.shape[ax_int]
 
@@ -559,7 +569,12 @@ class ScalarField(FieldBase):
         result._validate_domain_units()
         return result
 
-    def ifft_space(self, axes=None, n=None, overwrite=False):
+    def ifft_space(
+        self,
+        axes: Iterable[str] | None = None,
+        n: Sequence[int] | None = None,
+        overwrite: bool = False,
+    ) -> ScalarField:
         """Compute inverse FFT along k-space axes.
 
         Parameters
@@ -650,8 +665,8 @@ class ScalarField(FieldBase):
                 )
 
             dk_raw = k_axis[1] - k_axis[0]
-            dk_value = dk_raw.value
-            dk_unit = dk_raw.unit
+            dk_value = getattr(dk_raw, "value", dk_raw)
+            dk_unit = getattr(dk_raw, "unit", u.dimensionless_unscaled)
 
             # dx = 2π / (n * |dk|)
             dx_value = 2 * np.pi / (npts * abs(dk_value))
@@ -685,7 +700,7 @@ class ScalarField(FieldBase):
         result._validate_domain_units()
         return result
 
-    def wavelength(self, axis):
+    def wavelength(self, axis: str | int) -> u.Quantity:
         """Compute wavelength from wavenumber axis.
 
         Parameters
@@ -712,15 +727,16 @@ class ScalarField(FieldBase):
 
         k_index = self.axis(ax_name).index
         with np.errstate(divide="ignore"):
-            wavelength_values = 2 * np.pi / np.abs(k_index.value)
-        return wavelength_values * (1 / k_index.unit)
+            k_val = getattr(k_index, "value", k_index)
+            wavelength_values = 2 * np.pi / np.abs(k_val)
+        return wavelength_values * (1 / getattr(k_index, "unit", u.dimensionless_unscaled))
 
     # =========================================================================
     # Simulation
     # =========================================================================
 
     @classmethod
-    def simulate(cls, method: str, *args, **kwargs) -> ScalarField:
+    def simulate(cls, method: str, *args: Any, **kwargs: Any) -> ScalarField:
         """Generate a simulated ScalarField.
 
         Parameters
@@ -757,7 +773,11 @@ class ScalarField(FieldBase):
     # Extraction API (Phase 0.3)
     # =========================================================================
 
-    def extract_points(self, points, interp="nearest"):
+    def extract_points(
+        self,
+        points: Sequence[Sequence[u.Quantity]] | Sequence[tuple[u.Quantity, ...]],
+        interp: str = "nearest",
+    ) -> Any:
         """Extract time series at specified spatial points.
 
         Parameters
@@ -854,7 +874,9 @@ class ScalarField(FieldBase):
 
         return TimeSeriesList(*result_list)
 
-    def extract_profile(self, axis, at, reduce=None):
+    def extract_profile(
+        self, axis: str, at: dict[str, u.Quantity], reduce: str | None = None
+    ) -> tuple[IndexLike, Any]:
         """Extract a 1D profile along a specified axis.
 
         Parameters
@@ -1236,7 +1258,8 @@ class ScalarField(FieldBase):
             ax.plot(ts.times.value, ts.value, label=label, **kwargs)
 
         # Labels
-        ax.set_xlabel(f"{self._axis0_name} [{self._axis0_index.unit}]")
+        x_unit = getattr(self._axis0_index, "unit", u.dimensionless_unscaled)
+        ax.set_xlabel(f"{self._axis0_name} [{x_unit}]")
         if self.unit is not None:
             ax.set_ylabel(f"[{self.unit}]")
 
@@ -1301,10 +1324,12 @@ class ScalarField(FieldBase):
         y_data = values.value if hasattr(values, "value") else values
         y_unit = values.unit if hasattr(values, "unit") else None
 
-        ax.plot(axis_index.value, y_data, label=label, **kwargs)
+        x_data = getattr(axis_index, "value", axis_index)
+        ax.plot(x_data, y_data, label=label, **kwargs)
 
         # Labels with units
-        ax.set_xlabel(f"{axis} [{axis_index.unit}]")
+        x_unit = getattr(axis_index, "unit", u.dimensionless_unscaled)
+        ax.set_xlabel(f"{axis} [{x_unit}]")
         if y_unit is not None:
             ax.set_ylabel(f"{mode} [{y_unit}]")
 

@@ -10,6 +10,7 @@ from gwpy.types.series import Series
 
 if TYPE_CHECKING:
     from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
+    from gwexpy.types.typing import IndexLike
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +21,9 @@ class SeriesMatrixCoreMixin:
     if TYPE_CHECKING:
         _value: np.ndarray
         meta: MetaDataMatrix
-        _xindex: np.ndarray | u.Quantity | Index | None
-        _x0: Any
-        _dx: Any
+        _xindex: IndexLike | None
+        _x0: u.Quantity | None
+        _dx: u.Quantity | None
         rows: MetaDataDict
         cols: MetaDataDict
         name: str | None
@@ -42,7 +43,7 @@ class SeriesMatrixCoreMixin:
         return -1
 
     @property
-    def shape3D(self) -> tuple[int, int, int]:
+    def shape3D(self) -> tuple[int, ...]:
         """Shape of the matrix as a 3-tuple (n_rows, n_cols, n_samples).
         For 4D matrices (spectrograms), the last dimension is likely frequency,
         so n_samples is determined by _x_axis_index.
@@ -67,12 +68,12 @@ class SeriesMatrixCoreMixin:
 
     ##### xindex Information #####
     @property
-    def xindex(self) -> np.ndarray | u.Quantity | Index | None:
+    def xindex(self) -> IndexLike | None:
         """Sample axis index array."""
         return getattr(self, "_xindex", None)
 
     @xindex.setter
-    def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None:
+    def xindex(self, value: IndexLike | None) -> None:
         if value is None:
             self._xindex = None
         else:
@@ -103,7 +104,7 @@ class SeriesMatrixCoreMixin:
                 delattr(self, attr)
 
     @property
-    def x0(self) -> Any:
+    def x0(self) -> u.Quantity:
         """Starting value of the sample axis."""
         try:
             return self._x0
@@ -119,7 +120,7 @@ class SeriesMatrixCoreMixin:
             return self._x0
 
     @property
-    def dx(self) -> Any:
+    def dx(self) -> u.Quantity:
         """Step size between samples on the x-axis."""
         try:
             return self._dx
@@ -138,7 +139,7 @@ class SeriesMatrixCoreMixin:
             return self._dx
 
     @property
-    def xspan(self) -> Any:
+    def xspan(self) -> tuple[u.Quantity, u.Quantity]:
         """Full extent of the sample axis as a tuple (start, end)."""
         xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
         try:
@@ -154,15 +155,13 @@ class SeriesMatrixCoreMixin:
     @property
     def xunit(self) -> u.Unit | None:
         # Priority: dx (regular), xindex (array), x0
-        try:
+        if hasattr(self, "_dx") and self._dx is not None:
             return self._dx.unit
-        except AttributeError:
-            if self.xindex is not None:
-                return getattr(self.xindex, "unit", u.dimensionless_unscaled)
-            try:
-                return self._x0.unit
-            except AttributeError:
-                return u.dimensionless_unscaled
+        if self.xindex is not None:
+            return getattr(self.xindex, "unit", u.dimensionless_unscaled)
+        if hasattr(self, "_x0") and self._x0 is not None:
+            return self._x0.unit
+        return u.dimensionless_unscaled
 
     @property
     def N_samples(self) -> int:
@@ -170,12 +169,12 @@ class SeriesMatrixCoreMixin:
         return len(self.xindex) if self.xindex is not None else 0
 
     @property
-    def xarray(self) -> np.ndarray:
+    def xarray(self) -> IndexLike:
         """Return the sample axis values."""
         return self.xindex
 
     @property
-    def duration(self) -> Any:
+    def duration(self) -> u.Quantity:
         """Duration covered by the samples."""
         if self.N_samples == 0:
             try:
@@ -296,7 +295,7 @@ class SeriesMatrixCoreMixin:
         return dict_class(results)
 
     def _get_meta_for_constructor(
-        self, data: np.ndarray, xindex: Any
+        self, data: np.ndarray, xindex: IndexLike | None
     ) -> dict[str, Any]:
         """
         Prepare arguments for constructing a new instance of the same class.

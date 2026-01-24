@@ -11,6 +11,17 @@ from .plane2d import Plane2D
 from .series_creator import as_series
 from .seriesmatrix import SeriesMatrix
 from .time_plane_transform import TimePlaneTransform
+from .typing import (
+    ArrayLike,
+    IndexLike,
+    MetaDataCollectionType,
+    MetaDataDictLike,
+    MetaDataLike,
+    MetaDataMatrixLike,
+    MetaDataType,
+    UnitLike,
+    XIndex,
+)
 
 __all__ = [
     # Metadata
@@ -31,6 +42,16 @@ __all__ = [
     "Array3D",
     "Array4D",
     "TimePlaneTransform",
+    # Type definitions (Protocols and TypeAliases)
+    "XIndex",
+    "MetaDataLike",
+    "MetaDataDictLike",
+    "MetaDataMatrixLike",
+    "ArrayLike",
+    "IndexLike",
+    "UnitLike",
+    "MetaDataType",
+    "MetaDataCollectionType",
 ]
 
 # Dynamic import from gwpy (PEP 562)
