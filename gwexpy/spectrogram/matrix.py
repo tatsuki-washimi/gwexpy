@@ -705,3 +705,32 @@ class SpectrogramMatrix(
         from gwexpy.plot.plot import plot_summary
 
         return plot_summary(self, **kwargs)
+
+    def __reduce__(self):
+        """
+        Customize pickle serialization to ensure metadata preservation.
+        
+        Returns standard numpy reduce tuple but appends __dict__ only if not automatically handled.
+        """
+        picked = list(super().__reduce__())
+        # picked is [func, args, state]
+        # state is (version, shape, dtype, isFortran, rawdata)
+        state = picked[2]
+        
+        # Append our __dict__ to state tuple to ensure it's saved
+        full_state = state + (self.__dict__,)
+        picked[2] = full_state
+        return tuple(picked)
+
+    def __setstate__(self, state):
+        """
+        Restore state from pickle.
+        """
+        # The last element contains our __dict__
+        my_dict = state[-1]
+        
+        # The rest is for numpy
+        np_state = state[:-1]
+        
+        super().__setstate__(np_state)
+        self.__dict__.update(my_dict)
