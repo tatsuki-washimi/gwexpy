@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -9,7 +9,7 @@ from gwpy.types.index import Index
 from gwpy.types.series import Series
 
 if TYPE_CHECKING:
-    from gwexpy.types.metadata import MetaDataMatrix
+    from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 
 logger = logging.getLogger(__name__)
 
@@ -20,14 +20,14 @@ class SeriesMatrixCoreMixin:
     if TYPE_CHECKING:
         _value: np.ndarray
         meta: MetaDataMatrix
-        _xindex: Any
+        _xindex: np.ndarray | u.Quantity | Index | None
         _x0: Any
         _dx: Any
-        rows: Any
-        cols: Any
+        rows: MetaDataDict
+        cols: MetaDataDict
         name: str | None
         epoch: float | int | None
-        attrs: dict[str, Any]
+        attrs: dict[str, Any] | None
         unit: u.Unit | None
         list_class: type[Any]
         series_class: type[Any] | None
@@ -67,12 +67,12 @@ class SeriesMatrixCoreMixin:
 
     ##### xindex Information #####
     @property
-    def xindex(self) -> Any:
+    def xindex(self) -> np.ndarray | u.Quantity | Index | None:
         """Sample axis index array."""
         return getattr(self, "_xindex", None)
 
     @xindex.setter
-    def xindex(self, value: Any) -> None:
+    def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None:
         if value is None:
             self._xindex = None
         else:
@@ -109,7 +109,8 @@ class SeriesMatrixCoreMixin:
             return self._x0
         except AttributeError:
             try:
-                self._x0 = self.xindex[0]
+                xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
+                self._x0 = xindex[0]
             except (u.UnitConversionError, AttributeError):
                 logger.debug("Could not determine x0 from xindex, falling back to 0.", exc_info=True)
                 self._x0 = u.Quantity(0, self.xunit)
@@ -139,7 +140,7 @@ class SeriesMatrixCoreMixin:
     @property
     def xspan(self) -> Any:
         """Full extent of the sample axis as a tuple (start, end)."""
-        xindex = self.xindex
+        xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
         try:
             if hasattr(xindex, "regular") and xindex.regular:
                 return (xindex[0], xindex[-1] + self.dx)
@@ -151,7 +152,7 @@ class SeriesMatrixCoreMixin:
             return (xindex[0], xindex[-1])
 
     @property
-    def xunit(self) -> Any:
+    def xunit(self) -> u.Unit | None:
         # Priority: dx (regular), xindex (array), x0
         try:
             return self._dx.unit
@@ -178,10 +179,11 @@ class SeriesMatrixCoreMixin:
         """Duration covered by the samples."""
         if self.N_samples == 0:
             try:
-                return 0 * self.xunit
+                return 0 * cast(u.Unit, self.xunit)
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
                 return 0
-        return self.xindex[-1] - self.xindex[0]
+        xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
+        return xindex[-1] - xindex[0]
 
     ##### rows/cols Information #####
     def row_keys(self) -> tuple[Any, ...]:

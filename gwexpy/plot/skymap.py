@@ -1,6 +1,7 @@
+import logging
+
 import astropy.units as u
 import numpy as np
-import logging
 from astropy.coordinates import SkyCoord
 
 from .plot import Plot

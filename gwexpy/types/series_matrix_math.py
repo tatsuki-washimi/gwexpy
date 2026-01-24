@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -11,19 +11,30 @@ from .metadata import MetaData, MetaDataMatrix
 class SeriesMatrixMathMixin:
     """Mixin for SeriesMatrix math operations (linear algebra)."""
 
-    _value: np.ndarray
-    meta: MetaDataMatrix
-    xindex: Any
-    rows: Any
-    cols: Any
-    name: str | None
-    epoch: float | int | None
-    attrs: dict[str, Any]
-    row_index: Any
-    col_index: Any
-    dx: Any
-    xspan: Any
-    series_class: type[Any] | None
+    if TYPE_CHECKING:
+        from gwpy.types.index import Index
+
+        from .metadata import MetaDataDict
+
+        _value: np.ndarray
+        meta: MetaDataMatrix
+        rows: MetaDataDict
+        cols: MetaDataDict
+        name: str | None
+        epoch: float | int | None
+        attrs: dict[str, Any] | None
+        dx: Any
+        xspan: Any
+        series_class: type[Any] | None
+
+        @property
+        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...
+
+        @xindex.setter
+        def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...
+
+        def row_index(self, key: Any) -> int: ...
+        def col_index(self, key: Any) -> int: ...
 
     def _all_element_units_equivalent(self) -> tuple[bool, u.Unit | None]:
         """Check whether all element units are mutually equivalent."""
