@@ -70,10 +70,13 @@ class TimeSeriesMatrixCoreMixin:
 
         # Rebuild xindex to preserve start and length
         length = cast("TimeSeriesMatrix", self).shape[-1]
-        if cast("TimeSeriesMatrix", self).xindex is not None and len(cast("TimeSeriesMatrix", self).xindex) > 0:
-            start = cast("TimeSeriesMatrix", self).xindex[0]
+        xindex = cast("TimeSeriesMatrix", self).xindex
+        if xindex is not None and len(xindex) > 0:
+            start = xindex[0]
             if not isinstance(start, u.Quantity):
-                start = u.Quantity(start, cast("TimeSeriesMatrix", self).xunit or new_dt.unit or u.s)
+                start = u.Quantity(
+                    start, cast("TimeSeriesMatrix", self).xunit or new_dt.unit or u.s
+                )
         else:
             start = u.Quantity(0, cast("TimeSeriesMatrix", self).xunit or new_dt.unit or u.s)
 

@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from astropy import units as u
+from gwpy.types.index import Index
 
 if TYPE_CHECKING:
-    from gwexpy.types.metadata import MetaDataMatrix
+    from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 
 logger = logging.getLogger(__name__)
 
@@ -18,11 +19,16 @@ class SeriesMatrixValidationMixin:
     if TYPE_CHECKING:
         _value: np.ndarray
         meta: MetaDataMatrix
-        xindex: Any
-        rows: Any
-        cols: Any
+        rows: MetaDataDict
+        cols: MetaDataDict
         dx: Any
         xspan: Any
+
+        @property
+        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...
+
+        @xindex.setter
+        def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...
 
     def is_contiguous(self, other: Any, tol: float = 1 / 2.0**18) -> int:
         """Check if this matrix is contiguous with another."""
@@ -89,8 +95,8 @@ class SeriesMatrixValidationMixin:
     def is_compatible_exact(self, other: Any) -> bool:
         """Check strict compatibility with another matrix."""
         base_unit = getattr(self.xindex, "unit", None)
-        lhs = self.xindex
-        rhs = other.xindex
+        lhs = cast(np.ndarray | u.Quantity | Index, self.xindex)
+        rhs = cast(np.ndarray | u.Quantity | Index, other.xindex)
         if base_unit is not None:
             try:
                 lhs = lhs.to_value(base_unit)

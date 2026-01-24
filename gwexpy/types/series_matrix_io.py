@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections import OrderedDict
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -10,9 +11,46 @@ from gwexpy.interop._optional import require_optional
 
 from .metadata import MetaData, MetaDataDict, MetaDataMatrix
 
+if TYPE_CHECKING:
+    from gwpy.types.index import Index
+
 
 class SeriesMatrixIOMixin:
     """Mixin for SeriesMatrix I/O and display operations."""
+
+    if TYPE_CHECKING:
+        _value: np.ndarray
+        value: np.ndarray
+        x0: Any
+        dx: Any
+        name: str | None
+        epoch: float | int | None
+        attrs: dict[str, Any] | None
+        rows: MetaDataDict
+        cols: MetaDataDict
+        meta: MetaDataMatrix
+        shape: tuple[int, ...]
+        ndim: int
+
+        @property
+        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...
+
+        @xindex.setter
+        def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...
+
+        @property
+        def xunit(self) -> u.Unit | None: ...
+
+        @property
+        def N_samples(self) -> int: ...
+
+        @property
+        def shape3D(self) -> tuple[int, int, int]: ...
+
+        def row_keys(self) -> tuple[Any, ...]: ...
+        def col_keys(self) -> tuple[Any, ...]: ...
+        def row_index(self, key: Any) -> int: ...
+        def col_index(self, key: Any) -> int: ...
 
     # -- I/O (HDF5) -------------------------------------------------
     def to_pandas(self, format="wide"):
@@ -315,7 +353,8 @@ class SeriesMatrixIOMixin:
                 )
             cols = MetaDataDict(cols, expected_size=len(col_keys), key_prefix="col")
 
-        return cls(
+        matrix_cls = cast(type[Any], cls)
+        return matrix_cls(
             data,
             xindex=xindex,
             meta=meta_matrix,

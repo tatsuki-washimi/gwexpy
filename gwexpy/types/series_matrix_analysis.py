@@ -1,11 +1,49 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any, cast
+
 import numpy as np
 from astropy import units as u
+from gwpy.types.index import Index
+
+if TYPE_CHECKING:
+    from .metadata import MetaDataDict, MetaDataMatrix
 
 
 class SeriesMatrixAnalysisMixin:
     """Mixin for SeriesMatrix spectral analysis, cropping, and interpolation."""
+
+    if TYPE_CHECKING:
+        _value: np.ndarray
+        value: np.ndarray
+        xspan: Any
+        dx: Any
+        epoch: float | int | None
+        name: str | None
+        rows: MetaDataDict
+        cols: MetaDataDict
+        meta: MetaDataMatrix
+        attrs: dict[str, Any] | None
+        dtype: np.dtype[Any]
+        ndim: int
+        shape: tuple[int, ...]
+
+        @property
+        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...
+
+        @xindex.setter
+        def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...
+
+        @property
+        def xunit(self) -> u.Unit | None: ...
+
+        @property
+        def _x_axis_index(self) -> int: ...
+
+        def row_index(self, key: Any) -> int: ...
+        def col_index(self, key: Any) -> int: ...
+        def is_contiguous(self, other: Any, tol: float = ...) -> int: ...
+        def _get_meta_for_constructor(self, data: np.ndarray, xindex: Any) -> dict[str, Any]: ...
 
     def _get_axis_slice(self, axis, sl):
         """Helper to create a slice tuple for a specific axis."""
@@ -23,7 +61,7 @@ class SeriesMatrixAnalysisMixin:
 
     def crop(self, start=None, end=None, copy=False):
         """Crop the matrix to a specified range along the sample axis."""
-        xindex = self.xindex
+        xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
         xunit = getattr(xindex, "unit", None)
         xvalues = getattr(xindex, "value", np.asarray(xindex))
 
@@ -140,7 +178,8 @@ class SeriesMatrixAnalysisMixin:
             orig_len = target.shape[axis]
             sl = slice(-orig_len, None)
             new_data = out_full.value[out_full._get_axis_slice(axis, sl)]
-            new_xindex = out_full.xindex[sl]
+            out_xindex = cast(np.ndarray | u.Quantity | Index, out_full.xindex)
+            new_xindex = out_xindex[sl]
             out_full = self.__class__(
                 **self._get_meta_for_constructor(new_data, new_xindex)
             )
@@ -265,7 +304,8 @@ class SeriesMatrixAnalysisMixin:
         new_data = np.diff(self.value, n=n, axis=target_axis)
 
         if target_axis == self._x_axis_norm:
-            new_xindex = self.xindex[n:]
+            xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
+            new_xindex = xindex[n:]
         else:
             new_xindex = self.xindex
 
@@ -304,16 +344,17 @@ class SeriesMatrixAnalysisMixin:
 
         # Create full pad tuple for np.pad
         # ((0,0), ..., (pw_before, pw_after), ..., (0,0))
-        full_pad = [(0, 0)] * self.ndim
+        full_pad: list[tuple[int, int]] = [(0, 0)] * self.ndim
         full_pad[axis] = pw
-        full_pad = tuple(full_pad)
+        full_pad_tuple: tuple[tuple[int, int], ...] = tuple(full_pad)
 
         kwargs.setdefault("mode", "constant")
-        new_data = np.pad(self.value, full_pad, **kwargs)
+        new_data = np.pad(self.value, full_pad_tuple, **kwargs)
 
         # Update xindex
         dx = self.dx
-        x0 = self.xindex[0]
+        xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
+        x0 = xindex[0]
         n_before, n_after = pw
         new_x0 = x0 - n_before * dx
         total_len = new_data.shape[axis]

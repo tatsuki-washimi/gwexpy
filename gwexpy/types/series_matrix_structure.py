@@ -2,14 +2,37 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from copy import deepcopy
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
 from .metadata import MetaData, MetaDataDict, MetaDataMatrix
 
+if TYPE_CHECKING:
+    from astropy import units as u
+    from gwpy.types.index import Index
+
 
 class SeriesMatrixStructureMixin:
     """Mixin for SeriesMatrix structural transformations (reshape, transpose, cast)."""
+
+    if TYPE_CHECKING:
+        _value: np.ndarray
+        value: np.ndarray
+        rows: MetaDataDict
+        cols: MetaDataDict
+        meta: MetaDataMatrix
+        name: str | None
+        epoch: float | int | None
+        attrs: dict[str, Any] | None
+
+        @property
+        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...
+
+        @xindex.setter
+        def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...
+
+        def view(self, dtype: type[Any]) -> Any: ...
 
     def copy(self, order="C"):
         """Create a deep copy of this matrix."""
@@ -24,12 +47,17 @@ class SeriesMatrixStructureMixin:
         new_meta = MetaDataMatrix(deepcopy(np.asarray(self.meta)))
         new_rows = _copy_meta_dict(self.rows, "row")
         new_cols = _copy_meta_dict(self.cols, "col")
-        try:
-            new_xindex = self.xindex.copy()
-        except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-            new_xindex = deepcopy(self.xindex)
+        xindex = self.xindex
+        if xindex is None:
+            new_xindex = None
+        else:
+            try:
+                new_xindex = xindex.copy()
+            except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+                new_xindex = deepcopy(xindex)
 
-        return self.__class__(
+        matrix_cls = cast(type[Any], self.__class__)
+        return matrix_cls(
             new_val,
             meta=new_meta,
             rows=new_rows,
@@ -45,7 +73,8 @@ class SeriesMatrixStructureMixin:
         new_val = self.value.astype(dtype, copy=copy)
         if not copy and new_val is self.value:
             return self
-        return self.__class__(
+        matrix_cls = cast(type[Any], self.__class__)
+        return matrix_cls(
             new_val,
             xindex=self.xindex,
             rows=self.rows,
@@ -58,7 +87,8 @@ class SeriesMatrixStructureMixin:
 
     def real(self):
         """Real part of the matrix."""
-        return self.__class__(
+        matrix_cls = cast(type[Any], self.__class__)
+        return matrix_cls(
             self.value.real,
             xindex=self.xindex,
             rows=self.rows,
@@ -71,7 +101,8 @@ class SeriesMatrixStructureMixin:
 
     def imag(self):
         """Imaginary part of the matrix."""
-        return self.__class__(
+        matrix_cls = cast(type[Any], self.__class__)
+        return matrix_cls(
             self.value.imag,
             xindex=self.xindex,
             rows=self.rows,
@@ -84,7 +115,8 @@ class SeriesMatrixStructureMixin:
 
     def conj(self):
         """Complex conjugate of the matrix."""
-        return self.__class__(
+        matrix_cls = cast(type[Any], self.__class__)
+        return matrix_cls(
             np.conjugate(self.value),
             xindex=self.xindex,
             rows=self.rows,
@@ -106,7 +138,8 @@ class SeriesMatrixStructureMixin:
             # Default matrix transpose (0, 1, 2) -> (1, 0, 2)
             new_val = np.transpose(self.value, (1, 0, 2))
             new_meta = self.meta.T
-            return self.__class__(
+            matrix_cls = cast(type[Any], self.__class__)
+            return matrix_cls(
                 new_val,
                 xindex=self.xindex,
                 rows=self.cols,
@@ -141,7 +174,8 @@ class SeriesMatrixStructureMixin:
         # Metadata must also be reshaped
         new_meta = self.meta.value.reshape(target_shape[:2], order=order)
 
-        return self.__class__(
+        matrix_cls = cast(type[Any], self.__class__)
+        return matrix_cls(
             new_val,
             xindex=self.xindex,
             meta=MetaDataMatrix(new_meta),

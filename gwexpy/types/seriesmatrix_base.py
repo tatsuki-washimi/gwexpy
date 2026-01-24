@@ -1,3 +1,4 @@
+import logging
 import warnings
 from collections import OrderedDict
 from typing import Any, Union
@@ -27,6 +28,8 @@ from .seriesmatrix_validation import (
     check_add_sub_compatibility,
     check_shape_xindex_compatibility,
 )
+
+logger = logging.getLogger(__name__)
 
 _ADD_SUB_COMPARISON_UFUNCS = {
     np.add,
@@ -405,6 +408,7 @@ class SeriesMatrix(
                 result_meta = np.full((N, M), res_meta_obj, dtype=object)
             except Exception as e:
                 # Optimize: vectorized meta-ufunc failed, use fallback
+                logger.exception("MetaData ufunc optimization failed; using element-wise calculation.")
                 warnings.warn(
                     f"MetaData ufunc optimization failed: {e}. Using element-wise calculation.",
                     PerformanceWarning,
@@ -421,6 +425,7 @@ class SeriesMatrix(
                     result_meta = ufunc(*meta_matrices, **ufunc_kwargs)
             except Exception as e:
                 # Fallback to loop if vectorized meta-ufunc fails
+                logger.exception("MetaData vectorized ufunc failed; falling back to loop.")
                 warnings.warn(
                     f"MetaData vectorized ufunc failed; falling back to loop. Error: {e}",
                     PerformanceWarning,

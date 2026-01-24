@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Protocol
 if TYPE_CHECKING:
     from astropy import units as u
 
-    from gwexpy.types.metadata import MetaData, MetaDataDict, MetaDataMatrix
+    from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 
 
 class _FrequencySeriesMatrixCoreLike(Protocol):

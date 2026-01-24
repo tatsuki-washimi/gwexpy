@@ -8,7 +8,9 @@ from astropy import units as u
 from .seriesmatrix_validation import _expand_key, _slice_metadata_dict
 
 if TYPE_CHECKING:
-    from gwexpy.types.metadata import MetaDataMatrix
+    from gwpy.types.index import Index
+
+    from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 
 
 class SeriesMatrixIndexingMixin:
@@ -17,12 +19,17 @@ class SeriesMatrixIndexingMixin:
     if TYPE_CHECKING:
         _value: np.ndarray
         meta: MetaDataMatrix
-        xindex: Any
-        rows: Any
-        cols: Any
+        rows: MetaDataDict
+        cols: MetaDataDict
         unit: u.Unit | None
         list_class: type[Any]
         series_class: type[Any] | None
+
+        @property
+        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...
+
+        @xindex.setter
+        def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...
 
         def row_index(self, key: Any) -> int: ...
         def col_index(self, key: Any) -> int: ...

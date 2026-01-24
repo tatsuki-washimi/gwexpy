@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import numpy as np
 from astropy import units as u
 from scipy import fft as sp_fft
 
 from .base import FieldBase
-
-if TYPE_CHECKING:
-    from gwexpy.timeseries import TimeSeriesList
 
 __all__ = ["ScalarField"]
 
@@ -498,7 +495,7 @@ class ScalarField(FieldBase):
         s = None
         if n is not None:
             s = tuple(n)
-        
+
         import scipy.fft as sp_fft
         if overwrite:
             # Create explicit copy to allow overwrite_x optimization
@@ -616,7 +613,7 @@ class ScalarField(FieldBase):
         s = None
         if n is not None:
             s = tuple(n)
-        
+
         import scipy.fft as sp_fft
         if overwrite:
             work_data = self.value.copy()
