@@ -59,7 +59,7 @@ GWpyには標準実装されていない、周波数・時間周波数データ�
 *   `SpectrogramMatrix`: (Rows, Cols, Time, Frequency)
 
 **特徴・機能**:
-*   **行列演算**: 要素ごとの行列積 (`@`)、逆行列 (`.inv()`)、行列式 (`.det()`)、トレース (`.trace()`)、固有値計算 (`.eig()`)。MIMOシステムの伝達関数解析などに強力。
+*   **行列演算**: 要素ごとの行列積 (`@`)、逆行列 (`.inv()`)、行列式 (`.det()`)、トレース (`.trace()`)、シュア補行列 (`.schur()`)。MIMOシステムの伝達関数解析などに強力。
 *   **統計処理**: 行・列方向の平均・分散演算 (`.mean(axis)`, `.std(axis)` 等) により、センサーアレイ全体の統計量を一括計算。
 *   **バッチ処理**: 各要素に対する信号処理（フィルタリング、リサンプリング、白色化など）の一括適用。
 
@@ -91,17 +91,16 @@ GWpyには標準実装されていない、周波数・時間周波数データ�
 *   `.arima(order, ...)`: AR/MA/ARMA/ARIMAモデル解析 (`statsmodels`, `pmdarima` ラッパー)
 *   `.ar(p)`, `.ma(q)`, `.arma(p, q)`: AR/MA/ARMAのショートカット
 *   `.hurst_exponent()`: ハースト指数の計算
-*   `.skew()`: 歪度 (Skewness)
+*   `.skewness()`: 歪度 (Skewness)
 *   `.kurtosis()`: 尖度 (Kurtosis)
 
 ### 周波数スペクトル解析 (FrequencySeries)
-*   `.diff(axis)`: 周波数ドメインでの時間微分
-*   `.integrate(axis)`: 周波数ドメインでの時間積分
+*   `.differentiate()`, `.integrate()`: 周波数ドメインでの微分・積分
+*   `.differentiate_time()`, `.integrate_time()`: 周波数ドメインでの時間微分・積分（Displacement ↔ Velocity ↔ Acceleration 変換等）
 *   `.group_delay()`: 群遅延の計算
 
 ### 時間周波数解析 (Spectrogram / Special Transforms)
 GWpyのスペクトログラムとQ変換に加えて、様々な時間周波数解析手法を提供します。
-*   `impulse_fft()`: 短時間インパルスのFFT解析
 *   `hht()`: ヒルベルト・ファン変換 (HHT)。EMD (Empirical Mode Decomposition) によるIMF分解と瞬時周波数解析。
 *   `stlt()`: 短時間ラプラス変換 (Short-Time Laplace Transform)。減衰定数 $\sigma$ を考慮した解析。
 *   `cepstrum()`: ケプストラム解析 (倒周波数)。
@@ -113,20 +112,19 @@ GWpyのスペクトログラムとQ変換に加えて、様々な時間周波数
     *   `TimeSeries`, `FrequencySeries` にも `.fit()` 等のメソッドがMixされています。
 *   **Bootstrap**:
     *   `bootstrap_spectrogram`: スペクトログラムのブートストラップ推定
-    *   `psd_error`: PSD推定の誤差評価
 
 ## 4. 高度な解析メソッド (多チャンネル)
 
 ### 成分分析 (`gwexpy.timeseries.decomposition`)
 *   `PCA`: 主成分分析
 *   `ICA`: 独立成分分析
-*   `ZCA`: ゼロ位相成分分析 (白色化)
+*   `ZCA`: 白色化 (`.whiten(method='zca')` として利用)
 
 ### 相関・統計解析
 *   **相関指標**:
     *   `dCor`: 距離相関 (Distance Correlation)
     *   `MIC`: 最大情報係数 (Maximal Information Coefficient)
-    *   `Pearson`, `Kendall`, `Spearman`: 基本的な相関係数
+    *   `Pearson`, `Kendall`: 基本的な相関係数
 *   **Bruco**:
     *   多チャンネルコヒーレンス探索によるノイズ源特定ツール (`gwexpy.analysis.bruco`)
 
@@ -136,6 +134,8 @@ GWpyのスペクトログラムとQ変換に加えて、様々な時間周波数
     *   行列クラス (`SeriesMatrix`) を用いたMIMO伝達関数・時系列解析
 *   **雑音注入試験解析**:
     *   `gwexpy.analysis.response`: 伝達関数推定や結合係数算出のための実験データ解析ツール
+*   **行列演算**:
+    *   逆行列 (`.inv()`)、行列式 (`.det()`)、トレース (`.trace()`)、シュア補行列 (`.schur()`) などの基本操作。
 
 ## 5. 外部ツール連携 (Interop)
 
