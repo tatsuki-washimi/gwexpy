@@ -355,12 +355,12 @@ class TensorField(FieldDict):
         # We need to construct a flat list of items or use Plot capability
         # FieldPlot is a Plot. We can utilize separate=True logic or construct axes manually.
         # But FieldPlot.add_scalar works on single ax usually (gca).
-        
+
         # We'll use subplots geometry
         # Pass geometry to FieldPlot constructor
-        
+
         fp = FieldPlot(geometry=(dim_i, dim_j), sharex=True, sharey=True)
-        
+
         for i in range(dim_i):
             for j in range(dim_j):
                 ax = fp.axes[i * dim_j + j]
@@ -368,7 +368,7 @@ class TensorField(FieldDict):
                 # Matplotlib's sca(ax) affects plt.gca()
                 import matplotlib.pyplot as plt
                 plt.sca(ax)
-                
+
                 if (i, j) in self:
                     comp = self[(i, j)]
                     # Use add_scalar but ensure it uses gca (which we set)
@@ -376,7 +376,7 @@ class TensorField(FieldDict):
                     label = f"T_{{{i}{j}}}"
                     # Pass label to kwargs? no add_scalar has logic.
                     # Add title?
-                    
+
                     fp.add_scalar(comp, x=x, y=y, slice_kwargs=slice_kwargs, label=label, **plot_kwargs)
                     ax.set_title(label)
                 else:

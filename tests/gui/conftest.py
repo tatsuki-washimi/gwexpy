@@ -11,9 +11,10 @@ if os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD"):
     pytestmark = pytest.mark.skip("GUI tests skipped (plugin autoload disabled)")
     collect_ignore_glob = ["test_*.py", "integration/test_*.py"]
 try:
+    import faulthandler
+
     import pytestqt  # noqa: F401
     from PyQt5.QtWidgets import QApplication
-    import faulthandler
 except Exception:  # pragma: no cover - guard for headless/CI
     QT_AVAILABLE = False
     pytestmark = pytest.mark.skip("GUI tests skipped (pytest-qt/Qt not available)")

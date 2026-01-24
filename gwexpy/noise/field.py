@@ -14,7 +14,6 @@ import numpy as np
 from astropy import units as u
 
 if TYPE_CHECKING:
-    from numpy.random import Generator
     from ..fields.scalar import ScalarField
 
 
@@ -94,7 +93,7 @@ def gaussian(
 
     if axes is None:
         axes = _generate_axes(shape, sample_rate, space_step, t0, origin)
-    
+
     # Infer shape from axes if explicit axes are given
     if axes:
         shape = (
@@ -154,7 +153,7 @@ def plane_wave(
     # Meshgrid for vectorized calculation
     # Using 'ij' indexing implies (t, x, y, z) order if input is (t, x, y, z)
     # But meshgrid supports only list.
-    
+
     # We can use broadcasting.
     # t: (nt, 1, 1, 1)
     # x: (1, nx, 1, 1)
@@ -167,7 +166,7 @@ def plane_wave(
     Z = z.value[np.newaxis, np.newaxis, np.newaxis, :]
 
     f_val = frequency.to_value(u.Hz)
-    
+
     # k should be same unit base as x,y,z
     k_unit = 1 / x.unit
     kx = k_vector[0].to_value(k_unit)
@@ -177,7 +176,7 @@ def plane_wave(
     # Phase = 2pi * (f*t - (kx*x + ky*y + kz*z)) + phi
     # Dot product k*r
     dot_kr = kx * X + ky * Y + kz * Z
-    
+
     phi_total = 2 * np.pi * (f_val * T - dot_kr) + phase
 
     data = amplitude * np.cos(phi_total)

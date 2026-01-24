@@ -213,7 +213,7 @@ class VectorField(FieldDict):
         from ..plot.field import FieldPlot
 
         fp = FieldPlot()
-        
+
         # Split kwargs
         # We need access to axis names to know which are fixed coords
         # Since VectorField is a collection, we check keys of the first component
@@ -224,7 +224,7 @@ class VectorField(FieldDict):
             first_field._axis2_name,
             first_field._axis3_name
         ]
-        
+
         slice_kwargs = {}
         plot_kwargs = {}
         for k, v in kwargs.items():
@@ -232,7 +232,7 @@ class VectorField(FieldDict):
                 slice_kwargs[k] = v
             else:
                 plot_kwargs[k] = v
-        
+
         fp.add_vector(self, x=x, y=y, mode='quiver', slice_kwargs=slice_kwargs, **plot_kwargs)
         return fp
 
@@ -251,7 +251,7 @@ class VectorField(FieldDict):
         from ..plot.field import FieldPlot
 
         fp = FieldPlot()
-        
+
         first_field = next(iter(self.values()))
         all_axes = [
             first_field._axis0_name,
@@ -259,7 +259,7 @@ class VectorField(FieldDict):
             first_field._axis2_name,
             first_field._axis3_name
         ]
-        
+
         slice_kwargs = {}
         plot_kwargs = {}
         for k, v in kwargs.items():
@@ -267,7 +267,7 @@ class VectorField(FieldDict):
                 slice_kwargs[k] = v
             else:
                 plot_kwargs[k] = v
-        
+
         fp.add_vector(self, x=x, y=y, mode='streamline', slice_kwargs=slice_kwargs, **plot_kwargs)
         return fp
 
@@ -278,12 +278,12 @@ class VectorField(FieldDict):
         """
         # Split kwargs for scalar (magnitude) plot vs quiver plot?
         # A bit tricky. For now, pass most to scalar plot, add quiver with default black
-        
+
         # Defer
         from ..plot.field import FieldPlot
-        
+
         fp = FieldPlot()
-        
+
         first_field = next(iter(self.values()))
         all_axes = [
             first_field._axis0_name,
@@ -291,7 +291,7 @@ class VectorField(FieldDict):
             first_field._axis2_name,
             first_field._axis3_name
         ]
-        
+
         slice_kwargs = {}
         plot_kwargs = {}
         for k, v in kwargs.items():
@@ -303,17 +303,17 @@ class VectorField(FieldDict):
         # Calculate norm
         norm_field = self.norm()
         norm_field.name = "Magnitude"
-        
+
         # Add scalar magnitude
         fp.add_scalar(norm_field, x=x, y=y, slice_kwargs=slice_kwargs, **plot_kwargs)
-        
+
         # Add vector quiver (black by default for visibility)
         quiver_args = {'color': 'white', 'alpha': 0.7} # white arrows on colored map
-        
+
         # If user passed stride for quiver, extract it
         if 'stride' in plot_kwargs:
             quiver_args['stride'] = plot_kwargs['stride']
-            
+
         fp.add_vector(self, x=x, y=y, mode='quiver', slice_kwargs=slice_kwargs, **quiver_args)
-        
+
         return fp

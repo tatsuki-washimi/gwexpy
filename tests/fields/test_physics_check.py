@@ -1,10 +1,11 @@
-import pytest
 import numpy as np
+import pytest
 from astropy import units as u
 
 from gwexpy.fields import ScalarField
-from gwexpy.fields.vector import VectorField
 from gwexpy.fields.tensor import TensorField
+from gwexpy.fields.vector import VectorField
+
 
 @pytest.fixture
 def base_field():
@@ -82,7 +83,7 @@ def test_conservation_laws():
     # FFT and IFFT round-trip
     sf_freq = sf_time.fft_time()
     sf_time_reconstructed = sf_freq.ifft_time()
-    
+
     reconstruction_error = np.max(np.abs(sf_time.value - sf_time_reconstructed.value))
     assert reconstruction_error < 1e-10
 

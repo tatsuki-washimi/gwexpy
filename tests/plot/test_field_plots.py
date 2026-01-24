@@ -1,14 +1,16 @@
 
-import pytest
-import numpy as np
 import matplotlib
+import numpy as np
+import pytest
+
 matplotlib.use('Agg') # Non-interactive backend
 import matplotlib.pyplot as plt
 from astropy import units as u
-
-from gwexpy.fields import ScalarField, VectorField, TensorField
-from gwexpy.plot.field import FieldPlot
 from matplotlib.animation import FuncAnimation
+
+from gwexpy.fields import ScalarField, TensorField, VectorField
+from gwexpy.plot.field import FieldPlot
+
 
 @pytest.fixture
 def scalar_field():
@@ -34,7 +36,7 @@ def test_get_slice(scalar_field):
     sliced, xidx, yidx, xname, yname = scalar_field.get_slice()
     assert sliced.ndim == 2
     assert sliced.unit == scalar_field.unit
-    
+
     # Test specific slice
     sliced, xidx, yidx, xname, yname = scalar_field.get_slice(x_axis='x', y_axis='y', t=0, z=0)
     assert xname == 'x'
@@ -58,17 +60,17 @@ def test_vector_field_plots(vector_field):
     fp = vector_field.plot_magnitude(x='x', y='y', t=0, z=0)
     assert isinstance(fp, FieldPlot)
     plt.close(fp.figure)
-    
+
     # Quiver
     fp = vector_field.quiver(x='x', y='y', t=0, z=0)
     assert isinstance(fp, FieldPlot)
     plt.close(fp.figure)
-    
+
     # Streamline
     fp = vector_field.streamline(x='x', y='y', t=0, z=0)
     assert isinstance(fp, FieldPlot)
     plt.close(fp.figure)
-    
+
     # Combined plot
     fp = vector_field.plot(x='x', y='y', t=0, z=0)
     assert isinstance(fp, FieldPlot)

@@ -12,13 +12,14 @@ from ..engine import Engine
 
 # Excitation Module Imports
 from ..excitation.generator import SignalGenerator
-from ..excitation.params import GeneratorParams
 from ..loaders import loaders, products
 from ..nds.cache import NDSDataCache
 from ..plotting.normalize import normalize_series
 from ..streaming import SpectralAccumulator
 from .channel_browser import ChannelBrowserDialog
+from .excitation_manager import ExcitationManager
 from .graph_panel import GraphPanel
+from .plot_renderer import PlotRenderer
 from .tabs import (
     create_excitation_tab,
     create_input_tab,
@@ -96,6 +97,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.nds_cache.signal_payload.connect(self.on_stream_payload)
         if hasattr(self.nds_cache, "signal_error"):
             self.nds_cache.signal_error.connect(self.on_data_error)
+
+        # Excitation Manager (Phase 2 refactor)
+        self.excitation_manager = ExcitationManager(self.sig_gen, self.exc_controls)
+
+        # Plot Renderer (Phase 3 refactor)
+        self.plot_renderer = PlotRenderer(self)
 
         self.input_controls["ds_combo"].currentTextChanged.connect(
             self.on_source_changed
@@ -661,28 +668,64 @@ class MainWindow(QtWidgets.QMainWindow):
         return p
 
     def update_graphs(self):
+        """
+        Main update loop for streaming mode.
+
+        This method orchestrates the data pipeline:
+        1. Collect data from source (NDS/Simulation)
+        2. Apply excitation signals via ExcitationManager
+        3. Check stop conditions (Fixed Averaging)
+        4. Render results via PlotRenderer
+        """
         if self.is_file_mode:
             return
 
-        data_map = {}
+        # Stage 1: Collect data
+        data_map, current_times, current_fs = self._collect_data_map()
 
-        # NDS Mode Logic: Build data_map from buffers
+        if data_map is None and current_times is None:
+            return  # No data and no fallback
+
+        if data_map is None:
+            data_map = {}
+
+        # Stage 2: Apply excitation signals
+        total_excitation = self.excitation_manager.inject_signals(
+            data_map, current_times, current_fs
+        )
+        self.excitation_manager.publish_excitation_channel(
+            data_map, total_excitation, current_times, current_fs
+        )
+
+        # Stage 3: Apply time cropping and check stop conditions
+        self._apply_time_cropping(data_map, current_times)
+        self._check_stop_condition(data_map)
+
+        # Stage 4: Render graphs
+        self._render_graphs(data_map, current_times)
+
+    def _collect_data_map(self):
+        """
+        Collect data from the current source into a data_map.
+
+        Returns
+        -------
+        tuple
+            (data_map, current_times, current_fs) where data_map may be empty
+            or None if no data is available.
+        """
+        data_map = {}
         current_times = None
         current_fs = 16384  # Fallback
 
-        # Check if we have Active Excitation to decide if we need a fallback timebase
-        has_active_excitation = False
-        if self.exc_controls and "panels" in self.exc_controls:
-            for p in self.exc_controls["panels"]:
-                if p["active"].isChecked():
-                    has_active_excitation = True
-                    break
+        # Check if we have Active Excitation for fallback timebase
+        has_active_excitation = self.excitation_manager.has_active_excitation()
 
         if (
             self.data_source in ["NDS", "NDS2", "Simulation"]
             or self.input_controls["pcaudio"].isChecked()
         ):
-            # Try to get data
+            # Try to get data from NDS buffers
             if self.nds_latest_raw:
                 for ch_name, buf in self.nds_latest_raw.items():
                     y_vals = buf.data_map.get("raw")
@@ -719,9 +762,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 and current_times is None
                 and self.data_source in ["NDS", "NDS2", "Simulation"]
             ):
-                return  # No data and no fallback
+                return None, None, current_fs  # No data and no fallback
 
-        # SIM Logic (Legacy/Fallback, though UI removed)
+        # SIM Logic (Legacy/Fallback)
         elif self.data_source == "SIM":
             self.time_counter += 0.05
             params = self.get_ui_params()
@@ -733,440 +776,252 @@ class MainWindow(QtWidgets.QMainWindow):
             n = int(fs * duration)
             current_times = np.linspace(t0, t0 + duration, n, endpoint=False)
 
-            # ... (Sim generators removed from here as per request) ...
+        return data_map, current_times, current_fs
 
-        # --- EXCITATION / SIGNAL GENERATION ---
-        # Initialize global Excitation readback
-        # This represents the sum of all generated signals, useful for TF calculation
-        total_excitation = (
-            np.zeros(len(current_times)) if current_times is not None else None
-        )
+    def _apply_time_cropping(self, data_map, current_times):
+        """
+        Crop data to measurement start time and remove stale data.
 
-        if (
-            self.exc_controls
-            and "panels" in self.exc_controls
-            and current_times is not None
-        ):
-            panels = self.exc_controls["panels"]
+        Parameters
+        ----------
+        data_map : dict
+            Dictionary of channel data. Modified in place.
+        current_times : array_like or None
+            Current time array (used to initialize meas_start_gps if needed).
+        """
+        if not data_map:
+            return
 
-            for p in panels:
-                # Check if panel is active
-                if not p["active"].isChecked():
-                    continue
-
-                # Waveform Parameters
-                gen_params = GeneratorParams(
-                    enabled=True,
-                    waveform_type=p["waveform"].currentText(),
-                    amplitude=p["amp"].value(),
-                    frequency=p["freq"].value(),
-                    offset=p["offset"].value(),
-                    phase=p["phase"].value(),
-                    start_freq=p["freq"].value(),  # 'Frequency' box = Start
-                    stop_freq=p["fstart"].value(),  # 'Freq. Range' box = Stop
-                    output_mode="Sum",  # Always Sum/Inject behavior
-                    target_channel=p["ex_chan"].currentText(),  # User input
-                )
-
-                # Generate
-                sig = self.sig_gen.generate(current_times, gen_params)
-
-                # Accumulate to global readback
-                if total_excitation is not None:
-                    total_excitation += sig
-
-                # Injection / Assignment
-                tgt = gen_params.target_channel
-                if not tgt:
-                    tgt = "Excitation"  # Default if empty
-
-                # If target exists in data (Measurement Channel), INJECT (Sum)
-                if tgt in data_map:
-                    try:
-                        # In-place addition to simulate injection
-                        data_map[tgt] = data_map[tgt] + sig
-                    except Exception as e:
-                        logger.error(f"Injection Error for {tgt}: {e}")
-                else:
-                    # If target does NOT exist (e.g. Pure Simulation or 'Excitation' placeholder),
-                    # Create it.
-                    # Note: If user typed 'MySig', it creates 'MySig'.
-                    # But user can't select 'MySig' in Result tab unless it's in the list.
-                    # So usually they should use 'Excitation' or an existing channel.
-                    ts_sig = TimeSeries(
-                        sig, t0=current_times[0], sample_rate=current_fs, name=tgt
-                    )
-                    data_map[tgt] = ts_sig
-
-        # --- AVERAGING / STOP LOGIC ---
-        ui_params = self.get_ui_params()
-
-        # Determine measurement start if not set (Fresh Start)
+        # Determine measurement start if not set
         if self.meas_start_gps is None:
             if current_times is not None and len(current_times) > 0:
-                # Use the FIRST time point of the FIRST data buffer as t0.
-                # This ensures t=0 means "measurement start" and time increases to the right.
                 self.meas_start_gps = current_times[0]
                 logger.debug(f"Measurement Start GPS set to {self.meas_start_gps}")
 
-        # Apply Cropping if in Fixed/Fresh mode
-        # Actually we should always crop to self.meas_start_gps to show "measurement progress"
+        # Apply cropping
         if self.meas_start_gps is not None:
             for k, ts in list(data_map.items()):
-                # Check for empty or old data
+                # Check for entirely old data
                 if ts.t0.value + ts.duration.value <= self.meas_start_gps:
-                    # Entirely old data
                     del data_map[k]
                     continue
 
-                # Crop logic
-                # gwpy crop(start, end)
+                # Crop to measurement start
                 if ts.t0.value < self.meas_start_gps:
                     try:
                         data_map[k] = ts.crop(start=self.meas_start_gps)
                     except Exception:
                         del data_map[k]
 
-        # Check Stop Condition
-        if ui_params["avg_type"] == "fixed" and data_map:
-            # Calculate required duration
-            # N_avg = (Duration - Overlap) / (FFT_Len - Overlap)
-            # Duration = N_avg * (FFT_Len - Overlap) + Overlap
-            fft_len = 1.0 / max(ui_params["bw"], 1e-9)
-            overlap_pct = ui_params[
-                "overlap"
-            ]  # 0.0-1.0 from get_ui_params (check line 463: value/100.0)
-            overlap_sec = fft_len * overlap_pct
-            stride = fft_len - overlap_sec
+    def _check_stop_condition(self, data_map):
+        """
+        Check if Fixed Averaging stop condition is met.
 
-            target_avgs = ui_params["averages"]
-            # Duration needed for N averages
-            # For 1 avg: duration = fft_len
-            # For 2 avg: duration = fft_len + stride
-            # For N avg: duration = fft_len + (N-1)*stride
+        Parameters
+        ----------
+        data_map : dict
+            Dictionary of channel data.
+        """
+        ui_params = self.get_ui_params()
 
-            if target_avgs < 1:
-                target_avgs = 1
-            req_duration = fft_len + (target_avgs - 1) * stride
+        if ui_params["avg_type"] != "fixed" or not data_map:
+            return
 
-            # Check collected duration
-            # Use the first available TS
-            try:
-                ts_check = next(iter(data_map.values()))
-                collected = ts_check.duration.value
+        # Calculate required duration
+        fft_len = 1.0 / max(ui_params["bw"], 1e-9)
+        overlap_pct = ui_params["overlap"]
+        overlap_sec = fft_len * overlap_pct
+        stride = fft_len - overlap_sec
 
-                if collected >= req_duration:
-                    logger.debug(
-                        f"Fixed Averaging Reached. Collected: {collected:.2f}s, Req: {req_duration:.2f}s"
-                    )
-                    # Should stop
-                    self.pause_animation()
-                    # Crop strict?
-                    # for k in data_map: data_map[k] = data_map[k].crop(end=ts_check.t0.value + req_duration)
-                    # For now just pause is enough to stop updates.
-            except Exception as e:
-                logger.debug(f"Error checking stop condition: {e}")
+        target_avgs = max(ui_params["averages"], 1)
+        req_duration = fft_len + (target_avgs - 1) * stride
 
-        # Always publish the global 'Excitation' channel if we have any signal
-        if total_excitation is not None and np.any(total_excitation):
-            data_map["Excitation"] = TimeSeries(
-                total_excitation,
-                t0=current_times[0],
-                sample_rate=current_fs,
-                name="Excitation",
-            )
-        elif "Excitation" not in data_map and current_times is not None:
-            # Ensure zero-signal Excitation exists if enabled, or just leave it?
-            # Better to have it if we want to allow selecting it without crash.
-            pass
+        # Check collected duration
+        try:
+            ts_check = next(iter(data_map.values()))
+            collected = ts_check.duration.value
 
+            if collected >= req_duration:
+                logger.debug(
+                    f"Fixed Averaging Reached. Collected: {collected:.2f}s, "
+                    f"Req: {req_duration:.2f}s"
+                )
+                self.pause_animation()
+        except Exception as e:
+            logger.debug(f"Error checking stop condition: {e}")
+
+    def _render_graphs(self, data_map, current_times):
+        """
+        Render analysis results to both graph panels.
+
+        Parameters
+        ----------
+        data_map : dict
+            Dictionary of channel data.
+        current_times : array_like or None
+            Current time array.
+        """
         for plot_idx, info_root in enumerate([self.graph_info1, self.graph_info2]):
-            # Update meta info in Param tab (Start, Avgs, BW)
-            ui_p = self.get_ui_params()
-            if data_map:
-                first_ts = next(iter(data_map.values()))
-                if hasattr(first_ts, "t0"):
-                    info_root["panel"].meta_info["start_time"] = first_ts.t0.value
-                    info_root["panel"].meta_info["avgs"] = ui_p.get("averages", 1)
-                    info_root["panel"].meta_info["bw"] = ui_p.get("bw", 0)
-                    info_root["panel"].update_params_display()
+            # Update meta info in Param tab
+            self._update_panel_meta(info_root, data_map)
 
             try:
-                traces_items = [self.traces1, self.traces2][plot_idx]
                 g_type = info_root["graph_combo"].currentText()
+                results = self._get_results(plot_idx, info_root, data_map, g_type)
 
-                # Decide source of results
-                use_accumulator = (
-                    self.data_source in ["NDS", "NDS2", "Simulation"]
-                    or self.input_controls["pcaudio"].isChecked()
+                # Determine if X axis is Time
+                is_time_axis = g_type in ["Time Series", "Spectrogram"]
+                start_time_gps = self._get_start_time_gps(
+                    is_time_axis, current_times, results
                 )
 
-                # Fallback: If NDS is selected but no data arrived (NDS dead), and we have generated Simulation data (data_map),
-                # we should use the legacy Engine to compute results from data_map.
-                if (
-                    use_accumulator
-                    and self.nds_latest_raw is None
-                    and not self.input_controls["pcaudio"].isChecked()
-                    and data_map
-                ):
-                    use_accumulator = False
-
-                if use_accumulator:
-                    # Use Accumulator
-                    # Retrieve all results once?
-                    # Ideally we want results for THIS graph panel.
-                    # We configured accumulator with ALL traces combined (traces1 + traces2).
-                    # We need to slice the results.
-                    # Offset calculation:
-                    offset = 0
-                    if plot_idx == 1:
-                        # Skip graph 1 traces
-                        offset = len(self.graph_info1["traces"])
-
-                    all_results = self.accumulator.get_results()
-                    logger.debug(f"Accumulator returned {len(all_results)} results")
-                    valid_count = sum(1 for r in all_results if r is not None)
-                    logger.debug(
-                        f"Valid (not None) results: {valid_count} / {len(all_results)}"
-                    )
-                    # Slice
-                    n_traces = len(info_root["traces"])
-                    results = all_results[offset : offset + n_traces]
-                    # print(f"DEBUG: Graph {plot_idx} results slice: {len(results)} items. First is None? {results[0] is None if results else 'Empty'}")
-                else:
-                    # Legacy Engine (SIM/FILE)
-                    results = self.engine.compute(
-                        data_map,
-                        g_type,
-                        [
-                            {
-                                "active": c["active"].isChecked(),
-                                "ch_a": c["chan_a"].currentText(),
-                                "ch_b": c["chan_b"].currentText(),
-                                "gain": c.get("gain").value() if c.get("gain") else 1.0,
-                            }
-                            for c in info_root["traces"]
-                        ],
+                # Update axis labels
+                if is_time_axis and start_time_gps is not None:
+                    start_time_utc = self._gps_to_utc(start_time_gps)
+                    self.plot_renderer.update_axis_labels(
+                        info_root, start_time_gps, start_time_utc
                     )
 
-                # Helper to determine if X axis is Time
-                is_time_axis = g_type in ["Time Series", "Spectrogram"]
-                start_time_gps = None
-                start_time_utc = None
+                # Render traces
+                self.plot_renderer.render_panel(
+                    plot_idx, info_root, results, g_type,
+                    start_time_gps=start_time_gps,
+                    is_time_axis=is_time_axis
+                )
 
-                # Find T0 from the first valid result if possible
-                if is_time_axis:
-                    # Use fixed measurement start if available (Time since Measurement Start)
-                    if self.meas_start_gps is not None:
-                        start_time_gps = self.meas_start_gps
-                    # Fallback to data start (Time since Window Start)
-                    elif current_times is not None and len(current_times) > 0:
-                        start_time_gps = current_times[0]
-                    elif results:
-                        # Try to find first result with time
-                        for r in results:
-                            if r is not None:
-                                if isinstance(r, dict) and "times" in r:
-                                    start_time_gps = r["times"][0]
-                                    break
-                                elif isinstance(r, tuple) and len(r) == 2:
-                                    # (x, y)
-                                    if len(r[0]) > 0:
-                                        start_time_gps = r[0][0]
-                                        break
-
-                    if start_time_gps is not None:
-                        # Convert to UTC string
-                        try:
-                            from astropy.time import Time
-
-                            t = Time(start_time_gps, format="gps", scale="utc")
-                            start_time_utc = t.isot.replace("T", " ")
-                        except Exception:
-                            start_time_utc = "?"
-
-                        # Update Plot Label/Title
-                        # "Time [s] (Start: YYYY-MM-DD HH:MM:SS UTC / GPS: XXXXX)"
-                        label_text = f"Time [s] (Start: {start_time_utc} / GPS: {start_time_gps})"
-                        info_root["plot"].setLabel("bottom", label_text)
-
-                for t_idx, result in enumerate(results):
-                    try:
-                        tr = traces_items[t_idx]
-                        curve, bar, img = tr["curve"], tr["bar"], tr["img"]
-
-                        if result is None:
-                            curve.setData([], [])
-                            (bar.setOpts(height=[]) if bar.isVisible() else None)
-                            img.clear()
-                            continue
-
-                        if (
-                            isinstance(result, dict)
-                            and result.get("type") == "spectrogram"
-                        ):
-                            data = result["value"]
-                            times = result["times"]
-                            freqs = result["freqs"]
-
-                            # Shift to relative time
-                            if start_time_gps is not None:
-                                times = times - start_time_gps
-
-                            disp = (
-                                info_root.get("units", {})
-                                .get("display_y")
-                                .currentText()
-                            )
-                            if disp == "dB":
-                                data = 10 * np.log10(np.abs(data) + 1e-20)
-                            elif disp == "Phase":
-                                data = (
-                                    np.angle(data, deg=True)
-                                    if np.iscomplexobj(data)
-                                    else np.zeros_like(data)
-                                )
-                            elif disp == "Magnitude":
-                                data = np.abs(data)
-
-                            img.setImage(data, autoLevels=False)
-                            img.setLevels([np.min(data), np.max(data)])
-
-                            if len(freqs) > 1:
-                                df = freqs[1] - freqs[0]
-                                height = df * len(freqs)
-
-                                # Estimate dt if only 1 time point
-                                dt = 1.0
-                                if len(times) > 1:
-                                    dt = times[1] - times[0]
-                                elif len(times) == 1:
-                                    # Fallback: cannot know dt from 1 point history.
-                                    # However, we can guess or leave it proportional.
-                                    # Ideally we should get 'stride' from result metadata,
-                                    # but it's not passed.
-                                    # Assume 1.0 or derived from previous if available?
-                                    # Just use 1.0 width per sample for now to ensure visibility.
-                                    pass
-
-                                width = dt * len(times)
-
-                                # Handle Log-Y
-                                f0 = freqs[0]
-                                y_pos = f0
-                                h_val = height
-
-                                # Check if Y-Axis is Log
-                                is_log_y = False
-                                if "panel" in info_root:
-                                    try:
-                                        is_log_y = info_root[
-                                            "panel"
-                                        ].rb_y_log.isChecked()
-                                    except Exception:
-                                        pass
-
-                                if is_log_y:
-                                    # Offset 0Hz to a small positive value
-                                    min_f = (df * 0.5) if df > 0 else 1e-6
-                                    if f0 < min_f:
-                                        f0 = min_f
-
-                                    # For Log Axis, ImageItem rect must be in log coordinates
-                                    # y_start = log10(f0)
-                                    # y_end = log10(f0 + height)
-                                    # rect_height = y_end - y_start
-
-                                    # Calculate f_end from original linear height
-                                    f_end = (
-                                        freqs[0] + height
-                                    )  # Original f_end (approx freqs[-1] + df)
-                                    if f_end <= f0:  # Safety
-                                        f_end = f0 + min_f
-
-                                    y_pos = np.log10(f0)
-                                    h_val = np.log10(f_end) - y_pos
-
-                                # Center alignment: times[0] is the center of the first bin.
-                                # ImageItem draws from x to x+w.
-                                # We want x + bin_w/2 = times[0]. => x = times[0] - bin_w/2.
-                                # Calculate bin width (dt)
-                                n_bins = len(times)
-                                dt_bin = width / n_bins if n_bins > 0 else 0
-                                x_start = times[0] - (dt_bin / 2.0)
-
-                                img.setRect(
-                                    QtCore.QRectF(
-                                        x_start,
-                                        y_pos,
-                                        width,
-                                        h_val,
-                                    )
-                                )
-                                img.setVisible(True)
-                        else:
-                            img.setVisible(False)
-                            x_vals, y_vals = result
-                            if is_time_axis and start_time_gps is not None:
-                                x_vals = x_vals - start_time_gps
-                            disp = (
-                                info_root.get("units", {})
-                                .get("display_y")
-                                .currentText()
-                            )
-                            if disp == "dB":
-                                y_vals = (
-                                    10
-                                    if "Power" in g_type or "Squared" in g_type
-                                    else 20
-                                ) * np.log10(np.abs(y_vals) + 1e-20)
-                            elif disp == "Phase":
-                                y_vals = (
-                                    np.angle(y_vals, deg=True)
-                                    if np.iscomplexobj(y_vals)
-                                    else np.zeros_like(y_vals)
-                                )
-                            elif disp == "Magnitude":
-                                y_vals = np.abs(y_vals)
-                            # "None" case does nothing, keeping y_vals as is
-                            curve.setData(x_vals, y_vals)
-                            if bar.isVisible():
-                                bar.setOpts(
-                                    x=x_vals,
-                                    height=y_vals,
-                                    width=(
-                                        x_vals[1] - x_vals[0] if len(x_vals) > 1 else 1
-                                    ),
-                                )
-                    except Exception as e:
-                        print(f"Error updating Graph {plot_idx + 1} Trace {t_idx}: {e}")
-
-                # Stabilize X Range during streaming for Time-based graphs
-                # Skip range_updater for X-axis during streaming to prevent jitter
+                # Stabilize range during streaming
                 is_streaming = self.data_source in ["NDS", "NDS2", "Simulation"]
+                nds_window = getattr(self, "nds_window", 30.0)
+                self.plot_renderer.stabilize_streaming_range(
+                    info_root, is_streaming, is_time_axis, nds_window
+                )
 
-                if "range_updater" in info_root:
-                    if is_streaming and is_time_axis:
-                        # Only update Y-axis, skip X-axis auto-range during streaming
-                        # Manually set X range to NDS window size
-                        nds_window = getattr(self, "nds_window", 30.0)
-                        plot = info_root.get("plot")
-                        if plot:
-                            plot.enableAutoRange(axis="x", enable=False)
-                            # t=0 is measurement start (left), t=nds_window is newest (right)
-                            plot.setXRange(0, nds_window, padding=0.02)
-                        # Still update Y-axis
-                        panel = info_root.get("panel")
-                        if (
-                            panel
-                            and hasattr(panel, "rb_y_auto")
-                            and panel.rb_y_auto.isChecked()
-                        ):
-                            plot.enableAutoRange(axis="y")
-                    else:
-                        info_root["range_updater"]()
             except Exception as e:
-                print(f"Error in update_graphs for Graph {plot_idx + 1}: {e}")
+                logger.warning(f"Error in update_graphs for Graph {plot_idx + 1}: {e}")
+
+    def _update_panel_meta(self, info_root, data_map):
+        """Update panel metadata display."""
+        ui_p = self.get_ui_params()
+        if data_map:
+            first_ts = next(iter(data_map.values()), None)
+            if first_ts is not None and hasattr(first_ts, "t0"):
+                info_root["panel"].meta_info["start_time"] = first_ts.t0.value
+                info_root["panel"].meta_info["avgs"] = ui_p.get("averages", 1)
+                info_root["panel"].meta_info["bw"] = ui_p.get("bw", 0)
+                info_root["panel"].update_params_display()
+
+    def _get_results(self, plot_idx, info_root, data_map, g_type):
+        """
+        Get analysis results from accumulator or engine.
+
+        Parameters
+        ----------
+        plot_idx : int
+            Index of the graph panel.
+        info_root : dict
+            Graph info dictionary.
+        data_map : dict
+            Dictionary of channel data.
+        g_type : str
+            Graph type string.
+
+        Returns
+        -------
+        list
+            List of results for each trace.
+        """
+        # Decide source of results
+        use_accumulator = (
+            self.data_source in ["NDS", "NDS2", "Simulation"]
+            or self.input_controls["pcaudio"].isChecked()
+        )
+
+        # Fallback to engine if NDS selected but no data arrived
+        if (
+            use_accumulator
+            and self.nds_latest_raw is None
+            and not self.input_controls["pcaudio"].isChecked()
+            and data_map
+        ):
+            use_accumulator = False
+
+        if use_accumulator:
+            # Use Accumulator
+            offset = 0
+            if plot_idx == 1:
+                offset = len(self.graph_info1["traces"])
+
+            all_results = self.accumulator.get_results()
+            logger.debug(f"Accumulator returned {len(all_results)} results")
+
+            n_traces = len(info_root["traces"])
+            results = all_results[offset : offset + n_traces]
+        else:
+            # Legacy Engine (SIM/FILE)
+            results = self.engine.compute(
+                data_map,
+                g_type,
+                [
+                    {
+                        "active": c["active"].isChecked(),
+                        "ch_a": c["chan_a"].currentText(),
+                        "ch_b": c["chan_b"].currentText(),
+                        "gain": c.get("gain").value() if c.get("gain") else 1.0,
+                    }
+                    for c in info_root["traces"]
+                ],
+            )
+
+        return results
+
+    def _get_start_time_gps(self, is_time_axis, current_times, results):
+        """
+        Determine the GPS start time for time-axis graphs.
+
+        Parameters
+        ----------
+        is_time_axis : bool
+            Whether the X axis is time-based.
+        current_times : array_like or None
+            Current time array.
+        results : list
+            Analysis results.
+
+        Returns
+        -------
+        float or None
+            GPS start time.
+        """
+        if not is_time_axis:
+            return None
+
+        # Use fixed measurement start if available
+        if self.meas_start_gps is not None:
+            return self.meas_start_gps
+
+        # Fallback to data start
+        if current_times is not None and len(current_times) > 0:
+            return current_times[0]
+
+        # Try to find from results
+        if results:
+            for r in results:
+                if r is not None:
+                    if isinstance(r, dict) and "times" in r:
+                        return r["times"][0]
+                    elif isinstance(r, tuple) and len(r) == 2 and len(r[0]) > 0:
+                        return r[0][0]
+
+        return None
+
+    def _gps_to_utc(self, gps_time):
+        """Convert GPS time to UTC string."""
+        try:
+            from astropy.time import Time
+            t = Time(gps_time, format="gps", scale="utc")
+            return t.isot.replace("T", " ")
+        except Exception:
+            return "?"
 
     def on_trace_channel_changed(self):
         if not self.is_loading_file and self.is_file_mode:
