@@ -4,43 +4,78 @@ Tutorials
 Learn how to use **GWExPy** through interactive examples.
 
 .. note::
-   These tutorials are generated from Jupyter Notebooks. You can download them and run locally.
+   These tutorials are generated from Jupyter Notebooks. You can click "View Code" or download them to run locally.
 
-Core Data Structures
---------------------
-
-Fundamental data containers and operations.
+I. Core Data Structures
+-----------------------
+Fundamental data containers and basic operations.
 
 .. toctree::
    :maxdepth: 1
    :caption: Core Data Structures
 
-   01_timeseries
-   02_frequencyseries
-   03_spectrogram
-   04_plotting
+   intro_timeseries
+   intro_frequencyseries
+   intro_spectrogram
+   intro_plotting
+   intro_mapplotting
+   intro_interop
 
-Analysis Basics
----------------
-
-Standard analysis techniques for gravitational wave data.
+II. Multi-channel & Matrix Containers
+-------------------------------------
+Handling multiple channels efficiently using Matrix classes.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Analysis Basics
+   :caption: Matrix Containers
 
-   11_spectral_analysis
-   12_fitting
-   13_noise_models
+   matrix_timeseries
+   matrix_frequencyseries
+   matrix_spectrogram
 
-Case Studies
-------------
+III. High-dimensional Fields
+----------------------------
+Next-generation API for scalar, vector, and tensor fields.
 
-Real-world examples and advanced workflows.
+.. toctree::
+   :maxdepth: 1
+   :caption: Fields API
+
+   field_scalar_intro
+   field_scalar_signal
+
+IV. Advanced Signal Processing
+------------------------------
+Statistical analysis and advanced transforms.
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Advanced Analysis
+
+   advanced_fitting
+   advanced_peak_detection
+   advanced_hht
+   advanced_arima
+   advanced_correlation
+
+V. Specialized Tools
+--------------------
+Tools for specific noise hunting and diagnostics tasks.
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Specialized Tools
+
+   advanced_bruco
+
+VI. Case Studies
+----------------
+Practical examples from real-world gravitational wave data analysis.
 
 .. toctree::
    :maxdepth: 1
    :caption: Case Studies
 
-   21_noise_budget
-   22_hht
+   case_noise_budget
+   case_transfer_function
+   case_active_damping
