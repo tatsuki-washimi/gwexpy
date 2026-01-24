@@ -9,6 +9,14 @@ from astropy import units as u
 class SeriesMatrixValidationMixin:
     """Mixin for SeriesMatrix compatibility and contiguity checks."""
 
+    _value: np.ndarray
+    meta: Any
+    xindex: Any
+    rows: Any
+    cols: Any
+    dx: Any
+    xspan: Any
+
     def is_contiguous(self, other: Any, tol: float = 1 / 2.0**18) -> int:
         """Check if this matrix is contiguous with another."""
         # Note: 'type(self).__mro__[1]' was used in SeriesMatrixOps to refer to SeriesMatrix base.
@@ -38,7 +46,9 @@ class SeriesMatrixValidationMixin:
         else:
             return 0
 
-    def is_contiguous_exact(self, other: Any, tol: float = 1 / 2.0**18) -> int:
+    def is_contiguous_exact(
+        self, other: Any, tol: float = 1 / 2.0**18
+    ) -> int:
         """Check contiguity with strict shape matching."""
         if self._value.shape != other._value.shape:
             raise ValueError(
