@@ -1,15 +1,32 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 import numpy as np
 from astropy import units as u
+
+if TYPE_CHECKING:
+    from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
+
+
+class _FrequencySeriesMatrixLike(Protocol):
+    """Protocol defining the interface expected by FrequencySeriesMatrixAnalysisMixin."""
+
+    value: np.ndarray
+    meta: MetaDataMatrix
+    shape: tuple[int, ...]
+    df: u.Quantity | float
+    epoch: Any
+    rows: MetaDataDict
+    cols: MetaDataDict
+
+    def copy(self) -> _FrequencySeriesMatrixLike: ...
 
 
 class FrequencySeriesMatrixAnalysisMixin:
     """Analysis methods for FrequencySeriesMatrix (FFT, Filtering, Smoothing)."""
 
-    def ifft(self) -> Any:
+    def ifft(self: _FrequencySeriesMatrixLike) -> Any:
         """
         Compute the inverse FFT of this frequency-domain matrix.
 
@@ -51,7 +68,7 @@ class FrequencySeriesMatrixAnalysisMixin:
             xunit="s",
         )
 
-    def filter(self, *filt: Any, **kwargs: Any) -> Any:
+    def filter(self: _FrequencySeriesMatrixLike, *filt: Any, **kwargs: Any) -> Any:
         """
         Apply a filter to the FrequencySeriesMatrix.
 
@@ -77,7 +94,7 @@ class FrequencySeriesMatrixAnalysisMixin:
 
         return fdfilter(self, *filt, **kwargs)
 
-    def apply_response(self, response: Any, inplace: bool = False) -> Any:
+    def apply_response(self: _FrequencySeriesMatrixLike, response: Any, inplace: bool = False) -> Any:
         """
         Apply a complex frequency response to the matrix.
 
@@ -102,7 +119,7 @@ class FrequencySeriesMatrixAnalysisMixin:
             return self * h
 
     def smooth(
-        self, width: int, method: str = "amplitude", ignore_nan: bool = True
+        self: _FrequencySeriesMatrixLike, width: int, method: str = "amplitude", ignore_nan: bool = True
     ) -> Any:
         """
         Smooth the frequency series matrix along the frequency axis.
