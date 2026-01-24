@@ -157,14 +157,14 @@ class SpectrogramMatrix(
             obj.meta = None
 
         # Apply unit to metadata if needed (only if not explicitly set in meta)
-        if unit is not None and getattr(obj, "meta", None) is not None:
+        if unit is not None and obj.meta is not None:
             for m in obj.meta.flat:
                 # MetaData defaults to dimensionless_unscaled, so check for that too
                 if m.unit is None or m.unit == u.dimensionless_unscaled:
                     m.unit = unit
 
         # If no global unit was provided, infer it from metadata if consistent
-        if obj.unit is None and getattr(obj, "meta", None) is not None:
+        if obj.unit is None and obj.meta is not None:
             meta_units = {m.unit for m in obj.meta.flat if m is not None}
             if len(meta_units) == 1:
                 obj.unit = next(iter(meta_units))
@@ -448,6 +448,11 @@ class SpectrogramMatrix(
         # Let's keep it simple: check units match. Content matching is handled by append logic (overlap check etc).
 
         # 4. Meta/Channel Unit consistency
+        if self.meta is None and other.meta is None:
+            return True
+        if self.meta is None or other.meta is None:
+            raise ValueError("Metadata mismatch: one has metadata, the other does not")
+
         if self.meta.shape != other.meta.shape:
             # Should match if shapes match (unless metadata structure differs profoundly)
             # But let's proceed to loop over valid meta range
