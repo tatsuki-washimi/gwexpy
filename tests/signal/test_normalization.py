@@ -49,7 +49,6 @@ def test_get_enbw_dtt():
 def test_convert_scipy_to_dtt():
     from scipy.signal import welch, windows
     fs = 1000
-    n = 1000
     t = np.arange(10000) / fs
     data = np.random.normal(size=len(t))
 

@@ -21,7 +21,7 @@ def get_enbw(window, fs, mode="standard"):
     fs : float
         Sampling frequency in Hz.
     mode : {'standard', 'dtt'}, optional
-        The normalization mode. 
+        The normalization mode.
         - 'standard': Industry standard ENBW = fs * (sum(w^2) / sum(w)^2).
         - 'dtt': DTT (diaggui) definition = (fs / N) * (1 / mean(w)^2).
 
