@@ -7,10 +7,13 @@ Estimates the coupling function (CF) with flexible threshold strategies:
 - PercentileThreshold: Data-driven percentile (Robust to non-Gaussianity).
 """
 
+import logging
 import warnings
 from abc import ABC, abstractmethod
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 from ..frequencyseries import FrequencySeries
 from ..timeseries import TimeSeries, TimeSeriesDict
@@ -323,8 +326,8 @@ class CouplingResult:
                     p90 = spec.percentile(90)
                     p10_asd = p10**0.5
                     p90_asd = p90**0.5
-                except Exception as e:
-                    print(f"Warning: Could not compute percentiles: {e}")
+                except Exception:
+                    logger.warning("Could not compute background percentiles for %s", ts_bkg.name if ts_bkg is not None else "Target", exc_info=True)
 
             return asd_mean, p10_asd, p90_asd
 
@@ -552,6 +555,7 @@ def _process_single_target(
             or (ts_tgt_inj.unit / ts_wit_inj.unit)
         )
     except Exception:
+        logger.debug("Automatic CF unit determination failed, falling back to dimensionless.", exc_info=True)
         cf_unit = "dimensionless"
 
     cf = FrequencySeries(
