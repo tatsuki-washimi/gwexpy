@@ -60,6 +60,7 @@ vf_resampled = vf.resample_all(50)  # 50 Hz
 
 ## See Also
 
+- [FFT Specifications and Conventions](FFT_Conventions.md) - Mathematical details
 - [ScalarField](ScalarField.md) - The underlying scalar field class
 - [TensorField](TensorField.md) - For tensor-valued fields
 - [FieldDict](FieldDict.md) - The base collection class

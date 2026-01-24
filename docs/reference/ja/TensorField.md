@@ -60,6 +60,7 @@ result_v = tf @ v  # VectorField を返す
 
 ## 関連項目
 
+- [FFTの仕様とコンベンション](FFT_Conventions.md) - 数学的詳細
 - [ScalarField](ScalarField.md) - 基底となるスカラー場クラス
 - [VectorField](VectorField.md) - ベクトル値フィールド用
 - [FieldDict](FieldDict.md) - 基底コレクションクラス

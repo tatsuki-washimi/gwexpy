@@ -15,6 +15,8 @@
 
 ### FFT 操作
 
+正規化や符号の定義などの数学的詳細は、[FFTの仕様とコンベンション](FFT_Conventions.md) を参照してください。
+
 #### `fft_time(nfft=None)`
 
 時間軸の FFT を実行し、ドメインを `frequency` に更新。GWpy `TimeSeries.fft()` と同じ正規化（rfft/nfft + 非DC/非Nyquistの倍増）を適用。
