@@ -1,8 +1,8 @@
 """
 gwexpy.signal.normalization - Spectral normalization and ENBW utilities.
 
-This module provides utilities to handle window normalization and Equivalent Noise 
-Bandwidth (ENBW) calculations, supporting both standard scientific approaches 
+This module provides utilities to handle window normalization and Equivalent Noise
+Bandwidth (ENBW) calculations, supporting both standard scientific approaches
 (as used in scipy.signal) and DTT (diaggui) compatible modes.
 """
 

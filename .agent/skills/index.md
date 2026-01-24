@@ -72,6 +72,7 @@
 | `add_type` | gwexpyに新しい配列型（Array/Series/Field）とコレクションを実装する |
 | `extend_gwpy` | GWpy/Astropyクラスの安全な継承と拡張のためのガイドライン |
 | `manage_field_metadata` | 多次元フィールドの4D構造維持、ドメイン変換、物理単位の整合性を管理する |
+| `manage_gui_architecture` | PyQt等のモノリシックなGUIクラスを、データパイプライン・励起・描画のマネージャークラスへ分離・リファクタリングする |
 | `visualize_fields` | 多次元フィールドデータの抽出ロジックと描画APIを物理的整合性を保ちながら実装する |
 | `compare_methods` | gwexpy内の類似した信号処理手法の位置づけ、技術的・物理的な違いを分析する |
 | `calc_bode` | 制御理論を用いたメカニカルシステムの状態空間モデルから伝達関数を計算・表示する |

@@ -1,7 +1,5 @@
 import os
 
-import os
-
 import pytest
 
 if os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD"):
