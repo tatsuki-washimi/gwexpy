@@ -175,6 +175,18 @@ exclude = "gwexpy/(gui/.*|frequencyseries/.*|spectrogram/.*)|tests/.*"
 addopts = "--import-mode=importlib"
 testpaths = ["tests"]
 norecursedirs = ["gwexpy/gui/reference-dtt"]
+markers = [
+    "gui: GUI integration tests",
+    "nds: NDS server connection tests",
+    "cvmfs: tests requiring CVMFS access (from gwpy)",
+    "freeze_time: tests that use freezegun to mock time",
+    "long: long running tests",
+]
+filterwarnings = [
+    "ignore:Module already imported so cannot be rewritten. gwpy.testing.fixtures:pytest.PytestAssertRewriteWarning",
+    "ignore:Compatibility support for python2 has been dropped:DeprecationWarning:declarative.utilities.representations",
+    "ignore:divide by zero encountered in divide:RuntimeWarning:tests.fields.test_scalarfield_fft_space",
+]
 
 [[tool.mypy.overrides]]
 module = [
