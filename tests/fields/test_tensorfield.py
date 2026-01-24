@@ -215,7 +215,7 @@ def test_tensorfield_symmetrize_missing_component():
 
 def test_tensorfield_to_array_order():
     f = ScalarField(np.ones((10, 4, 4, 4)))
-    tf = TensorField({(0, 0): f * 1, (1, 1): f * 2}, rank=2)
+    tf = TensorField({(0, 0): cast(ScalarField, f * 1), (1, 1): cast(ScalarField, f * 2)}, rank=2)
 
     # Order 'last' (default)
     arr_last = tf.to_array(order="last")
