@@ -1,12 +1,32 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any, cast
+
 import numpy as np
+from astropy import units as u
 
 from .seriesmatrix_validation import _expand_key, _slice_metadata_dict
+
+if TYPE_CHECKING:
+    from gwexpy.types.metadata import MetaDataMatrix
 
 
 class SeriesMatrixIndexingMixin:
     """Mixin for SeriesMatrix indexing and slicing operations."""
+
+    if TYPE_CHECKING:
+        _value: np.ndarray
+        meta: MetaDataMatrix
+        xindex: Any
+        rows: Any
+        cols: Any
+        unit: u.Unit | None
+        list_class: type[Any]
+        series_class: type[Any] | None
+
+        def row_index(self, key: Any) -> int: ...
+        def col_index(self, key: Any) -> int: ...
+        def view(self, dtype: type[Any]) -> Any: ...
 
     def _get_series_kwargs(self, xindex, meta):
         """
@@ -41,15 +61,17 @@ class SeriesMatrixIndexingMixin:
             ci = self.col_index(c) if isinstance(c, str) else c
 
             # Index into values
-            result = super().__getitem__((ri, ci, s))
+            # Use cast to Any to avoid MyPy errors with super().__getitem__
+            result = cast(Any, super()).__getitem__((ri, ci, s))
 
             # Retrieve metadata
             meta = self.meta[ri, ci]
 
             # Construct Series
-            series_class = getattr(self, "series_class", None)
-            if series_class is None:
-                from gwpy.types.series import Series as series_class
+            series_cls = getattr(self, "series_class", None)
+            if series_cls is None:
+                from gwpy.types.series import Series as _Series
+                series_cls = _Series
 
             # Handle xindex slicing
             xidx = self.xindex
@@ -60,7 +82,7 @@ class SeriesMatrixIndexingMixin:
 
             # Wrap in Series
             kwargs = self._get_series_kwargs(new_xidx, meta)
-            return series_class(result, **kwargs)
+            return series_cls(result, **kwargs)
 
         # 3. Handle label-based slicing for rows/cols
         ri = r
@@ -83,7 +105,7 @@ class SeriesMatrixIndexingMixin:
 
         # 4. Perform actual ndarray slicing
         new_key = (ri, ci, s)
-        result = super().__getitem__(new_key)
+        result = cast(Any, super()).__getitem__(new_key)
 
         if not isinstance(result, np.ndarray):
             return result

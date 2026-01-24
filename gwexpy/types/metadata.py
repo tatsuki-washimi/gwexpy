@@ -514,7 +514,7 @@ class MetaDataMatrix(np.ndarray):
 
         Parameters
         ----------
-        value : Union[MetaData, dict]
+        value : MetaData | dict
             MetaData instance used as-is, or mapping passed once to ``MetaData(**value)``.
 
         Notes
