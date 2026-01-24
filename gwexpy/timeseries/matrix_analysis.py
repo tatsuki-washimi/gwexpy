@@ -2,8 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal, cast
 
+import logging
 import numpy as np
 from astropy import units as u
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from .matrix import TimeSeriesMatrix
@@ -30,6 +33,7 @@ def _calc_correlation_direct(ts, target, meth):
             ts = GWExTimeSeries(ts.value, t0=ts.t0, sample_rate=sr, name=ts.name)
         return ts.correlation(target, method=meth)
     except Exception:
+        logger.debug("Correlation calculation failed for %s", getattr(ts, "name", "unknown"), exc_info=True)
         return np.nan
 
 class TimeSeriesMatrixAnalysisMixin:
@@ -707,6 +711,7 @@ class TimeSeriesMatrixAnalysisMixin:
                         try:
                             score = fut.result()
                         except Exception:
+                            logger.debug("Failed to retrieve parallel correlation result for %s", name, exc_info=True)
                             score = np.nan
                         results.append(
                             {"row": i, "col": j, "channel": name, "score": score}
