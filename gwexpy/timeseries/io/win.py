@@ -15,6 +15,7 @@ import warnings
 
 import numpy as np
 from gwpy.io import registry as io_registry
+
 try:
     from obspy import Stream, Trace, UTCDateTime
     HAS_OBSPY = True
@@ -66,7 +67,7 @@ def _read_win_fixed(filename, century="20"):
 
             # Only create UTCDateTime if we actually need it / module exists
             # Logic flow: this function is only called via read_win_file -> registry -> only if HAS_OBSPY
-            
+
             date = UTCDateTime(int(yy), int(mm), int(dd), int(hh), int(mi), int(sec))
             if start == 0:
                 start = date
@@ -178,7 +179,7 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
     """
     if not HAS_OBSPY:
         raise ImportError("obspy is required to read WIN format files")
-        
+
     stream = _read_win_fixed(source, **kwargs)
 
     # Merge if necessary (simple gap handling)
