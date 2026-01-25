@@ -1,4 +1,5 @@
 """Vector-valued field implementation using ScalarField components."""
+from __future__ import annotations
 
 from typing import Literal
 
@@ -47,7 +48,7 @@ class VectorField(FieldDict):
         super().__init__(components, validate=validate)
         self.basis = basis
 
-    def copy(self) -> "VectorField":
+    def copy(self) -> VectorField:
         """Return a copy of this VectorField."""
         new_components = {k: v.copy() for k, v in self.items()}
         return VectorField(new_components, basis=self.basis, validate=False)
@@ -109,7 +110,7 @@ class VectorField(FieldDict):
             space_domain=first.space_domains,
         )
 
-    def dot(self, other: "VectorField") -> ScalarField:
+    def dot(self, other: VectorField) -> ScalarField:
         """Compute the scalar (dot) product with another VectorField.
 
         Parameters
@@ -141,7 +142,7 @@ class VectorField(FieldDict):
 
         return res_field
 
-    def cross(self, other: "VectorField") -> "VectorField":
+    def cross(self, other: VectorField) -> VectorField:
         """Compute the cross product with another VectorField (3-components).
 
         Parameters
@@ -171,7 +172,7 @@ class VectorField(FieldDict):
         }
         return VectorField(new_components, basis=self.basis)
 
-    def project(self, direction: "VectorField") -> ScalarField:
+    def project(self, direction: VectorField) -> ScalarField:
         """Project the vector field onto a given direction.
 
         Result is (self . direction) / |direction|.

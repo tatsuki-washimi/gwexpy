@@ -7,7 +7,7 @@ if os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD"):
         "GUI/qtbot tests skipped (plugin autoload disabled)", allow_module_level=True
     )
 pytest.importorskip("pytestqt")
-from PyQt5 import QtCore
+from qtpy import QtCore
 
 from gwexpy.gui.ui.main_window import MainWindow
 

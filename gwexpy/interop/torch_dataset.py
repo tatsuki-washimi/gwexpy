@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -21,7 +23,7 @@ class TimeSeriesWindowDataset:
         window: int,
         stride: int = 1,
         horizon: int = 0,
-        labels: Union["TimeSeries", "TimeSeriesMatrix", np.ndarray, Callable]
+        labels: TimeSeries | TimeSeriesMatrix | np.ndarray | Callable
         | None = None,
         multivariate: bool = False,
         align: str = "intersection",
@@ -122,7 +124,7 @@ def to_torch_dataset(
     window: int,
     stride: int = 1,
     horizon: int = 0,
-    labels: Union["TimeSeries", "TimeSeriesMatrix", np.ndarray, Callable] | None = None,
+    labels: TimeSeries | TimeSeriesMatrix | np.ndarray | Callable | None = None,
     multivariate: bool = False,
     align: str = "intersection",
     device=None,

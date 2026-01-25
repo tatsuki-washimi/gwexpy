@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import warnings
 from dataclasses import dataclass
 
@@ -41,8 +43,8 @@ except ImportError:
 
 @dataclass
 class ArimaForecastResult:
-    forecast_ts: "TimeSeries"
-    intervals: dict[str, "TimeSeries"]
+    forecast_ts: TimeSeries
+    intervals: dict[str, TimeSeries]
 
 
 class ArimaResult:
@@ -71,7 +73,7 @@ class ArimaResult:
             return int(round((t - self.t0) / self.dt))
         return default
 
-    def predict(self, start=None, end=None, *, dynamic=False) -> "TimeSeries":
+    def predict(self, start=None, end=None, *, dynamic=False) -> TimeSeries:
         """
         In-sample prediction using GPS times or steps.
 
@@ -109,7 +111,7 @@ class ArimaResult:
 
     def forecast(
         self, steps: int, *, alpha: float = 0.05
-    ) -> tuple["TimeSeries", dict[str, "TimeSeries"]]:
+    ) -> tuple[TimeSeries, dict[str, TimeSeries]]:
         """
         Out-of-sample forecasts.
 
@@ -159,7 +161,7 @@ class ArimaResult:
 
         return forecast_ts, {"lower": lower, "upper": upper}
 
-    def residuals(self) -> "TimeSeries":
+    def residuals(self) -> TimeSeries:
         """Return the model residuals as a TimeSeries."""
         from .timeseries import TimeSeries
 
@@ -264,7 +266,7 @@ class ArimaResult:
 
 
 def fit_arima(
-    timeseries: "TimeSeries",
+    timeseries: TimeSeries,
     order: tuple[int, int, int] = (1, 0, 0),
     *,
     seasonal_order: tuple[int, int, int, int] | None = None,
