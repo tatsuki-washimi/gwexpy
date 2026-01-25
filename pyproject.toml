@@ -178,6 +178,7 @@ exclude = "gwexpy/(gui/.*|spectrogram/.*)|tests/.*"
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
 testpaths = ["tests"]
+pythonpath = ["."]
 norecursedirs = ["gwexpy/gui/reference-dtt"]
 markers = [
     "gui: GUI integration tests",
