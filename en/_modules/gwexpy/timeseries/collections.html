@@ -78,7 +78,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gwexpy.timeseries.collections</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
@@ -204,7 +206,7 @@
 <div class="viewcode-block" id="TimeSeriesDict.from_control">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.from_control">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_control</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_control</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create TimeSeriesDict from python-control TimeResponseData.</span>
 
@@ -234,7 +236,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.radian">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.radian">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute instantaneous phase (in radians) of each item.&quot;&quot;&quot;</span>
         <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -244,7 +246,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.degree">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.degree">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute instantaneous phase (in degrees) of each item.&quot;&quot;&quot;</span>
         <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -906,7 +908,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.crop">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.crop">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Crop each TimeSeries in the dict.</span>
 <span class="sd">        Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).</span>
@@ -928,7 +930,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.append">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.append">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Append another mapping of TimeSeries or a single TimeSeries to each item.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -956,7 +958,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.prepend">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.prepend">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepend to each TimeSeries in the dict (in-place).</span>
 <span class="sd">        Returns self.</span>
@@ -977,7 +979,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.shift">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.shift">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shift each TimeSeries in the dict.</span>
 <span class="sd">        Returns a new TimeSeriesDict.</span>
@@ -990,7 +992,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.gate">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.gate">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">gate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gate each TimeSeries in the dict.</span>
 <span class="sd">        Returns a new TimeSeriesDict.</span>
@@ -1003,7 +1005,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.mask">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.mask">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mask each TimeSeries in the dict.</span>
 <span class="sd">        Returns a new TimeSeriesDict.</span>
@@ -1018,7 +1020,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.decimate">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.decimate">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">decimate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decimate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decimate each TimeSeries in the dict.</span>
 <span class="sd">        Returns a new TimeSeriesDict.</span>
@@ -1031,7 +1033,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.filter">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.filter">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter each TimeSeries in the dict.</span>
 <span class="sd">        Returns a new TimeSeriesDict.</span>
@@ -1044,7 +1046,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.whiten">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.whiten">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">whiten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">whiten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Whiten each TimeSeries in the dict.</span>
 <span class="sd">        Returns a new TimeSeriesDict.</span>
@@ -1057,7 +1059,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.notch">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.notch">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">notch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">notch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Notch filter each TimeSeries in the dict.</span>
 <span class="sd">        Returns a new TimeSeriesDict.</span>
@@ -1070,7 +1072,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.zpk">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.zpk">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">zpk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">zpk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply ZPK filter to each TimeSeries in the dict.</span>
 <span class="sd">        Returns a new TimeSeriesDict.</span>
@@ -1083,7 +1085,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.detrend">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.detrend">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">detrend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">detrend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Detrend each TimeSeries in the dict.</span>
 <span class="sd">        Returns a new TimeSeriesDict.</span>
@@ -1096,7 +1098,7 @@
 
 <div class="viewcode-block" id="TimeSeriesDict.taper">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.taper">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">taper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">taper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Taper each TimeSeries in the dict.</span>
 <span class="sd">        Returns a new TimeSeriesDict.</span>
@@ -1747,7 +1749,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.crop">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.crop">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Crop each TimeSeries in the list.</span>
 <span class="sd">        Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).</span>
@@ -1796,7 +1798,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.shift">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.shift">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shift each TimeSeries in the list.</span>
 <span class="sd">        Returns a new TimeSeriesList.</span>
@@ -1809,7 +1811,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.gate">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.gate">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">gate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gate each TimeSeries in the list.</span>
 <span class="sd">        Returns a new TimeSeriesList.</span>
@@ -1822,7 +1824,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.mask">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.mask">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mask each TimeSeries in the list.</span>
 <span class="sd">        Returns a new TimeSeriesList.</span>
@@ -1837,7 +1839,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.resample">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.resample">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resample each TimeSeries in the list.</span>
 <span class="sd">        Returns a new TimeSeriesList.</span>
@@ -1850,7 +1852,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.decimate">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.decimate">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">decimate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decimate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decimate each TimeSeries in the list.</span>
 <span class="sd">        Returns a new TimeSeriesList.</span>
@@ -1863,7 +1865,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.filter">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.filter">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter each TimeSeries in the list.</span>
 <span class="sd">        Returns a new TimeSeriesList.</span>
@@ -1876,7 +1878,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.whiten">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.whiten">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">whiten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">whiten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Whiten each TimeSeries in the list.</span>
 <span class="sd">        Returns a new TimeSeriesList.</span>
@@ -1889,7 +1891,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.notch">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.notch">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">notch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">notch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Notch filter each TimeSeries in the list.</span>
 <span class="sd">        Returns a new TimeSeriesList.</span>
@@ -1902,7 +1904,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.zpk">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.zpk">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">zpk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">zpk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ZPK filter each TimeSeries in the list.</span>
 <span class="sd">        Returns a new TimeSeriesList.</span>
@@ -1915,7 +1917,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.detrend">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.detrend">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">detrend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">detrend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Detrend each TimeSeries in the list.</span>
 <span class="sd">        Returns a new TimeSeriesList.</span>
@@ -1928,7 +1930,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.taper">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.taper">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">taper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">taper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Taper each TimeSeries in the list.</span>
 <span class="sd">        Returns a new TimeSeriesList.</span>
@@ -2341,7 +2343,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.radian">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.radian">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute instantaneous phase (in radians) of each item.&quot;&quot;&quot;</span>
         <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
@@ -2351,7 +2353,7 @@
 
 <div class="viewcode-block" id="TimeSeriesList.degree">
 <a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.degree">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute instantaneous phase (in degrees) of each item.&quot;&quot;&quot;</span>
         <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>

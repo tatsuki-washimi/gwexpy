@@ -149,20 +149,20 @@ from gwexpy.plot import Plot
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># --- パラメータ設定 ---
-fs = 2048.0       # サンプリング周波数 [Hz]
-duration = 60.0   # 継続時間 [s]
-f0_true = 300.0   # 真の共振周波数 [Hz]
-Q_true = 50.0     # 真のQ値
+fs = 2048.0  # サンプリング周波数 [Hz]
+duration = 60.0  # 継続時間 [s]
+f0_true = 300.0  # 真の共振周波数 [Hz]
+Q_true = 50.0  # 真のQ値
 
 # --- 時間軸と入力信号 ---
 t = np.linspace(0, duration, int(duration * fs), endpoint=False)
-input_data = np.random.normal(0, 1, size=len(t)) # 白色雑音入力
+input_data = np.random.normal(0, 1, size=len(t))  # 白色雑音入力
 
 # --- 物理システムのシミュレーション (scipy.signalを使用) ---
 # 伝達関数 H(s) = w0^2 / (s^2 + (w0/Q)s + w0^2)
 w0 = 2 * np.pi * f0_true
 num = [w0**2]
-den = [1, w0/Q_true, w0**2]
+den = [1, w0 / Q_true, w0**2]
 system = signal.TransferFunction(num, den)
 
 # 時間応答の計算 (lsim)
@@ -180,8 +180,8 @@ ts_output = TimeSeries(output_data, t0=0, sample_rate=fs, name=&quot;Output&quot
 
 print(&quot;Input data shape:&quot;, ts_input.shape)
 print(&quot;Output data shape:&quot;, ts_output.shape)
-Plot(ts_input,ts_output,separate=True);
-<br/></pre></div>
+Plot(ts_input, ts_output, separate=True);
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -210,13 +210,13 @@ Output data shape: (122880,)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># FFT設定: 平均化のためにデータを区切る長さを指定
-fftlength = 2.0 # 2秒ごとにFFTして平均化
+fftlength = 2.0  # 2秒ごとにFFTして平均化
 
 # 伝達関数の計算 (Output / Input)
 tf = ts_input.transfer_function(ts_output, fftlength=fftlength)
 
 # コヒーレンスの計算
-coh = ts_input.coherence(ts_output, fftlength=fftlength)**0.5
+coh = ts_input.coherence(ts_output, fftlength=fftlength) ** 0.5
 
 # --- プロット (ボード線図 &amp; コヒーレンス) ---
 fig, axes = plt.subplots(3, 1, figsize=(10, 10), sharex=True)
@@ -278,6 +278,7 @@ def resonator_model(f, amp, f0, Q):
     denominator = (f0**2) - (f**2) + 1j * (f * f0 / Q)
     return numerator / denominator
 
+
 # --- フィッティングの実行 ---
 # データ全体を使うと広帯域すぎてフィットが難しい場合があるため、
 # 共振付近 (100Hz ~ 500Hz) にデータを切り出します。
@@ -285,18 +286,14 @@ tf_crop = tf.crop(100, 500)
 
 # 初期値の推定 (目視またはピーク探索で決める)
 # ここでは f0=300付近に見えるため、それを初期値にします
-p0 = {
-    &quot;amp&quot;: 1.0,
-    &quot;f0&quot;: 300.0,
-    &quot;Q&quot;: 10.0
-}
+p0 = {&quot;amp&quot;: 1.0, &quot;f0&quot;: 300.0, &quot;Q&quot;: 10.0}
 
 # フィッティング実行
 # FrequencySeries の .fit() メソッドは複素数データのまま実部・虚部を同時にフィットします
 result = tf_crop.fit(resonator_model, p0=p0)
 
 print(result)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">

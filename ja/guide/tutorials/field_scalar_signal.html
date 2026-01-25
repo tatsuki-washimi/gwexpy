@@ -122,7 +122,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span>import matplotlib.pyplot as plt
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
 import numpy as np
 from astropy import units as u
 
@@ -130,7 +130,7 @@ from gwexpy.fields import ScalarField
 
 # Set random seed for reproducibility
 np.random.seed(42)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <section id="1.-Data-Generation">
@@ -145,14 +145,14 @@ np.random.seed(42)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span># Simulation Parameters
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Simulation Parameters
 fs = 256 * u.Hz
 duration = 4 * u.s
 t = np.arange(int((fs * duration).to_value(u.dimensionless_unscaled))) / fs.value
 
 x = np.linspace(0, 5, 20)  # 5 meters, 20 points
-y = np.linspace(0, 2, 5)   # 2 meters, 5 points
-z = np.array([0])          # 2D plane simulation (z=0)
+y = np.linspace(0, 2, 5)  # 2 meters, 5 points
+z = np.array([0])  # 2D plane simulation (z=0)
 
 # Create empty 4D array: (t, x, y, z)
 shape = (len(t), len(x), len(y), len(z))
@@ -184,15 +184,15 @@ for i, xi in enumerate(x):
 field = ScalarField(
     data,
     unit=u.V,
-    axis0=t*u.s,
-    axis1=x*u.m,
-    axis2=y*u.m,
-    axis3=z*u.m,
-    name=&quot;Environmental Field&quot;
+    axis0=t * u.s,
+    axis1=x * u.m,
+    axis2=y * u.m,
+    axis3=z * u.m,
+    name=&quot;Environmental Field&quot;,
 )
 
 print(field)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -465,22 +465,22 @@ ScalarField([[[[ 2.63448962e-01],
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span># Extract PSD at the source location (x=1m)
-psd_source = field.psd(point_or_region=(1.0*u.m, 0.0*u.m, 0.0*u.m))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Extract PSD at the source location (x=1m)
+psd_source = field.psd(point_or_region=(1.0 * u.m, 0.0 * u.m, 0.0 * u.m))
 
 # Extract PSD far from source (x=4m)
-psd_far = field.psd(point_or_region=(4.0*u.m, 0.0*u.m, 0.0*u.m))
+psd_far = field.psd(point_or_region=(4.0 * u.m, 0.0 * u.m, 0.0 * u.m))
 
 # Plot
 plt.figure(figsize=(10, 6))
-psd_source.plot(label=&#39;Source (x=1m)&#39;)
-psd_far.plot(label=&#39;Far (x=4m)&#39;)
-plt.xscale(&#39;log&#39;)
-plt.yscale(&#39;log&#39;)
+psd_source.plot(label=&quot;Source (x=1m)&quot;)
+psd_far.plot(label=&quot;Far (x=4m)&quot;)
+plt.xscale(&quot;log&quot;)
+plt.yscale(&quot;log&quot;)
 plt.title(&quot;Power Spectral Density at Different Locations&quot;)
 plt.legend()
 plt.show()
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -513,19 +513,16 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span># Scan along X-axis, fixing Y=0, Z=0
-fs_map = field.freq_space_map(axis=&#39;x&#39;, at={&#39;y&#39;: 0*u.m, &#39;z&#39;: 0*u.m})
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Scan along X-axis, fixing Y=0, Z=0
+fs_map = field.freq_space_map(axis=&quot;x&quot;, at={&quot;y&quot;: 0 * u.m, &quot;z&quot;: 0 * u.m})
 
 # Plot using plot_map2d
 # The map will have axes: &#39;f&#39; (frequency) and &#39;x&#39; (distance)
 fs_map.plot_map2d(
-    &#39;fx&#39;,
-    norm=&#39;log&#39;,
-    title=&quot;Frequency-Space Map (X-axis scan)&quot;,
-    vmin=1e-4, vmax=1e0
+    &quot;fx&quot;, norm=&quot;log&quot;, title=&quot;Frequency-Space Map (X-axis scan)&quot;, vmin=1e-4, vmax=1e0
 )
 plt.show()
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -543,23 +540,21 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span># Compute delay map relative to source at x=1.0m
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Compute delay map relative to source at x=1.0m
 delay_map = field.time_delay_map(
-    ref_point=(1.0*u.m, 0.0*u.m, 0.0*u.m),
-    plane=&#39;xy&#39;,
-    at={&#39;z&#39;: 0*u.m},
-    max_lag=0.5*u.s  # Limit search range
+    ref_point=(1.0 * u.m, 0.0 * u.m, 0.0 * u.m),
+    plane=&quot;xy&quot;,
+    at={&quot;z&quot;: 0 * u.m},
+    max_lag=0.5 * u.s,  # Limit search range
 )
 
 # Plot delay map
 # We expect delay to increase linearly away from x=1.0
 delay_map.plot_map2d(
-    &#39;xy&#39;,
-    title=&quot;Time Delay Map (Relative to Source at x=1m)&quot;,
-    cmap=&#39;RdBu_r&#39;
+    &quot;xy&quot;, title=&quot;Time Delay Map (Relative to Source at x=1m)&quot;, cmap=&quot;RdBu_r&quot;
 )
 plt.show()
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -577,22 +572,19 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span># Compute Coherence Map relative to source, averaging over 25-35 Hz band
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Compute Coherence Map relative to source, averaging over 25-35 Hz band
 coh_map = field.coherence_map(
-    ref_point=(1.0*u.m, 0.0*u.m, 0.0*u.m),
-    plane=&#39;xy&#39;,
-    at={&#39;z&#39;: 0*u.m},
-    band=(25*u.Hz, 35*u.Hz)  # Focus on the signal frequency
+    ref_point=(1.0 * u.m, 0.0 * u.m, 0.0 * u.m),
+    plane=&quot;xy&quot;,
+    at={&quot;z&quot;: 0 * u.m},
+    band=(25 * u.Hz, 35 * u.Hz),  # Focus on the signal frequency
 )
 
 coh_map.plot_map2d(
-    &#39;xy&#39;,
-    title=&quot;Coherence Map (25-35 Hz Band)&quot;,
-    vmin=0, vmax=1,
-    cmap=&#39;plasma&#39;
+    &quot;xy&quot;, title=&quot;Coherence Map (25-35 Hz Band)&quot;, vmin=0, vmax=1, cmap=&quot;plasma&quot;
 )
 plt.show()
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">

@@ -141,22 +141,24 @@ from gwexpy.timeseries import TimeSeries
 fs = 100
 duration = 5.0
 # Restore &#39;t&#39; for compatibility with downstream cells if they use it
-t = np.arange(0, duration, 1/fs)
+t = np.arange(0, duration, 1 / fs)
 
 # Sensor 1: 10Hzの正弦波 + ノイズ
 s1 = sine(duration=duration, sample_rate=fs, frequency=10, amplitude=1.0)
 n1 = gaussian(duration=duration, sample_rate=fs, std=0.2)
 ts1 = s1 + n1
-ts1.name = &#39;Sensor 1&#39;
-ts1.override_unit(&#39;V&#39;)
+ts1.name = &quot;Sensor 1&quot;
+ts1.override_unit(&quot;V&quot;)
 
 # Sensor 2: チャープ信号 (周波数が時間とともに変化: 5Hz -&gt; 25Hz) + 指数関数的な増幅
 s2 = chirp(duration=duration, sample_rate=fs, f0=5, f1=25, t1=duration)
-env = exponential(duration=duration, sample_rate=fs, tau=2.0, decay=False, amplitude=0.2)
+env = exponential(
+    duration=duration, sample_rate=fs, tau=2.0, decay=False, amplitude=0.2
+)
 ts2 = s2 * env
-ts2.name = &#39;Chirp Signal&#39;
-ts2.override_unit(&#39;V&#39;)
-<br/></pre></div>
+ts2.name = &quot;Chirp Signal&quot;
+ts2.override_unit(&quot;V&quot;)
+</pre></div>
 </div>
 </div>
 <p>## 2. 信号処理と復調</p>
@@ -175,13 +177,13 @@ ts_env = ts2.envelope()
 
 plot = Plot(ts2, ts_env, figsize=(10, 4))
 ax = plot.gca()
-ax.get_lines()[0].set_label(&#39;Original (Chirp)&#39;)
+ax.get_lines()[0].set_label(&quot;Original (Chirp)&quot;)
 ax.get_lines()[0].set_alpha(0.5)
-ax.get_lines()[1].set_label(&#39;Envelope&#39;)
-ax.get_lines()[1].set_color(&#39;red&#39;)
+ax.get_lines()[1].set_label(&quot;Envelope&quot;)
+ax.get_lines()[1].set_color(&quot;red&quot;)
 ax.get_lines()[1].set_linewidth(2)
 ax.legend()
-ax.set_title(&#39;Hilbert Transform and Envelope&#39;)
+ax.set_title(&quot;Hilbert Transform and Envelope&quot;)
 plt.show()
 </pre></div>
 </div>
@@ -210,10 +212,10 @@ freq = ts2.instantaneous_frequency()
 
 plot = Plot(phase_rad, freq, separate=True, sharex=True, figsize=(10, 6))
 ax = plot.axes
-ax[0].set_ylabel(&#39;Phase [rad]&#39;)
-ax[0].set_title(&#39;Instantaneous Phase (Unwrapped)&#39;)
-ax[1].set_ylabel(&#39;Frequency [Hz]&#39;)
-ax[1].set_title(&#39;Instantaneous Frequency&#39;)
+ax[0].set_ylabel(&quot;Phase [rad]&quot;)
+ax[0].set_title(&quot;Instantaneous Phase (Unwrapped)&quot;)
+ax[1].set_ylabel(&quot;Frequency [Hz]&quot;)
+ax[1].set_title(&quot;Instantaneous Frequency&quot;)
 plt.show()
 </pre></div>
 </div>
@@ -240,21 +242,21 @@ ts_mixed = ts1.mix_down(f0=10)
 ts_base = ts1.baseband(f0=10, lowpass=5, output_rate=20)
 
 # 3. lock_in: ロックイン検波 (振幅と位相を抽出)
-amp, ph = ts1.lock_in(f0=10, stride=0.1) # 0.1秒ごとの平均を出力
-res_complex = ts1.lock_in(f0=10, stride=0.1, output=&#39;complex&#39;) # 複素数での出力
+amp, ph = ts1.lock_in(f0=10, stride=0.1)  # 0.1秒ごとの平均を出力
+res_complex = ts1.lock_in(f0=10, stride=0.1, output=&quot;complex&quot;)  # 複素数での出力
 
 print(amp)
 
 plot = Plot(amp, ph, separate=True, sharex=True, figsize=(10, 6))
 ax = plot.axes
-ax[0].get_lines()[0].set_label(&#39;Amplitude&#39;)
-ax[0].axhline(1.0, color=&#39;gray&#39;, linestyle=&#39;--&#39;, label=&#39;Theoretical (Sine amp=1)&#39;)
-ax[0].set_ylabel(&#39;Amplitude&#39;)
+ax[0].get_lines()[0].set_label(&quot;Amplitude&quot;)
+ax[0].axhline(1.0, color=&quot;gray&quot;, linestyle=&quot;--&quot;, label=&quot;Theoretical (Sine amp=1)&quot;)
+ax[0].set_ylabel(&quot;Amplitude&quot;)
 ax[0].legend()
-ax[1].get_lines()[0].set_color(&#39;orange&#39;)
-ax[1].get_lines()[0].set_label(&#39;Phase [deg]&#39;)
-ax[1].set_ylabel(&#39;Phase [deg]&#39;)
-plot.figure.suptitle(&#39;Lock-in Amplification Result at 10Hz&#39;)
+ax[1].get_lines()[0].set_color(&quot;orange&quot;)
+ax[1].get_lines()[0].set_label(&quot;Phase [deg]&quot;)
+ax[1].set_ylabel(&quot;Phase [deg]&quot;)
+plot.figure.suptitle(&quot;Lock-in Amplification Result at 10Hz&quot;)
 plt.show()
 </pre></div>
 </div>
@@ -306,15 +308,17 @@ fs_gwpy = ts1.fft()
 
 # Transient モード:
 # pad_left/right でパディング量を指定。nfft_mode=&quot;next_fast_len&quot; で計算効率の良い長さに調整。
-fs_trans = ts1.fft(mode=&quot;transient&quot;, pad_left=0.5, pad_right=0.5, nfft_mode=&quot;next_fast_len&quot;)
+fs_trans = ts1.fft(
+    mode=&quot;transient&quot;, pad_left=0.5, pad_right=0.5, nfft_mode=&quot;next_fast_len&quot;
+)
 
-plot = Plot(fs_gwpy.abs(), fs_trans.abs(), yscale=&#39;log&#39;, xlim=(0, 50), figsize=(10, 4))
+plot = Plot(fs_gwpy.abs(), fs_trans.abs(), yscale=&quot;log&quot;, xlim=(0, 50), figsize=(10, 4))
 ax = plot.gca()
-ax.get_lines()[0].set_label(&#39;Standard FFT&#39;)
-ax.get_lines()[1].set_label(&#39;Transient FFT (Padded)&#39;)
+ax.get_lines()[0].set_label(&quot;Standard FFT&quot;)
+ax.get_lines()[1].set_label(&quot;Transient FFT (Padded)&quot;)
 ax.get_lines()[1].set_alpha(0.7)
 ax.legend()
-ax.set_title(&#39;Comparison of FFT modes&#39;)
+ax.set_title(&quot;Comparison of FFT modes&quot;)
 plt.show()
 </pre></div>
 </div>
@@ -336,23 +340,25 @@ plt.show()
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 伝達関数の計算 (Sensor 1 に対する Chirp Signal の伝達関数)
 tf_welch = ts2.transfer_function(ts1, fftlength=1)
-tf_fft = ts2.transfer_function(ts1, mode=&quot;transient&quot;) # 全区間FFT比 (過渡応答解析などに有用)
+tf_fft = ts2.transfer_function(
+    ts1, mode=&quot;transient&quot;
+)  # 全区間FFT比 (過渡応答解析などに有用)
 
 # 相互相関 (xcorr)
-corr = ts1.xcorr(ts2, maxlag=0.5, normalize=&#39;coeff&#39;)
+corr = ts1.xcorr(ts2, maxlag=0.5, normalize=&quot;coeff&quot;)
 
 plot = Plot(figsize=(10, 6))
 ax1 = plot.add_subplot(2, 1, 1)
-ax1.semilogy(tf_welch.frequencies, np.abs(tf_welch), label=&#39;Welch method&#39;)
-ax1.semilogy(tf_fft.frequencies, np.abs(tf_fft), label=&#39;Direct FFT ratio&#39;, alpha=0.5)
-ax1.set_title(&#39;Transfer Function Magnitude&#39;)
+ax1.semilogy(tf_welch.frequencies, np.abs(tf_welch), label=&quot;Welch method&quot;)
+ax1.semilogy(tf_fft.frequencies, np.abs(tf_fft), label=&quot;Direct FFT ratio&quot;, alpha=0.5)
+ax1.set_title(&quot;Transfer Function Magnitude&quot;)
 ax1.legend()
 
 ax2 = plot.add_subplot(2, 1, 2)
 lag = corr.times.value - corr.t0.value
 ax2.plot(lag, corr)
-ax2.set_title(&#39;Cross-Correlation (normalized)&#39;)
-ax2.set_xlabel(&#39;Lag [s]&#39;)
+ax2.set_title(&quot;Cross-Correlation (normalized)&quot;)
+ax2.set_xlabel(&quot;Lag [s]&quot;)
 plt.show()
 </pre></div>
 </div>
@@ -379,11 +385,11 @@ import numpy as np
 from gwexpy.plot import Plot
 
 t = np.linspace(0, 10, 1000)
-data = TimeSeries(np.sin(2 * np.pi * 1 * t), times=t*u.s, unit=&#39;V&#39;, name=&#39;Demo Data&#39;)
+data = TimeSeries(np.sin(2 * np.pi * 1 * t), times=t * u.s, unit=&quot;V&quot;, name=&quot;Demo Data&quot;)
 
 # STLT の実行
 # stride: 時間ステップ, window: 解析ウィンドウ長
-stlt_result = data.stlt(stride=&#39;0.5s&#39;, window=&#39;2s&#39;)
+stlt_result = data.stlt(stride=&quot;0.5s&quot;, window=&quot;2s&quot;)
 
 print(f&quot;Kind: {stlt_result.kind}&quot;)
 print(f&quot;Shape: {stlt_result.shape} (Time x Axis1 x Axis2)&quot;)
@@ -434,7 +440,9 @@ try:
     print(f&quot;Extracted IMFs: {list(imfs.keys())}&quot;)
 
     # IMFのプロット
-    sorted_keys = sorted([k for k in imfs.keys() if k.startswith(&quot;IMF&quot;)], key=lambda x: int(x[3:]))
+    sorted_keys = sorted(
+        [k for k in imfs.keys() if k.startswith(&quot;IMF&quot;)], key=lambda x: int(x[3:])
+    )
     if &quot;residual&quot; in imfs:
         sorted_keys.append(&quot;residual&quot;)
 
@@ -445,13 +453,13 @@ try:
     # Originalの設定
     ax0 = plot.axes[0]
     ax0.get_lines()[0].set_label(&quot;Original&quot;)
-    ax0.get_lines()[0].set_color(&#39;black&#39;)
+    ax0.get_lines()[0].set_color(&quot;black&quot;)
     ax0.legend(loc=&quot;upper right&quot;)
     ax0.set_title(&quot;Empirical Mode Decomposition&quot;)
 
     # IMFsの設定
     for i, key in enumerate(sorted_keys):
-        ax = plot.axes[i+1]
+        ax = plot.axes[i + 1]
         ax.get_lines()[0].set_label(key)
         ax.legend(loc=&quot;upper right&quot;)
 
@@ -461,7 +469,7 @@ except ImportError:
     print(&quot;EMD-signal not installed. Skipping HHT demo.&quot;)
 except Exception as e:
     print(f&quot;HHT Error: {e}&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -490,21 +498,21 @@ ts_nan = ts1.copy()
 ts_nan.value[100:150] = np.nan
 
 # 1. impute: 欠損値補完 (interpolation など)
-ts_imputed = ts_nan.impute(method=&#39;interpolate&#39;)
+ts_imputed = ts_nan.impute(method=&quot;interpolate&quot;)
 
 # 2. standardize: 標準化 (z-score, robust など)
-ts_z = ts1.standardize(method=&#39;zscore&#39;)
-ts_robust = ts1.standardize(method=&#39;zscore&#39;, robust=True) # Median/IQRを使用
+ts_z = ts1.standardize(method=&quot;zscore&quot;)
+ts_robust = ts1.standardize(method=&quot;zscore&quot;, robust=True)  # Median/IQRを使用
 
 plot = Plot(ts_nan, ts_imputed, figsize=(10, 4))
 ax = plot.gca()
-ax.get_lines()[0].set_label(&#39;with NaNs&#39;)
-ax.get_lines()[0].set_color(&#39;red&#39;)
+ax.get_lines()[0].set_label(&quot;with NaNs&quot;)
+ax.get_lines()[0].set_color(&quot;red&quot;)
 ax.get_lines()[0].set_alpha(0.3)
-ax.get_lines()[1].set_label(&#39;Imputed&#39;)
-ax.get_lines()[1].set_linestyle(&#39;--&#39;)
+ax.get_lines()[1].set_label(&quot;Imputed&quot;)
+ax.get_lines()[1].set_linestyle(&quot;--&quot;)
 ax.legend()
-ax.set_title(&#39;Missing Value Imputation&#39;)
+ax.set_title(&quot;Missing Value Imputation&quot;)
 plt.show()
 </pre></div>
 </div>
@@ -537,11 +545,19 @@ if len(peaks) &gt; 0:
 # プロット
 plot = ts2.plot(figsize=(12, 4))
 ax = plot.gca()
-ax.scatter(peaks.times.value, peaks.value, marker=&quot;x&quot;, color=&quot;red&quot;, s=100, label=&quot;Peaks&quot;, zorder=10)
+ax.scatter(
+    peaks.times.value,
+    peaks.value,
+    marker=&quot;x&quot;,
+    color=&quot;red&quot;,
+    s=100,
+    label=&quot;Peaks&quot;,
+    zorder=10,
+)
 ax.legend(loc=&quot;upper right&quot;)
 ax.set_title(&quot;Peak Detection Result&quot;)
 plt.show()
-<br/><br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -582,14 +598,20 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
 
     plot = Plot(ts1.tail(100), forecast, figsize=(10, 4))
     ax = plot.gca()
-    ax.get_lines()[0].set_label(&#39;Measured&#39;)
-    ax.get_lines()[1].set_label(&#39;Forecast&#39;)
-    ax.get_lines()[1].set_color(&#39;orange&#39;)
+    ax.get_lines()[0].set_label(&quot;Measured&quot;)
+    ax.get_lines()[1].set_label(&quot;Forecast&quot;)
+    ax.get_lines()[1].set_color(&quot;orange&quot;)
 
     # Fill between
-    ax.fill_between(conf[&#39;lower&#39;].times.value, conf[&#39;lower&#39;].value, conf[&#39;upper&#39;].value, alpha=0.2, color=&#39;orange&#39;)
+    ax.fill_between(
+        conf[&quot;lower&quot;].times.value,
+        conf[&quot;lower&quot;].value,
+        conf[&quot;upper&quot;].value,
+        alpha=0.2,
+        color=&quot;orange&quot;,
+    )
 
-    ax.set_title(&#39;ARIMA(1,0,0) Fit &amp; Forecast&#39;)
+    ax.set_title(&quot;ARIMA(1,0,0) Fit &amp; Forecast&quot;)
     ax.legend()
     plt.show()
 except Exception as e:
@@ -598,15 +620,15 @@ except Exception as e:
 try:
     # 4. hurst / local_hurst: ハースト指数 (長距離相関の指標)
     h_val = ts1.hurst()
-    h_detail = ts1.hurst(return_details=True) # 詳細情報付き
-    h_local = ts1.local_hurst(window=1.0) # 1秒窓での推移
+    h_detail = ts1.hurst(return_details=True)  # 詳細情報付き
+    h_local = ts1.local_hurst(window=1.0)  # 1秒窓での推移
 
     plot = Plot(h_local, figsize=(10, 4))
     ax = plot.gca()
-    ax.get_lines()[0].set_label(&#39;Local Hurst&#39;)
-    ax.axhline(h_val, color=&#39;red&#39;, linestyle=&#39;--&#39;, label=f&#39;Global H={h_val:.2f}&#39;)
+    ax.get_lines()[0].set_label(&quot;Local Hurst&quot;)
+    ax.axhline(h_val, color=&quot;red&quot;, linestyle=&quot;--&quot;, label=f&quot;Global H={h_val:.2f}&quot;)
     ax.set_ylim(0, 0.2)
-    ax.set_title(&#39;Hurst Exponent Analysis&#39;)
+    ax.set_title(&quot;Hurst Exponent Analysis&quot;)
     ax.legend()
     plt.show()
 except Exception as e:
@@ -637,7 +659,7 @@ Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hu
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>rw = 0.5 * u.s # 0.5秒窓
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>rw = 0.5 * u.s  # 0.5秒窓
 rmean = ts1.rolling_mean(rw)
 rstd = ts1.rolling_std(rw)
 rmed = ts1.rolling_median(rw)
@@ -646,16 +668,22 @@ rmax = ts1.rolling_max(rw)
 
 plot = Plot(ts1, rmean, rmed, figsize=(10, 4))
 ax = plot.gca()
-ax.get_lines()[0].set_label(&#39;Original&#39;)
+ax.get_lines()[0].set_label(&quot;Original&quot;)
 ax.get_lines()[0].set_alpha(0.3)
-ax.get_lines()[1].set_label(&#39;Rolling Mean&#39;)
-ax.get_lines()[1].set_color(&#39;blue&#39;)
-ax.get_lines()[2].set_label(&#39;Rolling Median&#39;)
-ax.get_lines()[2].set_color(&#39;green&#39;)
-ax.get_lines()[2].set_linestyle(&#39;--&#39;)
-ax.fill_between(rmean.times.value, rmean.value - rstd.value, rmean.value + rstd.value, alpha=0.1, color=&#39;blue&#39;)
+ax.get_lines()[1].set_label(&quot;Rolling Mean&quot;)
+ax.get_lines()[1].set_color(&quot;blue&quot;)
+ax.get_lines()[2].set_label(&quot;Rolling Median&quot;)
+ax.get_lines()[2].set_color(&quot;green&quot;)
+ax.get_lines()[2].set_linestyle(&quot;--&quot;)
+ax.fill_between(
+    rmean.times.value,
+    rmean.value - rstd.value,
+    rmean.value + rstd.value,
+    alpha=0.1,
+    color=&quot;blue&quot;,
+)
 ax.legend()
-ax.set_title(&#39;Rolling Statistics (Window=0.5s)&#39;)
+ax.set_title(&quot;Rolling Statistics (Window=0.5s)&quot;)
 plt.show()
 </pre></div>
 </div>
@@ -674,9 +702,9 @@ plt.show()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 1. asfreq: Pandasライクな名付け規則 (&#39;50ms&#39; など) で再インデックス
-ts_reindexed = ts1.asfreq(&#39;50ms&#39;, method=&#39;pad&#39;)
+ts_reindexed = ts1.asfreq(&quot;50ms&quot;, method=&quot;pad&quot;)
 Plot(ts1, ts_reindexed)
-plt.legend([&#39;Original&#39;, &quot;.asfreq(&#39;50ms&#39;, method=&#39;pad&#39;)&quot;])
+plt.legend([&quot;Original&quot;, &quot;.asfreq(&#39;50ms&#39;, method=&#39;pad&#39;)&quot;])
 </pre></div>
 </div>
 </div>
@@ -704,7 +732,7 @@ plt.legend([&#39;Original&#39;, &quot;.asfreq(&#39;50ms&#39;, method=&#39;pad&#3
 # 数値 (10Hz) を指定すると信号処理的なリサンプリング (GWpy標準)
 ts_sig = ts1.resample(10)
 # 文字列 (&#39;200ms&#39;) を指定すると、その時間幅のビンごとの統計量をとる (新機能)
-ts_binned = ts1.resample(&#39;200ms&#39;) # デフォルトは mean
+ts_binned = ts1.resample(&quot;200ms&quot;)  # デフォルトは mean
 
 # Plot doesn&#39;t have a direct &#39;step&#39; method equivalent in args, so we use ax.step or pass to plot
 # However, kwarg &#39;drawstyle&#39;=&#39;steps-post&#39; works in plot()? gwpy Plot wraps matplotlib.
@@ -712,10 +740,16 @@ ts_binned = ts1.resample(&#39;200ms&#39;) # デフォルトは mean
 # Better strategy: Create Plot instance, then use ax.step
 plot = Plot(figsize=(10, 4))
 ax = plot.gca()
-ax.plot(ts1, alpha=0.6, label=&#39;Original (100Hz)&#39;)
-ax.step(ts_binned.times, ts_binned.value, where=&#39;post&#39;, label=&#39;Binned Mean (200ms)&#39;, linewidth=2)
+ax.plot(ts1, alpha=0.6, label=&quot;Original (100Hz)&quot;)
+ax.step(
+    ts_binned.times,
+    ts_binned.value,
+    where=&quot;post&quot;,
+    label=&quot;Binned Mean (200ms)&quot;,
+    linewidth=2,
+)
 ax.legend()
-ax.set_title(&#39;Resampling: Signal Resampling vs Time Binning&#39;)
+ax.set_title(&quot;Resampling: Signal Resampling vs Time Binning&quot;)
 plt.show()
 </pre></div>
 </div>
@@ -746,7 +780,7 @@ result = data.fit(damped_oscillation, A=0.5, tau=0.5, f=15, phi=0)
 print(result)
 
 # ベストフィット曲線の取得
-#注: x_data はデータ点に対応する時間の配列です
+# 注: x_data はデータ点に対応する時間の配列です
 x_data = data.times.value
 best_fit = result.model(x_data)
 
@@ -757,7 +791,7 @@ ax.plot(data.times, best_fit, label=&quot;Best Fit&quot;, color=&quot;red&quot;,
 ax.legend()
 ax.set_title(&quot;Damped Oscillation Fit&quot;)
 plt.show()
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -810,19 +844,21 @@ plt.show()
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Pandas &amp; Xarray
 try:
-    df = ts1.to_pandas(index=&#39;datetime&#39;)
+    df = ts1.to_pandas(index=&quot;datetime&quot;)
     ts_p = TimeSeries.from_pandas(df)
     print(&quot;Pandas interop OK&quot;)
     display(df)
-except ImportError: pass
+except ImportError:
+    pass
 
 try:
     xr = ts1.to_xarray()
     ts_xr = TimeSeries.from_xarray(xr)
     print(&quot;Xarray interop OK&quot;)
     display(xr)
-except ImportError: pass
-<br/></pre></div>
+except ImportError:
+    pass
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1366,12 +1402,12 @@ Attributes:
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># SQLite (シリアライズ保存)
 import sqlite3
 
-with sqlite3.connect(&#39;:memory:&#39;) as conn:
-    ts1.to_sqlite(conn, series_id=&#39;my_sensor&#39;)
-    ts_sql = TimeSeries.from_sqlite(conn, series_id=&#39;my_sensor&#39;)
+with sqlite3.connect(&quot;:memory:&quot;) as conn:
+    ts1.to_sqlite(conn, series_id=&quot;my_sensor&quot;)
+    ts_sql = TimeSeries.from_sqlite(conn, series_id=&quot;my_sensor&quot;)
     print(f&quot;SQLite interop OK: {ts_sql.name}&quot;)
     display(conn)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1397,13 +1433,15 @@ SQLite interop OK: my_sensor
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Deep Learning (Torch)
 try:
     import torch
+
     _ = torch
     t_torch = ts1.to_torch()
     ts_f_torch = TimeSeries.from_torch(t_torch, t0=ts1.t0, dt=ts1.dt)
     print(f&quot;Torch interop OK (Shape: {t_torch.shape})&quot;)
     display(t_torch)
-except ImportError: pass
-<br/></pre></div>
+except ImportError:
+    pass
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1529,13 +1567,15 @@ tensor([-6.3638e-01,  6.7641e-01,  1.1160e+00,  7.5920e-01,  7.8126e-01,
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Deep Learning (TensorFlow)
 try:
     import tensorflow as tf
+
     _ = tf
     t_tf = ts1.to_tensorflow()
     ts_f_tf = TimeSeries.from_tensorflow(t_tf, t0=ts1.t0, dt=ts1.dt)
     print(&quot;TensorFlow interop OK&quot;)
     display(t_tf)
-except ImportError: pass
-<br/></pre></div>
+except ImportError:
+    pass
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1623,13 +1663,15 @@ array([-0.63638168,  0.67641478,  1.11601357, ..., -0.94245798,
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># ObsPy (地震波形・時系列解析)
 try:
     import obspy
+
     _ = obspy
     tr = ts1.to_obspy()
     ts_f_obspy = TimeSeries.from_obspy(tr)
     print(f&quot;ObsPy interop OK: {tr.id}&quot;)
     display(tr)
-except ImportError: pass
-<br/></pre></div>
+except ImportError:
+    pass
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">

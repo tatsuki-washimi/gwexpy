@@ -135,7 +135,7 @@ from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesMatrix
 from gwexpy.timeseries import TimeSeriesMatrix
 
 plt.rcParams.update({&quot;figure.figsize&quot;: (5, 3), &quot;axes.grid&quot;: True})
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <section id="代表データを用意">
@@ -189,7 +189,7 @@ display(asd)
 asd.plot(subplots=True)
 plt.xscale(&quot;log&quot;)
 plt.yscale(&quot;log&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -341,7 +341,7 @@ data_f[0, 1] = peak20
 data_f[1, 0] = 0.6 * peak10 + 0.4 * peak20
 data_f[1, 1] = 0.2 * peak10 - 0.5 * peak20
 
-units_f = np.full((2, 2), u.V / u.Hz ** 0.5)
+units_f = np.full((2, 2), u.V / u.Hz**0.5)
 names_f = [[&quot;p10&quot;, &quot;p20&quot;], [&quot;mix&quot;, &quot;diff&quot;]]
 channels_f = [[&quot;X:A&quot;, &quot;X:B&quot;], [&quot;Y:A&quot;, &quot;Y:B&quot;]]
 
@@ -359,26 +359,43 @@ fsm = FrequencySeriesMatrix(
 print(&quot;case1 frequencies&quot;, fsm.shape, &quot;df&quot;, fsm.df, &quot;f0&quot;, fsm.f0)
 
 # ケース 2: df/f0 を指定（Index.define で軸を生成）
-fsm_df = FrequencySeriesMatrix(data_f, df=1 * u.Hz, f0=0 * u.Hz, units=units_f, names=names_f)
+fsm_df = FrequencySeriesMatrix(
+    data_f, df=1 * u.Hz, f0=0 * u.Hz, units=units_f, names=names_f
+)
 print(&quot;case2 df/f0&quot;, fsm_df.shape, &quot;df&quot;, fsm_df.df)
 
 # ケース 3: FrequencySeries の 2D リストから構築
-fs00 = FrequencySeries(data_f[0, 0], frequencies=freqs, unit=units_f[0, 0], name=&quot;p10&quot;, channel=&quot;X:A&quot;)
-fs01 = FrequencySeries(data_f[0, 1], frequencies=freqs, unit=units_f[0, 1], name=&quot;p20&quot;, channel=&quot;X:B&quot;)
-fs10 = FrequencySeries(data_f[1, 0], frequencies=freqs, unit=units_f[1, 0], name=&quot;mix&quot;, channel=&quot;Y:A&quot;)
-fs11 = FrequencySeries(data_f[1, 1], frequencies=freqs, unit=units_f[1, 1], name=&quot;diff&quot;, channel=&quot;Y:B&quot;)
+fs00 = FrequencySeries(
+    data_f[0, 0], frequencies=freqs, unit=units_f[0, 0], name=&quot;p10&quot;, channel=&quot;X:A&quot;
+)
+fs01 = FrequencySeries(
+    data_f[0, 1], frequencies=freqs, unit=units_f[0, 1], name=&quot;p20&quot;, channel=&quot;X:B&quot;
+)
+fs10 = FrequencySeries(
+    data_f[1, 0], frequencies=freqs, unit=units_f[1, 0], name=&quot;mix&quot;, channel=&quot;Y:A&quot;
+)
+fs11 = FrequencySeries(
+    data_f[1, 1], frequencies=freqs, unit=units_f[1, 1], name=&quot;diff&quot;, channel=&quot;Y:B&quot;
+)
 fsm_from_fs = FrequencySeriesMatrix([[fs00, fs01], [fs10, fs11]])
-print(&quot;case3 from FrequencySeries&quot;, fsm_from_fs.shape, &quot;cell type&quot;, type(fsm_from_fs[0, 0]))
+print(
+    &quot;case3 from FrequencySeries&quot;,
+    fsm_from_fs.shape,
+    &quot;cell type&quot;,
+    type(fsm_from_fs[0, 0]),
+)
 
 # ケース 4: Quantity 入力（units を自動設定）
-fsm_q = FrequencySeriesMatrix(data_f * (u.mV / u.Hz ** 0.5), frequencies=freqs)
+fsm_q = FrequencySeriesMatrix(data_f * (u.mV / u.Hz**0.5), frequencies=freqs)
 print(&quot;case4 Quantity meta unit&quot;, fsm_q.meta[0, 0].unit)
 
 # ケース 5: 不規則 frequencies
 irreg = np.array([0, 1, 2, 4, 8]) * u.Hz
-fsm_irreg = FrequencySeriesMatrix(np.ones((1, 1, len(irreg))), frequencies=irreg, units=[[u.V]], names=[[&quot;irreg&quot;]])
+fsm_irreg = FrequencySeriesMatrix(
+    np.ones((1, 1, len(irreg))), frequencies=irreg, units=[[u.V]], names=[[&quot;irreg&quot;]]
+)
 print(&quot;case5 irregular frequencies&quot;, fsm_irreg.frequencies)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -419,7 +436,7 @@ print(&quot;asd[:,0] -&gt;&quot;, type(sub), sub.shape)
 sub.plot(subplots=True)
 plt.xscale(&quot;log&quot;)
 plt.yscale(&quot;log&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -468,7 +485,7 @@ print(&quot;diffed&quot;, type(diffed), diffed.shape, &quot;df&quot;, diffed.df)
 
 padded = band.pad(5)
 print(&quot;padded&quot;, type(padded), padded.shape, &quot;f0&quot;, padded.f0)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -505,7 +522,14 @@ print(&quot;scaled unit&quot;, scaled[0, 0].unit)
 # 30 Hz あたりから抑える単純な実応答
 resp_mag = 1 / (1 + (band.frequencies / (30 * u.Hz)) ** 4)
 shaped = band.apply_response(resp_mag)
-print(&quot;apply_response&quot;, shaped.shape, &quot;dtype&quot;, shaped.value.dtype, &quot;unit&quot;, shaped[0, 0].unit)
+print(
+    &quot;apply_response&quot;,
+    shaped.shape,
+    &quot;dtype&quot;,
+    shaped.value.dtype,
+    &quot;unit&quot;,
+    shaped[0, 0].unit,
+)
 
 shaped.plot(subplots=True)
 plt.xscale(&quot;log&quot;)
@@ -550,7 +574,7 @@ print(&quot;fft_filt&quot;, fft_filt.shape, &quot;df&quot;, fft_filt.df)
 print(&quot;tsm_filt&quot;, tsm_filt.shape, &quot;dt&quot;, tsm_filt.dt)
 
 tsm_filt[0, 0].plot(xscale=&quot;seconds&quot;);
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -584,7 +608,7 @@ print(&quot;rms error (cell 0,0)&quot;, rms)
 
 tsm[0, 0].plot(xscale=&quot;seconds&quot;)
 tsm_back[0, 0].plot(xscale=&quot;seconds&quot;);
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">

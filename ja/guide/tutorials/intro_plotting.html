@@ -155,9 +155,14 @@ t0 = 1356998418.0
 times = t0 + np.linspace(0, 10, 1000)
 data = np.random.randn(2, 2, 1000)
 # 行: Sensor A, B / 列: Axis X, Y
-tsm = TimeSeriesMatrix(data, times=times, unit=&#39;m&#39;, name=&#39;Velocity&#39;,
-                       rows=[&#39;Sensor A&#39;, &#39;Sensor B&#39;],
-                       cols=[&#39;X-axis&#39;, &#39;Y-axis&#39;])
+tsm = TimeSeriesMatrix(
+    data,
+    times=times,
+    unit=&quot;m&quot;,
+    name=&quot;Velocity&quot;,
+    rows=[&quot;Sensor A&quot;, &quot;Sensor B&quot;],
+    cols=[&quot;X-axis&quot;, &quot;Y-axis&quot;],
+)
 
 # プロット
 plot = tsm.plot()
@@ -191,18 +196,23 @@ f = np.logspace(1, 3, 500)
 data = np.zeros((2, 2, 500))
 for i in range(2):
     for j in range(2):
-        data[i, j, :] = 10 / f * (1 + 0.1 * np.random.randn(500)) + (i+j)
+        data[i, j, :] = 10 / f * (1 + 0.1 * np.random.randn(500)) + (i + j)
 
 # unit=&#39;m&#39; (Amplitude Spectral Density と仮定すると m/sqrt(Hz) ですが、ここでは単純化)
-fsm = FrequencySeriesMatrix(data, frequencies=f, unit=&#39;m&#39;, name=&#39;Displacement&#39;,
-                            rows=[&#39;Sensor A&#39;, &#39;Sensor B&#39;],
-                            cols=[&#39;X-axis&#39;, &#39;Y-axis&#39;])
+fsm = FrequencySeriesMatrix(
+    data,
+    frequencies=f,
+    unit=&quot;m&quot;,
+    name=&quot;Displacement&quot;,
+    rows=[&quot;Sensor A&quot;, &quot;Sensor B&quot;],
+    cols=[&quot;X-axis&quot;, &quot;Y-axis&quot;],
+)
 
 # プロット
 # 自動的に log-log プロットになることを確認してください
 plot = fsm.plot()
 plot.show()
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -221,8 +231,8 @@ plot.show()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># FrequencySeriesList の作成
-fs1 = FrequencySeries(1/f, frequencies=f, unit=u.m, name=&#39;Series 1&#39;)
-fs2 = FrequencySeries(2/f, frequencies=f, unit=u.m, name=&#39;Series 2&#39;)
+fs1 = FrequencySeries(1 / f, frequencies=f, unit=u.m, name=&quot;Series 1&quot;)
+fs2 = FrequencySeries(2 / f, frequencies=f, unit=u.m, name=&quot;Series 2&quot;)
 
 fs_list = FrequencySeriesList([fs1, fs2])
 
@@ -269,11 +279,23 @@ gc.collect()
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Spectrogram の作成
 # TimeSeriesMatrix と同じ GPS 時刻を使用
 t = t0 + np.linspace(0, 10, 100)
- # 10Hz - 1000Hz
+# 10Hz - 1000Hz
 f = np.logspace(1, 3, 50)
 
-spec_list = SpectrogramList([Spectrogram(np.random.rand(100, 50),    times=t, frequencies=f, unit=u.count, name=&#39;Spec 1&#39;),
-                             Spectrogram(np.random.rand(100, 50)*10, times=t, frequencies=f, unit=u.count, name=&#39;Spec 2&#39;)])
+spec_list = SpectrogramList(
+    [
+        Spectrogram(
+            np.random.rand(100, 50), times=t, frequencies=f, unit=u.count, name=&quot;Spec 1&quot;
+        ),
+        Spectrogram(
+            np.random.rand(100, 50) * 10,
+            times=t,
+            frequencies=f,
+            unit=u.count,
+            name=&quot;Spec 2&quot;,
+        ),
+    ]
+)
 spec_list.plot();
 </pre></div>
 </div>
@@ -299,9 +321,9 @@ spec_list.plot();
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 100,000,000 サンプルのデータを生成
-ts_large = TimeSeries(np.random.randn(100000000), sample_rate=1024, name=&#39;Large TS&#39;)
+ts_large = TimeSeries(np.random.randn(100000000), sample_rate=1024, name=&quot;Large TS&quot;)
 
-print(f&#39;Original samples: {len(ts_large)}&#39;)
+print(f&quot;Original samples: {len(ts_large)}&quot;)
 
 # プロット実行 (自動的に間引きが行われる)
 plot_opt = ts_large.plot()
@@ -309,7 +331,7 @@ plot_opt = ts_large.plot()
 # 描画された点数を確認
 ax = plot_opt.gca()
 line = ax.get_lines()[0]
-print(f&#39;Plotted points: {len(line.get_xdata())}&#39;)
+print(f&quot;Plotted points: {len(line.get_xdata())}&quot;)
 plot_opt.show();
 </pre></div>
 </div>
@@ -338,15 +360,12 @@ Plotted points: 10000
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 閾値を 10,000 に下げて、プロット点数を 2,000 に指定する例
-ts_med = TimeSeries(np.random.randn(20000), sample_rate=16384, name=&#39;Medium TS&#39;)
+ts_med = TimeSeries(np.random.randn(20000), sample_rate=16384, name=&quot;Medium TS&quot;)
 
-plot_custom = ts_med.plot(
-    decimate_threshold=10000,
-    decimate_points=2000
-)
+plot_custom = ts_med.plot(decimate_threshold=10000, decimate_points=2000)
 
 ax = plot_custom.gca()
-print(f&#39;Original: {len(ts_med)}, Plotted: {len(ax.get_lines()[0].get_xdata())}&#39;)
+print(f&quot;Original: {len(ts_med)}, Plotted: {len(ax.get_lines()[0].get_xdata())}&quot;)
 plot_custom.show();
 </pre></div>
 </div>
@@ -385,16 +404,14 @@ from gwexpy.timeseries import TimeSeries
 
 # テストデータの生成
 def make_sg(name):
-    ts = TimeSeries(np.random.randn(2048*10), sample_rate=2048, name=name, unit=&#39;m&#39;)
+    ts = TimeSeries(np.random.randn(2048 * 10), sample_rate=2048, name=name, unit=&quot;m&quot;)
     return ts.spectrogram(stride=1, fftlength=1, overlap=0.5)
 
-sg_dict = SpectrogramDict({
-    &#39;Channel A&#39;: make_sg(&#39;A&#39;),
-    &#39;Channel B&#39;: make_sg(&#39;B&#39;)
-})
+
+sg_dict = SpectrogramDict({&quot;Channel A&quot;: make_sg(&quot;A&quot;), &quot;Channel B&quot;: make_sg(&quot;B&quot;)})
 
 # ASDgram プロットの実行
-fig, axes = sg_dict.plot_summary(fmin=10, fmax=500, title=&#39;ASDgram Demonstration&#39;)
+fig, axes = sg_dict.plot_summary(fmin=10, fmax=500, title=&quot;ASDgram Demonstration&quot;)
 plt.show();
 </pre></div>
 </div>
@@ -435,8 +452,8 @@ from gwexpy.plot import PairPlot
 from gwexpy.timeseries import TimeSeries
 
 # 2 つの異なるサンプリングレートの TimeSeries を作成
-ts1 = TimeSeries(np.random.randn(5000), sample_rate=1024, name=&#39;TS1&#39;)
-ts2 = TimeSeries(np.random.randn(4000), sample_rate=2048, name=&#39;TS2&#39;)
+ts1 = TimeSeries(np.random.randn(5000), sample_rate=1024, name=&quot;TS1&quot;)
+ts2 = TimeSeries(np.random.randn(4000), sample_rate=2048, name=&quot;TS2&quot;)
 
 # PairPlot を作成（corner=True がデフォルト）
 pair = PairPlot([ts1, ts2], corner=True)

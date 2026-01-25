@@ -256,12 +256,14 @@ names = [f&quot;AUX-{i:02d}&quot; for i in range(n_channels)]
 # AUX-05とAUX-12に信号を注入
 target_signal = np.sin(np.linspace(0, 20, 1000))
 data[5, 0, :] += target_signal * 5  # 強い結合
-data[12, 0, :] += target_signal**2 * 5 # 非線形結合
+data[12, 0, :] += target_signal**2 * 5  # 非線形結合
 
 matrix = TimeSeriesMatrix(data, dt=0.01, channel_names=names)
 
 # ターゲットチャンネル
-target = TimeSeries(target_signal + np.random.normal(0, 0.1, 1000), dt=0.01, name=&quot;TARGET&quot;)
+target = TimeSeries(
+    target_signal + np.random.normal(0, 0.1, 1000), dt=0.01, name=&quot;TARGET&quot;
+)
 </pre></div>
 </div>
 </div>
@@ -275,7 +277,7 @@ target = TimeSeries(target_signal + np.random.normal(0, 0.1, 1000), dt=0.01, nam
 
 try:
     print(&quot;MICベクトルを計算中 (Top 5)...&quot;)
-    df_mic = matrix.correlation_vector(target, method=&#39;mic&#39;, nproc=2)
+    df_mic = matrix.correlation_vector(target, method=&quot;mic&quot;, nproc=2)
     print(df_mic.head(5))
 except ImportError:
     print(&quot;minepyがインストールされていないため、MICの例をスキップします。&quot;)
@@ -301,7 +303,7 @@ MICベクトルを計算中 (Top 5)...
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;Pearsonベクトルを計算中 (Top 5)...&quot;)
-df_pcc = matrix.correlation_vector(target, method=&#39;pearson&#39;, nproc=1)
+df_pcc = matrix.correlation_vector(target, method=&quot;pearson&quot;, nproc=1)
 print(df_pcc.head(5))
 </pre></div>
 </div>
@@ -328,10 +330,10 @@ Pearsonベクトルを計算中 (Top 5)...
 df_plot = df_pcc.head(10).iloc[::-1]  # 降順にするために逆転
 
 plt.figure(figsize=(10, 6))
-plt.barh(df_plot[&#39;channel&#39;], np.abs(df_plot[&#39;score&#39;]), color=&#39;skyblue&#39;)
+plt.barh(df_plot[&quot;channel&quot;], np.abs(df_plot[&quot;score&quot;]), color=&quot;skyblue&quot;)
 plt.xlabel(&quot;Absolute Correlation Score (Pearson)&quot;)
 plt.title(&quot;Top 10 Correlated Channels&quot;)
-plt.grid(axis=&#39;x&#39;, linestyle=&#39;--&#39;, alpha=0.7)
+plt.grid(axis=&quot;x&quot;, linestyle=&quot;--&quot;, alpha=0.7)
 plt.show()
 </pre></div>
 </div>
@@ -360,10 +362,12 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span># ガウスノイズと非ガウスノイズ（指数分布）の生成
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># ガウスノイズと非ガウスノイズ（指数分布）の生成
 np.random.seed(42)
 gauss_noise = TimeSeries(np.random.normal(0, 1, 1000), dt=0.01, name=&quot;Gaussian&quot;)
-exp_noise = TimeSeries(np.random.exponential(1, 1000) - 1, dt=0.01, name=&quot;Non-Gaussian&quot;) # 中心化
+exp_noise = TimeSeries(
+    np.random.exponential(1, 1000) - 1, dt=0.01, name=&quot;Non-Gaussian&quot;
+)  # 中心化
 
 # プロット
 plot = exp_noise.plot(label=&quot;Non-Gaussian&quot;)
@@ -372,10 +376,14 @@ plot.gca().legend()
 plot.show()
 
 # 統計量の計算
-print(f&quot;Gaussian:     Skewness={gauss_noise.skewness():.3f}, Kurtosis={gauss_noise.kurtosis():.3f}&quot;)
-print(f&quot;Non-Gaussian: Skewness={exp_noise.skewness():.3f}, Kurtosis={exp_noise.kurtosis():.3f}&quot;)
+print(
+    f&quot;Gaussian:     Skewness={gauss_noise.skewness():.3f}, Kurtosis={gauss_noise.kurtosis():.3f}&quot;
+)
+print(
+    f&quot;Non-Gaussian: Skewness={exp_noise.skewness():.3f}, Kurtosis={exp_noise.kurtosis():.3f}&quot;
+)
 print(&quot;Note: ガウス分布はSkewness~0, Kurtosis~0 (Fisher定義) になります。&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -403,13 +411,15 @@ Note: ガウス分布はSkewness~0, Kurtosis~0 (Fisher定義) になります。
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span>try:
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     dcor_val = ts_a.distance_correlation(ts_c)
     print(f&quot;Distance Correlation (A vs C): {dcor_val:.3f}&quot;)
     print(f&quot;Pearson Correlation  (A vs C): {ts_a.pcc(ts_c):.3f}&quot;)
 except ImportError:
-    print(&quot;dcorパッケージがインストールされていません。pip install dcor でインストールしてください。&quot;)
-<br/></pre></div>
+    print(
+        &quot;dcorパッケージがインストールされていません。pip install dcor でインストールしてください。&quot;
+    )
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -429,14 +439,14 @@ Pearson Correlation  (A vs C): -0.071
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span># 因果関係のあるデータを生成 (X -&gt; Y)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 因果関係のあるデータを生成 (X -&gt; Y)
 np.random.seed(0)
 n = 200
 x_val = np.random.randn(n)
 y_val = np.zeros(n)
 # YはXの1ステップ前の値に依存
 for i in range(1, n):
-    y_val[i] = 0.5 * y_val[i-1] + 0.8 * x_val[i-1] + 0.1 * np.random.randn()
+    y_val[i] = 0.5 * y_val[i - 1] + 0.8 * x_val[i - 1] + 0.1 * np.random.randn()
 
 ts_x = TimeSeries(x_val, dt=1, name=&quot;Cause (X)&quot;)
 ts_y = TimeSeries(y_val, dt=1, name=&quot;Effect (Y)&quot;)
@@ -448,11 +458,17 @@ try:
     # YがXの原因か？ -&gt; p値が大きいはず
     p_yx = ts_x.granger_causality(ts_y, maxlag=5)
 
-    print(f&quot;Granger Causality X -&gt; Y (p-value): {p_xy:.4f} {&#39;(Significant)&#39; if p_xy &lt; 0.05 else &#39;&#39;}&quot;)
-    print(f&quot;Granger Causality Y -&gt; X (p-value): {p_yx:.4f} {&#39;(Significant)&#39; if p_yx &lt; 0.05 else &#39;&#39;}&quot;)
+    print(
+        f&quot;Granger Causality X -&gt; Y (p-value): {p_xy:.4f} {&#39;(Significant)&#39; if p_xy &lt; 0.05 else &#39;&#39;}&quot;
+    )
+    print(
+        f&quot;Granger Causality Y -&gt; X (p-value): {p_yx:.4f} {&#39;(Significant)&#39; if p_yx &lt; 0.05 else &#39;&#39;}&quot;
+    )
 except ImportError:
-    print(&quot;statsmodelsパッケージがインストールされていません。pip install statsmodels でインストールしてください。&quot;)
-<br/></pre></div>
+    print(
+        &quot;statsmodelsパッケージがインストールされていません。pip install statsmodels でインストールしてください。&quot;
+    )
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">

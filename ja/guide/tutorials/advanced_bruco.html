@@ -172,7 +172,7 @@ from gwexpy.noise.asd import from_pygwinc
 from gwexpy.noise.wave import from_asd
 from gwexpy.plot import Plot
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -190,48 +190,63 @@ t = np.arange(0, duration, 1 / sample_rate)
 
 # aLIGOの感度曲線(ASD)を取得
 fmax = sample_rate / 2  # Nyquist frequency
-asd_aligo = from_pygwinc(&#39;aLIGO&#39;, fmin=4.0, fmax=fmax, df=1.0/duration, quantity=&#39;strain&#39;)
+asd_aligo = from_pygwinc(
+    &quot;aLIGO&quot;, fmin=4.0, fmax=fmax, df=1.0 / duration, quantity=&quot;strain&quot;
+)
 
 # aLIGOの感度曲線に基づくターゲットノイズを生成
 target = from_asd(asd_aligo, duration, sample_rate, t0=0, rng=rng).highpass(1)
-target.channel=&quot;H1:TARGET&quot;
+target.channel = &quot;H1:TARGET&quot;
 
 # 補助チャンネル用の信号
 fast_line = np.sin(2 * np.pi * 60.0 * t)
 slow_motion = 70 * np.sin(2 * np.pi * 2.3 * t) + 30 * np.sin(2 * np.pi * 7.1 * t)
 
-aux1_data = 0.8 * fast_line   + 0.2 * rng.normal(0, 1.0, size=t.size)
-aux2_data = 0.9 * slow_motion + 0.2 * rng.normal(0, 1.0, size=t.size) +1
-aux1 = TimeSeries(aux1_data, sample_rate=sample_rate, t0=0,unit=&#39;V&#39;, channel=&quot;H1:AUX1_FAST&quot;)
-aux2 = TimeSeries(aux2_data, sample_rate=sample_rate, t0=0,unit=&#39;V&#39;, channel=&quot;H1:AUX2_SLOW&quot;).lowpass(30)
+aux1_data = 0.8 * fast_line + 0.2 * rng.normal(0, 1.0, size=t.size)
+aux2_data = 0.9 * slow_motion + 0.2 * rng.normal(0, 1.0, size=t.size) + 1
+aux1 = TimeSeries(
+    aux1_data, sample_rate=sample_rate, t0=0, unit=&quot;V&quot;, channel=&quot;H1:AUX1_FAST&quot;
+)
+aux2 = TimeSeries(
+    aux2_data, sample_rate=sample_rate, t0=0, unit=&quot;V&quot;, channel=&quot;H1:AUX2_SLOW&quot;
+).lowpass(30)
 
 # ターゲットへの注入信号: aLIGOベースノイズ + 線形カップリング + 非線形注入
-target = target + 1e-22*target.unit * (aux1/u.V + aux2/u.V + (aux1/u.V/2)**2 + 0.01*(aux1*aux2/u.V**2))
+target = target + 1e-22 * target.unit * (
+    aux1 / u.V + aux2 / u.V + (aux1 / u.V / 2) ** 2 + 0.01 * (aux1 * aux2 / u.V**2)
+)
 
 
 target.name = target.channel
 aux1.name = aux1.channel
 aux2.name = aux2.channel
 
-aux_dict = TimeSeriesDict({
-    aux1.channel: aux1,
-    aux2.channel: aux2,
-})
+aux_dict = TimeSeriesDict(
+    {
+        aux1.channel: aux1,
+        aux2.channel: aux2,
+    }
+)
 
-print(f&#39;aLIGO ASD at 100 Hz: {asd_aligo.crop(99, 101).value[0]:.2e} strain/sqrt(Hz)&#39;)
-print(f&#39;Target data std: {target.std():.2e}&#39;)
+print(f&quot;aLIGO ASD at 100 Hz: {asd_aligo.crop(99, 101).value[0]:.2e} strain/sqrt(Hz)&quot;)
+print(f&quot;Target data std: {target.std():.2e}&quot;)
 
-plot = Plot([target.asd(8,4),asd_aligo],aux1.asd(8,4),aux2.asd(8,4),
-            figsize=(10,12), sharex=True)
+plot = Plot(
+    [target.asd(8, 4), asd_aligo],
+    aux1.asd(8, 4),
+    aux2.asd(8, 4),
+    figsize=(10, 12),
+    sharex=True,
+)
 axes = plot.get_axes()
-axes[0].set_xlim(1,1e3)
-axes[0].set_ylim(1e-24,1e-19)
-axes[1].set_ylim(1e-3,1e1)
-axes[2].set_ylim(1e-4,1e3)
-axes[0].legend([target.name,&#39;Model ASD&#39;])
+axes[0].set_xlim(1, 1e3)
+axes[0].set_ylim(1e-24, 1e-19)
+axes[1].set_ylim(1e-3, 1e1)
+axes[2].set_ylim(1e-4, 1e3)
+axes[0].legend([target.name, &quot;Model ASD&quot;])
 axes[1].legend([aux1.name])
 axes[2].legend([aux2.name])
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -270,7 +285,7 @@ Target data std: 5.08e-19
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span># Brucoの初期化。
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Brucoの初期化。
 # ここではデータは全て手動で渡すため、NDSからの自動取得チャンネルリスト(aux_channels)は空リストを指定します。
 bruco = Bruco(target_channel=target.name, aux_channels=[])
 
@@ -283,10 +298,10 @@ result = bruco.compute(
     nproc=1,
     batch_size=2,
     top_n=3,
-    target_data=target, # 事前に生成したターゲットデータ
-    aux_data=aux_dict   # 事前に生成した補助チャンネルデータの辞書
+    target_data=target,  # 事前に生成したターゲットデータ
+    aux_data=aux_dict,  # 事前に生成した補助チャンネルデータの辞書
 )
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -303,7 +318,7 @@ df_sorted = (
 )
 
 df_sorted
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -466,13 +481,13 @@ df_sorted
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>result.plot_projection(coherence_threshold=0.5)
-plt.xlim(4,1000)
+plt.xlim(4, 1000)
 plt.show()
 
 result.plot_coherence(coherence_threshold=0.5)
-plt.xlim(1,1000)
+plt.xlim(1, 1000)
 plt.show()
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -495,7 +510,7 @@ plt.show()
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>report_path = result.generate_report(&quot;bruco_report&quot;, coherence_threshold=0.4)
 report_path
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -523,7 +538,7 @@ ts_sq.name = f&quot;{aux1.name}^2&quot;
 
 ts_prod = aux1 * aux2
 ts_prod.name = f&quot;{aux1.name}*{aux2.name}&quot;
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -537,7 +552,7 @@ coh_sq = engine.compute_coherence(ts_sq)
 coh_prod = engine.compute_coherence(ts_prod)
 
 freqs = engine.frequencies
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -555,7 +570,7 @@ ax.set_ylim(0.0, 1.0)
 ax.grid(True, which=&quot;both&quot;, ls=&quot;-&quot;, alpha=0.4)
 ax.legend()
 plt.show()
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -590,14 +605,14 @@ dominant_coh = coh_map[dominant_label]
 
 # Brucoの投影式と同じ定義で、仮想チャンネルの寄与をASDで推定
 projected_asd = target_asd_vals * np.sqrt(dominant_coh)
-residual_asd_vals = np.sqrt(np.maximum(target_asd_vals ** 2 - projected_asd ** 2, 0.0))
+residual_asd_vals = np.sqrt(np.maximum(target_asd_vals**2 - projected_asd**2, 0.0))
 
 residual_asd = target_asd.copy()
 residual_asd.value[:] = residual_asd_vals
 
 fig, ax = plt.subplots(figsize=(12, 6))
-#ax.loglog(target_asd.frequencies.value, target_asd_vals, label=&quot;Target ASD&quot;)
-#ax.loglog(target_asd.frequencies.value, residual_asd_vals, label=&quot;Residual ASD&quot;)
+# ax.loglog(target_asd.frequencies.value, target_asd_vals, label=&quot;Target ASD&quot;)
+# ax.loglog(target_asd.frequencies.value, residual_asd_vals, label=&quot;Residual ASD&quot;)
 ax.loglog(target_asd, label=&quot;Target ASD&quot;)
 ax.loglog(residual_asd, label=&quot;Residual ASD&quot;)
 ax.set_xlabel(&quot;Frequency [Hz]&quot;)
@@ -607,13 +622,13 @@ ax.legend()
 plt.show()
 
 # BNS Rangeの比較
-bns_range_before = inspiral_range(target_asd ** 2, mass1=1.4, mass2=1.4, fmin=10)
-bns_range_after = inspiral_range(residual_asd ** 2, mass1=1.4, mass2=1.4, fmin=10)
+bns_range_before = inspiral_range(target_asd**2, mass1=1.4, mass2=1.4, fmin=10)
+bns_range_after = inspiral_range(residual_asd**2, mass1=1.4, mass2=1.4, fmin=10)
 
 print(f&quot;Dominant hypothesis: {dominant_label}&quot;)
 print(f&quot;BNS range (before): {bns_range_before.to_value(u.Mpc):.2f} Mpc&quot;)
 print(f&quot;BNS range (after):  {bns_range_after.to_value(u.Mpc):.2f} Mpc&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -675,7 +690,7 @@ cleaned_fft = main_fft - Y_proj
 
 # 時間領域へ
 cleaned_ts = cleaned_fft.ifft()
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -695,13 +710,15 @@ ax = fig.gca()
 
 # 元のデータと除去後のデータを重ねてプロット (最初の1秒間)
 plot_duration = 1.0
-ts.crop(end=ts.t0.value + plot_duration).plot(ax=ax, label=&#39;Original&#39;, alpha=0.7)  # noqa: F821
-cleaned_ts.crop(end=ts.t0.value + plot_duration).plot(ax=ax, label=&#39;Cleaned (Bruco)&#39;, linestyle=&#39;--&#39;, alpha=0.8)  # noqa: F821
+ts.crop(end=ts.t0.value + plot_duration).plot(ax=ax, label=&quot;Original&quot;, alpha=0.7)  # noqa: F821
+cleaned_ts.crop(end=ts.t0.value + plot_duration).plot(
+    ax=ax, label=&quot;Cleaned (Bruco)&quot;, linestyle=&quot;--&quot;, alpha=0.8
+)  # noqa: F821
 
-ax.set_title(f&#39;Noise Subtraction Result (First {plot_duration}s)&#39;)
+ax.set_title(f&quot;Noise Subtraction Result (First {plot_duration}s)&quot;)
 ax.legend()
 plt.show()
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 </section>

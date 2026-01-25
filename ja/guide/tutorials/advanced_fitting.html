@@ -127,7 +127,7 @@ from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.plot import Plot
 from gwexpy.timeseries import TimeSeries
 
-plt.rcParams[&#39;figure.figsize&#39;] = (10, 6)
+plt.rcParams[&quot;figure.figsize&quot;] = (10, 6)
 </pre></div>
 </div>
 </div>
@@ -140,18 +140,19 @@ plt.rcParams[&#39;figure.figsize&#39;] = (10, 6)
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># モデル関数の定義 (ガウス関数)
 def gaussian(x, a, mu, sigma):
-    return a * np.exp(-(x - mu)**2 / (2 * sigma**2))
+    return a * np.exp(-((x - mu) ** 2) / (2 * sigma**2))
+
 
 # ダミーデータの生成
 np.random.seed(42)
 x = np.linspace(-5, 5, 100)
-true_params = {&#39;a&#39;: 10, &#39;mu&#39;: 0.5, &#39;sigma&#39;: 1.2}
+true_params = {&quot;a&quot;: 10, &quot;mu&quot;: 0.5, &quot;sigma&quot;: 1.2}
 y_true = gaussian(x, **true_params)
 y_noise = y_true + np.random.normal(0, 1.0, size=len(x))
 
 # TimeSeries オブジェクトの作成
-ts = TimeSeries(y_noise, dt=0.1, name=&#39;Noisy Gaussian&#39;, unit=&#39;V&#39;)
-ts.plot(title=&#39;Noisy Data for Gaussian Fit&#39;);
+ts = TimeSeries(y_noise, dt=0.1, name=&quot;Noisy Gaussian&quot;, unit=&quot;V&quot;)
+ts.plot(title=&quot;Noisy Data for Gaussian Fit&quot;);
 </pre></div>
 </div>
 </div>
@@ -172,7 +173,7 @@ ts.plot(title=&#39;Noisy Data for Gaussian Fit&#39;);
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># フィッティング
 # p0 で初期値を指定します
-result = ts.fit(gaussian, sigma=0.8, p0={&#39;a&#39;: 5, &#39;mu&#39;: 5, &#39;sigma&#39;: 1})
+result = ts.fit(gaussian, sigma=0.8, p0={&quot;a&quot;: 5, &quot;mu&quot;: 5, &quot;sigma&quot;: 1})
 
 # 結果の表示
 display(result)
@@ -294,7 +295,7 @@ print(&quot;NDOF:&quot;, result.ndof)
 
 # プロット
 fig, ax = plt.subplots(figsize=(10, 6))
-result.plot(ax=ax, color=&#39;red&#39;, linewidth=2)
+result.plot(ax=ax, color=&quot;red&quot;, linewidth=2)
 ax.set_title(&quot;Gaussian Fit Demo&quot;)
 # auto-gps を使う場合は、xlabel は GWpy に任せる（epoch を含むラベルになる）
 ax.set_ylabel(&quot;Amplitude&quot;)
@@ -331,11 +332,9 @@ NDOF: 97
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 文字列 &#39;gaus&#39; を指定してフィッティング
 # 注意: 定義済みモデルのパラメータ名はモデルごとに決まっています (Gaussianの場合は A, mu, sigma)
-result_str = ts.fit(&#39;gaus&#39;,
-                    p0={&#39;A&#39;: 10, &#39;mu&#39;: 5, &#39;sigma&#39;: 1.0},
-                    x_range=(2, 8),
-                    sigma=0.8
-                   )
+result_str = ts.fit(
+    &quot;gaus&quot;, p0={&quot;A&quot;: 10, &quot;mu&quot;: 5, &quot;sigma&quot;: 1.0}, x_range=(2, 8), sigma=0.8
+)
 
 # 結果の表示
 display(result_str)
@@ -465,24 +464,25 @@ def pole_model(f, A, f0, Q):
     # H(f) = A / [ (f0^2 - f^2) + i * (f0 * f / Q) ]
     omega = 2 * np.pi * f
     omega0 = 2 * np.pi * f0
-    return A / ( (omega0**2 - omega**2) + 1j * (omega0 * omega / Q) )
+    return A / ((omega0**2 - omega**2) + 1j * (omega0 * omega / Q))
+
 
 # 2. データ生成
 f = np.linspace(10, 1000, 1000)
-p_true = {&#39;A&#39;: 1e7, &#39;f0&#39;: 300, &#39;Q&#39;: 10}
+p_true = {&quot;A&quot;: 1e7, &quot;f0&quot;: 300, &quot;Q&quot;: 10}
 data_clean = pole_model(f, **p_true)
 
 # ノイズ付加 (実部・虚部独立)
 np.random.seed(0)
 noise_re = np.random.normal(0, 5, len(f))
 noise_im = np.random.normal(0, 5, len(f))
-data_noisy = data_clean + 0.2*noise_re + 0.2j * noise_im
+data_noisy = data_clean + 0.2 * noise_re + 0.2j * noise_im
 
 # FrequencySeries 作成
-fs = FrequencySeries(data_noisy, frequencies=f, name=&#39;Transfer Function&#39;)
-plot = Plot(fs.abs(), fs.real, fs.imag, xscale=&#39;log&#39;, yscale=&#39;symlog&#39;, alpha=0.8)
-plt.legend([&#39;|H(f)|&#39;,&#39;Re(H(f))&#39;,&#39;Im(H(f))&#39;])
-plt.title(&#39;Noisy Transfer Function Data&#39;)
+fs = FrequencySeries(data_noisy, frequencies=f, name=&quot;Transfer Function&quot;)
+plot = Plot(fs.abs(), fs.real, fs.imag, xscale=&quot;log&quot;, yscale=&quot;symlog&quot;, alpha=0.8)
+plt.legend([&quot;|H(f)|&quot;, &quot;Re(H(f))&quot;, &quot;Im(H(f))&quot;])
+plt.title(&quot;Noisy Transfer Function Data&quot;)
 plt.tight_layout()
 plt.show()
 </pre></div>
@@ -502,8 +502,7 @@ plt.show()
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 3. フィッティング
 print(&quot;Fit Start...&quot;)
 # 初期値はずらしておく
-result_complex = fs.fit(pole_model, sigma=1.0,
-                        p0={&#39;A&#39;: 0.8e7, &#39;f0&#39;: 320, &#39;Q&#39;: 8})
+result_complex = fs.fit(pole_model, sigma=1.0, p0={&quot;A&quot;: 0.8e7, &quot;f0&quot;: 320, &quot;Q&quot;: 8})
 
 # 結果表示
 display(result_complex)
@@ -511,7 +510,7 @@ display(result_complex)
 # 4. プロット (ボード線図)
 # 自動的に振幅と位相のプロットになります
 result_complex.bode_plot()
-plt.gcf().get_axes()[0].set_ylim(1e-1,1e2)
+plt.gcf().get_axes()[0].set_ylim(1e-1, 1e2)
 plt.tight_layout()
 plt.show()
 </pre></div>
@@ -690,12 +689,12 @@ except Exception as e:
 x = np.logspace(0, 2, 100)
 y = power_law(x, A=10, alpha=-1.5) * (1 + 0.1 * np.random.normal(size=len(x)))
 fs = FrequencySeries(y, frequencies=x)
-res_pl = fs.fit(&#39;power_law&#39;, p0={&#39;A&#39;: 5, &#39;alpha&#39;: -1},sigma=y*0.1)
-print(&quot;Power law alpha:&quot;, res_pl.params[&#39;alpha&#39;])
+res_pl = fs.fit(&quot;power_law&quot;, p0={&quot;A&quot;: 5, &quot;alpha&quot;: -1}, sigma=y * 0.1)
+print(&quot;Power law alpha:&quot;, res_pl.params[&quot;alpha&quot;])
 display(res_pl)
 res_pl.plot()
-plt.xscale(&#39;log&#39;)
-plt.yscale(&#39;log&#39;)
+plt.xscale(&quot;log&quot;)
+plt.yscale(&quot;log&quot;)
 plt.show()
 plt.close()
 
@@ -703,11 +702,13 @@ plt.close()
 t = np.linspace(0, 1, 1000)
 y_osc = damped_oscillation(t, A=1, tau=0.3, f=10) + 0.05 * np.random.normal(size=len(t))
 ts_osc = TimeSeries(y_osc, times=t)
-res_osc = ts_osc.fit(&#39;damped_oscillation&#39;, p0={&#39;A&#39;: 0.5, &#39;tau&#39;: 0.5, &#39;f&#39;: 12},sigma=0.05)
-print(&quot;Damped oscillation frequency:&quot;, res_osc.params[&#39;f&#39;])
+res_osc = ts_osc.fit(
+    &quot;damped_oscillation&quot;, p0={&quot;A&quot;: 0.5, &quot;tau&quot;: 0.5, &quot;f&quot;: 12}, sigma=0.05
+)
+print(&quot;Damped oscillation frequency:&quot;, res_osc.params[&quot;f&quot;])
 display(res_osc)
 res_osc.plot();
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">

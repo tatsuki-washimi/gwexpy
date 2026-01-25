@@ -170,7 +170,7 @@ field = ScalarField(
     axis3=z,
     axis_names=[&quot;t&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;],
     axis0_domain=&quot;time&quot;,
-    space_domain=&quot;real&quot;
+    space_domain=&quot;real&quot;,
 )
 
 print(f&quot;Shape: {field.shape}&quot;)
@@ -279,7 +279,7 @@ field_time = ScalarField(
     axis3=x_small.copy(),
     axis_names=[&quot;t&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;],
     axis0_domain=&quot;time&quot;,
-    space_domain=&quot;real&quot;
+    space_domain=&quot;real&quot;,
 )
 
 # FFT実行
@@ -311,11 +311,13 @@ spectrum = np.abs(field_freq[:, 0, 0, 0].value).squeeze()
 freqs = field_freq._axis0_index.value
 
 plt.figure(figsize=(10, 4))
-plt.plot(freqs, spectrum, &#39;b-&#39;, linewidth=2)
-plt.axvline(signal_freq, color=&#39;r&#39;, linestyle=&#39;--&#39;, label=f&#39;{signal_freq} Hz (入力信号)&#39;)
-plt.xlabel(&#39;Frequency [Hz]&#39;)
-plt.ylabel(&#39;Amplitude [V]&#39;)
-plt.title(&#39;FFT Spectrum (ScalarField)&#39;)
+plt.plot(freqs, spectrum, &quot;b-&quot;, linewidth=2)
+plt.axvline(
+    signal_freq, color=&quot;r&quot;, linestyle=&quot;--&quot;, label=f&quot;{signal_freq} Hz (入力信号)&quot;
+)
+plt.xlabel(&quot;Frequency [Hz]&quot;)
+plt.ylabel(&quot;Amplitude [V]&quot;)
+plt.title(&quot;FFT Spectrum (ScalarField)&quot;)
 plt.xlim(0, 50)
 plt.legend()
 plt.grid(True, alpha=0.3)
@@ -368,11 +370,11 @@ original = field_time[:, 0, 0, 0].value.squeeze()
 reconstructed = field_reconstructed[:, 0, 0, 0].value.squeeze()
 
 plt.figure(figsize=(10, 4))
-plt.plot(t_dense.value, original, &#39;b-&#39;, label=&#39;Original&#39;, alpha=0.7)
-plt.plot(t_dense.value, reconstructed.real, &#39;r--&#39;, label=&#39;Reconstructed&#39;, alpha=0.7)
-plt.xlabel(&#39;Time [s]&#39;)
-plt.ylabel(&#39;Amplitude [V]&#39;)
-plt.title(&#39;IFFT: Frequency → Time&#39;)
+plt.plot(t_dense.value, original, &quot;b-&quot;, label=&quot;Original&quot;, alpha=0.7)
+plt.plot(t_dense.value, reconstructed.real, &quot;r--&quot;, label=&quot;Reconstructed&quot;, alpha=0.7)
+plt.xlabel(&quot;Time [s]&quot;)
+plt.ylabel(&quot;Amplitude [V]&quot;)
+plt.title(&quot;IFFT: Frequency → Time&quot;)
 plt.legend()
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
@@ -423,7 +425,7 @@ field_real = ScalarField(
     axis3=z_grid,
     axis_names=[&quot;t&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;],
     axis0_domain=&quot;time&quot;,
-    space_domain=&quot;real&quot;
+    space_domain=&quot;real&quot;,
 )
 
 # X軸のみFFT
@@ -455,12 +457,12 @@ kx_spectrum = np.abs(field_kx[0, :, 0, 0].value).squeeze()
 kx_values = field_kx._axis1_index.value
 
 plt.figure(figsize=(10, 4))
-plt.plot(kx_values, kx_spectrum, &#39;b-&#39;, linewidth=2)
-plt.axvline(k_expected, color=&#39;r&#39;, linestyle=&#39;--&#39;, label=f&#39;k = {k_expected:.2f} rad/m&#39;)
-plt.axvline(-k_expected, color=&#39;r&#39;, linestyle=&#39;--&#39;)
-plt.xlabel(&#39;Wavenumber kx [rad/m]&#39;)
-plt.ylabel(&#39;Amplitude&#39;)
-plt.title(&#39;Spatial FFT: Real → K space&#39;)
+plt.plot(kx_values, kx_spectrum, &quot;b-&quot;, linewidth=2)
+plt.axvline(k_expected, color=&quot;r&quot;, linestyle=&quot;--&quot;, label=f&quot;k = {k_expected:.2f} rad/m&quot;)
+plt.axvline(-k_expected, color=&quot;r&quot;, linestyle=&quot;--&quot;)
+plt.xlabel(&quot;Wavenumber kx [rad/m]&quot;)
+plt.ylabel(&quot;Amplitude&quot;)
+plt.title(&quot;Spatial FFT: Real → K space&quot;)
 plt.legend()
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
@@ -491,8 +493,10 @@ Peak wavenumber: 1.57 rad/m (expected: ±1.57 rad/m)
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 波長を計算
 wavelengths = field_kx.wavelength(&quot;kx&quot;)
 
-print(f&quot;Wavelength at k={k_expected:.2f}: {2*np.pi/k_expected:.2f} m&quot;)
-print(f&quot;Calculated wavelengths range: {wavelengths.value[wavelengths.value &gt; 0].min():.2f} - {wavelengths.value[wavelengths.value &lt; np.inf].max():.2f} m&quot;)
+print(f&quot;Wavelength at k={k_expected:.2f}: {2 * np.pi / k_expected:.2f} m&quot;)
+print(
+    f&quot;Calculated wavelengths range: {wavelengths.value[wavelengths.value &gt; 0].min():.2f} - {wavelengths.value[wavelengths.value &lt; np.inf].max():.2f} m&quot;
+)
 </pre></div>
 </div>
 </div>
@@ -564,7 +568,7 @@ for amp in amplitudes:
         axis3=np.arange(4) * 0.5 * u.m,
         axis_names=[&quot;t&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;],
         axis0_domain=&quot;time&quot;,
-        space_domain=&quot;real&quot;
+        space_domain=&quot;real&quot;,
     )
     fields.append(field_temp)
 
@@ -615,11 +619,10 @@ All fields transformed to frequency domain:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 名前付きフィールドの辞書を作成
-field_dict = FieldDict({
-    &quot;channel_A&quot;: fields[0],
-    &quot;channel_B&quot;: fields[1],
-    &quot;channel_C&quot;: fields[2]
-}, validate=True)
+field_dict = FieldDict(
+    {&quot;channel_A&quot;: fields[0], &quot;channel_B&quot;: fields[1], &quot;channel_C&quot;: fields[2]},
+    validate=True,
+)
 
 print(f&quot;Field names: {list(field_dict.keys())}&quot;)
 </pre></div>
@@ -674,9 +677,9 @@ field_test = ScalarField(
     axis1=np.arange(4) * u.m,
     axis2=np.arange(4) * u.m,
     axis3=np.arange(4) * u.m,
-    axis_names=[&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
-    axis0_domain=&#39;time&#39;,
-    space_domain=&#39;real&#39;
+    axis_names=[&quot;t&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;],
+    axis0_domain=&quot;time&quot;,
+    space_domain=&quot;real&quot;,
 )
 
 # Round-trip
@@ -684,9 +687,9 @@ field_roundtrip = field_test.fft_time().ifft_time()
 
 # Check
 max_error_time = np.max(np.abs(field_test.value - field_roundtrip.value.real))
-print(f&#39;時間FFT Round-trip max error: {max_error_time:.2e}&#39;)
-assert max_error_time &lt; 1e-10, &#39;Time FFT round-trip failed!&#39;
-print(&#39;✅ 時間FFT不変量チェック: PASSED&#39;)
+print(f&quot;時間FFT Round-trip max error: {max_error_time:.2e}&quot;)
+assert max_error_time &lt; 1e-10, &quot;Time FFT round-trip failed!&quot;
+print(&quot;✅ 時間FFT不変量チェック: PASSED&quot;)
 </pre></div>
 </div>
 </div>
@@ -707,9 +710,9 @@ print(&#39;✅ 時間FFT不変量チェック: PASSED&#39;)
 field_space_roundtrip = field_test.fft_space().ifft_space()
 
 max_error_space = np.max(np.abs(field_test.value - field_space_roundtrip.value.real))
-print(f&#39;空間FFT Round-trip max error: {max_error_space:.2e}&#39;)
-assert max_error_space &lt; 1e-10, &#39;Space FFT round-trip failed!&#39;
-print(&#39;✅ 空間FFT不変量チェック: PASSED&#39;)
+print(f&quot;空間FFT Round-trip max error: {max_error_space:.2e}&quot;)
+assert max_error_space &lt; 1e-10, &quot;Space FFT round-trip failed!&quot;
+print(&quot;✅ 空間FFT不変量チェック: PASSED&quot;)
 </pre></div>
 </div>
 </div>
@@ -727,18 +730,20 @@ print(&#39;✅ 空間FFT不変量チェック: PASSED&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># K軸の規約チェック: 両側（正負）の波数を持つこと
-field_k = field_test.fft_space(axes=[&#39;x&#39;])
+field_k = field_test.fft_space(axes=[&quot;x&quot;])
 kx_values = field_k._axis1_index.value
 
 has_negative = np.any(kx_values &lt; 0)
 has_positive = np.any(kx_values &gt; 0)
 has_zero = np.any(kx_values == 0)
 
-print(f&#39;K軸に負の値: {has_negative}&#39;)
-print(f&#39;K軸に正の値: {has_positive}&#39;)
-print(f&#39;K軸にゼロ: {has_zero}&#39;)
-assert has_negative and has_positive and has_zero, &#39;K-axis should have positive, negative, and zero values!&#39;
-print(&#39;✅ K軸両側規約チェック: PASSED&#39;)
+print(f&quot;K軸に負の値: {has_negative}&quot;)
+print(f&quot;K軸に正の値: {has_positive}&quot;)
+print(f&quot;K軸にゼロ: {has_zero}&quot;)
+assert has_negative and has_positive and has_zero, (
+    &quot;K-axis should have positive, negative, and zero values!&quot;
+)
+print(&quot;✅ K軸両側規約チェック: PASSED&quot;)
 </pre></div>
 </div>
 </div>
@@ -758,16 +763,16 @@ K軸にゼロ: True
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 波長計算の規約チェック: k=0 のとき wavelength = inf
-wavelengths = field_k.wavelength(&#39;kx&#39;)
+wavelengths = field_k.wavelength(&quot;kx&quot;)
 zero_k_idx = np.where(kx_values == 0)[0]
 
 if len(zero_k_idx) &gt; 0:
     wavelength_at_zero = wavelengths.value.flat[zero_k_idx[0]]
-    print(f&#39;k=0 における波長: {wavelength_at_zero}&#39;)
-    assert np.isinf(wavelength_at_zero), &#39;Wavelength at k=0 should be inf!&#39;
-    print(&#39;✅ k=0 波長チェック: PASSED&#39;)
+    print(f&quot;k=0 における波長: {wavelength_at_zero}&quot;)
+    assert np.isinf(wavelength_at_zero), &quot;Wavelength at k=0 should be inf!&quot;
+    print(&quot;✅ k=0 波長チェック: PASSED&quot;)
 else:
-    print(&#39;(k=0 が軸に含まれていないためスキップ)&#39;)
+    print(&quot;(k=0 が軸に含まれていないためスキップ)&quot;)
 </pre></div>
 </div>
 </div>

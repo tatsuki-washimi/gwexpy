@@ -298,7 +298,7 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spec_matrix = tsm.spectrogram(2, fftlength=0.5, overlap=0.25 )
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spec_matrix = tsm.spectrogram(2, fftlength=0.5, overlap=0.25)
 
 print(&quot;Type:&quot;, type(spec_matrix))
 print(&quot;Shape:&quot;, spec_matrix.shape)  # (Batch, Time, Freq)
@@ -431,6 +431,7 @@ plot5.show()
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># PyTorch Tensor への変換
 try:
     import torch
+
     _ = torch
     torch_tensor = spec_matrix.to_torch()
     print(&quot;PyTorch Tensor:&quot;, type(torch_tensor))

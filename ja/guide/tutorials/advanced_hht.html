@@ -134,9 +134,12 @@ from gwexpy.timeseries import TimeSeries
 # PyEMDの確認
 try:
     import PyEMD
+
     print(f&quot;{PyEMD.__name__} is installed and ready.&quot;)
 except ImportError:
-    raise ImportError(&quot;このチュートリアルには &#39;PyEMD&#39; (EMD-signal) が必要です。 pip install EMD-signal を実行してください。&quot;)
+    raise ImportError(
+        &quot;このチュートリアルには &#39;PyEMD&#39; (EMD-signal) が必要です。 pip install EMD-signal を実行してください。&quot;
+    )
 </pre></div>
 </div>
 </div>
@@ -170,7 +173,7 @@ s2 = 1.0 * np.sin(2 * np.pi * 80 * t * (1 + 0.5 * t))  # チャープ (80Hz -&gt
 trend = 2.0 * t  # 線形トレンド
 
 # TimeSeriesオブジェクトの作成
-data = TimeSeries(s1 + s2 + trend, dt=dt, unit=&#39;V&#39;, name=&#39;Simulation Data&#39;)
+data = TimeSeries(s1 + s2 + trend, dt=dt, unit=&quot;V&quot;, name=&quot;Simulation Data&quot;)
 
 # プロット
 plot = data.plot(title=&quot;Original Simulation Signal&quot;)
@@ -196,7 +199,7 @@ plot.show()
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># EMDの実行
 # method=&#39;eemd&#39; とすると Ensemble EMD が実行されます (計算時間がかかります)
-imfs = data.emd(method=&#39;emd&#39;)
+imfs = data.emd(method=&quot;emd&quot;)
 
 print(&quot;抽出されたIMF:&quot;, list(imfs.keys()))
 
@@ -258,13 +261,10 @@ for key in list(imfs.keys())[:3]:  # Loop over first 3 IMFs
     # 瞬時振幅 (包絡線) の計算
     inst_amp = imf.envelope()
 
-    hht_results[key] = {
-        &#39;freq&#39;: inst_freq,
-        &#39;amp&#39;: inst_amp
-    }
+    hht_results[key] = {&quot;freq&quot;: inst_freq, &quot;amp&quot;: inst_amp}
 
     # 瞬時周波数の時間変化をプロット
-    plt.plot(inst_freq.times.value, inst_freq.value, label=f&#39;{key} Freq&#39;)
+    plt.plot(inst_freq.times.value, inst_freq.value, label=f&quot;{key} Freq&quot;)
 
 plt.title(&quot;Instantaneous Frequency of IMFs&quot;)
 plt.xlabel(&quot;Time [s]&quot;)
@@ -295,22 +295,30 @@ plt.show()
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(10, 6))
 
 for key, res in hht_results.items():
-    t_vals = res[&#39;freq&#39;].times.value
-    f_vals = res[&#39;freq&#39;].value
-    a_vals = res[&#39;amp&#39;].value
+    t_vals = res[&quot;freq&quot;].times.value
+    f_vals = res[&quot;freq&quot;].value
+    a_vals = res[&quot;amp&quot;].value
 
     # 周波数が負や極端に大きい値になることがあるためフィルタリング
     mask = (f_vals &gt; 0) &amp; (f_vals &lt; 200)
 
-    plt.scatter(t_vals[mask], f_vals[mask], c=a_vals[mask],
-                cmap=&#39;viridis&#39;, s=5, alpha=0.7, vmin=0, vmax=1.0)
+    plt.scatter(
+        t_vals[mask],
+        f_vals[mask],
+        c=a_vals[mask],
+        cmap=&quot;viridis&quot;,
+        s=5,
+        alpha=0.7,
+        vmin=0,
+        vmax=1.0,
+    )
 
-plt.colorbar(label=&#39;Amplitude [V]&#39;)
-plt.xlabel(&#39;Time [s]&#39;)
-plt.ylabel(&#39;Frequency [Hz]&#39;)
-plt.title(&#39;Hilbert Spectrum (Scatter Plot)&#39;)
+plt.colorbar(label=&quot;Amplitude [V]&quot;)
+plt.xlabel(&quot;Time [s]&quot;)
+plt.ylabel(&quot;Frequency [Hz]&quot;)
+plt.title(&quot;Hilbert Spectrum (Scatter Plot)&quot;)
 plt.ylim(0, 150)
-plt.grid(True, alpha=0.3, linestyle=&#39;--&#39;)
+plt.grid(True, alpha=0.3, linestyle=&quot;--&quot;)
 plt.show()
 </pre></div>
 </div>

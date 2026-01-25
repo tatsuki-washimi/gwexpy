@@ -125,26 +125,27 @@ import numpy as np
 from gwexpy.plot import SkyMap
 
 # Create SkyMap with Mollweide projection (default)
-fig = SkyMap(figsize=(10, 5), projection=&#39;mollweide&#39;)
+fig = SkyMap(figsize=(10, 5), projection=&quot;mollweide&quot;)
 
 # Add synthetic HEALPix data if ligo.skymap is available
 try:
     import ligo.skymap
+
     _ = ligo.skymap
     nside = 16
     npix = 12 * nside**2
     # Generate a dummy central peak
-    map_data = np.exp(-0.5 * (np.arange(npix) - npix//2)**2 / (npix//10)**2)
-    fig.add_healpix(map_data, cmap=&#39;viridis&#39;)
+    map_data = np.exp(-0.5 * (np.arange(npix) - npix // 2) ** 2 / (npix // 10) ** 2)
+    fig.add_healpix(map_data, cmap=&quot;viridis&quot;)
 except ImportError:
     print(&quot;ligo.skymap not installed.&quot;)
 
 # Mark some astronomical targets
 # Crab Nebula (RA: 83.63 deg, Dec: 22.01 deg)
-fig.mark_target(83.63, 22.01, label=&quot;Crab Nebula&quot;, color=&#39;red&#39;, marker=&#39;*&#39;)
+fig.mark_target(83.63, 22.01, label=&quot;Crab Nebula&quot;, color=&quot;red&quot;, marker=&quot;*&quot;)
 
 # Other targets
-fig.mark_target([150, 250], [-30, 45], label=&quot;Other Sources&quot;, color=&#39;white&#39;, marker=&#39;o&#39;)
+fig.mark_target([150, 250], [-30, 45], label=&quot;Other Sources&quot;, color=&quot;white&quot;, marker=&quot;o&quot;)
 
 plt.show()
 </pre></div>
@@ -170,19 +171,19 @@ ligo.skymap not installed.
 
 # GeoMap を作成 with Robinson projection centered on 135E (Japan)
 try:
-    gmap = GeoMap(projection=&#39;Robinson&#39;, center_lon=135)
+    gmap = GeoMap(projection=&quot;Robinson&quot;, center_lon=135)
 
     # Add map features
-    gmap.add_coastlines(resolution=&#39;low&#39;, color=&#39;black&#39;)
-    gmap.fill_continents(color=&#39;wheat&#39;)
-    gmap.fill_oceans(color=&#39;lightblue&#39;)
+    gmap.add_coastlines(resolution=&quot;low&quot;, color=&quot;black&quot;)
+    gmap.fill_continents(color=&quot;wheat&quot;)
+    gmap.fill_oceans(color=&quot;lightblue&quot;)
 
     # Plot standard detectors (KAGRA, LIGO, Virgo, GEO)
-    for det in [&#39;K1&#39;, &#39;H1&#39;, &#39;L1&#39;, &#39;V1&#39;, &#39;G1&#39;]:
+    for det in [&quot;K1&quot;, &quot;H1&quot;, &quot;L1&quot;, &quot;V1&quot;, &quot;G1&quot;]:
         gmap.plot_detector(det, label=True)
 
     # Plot an arbitrary point
-    gmap.plot(x=170.5, y=-23.6, marker=&#39;o&#39;, color=&#39;purple&#39;, markersize=12)
+    gmap.plot(x=170.5, y=-23.6, marker=&quot;o&quot;, color=&quot;purple&quot;, markersize=12)
 
     gmap.show()
 except ImportError as e:
@@ -211,17 +212,17 @@ except Exception as e:
 
 # 日本周辺を表示 (region=&#39;JP&#39; を指定)
 # 拡大表示のため Mercator 投影法を使用し、枠線を詳しく表示 (frame=&#39;afg&#39;)
-geo_jp = GeoMap(projection=&#39;Mercator&#39;, region=&#39;JP&#39;, frame=&#39;afg&#39;)
+geo_jp = GeoMap(projection=&quot;Mercator&quot;, region=&quot;JP&quot;, frame=&quot;afg&quot;)
 
-geo_jp.fill_oceans(color=&#39;azure&#39;)
-geo_jp.fill_continents(color=&#39;lightgray&#39;)
-geo_jp.add_coastlines(resolution=&#39;medium&#39;) # 解像度を上げて海岸線を描画
+geo_jp.fill_oceans(color=&quot;azure&quot;)
+geo_jp.fill_continents(color=&quot;lightgray&quot;)
+geo_jp.add_coastlines(resolution=&quot;medium&quot;)  # 解像度を上げて海岸線を描画
 
 # KAGRA 検出器をプロット
-geo_jp.plot_detector(&#39;K1&#39;)
+geo_jp.plot_detector(&quot;K1&quot;)
 
 # 縮尺バーを追加 (500km 幅、左下に 0.5cm オフセット)
-geo_jp.add_scale_bar(width=&#39;500k&#39;, position=&#39;jBL&#39;, offset=&#39;0.5c/0.5c&#39;)
+geo_jp.add_scale_bar(width=&quot;500k&quot;, position=&quot;jBL&quot;, offset=&quot;0.5c/0.5c&quot;)
 
 geo_jp.show()
 </pre></div>

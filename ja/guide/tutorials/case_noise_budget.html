@@ -149,7 +149,7 @@ from gwexpy.noise.wave import from_asd
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fs = 2048.0
 duration = 64.0
-t = np.arange(0, duration, 1/fs)
+t = np.arange(0, duration, 1 / fs)
 n_samples = len(t)
 
 np.random.seed(42)
@@ -157,18 +157,20 @@ rng = np.random.default_rng(42)
 
 # aLIGO の感度曲線(ASD)を取得してメインチャンネルの基準ノイズに使う
 fmax = fs / 2
-asd_main = from_pygwinc(&#39;aLIGO&#39;, fmin=5.0, fmax=fmax, df=1.0 / duration, quantity=&#39;strain&#39;)
+asd_main = from_pygwinc(
+    &quot;aLIGO&quot;, fmin=5.0, fmax=fmax, df=1.0 / duration, quantity=&quot;strain&quot;
+)
 main_base = from_asd(asd_main, duration, fs, t0=0, rng=rng).highpass(5)
 
 # --- 補助チャンネル (Noise Sources) の生成 ---
 # 1. 地面振動 (低域支配)
-b_low, a_low = signal.butter(2, 2.0, fs=fs, btype=&#39;low&#39;)
+b_low, a_low = signal.butter(2, 2.0, fs=fs, btype=&quot;low&quot;)
 seis_val = signal.lfilter(b_low, a_low, np.random.normal(0, 50.0, n_samples))
 seis = TimeSeries(seis_val, sample_rate=fs, name=&quot;Seismic&quot;, unit=&quot;um&quot;)
 
 # 2. 磁場 (60Hz + 平坦)
 mag_val = np.random.normal(0, 0.1, n_samples)
-mag_val += 0.8 * np.sin(2 * np.pi * 60 * t) # 60Hz
+mag_val += 0.8 * np.sin(2 * np.pi * 60 * t)  # 60Hz
 mag = TimeSeries(mag_val, sample_rate=fs, name=&quot;Magnetic&quot;, unit=&quot;nT&quot;)
 
 # 3. 高域ノイズ源 (回路系)
@@ -176,8 +178,12 @@ elec_val = np.random.normal(0, 1.0, n_samples)
 elec = TimeSeries(elec_val, sample_rate=fs, name=&quot;Electronic&quot;, unit=&quot;V&quot;)
 
 # --- メインチャンネルの生成  ---
-main = main_base + seis*(2e-21 *main_base.unit/seis.unit) + mag*(1e-22 *main_base.unit/mag.unit) + elec*(2e-22 *main_base.unit/elec.unit)
-
+main = (
+    main_base
+    + seis * (2e-21 * main_base.unit / seis.unit)
+    + mag * (1e-22 * main_base.unit / mag.unit)
+    + elec * (2e-22 * main_base.unit / elec.unit)
+)
 
 
 # まとめ
@@ -188,10 +194,12 @@ tsd[&quot;AUX_MAG&quot;] = mag
 tsd[&quot;AUX_ELEC&quot;] = elec
 
 # 全体の ASD を確認
-asd_dict = tsd.asd(fftlength=8, overlap=4,method=&quot;welch&quot;)
-plot = asd_dict.plot(xscale=&quot;log&quot;, yscale=&quot;log&quot;,subplots=True,sharex=True)
+asd_dict = tsd.asd(fftlength=8, overlap=4, method=&quot;welch&quot;)
+plot = asd_dict.plot(xscale=&quot;log&quot;, yscale=&quot;log&quot;, subplots=True, sharex=True)
 axes = plot.get_axes()
-axes[0].plot(main_base.asd(fftlength=8, overlap=4,method=&quot;welch&quot;),alpha=0.5,color=&#39;black&#39;)
+axes[0].plot(
+    main_base.asd(fftlength=8, overlap=4, method=&quot;welch&quot;), alpha=0.5, color=&quot;black&quot;
+)
 axes[0].set_xlim(10, 1000)
 axes[0].set_ylim(1e-24, 1e-21)
 axes[1].set_ylim(1e-6, 1e-1)
@@ -201,7 +209,7 @@ plt.show()
 
 # MAIN チャンネル（黒色や青色になる想定）が、低域で下がり、
 # 高域で上がっていく「下に凸」の形状になっていることが確認できます。
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -236,7 +244,7 @@ plt.grid(True, which=&quot;both&quot;)
 plt.show()
 
 # 低域(10Hz以下)では SEIS、高域(100Hz以上)では ELEC と相関していることが分かります。
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -255,12 +263,12 @@ plt.show()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tf_seis = tsd[&quot;AUX_SEIS&quot;].transfer_function(tsd[&quot;MAIN&quot;], fftlength=8)
-tf_mag  = tsd[&quot;AUX_MAG&quot;].transfer_function(tsd[&quot;MAIN&quot;], fftlength=8)
+tf_mag = tsd[&quot;AUX_MAG&quot;].transfer_function(tsd[&quot;MAIN&quot;], fftlength=8)
 tf_elec = tsd[&quot;AUX_ELEC&quot;].transfer_function(tsd[&quot;MAIN&quot;], fftlength=8)
 
 plt.figure(figsize=(10, 5))
 plt.loglog(tf_seis.abs(), label=&quot;TF: SEIS -&gt; MAIN&quot;)
-plt.loglog(tf_mag.abs(),  label=&quot;TF: MAG -&gt; MAIN&quot;)
+plt.loglog(tf_mag.abs(), label=&quot;TF: MAG -&gt; MAIN&quot;)
 plt.loglog(tf_elec.abs(), label=&quot;TF: ELEC -&gt; MAIN&quot;)
 
 plt.xlim(10, 1000)
@@ -271,7 +279,7 @@ plt.ylabel(&quot;Coupling Strength&quot;)
 plt.legend()
 plt.grid(True, which=&quot;both&quot;)
 plt.show()
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -288,20 +296,20 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>main_ch = tsd[&#39;MAIN&#39;]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>main_ch = tsd[&quot;MAIN&quot;]
 proj_seis = asd_dict[&quot;AUX_SEIS&quot;] * tf_seis.abs()
-proj_mag  = asd_dict[&quot;AUX_MAG&quot;]  * tf_mag.abs()
+proj_mag = asd_dict[&quot;AUX_MAG&quot;] * tf_mag.abs()
 proj_elec = asd_dict[&quot;AUX_ELEC&quot;] * tf_elec.abs()
 
 # 二乗和の平方根で合計寄与を計算
-total_proj = (proj_seis**2 + proj_mag**2 + proj_elec**2)**0.5
+total_proj = (proj_seis**2 + proj_mag**2 + proj_elec**2) ** 0.5
 
 # 合計寄与をグラフ表示
 plt.figure(figsize=(10, 5))
 plt.loglog(total_proj, label=&quot;Total Projected Noise&quot;)
 plt.legend()
 plt.show()
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -322,7 +330,13 @@ plt.show()
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(12, 8))
 
 # 実際に観測された感度曲線
-plt.loglog(asd_dict[&quot;MAIN&quot;], label=&quot;Main Channel (Observed)&quot;, color=&quot;black&quot;, linewidth=4, alpha=0.6)
+plt.loglog(
+    asd_dict[&quot;MAIN&quot;],
+    label=&quot;Main Channel (Observed)&quot;,
+    color=&quot;black&quot;,
+    linewidth=4,
+    alpha=0.6,
+)
 
 # 各投影成分
 plt.loglog(proj_seis, label=&quot;Projected Seismic (Low Freq Limit)&quot;, ls=&quot;--&quot;)
@@ -330,7 +344,7 @@ plt.loglog(proj_mag, label=&quot;Projected Magnetic (Lines / Flat)&quot;, ls=&qu
 plt.loglog(proj_elec, label=&quot;Projected Electronic (High Freq Limit)&quot;, ls=&quot;--&quot;)
 
 # 合計投影
-plt.loglog(total_proj, label=&quot;Sum of Known Noises&quot;, color=&quot;red&quot;, linewidth=2,alpha=0.6)
+plt.loglog(total_proj, label=&quot;Sum of Known Noises&quot;, color=&quot;red&quot;, linewidth=2, alpha=0.6)
 
 plt.title(&quot;GW Detector-like Noise Budget&quot;)
 plt.xlabel(&quot;Frequency [Hz]&quot;)
@@ -342,7 +356,7 @@ plt.grid(True, which=&quot;both&quot;, ls=&quot;-&quot;, alpha=0.5)
 plt.show()
 
 # このように、複数のノイズ源が合わさることで、観測される「U字型」の感度曲線が形成されていることが一目で分かります。
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">

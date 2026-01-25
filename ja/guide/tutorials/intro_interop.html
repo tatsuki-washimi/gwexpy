@@ -190,7 +190,7 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import os
 
 os.environ.setdefault(&quot;TF_CPP_MIN_LOG_LEVEL&quot;, &quot;3&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -216,6 +216,7 @@ from astropy import units as u
 from gwpy.time import LIGOTimeGPS
 
 from gwexpy.timeseries import TimeSeries
+warnings.filterwarnings(&#39;ignore&#39;, category=UserWarning)
 </pre></div>
 </div>
 </div>
@@ -326,7 +327,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
     print(&quot;\n--- Restored TimeSeries from Pandas ---&quot;)
     print(ts_restored)
 
-    del s_pd,ts_restored
+    del s_pd, ts_restored
 
 except ImportError:
     print(&quot;Pandas is not installed.&quot;)
@@ -398,6 +399,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import polars as pl
+
     _ = pl
     # TimeSeries -&gt; Polars DataFrame
     df_pl = ts.to_polars()
@@ -406,13 +408,14 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 
     # Plot using Polars/Matplotlib
     plt.figure()
-    data_col = [c for c in df_pl.columns if c != &#39;time&#39;][0]
-    plt.plot(df_pl[&#39;time&#39;], df_pl[data_col])
+    data_col = [c for c in df_pl.columns if c != &quot;time&quot;][0]
+    plt.plot(df_pl[&quot;time&quot;], df_pl[data_col])
     plt.title(&quot;Polars Data Plot&quot;)
     plt.show()
 
     # Recover to TimeSeries
     from gwexpy.timeseries import TimeSeries
+
     ts_recovered = TimeSeries.from_polars(df_pl)
     print(&quot;Recovered from Polars:&quot;, ts_recovered)
 
@@ -420,7 +423,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 
 except ImportError:
     print(&quot;Polars not installed.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -556,9 +559,10 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import dask.array as da
+
     _ = da
     # Dask Array への変換
-    dask_arr = ts.to_dask(chunks=&#39;auto&#39;)
+    dask_arr = ts.to_dask(chunks=&quot;auto&quot;)
     print(&quot;\n--- Converted to Dask Array ---&quot;)
     print(dask_arr)
 
@@ -570,7 +574,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 
 except ImportError:
     print(&quot;Dask not installed.&quot;)
-<br/><br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -611,7 +615,7 @@ print(ts_json[:500] + &quot;...&quot;)
 # Plot data by loading back from JSON
 ts_dict_temp = json.loads(ts_json)
 plt.figure()
-plt.plot(ts_dict_temp[&#39;data&#39;])
+plt.plot(ts_dict_temp[&quot;data&quot;])
 plt.title(&quot;Plot from JSON Data&quot;)
 plt.show()
 
@@ -622,7 +626,7 @@ ts_recovered = TimeSeries.from_json(ts_json)
 print(&quot;Recovered from JSON:&quot;, ts_recovered)
 
 del ts_json, ts_dict_temp, ts_recovered
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -696,20 +700,22 @@ Recovered from JSON: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
     import tempfile
 
     import h5py
-    with tempfile.NamedTemporaryFile(suffix=&#39;.h5&#39;) as tmp:
+
+    with tempfile.NamedTemporaryFile(suffix=&quot;.h5&quot;) as tmp:
         # TimeSeries -&gt; HDF5
-        with h5py.File(tmp.name, &#39;w&#39;) as f:
+        with h5py.File(tmp.name, &quot;w&quot;) as f:
             ts.to_hdf5_dataset(f, &quot;dataset_01&quot;)
 
         # Read back and display
-        with h5py.File(tmp.name, &#39;r&#39;) as f:
-            ds = f[&#39;dataset_01&#39;]
+        with h5py.File(tmp.name, &quot;r&quot;) as f:
+            ds = f[&quot;dataset_01&quot;]
             print(&quot;--- HDF5 Dataset Info ---&quot;)
             print(f&quot;Shape: {ds.shape}, Dtype: {ds.dtype}&quot;)
             print(&quot;Attributes:&quot;, dict(ds.attrs))
 
             # Recover
             from gwexpy.timeseries import TimeSeries
+
             ts_recovered = TimeSeries.from_hdf5_dataset(f, &quot;dataset_01&quot;)
             print(&quot;Recovered from HDF5:&quot;, ts_recovered)
 
@@ -721,7 +727,7 @@ Recovered from JSON: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 
 except ImportError:
     print(&quot;h5py not installed.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -761,7 +767,7 @@ Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sqlite3
 
-conn = sqlite3.connect(&#39;:memory:&#39;)
+conn = sqlite3.connect(&quot;:memory:&quot;)
 
 # TimeSeries -&gt; SQLite
 series_id = ts.to_sqlite(conn, series_id=&quot;test_series&quot;)
@@ -783,7 +789,7 @@ plt.title(&quot;Recovered from SQLite&quot;)
 plt.show()
 
 del series_id, conn, cursor, ts_recovered
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -825,19 +831,21 @@ Recovered from SQLite: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
     import tempfile
 
     import zarr
+
     with tempfile.TemporaryDirectory() as tmpdir:
-        store_path = os.path.join(tmpdir, &#39;test.zarr&#39;)
+        store_path = os.path.join(tmpdir, &quot;test.zarr&quot;)
         # TimeSeries -&gt; Zarr
         ts.to_zarr(store_path, path=&quot;timeseries&quot;)
 
         # Read back
-        z = zarr.open(store_path, mode=&#39;r&#39;)
-        ds = z[&#39;timeseries&#39;]
+        z = zarr.open(store_path, mode=&quot;r&quot;)
+        ds = z[&quot;timeseries&quot;]
         print(&quot;--- Zarr Array Info ---&quot;)
         print(ds.info)
 
         # Recover
         from gwexpy.timeseries import TimeSeries
+
         ts_recovered = TimeSeries.from_zarr(store_path, &quot;timeseries&quot;)
         print(&quot;Recovered from Zarr:&quot;, ts_recovered)
 
@@ -849,7 +857,7 @@ Recovered from SQLite: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 
 except ImportError:
     print(&quot;zarr not installed.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -902,19 +910,21 @@ Recovered from Zarr: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
     import tempfile
 
     import netCDF4
-    with tempfile.NamedTemporaryFile(suffix=&#39;.nc&#39;) as tmp:
+
+    with tempfile.NamedTemporaryFile(suffix=&quot;.nc&quot;) as tmp:
         # TimeSeries -&gt; netCDF4
-        with netCDF4.Dataset(tmp.name, &#39;w&#39;) as ds:
+        with netCDF4.Dataset(tmp.name, &quot;w&quot;) as ds:
             ts.to_netcdf4(ds, &quot;my_signal&quot;)
 
         # Read back
-        with netCDF4.Dataset(tmp.name, &#39;r&#39;) as ds:
-            v = ds.variables[&#39;my_signal&#39;]
+        with netCDF4.Dataset(tmp.name, &quot;r&quot;) as ds:
+            v = ds.variables[&quot;my_signal&quot;]
             print(&quot;--- netCDF4 Variable Info ---&quot;)
             print(v)
 
             # Recover
             from gwexpy.timeseries import TimeSeries
+
             ts_recovered = TimeSeries.from_netcdf4(ds, &quot;my_signal&quot;)
             print(&quot;Recovered from netCDF4:&quot;, ts_recovered)
 
@@ -926,7 +936,7 @@ Recovered from Zarr: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 
 except ImportError:
     print(&quot;netCDF4 not installed.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -974,7 +984,9 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>os.environ.setdefault(&quot;TF_CPP_MIN_LOG_LEVEL&quot;, &quot;3&quot;)
+import os
+try:
     import torch
 
     # PyTorch Tensor への変換
@@ -987,7 +999,7 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
     print(&quot;\n--- Restored from Torch ---&quot;)
     print(ts_torch)
 
-    del tensor,ts_torch
+    del tensor, ts_torch
 
 except ImportError:
     print(&quot;PyTorch is not installed.&quot;)
@@ -1028,6 +1040,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 
 if is_cupy_available():
     import cupy as cp
+
     # TimeSeries -&gt; CuPy
     y_gpu = ts.to_cupy()
     print(&quot;--- CuPy Array (on GPU) ---&quot;)
@@ -1044,6 +1057,7 @@ if is_cupy_available():
 
     # Recover
     from gwexpy.timeseries import TimeSeries
+
     ts_recovered = TimeSeries.from_cupy(y_gpu_filt, t0=ts.t0, dt=ts.dt)
     print(&quot;Recovered from CuPy:&quot;, ts_recovered)
 
@@ -1051,7 +1065,7 @@ if is_cupy_available():
 
 else:
     print(&quot;CuPy or CUDA driver not available.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1097,6 +1111,7 @@ Recovered from CuPy: TimeSeries([ 0.        ,  0.12558104,  0.25066647, ...,
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import tensorflow as tf
+
     _ = tf
     # TensorFlow Tensor への変換
     tf_tensor = ts.to_tensorflow()
@@ -1105,14 +1120,16 @@ Recovered from CuPy: TimeSeries([ 0.        ,  0.12558104,  0.25066647, ...,
     print(f&quot;Tensor dtype: {tf_tensor.dtype}&quot;)
 
     # 戻す
-    ts_from_tensorflow = TimeSeries.from_tensorflow(tf_tensor, t0=ts.t0, dt=ts.dt, unit=ts.unit)
+    ts_from_tensorflow = TimeSeries.from_tensorflow(
+        tf_tensor, t0=ts.t0, dt=ts.dt, unit=ts.unit
+    )
     print(&quot;Recovered from TF:&quot;, ts_from_tensorflow)
 
     del tf_tensor, ts_from_tensorflow
 
 except ImportError:
     print(&quot;TensorFlow not installed.&quot;)
-<br/><br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1202,10 +1219,13 @@ I0000 00:00:1769342196.568982  876747 gpu_device.cc:2020] Created device /job:lo
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import os
+
     os.environ[&quot;XLA_PYTHON_CLIENT_PREALLOCATE&quot;] = &quot;false&quot;
     import jax
+
     _ = jax
     import jax.numpy as jnp
+
     _ = jnp
     # JAX Array への変換
     jax_arr = ts.to_jax()
@@ -1219,7 +1239,7 @@ I0000 00:00:1769342196.568982  876747 gpu_device.cc:2020] Created device /job:lo
     del jax_arr, ts_from_jax
 except ImportError:
     print(&quot;JAX not installed.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1346,12 +1366,15 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import specutils
+
     _ = specutils
 
     from gwexpy.frequencyseries import FrequencySeries
 
     # FrequencySeries -&gt; specutils.Spectrum1D
-    fs = FrequencySeries(np.random.random(100), frequencies=np.linspace(10, 100, 100), unit=&#39;Jy&#39;)
+    fs = FrequencySeries(
+        np.random.random(100), frequencies=np.linspace(10, 100, 100), unit=&quot;Jy&quot;
+    )
     spec = fs.to_specutils()
     print(&quot;specutils Spectrum1D:&quot;, spec)
     print(&quot;Spectral axis unit:&quot;, spec.spectral_axis.unit)
@@ -1394,6 +1417,7 @@ Restored FrequencySeries unit: Jy
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import pyspeckit
+
     _ = pyspeckit
     from gwexpy.frequencyseries import FrequencySeries
 
@@ -1445,7 +1469,7 @@ pyspeckit library not found. Skipping example.
     # データの準備
     t = np.linspace(0, 10, 1000)
     data = np.sin(2 * np.pi * 1.0 * t) + np.random.normal(0, 0.5, size=len(t))
-    ts = TimeSeries(data, dt=t[1]-t[0], name=&quot;signal&quot;)
+    ts = TimeSeries(data, dt=t[1] - t[0], name=&quot;signal&quot;)
 
     # --- 1. TGraph への変換 ---
     # ベクトル化された高速な変換
@@ -1502,7 +1526,7 @@ Created TH1D: signal with 1000 bins
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    if &#39;hist&#39; in locals() and hist:
+    if &quot;hist&quot; in locals() and hist:
         # ROOT TH1D -&gt; TimeSeries
         # ヒストグラムのビン内容を時系列データとして読み込みます
         ts_restored = from_root(TimeSeries, hist)
@@ -1517,7 +1541,7 @@ Created TH1D: signal with 1000 bins
         del ts_restored, ts_from_graph
 
 except NameError:
-    pass # hist や graph が作成されなかった場合
+    pass  # hist や graph が作成されなかった場合
 except ImportError:
     pass
 </pre></div>
@@ -1539,6 +1563,7 @@ except ImportError:
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import obspy
+
     _ = obspy
     # TimeSeries -&gt; ObsPy Trace
     tr = ts.to_obspy()
@@ -1550,6 +1575,7 @@ except ImportError:
 
     # Recover to TimeSeries
     from gwexpy.timeseries import TimeSeries
+
     ts_recovered = TimeSeries.from_obspy(tr)
     print(&quot;Recovered from ObsPy:&quot;, ts_recovered)
 
@@ -1557,7 +1583,7 @@ except ImportError:
 
 except ImportError:
     print(&quot;ObsPy not installed.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1596,6 +1622,7 @@ Recovered from ObsPy: TimeSeries([ 0.65027877, -0.06123054, -0.46661033, ...,
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import obspy
+
     _ = obspy
     tr = ts.to_obspy()
     print(&quot;ObsPy Trace:&quot;, tr)
@@ -1604,7 +1631,7 @@ Recovered from ObsPy: TimeSeries([ 0.65027877, -0.06123054, -0.46661033, ...,
 
 except ImportError:
     print(&quot;ObsPy not installed.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1629,21 +1656,25 @@ ObsPy Trace: .signal.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:10.00000
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import numpy as np
     import simpeg
+
     _ = simpeg
     from simpeg import maps
+
     _ = maps
 
     from gwexpy.frequencyseries import FrequencySeries
     from gwexpy.timeseries import TimeSeries
 
     # --- TimeSeries -&gt; SimPEG (TDEM想定) ---
-    ts = TimeSeries(np.random.normal(size=100), dt=0.01, unit=&#39;A/m^2&#39;)
+    ts = TimeSeries(np.random.normal(size=100), dt=0.01, unit=&quot;A/m^2&quot;)
     simpeg_data_td = ts.to_simpeg(location=np.array([0, 0, 0]))
     print(&quot;SimPEG TDEM data shape:&quot;, simpeg_data_td.dobs.shape)
 
     # --- FrequencySeries -&gt; SimPEG (FDEM想定) ---
-    fs = FrequencySeries(np.random.normal(size=10) + 1j*0.1, frequencies=np.logspace(0, 3, 10))
-    simpeg_data_fd = fs.to_simpeg(location=np.array([0, 0, 0]), orientation=&#39;z&#39;)
+    fs = FrequencySeries(
+        np.random.normal(size=10) + 1j * 0.1, frequencies=np.logspace(0, 3, 10)
+    )
+    simpeg_data_fd = fs.to_simpeg(location=np.array([0, 0, 0]), orientation=&quot;z&quot;)
     print(&quot;SimPEG FDEM data shape:&quot;, simpeg_data_fd.dobs.shape)
 
     del simpeg_data_td, simpeg_data_fd, fs
@@ -1677,9 +1708,11 @@ SimPEG FDEM data shape: (10,)
     import tempfile
 
     import mth5
+
     _ = mth5
-    with tempfile.NamedTemporaryFile(suffix=&#39;.h5&#39;) as tmp:
+    with tempfile.NamedTemporaryFile(suffix=&quot;.h5&quot;) as tmp:
         from gwexpy.interop.mt_ import from_mth5, to_mth5
+
         # TimeSeries -&gt; MTH5
         # We need to provide station and run names for MTH5 structure
         to_mth5(ts, tmp.name, station=&quot;SITE01&quot;, run=&quot;RUN01&quot;)
@@ -1698,7 +1731,7 @@ SimPEG FDEM data shape: (10,)
 
 except ImportError:
     print(&quot;mth5 not installed.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1780,27 +1813,30 @@ Recovered from MTH5: TimeSeries([ 1.37697923,  2.74600371,  0.57303984, -0.48362
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import librosa
+
     _ = librosa
     import matplotlib.pyplot as plt
+
     # TimeSeries -&gt; Librosa (y, sr)
     y, sr = ts.to_librosa()
     print(f&quot;--- Librosa Data ---\nSignal shape: {y.shape}, Sample rate: {sr}&quot;)
 
     # Plot using librosa style (matplotlib)
     plt.figure()
-    plt.plot(y[:1000]) # Plot first 1000 samples
+    plt.plot(y[:1000])  # Plot first 1000 samples
     plt.title(&quot;Librosa Audio Signal (Zoom)&quot;)
     plt.show()
 
     # Recover to TimeSeries
     from gwexpy.timeseries import TimeSeries
-    ts_recovered = TimeSeries(y, dt=1.0/sr)
+
+    ts_recovered = TimeSeries(y, dt=1.0 / sr)
     print(&quot;Recovered from Librosa:&quot;, ts_recovered)
 
     del y, sr
 except ImportError:
     print(&quot;Librosa not installed.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1872,6 +1908,7 @@ Recovered from Librosa: TimeSeries([ 1.3769792 ,  2.7460036 ,  0.5730398 , -0.48
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import mne
+
     _ = mne
     # TimeSeries -&gt; MNE Raw
     raw = ts.to_mne()
@@ -1883,6 +1920,7 @@ Recovered from Librosa: TimeSeries([ 1.3769792 ,  2.7460036 ,  0.5730398 , -0.48
 
     # Recover to TimeSeries
     from gwexpy.timeseries import TimeSeries
+
     ts_recovered = TimeSeries.from_mne(raw, channel=ts.name or &quot;ch0&quot;)
     print(&quot;Recovered from MNE:&quot;, ts_recovered)
 
@@ -1890,7 +1928,7 @@ Recovered from Librosa: TimeSeries([ 1.3769792 ,  2.7460036 ,  0.5730398 , -0.48
 
 except ImportError:
     print(&quot;MNE not installed.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1953,6 +1991,7 @@ Recovered from MNE: TimeSeries([ 1.37697923,  2.74600371,  0.57303984, -0.483627
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import mne
+
     _ = mne
     raw = ts.to_mne()
     print(&quot;MNE Raw:&quot;, raw)
@@ -1960,7 +1999,7 @@ Recovered from MNE: TimeSeries([ 1.37697923,  2.74600371,  0.57303984, -0.483627
     del raw
 except ImportError:
     print(&quot;MNE not installed.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1986,6 +2025,7 @@ MNE Raw: &lt;RawArray | 1 x 100 (1.0 s), ~6 KiB, data loaded&gt;
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import numpy as np
     import quantities as pq
+
     _ = pq
     from gwexpy.frequencyseries import FrequencySeries
 
@@ -2056,18 +2096,23 @@ Restored FrequencySeries unit: mV
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     import neo
+
     _ = neo
     # TimeSeries -&gt; Neo AnalogSignal
     # to_neo is available in gwexpy.interop
     # Note: TimeseriesMatrix is preferred for multi-channel Neo conversion,
     # but we can convert single TimeSeries by wrapping it.
     from gwexpy.interop import from_neo, to_neo
+
     _ = from_neo
     _ = to_neo
     # For single TimeSeries, we might need a Matrix wrapper or direct helper.
     # Assuming helper exists or using Matrix:
     from gwexpy.timeseries import TimeSeriesMatrix
-    tm = TimeSeriesMatrix(ts.value[None, None, :], t0=ts.t0, dt=ts.dt, channel_names=[ts.name])
+
+    tm = TimeSeriesMatrix(
+        ts.value[None, None, :], t0=ts.t0, dt=ts.dt, channel_names=[ts.name]
+    )
     sig = tm.to_neo()
 
     print(&quot;--- Neo AnalogSignal ---&quot;)
@@ -2088,7 +2133,7 @@ Restored FrequencySeries unit: mV
 
 except ImportError:
     print(&quot;neo not installed.&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">

@@ -350,7 +350,7 @@ for kwargs in [
         _ = TimeSeriesMatrix(data, **kwargs)
     except Exception as e:
         print(&quot;error&quot;, kwargs, &quot;-&gt;&quot;, type(e).__name__, e)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -390,7 +390,7 @@ print(&quot;[r0,c1]&quot;, &quot;name&quot;, s01.name, &quot;channel&quot;, s01.
 sub = tsm[:, 0]
 print(&quot;tsm[:,0] -&gt;&quot;, type(sub), sub.shape)
 sub.plot(subplots=True, xscale=&quot;seconds&quot;);
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -440,7 +440,7 @@ diffed.plot(subplots=True, xscale=&quot;seconds&quot;)
 padded = tsm.pad(50)
 print(&quot;padded&quot;, padded.shape, &quot;t0&quot;, padded.t0)
 padded.plot(subplots=True, xscale=&quot;seconds&quot;);
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -492,7 +492,7 @@ print(&quot;resample&quot;, rs.shape, &quot;sample_rate&quot;, rs.sample_rate)
 
 bp.plot(subplots=True, xscale=&quot;seconds&quot;)
 rs.plot(subplots=True, xscale=&quot;seconds&quot;);
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -532,12 +532,12 @@ tsm_miss = tsm.copy()
 # 最初のチャンネルの一部をNaNにする (アクセスの仕方に注意: tsm[0,0] は time series)
 tsm_miss[0, 0].value[50:60] = np.nan
 
-print(&quot;Before impute (Has NaN):&quot;, np.isnan(tsm_miss[0,0].value).any())
+print(&quot;Before impute (Has NaN):&quot;, np.isnan(tsm_miss[0, 0].value).any())
 
 # 補完 (線形補間)
 tsm_imp = tsm_miss.impute(method=&quot;interpolate&quot;)
-print(&quot;After impute (Has NaN):&quot;, np.isnan(tsm_imp[0,0].value).any())
-<br/><br/></pre></div>
+print(&quot;After impute (Has NaN):&quot;, np.isnan(tsm_imp[0, 0].value).any())
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -566,7 +566,7 @@ tsm_white, w_model = tsm_std.whiten_channels(return_model=True)
 
 print(&quot;Standardized shape:&quot;, tsm_std.shape)
 print(&quot;Whitened shape:&quot;, tsm_white.shape)
-<br/><br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -604,7 +604,7 @@ print(&quot;ICA Sources shape:&quot;, ica_sources.shape)
 ica_sources.plot()
 plt.show()
 plt.close()
-<br/><br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -649,12 +649,13 @@ ICA Sources shape: (2, 1, 1024)
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
     # PyTorch Tensorへ変換
     import torch
+
     _ = torch
     tensor = tsm.to_torch()
     print(&quot;Converted to PyTorch:&quot;, tensor.shape)
 except ImportError:
     print(&quot;PyTorch not installed&quot;)
-<br/><br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -682,8 +683,8 @@ print(&quot;psd&quot;, psd.shape, &quot;unit&quot;, psd[0, 0].unit)
 print(&quot;asd&quot;, asd.shape, &quot;unit&quot;, asd[0, 0].unit)
 
 asd.plot(subplots=True)
-plt.xscale(&#39;log&#39;)
-plt.yscale(&#39;log&#39;)
+plt.xscale(&quot;log&quot;)
+plt.yscale(&quot;log&quot;)
 </pre></div>
 </div>
 </div>
@@ -725,7 +726,7 @@ try:
     _ = tsm.coherence(tsm[:, :1], fftlength=1)
 except Exception as e:
     print(&quot;shape mismatch -&gt;&quot;, type(e).__name__, e)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -761,7 +762,7 @@ display(tsm)
 
 tsm.plot(subplots=True, xscale=&quot;seconds&quot;)
 tsm.step(where=&quot;post&quot;, xscale=&quot;seconds&quot;);
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">

@@ -156,9 +156,11 @@ plt.figure(figsize=(10, 5))
 plt.plot(spec, label=&quot;Spectrum&quot;, alpha=0.7)
 plt.plot(peaks, &quot;x&quot;, color=&quot;red&quot;, label=&quot;Basic Peaks&quot;)
 plt.title(&quot;Basic Peak Detection&quot;)
-plt.xlabel(&quot;Frequency [Hz]&quot;); plt.ylabel(&quot;Amplitude [V/Hz]&quot;)
-plt.legend(); plt.show()
-<br/></pre></div>
+plt.xlabel(&quot;Frequency [Hz]&quot;)
+plt.ylabel(&quot;Amplitude [V/Hz]&quot;)
+plt.legend()
+plt.show()
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -182,11 +184,13 @@ plt.figure(figsize=(10, 5))
 plt.plot(spec, label=&quot;Spectrum&quot;, alpha=0.7)
 plt.plot(peaks_adv, &quot;o&quot;, color=&quot;orange&quot;, label=&quot;Distance Constraint (20Hz)&quot;)
 plt.title(f&quot;Peak Detection with Distance Constraint ({dist_constraint})&quot;)
-plt.xlabel(&quot;Frequency [Hz]&quot;); plt.ylabel(&quot;Amplitude [V/Hz]&quot;)
-plt.legend(); plt.show()
+plt.xlabel(&quot;Frequency [Hz]&quot;)
+plt.ylabel(&quot;Amplitude [V/Hz]&quot;)
+plt.legend()
+plt.show()
 
 print(f&quot;Detected peaks: {peaks_adv.frequencies}&quot;)
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -212,13 +216,13 @@ Detected peaks: [  5.   27.5  50.   71.5 125.  300. ] Hz
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fs = 1024.0
-t = np.arange(0, 2.0, 1/fs)
+t = np.arange(0, 2.0, 1 / fs)
 ts_data = np.random.normal(0, 0.1, len(t))
 
 # パルスを追加
-ts_data[int(0.5*fs)] = 2.0
-ts_data[int(0.55*fs)] = 1.8
-ts_data[int(1.2*fs)] = 1.5
+ts_data[int(0.5 * fs)] = 2.0
+ts_data[int(0.55 * fs)] = 1.8
+ts_data[int(1.2 * fs)] = 1.5
 
 ts = TimeSeries(ts_data, sample_rate=fs, unit=&quot;counts&quot;)
 
@@ -229,9 +233,11 @@ plt.figure(figsize=(10, 5))
 plt.plot(ts)
 plt.plot(peaks_t, &quot;v&quot;, color=&quot;red&quot;, label=&quot;Detected pulses (&gt;100ms apart)&quot;)
 plt.title(&quot;Pulse Detection in TimeSeries&quot;)
-plt.xlabel(&quot;Time [s]&quot;); plt.ylabel(&quot;Raw Counts&quot;)
-plt.legend(); plt.show()
-<br/></pre></div>
+plt.xlabel(&quot;Time [s]&quot;)
+plt.ylabel(&quot;Raw Counts&quot;)
+plt.legend()
+plt.show()
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">

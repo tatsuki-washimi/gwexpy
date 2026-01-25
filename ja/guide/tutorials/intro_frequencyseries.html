@@ -129,7 +129,7 @@ from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.plot import Plot
 from gwexpy.timeseries import TimeSeries
 
-plt.rcParams[&#39;figure.figsize&#39;] = (10, 6)
+plt.rcParams[&quot;figure.figsize&quot;] = (10, 6)
 </pre></div>
 </div>
 </div>
@@ -141,11 +141,15 @@ plt.rcParams[&#39;figure.figsize&#39;] = (10, 6)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fs = 1024
-t = np.arange(0, 4, 1/fs)
-exp = np.exp(-t/1.5)
-exp[:int(exp.size/4)]=0
-data = np.sin(2 * np.pi * 10.1 * t) + 5*exp * np.sin(2 * np.pi * 100.1 * t) + np.random.normal(scale=0.3, size=len(t))
-ts = TimeSeries(data, dt=1/fs, unit=&#39;um&#39;, name=&#39;Test Signal&#39;)
+t = np.arange(0, 4, 1 / fs)
+exp = np.exp(-t / 1.5)
+exp[: int(exp.size / 4)] = 0
+data = (
+    np.sin(2 * np.pi * 10.1 * t)
+    + 5 * exp * np.sin(2 * np.pi * 100.1 * t)
+    + np.random.normal(scale=0.3, size=len(t))
+)
+ts = TimeSeries(data, dt=1 / fs, unit=&quot;um&quot;, name=&quot;Test Signal&quot;)
 print(ts)
 ts.plot(title=ts.name)
 
@@ -197,15 +201,15 @@ spec_db = spec.to_db()
 # 位相を取得 (度数表記、unwrap=True で連続化)
 spec_phase = spec.degree(unwrap=True)
 
-plot = Plot(spec_db, spec_phase, separate=True, sharex=True, xscale=&#39;log&#39;)
+plot = Plot(spec_db, spec_phase, separate=True, sharex=True, xscale=&quot;log&quot;)
 ax = plot.axes
-ax[0].set_ylabel(&#39;Magnitude [dB (m)]&#39;)
-ax[0].grid(True, which=&#39;both&#39;)
+ax[0].set_ylabel(&quot;Magnitude [dB (m)]&quot;)
+ax[0].grid(True, which=&quot;both&quot;)
 
-ax[1].set_ylabel(&#39;Phase [deg]&#39;)
-ax[1].set_xlabel(&#39;Frequency [Hz]&#39;)
-ax[1].grid(True, which=&#39;both&#39;)
-plot.figure.suptitle(&#39;Complex Spectrum Analysis&#39;)
+ax[1].set_ylabel(&quot;Phase [deg]&quot;)
+ax[1].set_xlabel(&quot;Frequency [Hz]&quot;)
+ax[1].grid(True, which=&quot;both&quot;)
+plot.figure.suptitle(&quot;Complex Spectrum Analysis&quot;)
 plot.show()
 </pre></div>
 </div>
@@ -235,15 +239,17 @@ accel_spec = spec.differentiate(order=2)
 # 積分も可能: 加速度 -&gt; 速度
 vel_from_accel = accel_spec.integrate()
 
-plot = Plot(spec.abs(), vel_spec.abs(), accel_spec.abs(), xscale=&#39;log&#39;, yscale=&#39;log&#39;, alpha=0.8)
+plot = Plot(
+    spec.abs(), vel_spec.abs(), accel_spec.abs(), xscale=&quot;log&quot;, yscale=&quot;log&quot;, alpha=0.8
+)
 ax = plot.gca()
-ax.get_lines()[0].set_label(&#39;Displacement [m]&#39;)
-ax.get_lines()[1].set_label(&#39;Velocity [m/s]&#39;)
-ax.get_lines()[2].set_label(&#39;Acceleration [m/s^2]&#39;)
+ax.get_lines()[0].set_label(&quot;Displacement [m]&quot;)
+ax.get_lines()[1].set_label(&quot;Velocity [m/s]&quot;)
+ax.get_lines()[2].set_label(&quot;Acceleration [m/s^2]&quot;)
 ax.legend()
-ax.grid(True, which=&#39;both&#39;)
-ax.set_title(&#39;Calculus in Frequency Domain&#39;)
-ax.set_ylabel(&#39;Magnitude&#39;)
+ax.grid(True, which=&quot;both&quot;)
+ax.set_title(&quot;Calculus in Frequency Domain&quot;)
+ax.set_ylabel(&quot;Magnitude&quot;)
 plot.show()
 </pre></div>
 </div>
@@ -268,15 +274,15 @@ plot.show()
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 振幅ドメインで 11 サンプルのスムージング
 spec_smooth = spec.smooth(width=11)
 
-plot = Plot(spec.abs(), spec_smooth.abs(), xscale=&#39;log&#39;, yscale=&#39;log&#39;)
+plot = Plot(spec.abs(), spec_smooth.abs(), xscale=&quot;log&quot;, yscale=&quot;log&quot;)
 ax = plot.gca()
-ax.get_lines()[0].set_label(&#39;Original&#39;)
+ax.get_lines()[0].set_label(&quot;Original&quot;)
 ax.get_lines()[0].set_alpha(0.6)
-ax.get_lines()[1].set_label(&#39;Smoothed (width=11)&#39;)
-ax.get_lines()[1].set_color(&#39;red&#39;)
+ax.get_lines()[1].set_label(&quot;Smoothed (width=11)&quot;)
+ax.get_lines()[1].set_color(&quot;red&quot;)
 ax.legend()
-ax.grid(True, which=&#39;both&#39;)
-ax.set_title(&#39;Spectrum Smoothing&#39;)
+ax.grid(True, which=&quot;both&quot;)
+ax.set_title(&quot;Spectrum Smoothing&quot;)
 plot.show()
 </pre></div>
 </div>
@@ -301,11 +307,13 @@ peaks, props = spec.find_peaks(threshold=0.2)
 
 plot = Plot(spec.abs())
 ax = plot.gca()
-ax.plot(peaks.abs(), color=&#39;red&#39;, marker=&#39;.&#39;,ms=15, lw=0, zorder=3, label=&#39;Detected Peaks&#39;)
+ax.plot(
+    peaks.abs(), color=&quot;red&quot;, marker=&quot;.&quot;, ms=15, lw=0, zorder=3, label=&quot;Detected Peaks&quot;
+)
 ax.set_xlim(1, 150)
-ax.set_xscale(&#39;log&#39;)
-ax.set_yscale(&#39;log&#39;)
-ax.set_title(&#39;Peak Detection&#39;)
+ax.set_xscale(&quot;log&quot;)
+ax.set_yscale(&quot;log&quot;)
+ax.set_title(&quot;Peak Detection&quot;)
 ax.legend()
 plot.show()
 </pre></div>
@@ -333,10 +341,10 @@ plot.show()
 
 plot = Plot(gd)
 ax = plot.gca()
-ax.set_ylabel(&#39;Group Delay [s]&#39;)
-ax.set_xlabel(&#39;Frequency [Hz]&#39;)
+ax.set_ylabel(&quot;Group Delay [s]&quot;)
+ax.set_xlabel(&quot;Frequency [Hz]&quot;)
 ax.set_xlim(0, 200)
-ax.set_title(&#39;Group Delay Calculation&#39;)
+ax.set_title(&quot;Group Delay Calculation&quot;)
 plot.show()
 </pre></div>
 </div>
@@ -363,17 +371,17 @@ red_ts = inv_ts - ts
 
 plot = Plot(ts, inv_ts, red_ts)
 ax = plot.gca()
-ax.get_lines()[0].set_label(&#39;Original&#39;)
-ax.get_lines()[1].set_label(&#39;IFFT Result&#39;)
-ax.get_lines()[2].set_label(&#39;Residual&#39;)
-ax.get_lines()[1].set_linestyle(&#39;--&#39;)
+ax.get_lines()[0].set_label(&quot;Original&quot;)
+ax.get_lines()[1].set_label(&quot;IFFT Result&quot;)
+ax.get_lines()[2].set_label(&quot;Residual&quot;)
+ax.get_lines()[1].set_linestyle(&quot;--&quot;)
 ax.get_lines()[1].set_alpha(0.8)
-ax.get_lines()[2].set_color(&#39;black&#39;)
+ax.get_lines()[2].set_color(&quot;black&quot;)
 ax.legend()
-ax.set_title(&#39;Time Domain Round-trip (FFT -&gt; IFFT)&#39;)
+ax.set_title(&quot;Time Domain Round-trip (FFT -&gt; IFFT)&quot;)
 plot.show()
 
-red_ts.plot(title=&#39;Residual Time Series after IFFT&#39;);
+red_ts.plot(title=&quot;Residual Time Series after IFFT&quot;);
 </pre></div>
 </div>
 </div>
@@ -413,6 +421,7 @@ display(da)
 # control.FRD へ変換 (制御系の解析に使用可能)
 try:
     from control import FRD
+
     _ = FRD
     frd_obj = spec.to_control_frd()
     print(&quot;Successfully converted to control.FRD&quot;)
@@ -1037,7 +1046,7 @@ Group Delay (s) at 10Hz: -1.9070915083932811
     print(frd_sys)
 
     # ボード線図のプロット (controlライブラリの機能)
-    control.bode(frd_sys) # (プロット環境があれば実行可能)
+    control.bode(frd_sys)  # (プロット環境があれば実行可能)
 
     # control.FRD -&gt; FrequencySeries 復元
     fs_restored = FrequencySeries.from_control_frd(frd_sys, frequency_unit=&quot;Hz&quot;)
@@ -4180,31 +4189,31 @@ FrequencySeries([ 0.00487259+0.j        ,
 np.random.seed(42)
 f = spec.frequencies.value
 noise = np.abs(np.random.randn(f.size))
-peak = 10.0 * np.exp(-(f - 200)**2 / 50.0)
+peak = 10.0 * np.exp(-((f - 200) ** 2) / 50.0)
 data = noise + peak
 
-raw = FrequencySeries(data, frequencies=f, unit=&#39;V&#39;, name=&#39;Raw Data&#39;)
+raw = FrequencySeries(data, frequencies=f, unit=&quot;V&quot;, name=&quot;Raw Data&quot;)
 
 # Smooth
-smoothed = raw.smooth(width=10, method=&#39;amplitude&#39;)
-smoothed.name = &#39;Smoothed&#39;
+smoothed = raw.smooth(width=10, method=&quot;amplitude&quot;)
+smoothed.name = &quot;Smoothed&quot;
 
 # Convert to dB
 raw_db = raw.to_db()
 smoothed_db = smoothed.to_db()
-raw_db.name = &#39;Raw (dB)&#39;
-smoothed_db.name = &#39;Smoothed (dB)&#39;
+raw_db.name = &quot;Raw (dB)&quot;
+smoothed_db.name = &quot;Smoothed (dB)&quot;
 
-plot = raw_db.plot(label=&#39;Raw&#39;, title=&quot;Smoothing &amp; dB&quot;)
+plot = raw_db.plot(label=&quot;Raw&quot;, title=&quot;Smoothing &amp; dB&quot;)
 ax = plot.gca()
-ax.plot(smoothed_db, label=&#39;Smoothed&#39;, linewidth=2)
+ax.plot(smoothed_db, label=&quot;Smoothed&quot;, linewidth=2)
 ax.legend()
 plot.show()
 plt.close()
 
 # Quadrature Sum (Noise Budget example)
-noise_a = FrequencySeries(np.ones_like(f), frequencies=f, unit=&#39;V&#39;, name=&#39;Noise A&#39;)
-noise_b = FrequencySeries(np.ones_like(f) * 2, frequencies=f, unit=&#39;V&#39;, name=&#39;Noise B&#39;)
+noise_a = FrequencySeries(np.ones_like(f), frequencies=f, unit=&quot;V&quot;, name=&quot;Noise A&quot;)
+noise_b = FrequencySeries(np.ones_like(f) * 2, frequencies=f, unit=&quot;V&quot;, name=&quot;Noise B&quot;)
 
 total = noise_a.quadrature_sum(noise_b)
 print(f&quot;Noise A: {noise_a.value[0]}, Noise B: {noise_b.value[0]}&quot;)

@@ -141,17 +141,19 @@ sample_rate = 128  # Hz
 # 10Hz, 30Hz, 50Hz のサイン波 (+ノイズ) を作成
 noise_amp = 0.1
 
+
 def make_signal(freq, name):
     s = sine(duration=duration, sample_rate=sample_rate, frequency=freq, amplitude=1.0)
     n = gaussian(duration=duration, sample_rate=sample_rate, std=noise_amp)
     ts = s + n
     ts.name = name
-    ts.override_unit(&#39;strain&#39;)
+    ts.override_unit(&quot;strain&quot;)
     return ts
 
-ts1 = make_signal(10, &#39;Signal 10Hz&#39;)
-ts2 = make_signal(30, &#39;Signal 30Hz&#39;)
-ts3 = make_signal(50, &#39;Signal 50Hz&#39;)
+
+ts1 = make_signal(10, &quot;Signal 10Hz&quot;)
+ts2 = make_signal(30, &quot;Signal 30Hz&quot;)
+ts3 = make_signal(50, &quot;Signal 50Hz&quot;)
 
 # スペクトログラムの計算 (stride=2s, fftlength=1s)
 # nproc=1 を指定してシリアル実行による安定化を図ります
@@ -262,11 +264,7 @@ Cropped yspan: [0.0 ... 40.0)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spec_dict = SpectrogramDict({
-    &quot;low_freq&quot;: spec1,
-    &quot;mid_freq&quot;: spec2,
-    &quot;high_freq&quot;: spec3
-})
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spec_dict = SpectrogramDict({&quot;low_freq&quot;: spec1, &quot;mid_freq&quot;: spec2, &quot;high_freq&quot;: spec3})
 
 print(&quot;Keys:&quot;, list(spec_dict.keys()))
 </pre></div>
