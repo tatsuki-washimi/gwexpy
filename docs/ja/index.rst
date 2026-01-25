@@ -24,3 +24,8 @@ GWExPy は GWpy を拡張し、時系列および周波数系列のための追�
    :caption: 開発者向け
 
    developers/index
+
+言語 (Language)
+---------------
+
+* `English <../en/index.html>`_
