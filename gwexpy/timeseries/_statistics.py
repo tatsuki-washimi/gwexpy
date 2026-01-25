@@ -161,7 +161,14 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
         # grangercausalitytests returns a dict: {lag: (test_result, params, ...)}
         # test_result[0] contains statistics like {'ssr_ftest': (F-stat, p-value, df_denom, df_num), ...}
-        res = grangercausalitytests(data, maxlag=maxlag, verbose=verbose)
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message="verbose is deprecated",
+                category=FutureWarning,
+                module="statsmodels",
+            )
+            res = grangercausalitytests(data, maxlag=maxlag, verbose=verbose)
 
         # Extract p-values for the specified test across all lags
         p_values = []
