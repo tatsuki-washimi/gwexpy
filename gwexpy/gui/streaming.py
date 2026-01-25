@@ -172,10 +172,12 @@ class SpectralAccumulator:
 
             required_samples = int(self.fftlength / dt)
             stride_samples = int(self.stride / dt)
-            
+
             if required_samples <= 0 or stride_samples <= 0:
-                 logger.warning(f"Insufficient samples for FFT: req={required_samples}, stride={stride_samples}. Check bw/fftlength.")
-                 return
+                logger.warning(
+                    f"Insufficient samples for FFT: req={required_samples}, stride={stride_samples}. Check bw/fftlength."
+                )
+                return
 
             # Process each segment step by step for ALL channels
             processed_any = True

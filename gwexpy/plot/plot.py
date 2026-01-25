@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -65,6 +66,8 @@ class Plot(BasePlot):
 
     # Suppress _repr_html_ to prevent double plotting (repr + backend)
     _repr_html_ = None
+
+    warnings.filterwarnings("ignore", message="Glyph .* missing from font")
 
     def __init__(self, *args, **kwargs):
         # Local import to avoid circular dependency
@@ -840,6 +843,8 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title="", **kwargs):
         # Add colorbar
         fig.colorbar(mesh, ax=ax_sg, label=sg.unit.to_string("latex_inline"))
 
-    fig.tight_layout()
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="This figure includes Axes that are not compatible with tight_layout")
+        fig.tight_layout()
 
     return fig, axes

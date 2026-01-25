@@ -10,10 +10,13 @@ Requires the `mth5` package.
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from ._optional import require_optional
 
+logger = logging.getLogger("mth5")
+logger.setLevel(logging.ERROR)
 __all__ = ["to_mth5", "from_mth5"]
 
 

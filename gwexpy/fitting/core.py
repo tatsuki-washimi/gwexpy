@@ -822,6 +822,10 @@ class FitResult:
 
         y_samples_arr = np.array(y_samples)
 
+        if np.iscomplexobj(y_samples_arr):
+            # For complex data, we usually want to plot the magnitude band
+            y_samples_arr = np.abs(y_samples_arr)
+
         # Compute percentiles
         y_lower = np.percentile(y_samples_arr, 16, axis=0)
         y_upper = np.percentile(y_samples_arr, 84, axis=0)

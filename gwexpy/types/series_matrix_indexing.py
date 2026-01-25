@@ -117,6 +117,9 @@ class SeriesMatrixIndexingMixin:
         if not isinstance(result, np.ndarray):
             return result
 
+        if not isinstance(result, type(self)):
+            result = result.view(type(self))
+
         if result.ndim < 3:
             # Ensure result preserves 3D SeriesMatrix structure (Row, Col, X).
             # We restore dimensions dropped by scalar indices.

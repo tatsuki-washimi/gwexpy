@@ -79,12 +79,12 @@ class FieldList(list):
                         f"Item {i}: Axis {ax_idx} shape mismatch. "
                         f"Expected {ref_ax.shape}, got {item_ax.shape}"
                     )
-                ref_unit = getattr(ref_ax, "unit", u.dimensionless_unscaled)
-                item_unit = getattr(item_ax, "unit", u.dimensionless_unscaled)
-                if ref_unit != item_unit:
+                ref_axis_unit = getattr(ref_ax, "unit", u.dimensionless_unscaled)
+                item_axis_unit = getattr(item_ax, "unit", u.dimensionless_unscaled)
+                if ref_axis_unit != item_axis_unit:
                     raise ValueError(
                         f"Item {i}: Axis {ax_idx} unit mismatch. "
-                        f"Expected {ref_unit}, got {item_unit}"
+                        f"Expected {ref_axis_unit}, got {item_axis_unit}"
                     )
                 ref_val = getattr(ref_ax, "value", ref_ax)
                 item_val = getattr(item_ax, "value", item_ax)
@@ -229,12 +229,12 @@ class FieldDict(dict):
                         f"Key '{key}': Axis {ax_idx} shape mismatch. "
                         f"Expected {ref_ax.shape}, got {item_ax.shape}"
                     )
-                ref_unit = getattr(ref_ax, "unit", u.dimensionless_unscaled)
-                item_unit = getattr(item_ax, "unit", u.dimensionless_unscaled)
-                if ref_unit != item_unit:
+                ref_axis_unit = getattr(ref_ax, "unit", u.dimensionless_unscaled)
+                item_axis_unit = getattr(item_ax, "unit", u.dimensionless_unscaled)
+                if ref_axis_unit != item_axis_unit:
                     raise ValueError(
                         f"Key '{key}': Axis {ax_idx} unit mismatch. "
-                        f"Expected {ref_unit}, got {item_unit}"
+                        f"Expected {ref_axis_unit}, got {item_axis_unit}"
                     )
                 ref_val = getattr(ref_ax, "value", ref_ax)
                 item_val = getattr(item_ax, "value", item_ax)

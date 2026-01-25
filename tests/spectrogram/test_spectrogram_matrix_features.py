@@ -108,9 +108,34 @@ class TestSpectrogramMatrixFeatures:
         # Crop 2s to 8s
         cropped = sgm_3d_basic.crop(start=2*u.s, end=8*u.s)
         # Indices: 2..8 (6 points)
+        assert isinstance(cropped, SpectrogramMatrix)
         assert cropped.shape == (2, 6, 5)
         assert cropped.times[0] == 2*u.s
         assert cropped.frequencies.shape[0] == 5 # Freqs untouched
+
+    def test_crop_time_4d(self, sgm_4d_basic):
+        """Test cropping along time axis (-2) for 4D matrix."""
+        cropped = sgm_4d_basic.crop(start=2, end=8)
+        assert isinstance(cropped, SpectrogramMatrix)
+        assert cropped.shape == (2, 2, 6, 5)
+        assert np.array_equal(cropped.times, np.arange(2, 8))
+
+    def test_label_slice_then_crop_4d(self, sgm_4d_basic):
+        """Test label slice then crop preserves SpectrogramMatrix for 4D input."""
+        sliced = sgm_4d_basic["R1"]
+        assert isinstance(sliced, SpectrogramMatrix)
+        cropped = sliced.crop(start=2, end=8)
+        assert isinstance(cropped, SpectrogramMatrix)
+        assert cropped.shape == (2, 6, 5)
+
+    def test_label_row_col_slice_4d(self, sgm_4d_basic):
+        """Test row/col label slicing preserves SpectrogramMatrix for 4D input."""
+        sliced = sgm_4d_basic["R1", "C2"]
+        assert isinstance(sliced, Spectrogram)
+        # Partial row/col slice should keep matrix shape
+        sub = sgm_4d_basic["R1", ["C1", "C2"]]
+        assert isinstance(sub, SpectrogramMatrix)
+        assert sub.shape == (2, 10, 5)
 
     def test_append_time(self, sgm_3d_basic):
         """Test appending along time axis."""
