@@ -521,27 +521,32 @@ class SpectrogramMatrix(
         # Handle tuple keys (Row, Col) or (Row, Col, Time, Freq)
         if isinstance(key, tuple):
             new_key = list(key)
-            if isinstance(new_key[0], str):
-                new_key[0] = self.row_index(new_key[0])
-            elif (
-                isinstance(new_key[0], (list, tuple, np.ndarray))
-                and len(new_key[0]) > 0
-                and isinstance(new_key[0][0], str)
-            ):
-                new_key[0] = [self.row_index(k) for k in new_key[0]]
-            if len(new_key) > 1 and isinstance(new_key[1], str):
-                try:
-                    new_key[1] = self.col_index(new_key[1])
-                except (KeyError, IndexError):
-                    # Maybe it's not a column key but a slice or index for Time/Freq?
-                    pass
-            elif (
-                len(new_key) > 1
-                and isinstance(new_key[1], (list, tuple, np.ndarray))
-                and len(new_key[1]) > 0
-                and isinstance(new_key[1][0], str)
-            ):
-                new_key[1] = [self.col_index(k) for k in new_key[1]]
+            
+            # Row index (0)
+            if len(new_key) > 0:
+                if isinstance(new_key[0], str):
+                    new_key[0] = self.row_index(new_key[0])
+                elif isinstance(new_key[0], (list, np.ndarray)) and len(new_key[0]) > 0 and isinstance(new_key[0][0], str):
+                    new_key[0] = [self.row_index(k) for k in new_key[0]]
+
+            # Col index (1) - only if we have at least 2 dims relevant to metadata (4D case or 3D with abuse?)
+            # SpectrogramMatrix 4D: (Row, Col, Time, Freq). 3D: (Batch, Time, Freq).
+            # For 3D, col index is not applicable in the same way, but let's assume standard behavior.
+            if len(new_key) > 1:
+                # Check if second element is string
+                if isinstance(new_key[1], str):
+                    try:
+                        new_key[1] = self.col_index(new_key[1])
+                    except (KeyError, IndexError):
+                        # If columns are not defined or key not found, it might be a time-slice?
+                        # But for 4D matrix, dim 1 IS Col.
+                        if self.ndim == 4:
+                            raise
+                        pass
+                elif isinstance(new_key[1], (list, np.ndarray)) and len(new_key[1]) > 0 and isinstance(new_key[1][0], str):
+                     if self.ndim == 4:
+                        new_key[1] = [self.col_index(k) for k in new_key[1]]
+
             key = tuple(new_key)
 
         # Access raw data
