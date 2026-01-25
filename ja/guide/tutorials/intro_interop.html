@@ -206,7 +206,10 @@ os.environ.setdefault(&quot;TF_CPP_MIN_LOG_LEVEL&quot;, &quot;3&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;, &quot;Wswiglal-redir-stdio&quot;)
+
+import matplotlib.pyplot as plt
 import numpy as np
 from astropy import units as u
 from gwpy.time import LIGOTimeGPS
