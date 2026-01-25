@@ -335,7 +335,7 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
                 raise TypeError("Value must be a Spectrogram")
         self.data[key] = item
 
-    def update(self, other=None, **kwargs):
+    def update(self, other=None, **kwargs):  # type: ignore[override]
         if other is not None:
             if isinstance(other, dict):
                 for k, v in other.items():
