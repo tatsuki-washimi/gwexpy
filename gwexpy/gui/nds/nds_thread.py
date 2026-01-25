@@ -1,4 +1,3 @@
-
 import logging
 
 logger = logging.getLogger(__name__)
@@ -67,7 +66,10 @@ class NDSThread(QtCore.QThread):
                     self.conn = None  # Avoid double close
                     c.close()
                 except Exception:
-                    logger.debug("Error while closing NDS connection in finally block.", exc_info=True)
+                    logger.debug(
+                        "Error while closing NDS connection in finally block.",
+                        exc_info=True,
+                    )
             self.finished.emit()
 
     def stop(self):
@@ -81,7 +83,9 @@ class NDSThread(QtCore.QThread):
                 if c:
                     c.close()
             except Exception:
-                logger.debug("Error while closing NDS connection in stop().", exc_info=True)
+                logger.debug(
+                    "Error while closing NDS connection in stop().", exc_info=True
+                )
 
 
 class ChannelListWorker(QtCore.QThread):

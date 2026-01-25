@@ -78,6 +78,7 @@ class SeriesMatrixIndexingMixin:
             series_cls = getattr(self, "series_class", None)
             if series_cls is None:
                 from gwpy.types.series import Series as _Series
+
                 series_cls = _Series
 
             # Handle xindex slicing

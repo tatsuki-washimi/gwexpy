@@ -237,8 +237,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
             # Check times equality (reusing base validation logic)
             try:
                 check_shape_xindex_compatibility(
-                    AxisWrapper(shape0, times0),
-                    AxisWrapper(s.shape, s.times)
+                    AxisWrapper(shape0, times0), AxisWrapper(s.shape, s.times)
                 )
             except ValueError as e:
                 raise ValueError(f"Times mismatch at index {i}: {e}")
@@ -246,8 +245,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
             # Check frequencies equality (reusing base validation logic)
             try:
                 check_shape_xindex_compatibility(
-                    AxisWrapper(shape0, freqs0),
-                    AxisWrapper(s.shape, s.frequencies)
+                    AxisWrapper(shape0, freqs0), AxisWrapper(s.shape, s.frequencies)
                 )
             except ValueError as e:
                 raise ValueError(f"Frequencies mismatch at index {i}: {e}")
@@ -265,11 +263,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
             )
         meta_matrix = MetaDataMatrix(meta_arr)
 
-        global_unit = (
-            s0.unit
-            if all(s.unit == s0.unit for s in self)
-            else None
-        )
+        global_unit = s0.unit if all(s.unit == s0.unit for s in self) else None
         return SpectrogramMatrix(
             arr,
             times=times0,
@@ -583,8 +577,7 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
             # Check times equality (reusing base validation logic)
             try:
                 check_shape_xindex_compatibility(
-                    AxisWrapper(shape0, times0),
-                    AxisWrapper(s.shape, s.times)
+                    AxisWrapper(shape0, times0), AxisWrapper(s.shape, s.times)
                 )
             except ValueError as e:
                 raise ValueError(f"Times mismatch at key {keys[i]}: {e}")
@@ -592,8 +585,7 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
             # Check frequencies equality (reusing base validation logic)
             try:
                 check_shape_xindex_compatibility(
-                    AxisWrapper(shape0, freqs0),
-                    AxisWrapper(s.shape, s.frequencies)
+                    AxisWrapper(shape0, freqs0), AxisWrapper(s.shape, s.frequencies)
                 )
             except ValueError as e:
                 raise ValueError(f"Frequencies mismatch at key {keys[i]}: {e}")
@@ -611,11 +603,7 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
             )
         meta_matrix = MetaDataMatrix(meta_arr)
 
-        global_unit = (
-            s0.unit
-            if all(s.unit == s0.unit for s in vals)
-            else None
-        )
+        global_unit = s0.unit if all(s.unit == s0.unit for s in vals) else None
         return SpectrogramMatrix(
             arr,
             times=times0,

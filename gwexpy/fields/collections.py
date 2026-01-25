@@ -48,8 +48,7 @@ class FieldList(list):
                 raise TypeError(f"Item {i}: Expected ScalarField, got {type(item)}")
             if item.unit != ref_unit:
                 raise ValueError(
-                    f"Item {i}: Inconsistent unit. "
-                    f"Expected {ref_unit}, got {item.unit}"
+                    f"Item {i}: Inconsistent unit. Expected {ref_unit}, got {item.unit}"
                 )
             if item.axis_names != ref_axis_names:
                 raise ValueError(
@@ -89,7 +88,10 @@ class FieldList(list):
                 ref_val = getattr(ref_ax, "value", ref_ax)
                 item_val = getattr(item_ax, "value", item_ax)
                 if not np.allclose(
-                    np.asarray(ref_val), np.asarray(item_val), rtol=_AXIS_RTOL, atol=_AXIS_ATOL
+                    np.asarray(ref_val),
+                    np.asarray(item_val),
+                    rtol=_AXIS_RTOL,
+                    atol=_AXIS_ATOL,
                 ):
                     raise ValueError(
                         f"Item {i}: Axis {ax_idx} coordinate mismatch. "
@@ -239,7 +241,10 @@ class FieldDict(dict):
                 ref_val = getattr(ref_ax, "value", ref_ax)
                 item_val = getattr(item_ax, "value", item_ax)
                 if not np.allclose(
-                    np.asarray(ref_val), np.asarray(item_val), rtol=_AXIS_RTOL, atol=_AXIS_ATOL
+                    np.asarray(ref_val),
+                    np.asarray(item_val),
+                    rtol=_AXIS_RTOL,
+                    atol=_AXIS_ATOL,
                 ):
                     raise ValueError(
                         f"Key '{key}': Axis {ax_idx} coordinate mismatch. "
@@ -256,11 +261,15 @@ class FieldDict(dict):
 
     def fft_space_all(self, axes=None, **kwargs):
         """Apply fft_space to all fields, returning FieldDict."""
-        return self.__class__({k: v.fft_space(axes=axes, **kwargs) for k, v in self.items()})
+        return self.__class__(
+            {k: v.fft_space(axes=axes, **kwargs) for k, v in self.items()}
+        )
 
     def ifft_space_all(self, axes=None, **kwargs):
         """Apply ifft_space to all fields, returning FieldDict."""
-        return self.__class__({k: v.ifft_space(axes=axes, **kwargs) for k, v in self.items()})
+        return self.__class__(
+            {k: v.ifft_space(axes=axes, **kwargs) for k, v in self.items()}
+        )
 
     def resample_all(self, rate, **kwargs):
         """Apply resample to all fields, returning FieldDict."""

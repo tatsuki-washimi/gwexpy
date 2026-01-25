@@ -1,9 +1,9 @@
-
 from __future__ import annotations
 
 from .plot import Plot
 
 __all__ = ["FieldPlot"]
+
 
 class FieldPlot(Plot):
     """
@@ -55,7 +55,9 @@ class FieldPlot(Plot):
 
         # Extract slice
         # field.get_slice returns: data(2D), x_index, y_index, x_name, y_name
-        data, x_idx, y_idx, x_name, y_name = field.get_slice(x_axis=x, y_axis=y, **slice_kwargs)
+        data, x_idx, y_idx, x_name, y_name = field.get_slice(
+            x_axis=x, y_axis=y, **slice_kwargs
+        )
 
         # Get current axes
         ax = self.gca()
@@ -65,12 +67,14 @@ class FieldPlot(Plot):
         # otherwise use .value
 
         # Determine shading (auto or gouraud or flat)
-        shading = kwargs.pop('shading', 'auto')
+        shading = kwargs.pop("shading", "auto")
 
         # Handle label for colorbar
-        label = kwargs.pop('label', getattr(field, 'name', None))
+        label = kwargs.pop("label", getattr(field, "name", None))
 
-        mesh = ax.pcolormesh(x_idx.value, y_idx.value, data.value.T, shading=shading, **kwargs)
+        mesh = ax.pcolormesh(
+            x_idx.value, y_idx.value, data.value.T, shading=shading, **kwargs
+        )
 
         # Labels
         if not ax.get_xlabel():
@@ -85,7 +89,9 @@ class FieldPlot(Plot):
 
         return mesh
 
-    def add_vector(self, field, x=None, y=None, mode='quiver', slice_kwargs=None, **kwargs):
+    def add_vector(
+        self, field, x=None, y=None, mode="quiver", slice_kwargs=None, **kwargs
+    ):
         """
         Add a vector field slice to the plot.
 
@@ -108,7 +114,9 @@ class FieldPlot(Plot):
 
         # 1. Determine plot axes first using one component (e.g. first one)
         first_comp = list(field.values())[0]
-        _, x_idx, y_idx, x_name, y_name = first_comp.get_slice(x_axis=x, y_axis=y, **slice_kwargs)
+        _, x_idx, y_idx, x_name, y_name = first_comp.get_slice(
+            x_axis=x, y_axis=y, **slice_kwargs
+        )
 
         # 2. Identify U (horizontal) and V (vertical) components matching x_name and y_name
         # e.g. if x_name='x', we want component 'x' for U
@@ -124,11 +132,17 @@ class FieldPlot(Plot):
                 u_field = field[keys[0]]
                 v_field = field[keys[1]]
             else:
-                raise ValueError(f"Cannot map vector components to axes {x_name}, {y_name}")
+                raise ValueError(
+                    f"Cannot map vector components to axes {x_name}, {y_name}"
+                )
 
         # Slice components
-        u_data, _, _, _, _ = u_field.get_slice(x_axis=x_name, y_axis=y_name, **slice_kwargs)
-        v_data, _, _, _, _ = v_field.get_slice(x_axis=x_name, y_axis=y_name, **slice_kwargs)
+        u_data, _, _, _, _ = u_field.get_slice(
+            x_axis=x_name, y_axis=y_name, **slice_kwargs
+        )
+        v_data, _, _, _, _ = v_field.get_slice(
+            x_axis=x_name, y_axis=y_name, **slice_kwargs
+        )
 
         ax = self.gca()
 
@@ -154,13 +168,18 @@ class FieldPlot(Plot):
         u_val = u_data.value.T
         v_val = v_data.value.T
 
-        if mode == 'quiver':
+        if mode == "quiver":
             # stride for performance? kwarg 'stride'
-            stride = kwargs.pop('stride', 1)
+            stride = kwargs.pop("stride", 1)
             # Apply stride
-            mesh = ax.quiver(x_idx.value[::stride], y_idx.value[::stride],
-                             u_val[::stride, ::stride], v_val[::stride, ::stride], **kwargs)
-        elif mode == 'streamline':
+            mesh = ax.quiver(
+                x_idx.value[::stride],
+                y_idx.value[::stride],
+                u_val[::stride, ::stride],
+                v_val[::stride, ::stride],
+                **kwargs,
+            )
+        elif mode == "streamline":
             # streamplot requires evenly spaced grid?
             # x_idx, y_idx are usually evenly spaced in our fields.
             mesh = ax.streamplot(x_idx.value, y_idx.value, u_val, v_val, **kwargs)

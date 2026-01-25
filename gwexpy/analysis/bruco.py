@@ -842,7 +842,9 @@ class Bruco:
                         if duration is None:
                             duration = int(round(first_ts.duration.value))
                     except Exception as e:
-                        logger.debug(f"Failed to infer start/duration from aux_data: {e}")
+                        logger.debug(
+                            f"Failed to infer start/duration from aux_data: {e}"
+                        )
                         pass  # infer failed
 
             # Final check
@@ -1259,7 +1261,9 @@ class Bruco:
             return (aux.name, final_coh)
 
         except Exception as e:
-            logger.debug(f"Coherence calculation failed for channel {getattr(aux, 'name', 'unknown')}: {e}")
+            logger.debug(
+                f"Coherence calculation failed for channel {getattr(aux, 'name', 'unknown')}: {e}"
+            )
             return None
 
     @staticmethod
@@ -1372,7 +1376,9 @@ class Bruco:
 
             return (aux.name, final_coh)
         except Exception as e:
-            logger.debug(f"Coherence calculation (fast engine) failed for channel {getattr(aux, 'name', 'unknown')}: {e}")
+            logger.debug(
+                f"Coherence calculation (fast engine) failed for channel {getattr(aux, 'name', 'unknown')}: {e}"
+            )
             return None
 
     @staticmethod

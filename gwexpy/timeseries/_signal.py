@@ -25,10 +25,7 @@ from ._typing import TimeSeriesAttrs
 NumberLike: TypeAlias = int | float | np.number
 QuantityLike: TypeAlias = ArrayLike | u.Quantity
 PhaseLike: TypeAlias = (
-    Sequence[NumberLike]
-    | NDArray[np.floating]
-    | NDArray[np.complex128]
-    | None
+    Sequence[NumberLike] | NDArray[np.floating] | NDArray[np.complex128] | None
 )
 
 try:
@@ -154,14 +151,9 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             pad = u.Quantity(pad)
         if isinstance(pad, u.Quantity):
             if self.dt is None or getattr(self.times, "unit", None) is None:
-                raise ValueError(
-                    "hilbert requires defined dt and times when padding."
-                )
+                raise ValueError("hilbert requires defined dt and times when padding.")
             n_pad = int(
-                round(
-                    pad.to(self.times.unit).value
-                    / self.dt.to(self.times.unit).value
-                )
+                round(pad.to(self.times.unit).value / self.dt.to(self.times.unit).value)
             )
         else:
             n_pad = int(pad)
@@ -569,9 +561,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
 
     def heterodyne(
         self,
-        phase: Sequence[NumberLike]
-        | NDArray[np.floating]
-        | NDArray[np.complex128],
+        phase: Sequence[NumberLike] | NDArray[np.floating] | NDArray[np.complex128],
         stride: NumberLike | u.Quantity = 1.0,
         *,
         singlesided: bool = False,
@@ -642,9 +632,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             raise TypeError(f"Phase is not array_like: {e}") from e
 
         if len(phase) != len(self):
-            raise ValueError(
-                "Phase array must be the same length as the TimeSeries"
-            )
+            raise ValueError("Phase array must be the same length as the TimeSeries")
 
         # --- Stride calculation ---
         if isinstance(stride, u.Quantity):
@@ -1379,7 +1367,9 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                 elif den_unit is not None:
                     unit = 1 / den_unit
             except Exception:
-                logger.debug("Failed to determine unit for transfer function.", exc_info=True)
+                logger.debug(
+                    "Failed to determine unit for transfer function.", exc_info=True
+                )
                 unit = None
 
             return num.__class__(

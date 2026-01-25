@@ -78,7 +78,9 @@ class TimeSeriesMatrixCoreMixin:
                     start, cast("TimeSeriesMatrix", self).xunit or new_dt.unit or u.s
                 )
         else:
-            start = u.Quantity(0, cast("TimeSeriesMatrix", self).xunit or new_dt.unit or u.s)
+            start = u.Quantity(
+                0, cast("TimeSeriesMatrix", self).xunit or new_dt.unit or u.s
+            )
 
         cast("TimeSeriesMatrix", self).xindex = Index.define(start, new_dt, length)
 
@@ -104,7 +106,11 @@ class TimeSeriesMatrixCoreMixin:
 
         N, M, _ = self.shape
         if N == 0 or M == 0:
-            return self if kwargs.get("inplace", False) else cast("TimeSeriesMatrix", self).copy()
+            return (
+                self
+                if kwargs.get("inplace", False)
+                else cast("TimeSeriesMatrix", self).copy()
+            )
 
         if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):
             raise NotImplementedError(
@@ -116,7 +122,9 @@ class TimeSeriesMatrixCoreMixin:
         base_kwargs.pop("inplace", None)
 
         supports_inplace = False
-        ts_attr = getattr(cast("TimeSeriesMatrix", self).series_class, method_name, None)
+        ts_attr = getattr(
+            cast("TimeSeriesMatrix", self).series_class, method_name, None
+        )
         if ts_attr is not None:
             try:
                 sig = inspect.signature(ts_attr)
@@ -126,7 +134,9 @@ class TimeSeriesMatrixCoreMixin:
 
         dtype = None
         axis_infos = []
-        values: list[list[np.ndarray | None]] = [[None for _ in range(M)] for _ in range(N)]
+        values: list[list[np.ndarray | None]] = [
+            [None for _ in range(M)] for _ in range(N)
+        ]
         meta_array = np.empty((N, M), dtype=object)
 
         for i in range(N):
@@ -174,8 +184,14 @@ class TimeSeriesMatrixCoreMixin:
         if inplace_matrix:
             if self.shape != out_data.shape:
                 cast("TimeSeriesMatrix", self).resize(out_data.shape, refcheck=False)
-            np.copyto(cast("TimeSeriesMatrix", self).view(np.ndarray), out_data, casting="unsafe")
-            cast("TimeSeriesMatrix", self)._value = cast("TimeSeriesMatrix", self).view(np.ndarray)
+            np.copyto(
+                cast("TimeSeriesMatrix", self).view(np.ndarray),
+                out_data,
+                casting="unsafe",
+            )
+            cast("TimeSeriesMatrix", self)._value = cast("TimeSeriesMatrix", self).view(
+                np.ndarray
+            )
             return self
 
         # New Matrix
@@ -224,7 +240,9 @@ class TimeSeriesMatrixCoreMixin:
         get_other = self._coerce_other_timeseries_input(other, method_name)
 
         N, M, _ = self.shape
-        values: list[list[np.ndarray | None]] = [[None for _ in range(M)] for _ in range(N)]
+        values: list[list[np.ndarray | None]] = [
+            [None for _ in range(M)] for _ in range(N)
+        ]
         meta_array = np.empty((N, M), dtype=object)
         freq_infos = []
         epochs = []
@@ -296,7 +314,9 @@ class TimeSeriesMatrixCoreMixin:
             )
 
         N, M, _ = self.shape
-        values: list[list[np.ndarray | None]] = [[None for _ in range(M)] for _ in range(N)]
+        values: list[list[np.ndarray | None]] = [
+            [None for _ in range(M)] for _ in range(N)
+        ]
         meta_array = np.empty((N, M), dtype=object)
         freq_infos = []
         epochs = []
@@ -370,7 +390,9 @@ class TimeSeriesMatrixCoreMixin:
         if N == 0 or M == 0:
             return SpectrogramMatrix(np.empty((N, M, 0, 0)))
 
-        values: list[list[np.ndarray | None]] = [[None for _ in range(M)] for _ in range(N)]
+        values: list[list[np.ndarray | None]] = [
+            [None for _ in range(M)] for _ in range(N)
+        ]
         meta_array = np.empty((N, M), dtype=object)
         time_infos = []
         freq_infos = []
@@ -432,7 +454,9 @@ class TimeSeriesMatrixCoreMixin:
             for j in range(M):
                 val = values[i][j]
                 if val is None:
-                    raise RuntimeError(f"Unexpected None at ({i}, {j}) in {method_name}")
+                    raise RuntimeError(
+                        f"Unexpected None at ({i}, {j}) in {method_name}"
+                    )
                 if val.shape != (n_time, n_freq):
                     raise ValueError(
                         f"{method_name} produced inconsistent spectrogram shapes"

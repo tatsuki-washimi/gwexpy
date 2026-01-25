@@ -53,9 +53,7 @@ class FieldBase(Array4D):
         # Set default axis names based on domain
         if axis_names is None:
             time_name = (
-                cls._TIME_AXIS_NAME
-                if axis0_domain == "time"
-                else cls._FREQ_AXIS_NAME
+                cls._TIME_AXIS_NAME if axis0_domain == "time" else cls._FREQ_AXIS_NAME
             )
 
             if isinstance(space_domain, dict):
@@ -190,11 +188,15 @@ class FieldBase(Array4D):
             if len(candidates) < 2:
                 # Need at least 2 free axes, unless the data itself is small
                 # Fallback to existing if available
-                if x_axis is None: x_axis = candidates[0] if candidates else self._axis1_name
-                if y_axis is None: y_axis = candidates[1] if len(candidates) > 1 else self._axis2_name
+                if x_axis is None:
+                    x_axis = candidates[0] if candidates else self._axis1_name
+                if y_axis is None:
+                    y_axis = candidates[1] if len(candidates) > 1 else self._axis2_name
             else:
-                if x_axis is None: x_axis = candidates[0]
-                if y_axis is None: y_axis = candidates[1]
+                if x_axis is None:
+                    x_axis = candidates[0]
+                if y_axis is None:
+                    y_axis = candidates[1]
 
         # 2. Build selector dictionary for isel/sel
         # We want to perform ONE selection operation.
@@ -221,19 +223,19 @@ class FieldBase(Array4D):
                 val = fixed_coords[ax_name]
                 # Check if it's an integer index or a physical quantity
                 if isinstance(val, int) and not isinstance(val, u.Quantity):
-                     # Treat int as index directly (convenience)
-                     slices[i] = val
+                    # Treat int as index directly (convenience)
+                    slices[i] = val
                 else:
                     # Value-based selection: find nearest index
                     idx_arr = getattr(self, f"_axis{i}_index")
                     if isinstance(val, u.Quantity):
-                         # find nearest
-                         diff = np.abs(idx_arr - val)
-                         slices[i] = np.argmin(diff)
+                        # find nearest
+                        diff = np.abs(idx_arr - val)
+                        slices[i] = np.argmin(diff)
                     else:
-                         # Assume raw value matches raw quantity value
-                         diff = np.abs(idx_arr.value - val)
-                         slices[i] = np.argmin(diff)
+                        # Assume raw value matches raw quantity value
+                        diff = np.abs(idx_arr.value - val)
+                        slices[i] = np.argmin(diff)
             else:
                 # Default behavior: slice at index 0 (or could be center)
                 # Let's pivot to default to 0 for time, center for space?
@@ -254,7 +256,7 @@ class FieldBase(Array4D):
             x_idx_pos = all_axes.index(x_axis)
             y_idx_pos = all_axes.index(y_axis)
         except ValueError:
-             raise ValueError(f"Invalid axis name. Available: {all_axes}")
+            raise ValueError(f"Invalid axis name. Available: {all_axes}")
 
         x_index = getattr(self, f"_axis{x_idx_pos}_index")
         y_index = getattr(self, f"_axis{y_idx_pos}_index")
@@ -306,7 +308,12 @@ class FieldBase(Array4D):
 
         plot_kwargs = {}
 
-        all_axes = [self._axis0_name, self._axis1_name, self._axis2_name, self._axis3_name]
+        all_axes = [
+            self._axis0_name,
+            self._axis1_name,
+            self._axis2_name,
+            self._axis3_name,
+        ]
 
         for k, v in kwargs.items():
             if k in all_axes:
@@ -343,7 +350,12 @@ class FieldBase(Array4D):
         from ..plot.field import FieldPlot
 
         # Identify axis to loop
-        all_axes = [self._axis0_name, self._axis1_name, self._axis2_name, self._axis3_name]
+        all_axes = [
+            self._axis0_name,
+            self._axis1_name,
+            self._axis2_name,
+            self._axis3_name,
+        ]
         try:
             loop_idx_pos = all_axes.index(axis)
         except ValueError:
@@ -367,16 +379,16 @@ class FieldBase(Array4D):
 
         # Pre-calculate common arguments to avoid overhead
         # We need to decide proper vmin/vmax if not provided, to keep scale steady
-        if 'vmin' not in plot_kwargs or 'vmax' not in plot_kwargs:
+        if "vmin" not in plot_kwargs or "vmax" not in plot_kwargs:
             # Calculate global min/max for the whole field (or sampled?)
             # This might be heavy for huge data.
             # Use 2% and 98% percentile of the whole data? Or just min/max?
             # Safe default fallback: let matplotlib decide per frame (flickering!)
             # Better: use min/max of the field.
-            if 'vmin' not in plot_kwargs:
-                plot_kwargs['vmin'] = np.nanmin(self.value)
-            if 'vmax' not in plot_kwargs:
-                plot_kwargs['vmax'] = np.nanmax(self.value)
+            if "vmin" not in plot_kwargs:
+                plot_kwargs["vmin"] = np.nanmin(self.value)
+            if "vmax" not in plot_kwargs:
+                plot_kwargs["vmax"] = np.nanmax(self.value)
 
         def update(frame_val):
             ax.clear()
@@ -385,7 +397,9 @@ class FieldBase(Array4D):
             current_slice_kwargs[axis] = frame_val
 
             # Add scalar plot
-            fp.add_scalar(self, x=x, y=y, slice_kwargs=current_slice_kwargs, **plot_kwargs)
+            fp.add_scalar(
+                self, x=x, y=y, slice_kwargs=current_slice_kwargs, **plot_kwargs
+            )
 
             # Set title
             if isinstance(frame_val, u.Quantity):
@@ -400,9 +414,9 @@ class FieldBase(Array4D):
         # User can slice the field before calling animate if needed.
         frames = loop_axis_index
         if len(frames) > 200:
-             # Heuristic: limit frames for default smoothness
-             # User should pre-slice if they want specific range
-             pass # Use all for correctness
+            # Heuristic: limit frames for default smoothness
+            # User should pre-slice if they want specific range
+            pass  # Use all for correctness
 
         ani = FuncAnimation(fp.figure, update, frames=frames, interval=interval)
 

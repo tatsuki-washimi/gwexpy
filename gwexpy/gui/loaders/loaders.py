@@ -28,7 +28,11 @@ def load_products(filename: str) -> dict:
             if products:
                 return products
         except Exception:
-            logger.debug("DTT XML loader failed for %s, falling back to generic.", filename, exc_info=True)
+            logger.debug(
+                "DTT XML loader failed for %s, falling back to generic.",
+                filename,
+                exc_info=True,
+            )
             # Fallback to generic loaders if not a valid DTT XML
 
     # Format Mapping for explicit fallback
@@ -67,7 +71,9 @@ def load_products(filename: str) -> dict:
         products["TS"] = {str(k): v for k, v in ts_dict.items()}
         return products
     except Exception:
-        logger.debug("Automatic TimeSeriesDict.read failed for %s.", filename, exc_info=True)
+        logger.debug(
+            "Automatic TimeSeriesDict.read failed for %s.", filename, exc_info=True
+        )
         # Retry with explicit format if available
         if fmt:
             try:
@@ -80,7 +86,11 @@ def load_products(filename: str) -> dict:
 
                         channels = get_channels(filename)
                     except Exception:
-                        logger.debug("Failed to discover channels from %s using lalframe.", filename, exc_info=True)
+                        logger.debug(
+                            "Failed to discover channels from %s using lalframe.",
+                            filename,
+                            exc_info=True,
+                        )
 
                     # 2. Try various GWF backends with discovered channels (or without if failed)
                     # Priority: generic 'gwf' -> 'gwf.lalframe' -> 'gwf.framecpp' -> 'gwf.framel'
@@ -100,7 +110,12 @@ def load_products(filename: str) -> dict:
                             products["TS"] = {str(k): v for k, v in ts_dict.items()}
                             return products
                         except Exception:
-                            logger.debug("GWF read attempt failed with backend %s for %s", gw_fmt, filename, exc_info=True)
+                            logger.debug(
+                                "GWF read attempt failed with backend %s for %s",
+                                gw_fmt,
+                                filename,
+                                exc_info=True,
+                            )
                             continue  # Try next format
 
                     # If all failed, let outer loop handle or bubble up
@@ -118,7 +133,9 @@ def load_products(filename: str) -> dict:
         products["TS"] = {ts.name or "Channel0": ts}
         return products
     except Exception:
-        logger.debug("Automatic TimeSeries.read failed for %s.", filename, exc_info=True)
+        logger.debug(
+            "Automatic TimeSeries.read failed for %s.", filename, exc_info=True
+        )
         # Retry with explicit format
         if fmt:
             try:

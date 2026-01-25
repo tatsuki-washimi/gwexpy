@@ -66,7 +66,9 @@ class TensorField(FieldDict):
             If the tensor rank is not 2.
         """
         if self.rank != 2:
-            raise ValueError(f"trace() is only defined for rank-2 tensors, got rank {self.rank}")
+            raise ValueError(
+                f"trace() is only defined for rank-2 tensors, got rank {self.rank}"
+            )
 
         # Find unique indices present in the diagonal
         diag_indices = set()
@@ -109,7 +111,9 @@ class TensorField(FieldDict):
         - TensorField @ TensorField -> TensorField
         """
         if self.rank != 2:
-            raise ValueError(f"Matmul (@) is only defined for rank-2 tensors, got rank {self.rank}")
+            raise ValueError(
+                f"Matmul (@) is only defined for rank-2 tensors, got rank {self.rank}"
+            )
 
         # Mapping for VectorField components
         V_INV = {0: "x", 1: "y", 2: "z"}
@@ -145,7 +149,7 @@ class TensorField(FieldDict):
 
         if isinstance(other, TensorField):
             if other.rank != 2:
-                 raise ValueError("Matmul requires rank-2 TensorField")
+                raise ValueError("Matmul requires rank-2 TensorField")
 
             # T_ij S_jk = R_ik
             indices_i = {k[0] for k in self.keys()}
@@ -193,7 +197,7 @@ class TensorField(FieldDict):
             Shape (N0, N1, N2, N3, dim1, dim2) if order='last'.
         """
         if self.rank != 2:
-             raise NotImplementedError("to_array only implemented for rank-2 tensors")
+            raise NotImplementedError("to_array only implemented for rank-2 tensors")
 
         indices_i = {k[0] for k in self.keys()}
         indices_j = {k[1] for k in self.keys()}
@@ -225,7 +229,9 @@ class TensorField(FieldDict):
             The determinant field.
         """
         if self.rank != 2:
-            raise ValueError(f"det() is only defined for rank-2 tensors, got rank {self.rank}")
+            raise ValueError(
+                f"det() is only defined for rank-2 tensors, got rank {self.rank}"
+            )
 
         arr = self.to_array(order="last")
         det_val = np.linalg.det(arr)
@@ -258,13 +264,15 @@ class TensorField(FieldDict):
             If the tensor rank is not 2.
         """
         if self.rank != 2:
-            raise ValueError(f"symmetrize() is only defined for rank-2 tensors, got rank {self.rank}")
+            raise ValueError(
+                f"symmetrize() is only defined for rank-2 tensors, got rank {self.rank}"
+            )
 
         new_components: dict[tuple[int, ...], ScalarField] = {}
         all_keys = set(self.keys())
         processed_pairs = set()
 
-        for (i, j) in all_keys:
+        for i, j in all_keys:
             if (i, j) in processed_pairs:
                 continue
 
@@ -328,7 +336,7 @@ class TensorField(FieldDict):
             Fixed coordinates and arguments passed to FieldPlot.add_scalar.
         """
         if self.rank != 2:
-             raise NotImplementedError("plot_components only supports rank-2 tensors")
+            raise NotImplementedError("plot_components only supports rank-2 tensors")
 
         from ..plot.field import FieldPlot
 
@@ -342,7 +350,12 @@ class TensorField(FieldDict):
         # This is repeated logic, maybe move to FieldBase static helper if needed often?
         # But 'all_axes' info is needed.
         first = next(iter(self.values()))
-        all_axes = [first._axis0_name, first._axis1_name, first._axis2_name, first._axis3_name]
+        all_axes = [
+            first._axis0_name,
+            first._axis1_name,
+            first._axis2_name,
+            first._axis3_name,
+        ]
 
         slice_kwargs = {}
         plot_kwargs = {}
@@ -367,6 +380,7 @@ class TensorField(FieldDict):
                 # Set current axes to this one
                 # Matplotlib's sca(ax) affects plt.gca()
                 import matplotlib.pyplot as plt
+
                 plt.sca(ax)
 
                 if (i, j) in self:
@@ -377,9 +391,16 @@ class TensorField(FieldDict):
                     # Pass label to kwargs? no add_scalar has logic.
                     # Add title?
 
-                    fp.add_scalar(comp, x=x, y=y, slice_kwargs=slice_kwargs, label=label, **plot_kwargs)
+                    fp.add_scalar(
+                        comp,
+                        x=x,
+                        y=y,
+                        slice_kwargs=slice_kwargs,
+                        label=label,
+                        **plot_kwargs,
+                    )
                     ax.set_title(label)
                 else:
-                    ax.axis('off')
+                    ax.axis("off")
 
         return fp

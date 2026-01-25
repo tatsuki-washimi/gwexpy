@@ -844,7 +844,10 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title="", **kwargs):
         fig.colorbar(mesh, ax=ax_sg, label=sg.unit.to_string("latex_inline"))
 
     with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", message="This figure includes Axes that are not compatible with tight_layout")
+        warnings.filterwarnings(
+            "ignore",
+            message="This figure includes Axes that are not compatible with tight_layout",
+        )
         fig.tight_layout()
 
     return fig, axes

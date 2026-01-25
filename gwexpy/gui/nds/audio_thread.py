@@ -69,7 +69,9 @@ class AudioThread(QtCore.QThread):
                         )
                         working_rate = default_sr
             except Exception:
-                logger.debug("Failed to query device default samplerate.", exc_info=True)
+                logger.debug(
+                    "Failed to query device default samplerate.", exc_info=True
+                )
 
         # 3. Try common rates
         if working_rate is None:
@@ -84,18 +86,23 @@ class AudioThread(QtCore.QThread):
         if working_rate is not None and working_rate != self.sample_rate:
             logger.warning(
                 "AudioThread: %sHz NOT supported by %s. Switching to %sHz.",
-                self.sample_rate, dev_str, working_rate
+                self.sample_rate,
+                dev_str,
+                working_rate,
             )
             self.sample_rate = working_rate
         elif working_rate is None:
             logger.warning(
                 "AudioThread WARNING: No supported sample rate found for %s. Proceeding with extreme caution...",
-                dev_str
+                dev_str,
             )
 
         logger.debug(
             "Starting AudioThread for %s at %sHz (block_size=%s, %s)",
-            self.channels, self.sample_rate, self.block_size, dev_str
+            self.channels,
+            self.sample_rate,
+            self.block_size,
+            dev_str,
         )
 
         mic_channels = [c for c in self.channels if "PC:MIC" in c]
@@ -155,14 +162,17 @@ class AudioThread(QtCore.QThread):
                                 "step": 1.0 / self.sample_rate,
                             }
                     except Exception:
-                        logger.error("AudioThread: Error processing channel %s.", c, exc_info=True)
+                        logger.error(
+                            "AudioThread: Error processing channel %s.",
+                            c,
+                            exc_info=True,
+                        )
 
                 if payload:
                     self.dataReceived.emit(payload, "raw", True)
 
             logger.debug(
-                "Attempting to open InputStream for %s channels on %s",
-                max_ch, dev_str
+                "Attempting to open InputStream for %s channels on %s", max_ch, dev_str
             )
             with sd.InputStream(
                 samplerate=self.sample_rate,

@@ -150,7 +150,11 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
                 dist = int(dist.to("s").value * fs)
 
             # If width is quantity (or tuple of quantities)
-            if wid is not None and isinstance(wid, Iterable) and not isinstance(wid, (str, bytes)):
+            if (
+                wid is not None
+                and isinstance(wid, Iterable)
+                and not isinstance(wid, (str, bytes))
+            ):
                 new_wid: list[float] = []
                 for w in wid:
                     if hasattr(w, "to"):

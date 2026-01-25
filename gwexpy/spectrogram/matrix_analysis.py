@@ -72,9 +72,9 @@ class SpectrogramMatrixAnalysisMixin:
                 m.unit = u.rad
                 if m.name:
                     if ".real" in m.name:
-                         m.name = m.name.replace(".real", "_phase")
+                        m.name = m.name.replace(".real", "_phase")
                     else:
-                         m.name += "_phase"
+                        m.name += "_phase"
                 else:
                     m.name = "phase"
             new.meta = temp_meta

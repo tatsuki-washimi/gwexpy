@@ -76,7 +76,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Connect Calibration button (Phase 4)
         if hasattr(res_tab, "btn_calibration"):
-            res_tab.btn_calibration.setEnabled(False)  # Disable until implemented in v0.5+
+            res_tab.btn_calibration.setEnabled(
+                False
+            )  # Disable until implemented in v0.5+
             # res_tab.btn_calibration.clicked.connect(self.show_calibration_dialog)
 
         self.engine = Engine()
@@ -888,9 +890,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 # Render traces
                 self.plot_renderer.render_panel(
-                    plot_idx, info_root, results, g_type,
+                    plot_idx,
+                    info_root,
+                    results,
+                    g_type,
                     start_time_gps=start_time_gps,
-                    is_time_axis=is_time_axis
+                    is_time_axis=is_time_axis,
                 )
 
                 # Stabilize range during streaming
@@ -1022,6 +1027,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Convert GPS time to UTC string."""
         try:
             from astropy.time import Time
+
             t = Time(gps_time, format="gps", scale="utc")
             return t.isot.replace("T", " ")
         except Exception:
@@ -1254,10 +1260,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """Open a new window sharing the same data (DTT New behavior)."""
         try:
             from .result_window import ResultWindow
-            new_win = ResultWindow(
-                loaded_products=self.loaded_products,
-                parent=None
-            )
+
+            new_win = ResultWindow(loaded_products=self.loaded_products, parent=None)
             new_win.show()
             # Keep reference to prevent garbage collection
             if not hasattr(self, "_child_windows"):
@@ -1270,7 +1274,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 "New Window",
                 "New Result Window feature:\n"
                 "Opens a separate window sharing the same data.\n\n"
-                "(Full implementation pending)"
+                "(Full implementation pending)",
             )
 
     def show_reference_dialog(self):
@@ -1316,18 +1320,26 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             if f:
                 import os
+
                 name = os.path.basename(f)
                 if not hasattr(self, "_reference_traces"):
                     self._reference_traces = {}
                 # Placeholder: actual loading would use gwpy/loaders
-                self._reference_traces[name] = {"file": f, "visible": True, "data": None}
+                self._reference_traces[name] = {
+                    "file": f,
+                    "visible": True,
+                    "data": None,
+                }
                 self._ref_list_widget.addItem(name)
 
         def remove_reference():
             item = self._ref_list_widget.currentItem()
             if item:
                 name = item.text()
-                if hasattr(self, "_reference_traces") and name in self._reference_traces:
+                if (
+                    hasattr(self, "_reference_traces")
+                    and name in self._reference_traces
+                ):
                     del self._reference_traces[name]
                 self._ref_list_widget.takeItem(self._ref_list_widget.row(item))
 
@@ -1407,17 +1419,27 @@ class MainWindow(QtWidgets.QMainWindow):
 
         def import_calibration():
             f, _ = QtWidgets.QFileDialog.getOpenFileName(
-                dialog, "Import Calibration", "", "Calibration Files (*.cal *.xml *.txt);;All Files (*)"
+                dialog,
+                "Import Calibration",
+                "",
+                "Calibration Files (*.cal *.xml *.txt);;All Files (*)",
             )
             if f:
-                QtWidgets.QMessageBox.information(dialog, "Import", f"Loaded calibration from:\n{f}")
+                QtWidgets.QMessageBox.information(
+                    dialog, "Import", f"Loaded calibration from:\n{f}"
+                )
 
         def export_calibration():
             f, _ = QtWidgets.QFileDialog.getSaveFileName(
-                dialog, "Export Calibration", "", "Calibration Files (*.cal *.xml);;All Files (*)"
+                dialog,
+                "Export Calibration",
+                "",
+                "Calibration Files (*.cal *.xml);;All Files (*)",
             )
             if f:
-                QtWidgets.QMessageBox.information(dialog, "Export", f"Exported calibration to:\n{f}")
+                QtWidgets.QMessageBox.information(
+                    dialog, "Export", f"Exported calibration to:\n{f}"
+                )
 
         btn_import_cal.clicked.connect(import_calibration)
         btn_export_cal.clicked.connect(export_calibration)
@@ -1446,7 +1468,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if ch_item and ch_item.text():
                     self._calibration_table[ch_item.text()] = {
                         "gain": float(gain_item.text()) if gain_item else 1.0,
-                        "units": unit_item.text() if unit_item else "counts"
+                        "units": unit_item.text() if unit_item else "counts",
                     }
 
     def open_file_dialog(self):

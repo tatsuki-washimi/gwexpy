@@ -854,8 +854,8 @@ def create_result_tab(on_import=None):
 
     # --- Phase 2: Zoom/Active/Options state management ---
     # State variables stored in tab widget
-    tab._active_pad = 0       # 0 = Graph 1, 1 = Graph 2
-    tab._zoomed_pad = -1      # -1 = not zoomed, 0/1 = zoomed pad index
+    tab._active_pad = 0  # 0 = Graph 1, 1 = Graph 2
+    tab._zoomed_pad = -1  # -1 = not zoomed, 0/1 = zoomed pad index
     tab._plots = [plot1, plot2]
     tab._panels = [info1_panel, info2_panel]
 
@@ -982,12 +982,12 @@ def create_result_tab(on_import=None):
 
     btn_reference = QtWidgets.QPushButton("Reference...")
     btn_reference.setToolTip("Manage reference traces for comparison")
-    btn_reference.setEnabled(False) # Phase 3: Reference
+    btn_reference.setEnabled(False)  # Phase 3: Reference
     bot_toolbar.addWidget(btn_reference)
 
     btn_calibration = QtWidgets.QPushButton("Calibration...")
     btn_calibration.setToolTip("Edit calibration table")
-    btn_calibration.setEnabled(False) # Phase 4
+    btn_calibration.setEnabled(False)  # Phase 4
     bot_toolbar.addWidget(btn_calibration)
 
     bot_toolbar.addStretch(1)

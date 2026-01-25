@@ -393,7 +393,11 @@ class CouplingResult:
                     p10_asd = p10**0.5
                     p90_asd = p90**0.5
                 except Exception:
-                    logger.warning("Could not compute background percentiles for %s", ts_bkg.name if ts_bkg is not None else "Target", exc_info=True)
+                    logger.warning(
+                        "Could not compute background percentiles for %s",
+                        ts_bkg.name if ts_bkg is not None else "Target",
+                        exc_info=True,
+                    )
 
             return asd_mean, p10_asd, p90_asd
 
@@ -623,7 +627,10 @@ def _process_single_target(
             or (ts_tgt_inj.unit / ts_wit_inj.unit)
         )
     except Exception:
-        logger.debug("Automatic CF unit determination failed, falling back to dimensionless.", exc_info=True)
+        logger.debug(
+            "Automatic CF unit determination failed, falling back to dimensionless.",
+            exc_info=True,
+        )
         cf_unit = "dimensionless"
 
     cf = FrequencySeries(

@@ -258,7 +258,9 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
                     .reshape(nt, nf_new, bin_size)
                     .mean(axis=2)
                 )
-                freqs = freqs[: nf_new * bin_size].reshape(nf_new, bin_size).mean(axis=1)
+                freqs = (
+                    freqs[: nf_new * bin_size].reshape(nf_new, bin_size).mean(axis=1)
+                )
 
         # Time rebinning
         if dt is not None:
@@ -274,7 +276,9 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
                     .reshape(nt_new, bin_size, nf)
                     .mean(axis=1)
                 )
-                times = times[: nt_new * bin_size].reshape(nt_new, bin_size).mean(axis=1)
+                times = (
+                    times[: nt_new * bin_size].reshape(nt_new, bin_size).mean(axis=1)
+                )
 
         return self.__class__(
             data,
@@ -407,7 +411,9 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         times = self.times
         frequencies = self.frequencies
         # Convert epoch to GPS float to avoid astropy.Time interpretation issues
-        epoch = float(self.epoch.gps) if hasattr(self.epoch, "gps") else float(self.epoch)
+        epoch = (
+            float(self.epoch.gps) if hasattr(self.epoch, "gps") else float(self.epoch)
+        )
         channel = self.channel
         base_name = self.name
 
@@ -477,7 +483,9 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         times = self.times
         frequencies = self.frequencies
         # Convert epoch to GPS float to avoid astropy.Time interpretation issues
-        epoch = float(self.epoch.gps) if hasattr(self.epoch, "gps") else float(self.epoch)
+        epoch = (
+            float(self.epoch.gps) if hasattr(self.epoch, "gps") else float(self.epoch)
+        )
         channel = self.channel
         base_name = self.name
 

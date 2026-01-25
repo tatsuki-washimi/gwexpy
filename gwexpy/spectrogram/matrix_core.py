@@ -60,7 +60,6 @@ class SpectrogramMatrixCoreMixin:
     it must update xindex/frequencies in lockstep (design note; not scheduled).
     """
 
-
     @property
     def _x_axis_index(self: _SpectrogramMatrixCoreLike) -> int:
         """
@@ -159,7 +158,9 @@ class SpectrogramMatrixCoreMixin:
                 self._df = None
             return self._df
 
-    def _get_series_kwargs(self: _SpectrogramMatrixCoreLike, xindex: Any, meta: Any) -> dict[str, Any]:
+    def _get_series_kwargs(
+        self: _SpectrogramMatrixCoreLike, xindex: Any, meta: Any
+    ) -> dict[str, Any]:
         """Arguments to construct a Spectrogram element."""
         return {
             "times": xindex,
@@ -169,7 +170,9 @@ class SpectrogramMatrixCoreMixin:
             "epoch": getattr(self, "epoch", None),
         }
 
-    def _get_meta_for_constructor(self: _SpectrogramMatrixCoreLike, data: Any, xindex: Any) -> dict[str, Any]:
+    def _get_meta_for_constructor(
+        self: _SpectrogramMatrixCoreLike, data: Any, xindex: Any
+    ) -> dict[str, Any]:
         """Arguments to construct a SpectrogramMatrix."""
         return {
             "data": data,

@@ -33,8 +33,13 @@ def _calc_correlation_direct(ts, target, meth):
             ts = GWExTimeSeries(ts.value, t0=ts.t0, sample_rate=sr, name=ts.name)
         return ts.correlation(target, method=meth)
     except Exception:
-        logger.debug("Correlation calculation failed for %s", getattr(ts, "name", "unknown"), exc_info=True)
+        logger.debug(
+            "Correlation calculation failed for %s",
+            getattr(ts, "name", "unknown"),
+            exc_info=True,
+        )
         return np.nan
+
 
 class TimeSeriesMatrixAnalysisMixin:
     """Analysis and preprocessing methods for TimeSeriesMatrix."""
@@ -154,9 +159,7 @@ class TimeSeriesMatrixAnalysisMixin:
         # RMS does not support all kwargs in mean (like keepdims? No, mean supports keepdims)
         # But base rms passes argument 'keepdims' to mean.
         return np.sqrt(
-            func(
-                np.square(self.value), axis=ax, keepdims=keepdims, **kwargs
-            )
+            func(np.square(self.value), axis=ax, keepdims=keepdims, **kwargs)
         )
 
     def min(
@@ -418,7 +421,13 @@ class TimeSeriesMatrixAnalysisMixin:
         Standardize the matrix.
         See gwexpy.timeseries.preprocess.standardize_matrix.
         """
-        return standardize_matrix(cast("TimeSeriesMatrix", self), axis=cast(Literal['time', 'channel'], axis), method=method, ddof=ddof, **kwargs)
+        return standardize_matrix(
+            cast("TimeSeriesMatrix", self),
+            axis=cast(Literal["time", "channel"], axis),
+            method=method,
+            ddof=ddof,
+            **kwargs,
+        )
 
     def whiten_channels(
         self: Any,
@@ -435,7 +444,10 @@ class TimeSeriesMatrixAnalysisMixin:
         See gwexpy.timeseries.preprocess.whiten_matrix.
         """
         mat, model = whiten_matrix(
-            cast("TimeSeriesMatrix", self), method=cast(Literal['pca', 'zca'], method), eps=eps, n_components=n_components
+            cast("TimeSeriesMatrix", self),
+            method=cast(Literal["pca", "zca"], method),
+            eps=eps,
+            n_components=n_components,
         )
         if return_model:
             return mat, model
@@ -668,7 +680,9 @@ class TimeSeriesMatrixAnalysisMixin:
         """
         return self.correlation(other, method="kendall", **kwargs)
 
-    def correlation_vector(self: Any, target_timeseries: Any, method: str = "mic", nproc: int | None = None) -> Any:
+    def correlation_vector(
+        self: Any, target_timeseries: Any, method: str = "mic", nproc: int | None = None
+    ) -> Any:
         """
         Calculate correlation between a target TimeSeries and all channels in this Matrix.
         """
@@ -711,7 +725,11 @@ class TimeSeriesMatrixAnalysisMixin:
                         try:
                             score = fut.result()
                         except Exception:
-                            logger.debug("Failed to retrieve parallel correlation result for %s", name, exc_info=True)
+                            logger.debug(
+                                "Failed to retrieve parallel correlation result for %s",
+                                name,
+                                exc_info=True,
+                            )
                             score = np.nan
                         results.append(
                             {"row": i, "col": j, "channel": name, "score": score}

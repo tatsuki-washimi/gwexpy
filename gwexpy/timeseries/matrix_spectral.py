@@ -35,7 +35,9 @@ class TimeSeriesMatrixSpectralMixin:
         fs_data = np.fft.rfft(data, n=rfft_len, axis=-1)
 
         # Calculate frequencies
-        freqs = np.fft.rfftfreq(rfft_len, d=cast("TimeSeriesMatrix", self).dt.value) * u.Hz
+        freqs = (
+            np.fft.rfftfreq(rfft_len, d=cast("TimeSeriesMatrix", self).dt.value) * u.Hz
+        )
 
         # Metadata logic: simplified for now, uses same meta for all
         return FrequencySeriesMatrix(
@@ -182,11 +184,15 @@ class TimeSeriesMatrixSpectralMixin:
         N, M, _ = cast("TimeSeriesMatrix", self).shape
         if N == 0 or M == 0:
             if expect_tuple:
-                return cast("TimeSeriesMatrix", self).copy(), cast("TimeSeriesMatrix", self).copy()
+                return cast("TimeSeriesMatrix", self).copy(), cast(
+                    "TimeSeriesMatrix", self
+                ).copy()
             return cast("TimeSeriesMatrix", self).copy()
 
         vals1: list[list[Any]] = [[None for _ in range(M)] for _ in range(N)]
-        vals2: list[list[Any]] | None = [[None for _ in range(M)] for _ in range(N)] if expect_tuple else None
+        vals2: list[list[Any]] | None = (
+            [[None for _ in range(M)] for _ in range(N)] if expect_tuple else None
+        )
 
         meta1 = np.empty((N, M), dtype=object)
         meta2 = np.empty((N, M), dtype=object) if expect_tuple else None
@@ -288,21 +294,27 @@ class TimeSeriesMatrixSpectralMixin:
         Compute spectrogram of each element.
         Returns SpectrogramMatrix.
         """
-        return cast("TimeSeriesMatrix", self)._apply_spectrogram_method("spectrogram", *args, **kwargs)
+        return cast("TimeSeriesMatrix", self)._apply_spectrogram_method(
+            "spectrogram", *args, **kwargs
+        )
 
     def spectrogram2(self, *args: Any, **kwargs: Any) -> Any:
         """
         Compute spectrogram2 of each element.
         Returns SpectrogramMatrix.
         """
-        return cast("TimeSeriesMatrix", self)._apply_spectrogram_method("spectrogram2", *args, **kwargs)
+        return cast("TimeSeriesMatrix", self)._apply_spectrogram_method(
+            "spectrogram2", *args, **kwargs
+        )
 
     def q_transform(self, *args: Any, **kwargs: Any) -> Any:
         """
         Compute Q-transform of each element.
         Returns SpectrogramMatrix.
         """
-        return cast("TimeSeriesMatrix", self)._apply_spectrogram_method("q_transform", *args, **kwargs)
+        return cast("TimeSeriesMatrix", self)._apply_spectrogram_method(
+            "q_transform", *args, **kwargs
+        )
 
     def _run_spectral_method(self, method_name: str, **kwargs: Any) -> Any:
         """

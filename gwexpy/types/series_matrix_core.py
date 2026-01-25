@@ -86,7 +86,10 @@ class SeriesMatrixCoreMixin:
             try:
                 n_samples = self._value.shape[self._x_axis_index]
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-                logger.debug("Could not determine n_samples for xindex length check.", exc_info=True)
+                logger.debug(
+                    "Could not determine n_samples for xindex length check.",
+                    exc_info=True,
+                )
                 n_samples = None
             suppress = getattr(self, "_suppress_xindex_check", False)
             if (
@@ -113,9 +116,12 @@ class SeriesMatrixCoreMixin:
                 xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
                 self._x0 = xindex[0]
             except (u.UnitConversionError, AttributeError):
-                logger.debug("Could not determine x0 from xindex, falling back to 0.", exc_info=True)
+                logger.debug(
+                    "Could not determine x0 from xindex, falling back to 0.",
+                    exc_info=True,
+                )
                 self._x0 = u.Quantity(0, self.xunit)
-            except (IndexError):
+            except IndexError:
                 self._x0 = u.Quantity(0, self.xunit)
             return self._x0
 
