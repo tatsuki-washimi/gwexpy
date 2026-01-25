@@ -10,10 +10,11 @@ v0.1.0b1 最終リリースのためのCI要件への適合、日本語ドキュ
 
 ## 2. 修正・追加の詳細
 
-### Phase 1: Japanese Documentation Gap Fill
+### Phase 1: Japanese Documentation Setup & Gap Fill
 
-- 英語のみで提供されていた `docs/guide/tutorials/` 以下の全ての `.ipynb` に対し、`docs/ja/guide/tutorials/` に同名の `.md` スタブを作成しました。
-- 各スタブには「このチュートリアルはまだ翻訳されていません」というメッセージと、英語版へのリンクを含め、日本語切替時に 404 エラーが発生しないようにしました。
+- `docs/ja/` ディレクトリを新規作成し、英語版 (`docs/`) のディレクトリ構造 (`guide`, `reference`) を複製しました。
+- `docs/ja/index.rst` および `docs/ja/guide/installation.rst` を日本語に翻訳し、ランディングページとインストールガイドのマルチバイト化を完了しました。
+- `docs/guide/tutorials/` 以下の全てのチュートリアルに対し、日本語版 (`docs/ja/guide/tutorials/*.md`) のスタブを作成し、翻訳未完了のものは英語版へ誘導するようにしました。
 
 ### Phase 2: Installation Guide Update
 
