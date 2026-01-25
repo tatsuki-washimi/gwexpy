@@ -9,6 +9,11 @@ gravitational wave and time-series data analysis.
 import warnings
 
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
+try:
+    import lal
+except ImportError:
+    pass
+
 warnings.filterwarnings("ignore", category=UserWarning, module="gwpy")
 warnings.filterwarnings("ignore", category=UserWarning, module="scipy")
 from astropy.utils.exceptions import AstropyWarning
