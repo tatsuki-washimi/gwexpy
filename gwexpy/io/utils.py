@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import contextlib
 import datetime as _dt
 from collections.abc import Iterable

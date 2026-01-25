@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import logging
 import warnings
 from collections import OrderedDict
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from astropy import units as u
@@ -70,22 +72,22 @@ class SeriesMatrix(
         cls,
         data: Any = None,
         *,
-        meta: Union["MetaDataMatrix", np.ndarray, list] | None = None,
+        meta: MetaDataMatrix | np.ndarray | list | None = None,
         unit: object | None = None,
         units: np.ndarray | None = None,
         names: np.ndarray | None = None,
         channels: np.ndarray | None = None,
-        rows: "MetaDataCollectionType" = None,
-        cols: "MetaDataCollectionType" = None,
+        rows: MetaDataCollectionType = None,
+        cols: MetaDataCollectionType = None,
         shape: tuple[int, ...] | None = None,
-        xindex: "IndexLike | None" = None,
-        dx: "u.Quantity | None" = None,
-        x0: "u.Quantity | None" = None,
-        xunit: "UnitLike" = None,
+        xindex: IndexLike | None = None,
+        dx: u.Quantity | None = None,
+        x0: u.Quantity | None = None,
+        xunit: UnitLike = None,
         name: str = "",
         epoch: float = 0.0,
         attrs: dict[str, Any] | None = None,
-    ) -> "SeriesMatrix":
+    ) -> SeriesMatrix:
         """
         Create a SeriesMatrix with normalized inputs and metadata.
         """

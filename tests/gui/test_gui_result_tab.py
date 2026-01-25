@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from PyQt5 import QtCore, QtWidgets
+from qtpy import QtCore, QtWidgets
 
 faulthandler.enable()
 

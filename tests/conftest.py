@@ -239,7 +239,7 @@ def _screenshot_dir() -> Path:
 
 def _find_main_window():
     try:
-        from PyQt5 import QtWidgets
+        from qtpy import QtWidgets
     except Exception:
         return None
 
@@ -387,7 +387,7 @@ def _cleanup_qt_widgets(request):
         return
 
     try:
-        from PyQt5 import QtCore, QtWidgets
+        from qtpy import QtCore, QtWidgets
     except Exception:
         return
 

@@ -1,4 +1,5 @@
 """gwexpy.noise.magnetic - Geomagnetic noise models."""
+from __future__ import annotations
 
 from typing import Any
 

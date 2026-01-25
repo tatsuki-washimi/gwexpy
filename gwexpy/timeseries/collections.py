@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from astropy import units as u
@@ -99,7 +101,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         return from_mne_raw(cls, raw, unit_map=unit_map)
 
     @classmethod
-    def from_control(cls, response: Any, **kwargs) -> "TimeSeriesDict":
+    def from_control(cls, response: Any, **kwargs) -> TimeSeriesDict:
         """
         Create TimeSeriesDict from python-control TimeResponseData.
 
@@ -126,14 +128,14 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             return obj
         return res
 
-    def radian(self, *args, **kwargs) -> "TimeSeriesDict":
+    def radian(self, *args, **kwargs) -> TimeSeriesDict:
         """Compute instantaneous phase (in radians) of each item."""
         new_dict = self.__class__()
         for key, ts in self.items():
             new_dict[key] = ts.radian(*args, **kwargs)
         return new_dict
 
-    def degree(self, *args, **kwargs) -> "TimeSeriesDict":
+    def degree(self, *args, **kwargs) -> TimeSeriesDict:
         """Compute instantaneous phase (in degrees) of each item."""
         new_dict = self.__class__()
         for key, ts in self.items():
@@ -702,7 +704,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
 
     # --- Waveform Operations ---
 
-    def crop(self, start=None, end=None, copy=False) -> "TimeSeriesDict":
+    def crop(self, start=None, end=None, copy=False) -> TimeSeriesDict:
         """
         Crop each TimeSeries in the dict.
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
@@ -721,7 +723,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             new_dict[key] = ts.crop(start=start, end=end, copy=copy)
         return new_dict
 
-    def append(self, other, copy=True, **kwargs) -> "TimeSeriesDict":
+    def append(self, other, copy=True, **kwargs) -> TimeSeriesDict:
         """
         Append another mapping of TimeSeries or a single TimeSeries to each item.
         """
@@ -746,7 +748,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
 
         return super().append(other, copy=copy, **kwargs)
 
-    def prepend(self, *args, **kwargs) -> "TimeSeriesDict":
+    def prepend(self, *args, **kwargs) -> TimeSeriesDict:
         """
         Prepend to each TimeSeries in the dict (in-place).
         Returns self.
@@ -764,7 +766,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
     #         ts.update(*args, **kwargs)
     #     return self
 
-    def shift(self, *args, **kwargs) -> "TimeSeriesDict":
+    def shift(self, *args, **kwargs) -> TimeSeriesDict:
         """
         Shift each TimeSeries in the dict.
         Returns a new TimeSeriesDict.
@@ -774,7 +776,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             new_dict[key] = ts.shift(*args, **kwargs)
         return new_dict
 
-    def gate(self, *args, **kwargs) -> "TimeSeriesDict":
+    def gate(self, *args, **kwargs) -> TimeSeriesDict:
         """
         Gate each TimeSeries in the dict.
         Returns a new TimeSeriesDict.
@@ -784,7 +786,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             new_dict[key] = ts.gate(*args, **kwargs)
         return new_dict
 
-    def mask(self, *args, **kwargs) -> "TimeSeriesDict":
+    def mask(self, *args, **kwargs) -> TimeSeriesDict:
         """
         Mask each TimeSeries in the dict.
         Returns a new TimeSeriesDict.
@@ -796,7 +798,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
 
     # --- Signal Processing ---
 
-    def decimate(self, *args, **kwargs) -> "TimeSeriesDict":
+    def decimate(self, *args, **kwargs) -> TimeSeriesDict:
         """
         Decimate each TimeSeries in the dict.
         Returns a new TimeSeriesDict.
@@ -806,7 +808,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             new_dict[key] = ts.decimate(*args, **kwargs)
         return new_dict
 
-    def filter(self, *args, **kwargs) -> "TimeSeriesDict":
+    def filter(self, *args, **kwargs) -> TimeSeriesDict:
         """
         Filter each TimeSeries in the dict.
         Returns a new TimeSeriesDict.
@@ -816,7 +818,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             new_dict[key] = ts.filter(*args, **kwargs)
         return new_dict
 
-    def whiten(self, *args, **kwargs) -> "TimeSeriesDict":
+    def whiten(self, *args, **kwargs) -> TimeSeriesDict:
         """
         Whiten each TimeSeries in the dict.
         Returns a new TimeSeriesDict.
@@ -826,7 +828,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             new_dict[key] = ts.whiten(*args, **kwargs)
         return new_dict
 
-    def notch(self, *args, **kwargs) -> "TimeSeriesDict":
+    def notch(self, *args, **kwargs) -> TimeSeriesDict:
         """
         Notch filter each TimeSeries in the dict.
         Returns a new TimeSeriesDict.
@@ -836,7 +838,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             new_dict[key] = ts.notch(*args, **kwargs)
         return new_dict
 
-    def zpk(self, *args, **kwargs) -> "TimeSeriesDict":
+    def zpk(self, *args, **kwargs) -> TimeSeriesDict:
         """
         Apply ZPK filter to each TimeSeries in the dict.
         Returns a new TimeSeriesDict.
@@ -846,7 +848,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             new_dict[key] = ts.zpk(*args, **kwargs)
         return new_dict
 
-    def detrend(self, *args, **kwargs) -> "TimeSeriesDict":
+    def detrend(self, *args, **kwargs) -> TimeSeriesDict:
         """
         Detrend each TimeSeries in the dict.
         Returns a new TimeSeriesDict.
@@ -856,7 +858,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             new_dict[key] = ts.detrend(*args, **kwargs)
         return new_dict
 
-    def taper(self, *args, **kwargs) -> "TimeSeriesDict":
+    def taper(self, *args, **kwargs) -> TimeSeriesDict:
         """
         Taper each TimeSeries in the dict.
         Returns a new TimeSeriesDict.
@@ -1411,7 +1413,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
 
     # --- Waveform Operations ---
 
-    def crop(self, start=None, end=None, copy=False) -> "TimeSeriesList":
+    def crop(self, start=None, end=None, copy=False) -> TimeSeriesList:
         """
         Crop each TimeSeries in the list.
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
@@ -1457,7 +1459,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
     #         ts.update(*args, **kwargs)
     #     return self
 
-    def shift(self, *args, **kwargs) -> "TimeSeriesList":
+    def shift(self, *args, **kwargs) -> TimeSeriesList:
         """
         Shift each TimeSeries in the list.
         Returns a new TimeSeriesList.
@@ -1467,7 +1469,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             list.append(new_list, ts.shift(*args, **kwargs))
         return new_list
 
-    def gate(self, *args, **kwargs) -> "TimeSeriesList":
+    def gate(self, *args, **kwargs) -> TimeSeriesList:
         """
         Gate each TimeSeries in the list.
         Returns a new TimeSeriesList.
@@ -1477,7 +1479,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             list.append(new_list, ts.gate(*args, **kwargs))
         return new_list
 
-    def mask(self, *args, **kwargs) -> "TimeSeriesList":
+    def mask(self, *args, **kwargs) -> TimeSeriesList:
         """
         Mask each TimeSeries in the list.
         Returns a new TimeSeriesList.
@@ -1489,7 +1491,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
 
     # --- Signal Processing ---
 
-    def resample(self, *args, **kwargs) -> "TimeSeriesList":
+    def resample(self, *args, **kwargs) -> TimeSeriesList:
         """
         Resample each TimeSeries in the list.
         Returns a new TimeSeriesList.
@@ -1499,7 +1501,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             list.append(new_list, ts.resample(*args, **kwargs))
         return new_list
 
-    def decimate(self, *args, **kwargs) -> "TimeSeriesList":
+    def decimate(self, *args, **kwargs) -> TimeSeriesList:
         """
         Decimate each TimeSeries in the list.
         Returns a new TimeSeriesList.
@@ -1509,7 +1511,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             list.append(new_list, ts.decimate(*args, **kwargs))
         return new_list
 
-    def filter(self, *args, **kwargs) -> "TimeSeriesList":
+    def filter(self, *args, **kwargs) -> TimeSeriesList:
         """
         Filter each TimeSeries in the list.
         Returns a new TimeSeriesList.
@@ -1519,7 +1521,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             list.append(new_list, ts.filter(*args, **kwargs))
         return new_list
 
-    def whiten(self, *args, **kwargs) -> "TimeSeriesList":
+    def whiten(self, *args, **kwargs) -> TimeSeriesList:
         """
         Whiten each TimeSeries in the list.
         Returns a new TimeSeriesList.
@@ -1529,7 +1531,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             list.append(new_list, ts.whiten(*args, **kwargs))
         return new_list
 
-    def notch(self, *args, **kwargs) -> "TimeSeriesList":
+    def notch(self, *args, **kwargs) -> TimeSeriesList:
         """
         Notch filter each TimeSeries in the list.
         Returns a new TimeSeriesList.
@@ -1539,7 +1541,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             list.append(new_list, ts.notch(*args, **kwargs))
         return new_list
 
-    def zpk(self, *args, **kwargs) -> "TimeSeriesList":
+    def zpk(self, *args, **kwargs) -> TimeSeriesList:
         """
         ZPK filter each TimeSeries in the list.
         Returns a new TimeSeriesList.
@@ -1549,7 +1551,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             list.append(new_list, ts.zpk(*args, **kwargs))
         return new_list
 
-    def detrend(self, *args, **kwargs) -> "TimeSeriesList":
+    def detrend(self, *args, **kwargs) -> TimeSeriesList:
         """
         Detrend each TimeSeries in the list.
         Returns a new TimeSeriesList.
@@ -1559,7 +1561,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             list.append(new_list, ts.detrend(*args, **kwargs))
         return new_list
 
-    def taper(self, *args, **kwargs) -> "TimeSeriesList":
+    def taper(self, *args, **kwargs) -> TimeSeriesList:
         """
         Taper each TimeSeries in the list.
         Returns a new TimeSeriesList.
@@ -1867,14 +1869,14 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         """Alias for plot(). Plots all series."""
         return self.plot(*args, **kwargs)
 
-    def radian(self, *args, **kwargs) -> "TimeSeriesList":
+    def radian(self, *args, **kwargs) -> TimeSeriesList:
         """Compute instantaneous phase (in radians) of each item."""
         new_list = self.__class__()
         for ts in self:
             new_list.append(ts.radian(*args, **kwargs))
         return new_list
 
-    def degree(self, *args, **kwargs) -> "TimeSeriesList":
+    def degree(self, *args, **kwargs) -> TimeSeriesList:
         """Compute instantaneous phase (in degrees) of each item."""
         new_list = self.__class__()
         for ts in self:

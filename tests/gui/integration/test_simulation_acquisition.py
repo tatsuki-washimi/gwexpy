@@ -1,7 +1,7 @@
 import time
 
 import pytest
-from PyQt5 import QtCore
+from qtpy import QtCore
 
 from gwexpy.gui.ui.main_window import MainWindow
 
