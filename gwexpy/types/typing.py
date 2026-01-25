@@ -163,11 +163,9 @@ IndexLike: TypeAlias = XIndex | u.Quantity | np.ndarray
 UnitLike: TypeAlias = u.UnitBase | str | None
 
 # Metadata types
-MetaDataType: TypeAlias = Union[
-    "MetaData",
-    MetaDataLike,
-    dict[str, Any],
-]
+MetaDataType: TypeAlias = (
+    "MetaData" | MetaDataLike | dict[str, Any]
+)
 
 MetaDataCollectionType: TypeAlias = MetaDataDictLike | dict[str, MetaDataType] | list[MetaDataType] | None
 

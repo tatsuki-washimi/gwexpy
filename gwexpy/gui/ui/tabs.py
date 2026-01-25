@@ -982,10 +982,12 @@ def create_result_tab(on_import=None):
 
     btn_reference = QtWidgets.QPushButton("Reference...")
     btn_reference.setToolTip("Manage reference traces for comparison")
+    btn_reference.setEnabled(False) # Phase 3: Reference
     bot_toolbar.addWidget(btn_reference)
 
     btn_calibration = QtWidgets.QPushButton("Calibration...")
     btn_calibration.setToolTip("Edit calibration table")
+    btn_calibration.setEnabled(False) # Phase 4
     bot_toolbar.addWidget(btn_calibration)
 
     bot_toolbar.addStretch(1)

@@ -76,7 +76,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Connect Calibration button (Phase 4)
         if hasattr(res_tab, "btn_calibration"):
-            res_tab.btn_calibration.clicked.connect(self.show_calibration_dialog)
+            res_tab.btn_calibration.setEnabled(False)  # Disable until implemented in v0.5+
+            # res_tab.btn_calibration.clicked.connect(self.show_calibration_dialog)
 
         self.engine = Engine()
         self.loaded_products = {}
@@ -702,7 +703,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self._check_stop_condition(data_map)
 
         # Stage 4: Render graphs
-        self._render_graphs(data_map, current_times)
+        try:
+            self._render_graphs(data_map, current_times)
+        except Exception:
+            logger.exception("Error rendering graphs")
 
     def _collect_data_map(self):
         """

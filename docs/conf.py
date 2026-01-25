@@ -14,6 +14,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
     "myst_parser",
+    "sphinx.ext.intersphinx",
     "nbsphinx",
 ]
 
@@ -82,3 +83,19 @@ source_suffix = {
     ".rst": "restructuredtext",
     ".md": "markdown",
 }
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+    "astropy": ("https://docs.astropy.org/en/stable/", None),
+    "gwpy": ("https://gwpy.github.io/docs/stable/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+}
+
+nitpick_ignore = [
+    ("py:class", "numpy.dtype"),  # Often fails even with intersphinx
+    ("py:class", "numpy.typing.ArrayLike"),
+    ("py:class", "numpy.typing.DTypeLike"),
+]
