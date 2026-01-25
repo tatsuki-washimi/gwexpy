@@ -76,8 +76,8 @@ def from_polars_dataframe(cls, df, index_column="time", unit=None):
     times = df[index_column]
 
     # Infer t0, dt
-    t0 = 0
-    dt = 1
+    t0: float = 0.0
+    dt: float = 1.0
 
     if len(times) > 0:
         t0_val = times[0]
@@ -174,8 +174,8 @@ def from_polars_dict(cls, df, index_column="time", unit_map=None):
     # but it's more efficient to calculate t0/dt once.
 
     times = df[index_column]
-    t0 = 0
-    dt = 1
+    t0: float = 0.0
+    dt: float = 1.0
     if len(times) > 0:
         t0_val = times[0]
         if isinstance(t0_val, (np.datetime64,)):

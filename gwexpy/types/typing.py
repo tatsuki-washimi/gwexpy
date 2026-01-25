@@ -154,26 +154,13 @@ class MetaDataMatrixLike(Protocol):
 # =============================
 
 # Generic array-like (numpy-compatible)
-ArrayLike: TypeAlias = Union[
-    np.ndarray,
-    list,
-    tuple,
-    NumpyArrayLike,
-]
+ArrayLike: TypeAlias = np.ndarray | list | tuple | NumpyArrayLike
 
 # Index types (coordinate axes)
-IndexLike: TypeAlias = Union[
-    XIndex,
-    u.Quantity,
-    np.ndarray,
-]
+IndexLike: TypeAlias = XIndex | u.Quantity | np.ndarray
 
 # Unit types
-UnitLike: TypeAlias = Union[
-    u.UnitBase,
-    str,
-    None,
-]
+UnitLike: TypeAlias = u.UnitBase | str | None
 
 # Metadata types
 MetaDataType: TypeAlias = Union[
@@ -182,12 +169,7 @@ MetaDataType: TypeAlias = Union[
     dict[str, Any],
 ]
 
-MetaDataCollectionType: TypeAlias = Union[
-    MetaDataDictLike,
-    dict[str, MetaDataType],
-    list[MetaDataType],
-    None,
-]
+MetaDataCollectionType: TypeAlias = MetaDataDictLike | dict[str, MetaDataType] | list[MetaDataType] | None
 
 __all__ = [
     # Protocols

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Iterator, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -19,7 +19,6 @@ from gwpy.types.array import Array
 from gwpy.types.series import Series
 
 if TYPE_CHECKING:
-    from typing import Any
 
     import pandas as pd
 
@@ -267,7 +266,7 @@ class MetaDataDict(OrderedDict[str, MetaData]):
 
     def __init__(
         self,
-        entries: Union[dict, list, "pd.DataFrame", "MetaDataDict", None] = None,
+        entries: dict | list | pd.DataFrame | MetaDataDict | None = None,
         expected_size: int | None = None,
         key_prefix: str = "key",
     ) -> None:

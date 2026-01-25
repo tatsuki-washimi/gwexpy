@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Iterable, Sequence, cast
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from astropy import units as u
@@ -9,7 +10,7 @@ from scipy import fft as sp_fft
 from .base import FieldBase
 
 if TYPE_CHECKING:
-    from gwexpy.types.typing import ArrayLike, IndexLike, UnitLike
+    from gwexpy.types.typing import IndexLike
 
 __all__ = ["ScalarField"]
 

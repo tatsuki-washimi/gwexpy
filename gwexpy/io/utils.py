@@ -1,12 +1,15 @@
 import contextlib
 import datetime as _dt
 from collections.abc import Iterable
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import numpy as np
 from astropy import units as u
 from gwpy.time import to_gps
+
+if TYPE_CHECKING:
+    from gwexpy.types.seriesmatrix import SeriesMatrix
 
 
 def parse_timezone(tz: Any) -> _dt.tzinfo:
@@ -101,14 +104,17 @@ def apply_unit(series: Any, unit: Any | None) -> Any:
         return series
     try:
         from gwexpy.types.seriesmatrix import SeriesMatrix  # lazy import
+
+        series_matrix_types: tuple[type, ...] = (SeriesMatrix,)
     except ImportError:  # pragma: no cover - optional
-        SeriesMatrix = tuple()
-    if isinstance(series, SeriesMatrix):
+        series_matrix_types = ()
+    if isinstance(series, series_matrix_types):
+        series_matrix = cast("SeriesMatrix", series)
         try:
-            for i in range(series.meta.shape[0]):
-                for j in range(series.meta.shape[1]):
-                    series.meta[i, j]["unit"] = u.Unit(unit)
-            return series
+            for i in range(series_matrix.meta.shape[0]):
+                for j in range(series_matrix.meta.shape[1]):
+                    series_matrix.meta[i, j]["unit"] = u.Unit(unit)
+            return series_matrix
         except (KeyError, IndexError, AttributeError):
             pass
     try:

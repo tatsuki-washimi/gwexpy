@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Any
+from typing import TYPE_CHECKING, Any, Protocol, cast
 
 import numpy as np
 
 from ._optional import require_optional
+
+if TYPE_CHECKING:
+
+    class _TimeSeriesDictLike(Protocol):
+        def __setitem__(self, key: Any, value: Any) -> None: ...
+        def to_matrix(self) -> Any: ...
 
 
 def _infer_sfreq_hz(ts: Any) -> float:
@@ -93,120 +99,6 @@ def _select_items(
     return [items[i] for i in indices]
 
 
-def _mne_spectrum_to_fs(cls, spectrum, **kwargs):
-    """mne.time_frequency.Spectrum -> FrequencySeries (or dict)"""
-    data = spectrum.get_data()
-    freqs = spectrum.freqs
-    ch_names = spectrum.ch_names
-
-    n_epochs, n_ch, n_freqs = data.shape
-
-    if n_epochs > 1:
-        data = data.mean(axis=0)  # (n_ch, n_freqs)
-    else:
-        data = data[0]  # (n_ch, n_freqs)
-
-    if n_ch == 1:
-        # data[0] is (n_freqs,) array.
-        # Ensure it is passed as 1D array to FrequencySeries
-        val = data[0]
-        return cls(val, frequencies=freqs, name=ch_names[0], **kwargs)
-
-    from gwexpy.frequencyseries import FrequencySeriesDict
-
-    fsd = FrequencySeriesDict()
-    for i, name in enumerate(ch_names):
-        fsd[name] = cls(data[i], frequencies=freqs, name=name, **kwargs)
-    return fsd
-
-
-def _spec_to_mne_tfr(specd, info=None, **kwargs):
-    """Spectrogram (or dict) -> mne.time_frequency.EpochsTFRArray"""
-    mne = require_optional("mne")
-
-    if isinstance(specd, Mapping):
-        items = list(specd.items())
-    elif hasattr(specd, "name"):
-        name = _default_ch_name(specd, fallback="ch0")
-        items = [(name, specd)]
-    else:
-        items = [(_default_ch_name(specd, fallback="ch0"), specd)]
-
-    if not items:
-        raise ValueError("No data provided")
-
-    first = items[0][1]
-    freqs = first.frequencies.value
-    times = first.times.value
-
-    data_list = []
-    ch_names = []
-
-    for name, spec in items:
-        val = spec.value
-        # gwpy Spectrogram is (times, freqs)
-        # MNE expects (freqs, times) for the inner dimensions of TFRArray?
-        # MNE EpochsTFRArray args: info, data, times, freqs
-        # data shape: (n_epochs, n_channels, n_freqs, n_times)
-
-        if val.shape == (len(times), len(freqs)):
-            val = val.T  # (freqs, times)
-        elif val.shape == (len(freqs), len(times)):
-            pass
-        else:
-            # Dimensions mismatch?
-            # Might be due to different conventions or errors.
-            # Let's verify dimensions.
-            # If mismatch, MNE will raise error later usually.
-            pass
-
-        data_list.append(val)
-        ch_names.append(str(name))
-
-    # Stack channels
-    data_3d = np.stack(data_list, axis=0)  # (n_ch, n_freqs, n_times)
-    data_4d = data_3d[None, :, :, :]  # (1, n_ch, n_freqs, n_times)
-
-    sfreq = _infer_sfreq_hz(first)
-
-    if info is None:
-        info = mne.create_info(
-            ch_names=ch_names, sfreq=sfreq, ch_types=["misc"] * len(ch_names)
-        )
-
-    if not hasattr(mne.time_frequency, "EpochsTFRArray"):
-        raise ImportError("mne.time_frequency.EpochsTFRArray requires MNE >= 1.3")
-
-    return mne.time_frequency.EpochsTFRArray(info, data_4d, times, freqs, **kwargs)
-
-
-def _mne_tfr_to_spec(cls, tfr, **kwargs):
-    # ... existing implementation ...
-    # Ensure transposed back correctly
-    data = tfr.data
-    times = tfr.times
-    freqs = tfr.freqs
-    ch_names = tfr.ch_names
-
-    if data.ndim == 4:
-        data = data.mean(axis=0)  # (n_ch, n_freqs, n_times)
-
-    from gwexpy.spectrogram import SpectrogramDict
-
-    sd = SpectrogramDict()
-
-    for i, name in enumerate(ch_names):
-        # Transpose back: (freqs, times) -> (times, freqs) for Spectrogram
-        # data[i] is (freqs, times)
-        val = data[i].T  # (times, freqs)
-
-        sd[name] = cls(val, times=times, frequencies=freqs, name=name, **kwargs)
-
-    if len(ch_names) == 1:
-        return sd[ch_names[0]]
-    return sd
-
-
 def to_mne_rawarray(tsd, info=None, picks=None):
     """
     Convert a TimeSeries-like object to an ``mne.io.RawArray``.
@@ -261,7 +153,7 @@ def to_mne_rawarray(tsd, info=None, picks=None):
         data = np.stack([np.asarray(ts.value) for ts in series], axis=0)
     elif hasattr(tsd, "to_matrix"):
         try:
-            tsd_sel = tsd.__class__()  # TimeSeriesDict-like
+            tsd_sel = cast("_TimeSeriesDictLike", tsd.__class__())
             for k, ts in items:
                 tsd_sel[k] = ts
             from .base import to_plain_array
