@@ -12,3 +12,4 @@ API Reference
    analysis
    noise
    types
+   extra

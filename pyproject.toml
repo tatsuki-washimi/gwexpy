@@ -186,15 +186,10 @@ filterwarnings = [
     "ignore:Module already imported so cannot be rewritten. gwpy.testing.fixtures:pytest.PytestAssertRewriteWarning",
     "ignore:Compatibility support for python2 has been dropped:DeprecationWarning:declarative.utilities.representations",
     "ignore:divide by zero encountered in divide:RuntimeWarning:tests.fields.test_scalarfield_fft_space",
+    "ignore:.*scitokens.*:DeprecationWarning",
 ]
 
-[[tool.mypy.overrides]]
-module = [
-  "gwexpy.types.seriesmatrix_base",
-  "gwexpy.types.seriesmatrix_validation",
-  "gwexpy.types.seriesmatrix",
-]
-ignore_errors = true
+
 
 [[tool.mypy.overrides]]
 module = [
