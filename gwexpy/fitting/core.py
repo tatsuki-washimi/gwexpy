@@ -554,6 +554,10 @@ class FitResult:
         Least Squares) error structures. If `cov_inv` is available, the log
         probability is computed using the full covariance structure.
 
+        For complex-valued data (e.g., Transfer Functions), the cost function
+        is computed using the magnitude of residuals or the Hermitian form 
+        in the case of GLS, ensuring correct handling of real and imaginary parts.
+
         Parameters
         ----------
         n_walkers : int, optional
