@@ -25,6 +25,21 @@ This skill helps in testing and debugging `gwexpy.gui`.
 ## Best Practices
 
 - **Avoid Binding Conflicts**: Use `qtpy` for imports in test files (e.g. `from qtpy import QtWidgets`).
-- **Environment Variables**: If multiple Qt bindings are installed, enforce consistency:
+- **Environment Variables**: If multiple top-level bindings are installed, enforce consistency:
   - `export QT_API=pyqt5`
   - `export PYTEST_QT_API=pyqt5`
+- **Handling Blocking Windows (plt.show)**:
+  - When testing code that calls `plt.show()` or `app.exec_()`, use `QTimer` to close it automatically.
+  - Example:
+
+    ```python
+    from qtpy.QtCore import QTimer
+    # ... inside test ...
+    # Close active window after 100ms
+    QTimer.singleShot(100, plt.close)
+    # Or for raw Qt widgets:
+    # QTimer.singleShot(100, widget.close)
+
+    # Then call the blocking function
+    plt.show()
+    ```

@@ -37,3 +37,12 @@ This skill consolidates specialized knowledge for resolving static analysis erro
 ### 6. Utilization of Type Aliases
 
 **Solution**: Define complex Union types as `TypeAlias` and reuse them throughout the repository. This enables safe and reliable bulk replacement of concrete types.
+
+### 7. Python 3.9+ Compatibility (PEP 585)
+
+**Symptoms**: `TypeError: 'type' object is not subscriptable` when using `list[...]`, `dict[...]` at runtime, especially if `from __future__ import annotations` is missing or in specific library interactions (e.g. older `astropy`).
+**Solution**:
+
+- Ensure `from __future__ import annotations` is present at the top of the file.
+- If strictly needed for runtime compatibility without future import, fallback to `typing.List`, `typing.Dict`, etc.
+- For `astropy.units.Quantity`, ensure correct usage of generics or string forward references if causing issues.
