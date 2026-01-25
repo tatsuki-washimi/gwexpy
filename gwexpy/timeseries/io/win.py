@@ -18,6 +18,7 @@ from gwpy.io import registry as io_registry
 
 try:
     from obspy import Stream, Trace, UTCDateTime
+
     HAS_OBSPY = True
 except ImportError:
     HAS_OBSPY = False
