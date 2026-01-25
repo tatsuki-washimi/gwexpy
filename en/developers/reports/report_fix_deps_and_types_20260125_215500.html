@@ -1,0 +1,184 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作業レポート: 依存関係エラーおよび型ヒント互換性の修正 &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">作業レポート: 依存関係エラーおよび型ヒント互換性の修正</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_fix_deps_and_types_20260125_215500.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>作業レポート: 依存関係エラーおよび型ヒント互換性の修正<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p><strong>日時</strong>: 2026-01-25
+<strong>タスク</strong>: CI/ローカルテストで発生していた依存関係エラーとPython 3.9での型ヒントエラーの修正
+<strong>担当</strong>: Antigravity</p>
+<section id="id2">
+<h2>概要<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> のCIおよび特定の環境下でのテスト実行時に、オプショナルな依存関係（<code class="docutils literal notranslate"><span class="pre">obspy</span></code>, <code class="docutils literal notranslate"><span class="pre">iminuit</span></code>）が不足しているとクラッシュする問題、および Python 3.9 環境下で <code class="docutils literal notranslate"><span class="pre">|</span></code> 演算子を用いた型ヒント（Union Type）が原因でインポートエラーが発生する問題を修正しました。
+また、ドキュメント（Jupyter Notebook）の警告表示抑制や、Lintツールの設定調整も行いました。</p>
+</section>
+<section id="id3">
+<h2>実施内容<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>1. 依存関係エラーの修正<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/win.py</span></code></strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">obspy</span></code> ライブラリ（WINファイル形式のサポートに使用）のインポートを <code class="docutils literal notranslate"><span class="pre">try-except</span> <span class="pre">ImportError</span></code> ブロックで囲みました。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obspy</span></code> がインストールされていない環境では、関連するリーダー関数が <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出するようにし、パッケージ全体のロード時クラッシュを防止しました。</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">tests/fitting/test_fitting_semantics.py</span></code></strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">iminuit</span></code> ライブラリを使用するテストケースに対し、<code class="docutils literal notranslate"><span class="pre">pytest.importorskip(&quot;iminuit&quot;)</span></code> を追加しました。</p></li>
+<li><p>これにより、<code class="docutils literal notranslate"><span class="pre">iminuit</span></code> がない環境ではテストが安全にスキップされるようになりました。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="python-3-9-type-hint">
+<h3>2. Python 3.9 互換性 (Type Hint) の修正<a class="headerlink" href="#python-3-9-type-hint" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">gwexpy/interop/root_.py</span></code></strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">to_tmultigraph(...,</span> <span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None)</span></code> という記述が、Python 3.9 環境での実行時（インポート時）に <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">unsupported</span> <span class="pre">operand</span> <span class="pre">type(s)</span> <span class="pre">for</span> <span class="pre">|</span></code> を引き起こしていました。</p></li>
+<li><p>これを <code class="docutils literal notranslate"><span class="pre">Optional[str]</span></code> を使用する形式に修正し、ファイル先頭に <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span> <span class="pre">annotations</span></code> を追加しました。</p></li>
+<li><p>この修正により、パッケージ全体のインポートエラーおよび大量の <code class="docutils literal notranslate"><span class="pre">ERROR</span> <span class="pre">collecting</span></code> が解消されました。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="lint">
+<h3>3. ドキュメントおよび Lint 設定の修正<a class="headerlink" href="#lint" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">docs/ja/guide/tutorials/intro_interop.ipynb</span></code></strong>:</p>
+<ul>
+<li><p>GWpy/LAL 連携時に表示される <code class="docutils literal notranslate"><span class="pre">Wswiglal-redir-stdio</span></code> 警告を抑制するコードを追加しました。</p></li>
+<li><p>Ruff の指摘に従い、インポートブロックの順序を整えました。</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></strong>:</p>
+<ul>
+<li><p>Ruff の <code class="docutils literal notranslate"><span class="pre">target-version</span></code> が <code class="docutils literal notranslate"><span class="pre">py310</span></code> になっていたため、プロジェクト要件に合わせて <code class="docutils literal notranslate"><span class="pre">py39</span></code> に変更しました。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/interop/root_.py</span></code> に対して、新しい型ヒント記法（<code class="docutils literal notranslate"><span class="pre">|</span></code>）を強制するルール <code class="docutils literal notranslate"><span class="pre">UP045</span></code> を無視するように設定を追加しました。これにより、Lint エラーと実行時互換性の両立を図りました。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="id5">
+<h2>成果<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>CI およびローカル環境（<code class="docutils literal notranslate"><span class="pre">run_tests.sh</span></code> 相当）で、オプショナル依存関係の有無にかかわらずテストが正常に収集・実行されるようになりました。</p></li>
+<li><p>Python 3.9 環境での互換性が確保されました。</p></li>
+<li><p>ドキュメントの可読性が向上しました。</p></li>
+</ul>
+</section>
+<section id="id6">
+<h2>今後の課題<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>今後 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> のサポートする最小 Python バージョンを 3.10 以上に引き上げる際、今回抑制した <code class="docutils literal notranslate"><span class="pre">UP045</span></code> ルールを再度有効化し、コードベースを最新の型ヒント記法に統一することを推奨します。</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
