@@ -1,4 +1,3 @@
-
 import numpy as np
 from astropy import units as u
 
@@ -12,9 +11,7 @@ def test_array2d_axes():
     # gwpy Array2D: axis0=y (10), axis1=x (5)
     # xindex size 5, yindex size 10
 
-    arr = Array2D(data,
-                  xindex=np.arange(5)*u.m,
-                  yindex=np.arange(10)*u.s)
+    arr = Array2D(data, xindex=np.arange(5) * u.m, yindex=np.arange(10) * u.s)
 
     # Check default names
     assert arr.axes[0].name == "axis0"
@@ -25,6 +22,7 @@ def test_array2d_axes():
     assert arr.axes[0].unit == u.s
     assert arr.axes[1].size == 5
     assert arr.axes[1].unit == u.m
+
 
 def test_array2d_rename_axes():
     data = np.zeros((10, 5))
@@ -42,10 +40,15 @@ def test_array2d_rename_axes():
     # axis descriptor access
     assert arr2.axis("time").size == 10
 
+
 def test_array2d_swapaxes():
     data = np.random.randn(10, 5)
-    arr = Array2D(data, xindex=np.arange(5)*u.m, yindex=np.arange(10)*u.s,
-                  axis_names=("time", "space"))
+    arr = Array2D(
+        data,
+        xindex=np.arange(5) * u.m,
+        yindex=np.arange(10) * u.s,
+        axis_names=("time", "space"),
+    )
 
     # swapaxes(0, 1) or T
     # axis0 was time (10), axis1 was space (5)

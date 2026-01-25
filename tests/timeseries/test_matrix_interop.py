@@ -1,4 +1,3 @@
-
 import numpy as np
 
 from gwexpy.timeseries import TimeSeriesMatrix
@@ -32,10 +31,11 @@ def test_timeseriesmatrix_to_torch():
         assert tf.is_tensor(tensor_tf)
         assert np.allclose(tensor_tf.numpy(), data)
 
+
 @pytest.mark.skipif(torch is None, reason="torch not installed")
 def test_timeseriesmatrix_to_torch_device():
     data = np.random.randn(2, 1, 100)
     tsm = TimeSeriesMatrix(data, dt=0.01)
     # Check that arguments are passed correctly
-    tensor = tsm.to_torch(device='cpu', copy=True)
+    tensor = tsm.to_torch(device="cpu", copy=True)
     assert torch.is_tensor(tensor)

@@ -59,4 +59,3 @@ __all__ = [
     "test_read_pycbc_live_regression_1081",
     "test_read_pycbc_live_selection_columns",
 ]
-

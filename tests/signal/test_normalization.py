@@ -20,6 +20,7 @@ def test_get_enbw_standard():
     # Hann window ENBW is theoretical 1.5 * RBW = 1.5 * (fs/N)
     # However, Discrete Hann is slightly different. Let's check against a large N.
     from scipy.signal import windows
+
     w_hann = windows.hann(n)
     enbw_hann = get_enbw(w_hann, fs, mode="standard")
     assert enbw_hann == pytest.approx(1.5 * (fs / n), rel=1e-3)
@@ -38,7 +39,8 @@ def test_get_enbw_dtt():
     # DTT ENBW = (fs/N) / 0.25 = 4 * (fs/N)
     # This is different from industry standard 1.5. This is the core reason for this module!
     from scipy.signal import windows
-    w_hann = windows.hann(n) # sum is exactly 0.5 * N
+
+    w_hann = windows.hann(n)  # sum is exactly 0.5 * N
     enbw_hann_dtt = get_enbw(w_hann, fs, mode="dtt")
 
     # mean(hann) = 0.5 => windowNorm = 0.25
@@ -48,15 +50,16 @@ def test_get_enbw_dtt():
 
 def test_convert_scipy_to_dtt():
     from scipy.signal import welch, windows
+
     fs = 1000
     t = np.arange(10000) / fs
     data = np.random.normal(size=len(t))
 
-    w_name = 'hann'
+    w_name = "hann"
     nperseg = 1000
     w = windows.get_window(w_name, nperseg)
 
-    f, pxx = welch(data, fs=fs, window=w, nperseg=nperseg, scaling='density')
+    f, pxx = welch(data, fs=fs, window=w, nperseg=nperseg, scaling="density")
 
     pxx_dtt = convert_scipy_to_dtt(pxx, w)
 

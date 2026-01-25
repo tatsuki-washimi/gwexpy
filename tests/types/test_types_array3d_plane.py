@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 from astropy import units as u
@@ -15,9 +14,10 @@ def arr3d():
     axis1 = np.arange(4) * u.m
     axis2 = np.arange(5) * u.Hz
 
-    return Array3D(data,
-                   axis0=axis0, axis1=axis1, axis2=axis2,
-                   axis_names=("time", "dist", "freq"))
+    return Array3D(
+        data, axis0=axis0, axis1=axis1, axis2=axis2, axis_names=("time", "dist", "freq")
+    )
+
 
 def test_array3d_plane_default(arr3d):
     # drop time (axis0), index 0
@@ -35,6 +35,7 @@ def test_array3d_plane_default(arr3d):
     assert p.axis1.unit == u.m
     assert p.axis2.unit == u.Hz
 
+
 def test_array3d_plane_reorder(arr3d):
     # drop time, but want axis1=freq, axis2=dist
     p = arr3d.plane(0, 0, axis1="freq", axis2="dist")
@@ -49,6 +50,7 @@ def test_array3d_plane_reorder(arr3d):
     assert p.axis1.unit == u.Hz
     assert p.axis2.unit == u.m
 
+
 def test_array3d_plane_by_name(arr3d):
     # drop "freq" (axis2)
     p = arr3d.plane("freq", 0)
@@ -57,6 +59,7 @@ def test_array3d_plane_by_name(arr3d):
     assert p.axis1.name == "time"
     assert p.axis2.name == "dist"
 
+
 def test_array3d_plane_error(arr3d):
     with pytest.raises(ValueError):
         arr3d.plane(0, 0, axis1="dist", axis2="dist")
@@ -64,6 +67,7 @@ def test_array3d_plane_error(arr3d):
     with pytest.raises(ValueError):
         # dropping "time", cannot use "time" as Output
         arr3d.plane("time", 0, axis1="time", axis2="dist")
+
 
 def test_array3d_plane_default_order():
     data = np.arange(2 * 3 * 4).reshape(2, 3, 4)
@@ -87,6 +91,7 @@ def test_array3d_plane_default_order():
     assert np.all(p.axis2.index == axis2)
     assert p.shape == (len(axis1), len(axis2))
 
+
 def test_array3d_plane_user_order_transpose():
     data = np.arange(2 * 3 * 4).reshape(2, 3, 4)
     axis0 = np.array([0.0, 1.0]) * u.s
@@ -109,6 +114,7 @@ def test_array3d_plane_user_order_transpose():
     assert np.all(p.axis2.index == axis1)
     assert p.shape == (len(axis2), len(axis1))
     assert np.all(p.value == default_plane.value.T)
+
 
 def test_array3d_direct_slice_equivalence():
     data = np.arange(2 * 3 * 4).reshape(2, 3, 4)
@@ -149,6 +155,7 @@ def test_array3d_direct_slice_equivalence():
     assert np.all(p2.axis1.index == p1.axis1.index)
     assert np.all(p2.axis2.index == p1.axis2.index)
     assert np.all(p2.value == p1.value)
+
 
 def test_array3d_transpose_metadata():
     data = np.arange(2 * 3 * 4).reshape(2, 3, 4)

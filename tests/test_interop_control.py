@@ -40,7 +40,9 @@ def test_control_response_interop():
 
     # 2. MIMO Case
     # Two independent systems: y1 = x1, y2 = x2
-    sys_mimo = control.ss([[-1, 0], [0, -2]], [[1, 0], [0, 1]], [[1, 0], [0, 1]], [[0, 0], [0, 0]])
+    sys_mimo = control.ss(
+        [[-1, 0], [0, -2]], [[1, 0], [0, 1]], [[1, 0], [0, 1]], [[0, 0], [0, 0]]
+    )
     u_mimo = np.vstack([u, u])
     res_mimo = control.forced_response(sys_mimo, T=t, U=u_mimo)
 
@@ -63,8 +65,13 @@ def test_control_response_interop():
     assert len(tdict2) == 2
 
     # 3. MIMO with labels
-    sys_labeled = control.ss([[-1, 0], [0, -2]], [[1, 0], [0, 1]], [[1, 0], [0, 1]], [[0, 0], [0, 0]],
-                             outputs=['chanA', 'chanB'])
+    sys_labeled = control.ss(
+        [[-1, 0], [0, -2]],
+        [[1, 0], [0, 1]],
+        [[1, 0], [0, 1]],
+        [[0, 0], [0, 0]],
+        outputs=["chanA", "chanB"],
+    )
     res_labeled = control.forced_response(sys_labeled, T=t, U=u_mimo)
     tdict_labeled = TimeSeriesDict.from_control(res_labeled)
     assert "chanA" in tdict_labeled
@@ -72,9 +79,9 @@ def test_control_response_interop():
     assert tdict_labeled["chanA"].name == "chanA"
 
     # 4. Test **kwargs (e.g., unit)
-    ts_unit = TimeSeries.from_control(res_siso, unit='m')
-    assert ts_unit.unit == 'm'
+    ts_unit = TimeSeries.from_control(res_siso, unit="m")
+    assert ts_unit.unit == "m"
 
-    tdict_unit = TimeSeriesDict.from_control(res_labeled, unit='m')
-    assert tdict_unit["chanA"].unit == 'm'
-    assert tdict_unit["chanB"].unit == 'm'
+    tdict_unit = TimeSeriesDict.from_control(res_labeled, unit="m")
+    assert tdict_unit["chanA"].unit == "m"
+    assert tdict_unit["chanB"].unit == "m"

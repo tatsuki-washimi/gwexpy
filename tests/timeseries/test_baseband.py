@@ -18,17 +18,19 @@ from gwexpy.timeseries import TimeSeries
 # Helper functions
 # =============================================================================
 
+
 def make_cosine_signal(f0: float, duration: float, sample_rate: float) -> TimeSeries:
     """Create a cosine signal TimeSeries for testing."""
     dt = 1.0 / sample_rate
     t = np.arange(0, duration, dt)
     data = np.cos(2 * np.pi * f0 * t)
-    return TimeSeries(data, dt=dt, unit='V')
+    return TimeSeries(data, dt=dt, unit="V")
 
 
 # =============================================================================
 # Mode A: lowpass specified
 # =============================================================================
+
 
 class TestBasebandModeA:
     """Tests for Mode A: mix_down → lowpass [→ optional resample]."""
@@ -74,7 +76,7 @@ class TestBasebandModeA:
 
         # DC power (near 0 Hz)
         dc_idx = np.abs(freqs) < 5  # Within 5 Hz of DC
-        dc_power = np.mean(np.abs(fft[dc_idx])**2)
+        dc_power = np.mean(np.abs(fft[dc_idx]) ** 2)
 
         # High frequency power (near 2*fc = 100 Hz should be suppressed,
         # but after mixing it appears at fc in baseband)
@@ -83,7 +85,7 @@ class TestBasebandModeA:
         # After lowpass at 10 Hz, the 2*fc component should be cut
         high_freq_idx = np.abs(freqs) > 30  # Above 30 Hz
         if np.any(high_freq_idx):
-            high_power = np.mean(np.abs(fft[high_freq_idx])**2)
+            high_power = np.mean(np.abs(fft[high_freq_idx]) ** 2)
 
             # High frequency should be suppressed relative to DC
             # Use a relaxed threshold since filter rolloff varies
@@ -113,6 +115,7 @@ class TestBasebandModeA:
 # =============================================================================
 # Mode B: resample only
 # =============================================================================
+
 
 class TestBasebandModeB:
     """Tests for Mode B: mix_down → resample (no explicit lowpass)."""
@@ -173,6 +176,7 @@ class TestBasebandModeB:
 # =============================================================================
 # Exception condition tests
 # =============================================================================
+
 
 class TestBasebandValidation:
     """Tests for input validation (ValueError conditions)."""
@@ -266,6 +270,7 @@ class TestBasebandValidation:
 # kwargs passthrough tests
 # =============================================================================
 
+
 class TestBasebandKwargsPassthrough:
     """Tests for lowpass_kwargs and resample_kwargs passthrough."""
 
@@ -275,11 +280,7 @@ class TestBasebandKwargsPassthrough:
 
         # These are typical GWpy lowpass kwargs
         # Just verify they don't cause errors (actual behavior depends on GWpy)
-        z = ts.baseband(
-            f0=50,
-            lowpass=10,
-            lowpass_kwargs={"filtfilt": True}
-        )
+        z = ts.baseband(f0=50, lowpass=10, lowpass_kwargs={"filtfilt": True})
 
         assert np.iscomplexobj(z.value)
 
@@ -292,7 +293,7 @@ class TestBasebandKwargsPassthrough:
             f0=50,
             lowpass=None,
             output_rate=200,
-            resample_kwargs={}  # Empty dict should work
+            resample_kwargs={},  # Empty dict should work
         )
 
         assert np.iscomplexobj(z.value)
@@ -301,6 +302,7 @@ class TestBasebandKwargsPassthrough:
 # =============================================================================
 # Quantity input tests
 # =============================================================================
+
 
 class TestBasebandQuantityInputs:
     """Tests for Quantity-typed inputs."""

@@ -23,8 +23,7 @@ class TimeSeriesWindowDataset:
         window: int,
         stride: int = 1,
         horizon: int = 0,
-        labels: TimeSeries | TimeSeriesMatrix | np.ndarray | Callable
-        | None = None,
+        labels: TimeSeries | TimeSeriesMatrix | np.ndarray | Callable | None = None,
         multivariate: bool = False,
         align: str = "intersection",
         device=None,

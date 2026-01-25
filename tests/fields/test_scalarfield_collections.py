@@ -120,7 +120,9 @@ class TestFieldListValidation:
     def test_validate_consistent_fields(self):
         """Test validation passes for consistent fields."""
         fields = [
-            ScalarField(np.zeros((10, 4, 4, 4)), unit=u.V, axis_names=["t", "x", "y", "z"])
+            ScalarField(
+                np.zeros((10, 4, 4, 4)), unit=u.V, axis_names=["t", "x", "y", "z"]
+            )
             for _ in range(3)
         ]
         # Should not raise

@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 
@@ -10,11 +9,13 @@ def gaussian_data():
     np.random.seed(42)
     return TimeSeries(np.random.normal(0, 1, 1000), dt=0.01)
 
+
 @pytest.fixture
 def non_gaussian_data():
     np.random.seed(42)
     # Exponential distribution is skewed and leptokurtic
     return TimeSeries(np.random.exponential(1, 1000), dt=0.01)
+
 
 @pytest.fixture
 def simple_linear_relationship():
@@ -23,12 +24,14 @@ def simple_linear_relationship():
     y = TimeSeries(2 * t + 1, dt=0.1)
     return x, y
 
+
 @pytest.fixture
 def non_linear_relationship():
     t = np.linspace(-10, 10, 100)
     x = TimeSeries(t, dt=0.1)
-    y = TimeSeries(t**2, dt=0.1) # Parabola
+    y = TimeSeries(t**2, dt=0.1)  # Parabola
     return x, y
+
 
 @pytest.fixture
 def causal_relationship():
@@ -39,11 +42,12 @@ def causal_relationship():
     y_val = np.zeros(n)
     # Y depends on X from 1 step ago
     for i in range(1, n):
-        y_val[i] = 0.5 * y_val[i-1] + 0.8 * x_val[i-1] + 0.1 * np.random.randn()
+        y_val[i] = 0.5 * y_val[i - 1] + 0.8 * x_val[i - 1] + 0.1 * np.random.randn()
 
     x = TimeSeries(x_val, dt=1)
     y = TimeSeries(y_val, dt=1)
     return x, y
+
 
 def test_skewness(gaussian_data, non_gaussian_data):
     s_gauss = gaussian_data.skewness()
@@ -54,6 +58,7 @@ def test_skewness(gaussian_data, non_gaussian_data):
     # Exponential should be positive (around 2)
     assert s_exp > 1.0
 
+
 def test_kurtosis(gaussian_data, non_gaussian_data):
     k_gauss = gaussian_data.kurtosis(fisher=True)
     k_exp = non_gaussian_data.kurtosis(fisher=True)
@@ -63,10 +68,12 @@ def test_kurtosis(gaussian_data, non_gaussian_data):
     # Exponential should be positive (excess kurtosis)
     assert k_exp > 1.0
 
+
 def test_pearson_correlation(simple_linear_relationship):
     x, y = simple_linear_relationship
     corr = x.pcc(y)
     assert abs(corr - 1.0) < 1e-5
+
 
 def test_distance_correlation(non_linear_relationship):
     x, y = non_linear_relationship
@@ -82,6 +89,7 @@ def test_distance_correlation(non_linear_relationship):
     except Exception as exc:
         pytest.skip(f"dcor unavailable: {exc}")
 
+
 def test_mic(non_linear_relationship):
     x, y = non_linear_relationship
     try:
@@ -89,6 +97,7 @@ def test_mic(non_linear_relationship):
         assert mic > 0.5
     except ImportError:
         pytest.skip("mictools (or minepy) not installed")
+
 
 def test_granger_causality(causal_relationship):
     x, y = causal_relationship

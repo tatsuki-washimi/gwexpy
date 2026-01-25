@@ -48,7 +48,13 @@ def test_gbd_reader_parses_minimal_file(tmp_path):
     ts = tsd[channels[0]]
     assert len(ts) == data.shape[0]
     assert np.isclose(ts.dt.value, dt)
-    expected_t0 = float(to_gps(datetime.strptime(start_str, "%Y/%m/%d %H:%M:%S").replace(tzinfo=dt_timezone.utc)))
+    expected_t0 = float(
+        to_gps(
+            datetime.strptime(start_str, "%Y/%m/%d %H:%M:%S").replace(
+                tzinfo=dt_timezone.utc
+            )
+        )
+    )
     assert np.isclose(ts.t0.value, expected_t0)
     assert ts.unit.to_string() == "V"
     np.testing.assert_array_equal(tsd[channels[1]].value, data[:, 1])

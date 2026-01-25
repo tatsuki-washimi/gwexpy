@@ -53,4 +53,3 @@ __all__ = [
     "test_to_gps_error",
     "time",
 ]
-

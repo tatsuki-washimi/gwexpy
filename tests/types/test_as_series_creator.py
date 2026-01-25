@@ -51,7 +51,7 @@ def test_as_series_datetime_array():
     times = [datetime(2020, 1, 1, 0, 0, 0), datetime(2020, 1, 1, 0, 0, 1)]
     ts = as_series(times)
 
-    assert ts.t0.value == 1261872018.0 # GPS
+    assert ts.t0.value == 1261872018.0  # GPS
     assert ts.dt.value == 1.0
     assert ts.unit == u.s
     assert np.allclose(ts.value, [1261872018.0, 1261872019.0])

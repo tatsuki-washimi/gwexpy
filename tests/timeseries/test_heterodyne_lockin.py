@@ -6,6 +6,7 @@ This test module verifies that:
 2. `lock_in()` enforces phase precedence and mode selection rules
 3. Output formats and validation work correctly
 """
+
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
@@ -31,7 +32,7 @@ class TestHeterodyneGWpyCompatibility:
         n_samples = int(duration * sample_rate)
         t = np.arange(n_samples) / sample_rate
         data = A * np.cos(2 * np.pi * f0 * t + phi0)
-        ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(data, dt=1 / sample_rate, unit="V")
 
         # Phase for heterodyning
         phase = 2 * np.pi * f0 * t
@@ -60,7 +61,7 @@ class TestHeterodyneGWpyCompatibility:
         n_samples = int(duration * sample_rate)
         t = np.arange(n_samples) / sample_rate
         data = A * np.cos(2 * np.pi * f0 * t + phi0)
-        ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(data, dt=1 / sample_rate, unit="V")
         phase = 2 * np.pi * f0 * t
 
         # Heterodyne with singlesided=True
@@ -79,7 +80,7 @@ class TestHeterodyneGWpyCompatibility:
 
         n_samples = int(duration * sample_rate)
         data = np.ones(n_samples)
-        ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(data, dt=1 / sample_rate, unit="V")
         phase = np.zeros(n_samples)
 
         het = ts.heterodyne(phase, stride=stride, singlesided=False)
@@ -96,7 +97,7 @@ class TestHeterodyneGWpyCompatibility:
         stride = 1.0
 
         data = np.ones(n_samples)
-        ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(data, dt=1 / sample_rate, unit="V")
         phase = np.zeros(n_samples)
 
         het = ts.heterodyne(phase, stride=stride, singlesided=False)
@@ -106,7 +107,7 @@ class TestHeterodyneGWpyCompatibility:
 
     def test_phase_not_array_like_raises_typeerror(self):
         """Test that non-array-like phase raises TypeError."""
-        ts = TimeSeries(np.ones(100), dt=0.01, unit='V')
+        ts = TimeSeries(np.ones(100), dt=0.01, unit="V")
 
         # Scalar float
         with pytest.raises(TypeError, match="Phase is not array_like"):
@@ -118,7 +119,7 @@ class TestHeterodyneGWpyCompatibility:
 
     def test_phase_length_mismatch_raises_valueerror(self):
         """Test that phase length != TimeSeries length raises ValueError."""
-        ts = TimeSeries(np.ones(100), dt=0.01, unit='V')
+        ts = TimeSeries(np.ones(100), dt=0.01, unit="V")
         wrong_phase = np.zeros(50)  # Wrong length
 
         with pytest.raises(ValueError, match="same length as the TimeSeries"):
@@ -132,7 +133,7 @@ class TestHeterodyneGWpyCompatibility:
 
         # Complex sinusoid
         data = np.exp(1j * 2 * np.pi * 10 * t)
-        ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(data, dt=1 / sample_rate, unit="V")
         phase = 2 * np.pi * 10 * t
 
         het = ts.heterodyne(phase, stride=1.0, singlesided=False)
@@ -146,7 +147,7 @@ class TestLockInValidation:
 
     def test_phase_and_f0_mutual_exclusivity(self):
         """Test that specifying both phase and f0 raises ValueError."""
-        ts = TimeSeries(np.ones(1000), dt=0.001, unit='V')
+        ts = TimeSeries(np.ones(1000), dt=0.001, unit="V")
         phase = np.zeros(1000)
 
         with pytest.raises(ValueError, match="Cannot specify both 'phase' and any of"):
@@ -154,7 +155,7 @@ class TestLockInValidation:
 
     def test_phase_and_fdot_raises_valueerror(self):
         """Test that specifying phase with fdot != 0 raises ValueError."""
-        ts = TimeSeries(np.ones(1000), dt=0.001, unit='V')
+        ts = TimeSeries(np.ones(1000), dt=0.001, unit="V")
         phase = np.zeros(1000)
 
         with pytest.raises(ValueError, match="Cannot specify both 'phase' and any of"):
@@ -162,7 +163,7 @@ class TestLockInValidation:
 
     def test_phase_and_phase0_raises_valueerror(self):
         """Test that specifying phase with phase0 != 0 raises ValueError."""
-        ts = TimeSeries(np.ones(1000), dt=0.001, unit='V')
+        ts = TimeSeries(np.ones(1000), dt=0.001, unit="V")
         phase = np.zeros(1000)
 
         with pytest.raises(ValueError, match="Cannot specify both 'phase' and any of"):
@@ -170,28 +171,34 @@ class TestLockInValidation:
 
     def test_neither_phase_nor_f0_raises_valueerror(self):
         """Test that specifying neither phase nor f0 raises ValueError."""
-        ts = TimeSeries(np.ones(1000), dt=0.001, unit='V')
+        ts = TimeSeries(np.ones(1000), dt=0.001, unit="V")
 
-        with pytest.raises(ValueError, match="Either 'phase' or 'f0' must be specified"):
+        with pytest.raises(
+            ValueError, match="Either 'phase' or 'f0' must be specified"
+        ):
             ts.lock_in(stride=1.0)
 
     def test_bandwidth_and_stride_mutual_exclusivity(self):
         """Test that specifying both bandwidth and stride raises ValueError."""
-        ts = TimeSeries(np.ones(1000), dt=0.001, unit='V')
+        ts = TimeSeries(np.ones(1000), dt=0.001, unit="V")
 
-        with pytest.raises(ValueError, match="Cannot specify both 'bandwidth' and 'stride'"):
+        with pytest.raises(
+            ValueError, match="Cannot specify both 'bandwidth' and 'stride'"
+        ):
             ts.lock_in(f0=10.0, bandwidth=5.0, stride=1.0)
 
     def test_neither_bandwidth_nor_stride_raises_valueerror(self):
         """Test that specifying neither bandwidth nor stride raises ValueError."""
-        ts = TimeSeries(np.ones(1000), dt=0.001, unit='V')
+        ts = TimeSeries(np.ones(1000), dt=0.001, unit="V")
 
-        with pytest.raises(ValueError, match="Either 'bandwidth' or 'stride' must be specified"):
+        with pytest.raises(
+            ValueError, match="Either 'bandwidth' or 'stride' must be specified"
+        ):
             ts.lock_in(f0=10.0)
 
     def test_invalid_output_format_raises_valueerror(self):
         """Test that invalid output format raises ValueError."""
-        ts = TimeSeries(np.ones(1000), dt=0.001, unit='V')
+        ts = TimeSeries(np.ones(1000), dt=0.001, unit="V")
 
         with pytest.raises(ValueError, match="Unknown output format"):
             ts.lock_in(f0=10.0, stride=1.0, output="invalid")
@@ -210,11 +217,11 @@ class TestLockInStrideAverageMode:
         n_samples = int(duration * sample_rate)
         t = np.arange(n_samples) / sample_rate
         data = np.cos(2 * np.pi * f0 * t)
-        ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(data, dt=1 / sample_rate, unit="V")
         phase = 2 * np.pi * f0 * t
 
         # Lock-in with explicit phase
-        lockin_result = ts.lock_in(phase=phase, stride=stride, output='complex')
+        lockin_result = ts.lock_in(phase=phase, stride=stride, output="complex")
 
         # Direct heterodyne
         het_result = ts.heterodyne(phase, stride=stride, singlesided=True)
@@ -232,16 +239,16 @@ class TestLockInStrideAverageMode:
         n_samples = int(duration * sample_rate)
         t = np.arange(n_samples) / sample_rate
         data = np.cos(2 * np.pi * f0 * t + phi0)
-        ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(data, dt=1 / sample_rate, unit="V")
 
         # Get complex and amp_phase
-        complex_result = ts.lock_in(f0=f0, stride=stride, output='complex')
-        amp, phase = ts.lock_in(f0=f0, stride=stride, output='amp_phase', deg=False)
+        complex_result = ts.lock_in(f0=f0, stride=stride, output="complex")
+        amp, phase = ts.lock_in(f0=f0, stride=stride, output="amp_phase", deg=False)
 
         # Check consistency
         assert_allclose(amp.value, np.abs(complex_result.value), rtol=1e-10)
         assert_allclose(phase.value, np.angle(complex_result.value), rtol=1e-10)
-        assert phase.unit == 'rad'
+        assert phase.unit == "rad"
 
     def test_output_amp_phase_deg(self):
         """Test that deg=True gives phase in degrees."""
@@ -249,13 +256,13 @@ class TestLockInStrideAverageMode:
         duration = 10.0
         n_samples = int(duration * sample_rate)
         t = np.arange(n_samples) / sample_rate
-        ts = TimeSeries(np.cos(2 * np.pi * 30 * t), dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(np.cos(2 * np.pi * 30 * t), dt=1 / sample_rate, unit="V")
 
-        _, phase_deg = ts.lock_in(f0=30.0, stride=1.0, output='amp_phase', deg=True)
-        _, phase_rad = ts.lock_in(f0=30.0, stride=1.0, output='amp_phase', deg=False)
+        _, phase_deg = ts.lock_in(f0=30.0, stride=1.0, output="amp_phase", deg=True)
+        _, phase_rad = ts.lock_in(f0=30.0, stride=1.0, output="amp_phase", deg=False)
 
-        assert phase_deg.unit == 'deg'
-        assert phase_rad.unit == 'rad'
+        assert phase_deg.unit == "deg"
+        assert phase_rad.unit == "rad"
         assert_allclose(phase_deg.value, np.rad2deg(phase_rad.value), rtol=1e-10)
 
     def test_output_iq_consistency(self):
@@ -268,10 +275,10 @@ class TestLockInStrideAverageMode:
         n_samples = int(duration * sample_rate)
         t = np.arange(n_samples) / sample_rate
         data = np.cos(2 * np.pi * f0 * t)
-        ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(data, dt=1 / sample_rate, unit="V")
 
-        complex_result = ts.lock_in(f0=f0, stride=stride, output='complex')
-        i, q = ts.lock_in(f0=f0, stride=stride, output='iq')
+        complex_result = ts.lock_in(f0=f0, stride=stride, output="complex")
+        i, q = ts.lock_in(f0=f0, stride=stride, output="iq")
 
         assert_allclose(i.value, complex_result.value.real, rtol=1e-10)
         assert_allclose(q.value, complex_result.value.imag, rtol=1e-10)
@@ -290,9 +297,9 @@ class TestLockInLPFMode:
         n_samples = int(duration * sample_rate)
         t = np.arange(n_samples) / sample_rate
         data = np.cos(2 * np.pi * f0 * t)
-        ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(data, dt=1 / sample_rate, unit="V")
 
-        result = ts.lock_in(f0=f0, bandwidth=bandwidth, output='complex')
+        result = ts.lock_in(f0=f0, bandwidth=bandwidth, output="complex")
 
         # Check it's complex
         assert np.iscomplexobj(result.value)
@@ -310,9 +317,9 @@ class TestLockInLPFMode:
         t = np.arange(n_samples) / sample_rate
         # Pure tone at f0
         data = np.cos(2 * np.pi * f0 * t)
-        ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(data, dt=1 / sample_rate, unit="V")
 
-        result = ts.lock_in(f0=f0, bandwidth=bandwidth, output='complex')
+        result = ts.lock_in(f0=f0, bandwidth=bandwidth, output="complex")
 
         # After demodulation, DC should be dominant
         # The mean amplitude should be significant (not near zero)
@@ -321,9 +328,11 @@ class TestLockInLPFMode:
 
     def test_lpf_mode_with_stride_raises(self):
         """Test that bandwidth + stride raises ValueError."""
-        ts = TimeSeries(np.ones(1000), dt=0.001, unit='V')
+        ts = TimeSeries(np.ones(1000), dt=0.001, unit="V")
 
-        with pytest.raises(ValueError, match="Cannot specify both 'bandwidth' and 'stride'"):
+        with pytest.raises(
+            ValueError, match="Cannot specify both 'bandwidth' and 'stride'"
+        ):
             ts.lock_in(f0=10.0, bandwidth=5.0, stride=1.0)
 
     def test_lpf_mode_amp_phase_output(self):
@@ -336,9 +345,9 @@ class TestLockInLPFMode:
         n_samples = int(duration * sample_rate)
         t = np.arange(n_samples) / sample_rate
         data = np.cos(2 * np.pi * f0 * t)
-        ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(data, dt=1 / sample_rate, unit="V")
 
-        amp, phase = ts.lock_in(f0=f0, bandwidth=bandwidth, output='amp_phase')
+        amp, phase = ts.lock_in(f0=f0, bandwidth=bandwidth, output="amp_phase")
 
         assert isinstance(amp, TimeSeries)
         assert isinstance(phase, TimeSeries)
@@ -358,12 +367,12 @@ class TestLockInPhaseOnly:
         n_samples = int(duration * sample_rate)
         t = np.arange(n_samples) / sample_rate
         data = np.cos(2 * np.pi * f0 * t)
-        ts = TimeSeries(data, dt=1 / sample_rate, unit='V')
+        ts = TimeSeries(data, dt=1 / sample_rate, unit="V")
 
         # Explicit phase
         phase = 2 * np.pi * f0 * t
 
-        result = ts.lock_in(phase=phase, stride=stride, output='complex')
+        result = ts.lock_in(phase=phase, stride=stride, output="complex")
 
         # Should return complex TimeSeries
         assert np.iscomplexobj(result.value)

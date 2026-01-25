@@ -26,13 +26,12 @@ def test_value_internal_storage():
     sm = SeriesMatrix(data, xindex=xindex)
 
     # Check _value exists and has correct shape
-    assert hasattr(sm, '_value'), "SeriesMatrix should have _value attribute"
+    assert hasattr(sm, "_value"), "SeriesMatrix should have _value attribute"
     assert sm._value.shape == (2, 3, 10), f"_value shape incorrect: {sm._value.shape}"
 
     # Check that shape3D uses N_samples correctly
     assert sm.shape3D == (2, 3, 10), f"shape3D incorrect: {sm.shape3D}"
     assert sm.N_samples == 10, f"N_samples should be 10, got {sm.N_samples}"
-
 
 
 def test_xarray_duration_no_double_units():
@@ -41,7 +40,7 @@ def test_xarray_duration_no_double_units():
     # Create SeriesMatrix with frequency xindex (already as Quantity)
 
     # Create frequency index [0, 1, 2, ..., 9] Hz
-    xindex = u.Quantity(np.linspace(0, 9, 10), 'Hz')
+    xindex = u.Quantity(np.linspace(0, 9, 10), "Hz")
     data = np.random.randn(2, 2, 10)
 
     sm = SeriesMatrix(data, xindex=xindex)
@@ -50,17 +49,18 @@ def test_xarray_duration_no_double_units():
     xarray = sm.xarray
 
     # Check units
-    assert hasattr(xarray, 'unit'), "xarray should be a Quantity"
+    assert hasattr(xarray, "unit"), "xarray should be a Quantity"
     assert xarray.unit == u.Hz, f"xarray unit should be Hz, got {xarray.unit}"
 
     # Duration should be last - first, not last*xunit - first*xunit
     duration = sm.duration
 
-    assert hasattr(duration, 'unit'), "duration should be a Quantity"
+    assert hasattr(duration, "unit"), "duration should be a Quantity"
     assert duration.unit == u.Hz, f"duration unit should be Hz, got {duration.unit}"
     # duration should be 9 Hz (last - first in frequency space)
-    assert np.isclose(duration.value, 9.0), f"duration value should be ~9, got {duration.value}"
-
+    assert np.isclose(duration.value, 9.0), (
+        f"duration value should be ~9, got {duration.value}"
+    )
 
 
 def test_quantity_input_unit_defaults():
@@ -68,7 +68,7 @@ def test_quantity_input_unit_defaults():
 
     # Create data as Quantity with power units
     data_values = np.random.randn(2, 3, 10)
-    data_quantity = u.Quantity(data_values, 'W')  # Watts
+    data_quantity = u.Quantity(data_values, "W")  # Watts
 
     # Create SeriesMatrix without explicit units argument
     # Should use data.unit as default for all cells
@@ -82,25 +82,23 @@ def test_quantity_input_unit_defaults():
             assert unit == u.W, f"Cell ({i},{j}) should have unit W, got {unit}"
 
 
-
 def test_xindex_quantity_preserves_unit():
     """Test that passing xindex as Quantity preserves it."""
 
     # Create xindex as Quantity (e.g., time or frequency)
-    xindex_quantity = u.Quantity([0, 1, 2, 3, 4], 's')  # seconds
+    xindex_quantity = u.Quantity([0, 1, 2, 3, 4], "s")  # seconds
     data = np.random.randn(2, 2, 5)
 
     sm = SeriesMatrix(data, xindex=xindex_quantity)
 
     # xindex should preserve the Quantity
 
-    assert hasattr(sm.xindex, 'unit'), "xindex should be a Quantity"
+    assert hasattr(sm.xindex, "unit"), "xindex should be a Quantity"
     assert sm.xindex.unit == u.s, f"xindex unit should be s, got {sm.xindex.unit}"
 
     # xarray should also have seconds unit (not seconds^2)
     xarray = sm.xarray
     assert xarray.unit == u.s, f"xarray unit should be s, got {xarray.unit}"
-
 
 
 def test_basic_import_and_instantiation():
@@ -116,7 +114,6 @@ def test_basic_import_and_instantiation():
     assert sm.name == "test_matrix", f"Name incorrect: {sm.name}"
 
 
-
 def test_array_ufunc_comparison_returns_bool():
     """Ensure comparison ufunc results use boolean dtype."""
     data = np.arange(6, dtype=float).reshape(1, 2, 3)
@@ -125,7 +122,9 @@ def test_array_ufunc_comparison_returns_bool():
 
     result = sm < sm
 
-    assert result.value.dtype == np.bool_, f"Comparison dtype should be bool, got {result.value.dtype}"
+    assert result.value.dtype == np.bool_, (
+        f"Comparison dtype should be bool, got {result.value.dtype}"
+    )
     assert not result.value.any(), "sm < sm should yield all False"
 
 
@@ -168,13 +167,19 @@ def test_array_ufunc_quantity_broadcast_invalid_shapes_raise():
     sm = SeriesMatrix(data, xindex=xindex)
 
     with pytest.raises(ValueError):
-        _ = sm * u.Quantity(np.arange(5, dtype=float), u.s)  # 1D but length != N_samples
+        _ = sm * u.Quantity(
+            np.arange(5, dtype=float), u.s
+        )  # 1D but length != N_samples
 
     with pytest.raises(ValueError):
-        _ = sm * u.Quantity(np.ones((2, 2), dtype=float), u.s)  # 2D but shape != (Nrow,Ncol)
+        _ = sm * u.Quantity(
+            np.ones((2, 2), dtype=float), u.s
+        )  # 2D but shape != (Nrow,Ncol)
 
     with pytest.raises(ValueError):
-        _ = sm * u.Quantity(np.ones((2, 3, 4, 1), dtype=float), u.s)  # 4D is unsupported
+        _ = sm * u.Quantity(
+            np.ones((2, 3, 4, 1), dtype=float), u.s
+        )  # 4D is unsupported
 
 
 def test_is_contiguous_without_unit_xindex():
@@ -276,7 +281,12 @@ def test_shift_moves_xindex():
 def test_copy_is_independent():
     """Modifying a copied object should not affect the original"""
     data = np.array([[[1.0, 2.0]]])
-    sm = SeriesMatrix(data, xindex=np.array([0.0, 1.0]), rows={"r0": {"name": "r0"}}, cols={"c0": {"name": "c0"}})
+    sm = SeriesMatrix(
+        data,
+        xindex=np.array([0.0, 1.0]),
+        rows={"r0": {"name": "r0"}},
+        cols={"c0": {"name": "c0"}},
+    )
     cp = sm.copy()
 
     cp.value[0, 0, 0] = 99.0
@@ -352,7 +362,9 @@ def test_channel_mismatch_raises():
     data = np.zeros((1, 1, 3))
     xindex = np.arange(3)
     meta_arr = np.empty((1, 1), dtype=object)
-    meta_arr[0, 0] = MetaData(channel=Channel("A"), unit=u.dimensionless_unscaled, name="m")
+    meta_arr[0, 0] = MetaData(
+        channel=Channel("A"), unit=u.dimensionless_unscaled, name="m"
+    )
     meta = MetaDataMatrix(meta_arr)
 
     with pytest.raises(ValueError):
@@ -364,7 +376,9 @@ def test_channel_string_matches_channel_object():
     data = np.zeros((1, 1, 3))
     xindex = np.arange(3)
     meta_arr = np.empty((1, 1), dtype=object)
-    meta_arr[0, 0] = MetaData(channel=Channel("A"), unit=u.dimensionless_unscaled, name="m")
+    meta_arr[0, 0] = MetaData(
+        channel=Channel("A"), unit=u.dimensionless_unscaled, name="m"
+    )
     meta = MetaDataMatrix(meta_arr)
 
     sm = SeriesMatrix(data, xindex=xindex, meta=meta, channels=[["A"]])
@@ -381,7 +395,9 @@ def test_append_gap_and_pad_unitless():
     combined = sm1.append_exact(sm2, pad=0.0, gap=3.0)
 
     assert combined.shape == (1, 1, 8)
-    assert np.array_equal(combined.xindex, np.array([0., 1., 2., 3., 4., 5., 6., 7.]))
+    assert np.array_equal(
+        combined.xindex, np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0])
+    )
     # Padded parts are 0, otherwise original values
     expected = np.concatenate([np.zeros(3), np.zeros(2), np.ones(3)])
     assert np.array_equal(combined.value.flatten(), expected)
@@ -418,12 +434,12 @@ def test_is_compatible_raises_on_incompatible_units():
 
 
 def test_sign_preserves_unit_and_meta():
-    data = np.array([[[ -1.0, 2.0 ]]])
+    data = np.array([[[-1.0, 2.0]]])
     xindex = np.array([0.0, 1.0])
     sm = SeriesMatrix(data, xindex=xindex, units=[[u.m]])
     out = np.sign(sm)
-    assert np.array_equal(out.value, [[[-1., 1.]]])
-    assert out.meta[0,0].unit == u.m
+    assert np.array_equal(out.value, [[[-1.0, 1.0]]])
+    assert out.meta[0, 0].unit == u.m
 
 
 def test_floor_divide_mod_passthrough_meta():
@@ -432,18 +448,18 @@ def test_floor_divide_mod_passthrough_meta():
     sm = SeriesMatrix(data, xindex=xindex, units=[[u.s]])
     out_fd = np.floor_divide(sm, 2)
     out_mod = np.mod(sm, 2)
-    assert out_fd.meta[0,0].unit == u.s
-    assert out_mod.meta[0,0].unit == u.s
-    assert np.array_equal(out_fd.value, [[[2., 3.]]])
-    assert np.array_equal(out_mod.value, [[[1., 0.]]])
+    assert out_fd.meta[0, 0].unit == u.s
+    assert out_mod.meta[0, 0].unit == u.s
+    assert np.array_equal(out_fd.value, [[[2.0, 3.0]]])
+    assert np.array_equal(out_mod.value, [[[1.0, 0.0]]])
 
 
 def test_clip_passthrough_meta():
-    data = np.array([[[ -1.0, 0.5, 2.0 ]]])
+    data = np.array([[[-1.0, 0.5, 2.0]]])
     xindex = np.array([0.0, 1.0, 2.0])
     sm = SeriesMatrix(data, xindex=xindex, units=[[u.Hz]])
     out = np.clip(sm, 0.0, 1.0)
-    assert out.meta[0,0].unit == u.Hz
+    assert out.meta[0, 0].unit == u.Hz
     assert np.array_equal(out.value, [[[0.0, 0.5, 1.0]]])
 
 
@@ -473,10 +489,11 @@ def test_is_contiguous_gwpy_allows_different_length():
 def test_append_gwpy_pad_gap_option():
     sm1 = SeriesMatrix(np.zeros((1, 1, 2)), xindex=np.array([0.0, 1.0]))
     sm2 = SeriesMatrix(np.ones((1, 1, 2)), xindex=np.array([4.0, 5.0]))
-    out = sm1.append(sm2, gap='pad', pad=0.0)
+    out = sm1.append(sm2, gap="pad", pad=0.0)
     assert out.shape == (1, 1, 6)
     # should have zeros padding between
-    assert np.array_equal(out.value.flatten(), np.array([0., 0., 0., 0., 1., 1.]))
+    assert np.array_equal(out.value.flatten(), np.array([0.0, 0.0, 0.0, 0.0, 1.0, 1.0]))
+
 
 if __name__ == "__main__":
     try:
@@ -488,5 +505,6 @@ if __name__ == "__main__":
 
     except Exception:
         import traceback
+
         traceback.print_exc()
         exit(1)

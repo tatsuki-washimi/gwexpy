@@ -1,6 +1,7 @@
 """
 Tests for MCMC functionality with GLS support.
 """
+
 import numpy as np
 import pytest
 
@@ -189,7 +190,7 @@ def test_plot_fit_band():
     lines = ax.get_lines()
     assert len(lines) >= 1  # At least the fit line
 
-    plt.close('all')
+    plt.close("all")
 
 
 def test_mcmc_with_custom_cost_function_gls():

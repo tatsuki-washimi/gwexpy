@@ -26,7 +26,7 @@ class TestCrossModuleA2Integration:
         freq = 10.0
         amp = 2.0
         data = amp * np.sin(2 * np.pi * freq * t)
-        ts = TimeSeries(data, dt=1.0/fs * u.s, unit='V')
+        ts = TimeSeries(data, dt=1.0 / fs * u.s, unit="V")
 
         # FFT (gwexpy FFT typically produces a Spectrum-like FrequencySeries)
         # We need to distinguish between 'steady' and 'transient' modes if applicable
@@ -53,21 +53,21 @@ class TestCrossModuleA2Integration:
         """
         fs = 1000
         data = np.random.normal(size=fs)
-        ts = TimeSeries(data, dt=1.0/fs * u.s, unit='V')
+        ts = TimeSeries(data, dt=1.0 / fs * u.s, unit="V")
 
         # Density
-        psd_density = estimate_psd(ts, scaling='density')
+        psd_density = estimate_psd(ts, scaling="density")
         assert psd_density.unit == u.V**2 / u.Hz
 
         # Spectrum
-        psd_spectrum = estimate_psd(ts, scaling='spectrum')
+        psd_spectrum = estimate_psd(ts, scaling="spectrum")
         assert psd_spectrum.unit == u.V**2
 
     def test_f0_handling_at_dc(self):
         """
         Verify that DC component (f=0) doesn't cause errors and is handled correctly.
         """
-        data = np.ones(1024) # Constant offset
+        data = np.ones(1024)  # Constant offset
         ts = TimeSeries(data, dt=0.001 * u.s)
 
         spec = ts.fft()
@@ -84,7 +84,12 @@ class TestCrossModuleA2Integration:
         TimeSeries -> Spectrogram (indirectly) -> FrequencySeries (PSD)
         Verify metadata propagation through a common analysis chain.
         """
-        ts = TimeSeries(np.random.normal(size=2048), dt=1.0/1024 * u.s, epoch=1234567890, name='H1:TEST')
+        ts = TimeSeries(
+            np.random.normal(size=2048),
+            dt=1.0 / 1024 * u.s,
+            epoch=1234567890,
+            name="H1:TEST",
+        )
 
         # Compute PSD (internally may go through overlapping windows)
         psd = ts.psd(fftlength=1)
@@ -106,7 +111,7 @@ class TestCrossModuleA2Integration:
         mat1 = TimeSeriesMatrix(data1, dt=1.0)
 
         data2 = np.random.rand(1, 10)
-        mat2 = TimeSeriesMatrix(data2, dt=1.0001) # Mismatched dt
+        mat2 = TimeSeriesMatrix(data2, dt=1.0001)  # Mismatched dt
 
         with pytest.raises(ValueError, match="mismatch"):
             _ = mat1 + mat2

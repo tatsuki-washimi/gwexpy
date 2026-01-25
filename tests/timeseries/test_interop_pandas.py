@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 from astropy import units as u
@@ -12,6 +11,7 @@ try:
 except ImportError:
     pd = None
 
+
 @pytest.mark.skipif(pd is None, reason="pandas not installed")
 def test_pandas_interop():
     t0 = LIGOTimeGPS(1234567890, 123000000)
@@ -22,7 +22,7 @@ def test_pandas_interop():
     # 1. to_pandas (datetime)
     s_dt = ts.to_pandas(index="datetime")
     assert isinstance(s_dt, pd.Series)
-    assert s_dt.index.tz is not None # aware
+    assert s_dt.index.tz is not None  # aware
     assert len(s_dt) == 100
     assert s_dt.name == "test_ts"
 
@@ -47,4 +47,3 @@ def test_pandas_interop():
     tsd_restored = TimeSeriesDict.from_pandas(df)
     assert "ch1" in tsd_restored
     assert "ch2" in tsd_restored
-

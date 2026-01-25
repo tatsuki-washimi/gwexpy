@@ -1,4 +1,3 @@
-
 import os
 
 import numpy as np
@@ -29,6 +28,7 @@ try:
 except ImportError:
     tf = None
 
+
 @pytest.mark.skipif(torch is None, reason="torch not installed")
 def test_torch_interop():
     data = np.arange(10, dtype=np.float32)
@@ -48,6 +48,7 @@ def test_torch_interop():
     ts2 = TimeSeries.from_torch(tensor, t0=0, dt=0.01)
     assert np.allclose(ts2.value, data)
 
+
 @pytest.mark.skipif(tf is None, reason="tensorflow not installed")
 def test_tf_interop():
     data = np.arange(10, dtype=np.float32)
@@ -62,6 +63,7 @@ def test_tf_interop():
     ts2 = TimeSeries.from_tensorflow(tensor, t0=0, dt=0.01)
     assert np.allclose(ts2.value, data)
 
+
 @pytest.mark.skipif(da is None, reason="dask not installed")
 def test_dask_interop():
     data = np.arange(100, dtype=float)
@@ -70,12 +72,13 @@ def test_dask_interop():
     # 1. to_dask
     darr = ts.to_dask(chunks=10)
     assert isinstance(darr, da.Array)
-    assert darr.chunks == ((10,)*10,)
+    assert darr.chunks == ((10,) * 10,)
 
     # 2. from_dask (compute=True)
     ts2 = TimeSeries.from_dask(darr, t0=0, dt=0.1, compute=True)
     assert isinstance(ts2.value, np.ndarray)
     assert np.allclose(ts2.value, data)
+
 
 @pytest.mark.skipif(zarr is None, reason="zarr not installed")
 def test_zarr_interop(tmp_path):

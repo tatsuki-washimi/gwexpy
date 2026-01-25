@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 
@@ -9,6 +8,7 @@ try:
 except ImportError:
     obspy = None
 
+
 @pytest.mark.skipif(obspy is None, reason="obspy not installed")
 def test_to_obspy_stream():
     """Test conversion from Spectrogram to Obspy Stream."""
@@ -18,7 +18,7 @@ def test_to_obspy_stream():
     freqs = np.linspace(0, 4, nf)
     times = np.linspace(0, 9, nt)
 
-    spec = Spectrogram(data, frequencies=freqs, times=times, unit='m', name='TEST_SPEC')
+    spec = Spectrogram(data, frequencies=freqs, times=times, unit="m", name="TEST_SPEC")
 
     st = spec.to_obspy()
 
@@ -28,10 +28,10 @@ def test_to_obspy_stream():
     # Check first trace (first frequency bin)
     tr0 = st[0]
     assert tr0.stats.npts == nt
-    assert tr0.stats.delta == 1.0 # t1-t0
-    assert tr0.stats.station == 'TEST_SPEC'
+    assert tr0.stats.delta == 1.0  # t1-t0
+    assert tr0.stats.station == "TEST_SPEC"
     # Check if frequency info is preserved in our custom header
-    assert hasattr(tr0.stats, 'frequency')
+    assert hasattr(tr0.stats, "frequency")
     assert tr0.stats.frequency == freqs[0]
 
     np.testing.assert_array_equal(tr0.data, data[:, 0])
@@ -45,6 +45,7 @@ def test_to_obspy_stream():
     # t0 should be starttime
     assert spec_rec.t0.value == spec.t0.value
     assert spec_rec.dt.value == spec.dt.value
+
 
 @pytest.mark.skipif(obspy is None, reason="obspy not installed")
 def test_from_obspy_stream_mixed():

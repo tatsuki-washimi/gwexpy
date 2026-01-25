@@ -30,10 +30,12 @@ def test_timeseries_batch():
     cropped = ts_list.crop(0, 5)
     print(f"Cropped list length: {len(cropped)}")
     assert len(cropped) == 2
-    assert len(cropped[0]) == int(5/dt) + 1 or len(cropped[0]) == int(5/dt), f"Crop length unexpected: {len(cropped[0])}"
+    assert len(cropped[0]) == int(5 / dt) + 1 or len(cropped[0]) == int(5 / dt), (
+        f"Crop length unexpected: {len(cropped[0])}"
+    )
 
     # Signal Processing
-    resampled = ts_list.resample(10) # 10 Hz (original 100Hz)
+    resampled = ts_list.resample(10)  # 10 Hz (original 100Hz)
     assert len(resampled) == 2
 
     # Stats
@@ -91,8 +93,8 @@ def test_frequencyseries_batch():
     dt = 0.01
     n_samples = 1000
     times = np.arange(n_samples) * dt
-    data1 = np.sin(2 * np.pi * 10 * times) # 10 Hz
-    data2 = np.sin(2 * np.pi * 20 * times) # 20 Hz
+    data1 = np.sin(2 * np.pi * 10 * times)  # 10 Hz
+    data2 = np.sin(2 * np.pi * 20 * times)  # 20 Hz
 
     ts1 = TimeSeries(data1, dt=dt, unit="V", name="ch1")
     ts2 = TimeSeries(data2, dt=dt, unit="V", name="ch2")
@@ -139,6 +141,7 @@ def test_frequencyseries_batch():
         # Assuming torch not installed in env? Or maybe it is.
         # We'll try to_torch if torch is available, otherwise skip
         import torch  # noqa: F401 - availability check
+
         torch_dict = fs_dict.to_torch()
         assert isinstance(torch_dict, dict)
         print("to_torch successful")

@@ -21,4 +21,3 @@ __all__ = [
     "test_to_astropy_table_empty",
     "test_to_astropy_table_rename",
 ]
-

@@ -32,4 +32,3 @@ def test_spectrogram_bootstrap_asd_wrapper():
     assert fs.value.shape == (16,)
     assert fs.error_low.value.shape == (16,)
     assert fs.error_high.value.shape == (16,)
-

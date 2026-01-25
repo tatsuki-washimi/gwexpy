@@ -16,9 +16,11 @@ from matplotlib import use as mpl_use
 _PYTEST_QT_AVAILABLE = importlib.util.find_spec("pytestqt") is not None
 
 if not _PYTEST_QT_AVAILABLE:
+
     @pytest.fixture
     def qtbot():  # type: ignore[override]
         pytest.skip("pytest-qt not installed")
+
 
 pytest_plugins = ["gwpy.testing.fixtures"]
 
@@ -26,8 +28,7 @@ faulthandler.enable()
 
 _QT_QPA_PLATFORM = os.environ.get("QT_QPA_PLATFORM", "").lower()
 _HEADLESS = (
-    not os.environ.get("DISPLAY")
-    and not os.environ.get("WAYLAND_DISPLAY")
+    not os.environ.get("DISPLAY") and not os.environ.get("WAYLAND_DISPLAY")
 ) or _QT_QPA_PLATFORM in {"offscreen", "minimal"}
 
 if _HEADLESS:
@@ -49,6 +50,7 @@ if _HEADLESS:
 # Helper functions
 # =============================================================================
 
+
 def _ensure_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
     try:
@@ -56,6 +58,7 @@ def _ensure_dir(path: Path) -> None:
     except OSError:
         # Best-effort; permissions may be controlled by the environment.
         pass
+
 
 def _requirement_available(name: str) -> bool:
     if name == "uproot" and os.environ.get("GWEXPY_ALLOW_UPROOT", "") != "1":
@@ -66,6 +69,7 @@ def _requirement_available(name: str) -> bool:
     except (ImportError, ModuleNotFoundError):
         return False
 
+
 def _semlock_available() -> bool:
     try:
         ctx = _mp.get_context()
@@ -75,6 +79,7 @@ def _semlock_available() -> bool:
         return False
     except OSError as exc:
         return exc.errno not in (None, 13)
+
 
 def _is_network_error(exc: BaseException) -> bool:
     try:
@@ -100,6 +105,7 @@ def _is_network_error(exc: BaseException) -> bool:
             current, "__context__", None
         )
     return False
+
 
 # =============================================================================
 # Environment Configuration
@@ -182,6 +188,7 @@ except Exception as exc:
 # Hooks
 # =============================================================================
 
+
 def pytest_configure(config):
     # From gwexpy/conftest.py
     _gwpy_conftest.pytest_configure(config)
@@ -189,6 +196,7 @@ def pytest_configure(config):
         "markers",
         "requires(module): skip test if optional dependency cannot be imported",
     )
+
 
 def pytest_collection_modifyitems(config, items):
     if _MP_AVAILABLE:
@@ -210,7 +218,9 @@ def pytest_runtest_setup(item):
     # 1. requirement check from gwexpy/conftest
     marker_req = item.get_closest_marker("requires")
     if marker_req:
-        missing = [req for req in marker_req.args if not _requirement_available(str(req))]
+        missing = [
+            req for req in marker_req.args if not _requirement_available(str(req))
+        ]
         if missing:
             pytest.skip(f"missing optional dependency: {', '.join(missing)}")
 
@@ -279,9 +289,11 @@ def pytest_runtest_makereport(item, call):
     except Exception:
         return
 
+
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest.fixture(autouse=True)
 def _mp_fallback(monkeypatch):

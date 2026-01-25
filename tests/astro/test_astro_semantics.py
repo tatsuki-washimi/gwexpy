@@ -29,7 +29,9 @@ class TestAstroSemantics:
         df = 0.25
         freqs = np.arange(10, 2048, df)
         data = np.full_like(freqs, 1e-46, dtype=float)
-        return FrequencySeries(data, frequencies=freqs, unit=u.dimensionless_unscaled**2 / u.Hz)
+        return FrequencySeries(
+            data, frequencies=freqs, unit=u.dimensionless_unscaled**2 / u.Hz
+        )
 
     @pytest.mark.skipif(
         not INSPIRAL_RANGE_AVAILABLE,
@@ -41,10 +43,10 @@ class TestAstroSemantics:
         r = inspiral_range(aLIGO_flat_psd, mass1=1.4, mass2=1.4)
 
         assert isinstance(r, u.Quantity)
-        assert r.unit.is_equivalent(u.m) # It is a length
+        assert r.unit.is_equivalent(u.m)  # It is a length
         # GWpy default is usually Mpc, let's verify it matches the expected magnitude
         # 1e-23 ASD is very sensitive, range should be > 100 Mpc
-        assert r.to('Mpc').value > 100
+        assert r.to("Mpc").value > 100
 
     def test_sensemon_range_units(self, aLIGO_flat_psd):
         """Test that sensemon_range returns a Quantity with length units (Mpc)."""
@@ -65,13 +67,13 @@ class TestAstroSemantics:
         data = np.full_like(freqs, 1e-46, dtype=float)
 
         # Unit as strain^2 / Hz
-        psd1 = FrequencySeries(data, frequencies=freqs, unit='1/Hz')
+        psd1 = FrequencySeries(data, frequencies=freqs, unit="1/Hz")
         r1 = inspiral_range(psd1)
 
         # Unit as strain / sqrt(Hz) -> this is ASD, should fail if function expects PSD
         # But some functions might be smart? GWpy inspiral_range expects PSD.
         # Let's see if it handles different representations of the same unit.
-        psd2 = FrequencySeries(data, frequencies=freqs, unit=u.Unit('1/Hz'))
+        psd2 = FrequencySeries(data, frequencies=freqs, unit=u.Unit("1/Hz"))
         r2 = inspiral_range(psd2)
 
         assert r1 == r2
@@ -86,7 +88,7 @@ class TestAstroSemantics:
 
         assert r.value > 0
         # For aLIGO-like flat noise, it should be in the order of 100-200 Mpc
-        assert 10 < r.to('Mpc').value < 1000
+        assert 10 < r.to("Mpc").value < 1000
 
     def test_reexport_consistency(self):
         """Verify that gwexpy.astro re-exports match gwpy.astro."""

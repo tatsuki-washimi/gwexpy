@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 
@@ -13,9 +12,9 @@ try:
 except ImportError:
     simpeg = None
 
+
 @pytest.mark.skipif(simpeg is None, reason="simpeg not installed")
 class TestSimPEGInterop:
-
     def test_timeseries_to_simpeg(self):
         """Test TimeSeries -> SimPEG Data -> TimeSeries cycle."""
 
@@ -26,7 +25,9 @@ class TestSimPEGInterop:
         ts = TimeSeries(data, t0=t0, dt=dt, unit="V", name="V_meas")
 
         # 2. To SimPEG
-        simpeg_data = ts.to_simpeg(location=[10, 0, 0], rx_type="PointElectricField", orientation='x')
+        simpeg_data = ts.to_simpeg(
+            location=[10, 0, 0], rx_type="PointElectricField", orientation="x"
+        )
 
         assert isinstance(simpeg_data, Data)
         assert len(simpeg_data.dobs) == 100
@@ -39,11 +40,11 @@ class TestSimPEGInterop:
         rx = src.receiver_list[0]
 
         # Check locations
-        np.testing.assert_array_equal(rx.locations, [[10., 0., 0.]])
+        np.testing.assert_array_equal(rx.locations, [[10.0, 0.0, 0.0]])
 
         # Check orientation
         # orientation is vector [1, 0, 0] for 'x'
-        np.testing.assert_allclose(rx.orientation, [1., 0., 0.])
+        np.testing.assert_allclose(rx.orientation, [1.0, 0.0, 0.0])
 
         # Check times
         np.testing.assert_allclose(rx.times, ts.times.value)
@@ -65,7 +66,9 @@ class TestSimPEGInterop:
         fs = FrequencySeries(data, frequencies=freqs, unit="V", name="VF_meas")
 
         # 2. To SimPEG
-        simpeg_data = fs.to_simpeg(location=[0, 10, 0], rx_type="PointMagneticFluxDensity", orientation='z')
+        simpeg_data = fs.to_simpeg(
+            location=[0, 10, 0], rx_type="PointMagneticFluxDensity", orientation="z"
+        )
 
         assert isinstance(simpeg_data, Data)
         assert len(simpeg_data.dobs) == 10
@@ -81,12 +84,12 @@ class TestSimPEGInterop:
         rx0 = src0.receiver_list[0]
 
         # Check locations
-        np.testing.assert_array_equal(rx0.locations, [[0., 10., 0.]])
+        np.testing.assert_array_equal(rx0.locations, [[0.0, 10.0, 0.0]])
 
         # Check orientation
         # orientation is vector [0, 0, 1] for 'z'
         # SimPEG returns vector even if initialized with string
-        np.testing.assert_allclose(rx0.orientation, [0., 0., 1.])
+        np.testing.assert_allclose(rx0.orientation, [0.0, 0.0, 1.0])
 
         # 3. From SimPEG
         fs_rec = FrequencySeries.from_simpeg(simpeg_data)
@@ -94,4 +97,3 @@ class TestSimPEGInterop:
         assert isinstance(fs_rec, FrequencySeries)
         np.testing.assert_allclose(fs_rec.value, fs.value)
         np.testing.assert_allclose(fs_rec.frequencies.value, fs.frequencies.value)
-

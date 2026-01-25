@@ -19,6 +19,7 @@ from astropy import units as u
 # 1. Tests for Spectrogram.radian() / Spectrogram.degree()
 # =============================================================================
 
+
 class TestSpectrogramPhase:
     """Test Spectrogram.radian() and .degree() methods."""
 
@@ -82,12 +83,14 @@ class TestSpectrogramPhase:
         from gwexpy.spectrogram import Spectrogram
 
         # Build phase that wraps
-        phases = np.array([
-            [0.0, 0.0, 0.0],
-            [3.0, 3.0, 3.0],
-            [-3.0, -3.0, -3.0],  # wraps from ~3 to -3
-            [0.0, 0.0, 0.0],
-        ])
+        phases = np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [3.0, 3.0, 3.0],
+                [-3.0, -3.0, -3.0],  # wraps from ~3 to -3
+                [0.0, 0.0, 0.0],
+            ]
+        )
         data = np.exp(1j * phases)
 
         spec = Spectrogram(
@@ -141,12 +144,14 @@ class TestSpectrogramPhase:
         from gwexpy.spectrogram import Spectrogram
 
         # Build phase that wraps
-        phases = np.array([
-            [0.0, 0.0, 0.0],
-            [3.0, 3.0, 3.0],
-            [-3.0, -3.0, -3.0],
-            [0.0, 0.0, 0.0],
-        ])
+        phases = np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [3.0, 3.0, 3.0],
+                [-3.0, -3.0, -3.0],
+                [0.0, 0.0, 0.0],
+            ]
+        )
         data = np.exp(1j * phases)
 
         spec = Spectrogram(
@@ -165,6 +170,7 @@ class TestSpectrogramPhase:
 # =============================================================================
 # 2. Tests for SpectrogramMatrixCoreMixin.frequencies
 # =============================================================================
+
 
 class TestSpectrogramMatrixFrequencies:
     """Test SpectrogramMatrixCoreMixin frequencies length validation and df/f0."""
@@ -235,6 +241,7 @@ class TestSpectrogramMatrixFrequencies:
 # =============================================================================
 # 3. Tests for SpectrogramMatrixAnalysisMixin.radian/degree
 # =============================================================================
+
 
 class TestSpectrogramMatrixPhase:
     """Test SpectrogramMatrixAnalysisMixin radian/degree methods."""
@@ -328,6 +335,7 @@ class TestSpectrogramMatrixPhase:
 # 4. Tests for SpectrogramMatrix.__array_ufunc__ unit behavior
 # =============================================================================
 
+
 class TestSpectrogramMatrixUfunc:
     """Test SpectrogramMatrix.__array_ufunc__ unit behavior."""
 
@@ -405,6 +413,7 @@ class TestSpectrogramMatrixUfunc:
 # =============================================================================
 # 5. Tests for SpectrogramList/SpectrogramDict.to_matrix invariants
 # =============================================================================
+
 
 class TestCollectionsToMatrix:
     """Test SpectrogramList and SpectrogramDict to_matrix invariants."""
@@ -553,15 +562,18 @@ class TestCollectionsToMatrix:
 # Import sanity checks
 # =============================================================================
 
+
 class TestImportSanity:
     """Test that re-exports can be imported without error."""
 
     def test_import_coherence(self):
         """coherence.py should be importable."""
         from gwexpy.spectrogram import coherence
+
         assert coherence is not None
 
     def test_import_io_hdf5(self):
         """io/hdf5.py should be importable."""
         from gwexpy.spectrogram.io import hdf5
+
         assert hdf5 is not None

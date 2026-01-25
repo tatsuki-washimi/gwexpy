@@ -7,11 +7,13 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 PYEMD_AVAILABLE = False
 try:
     import PyEMD
+
     # Basic check for EMD existence
     _ = PyEMD.EMD()
     PYEMD_AVAILABLE = True
 except (ImportError, AttributeError):
     pass
+
 
 class TestHHT:
     @pytest.fixture
@@ -23,14 +25,15 @@ class TestHHT:
         # Non-stationary chirp: 5Hz to 10Hz
         # phi = 2*pi * (5*t + 0.5 * (5/10) * t^2)
         # f_inst = 5 + (5/10)*t = 5 + 0.5t
-        phase = 2*np.pi * (5*t + 0.25 * t**2)
+        phase = 2 * np.pi * (5 * t + 0.25 * t**2)
         chirp = np.sin(phase)
 
         # Simple Sine
         sine = np.sin(2 * np.pi * 10 * t)
 
-        return TimeSeries(chirp, t0=0, dt=dt, unit="V", name="chirp"), \
-               TimeSeries(sine, t0=0, dt=dt, unit="V", name="sine")
+        return TimeSeries(chirp, t0=0, dt=dt, unit="V", name="chirp"), TimeSeries(
+            sine, t0=0, dt=dt, unit="V", name="sine"
+        )
 
     def test_hilbert_analysis(self, sine_waves):
         chirp, sine = sine_waves
@@ -47,7 +50,7 @@ class TestHHT:
         freq = res["frequency"]
         # Skip edges where gradient might be weird
         mid_freq = freq[10:-10].value
-        assert np.allclose(mid_freq, 10.0, atol=1.0) # Within 1Hz tolerance
+        assert np.allclose(mid_freq, 10.0, atol=1.0)  # Within 1Hz tolerance
 
         # Amplitude should be ~ 1
         amp = res["amplitude"]
@@ -69,7 +72,7 @@ class TestHHT:
         # Sum of IMFs + residual should reconstruct signal approx
         recon = np.zeros_like(sine.value)
         for k in imfs:
-             recon += imfs[k].value
+            recon += imfs[k].value
 
         assert np.allclose(recon, sine.value, atol=1e-5)
 
@@ -94,7 +97,7 @@ class TestHHT:
         # EMD boundaries are tricky
         diff = np.abs(if_series.value - expected_f)
         # Check median error is small
-        assert np.median(diff[10:-10]) < 2.0 # 2Hz margin
+        assert np.median(diff[10:-10]) < 2.0  # 2Hz margin
 
     @pytest.mark.skipif(not PYEMD_AVAILABLE, reason="PyEMD not installed")
     def test_hht_spectrogram(self, sine_waves):
@@ -102,8 +105,8 @@ class TestHHT:
 
         res = chirp.hht(output="spectrogram")
         assert isinstance(res, Spectrogram)
-        assert res.shape[0] == len(chirp) # Time axis
-        assert res.shape[1] == 100 # Default frequency bins used
+        assert res.shape[0] == len(chirp)  # Time axis
+        assert res.shape[1] == 100  # Default frequency bins used
 
         # Check energy exists
         assert res.value.max() > 0

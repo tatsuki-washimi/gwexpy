@@ -3,6 +3,7 @@ Tests inherited from gwpy.timeseries.tests.test_timeseries.
 
 Some tests may be marked as xfail due to upstream API changes.
 """
+
 import socket
 
 import pytest

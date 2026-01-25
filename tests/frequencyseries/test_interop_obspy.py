@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 
@@ -9,19 +8,20 @@ try:
 except ImportError:
     obspy = None
 
+
 @pytest.mark.skipif(obspy is None, reason="obspy not installed")
 def test_to_obspy_trace():
     """Test conversion from FrequencySeries to Obspy Trace."""
     data = np.arange(10).astype(float)
     freqs = np.linspace(0, 9, 10)
-    fs = FrequencySeries(data, frequencies=freqs, unit='m', name='TEST_FS')
+    fs = FrequencySeries(data, frequencies=freqs, unit="m", name="TEST_FS")
 
     tr = fs.to_obspy()
 
     assert isinstance(tr, obspy.Trace)
     assert tr.stats.npts == 10
-    assert tr.stats.delta == 1.0 # f1-f0
-    assert tr.stats.station == 'TEST_FS'
+    assert tr.stats.delta == 1.0  # f1-f0
+    assert tr.stats.station == "TEST_FS"
     np.testing.assert_array_equal(tr.data, data)
 
     # Check if we can reconstruct
@@ -34,6 +34,7 @@ def test_to_obspy_trace():
     # If f0=0, starttime is 1970...
     assert fs_rec.f0.value == fs.f0.value
 
+
 @pytest.mark.skipif(obspy is None, reason="obspy not installed")
 def test_from_obspy_trace():
     """Test conversion from Obspy Trace to FrequencySeries."""
@@ -42,16 +43,16 @@ def test_from_obspy_trace():
     tr = obspy.Trace(data=data)
     tr.stats.delta = 0.5
     tr.stats.starttime = 100.0
-    tr.stats.station = 'OBSPY_TR'
-    tr.stats.channel = 'CH1'
+    tr.stats.station = "OBSPY_TR"
+    tr.stats.channel = "CH1"
 
     fs = FrequencySeries.from_obspy(tr)
 
     assert isinstance(fs, FrequencySeries)
     assert fs.df.value == 0.5
-    assert fs.f0.value == 100.0 # starttime timestamp
+    assert fs.f0.value == 100.0  # starttime timestamp
     # tr.id is typically NET.STA.LOC.CHAN, here '.
-    expected_id = '.OBSPY_TR..CH1'
+    expected_id = ".OBSPY_TR..CH1"
     assert fs.name == expected_id
     # Our impl defaults to id if name_policy='id', which includes network.station...
     # If 'id', it's usually network.station.location.channel

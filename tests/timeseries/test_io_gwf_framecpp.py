@@ -11,9 +11,11 @@ def test_gwf_framecpp_reexports_gwpy():
     if not exported:
         # Fallback: check that the module at least has a dir() with some content
         # or skip if truly empty (this is an upstream gwpy issue)
-        gwpy_attrs = [a for a in dir(gwpy_mod) if not a.startswith('_')]
+        gwpy_attrs = [a for a in dir(gwpy_mod) if not a.startswith("_")]
         if not gwpy_attrs:
-            pytest.skip("gwpy.timeseries.io.gwf.framecpp has no public exports (upstream issue)")
+            pytest.skip(
+                "gwpy.timeseries.io.gwf.framecpp has no public exports (upstream issue)"
+            )
         return
 
     for name in exported:

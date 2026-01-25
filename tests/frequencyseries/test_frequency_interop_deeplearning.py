@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 
@@ -8,6 +7,7 @@ try:
     import torch  # noqa: F401 - availability check
 except ImportError:
     torch = None
+
 
 @pytest.mark.skipif(torch is None, reason="torch not installed")
 def test_frequencyseries_to_torch():
@@ -25,10 +25,12 @@ def test_frequencyseries_to_torch():
     assert np.allclose(fs2.value, data)
     assert np.allclose(fs2.frequencies.value, fs.frequencies.value)
 
+
 try:
     import tensorflow as tf
 except ImportError:
     tf = None
+
 
 @pytest.mark.skipif(tf is None, reason="tensorflow not installed")
 def test_frequencyseries_to_tf():

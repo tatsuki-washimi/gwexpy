@@ -123,7 +123,7 @@ class TestStandardizeTimeSeries:
         ts = TimeSeries(data, dt=1.0 * u.s)
         ts_std, model = standardize_timeseries(ts, method="zscore")
 
-        assert ts_std.value.dtype.kind == 'f'  # float
+        assert ts_std.value.dtype.kind == "f"  # float
 
     def test_metadata_preserved(self):
         """Test that metadata is preserved."""
@@ -187,7 +187,9 @@ class TestStandardizeMatrix:
                 channel = mat_std.value[i, j, :]
                 assert np.abs(np.nanmedian(channel)) < 1e-10
                 mad = np.nanmedian(np.abs(channel - np.nanmedian(channel)))
-                assert np.abs(1.4826 * mad - 1.0) < 0.1  # Looser tolerance for small samples
+                assert (
+                    np.abs(1.4826 * mad - 1.0) < 0.1
+                )  # Looser tolerance for small samples
 
     def test_axis_channel_robust(self):
         """Test axis='channel' with robust method."""
@@ -227,7 +229,7 @@ class TestStandardizeMatrix:
 
         mat_std = standardize_matrix(mat, axis="time")
 
-        if hasattr(mat_std, 'unit') and mat_std.unit is not None:
+        if hasattr(mat_std, "unit") and mat_std.unit is not None:
             assert mat_std.unit == u.dimensionless_unscaled
 
     def test_invalid_method_raises(self):
@@ -357,7 +359,7 @@ class TestWhitenMatrix:
 
         mat_w, model = whiten_matrix(mat, method="pca")
 
-        if hasattr(mat_w, 'unit') and mat_w.unit is not None:
+        if hasattr(mat_w, "unit") and mat_w.unit is not None:
             assert mat_w.unit == u.dimensionless_unscaled
 
     def test_output_unit_dimensionless_zca(self):
@@ -368,7 +370,7 @@ class TestWhitenMatrix:
 
         mat_w, model = whiten_matrix(mat, method="zca")
 
-        if hasattr(mat_w, 'unit') and mat_w.unit is not None:
+        if hasattr(mat_w, "unit") and mat_w.unit is not None:
             assert mat_w.unit == u.dimensionless_unscaled
 
     def test_invalid_method_raises(self):

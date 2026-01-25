@@ -27,7 +27,7 @@ class TestSpectralSemantics:
         """10 seconds of white noise at 1024 Hz."""
         np.random.seed(42)
         data = np.random.randn(10240)
-        return TimeSeries(data, sample_rate=1024, unit='V')
+        return TimeSeries(data, sample_rate=1024, unit="V")
 
     def test_estimate_psd_returns_frequencyseries(self, noise_ts):
         """Test that estimate_psd returns FrequencySeries instance."""
@@ -39,7 +39,9 @@ class TestSpectralSemantics:
         psd = estimate_psd(noise_ts, fftlength=1.0)
         # PSD unit should be input_unit**2 / Hz
         expected_unit = u.V**2 / u.Hz
-        assert psd.unit.is_equivalent(expected_unit), f"Expected {expected_unit}, got {psd.unit}"
+        assert psd.unit.is_equivalent(expected_unit), (
+            f"Expected {expected_unit}, got {psd.unit}"
+        )
 
     def test_estimate_psd_frequency_axis_consistency(self, noise_ts):
         """Test that frequency axis is consistent with fftlength."""
@@ -63,19 +65,20 @@ class TestSpectralSemantics:
         data = np.random.randn(4096)
 
         # Test with different units
-        for input_unit in ['m', 's', 'V', 'm/s']:
+        for input_unit in ["m", "s", "V", "m/s"]:
             ts = TimeSeries(data, sample_rate=256, unit=input_unit)
             psd = estimate_psd(ts, fftlength=1.0)
 
-            expected_unit = u.Unit(input_unit)**2 / u.Hz
-            assert psd.unit.is_equivalent(expected_unit), \
+            expected_unit = u.Unit(input_unit) ** 2 / u.Hz
+            assert psd.unit.is_equivalent(expected_unit), (
                 f"For input {input_unit}, expected {expected_unit}, got {psd.unit}"
+            )
 
     def test_estimate_psd_methods(self, noise_ts):
         """Test different averaging methods produce valid results."""
         # Note: Only 'median' and 'welch' are registered in GWpy's PSD registry
         # 'mean' is not a valid method name
-        for method in ['median', 'welch']:
+        for method in ["median", "welch"]:
             psd = estimate_psd(noise_ts, fftlength=1.0, method=method)
             assert isinstance(psd, FrequencySeries)
             assert not np.isnan(psd.value).any()
@@ -86,7 +89,7 @@ class TestSpectralSemantics:
     def test_estimate_psd_spectrum_scaling(self, noise_ts):
         """Test that scaling='spectrum' returns V^2 (not V^2/Hz)."""
         # Scipy backend supports scaling='spectrum'
-        spec = estimate_psd(noise_ts, fftlength=1.0, scaling='spectrum')
+        spec = estimate_psd(noise_ts, fftlength=1.0, scaling="spectrum")
         # Unit should be V^2
         assert spec.unit == u.V**2
         assert not spec.unit.is_equivalent(u.V**2 / u.Hz)
@@ -98,6 +101,7 @@ class TestBootstrapSemantics:
     @pytest.fixture
     def dummy_spectrogram(self):
         """Create a dummy spectrogram for testing."""
+
         class DummySpectrogram:
             def __init__(self):
                 np.random.seed(42)
@@ -107,6 +111,7 @@ class TestBootstrapSemantics:
                 self.df = 8.0 * u.Hz
                 self.unit = u.V**2 / u.Hz
                 self.name = "test_spectrogram"
+
         return DummySpectrogram()
 
     def test_bootstrap_returns_frequencyseries(self, dummy_spectrogram):
@@ -123,8 +128,8 @@ class TestBootstrapSemantics:
         """Test that bootstrap result has error_low and error_high attributes."""
         result = bootstrap_spectrogram(dummy_spectrogram, n_boot=50)
 
-        assert hasattr(result, 'error_low')
-        assert hasattr(result, 'error_high')
+        assert hasattr(result, "error_low")
+        assert hasattr(result, "error_high")
         assert isinstance(result.error_low, FrequencySeries)
         assert isinstance(result.error_high, FrequencySeries)
 
@@ -140,20 +145,19 @@ class TestBootstrapSemantics:
         result = bootstrap_spectrogram(dummy_spectrogram, n_boot=50)
 
         np.testing.assert_array_equal(
-            result.frequencies.value,
-            dummy_spectrogram.frequencies.value
+            result.frequencies.value, dummy_spectrogram.frequencies.value
         )
 
     def test_bootstrap_methods_produce_different_results(self, dummy_spectrogram):
         """Test that median and mean methods produce different results."""
         np.random.seed(42)
         median_result = bootstrap_spectrogram(
-            dummy_spectrogram, n_boot=100, method='median'
+            dummy_spectrogram, n_boot=100, method="median"
         )
 
         np.random.seed(42)
         mean_result = bootstrap_spectrogram(
-            dummy_spectrogram, n_boot=100, method='mean'
+            dummy_spectrogram, n_boot=100, method="mean"
         )
 
         # Results should be different (though may be close for normal-ish data)
@@ -164,9 +168,7 @@ class TestBootstrapSemantics:
         """Test that rebin_width reduces the number of frequency bins."""
         original_nfreq = len(dummy_spectrogram.frequencies)
 
-        result = bootstrap_spectrogram(
-            dummy_spectrogram, n_boot=50, rebin_width=32.0
-        )
+        result = bootstrap_spectrogram(dummy_spectrogram, n_boot=50, rebin_width=32.0)
 
         # With rebinning, should have fewer frequency bins
         assert len(result.frequencies) < original_nfreq

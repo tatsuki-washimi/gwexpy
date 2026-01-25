@@ -12,10 +12,12 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
 def get_root():
     try:
         import ROOT
+
         ROOT.gROOT.SetBatch(True)
         return ROOT
     except ImportError:
         return None
+
 
 @pytest.fixture
 def ROOT():
@@ -23,6 +25,7 @@ def ROOT():
     if r is None:
         pytest.skip("ROOT (pyroot) not installed")
     return r
+
 
 def test_spectrogram_root(ROOT):
     times = np.linspace(0, 1, 10)
@@ -50,6 +53,7 @@ def test_spectrogram_root(ROOT):
     # Check if value matches
     assert np.allclose(spec3.value, spec.value)
 
+
 def test_timeseries_dict_root(ROOT, tmp_path):
     ts1 = TimeSeries([1, 2, 3], t0=0, dt=1, name="ch1")
     ts2 = TimeSeries([4, 5, 6], t0=0, dt=1, name="ch2")
@@ -70,6 +74,7 @@ def test_timeseries_dict_root(ROOT, tmp_path):
     assert isinstance(f.Get("L1"), ROOT.TGraph)
     f.Close()
 
+
 def test_timeseries_list_root(ROOT, tmp_path):
     ts1 = TimeSeries([1, 2], name="ts1")
     tsl = TimeSeriesList(ts1)
@@ -81,6 +86,7 @@ def test_timeseries_list_root(ROOT, tmp_path):
     assert f.Get("ts1")
     f.Close()
 
+
 def test_frequencyseries_dict_root(ROOT, tmp_path):
     fs1 = FrequencySeries([10, 20], frequencies=[1, 2], name="fs1")
     fsd = FrequencySeriesDict({"A": fs1})
@@ -91,6 +97,7 @@ def test_frequencyseries_dict_root(ROOT, tmp_path):
     f = ROOT.TFile.Open(filename)
     assert f.Get("A")
     f.Close()
+
 
 def test_spectrogram_dict_root(ROOT, tmp_path):
     times = np.linspace(0, 1, 5)

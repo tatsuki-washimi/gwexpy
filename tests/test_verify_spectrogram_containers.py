@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 from astropy import units as u
@@ -11,8 +10,9 @@ def create_mock_spectrogram(name="spec", shape=(10, 10)):
     # Create a 10x10 spectrogram
     # Time: 0 to 10s (dt=1), Freq: 0 to 100Hz (df=10)
     data = np.random.random(shape)
-    spec = Spectrogram(data, t0=0, dt=1, f0=0, df=10, unit='strain', name=name)
+    spec = Spectrogram(data, t0=0, dt=1, f0=0, df=10, unit="strain", name=name)
     return spec
+
 
 def test_spectrogram_list():
     s1 = create_mock_spectrogram("s1")
@@ -53,11 +53,11 @@ def test_spectrogram_list():
     assert len(mat.times) == 10
     assert mat.frequencies is not None
     assert len(mat.frequencies) == 10
-    assert mat.unit == u.Unit('strain')
+    assert mat.unit == u.Unit("strain")
 
     # Plot check (dry run) - skip if matplotlib not available
     matplotlib = pytest.importorskip("matplotlib")
-    matplotlib.use('Agg')
+    matplotlib.use("Agg")
     p = sl.plot()
     p.close()
 
@@ -70,25 +70,26 @@ def test_spectrogram_list():
     except ValueError:
         pass
 
+
 def test_spectrogram_dict():
     s1 = create_mock_spectrogram("s1")
     s2 = create_mock_spectrogram("s2")
 
-    sd = SpectrogramDict({'a': s1})
-    sd['b'] = s2
+    sd = SpectrogramDict({"a": s1})
+    sd["b"] = s2
 
     assert len(sd) == 2
 
     # Type check
     try:
-        sd['c'] = "invalid"
+        sd["c"] = "invalid"
         raise AssertionError("Type check failed")
     except TypeError:
-         pass
+        pass
 
     # Crop
     sd_cropped = sd.crop(2, 8)
-    assert sd_cropped['a'].times[0].value >= 2
+    assert sd_cropped["a"].times[0].value >= 2
 
     # Matrix
     mat = sd.to_matrix()

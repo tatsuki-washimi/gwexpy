@@ -35,7 +35,9 @@ def test_pyautogui_start_stop(qtbot, log_gui_action):
 
     start_btn = window.btn_start
     abort_btn = window.btn_abort
-    qtbot.waitUntil(lambda: start_btn.isVisible() and start_btn.isEnabled(), timeout=5000)
+    qtbot.waitUntil(
+        lambda: start_btn.isVisible() and start_btn.isEnabled(), timeout=5000
+    )
 
     def click_widget(widget, condition, timeout=5000):
         center = widget.mapToGlobal(widget.rect().center())

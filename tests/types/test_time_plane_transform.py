@@ -1,4 +1,3 @@
-
 import numpy as np
 from astropy import units as u
 
@@ -21,7 +20,7 @@ def test_basic_construction():
         axis_names=["time", "distance", "frequency"],
         axis0=times,
         axis1=ax1,
-        axis2=ax2
+        axis2=ax2,
     )
 
     tpt = TimePlaneTransform(data3d, kind="test_kind", meta={"a": 1})
@@ -39,6 +38,7 @@ def test_basic_construction():
     assert tpt.unit == u.m
     assert len(tpt.axes) == 3
 
+
 def test_plane_default_ordering():
     """
     Test plane() extraction with default ordering.
@@ -49,13 +49,15 @@ def test_plane_default_ordering():
     for t in range(3):
         for i in range(2):
             for j in range(4):
-                val[t, i, j] = t*100 + i*10 + j
+                val[t, i, j] = t * 100 + i * 10 + j
 
     times = [0, 1, 2] * u.s
     ax1 = [10, 20] * u.m
     ax2 = [1, 2, 3, 4] * u.Hz
 
-    data3d = Array3D(val, axis_names=["time", "ax1", "ax2"], axis0=times, axis1=ax1, axis2=ax2)
+    data3d = Array3D(
+        val, axis_names=["time", "ax1", "ax2"], axis0=times, axis1=ax1, axis2=ax2
+    )
     tpt = TimePlaneTransform(data3d)
 
     # Drop time at index 1 -> shape (2, 4)
@@ -71,6 +73,7 @@ def test_plane_default_ordering():
     # Check values: at t=1, val = 100 + i*10 + j
     expected = val[1, :, :]
     np.testing.assert_array_equal(p.value, expected)
+
 
 def test_plane_user_ordering():
     """
@@ -92,12 +95,13 @@ def test_plane_user_ordering():
     expected = val[0, :, :].T
     np.testing.assert_array_equal(p.value, expected)
 
+
 def test_at_time_nearest():
     """
     Test at_time method with nearest neighbor.
     """
     val = np.arange(3 * 2 * 2).reshape(3, 2, 2)
-    times = [0.0, 1.0, 2.0] * u.s # Regular
+    times = [0.0, 1.0, 2.0] * u.s  # Regular
 
     data3d = Array3D(val, axis_names=["time", "a", "b"], axis0=times)
     tpt = TimePlaneTransform(data3d)
@@ -113,6 +117,7 @@ def test_at_time_nearest():
     p0 = tpt.at_time(0.1 * u.s)
     np.testing.assert_array_equal(p0.value, val[0])
 
+
 def test_tuple_construction():
     """Test construction from tuple."""
     val = np.ones((2, 2, 2))
@@ -126,4 +131,3 @@ def test_tuple_construction():
     # Default names
     assert tpt.axes[1].name == "axis1"
     assert tpt.axes[2].name == "axis2"
-

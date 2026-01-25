@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 
@@ -6,7 +5,6 @@ from gwexpy.frequencyseries import FrequencySeries
 
 
 class TestSpectralInterop:
-
     def test_specutils_interop(self):
         """Test FrequencySeries <-> specutils.Spectrum1D conversion."""
         pytest.importorskip("specutils")
@@ -15,7 +13,7 @@ class TestSpectralInterop:
         # 1. Create FrequencySeries
         data = np.random.randn(100)
         frequencies = np.linspace(0, 100, 100)
-        fs = FrequencySeries(data, frequencies=frequencies, unit='V', name='test_spec')
+        fs = FrequencySeries(data, frequencies=frequencies, unit="V", name="test_spec")
 
         # 2. To Spectrum1D
         spec = fs.to_specutils()
@@ -34,7 +32,7 @@ class TestSpectralInterop:
         fs_rec = FrequencySeries.from_specutils(spec)
 
         assert isinstance(fs_rec, FrequencySeries)
-        np.testing.assert_allclose(fs_rec.value, data) # fs_rec.value is numpy array
+        np.testing.assert_allclose(fs_rec.value, data)  # fs_rec.value is numpy array
         np.testing.assert_allclose(fs_rec.frequencies.value, frequencies)
 
     def test_pyspeckit_interop(self):
@@ -45,7 +43,9 @@ class TestSpectralInterop:
         # 1. Create FrequencySeries
         data = np.random.randn(50)
         frequencies = np.linspace(0, 50, 50)
-        fs = FrequencySeries(data, frequencies=frequencies, unit='V', name='test_pyspeckit')
+        fs = FrequencySeries(
+            data, frequencies=frequencies, unit="V", name="test_pyspeckit"
+        )
 
         # 2. To pyspeckit
         sp = fs.to_pyspeckit()

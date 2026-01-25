@@ -97,9 +97,7 @@ class TestScalarFieldSliceMap2D:
 
     def test_slice_xy_plane(self, sample_field):
         """Test slicing XY plane keeps x and y axes."""
-        sliced = sample_field.slice_map2d(
-            "xy", at={"t": 0.5 * u.s, "z": 3.0 * u.m}
-        )
+        sliced = sample_field.slice_map2d("xy", at={"t": 0.5 * u.s, "z": 3.0 * u.m})
 
         # t and z should be length 1
         assert sliced.shape[0] == 1  # t
@@ -109,9 +107,7 @@ class TestScalarFieldSliceMap2D:
 
     def test_slice_xz_plane(self, sample_field):
         """Test slicing XZ plane keeps x and z axes."""
-        sliced = sample_field.slice_map2d(
-            "xz", at={"t": 0.5 * u.s, "y": 3.0 * u.m}
-        )
+        sliced = sample_field.slice_map2d("xz", at={"t": 0.5 * u.s, "y": 3.0 * u.m})
 
         assert sliced.shape[0] == 1  # t
         assert sliced.shape[1] == 8  # x (kept)
@@ -120,20 +116,16 @@ class TestScalarFieldSliceMap2D:
 
     def test_slice_tx_plane(self, sample_field):
         """Test slicing TX (time-space) plane."""
-        sliced = sample_field.slice_map2d(
-            "tx", at={"y": 3.0 * u.m, "z": 3.0 * u.m}
-        )
+        sliced = sample_field.slice_map2d("tx", at={"y": 3.0 * u.m, "z": 3.0 * u.m})
 
         assert sliced.shape[0] == 10  # t (kept)
-        assert sliced.shape[1] == 8   # x (kept)
-        assert sliced.shape[2] == 1   # y
-        assert sliced.shape[3] == 1   # z
+        assert sliced.shape[1] == 8  # x (kept)
+        assert sliced.shape[2] == 1  # y
+        assert sliced.shape[3] == 1  # z
 
     def test_slice_preserves_unit(self, sample_field):
         """Test that sliced ScalarField preserves unit."""
-        sliced = sample_field.slice_map2d(
-            "xy", at={"t": 0.5 * u.s, "z": 3.0 * u.m}
-        )
+        sliced = sample_field.slice_map2d("xy", at={"t": 0.5 * u.s, "z": 3.0 * u.m})
         assert sliced.unit == u.V
 
     def test_slice_auto_length1(self, sample_field):
@@ -172,9 +164,7 @@ class TestScalarFieldPlotMap2D:
         """Test that plot_map2d returns (fig, ax) tuple."""
         import matplotlib.pyplot as plt
 
-        fig, ax = sample_field.plot_map2d(
-            "xy", at={"t": 0.5 * u.s, "z": 3.0 * u.m}
-        )
+        fig, ax = sample_field.plot_map2d("xy", at={"t": 0.5 * u.s, "z": 3.0 * u.m})
 
         assert fig is not None
         assert ax is not None
@@ -208,9 +198,7 @@ class TestScalarFieldPlotMap2D:
         """Test that axes have labels with units."""
         import matplotlib.pyplot as plt
 
-        fig, ax = sample_field.plot_map2d(
-            "xy", at={"t": 0.5 * u.s, "z": 3.0 * u.m}
-        )
+        fig, ax = sample_field.plot_map2d("xy", at={"t": 0.5 * u.s, "z": 3.0 * u.m})
 
         xlabel = ax.get_xlabel()
         ylabel = ax.get_ylabel()
@@ -345,12 +333,22 @@ class TestScalarFieldDiff:
         z = np.arange(5) * 1.0 * u.m
 
         field1 = ScalarField(
-            data1, unit=u.V, axis0=times, axis1=x, axis2=y, axis3=z,
-            axis_names=["t", "x", "y", "z"]
+            data1,
+            unit=u.V,
+            axis0=times,
+            axis1=x,
+            axis2=y,
+            axis3=z,
+            axis_names=["t", "x", "y", "z"],
         )
         field2 = ScalarField(
-            data2, unit=u.V, axis0=times, axis1=x, axis2=y, axis3=z,
-            axis_names=["t", "x", "y", "z"]
+            data2,
+            unit=u.V,
+            axis0=times,
+            axis1=x,
+            axis2=y,
+            axis3=z,
+            axis_names=["t", "x", "y", "z"],
         )
         return field1, field2
 
@@ -414,8 +412,13 @@ class TestScalarFieldZscore:
         z = np.arange(4) * 1.0 * u.m
 
         return ScalarField(
-            data, unit=u.V, axis0=times, axis1=x, axis2=y, axis3=z,
-            axis_names=["t", "x", "y", "z"]
+            data,
+            unit=u.V,
+            axis0=times,
+            axis1=x,
+            axis2=y,
+            axis3=z,
+            axis_names=["t", "x", "y", "z"],
         )
 
     def test_zscore_is_dimensionless(self, sample_field):
@@ -458,8 +461,13 @@ class TestScalarFieldTimeStatMap:
         z = np.arange(4) * 1.0 * u.m
 
         return ScalarField(
-            data, unit=u.V, axis0=times, axis1=x, axis2=y, axis3=z,
-            axis_names=["t", "x", "y", "z"]
+            data,
+            unit=u.V,
+            axis0=times,
+            axis1=x,
+            axis2=y,
+            axis3=z,
+            axis_names=["t", "x", "y", "z"],
         )
 
     def test_mean_stat(self, sample_field):
@@ -476,9 +484,7 @@ class TestScalarFieldTimeStatMap:
 
     def test_t_range_selection(self, sample_field):
         """Test that t_range properly selects time subset."""
-        result = sample_field.time_stat_map(
-            stat="mean", t_range=(0.0 * u.s, 0.5 * u.s)
-        )
+        result = sample_field.time_stat_map(stat="mean", t_range=(0.0 * u.s, 0.5 * u.s))
         # Should still work and have valid result
         assert result.shape[0] == 1
 
@@ -499,8 +505,13 @@ class TestScalarFieldTimeSpaceMap:
         z = np.arange(4) * 1.0 * u.m
 
         return ScalarField(
-            data, unit=u.V, axis0=times, axis1=x, axis2=y, axis3=z,
-            axis_names=["t", "x", "y", "z"]
+            data,
+            unit=u.V,
+            axis0=times,
+            axis1=x,
+            axis2=y,
+            axis3=z,
+            axis_names=["t", "x", "y", "z"],
         )
 
     def test_time_space_map_shape(self, sample_field):
@@ -510,5 +521,5 @@ class TestScalarFieldTimeSpaceMap:
         )
 
         assert len(t_axis) == 10  # time axis length
-        assert len(x_axis) == 8   # x axis length
+        assert len(x_axis) == 8  # x axis length
         assert data.shape == (10, 8)  # (t, x)

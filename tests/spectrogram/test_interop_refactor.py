@@ -1,4 +1,3 @@
-
 import numpy as np
 
 from gwexpy.spectrogram import Spectrogram, SpectrogramMatrix
@@ -7,6 +6,7 @@ try:
     import torch  # noqa: F401 - availability check
 except ImportError:
     torch = None
+
 
 def test_spectrogram_interop():
     data = np.random.randn(10, 20)
@@ -18,6 +18,7 @@ def test_spectrogram_interop():
         assert tensor.shape == (10, 20)
         assert np.allclose(tensor.numpy(), data)
         print("Spectrogram to_torch passed")
+
 
 def test_spectrogram_matrix_interop():
     data = np.random.randn(2, 10, 20)
@@ -32,6 +33,7 @@ def test_spectrogram_matrix_interop():
         assert tensor.shape == (2, 10, 20)
         assert np.allclose(tensor.numpy(), data)
         print("SpectrogramMatrix to_torch passed")
+
 
 if __name__ == "__main__":
     test_spectrogram_interop()

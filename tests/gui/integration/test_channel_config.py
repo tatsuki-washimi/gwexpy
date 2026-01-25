@@ -39,8 +39,16 @@ def test_channel_selection_and_banking(qtbot, log_gui_action):
     assert refs[15][1].isChecked()
 
     # Find Bank Radio Buttons
-    radio_buttons = window.findChildren(QtCore.QObject, options=QtCore.Qt.FindChildrenRecursively)
-    banks_rb = [rb for rb in radio_buttons if isinstance(rb, QtCore.QObject) and hasattr(rb, "text") and "Channels" in rb.text()]
+    radio_buttons = window.findChildren(
+        QtCore.QObject, options=QtCore.Qt.FindChildrenRecursively
+    )
+    banks_rb = [
+        rb
+        for rb in radio_buttons
+        if isinstance(rb, QtCore.QObject)
+        and hasattr(rb, "text")
+        and "Channels" in rb.text()
+    ]
 
     # Find "Channels 16 to 31"
     rb16 = next(rb for rb in banks_rb if "16 to 31" in rb.text())

@@ -27,7 +27,7 @@ def test_simulation_partial_channels_update(qtbot, log_gui_action):
     logger.info("Selecting white_noise channel for measurement")
     new_channels = [{"name": "white_noise", "active": True}]
     window.meas_controls["set_all_channels"](new_channels)
-    window.meas_controls["bw"].setValue(1.0) # 1Hz BW = 1s FFT
+    window.meas_controls["bw"].setValue(1.0)  # 1Hz BW = 1s FFT
 
     # 3. Configure Traces in Graph 1
     # Trace 0: "white_noise" (Should update)
@@ -40,12 +40,12 @@ def test_simulation_partial_channels_update(qtbot, log_gui_action):
     # Configure Trace 0
     t0 = traces[0]
     t0["active"].setChecked(True)
-    t0["chan_a"].setCurrentText("white_noise") # Must match measurement
+    t0["chan_a"].setCurrentText("white_noise")  # Must match measurement
 
     # Configure Trace 1
     t1 = traces[1]
     t1["active"].setChecked(True)
-    t1["chan_a"].setCurrentText("MISSING_CHANNEL") # Not in measurement
+    t1["chan_a"].setCurrentText("MISSING_CHANNEL")  # Not in measurement
 
     # Ensure other traces are inactive
     for i in range(2, len(traces)):

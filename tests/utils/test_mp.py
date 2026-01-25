@@ -9,4 +9,3 @@ __all__ = [
     "test_multiprocess_with_queues_errors",
     "test_multiprocess_with_queues_raise",
 ]
-

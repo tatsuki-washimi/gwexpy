@@ -37,6 +37,7 @@ def test_fit_result_plot_includes_errorbars():
     assert ax.get_xscale() == "auto-gps"
     assert ax.get_xlabel() == ""
 
+
 def test_fit_result_plot_shows_full_data_and_fit_range_only():
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
@@ -50,7 +51,9 @@ def test_fit_result_plot_shows_full_data_and_fit_range_only():
     y = gaussian(t, A=10, mu=5, sigma=1) + np.random.normal(0, 0.1, len(t))
     ts = TimeSeries(y, times=t)
 
-    res = fit_series(ts, "gaus", x_range=(4, 6), sigma=0.5, p0={"A": 8, "mu": 4.5, "sigma": 1.5})
+    res = fit_series(
+        ts, "gaus", x_range=(4, 6), sigma=0.5, p0={"A": 8, "mu": 4.5, "sigma": 1.5}
+    )
 
     fig = Figure()
     FigureCanvas(fig)
@@ -80,7 +83,9 @@ def test_fit_result_bode_plot_includes_magnitude_errorbars():
     def cmodel(x, A, phi):
         return A * np.exp(1j * phi) * np.ones_like(x)
 
-    y = cmodel(f, 3.0, 0.3) + 0.05 * (np.random.normal(size=len(f)) + 1j * np.random.normal(size=len(f)))
+    y = cmodel(f, 3.0, 0.3) + 0.05 * (
+        np.random.normal(size=len(f)) + 1j * np.random.normal(size=len(f))
+    )
     fs = FrequencySeries(y, frequencies=f)
     res = fit_series(fs, cmodel, sigma=0.1, p0={"A": 1.0, "phi": 0.0})
 
@@ -110,7 +115,9 @@ def test_fit_result_bode_plot_shows_full_data_and_fit_range_only():
     def cmodel(x, A, phi):
         return A * np.exp(1j * phi) * np.ones_like(x)
 
-    y = cmodel(f, 3.0, 0.3) + 0.05 * (np.random.normal(size=len(f)) + 1j * np.random.normal(size=len(f)))
+    y = cmodel(f, 3.0, 0.3) + 0.05 * (
+        np.random.normal(size=len(f)) + 1j * np.random.normal(size=len(f))
+    )
     fs = FrequencySeries(y, frequencies=f)
 
     res = fit_series(fs, cmodel, x_range=(10, 20), sigma=0.1, p0={"A": 1.0, "phi": 0.0})

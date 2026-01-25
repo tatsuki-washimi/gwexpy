@@ -1,4 +1,5 @@
 """gwexpy.noise.colored - Power-law noise generation."""
+
 from __future__ import annotations
 
 from typing import Any

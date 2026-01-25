@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 from astropy import units as u
@@ -10,6 +9,7 @@ try:
     import xarray as xr
 except ImportError:
     xr = None
+
 
 @pytest.mark.skipif(xr is None, reason="xarray not installed")
 def test_xarray_interop():
