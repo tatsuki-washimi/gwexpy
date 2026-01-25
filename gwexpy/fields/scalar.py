@@ -98,9 +98,7 @@ class ScalarField(FieldBase):
             if fill < 0:
                 raise IndexError("Too many indices for 4D array")
             item = (
-                item[:ellipsis_idx]
-                + (slice(None),) * fill
-                + item[ellipsis_idx + 1 :]
+                item[:ellipsis_idx] + (slice(None),) * fill + item[ellipsis_idx + 1 :]
             )
 
         # Pad to length 4
@@ -221,6 +219,7 @@ class ScalarField(FieldBase):
             )
         # Check regularity using AxisDescriptor
         from ..types.axis import AxisDescriptor
+
         ax_desc = AxisDescriptor(axis_name, axis_index)
         if not ax_desc.regular:
             raise ValueError(
@@ -264,9 +263,7 @@ class ScalarField(FieldBase):
             )
 
         # Validate axis regularity and length
-        self._validate_axis_for_fft(
-            self._axis0_index, self._axis0_name, "time"
-        )
+        self._validate_axis_for_fft(self._axis0_index, self._axis0_name, "time")
 
         # Reject complex input (rfft expects real-valued signals)
         if np.iscomplexobj(self.value):
@@ -283,6 +280,7 @@ class ScalarField(FieldBase):
 
         # rfft along axis 0, normalized
         import scipy.fft as sp_fft
+
         dft = sp_fft.rfft(self.value, n=nfft, axis=0) / nfft
 
         # Multiply non-DC, non-Nyquist bins by 2 (one-sided spectrum correction)
@@ -359,9 +357,7 @@ class ScalarField(FieldBase):
             )
 
         # Validate axis regularity and length
-        self._validate_axis_for_fft(
-            self._axis0_index, self._axis0_name, "frequency"
-        )
+        self._validate_axis_for_fft(self._axis0_index, self._axis0_name, "frequency")
 
         if nout is None:
             nout = (self.shape[0] - 1) * 2
@@ -490,8 +486,7 @@ class ScalarField(FieldBase):
                 )
             if not ax_desc.regular:
                 raise ValueError(
-                    f"Axis '{ax_name}' is not uniformly spaced. "
-                    f"Cannot apply FFT."
+                    f"Axis '{ax_name}' is not uniformly spaced. Cannot apply FFT."
                 )
             # Check strict monotonicity
             diffs = np.diff(ax_desc.index.value)
@@ -508,6 +503,7 @@ class ScalarField(FieldBase):
             s = tuple(n)
 
         import scipy.fft as sp_fft
+
         if overwrite:
             # Create explicit copy to allow overwrite_x optimization
             # This avoids creating internal temporary buffers in sp_fft
@@ -631,6 +627,7 @@ class ScalarField(FieldBase):
             s = tuple(n)
 
         import scipy.fft as sp_fft
+
         if overwrite:
             work_data = self.value.copy()
             dift = sp_fft.ifftn(work_data, s=s, axes=target_axes_int, overwrite_x=True)
@@ -730,7 +727,9 @@ class ScalarField(FieldBase):
         with np.errstate(divide="ignore"):
             k_val = getattr(k_index, "value", k_index)
             wavelength_values = 2 * np.pi / np.abs(k_val)
-        return wavelength_values * (1 / getattr(k_index, "unit", u.dimensionless_unscaled))
+        return wavelength_values * (
+            1 / getattr(k_index, "unit", u.dimensionless_unscaled)
+        )
 
     # =========================================================================
     # Simulation
@@ -957,6 +956,7 @@ class ScalarField(FieldBase):
 
         # Return with units
         from astropy import units as u
+
         if hasattr(self, "unit") and self.unit is not None:
             values = data * self.unit
         else:
@@ -1180,14 +1180,19 @@ class ScalarField(FieldBase):
         # Plot
         if method == "pcolormesh":
             im = ax.pcolormesh(
-                x_coords, y_coords, data_2d,
-                vmin=vmin, vmax=vmax, cmap=cmap, **kwargs
+                x_coords, y_coords, data_2d, vmin=vmin, vmax=vmax, cmap=cmap, **kwargs
             )
         elif method == "imshow":
             extent = [x_coords[0], x_coords[-1], y_coords[0], y_coords[-1]]
             im = ax.imshow(
-                data_2d, extent=extent, origin="lower", aspect="auto",
-                vmin=vmin, vmax=vmax, cmap=cmap, **kwargs
+                data_2d,
+                extent=extent,
+                origin="lower",
+                aspect="auto",
+                vmin=vmin,
+                vmax=vmax,
+                cmap=cmap,
+                **kwargs,
             )
         else:
             raise ValueError(
@@ -1378,9 +1383,7 @@ class ScalarField(FieldBase):
         from astropy import units as u
 
         if self.shape != other.shape:
-            raise ValueError(
-                f"Shape mismatch: {self.shape} vs {other.shape}"
-            )
+            raise ValueError(f"Shape mismatch: {self.shape} vs {other.shape}")
 
         valid_modes = ("diff", "ratio", "percent")
         if mode not in valid_modes:
@@ -1462,7 +1465,7 @@ class ScalarField(FieldBase):
             if i_start > i_end:
                 i_start, i_end = i_end, i_start
 
-            baseline_data = self.value[i_start:i_end + 1, ...]
+            baseline_data = self.value[i_start : i_end + 1, ...]
 
         # Compute mean and std along time axis
         mean = np.mean(baseline_data, axis=0, keepdims=True)
@@ -1543,7 +1546,7 @@ class ScalarField(FieldBase):
         elif stat == "std":
             result_data = np.std(data, axis=0, keepdims=True)
         elif stat == "rms":
-            result_data = np.sqrt(np.mean(data ** 2, axis=0, keepdims=True))
+            result_data = np.sqrt(np.mean(data**2, axis=0, keepdims=True))
         elif stat == "max":
             result_data = np.max(data, axis=0, keepdims=True)
         elif stat == "min":
@@ -1727,17 +1730,30 @@ class ScalarField(FieldBase):
         # Plot
         if method == "pcolormesh":
             im = ax.pcolormesh(
-                space_axis.value, t_axis.value, data_2d,
-                vmin=vmin, vmax=vmax, cmap=cmap, **kwargs
+                space_axis.value,
+                t_axis.value,
+                data_2d,
+                vmin=vmin,
+                vmax=vmax,
+                cmap=cmap,
+                **kwargs,
             )
         elif method == "imshow":
             extent = [
-                space_axis.value[0], space_axis.value[-1],
-                t_axis.value[0], t_axis.value[-1]
+                space_axis.value[0],
+                space_axis.value[-1],
+                t_axis.value[0],
+                t_axis.value[-1],
             ]
             im = ax.imshow(
-                data_2d, extent=extent, origin="lower", aspect="auto",
-                vmin=vmin, vmax=vmax, cmap=cmap, **kwargs
+                data_2d,
+                extent=extent,
+                origin="lower",
+                aspect="auto",
+                vmin=vmin,
+                vmax=vmax,
+                cmap=cmap,
+                **kwargs,
             )
         else:
             raise ValueError(f"Unknown method '{method}'.")
@@ -1841,7 +1857,7 @@ class ScalarField(FieldBase):
 
         # Use scipy.signal.resample for efficient array resampling
         # We need to compute the new number of samples
-        dt = (self._axis0_index[1] - self._axis0_index[0])
+        dt = self._axis0_index[1] - self._axis0_index[0]
         if hasattr(rate, "to"):
             new_fs = rate.to("Hz").value
             new_dt = (1.0 / new_fs) * u.s
@@ -1853,9 +1869,12 @@ class ScalarField(FieldBase):
         new_nt = int(round(duration * new_fs))
 
         import scipy.signal
+
         new_data_2d = scipy.signal.resample(data_2d, new_nt, axis=0)
 
-        new_times = np.arange(new_nt) * (1.0 / new_fs) * new_dt.unit + self._axis0_index[0]
+        new_times = (
+            np.arange(new_nt) * (1.0 / new_fs) * new_dt.unit + self._axis0_index[0]
+        )
 
         # Reshape back
         new_shape = [new_nt] + list(orig_shape[1:])
@@ -1888,7 +1907,6 @@ class ScalarField(FieldBase):
         if self._axis0_domain != "time":
             raise ValueError("filter requires axis0_domain='time'")
 
-
         # Reshape to (time, points)
         orig_shape = self.shape
         data_2d = self.value.reshape(orig_shape[0], -1)
@@ -1901,18 +1919,26 @@ class ScalarField(FieldBase):
 
         form, filt = filter_design.parse_filter(
             args,
-            analog=kwargs.pop('analog', False),
+            analog=kwargs.pop("analog", False),
             sample_rate=fs,
         )
         filtfilt = kwargs.pop("filtfilt", True)  # Default to True for phase consistency
 
         # Apply filter along axis 0
-        if form == 'zpk':
+        if form == "zpk":
             sos = scipy_signal.zpk2sos(*filt)
-            new_data_2d = scipy_signal.sosfiltfilt(sos, data_2d, axis=0) if filtfilt else scipy_signal.sosfilt(sos, data_2d, axis=0)
+            new_data_2d = (
+                scipy_signal.sosfiltfilt(sos, data_2d, axis=0)
+                if filtfilt
+                else scipy_signal.sosfilt(sos, data_2d, axis=0)
+            )
         else:
             b, a = filt
-            new_data_2d = scipy_signal.filtfilt(b, a, data_2d, axis=0) if filtfilt else scipy_signal.lfilter(b, a, data_2d, axis=0)
+            new_data_2d = (
+                scipy_signal.filtfilt(b, a, data_2d, axis=0)
+                if filtfilt
+                else scipy_signal.lfilter(b, a, data_2d, axis=0)
+            )
 
         # Reshape back
         return ScalarField(
@@ -2093,6 +2119,7 @@ class ScalarField(FieldBase):
         """
         if "point_or_region" in kwargs:
             from .signal import compute_psd
+
             point_or_region = kwargs.pop("point_or_region")
             return compute_psd(self, point_or_region, **kwargs)
 

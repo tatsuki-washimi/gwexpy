@@ -39,7 +39,6 @@ class Polynomial(Model):
         return res
 
 
-
 def gaussian(x, A, mu, sigma):
     """
     Gaussian distribution.

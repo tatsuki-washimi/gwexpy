@@ -848,8 +848,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         # Validate results
         if imfs_array is None or imfs_array.shape[0] == 0:
             raise ValueError(
-                "EMD decomposition returned no IMFs. "
-                "Check input signal quality."
+                "EMD decomposition returned no IMFs. Check input signal quality."
             )
 
         n_imfs = imfs_array.shape[0]
@@ -883,6 +882,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
                 )
             else:
                 import warnings
+
                 warnings.warn(
                     "Residual requested but not available from decomposer. "
                     "The 'residual' key will not be included in output.",
@@ -1148,9 +1148,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
 
         # Validate if_policy
         if if_policy not in ("drop", "clip"):
-            raise ValueError(
-                f"Unknown if_policy: {if_policy!r}. Use 'drop' or 'clip'."
-            )
+            raise ValueError(f"Unknown if_policy: {if_policy!r}. Use 'drop' or 'clip'.")
 
         imfs = self.emd(method=emd_method, **emd_kwargs)
         from .collections import TimeSeriesDict
@@ -1249,9 +1247,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
             # Digitize IF values into frequency bins
             if if_policy == "clip":
                 # Clip IF to valid range before digitizing
-                if_clipped = np.clip(
-                    if_stack, freq_bins_arr[0], freq_bins_arr[-1]
-                )
+                if_clipped = np.clip(if_stack, freq_bins_arr[0], freq_bins_arr[-1])
                 inds = np.digitize(if_clipped, freq_bins_arr) - 1
                 # digitize returns n_bins for values == freq_bins_arr[-1]
                 inds = np.clip(inds, 0, actual_n_bins - 1)
@@ -1262,17 +1258,15 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
 
             # Compute weights
             if weight == "ia2":
-                weights_stack = ia_stack ** 2
-                out_unit = self.unit ** 2
+                weights_stack = ia_stack**2
+                out_unit = self.unit**2
                 weight_label = "power"
             elif weight == "ia":
                 weights_stack = ia_stack
                 out_unit = self.unit
                 weight_label = "amplitude"
             else:
-                raise ValueError(
-                    f"Unknown weight: {weight}. Use 'ia2' or 'ia'."
-                )
+                raise ValueError(f"Unknown weight: {weight}. Use 'ia2' or 'ia'.")
 
             # Build the spectrogram grid
             grid = np.zeros((n_time, actual_n_bins))
@@ -1295,9 +1289,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
                 times=self.times,
                 frequencies=u.Quantity(freq_centers, "Hz"),
                 unit=out_unit,
-                name=(self.name + " " + name_suffix)
-                if self.name
-                else name_suffix,
+                name=(self.name + " " + name_suffix) if self.name else name_suffix,
                 channel=self.channel,
                 epoch=self.epoch,
             )

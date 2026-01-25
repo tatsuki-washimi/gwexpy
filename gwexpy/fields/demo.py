@@ -100,17 +100,11 @@ def make_demo_scalar_field(
     rng = np.random.default_rng(seed)
 
     if pattern == "gaussian":
-        data = _generate_propagating_gaussian(
-            times, x, y, z, rng, **kwargs
-        )
+        data = _generate_propagating_gaussian(times, x, y, z, rng, **kwargs)
     elif pattern == "sine":
-        data = _generate_sinusoidal_wave(
-            times, x, y, z, rng, **kwargs
-        )
+        data = _generate_sinusoidal_wave(times, x, y, z, rng, **kwargs)
     elif pattern == "standing":
-        data = _generate_standing_wave(
-            times, x, y, z, rng, **kwargs
-        )
+        data = _generate_standing_wave(times, x, y, z, rng, **kwargs)
     elif pattern == "noise":
         data = rng.standard_normal((nt, nx, ny, nz))
     else:
@@ -243,7 +237,7 @@ def _generate_sinusoidal_wave(
     zz = z.to_value(u.m)
 
     # Meshgrid for spatial coordinates
-    X, Y, Z = np.meshgrid(xx, yy, zz, indexing='ij')
+    X, Y, Z = np.meshgrid(xx, yy, zz, indexing="ij")
     kr = k_vec[0] * X + k_vec[1] * Y + k_vec[2] * Z
 
     data = np.zeros((nt, nx, ny, nz))
@@ -279,13 +273,13 @@ def _generate_standing_wave(
 
     # Coordinate values (normalized to [0, 1] range for modes)
     tt = times.to_value(u.s)
-    x_norm = (x.to_value(u.m) - x[0].to_value(u.m))
+    x_norm = x.to_value(u.m) - x[0].to_value(u.m)
     if len(x) > 1:
         x_norm = x_norm / (x[-1].to_value(u.m) - x[0].to_value(u.m))
-    y_norm = (y.to_value(u.m) - y[0].to_value(u.m))
+    y_norm = y.to_value(u.m) - y[0].to_value(u.m)
     if len(y) > 1:
         y_norm = y_norm / (y[-1].to_value(u.m) - y[0].to_value(u.m))
-    z_norm = (z.to_value(u.m) - z[0].to_value(u.m))
+    z_norm = z.to_value(u.m) - z[0].to_value(u.m)
     if len(z) > 1:
         z_norm = z_norm / (z[-1].to_value(u.m) - z[0].to_value(u.m))
 
@@ -295,7 +289,7 @@ def _generate_standing_wave(
     Z_mode = np.sin(np.pi * mode_z * z_norm) if mode_z > 0 else np.ones(nz)
 
     # Outer product for spatial pattern
-    spatial = np.einsum('i,j,k->ijk', X_mode, Y_mode, Z_mode)
+    spatial = np.einsum("i,j,k->ijk", X_mode, Y_mode, Z_mode)
 
     # Time evolution
     data = np.zeros((nt, nx, ny, nz))

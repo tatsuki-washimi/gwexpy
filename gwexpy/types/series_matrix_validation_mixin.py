@@ -59,9 +59,7 @@ class SeriesMatrixValidationMixin:
         else:
             return 0
 
-    def is_contiguous_exact(
-        self, other: Any, tol: float = 1 / 2.0**18
-    ) -> int:
+    def is_contiguous_exact(self, other: Any, tol: float = 1 / 2.0**18) -> int:
         """Check contiguity with strict shape matching."""
         if self._value.shape != other._value.shape:
             raise ValueError(
@@ -102,7 +100,10 @@ class SeriesMatrixValidationMixin:
                 lhs = lhs.to_value(base_unit)
                 rhs = rhs.to_value(base_unit)
             except (u.UnitConversionError, AttributeError):
-                logger.debug("Automatic xindex conversion failed, using raw values.", exc_info=True)
+                logger.debug(
+                    "Automatic xindex conversion failed, using raw values.",
+                    exc_info=True,
+                )
                 pass
         try:
             equal = np.array_equal(lhs, rhs)

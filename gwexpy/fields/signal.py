@@ -286,9 +286,9 @@ def spectral_density(
     freq_unit = 1 / delta_unit
     if field.unit is not None:
         if scaling == "density":
-            psd_unit = field.unit ** 2 / freq_unit
+            psd_unit = field.unit**2 / freq_unit
         else:
-            psd_unit = field.unit ** 2
+            psd_unit = field.unit**2
     else:
         psd_unit = u.dimensionless_unscaled
 
@@ -298,9 +298,7 @@ def spectral_density(
     # Determine new axis names and domains
     if axis_int == 0:
         new_axis0_domain = "frequency"
-        new_axis_names = [
-            "f", field._axis1_name, field._axis2_name, field._axis3_name
-        ]
+        new_axis_names = ["f", field._axis1_name, field._axis2_name, field._axis3_name]
         new_space_domains = dict(field._space_domains)
         new_axes = {
             0: freq_axis,
@@ -489,9 +487,9 @@ def compute_psd(
         # Determine PSD unit
         if field.unit is not None:
             if scaling == "density":
-                psd_unit = field.unit ** 2 / freq_unit
+                psd_unit = field.unit**2 / freq_unit
             else:  # spectrum
-                psd_unit = field.unit ** 2
+                psd_unit = field.unit**2
         else:
             psd_unit = u.dimensionless_unscaled
 
@@ -713,9 +711,9 @@ def freq_space_map(
     # Determine unit
     if field.unit is not None:
         if scaling == "density":
-            psd_unit = field.unit ** 2 / freq_unit
+            psd_unit = field.unit**2 / freq_unit
         else:
-            psd_unit = field.unit ** 2
+            psd_unit = field.unit**2
     else:
         psd_unit = u.dimensionless_unscaled
 
@@ -816,7 +814,7 @@ def compute_xcorr(
 
     # Normalize
     if normalize:
-        norm = np.sqrt(np.sum(data_a ** 2) * np.sum(data_b ** 2))
+        norm = np.sqrt(np.sum(data_a**2) * np.sum(data_b**2))
         if norm > 0:
             corr = corr / norm
 
@@ -848,7 +846,7 @@ def compute_xcorr(
     return TimeSeries(
         corr,
         times=lag_times,
-        unit=u.dimensionless_unscaled if normalize else field.unit ** 2,
+        unit=u.dimensionless_unscaled if normalize else field.unit**2,
         name="xcorr",
     )
 
@@ -1001,7 +999,7 @@ def time_delay_map(
             # Cross-correlation
             corr = correlate(ref_data, data, mode="full")
             if normalize:
-                norm = np.sqrt(np.sum(ref_data ** 2) * np.sum(data ** 2))
+                norm = np.sqrt(np.sum(ref_data**2) * np.sum(data**2))
                 if norm > 0:
                     corr = corr / norm
 
@@ -1181,8 +1179,7 @@ def coherence_map(
     )
     test_data = field.value[tuple(test_slices)]
     freqs, _ = coherence(
-        ref_data, test_data, fs=fs, window=window,
-        nperseg=nperseg, noverlap=noverlap
+        ref_data, test_data, fs=fs, window=window, nperseg=nperseg, noverlap=noverlap
     )
 
     n_freq = len(freqs)
@@ -1196,8 +1193,7 @@ def coherence_map(
             data = field.value[tuple(slices)]
 
             _, cxy = coherence(
-                ref_data, data, fs=fs, window=window,
-                nperseg=nperseg, noverlap=noverlap
+                ref_data, data, fs=fs, window=window, nperseg=nperseg, noverlap=noverlap
             )
             coh_3d[:, i1, i2] = cxy
 

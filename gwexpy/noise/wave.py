@@ -626,7 +626,9 @@ def chirp(
         t1 = duration
 
     t = _get_times(duration, sample_rate)
-    data = amplitude * scipy_signal.chirp(t, f0, t1, f1, method=method, phi=np.degrees(phase))
+    data = amplitude * scipy_signal.chirp(
+        t, f0, t1, f1, method=method, phi=np.degrees(phase)
+    )
 
     return _make_timeseries(data, sample_rate, t0, unit, name, channel)
 

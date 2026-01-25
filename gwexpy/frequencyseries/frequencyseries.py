@@ -66,7 +66,7 @@ class FrequencySeries(
         arguments for the parent FrequencySeries constructor.
         """
         # Remove noise-generation parameters that shouldn't be passed to parent
-        for key in ['fmin', 'fmax']:
+        for key in ["fmin", "fmax"]:
             kwargs.pop(key, None)
 
         return super().__new__(cls, *args, **kwargs)

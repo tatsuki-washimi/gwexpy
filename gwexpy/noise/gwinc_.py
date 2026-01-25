@@ -169,7 +169,9 @@ def from_pygwinc(
 
     # If there are still problematic keys, print them (will show up in sphinx-build output/logs)
     if any(k in kwargs for k in ["fmin", "fmax", "df"]):
-        print(f"CRITICAL: Key found in kwargs even after pop: {[k for k in ['fmin', 'fmax', 'df'] if k in kwargs]}")
+        print(
+            f"CRITICAL: Key found in kwargs even after pop: {[k for k in ['fmin', 'fmax', 'df'] if k in kwargs]}"
+        )
 
     return FrequencySeries(
         asd, frequencies=frequencies, unit=unit, name=model, **kwargs

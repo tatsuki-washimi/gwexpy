@@ -426,7 +426,6 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         >>> # Find fundamental period from peak in cepstrum
         """
         try:
-
             import scipy.fft
         except ImportError:
             raise ImportError("scipy is required for cepstrum.")

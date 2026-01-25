@@ -130,18 +130,24 @@ class Array4D(Array):
         copy_attr("_axis2_name", "axis2")
         copy_attr("_axis3_name", "axis3")
 
-        if self.ndim >= 1: # Always check axis 0 if dimension exists
+        if self.ndim >= 1:  # Always check axis 0 if dimension exists
             val = getattr(obj, "_axis0_index", None)
             current = getattr(self, "_axis0_index", None)
 
-            if val is not None and getattr(obj, "ndim", 0) >= 1 and obj.shape[0] == self.shape[0]:
-                 # Force copy if self is default or None?
-                 if current is None:
-                     self._axis0_index = val
-                 # Also overwrite if current is dimensionless (default) and val has unit
-                 elif hasattr(current, 'unit') and current.unit == dimensionless_unscaled:
-                     if hasattr(val, 'unit') and val.unit != dimensionless_unscaled:
-                         self._axis0_index = val
+            if (
+                val is not None
+                and getattr(obj, "ndim", 0) >= 1
+                and obj.shape[0] == self.shape[0]
+            ):
+                # Force copy if self is default or None?
+                if current is None:
+                    self._axis0_index = val
+                # Also overwrite if current is dimensionless (default) and val has unit
+                elif (
+                    hasattr(current, "unit") and current.unit == dimensionless_unscaled
+                ):
+                    if hasattr(val, "unit") and val.unit != dimensionless_unscaled:
+                        self._axis0_index = val
 
             # Default fallback
             if getattr(self, "_axis0_index", None) is None:
@@ -151,12 +157,18 @@ class Array4D(Array):
             val = getattr(obj, "_axis1_index", None)
             current = getattr(self, "_axis1_index", None)
 
-            if val is not None and getattr(obj, "ndim", 0) >= 2 and obj.shape[1] == self.shape[1]:
-                 if current is None:
-                     self._axis1_index = val
-                 elif hasattr(current, 'unit') and current.unit == dimensionless_unscaled:
-                     if hasattr(val, 'unit') and val.unit != dimensionless_unscaled:
-                         self._axis1_index = val
+            if (
+                val is not None
+                and getattr(obj, "ndim", 0) >= 2
+                and obj.shape[1] == self.shape[1]
+            ):
+                if current is None:
+                    self._axis1_index = val
+                elif (
+                    hasattr(current, "unit") and current.unit == dimensionless_unscaled
+                ):
+                    if hasattr(val, "unit") and val.unit != dimensionless_unscaled:
+                        self._axis1_index = val
 
             if getattr(self, "_axis1_index", None) is None:
                 self._axis1_index = np.arange(self.shape[1]) * dimensionless_unscaled
@@ -165,12 +177,18 @@ class Array4D(Array):
             val = getattr(obj, "_axis2_index", None)
             current = getattr(self, "_axis2_index", None)
 
-            if val is not None and getattr(obj, "ndim", 0) >= 3 and obj.shape[2] == self.shape[2]:
-                 if current is None:
-                     self._axis2_index = val
-                 elif hasattr(current, 'unit') and current.unit == dimensionless_unscaled:
-                     if hasattr(val, 'unit') and val.unit != dimensionless_unscaled:
-                         self._axis2_index = val
+            if (
+                val is not None
+                and getattr(obj, "ndim", 0) >= 3
+                and obj.shape[2] == self.shape[2]
+            ):
+                if current is None:
+                    self._axis2_index = val
+                elif (
+                    hasattr(current, "unit") and current.unit == dimensionless_unscaled
+                ):
+                    if hasattr(val, "unit") and val.unit != dimensionless_unscaled:
+                        self._axis2_index = val
 
             if getattr(self, "_axis2_index", None) is None:
                 self._axis2_index = np.arange(self.shape[2]) * dimensionless_unscaled
@@ -179,12 +197,18 @@ class Array4D(Array):
             val = getattr(obj, "_axis3_index", None)
             current = getattr(self, "_axis3_index", None)
 
-            if val is not None and getattr(obj, "ndim", 0) >= 4 and obj.shape[3] == self.shape[3]:
-                 if current is None:
-                     self._axis3_index = val
-                 elif hasattr(current, 'unit') and current.unit == dimensionless_unscaled:
-                     if hasattr(val, 'unit') and val.unit != dimensionless_unscaled:
-                         self._axis3_index = val
+            if (
+                val is not None
+                and getattr(obj, "ndim", 0) >= 4
+                and obj.shape[3] == self.shape[3]
+            ):
+                if current is None:
+                    self._axis3_index = val
+                elif (
+                    hasattr(current, "unit") and current.unit == dimensionless_unscaled
+                ):
+                    if hasattr(val, "unit") and val.unit != dimensionless_unscaled:
+                        self._axis3_index = val
 
             if getattr(self, "_axis3_index", None) is None:
                 self._axis3_index = np.arange(self.shape[3]) * dimensionless_unscaled

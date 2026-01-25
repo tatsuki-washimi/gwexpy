@@ -91,7 +91,9 @@ class VectorField(FieldDict):
 
         if sq_sum is None:
             # Should be unreachable given 'if not self' check
-            raise ValueError("Unexpected error: no components processed for norm computation")
+            raise ValueError(
+                "Unexpected error: no components processed for norm computation"
+            )
 
         # Reconstruction using metadata from the first component
         first = next(iter(self.values()))
@@ -135,7 +137,7 @@ class VectorField(FieldDict):
                 res_field += prod
 
         if res_field is None:
-             raise ValueError("Cannot compute dot product of empty VectorField")
+            raise ValueError("Cannot compute dot product of empty VectorField")
 
         return res_field
 
@@ -154,7 +156,9 @@ class VectorField(FieldDict):
         """
         xyz = {"x", "y", "z"}
         if set(self.keys()) != xyz or set(other.keys()) != xyz:
-            raise ValueError("cross product is only defined for 3-component (x, y, z) VectorFields")
+            raise ValueError(
+                "cross product is only defined for 3-component (x, y, z) VectorFields"
+            )
 
         # [AyBz - AzBy, AzBx - AxBz, AxBy - AyBx]
         ax, ay, az = self["x"], self["y"], self["z"]
@@ -226,7 +230,7 @@ class VectorField(FieldDict):
             first_field._axis0_name,
             first_field._axis1_name,
             first_field._axis2_name,
-            first_field._axis3_name
+            first_field._axis3_name,
         ]
 
         slice_kwargs = {}
@@ -237,7 +241,9 @@ class VectorField(FieldDict):
             else:
                 plot_kwargs[k] = v
 
-        fp.add_vector(self, x=x, y=y, mode='quiver', slice_kwargs=slice_kwargs, **plot_kwargs)
+        fp.add_vector(
+            self, x=x, y=y, mode="quiver", slice_kwargs=slice_kwargs, **plot_kwargs
+        )
         return fp
 
     def streamline(self, x=None, y=None, **kwargs):
@@ -261,7 +267,7 @@ class VectorField(FieldDict):
             first_field._axis0_name,
             first_field._axis1_name,
             first_field._axis2_name,
-            first_field._axis3_name
+            first_field._axis3_name,
         ]
 
         slice_kwargs = {}
@@ -272,7 +278,9 @@ class VectorField(FieldDict):
             else:
                 plot_kwargs[k] = v
 
-        fp.add_vector(self, x=x, y=y, mode='streamline', slice_kwargs=slice_kwargs, **plot_kwargs)
+        fp.add_vector(
+            self, x=x, y=y, mode="streamline", slice_kwargs=slice_kwargs, **plot_kwargs
+        )
         return fp
 
     def plot(self, x=None, y=None, **kwargs):
@@ -293,7 +301,7 @@ class VectorField(FieldDict):
             first_field._axis0_name,
             first_field._axis1_name,
             first_field._axis2_name,
-            first_field._axis3_name
+            first_field._axis3_name,
         ]
 
         slice_kwargs = {}
@@ -312,12 +320,14 @@ class VectorField(FieldDict):
         fp.add_scalar(norm_field, x=x, y=y, slice_kwargs=slice_kwargs, **plot_kwargs)
 
         # Add vector quiver (black by default for visibility)
-        quiver_args = {'color': 'white', 'alpha': 0.7} # white arrows on colored map
+        quiver_args = {"color": "white", "alpha": 0.7}  # white arrows on colored map
 
         # If user passed stride for quiver, extract it
-        if 'stride' in plot_kwargs:
-            quiver_args['stride'] = plot_kwargs['stride']
+        if "stride" in plot_kwargs:
+            quiver_args["stride"] = plot_kwargs["stride"]
 
-        fp.add_vector(self, x=x, y=y, mode='quiver', slice_kwargs=slice_kwargs, **quiver_args)
+        fp.add_vector(
+            self, x=x, y=y, mode="quiver", slice_kwargs=slice_kwargs, **quiver_args
+        )
 
         return fp

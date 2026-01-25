@@ -129,7 +129,12 @@ class SpectralAccumulator:
 
                 # 2. Update Processing Buffer
                 if ch not in self.buffers:
-                    self.buffers[ch] = {"data": [], "dt": dt, "t0": t0, "current_len": 0}
+                    self.buffers[ch] = {
+                        "data": [],
+                        "dt": dt,
+                        "t0": t0,
+                        "current_len": 0,
+                    }
 
                 buf = self.buffers[ch]
                 buf["data"].append(data)

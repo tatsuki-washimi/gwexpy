@@ -40,7 +40,6 @@ class SpectrogramMatrix(
     resources still require higher-level I/O (e.g., HDF5) for full fidelity.
     """
 
-
     series_class = Spectrogram
     dict_class = SpectrogramDict
     list_class = SpectrogramList
@@ -202,8 +201,12 @@ class SpectrogramMatrix(
         # Identify ufunc category for unit handling
         _ADD_SUB_UFUNCS = {np.add, np.subtract}
         _COMPARISON_UFUNCS = {
-            np.less, np.less_equal, np.equal, np.not_equal,
-            np.greater, np.greater_equal
+            np.less,
+            np.less_equal,
+            np.equal,
+            np.not_equal,
+            np.greater,
+            np.greater_equal,
         }
         _MUL_DIV_UFUNCS = {np.multiply, np.divide, np.floor_divide, np.true_divide}
 
@@ -259,15 +262,20 @@ class SpectrogramMatrix(
 
                 for idx in np.ndindex(meta_shape):
                     old_meta = main.meta[idx]
-                    old_unit = old_meta.unit if old_meta.unit else u.dimensionless_unscaled
+                    old_unit = (
+                        old_meta.unit if old_meta.unit else u.dimensionless_unscaled
+                    )
 
                     try:
                         # Apply ufunc to units
-                        q_result = ufunc(
-                            u.Quantity(1, old_unit),
-                            u.Quantity(1, scalar_unit)
-                        ) if len(inputs) == 2 else ufunc(u.Quantity(1, old_unit))
-                        new_unit = q_result.unit if hasattr(q_result, "unit") else old_unit
+                        q_result = (
+                            ufunc(u.Quantity(1, old_unit), u.Quantity(1, scalar_unit))
+                            if len(inputs) == 2
+                            else ufunc(u.Quantity(1, old_unit))
+                        )
+                        new_unit = (
+                            q_result.unit if hasattr(q_result, "unit") else old_unit
+                        )
                     except (TypeError, ValueError, u.UnitConversionError):
                         new_unit = old_unit
 
@@ -314,7 +322,9 @@ class SpectrogramMatrix(
                             # Default: try to compute
                             try:
                                 q_result = ufunc(u.Quantity(1, u1), u.Quantity(1, u2))
-                                new_unit = q_result.unit if hasattr(q_result, "unit") else u1
+                                new_unit = (
+                                    q_result.unit if hasattr(q_result, "unit") else u1
+                                )
                             except (TypeError, ValueError, u.UnitConversionError) as e:
                                 if isinstance(e, u.UnitConversionError):
                                     raise

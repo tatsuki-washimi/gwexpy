@@ -94,7 +94,9 @@ class FrequencySeriesMatrixAnalysisMixin:
 
         return fdfilter(self, *filt, **kwargs)
 
-    def apply_response(self: _FrequencySeriesMatrixLike, response: Any, inplace: bool = False) -> Any:
+    def apply_response(
+        self: _FrequencySeriesMatrixLike, response: Any, inplace: bool = False
+    ) -> Any:
         """
         Apply a complex frequency response to the matrix.
 
@@ -119,7 +121,10 @@ class FrequencySeriesMatrixAnalysisMixin:
             return self * h
 
     def smooth(
-        self: _FrequencySeriesMatrixLike, width: int, method: str = "amplitude", ignore_nan: bool = True
+        self: _FrequencySeriesMatrixLike,
+        width: int,
+        method: str = "amplitude",
+        ignore_nan: bool = True,
     ) -> Any:
         """
         Smooth the frequency series matrix along the frequency axis.

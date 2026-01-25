@@ -114,7 +114,7 @@ def convert_scipy_to_dtt(psd, window, is_one_sided=True):
     # DTT_Scale = (sum_w^2) / (fs * N)
     # Scipy_Scale = 1 / (fs * sum_w2)
     # Ratio = (sum_w^2 * sum_w2) / N
-    ratio = (sum_w**2 * sum_w2) / (n**2) # Wait, let's re-verify.
+    ratio = (sum_w**2 * sum_w2) / (n**2)  # Wait, let's re-verify.
 
     # Re-derivation from dtt_normalization_analysis.md Task 2 logic:
     # dc_gain = sum_w / n

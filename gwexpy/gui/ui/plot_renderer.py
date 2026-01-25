@@ -44,8 +44,15 @@ class PlotRenderer:
         """
         self.mw = main_window
 
-    def render_panel(self, plot_idx, info_root, results, graph_type,
-                     start_time_gps=None, is_time_axis=False):
+    def render_panel(
+        self,
+        plot_idx,
+        info_root,
+        results,
+        graph_type,
+        start_time_gps=None,
+        is_time_axis=False,
+    ):
         """
         Render all traces for a single graph panel.
 
@@ -77,16 +84,23 @@ class PlotRenderer:
 
                 if self._is_spectrogram_result(result):
                     self._render_spectrogram(
-                        img, curve, bar, result, info_root,
-                        start_time_gps, graph_type
+                        img, curve, bar, result, info_root, start_time_gps, graph_type
                     )
                 else:
                     self._render_series(
-                        curve, bar, img, result, info_root,
-                        start_time_gps, is_time_axis, graph_type
+                        curve,
+                        bar,
+                        img,
+                        result,
+                        info_root,
+                        start_time_gps,
+                        is_time_axis,
+                        graph_type,
                     )
             except Exception as e:
-                logger.warning(f"Error updating Graph {plot_idx + 1} Trace {t_idx}: {e}")
+                logger.warning(
+                    f"Error updating Graph {plot_idx + 1} Trace {t_idx}: {e}"
+                )
 
     def _clear_trace(self, curve, bar, img):
         """Clear all trace items."""
@@ -106,7 +120,9 @@ class PlotRenderer:
         except (AttributeError, KeyError):
             return "None"
 
-    def _apply_unit_conversion(self, data, display_unit, graph_type, is_spectrogram=False):
+    def _apply_unit_conversion(
+        self, data, display_unit, graph_type, is_spectrogram=False
+    ):
         """
         Apply unit conversion to data based on display settings.
 
@@ -132,7 +148,9 @@ class PlotRenderer:
                 return 10 * np.log10(np.abs(data) + 1e-20)
             else:
                 # For amplitude (ASD), use 20*log10; for power, use 10*log10
-                factor = 10 if ("Power" in graph_type or "Squared" in graph_type) else 20
+                factor = (
+                    10 if ("Power" in graph_type or "Squared" in graph_type) else 20
+                )
                 return factor * np.log10(np.abs(data) + 1e-20)
 
         elif display_unit == "Phase":
@@ -146,8 +164,9 @@ class PlotRenderer:
         # "None" - return as-is
         return data
 
-    def _render_spectrogram(self, img, curve, bar, result, info_root,
-                            start_time_gps, graph_type):
+    def _render_spectrogram(
+        self, img, curve, bar, result, info_root, start_time_gps, graph_type
+    ):
         """
         Render a spectrogram result to an ImageItem.
 
@@ -182,7 +201,9 @@ class PlotRenderer:
 
         # Unit conversion
         display_unit = self._get_display_unit(info_root)
-        data = self._apply_unit_conversion(data, display_unit, graph_type, is_spectrogram=True)
+        data = self._apply_unit_conversion(
+            data, display_unit, graph_type, is_spectrogram=True
+        )
 
         # Set image data
         img.setImage(data, autoLevels=False)
@@ -232,8 +253,17 @@ class PlotRenderer:
         img.setRect(QtCore.QRectF(x_start, y_pos, width, h_val))
         img.setVisible(True)
 
-    def _render_series(self, curve, bar, img, result, info_root,
-                       start_time_gps, is_time_axis, graph_type):
+    def _render_series(
+        self,
+        curve,
+        bar,
+        img,
+        result,
+        info_root,
+        start_time_gps,
+        is_time_axis,
+        graph_type,
+    ):
         """
         Render a 1D series result to a curve or bar graph.
 
@@ -266,7 +296,9 @@ class PlotRenderer:
 
         # Unit conversion
         display_unit = self._get_display_unit(info_root)
-        y_vals = self._apply_unit_conversion(y_vals, display_unit, graph_type, is_spectrogram=False)
+        y_vals = self._apply_unit_conversion(
+            y_vals, display_unit, graph_type, is_spectrogram=False
+        )
 
         # Update curve
         curve.setData(x_vals, y_vals)
@@ -301,7 +333,9 @@ class PlotRenderer:
         label_text = f"Time [s] (Start: {start_time_utc} / GPS: {start_time_gps})"
         info_root["plot"].setLabel("bottom", label_text)
 
-    def stabilize_streaming_range(self, info_root, is_streaming, is_time_axis, nds_window):
+    def stabilize_streaming_range(
+        self, info_root, is_streaming, is_time_axis, nds_window
+    ):
         """
         Stabilize plot range during streaming mode.
 

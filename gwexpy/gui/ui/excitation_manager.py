@@ -145,7 +145,9 @@ class ExcitationManager:
 
         return total_excitation
 
-    def publish_excitation_channel(self, data_map, total_excitation, times, sample_rate):
+    def publish_excitation_channel(
+        self, data_map, total_excitation, times, sample_rate
+    ):
         """
         Publish the total excitation as a dedicated 'Excitation' channel.
 

@@ -1,4 +1,3 @@
-
 from gwpy.spectrogram import Spectrogram
 
 
@@ -12,6 +11,7 @@ class HHTSpectrogram(Spectrogram):
     - Color-axis: log scale (power/amplitude)
     - X-axis: auto-gps scale (time)
     """
+
     def plot(self, method="pcolormesh", **kwargs):
         """Plot this spectrogram with HHT-specific defaults.
 
@@ -52,7 +52,7 @@ class HHTSpectrogram(Spectrogram):
         elif isinstance(cmap, str):
             cmap = plt.get_cmap(cmap).copy()
         else:
-            cmap = cmap.copy() if hasattr(cmap, 'copy') else cmap
+            cmap = cmap.copy() if hasattr(cmap, "copy") else cmap
 
         # Set 'under' and 'bad' values to the bottom color of the colormap
         # This prevents white areas for zeros or out-of-range values in log scale
