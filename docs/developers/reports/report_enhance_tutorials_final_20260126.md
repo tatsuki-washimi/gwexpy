@@ -50,3 +50,10 @@ IPython環境下で `gwpy` (経由で `lal`) をインポートした際に発�
 
 - **gwexpy/**init**.py**: 警告フィルタ設定直後に `lal` を明示的にインポート (`try-except` ブロック内) することで、フィルタが有効な状態で確実に警告処理を実行・抑制するようにしました。
 - **docs/ja/guide/tutorials/intro_interop.ipynb**: ノートブック内での `gwpy` インポート順序の影響で警告が出ていたため、警告抑制コードを `run_command` 実行前に確実に適用されるようセル冒頭に移動しました。
+
+### 6. 追加修正: TensorFlow / Protobuf 警告の抑制
+
+`docs/ja/guide/tutorials/intro_timeseries.ipynb` における `tensorflow` インポート時に大量に表示されるログと `Protobuf gencode version` 警告を抑制しました。
+
+- `TF_CPP_MIN_LOG_LEVEL=2` を環境変数に設定し、TensorFlowのINFO/WARNINGログを抑制。
+- `warnings.filterwarnings("ignore", category=UserWarning, module="google.protobuf")` を追加し、Protobufのバージョン不整合に関する `UserWarning` を無視するように設定。
