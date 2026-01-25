@@ -23,6 +23,7 @@
 - **Physics Models**: Built-in support for `gwinc` (detector noise) and `obspy` (earth noise).
 - **Expanded I/O**: Native support for `.gwf`, `.wav`, `.root` (vectorized), `.mseed`, `.win`, `.ats`, `.tdms`, `.gbd`, and more.
 - **Interoperability**: Seamless conversion to PyTorch, TensorFlow, JAX, Dask, and Polars.
+- **Robust Serialization**: Full Pickle round-trip support for all data objects (e.g., `TimeSeriesMatrix`, `ScalarField`).
 
 See the [Features](https://tatsuki-washimi.github.io/gwexpy/en/index.html) page for details.
 

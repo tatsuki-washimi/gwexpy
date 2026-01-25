@@ -194,9 +194,13 @@ class SeriesMatrix(
         self.xindex = getattr(obj, "xindex", None)
         if hasattr(self, "_suppress_xindex_check"):
             delattr(self, "_suppress_xindex_check")
-        self.meta = getattr(obj, "meta", None)
-        self.rows = getattr(obj, "rows", None)
-        self.cols = getattr(obj, "cols", None)
+        from typing import cast
+
+        from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
+
+        self.meta = cast(MetaDataMatrix, getattr(obj, "meta", None))
+        self.rows = cast(MetaDataDict, getattr(obj, "rows", None))
+        self.cols = cast(MetaDataDict, getattr(obj, "cols", None))
         self.name = getattr(obj, "name", "")
         self.epoch = getattr(obj, "epoch", 0.0)
         self.attrs = getattr(obj, "attrs", getattr(self, "attrs", {}))

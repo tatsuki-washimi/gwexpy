@@ -95,7 +95,37 @@ intersphinx_mapping = {
 }
 
 nitpick_ignore = [
-    ("py:class", "numpy.dtype"),  # Often fails even with intersphinx
+    ("py:class", "numpy.dtype"),
     ("py:class", "numpy.typing.ArrayLike"),
     ("py:class", "numpy.typing.DTypeLike"),
+    ("py:class", "optional"),
+    ("py:class", "iterable"),
+    ("py:class", "array-like"),
+    ("py:class", "u.Quantity"),  # Sphinx sometimes misses the alias
+    ("py:class", "UnitLike"),
+    ("py:class", "IndexLike"),
+    ("py:class", "MetaDataCollectionType"),
+    ("py:class", "MetaDataLike"),
+    ("py:class", "MetaDataMatrix"),
+    ("py:class", "MetaDataDictLike"),
+    ("py:class", "Quantity"),
+    ("py:class", "subset"),
+    ("py:class", "copy"),
+    ("py:class", "self"),
+    # Mixins (often not exported to top level documentation)
+    ("py:class", "gwexpy.types.mixin.mixin_legacy.RegularityMixin"),
+    ("py:class", "gwexpy.types.mixin.signal_interop.InteropMixin"),
+    ("py:class", "gwexpy.types.series_matrix_core.SeriesMatrixCoreMixin"),
+    ("py:class", "gwexpy.types.series_matrix_indexing.SeriesMatrixIndexingMixin"),
+    ("py:class", "gwexpy.types.series_matrix_io.SeriesMatrixIOMixin"),
+    ("py:class", "gwexpy.types.series_matrix_math.SeriesMatrixMathMixin"),
+    ("py:class", "gwexpy.types.series_matrix_analysis.SeriesMatrixAnalysisMixin"),
+    ("py:class", "gwexpy.types.series_matrix_structure.SeriesMatrixStructureMixin"),
+    ("py:class", "gwexpy.types.series_matrix_visualization.SeriesMatrixVisualizationMixin"),
+    ("py:class", "gwexpy.types.series_matrix_validation_mixin.SeriesMatrixValidationMixin"),
+    ("py:class", "gwexpy.types._stats.StatisticalMethodsMixin"),
+    # External not mapped
+    ("py:class", "pandas.core.frame.DataFrame"),
+    ("py:class", "torch.Tensor"),
+    ("py:class", "torch.dtype"),
 ]
