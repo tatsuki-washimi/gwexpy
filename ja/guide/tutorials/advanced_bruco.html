@@ -695,8 +695,8 @@ ax = fig.gca()
 
 # 元のデータと除去後のデータを重ねてプロット (最初の1秒間)
 plot_duration = 1.0
-ts.crop(end=ts.t0.value + plot_duration).plot(ax=ax, label=&#39;Original&#39;, alpha=0.7)
-cleaned_ts.crop(end=ts.t0.value + plot_duration).plot(ax=ax, label=&#39;Cleaned (Bruco)&#39;, linestyle=&#39;--&#39;, alpha=0.8)
+ts.crop(end=ts.t0.value + plot_duration).plot(ax=ax, label=&#39;Original&#39;, alpha=0.7)  # noqa: F821
+cleaned_ts.crop(end=ts.t0.value + plot_duration).plot(ax=ax, label=&#39;Cleaned (Bruco)&#39;, linestyle=&#39;--&#39;, alpha=0.8)  # noqa: F821
 
 ax.set_title(f&#39;Noise Subtraction Result (First {plot_duration}s)&#39;)
 ax.legend()
