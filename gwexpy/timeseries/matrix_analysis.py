@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Any, Literal, cast
 
-import logging
 import numpy as np
 from astropy import units as u
 

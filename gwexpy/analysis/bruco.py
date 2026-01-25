@@ -1,9 +1,9 @@
 import html
 import logging
 import os
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from typing import Any
+from typing import TypeAlias, TypedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,6 +18,15 @@ _BRUCO_BLOCK_SIZE_DEFAULT = 256
 _BRUCO_BLOCK_BYTES_DEFAULT = 64 * 1024 * 1024
 _BRUCO_BLOCK_SIZE_MIN = 16
 _BRUCO_BLOCK_SIZE_MAX = 1024
+
+BrucoMetadataValue: TypeAlias = str | int | float | bool
+BrucoMetadata: TypeAlias = Mapping[str, BrucoMetadataValue]
+
+
+class BrucoPairSummary(TypedDict):
+    channel: str
+    max_coherence: float
+    freq_at_max: float
 
 
 def _auto_block_size(n_bins: int, top_n: int) -> int:
@@ -142,7 +151,7 @@ class BrucoResult:
         target_name: str,
         target_spectrum: np.ndarray,
         top_n: int = 5,
-        metadata: dict[str, Any] | None = None,
+        metadata: BrucoMetadata | None = None,
         block_size: int | str | None = None,
     ) -> None:
         """
@@ -167,7 +176,9 @@ class BrucoResult:
         self.target_spectrum = target_spectrum
         # Internal calculations use PSD; ASD is derived only for display.
         self.top_n = top_n
-        self.metadata = metadata or {}
+        self.metadata: dict[str, BrucoMetadataValue] = (
+            dict(metadata) if metadata is not None else {}
+        )
         self.n_bins = len(frequencies)
         self.block_size = _resolve_block_size(block_size, self.n_bins, self.top_n)
 
@@ -329,7 +340,7 @@ class BrucoResult:
         Returns:
             List of channel names sorted by importance.
         """
-        channel_scores = {}
+        channel_scores: dict[str, float] = {}
         for rank in range(self.top_n):
             names = self.top_channels[:, rank]
             cohs = self.top_coherence[:, rank]
@@ -750,7 +761,7 @@ class Bruco:
         target_channel: str,
         aux_channels: list[str],
         excluded_channels: list[str] | None = None,
-    ):
+    ) -> None:
         """
         Initialize the Bruco scanner.
 
@@ -818,17 +829,13 @@ class Bruco:
                 if duration is None:
                     duration = int(round(target_data.duration.value))
             # 2. Infer from aux_data (only if dict-like)
-            elif aux_data is not None and hasattr(aux_data, "values"):
+            elif isinstance(aux_data, Mapping):
                 # Check if empty (keys/len)
-                if hasattr(aux_data, "__len__") and len(aux_data) > 0:
+                if len(aux_data) > 0:
                     try:
                         # Peek at first item
-                        if hasattr(aux_data, "values"):
-                            # TimeSeriesDict / Dict
-                            first_ts = next(iter(aux_data.values()))
-                        else:
-                            # fallback if dict-like but no values()? (unlikely for TimeSeriesDict)
-                            first_ts = aux_data[list(aux_data.keys())[0]]
+                        # TimeSeriesDict / Dict
+                        first_ts = next(iter(aux_data.values()))
 
                         if start is None:
                             start = float(first_ts.t0.value)
@@ -912,7 +919,7 @@ class Bruco:
         # Case A: Aux data provided
         if aux_data is not None:
             # Case A-1: Dictionary-like (Everything in memory)
-            if hasattr(aux_data, "keys") and hasattr(aux_data, "__getitem__"):
+            if isinstance(aux_data, Mapping):
                 logger.info(
                     f"Using provided auxiliary data dict ({len(aux_data)} channels)."
                 )
@@ -969,7 +976,7 @@ class Bruco:
                     )
 
             # Case A-2: Iterable/Generator (Memory efficient streaming)
-            else:
+            elif aux_data is not None:
                 logger.info("Using provided auxiliary data generator/iterable.")
                 batch_dict = TimeSeriesDict()
                 batch_count = 0
@@ -1102,7 +1109,7 @@ class Bruco:
         overlap: float,
         nproc: int,
         target_frequencies: np.ndarray,
-    ):
+    ) -> None:
         # Calculate Coherence for batch
         # Returns list of (name, coherence_array)
         batch_results_list = self._process_batch(
@@ -1374,7 +1381,7 @@ class Bruco:
         aux: TimeSeries,
         fftlength: float,
         overlap: float,
-    ) -> dict[str, Any]:
+    ) -> BrucoPairSummary:
         """
         Convenience helper to summarize coherence for a single pair.
         """
