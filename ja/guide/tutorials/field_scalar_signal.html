@@ -461,7 +461,7 @@ ScalarField([[[[ 2.63448962e-01],
 <section id="2.-Power-Spectral-Density-(PSD)">
 <h2>2. Power Spectral Density (PSD)<a class="headerlink" href="#2.-Power-Spectral-Density-(PSD)" title="Link to this heading"></a></h2>
 <p>We can compute the PSD at specific points to analyze the frequency content. The <code class="docutils literal notranslate"><span class="pre">compute_psd</span></code> (or <code class="docutils literal notranslate"><span class="pre">field.psd</span></code>) method handles Welch’s method for you.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
@@ -483,11 +483,33 @@ plt.show()
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 1000x600 with 0 Axes&gt;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_field_scalar_signal_5_1.png" src="../../_images/guide_tutorials_field_scalar_signal_5_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_field_scalar_signal_5_2.png" src="../../_images/guide_tutorials_field_scalar_signal_5_2.png" />
+</div>
+</div>
 </section>
 <section id="3.-Frequency-Space-Map">
 <h2>3. Frequency-Space Map<a class="headerlink" href="#3.-Frequency-Space-Map" title="Link to this heading"></a></h2>
 <p>To visualize how the spectrum changes across space, we use <code class="docutils literal notranslate"><span class="pre">freq_space_map</span></code>. This creates a 2D map with Frequency on one axis and a Spatial coordinate (e.g., X) on the other.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -506,11 +528,18 @@ plt.show()
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_field_scalar_signal_7_0.png" src="../../_images/guide_tutorials_field_scalar_signal_7_0.png" />
+</div>
+</div>
 </section>
 <section id="4.-Time-Delay-Map">
 <h2>4. Time Delay Map<a class="headerlink" href="#4.-Time-Delay-Map" title="Link to this heading"></a></h2>
 <p>We can visualize the propagation of the signal by computing the time delay relative to the source. <code class="docutils literal notranslate"><span class="pre">time_delay_map</span></code> computes the cross-correlation lag for every point in a plane.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
@@ -533,11 +562,18 @@ plt.show()
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_field_scalar_signal_9_0.png" src="../../_images/guide_tutorials_field_scalar_signal_9_0.png" />
+</div>
+</div>
 </section>
 <section id="5.-Coherence-Map">
 <h2>5. Coherence Map<a class="headerlink" href="#5.-Coherence-Map" title="Link to this heading"></a></h2>
 <p>Coherence measures the linear correlation between signals in the frequency domain. It is useful for identifying regions that are coherent with a noise source.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
@@ -557,6 +593,13 @@ coh_map.plot_map2d(
 )
 plt.show()
 <br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_field_scalar_signal_11_0.png" src="../../_images/guide_tutorials_field_scalar_signal_11_0.png" />
 </div>
 </div>
 </section>

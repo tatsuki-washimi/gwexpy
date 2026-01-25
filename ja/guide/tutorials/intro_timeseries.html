@@ -164,7 +164,7 @@ ts2.override_unit(&#39;V&#39;)
 <section id="ヒルベルト変換と包絡線">
 <h3>ヒルベルト変換と包絡線<a class="headerlink" href="#ヒルベルト変換と包絡線" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">hilbert</span></code> と <code class="docutils literal notranslate"><span class="pre">envelope</span></code> を使用します。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -186,11 +186,18 @@ plt.show()
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_5_0.png" src="../../_images/guide_tutorials_intro_timeseries_5_0.png" />
+</div>
+</div>
 </section>
 <section id="瞬時位相と瞬時周波数">
 <h3>瞬時位相と瞬時周波数<a class="headerlink" href="#瞬時位相と瞬時周波数" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">instantaneous_phase</span></code> と <code class="docutils literal notranslate"><span class="pre">instantaneous_frequency</span></code> を使用します。位相のアンラップ (<code class="docutils literal notranslate"><span class="pre">unwrap</span></code>) や度の単位 (<code class="docutils literal notranslate"><span class="pre">deg</span></code>) も指定可能です。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
@@ -209,6 +216,13 @@ ax[1].set_ylabel(&#39;Frequency [Hz]&#39;)
 ax[1].set_title(&#39;Instantaneous Frequency&#39;)
 plt.show()
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_7_0.png" src="../../_images/guide_tutorials_intro_timeseries_7_0.png" />
 </div>
 </div>
 </section>
@@ -245,24 +259,24 @@ plt.show()
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-TimeSeries([0.92524157, 1.01052698, 0.83160748, 0.98983979,
-            0.95640578, 0.79329431, 0.93440113, 0.84457421,
-            0.91706051, 0.9082904 , 1.12723257, 0.91667357,
-            1.07364718, 0.9329322 , 0.87454484, 0.89378692,
-            1.04037195, 1.02972315, 1.03514776, 1.14641592,
-            1.01430299, 0.96930373, 1.05442117, 0.93487983,
-            1.0797398 , 0.95698737, 1.0973161 , 0.96421097,
-            1.0697921 , 1.02096688, 0.90928353, 0.91870064,
-            0.97065871, 1.00145278, 0.90385531, 0.97779889,
-            0.90362796, 1.10402866, 0.8047971 , 1.13757768,
-            0.87742296, 1.14622714, 1.20054564, 0.95197451,
-            1.08100401, 1.10346222, 1.09301454, 0.9439661 ,
-            1.13723119, 0.90875096]
+TimeSeries([1.03481507, 0.96203914, 1.26042756, 1.07545387,
+            0.85431812, 0.86408565, 1.00513351, 1.08458243,
+            0.97558374, 1.02132729, 1.1182754 , 1.04892109,
+            1.0532585 , 0.98106536, 0.79733538, 0.98581482,
+            0.92058138, 1.06299188, 1.09037351, 0.93625037,
+            0.99950949, 1.13805062, 0.99513265, 1.13102761,
+            1.14067506, 1.02879789, 1.06228927, 1.14770241,
+            0.91021493, 0.94481575, 1.08763264, 0.90287389,
+            1.03999359, 0.91981346, 1.06551456, 1.18556526,
+            0.92602146, 1.05984894, 1.15023769, 1.11556909,
+            1.013073  , 0.97225309, 1.18268113, 1.0056054 ,
+            1.09119002, 0.9003583 , 0.90698603, 1.19031095,
+            0.96490867, 1.10367259]
            unit: V,
            t0: 0.0 s,
            dt: 0.1 s,
@@ -270,13 +284,20 @@ TimeSeries([0.92524157, 1.01052698, 0.83160748, 0.98983979,
            channel: None)
 </pre></div></div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_9_1.png" src="../../_images/guide_tutorials_intro_timeseries_9_1.png" />
+</div>
+</div>
 <p>## 3. スペクトル解析と相関</p>
 <p>GWpy の機能を継承しつつ、過渡信号向けの <code class="docutils literal notranslate"><span class="pre">transient</span></code> モード FFT や、FFT の直接比による伝達関数計算が追加されています。</p>
 </section>
 <section id="拡張された-FFT">
 <h3>拡張された FFT<a class="headerlink" href="#拡張された-FFT" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code> を使用すると、ゼロパディングや高速な長さへの調整、左右個別のパディング指定が可能です。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
@@ -298,6 +319,13 @@ plt.show()
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_12_0.png" src="../../_images/guide_tutorials_intro_timeseries_12_0.png" />
+</div>
+</div>
 </section>
 <section id="伝達関数-(Transfer-Function)-と相互相関-(xcorr)">
 <h3>伝達関数 (Transfer Function) と相互相関 (xcorr)<a class="headerlink" href="#伝達関数-(Transfer-Function)-と相互相関-(xcorr)" title="Link to this heading"></a></h3>
@@ -308,7 +336,7 @@ plt.show()
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 伝達関数の計算 (Sensor 1 に対する Chirp Signal の伝達関数)
 tf_welch = ts2.transfer_function(ts1, fftlength=1)
-tf_fft = ts2.transfer_function(ts1, method=&quot;fft&quot;) # 全区間FFT比 (過渡応答解析などに有用)
+tf_fft = ts2.transfer_function(ts1, mode=&quot;transient&quot;) # 全区間FFT比 (過渡応答解析などに有用)
 
 # 相互相関 (xcorr)
 corr = ts1.xcorr(ts2, maxlag=0.5, normalize=&#39;coeff&#39;)
@@ -332,11 +360,9 @@ plt.show()
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/tmp/ipykernel_630172/1615014204.py:3: DeprecationWarning: The &#39;method&#39; parameter is deprecated. Use &#39;mode&#39; instead: &#39;gwpy&#39;/&#39;csd_psd&#39; -&gt; mode=&#39;steady&#39;, &#39;fft&#39; -&gt; mode=&#39;transient&#39;.
-  tf_fft = ts2.transfer_function(ts1, method=&#34;fft&#34;) # 全区間FFT比 (過渡応答解析などに有用)
-</pre></div></div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_14_0.png" src="../../_images/guide_tutorials_intro_timeseries_14_0.png" />
+</div>
 </div>
 </section>
 <section id="STLT-(Short-Time-Laplace-Transform)">
@@ -438,7 +464,7 @@ except Exception as e:
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -446,9 +472,16 @@ except Exception as e:
 Extracted IMFs: [&#39;IMF1&#39;, &#39;IMF2&#39;, &#39;IMF3&#39;, &#39;residual&#39;]
 </pre></div></div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_18_1.png" src="../../_images/guide_tutorials_intro_timeseries_18_1.png" />
+</div>
+</div>
 <p>## 5. 統計・前処理</p>
 <p>欠損値補完、標準化、ARIMAモデル、ハースト指数、およびローリング統計量が TimeSeries メソッドとして利用可能です。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
@@ -474,6 +507,13 @@ ax.legend()
 ax.set_title(&#39;Missing Value Imputation&#39;)
 plt.show()
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_20_0.png" src="../../_images/guide_tutorials_intro_timeseries_20_0.png" />
 </div>
 </div>
 <section id="ピーク検出-(Find-Peaks)">
@@ -504,7 +544,7 @@ plt.show()
 <br/><br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -518,6 +558,13 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
            name: Chirp Signal_peaks,
            channel: None)
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_22_1.png" src="../../_images/guide_tutorials_intro_timeseries_22_1.png" />
+</div>
 </div>
 </section>
 <section id="ARIMAモデルとハースト指数">
@@ -567,6 +614,13 @@ except Exception as e:
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_24_0.png" src="../../_images/guide_tutorials_intro_timeseries_24_0.png" />
+</div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
@@ -579,7 +633,7 @@ Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hu
 <section id="ローリング統計量-(Rolling-Statistics)">
 <h3>ローリング統計量 (Rolling Statistics)<a class="headerlink" href="#ローリング統計量-(Rolling-Statistics)" title="Link to this heading"></a></h3>
 <p>Pandas と同様の使い勝手で、<code class="docutils literal notranslate"><span class="pre">rolling_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">std</span></code>, <code class="docutils literal notranslate"><span class="pre">median</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code> が利用できます。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
@@ -606,6 +660,13 @@ plt.show()
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_26_0.png" src="../../_images/guide_tutorials_intro_timeseries_26_0.png" />
+</div>
+</div>
 <p>## 6. リサンプリングと再インデックス</p>
 <p><code class="docutils literal notranslate"><span class="pre">asfreq</span></code> メソッドによる固定グリッドへの割り当てや、<code class="docutils literal notranslate"><span class="pre">resample</span></code> メソッドでの「時間ビン集計」が可能になりました。</p>
 <div class="nbinput docutils container">
@@ -619,16 +680,23 @@ plt.legend([&#39;Original&#39;, &quot;.asfreq(&#39;50ms&#39;, method=&#39;pad&#3
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.legend.Legend at 0x7d25252988f0&gt;
+&lt;matplotlib.legend.Legend at 0x7d1c9e115820&gt;
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_28_1.png" src="../../_images/guide_tutorials_intro_timeseries_28_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
@@ -650,6 +718,13 @@ ax.legend()
 ax.set_title(&#39;Resampling: Signal Resampling vs Time Binning&#39;)
 plt.show()
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_29_0.png" src="../../_images/guide_tutorials_intro_timeseries_29_0.png" />
 </div>
 </div>
 </section>
@@ -685,7 +760,7 @@ plt.show()
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -719,6 +794,13 @@ plt.show()
 │ phi │      -0.0001       38.287      -190e-6      0.00796 │
 └─────┴─────────────────────────────────────────────────────┘
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_timeseries_31_1.png" src="../../_images/guide_tutorials_intro_timeseries_31_1.png" />
+</div>
 </div>
 <p>## 8. 相互運用性</p>
 <p>主要なデータサイエンス・機械学習ライブラリとの相互変換が非常にスムーズです。</p>
@@ -757,17 +839,17 @@ Pandas interop OK
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 time_utc
-1980-01-06 00:00:19+00:00           0.190526
-1980-01-06 00:00:19.010000+00:00    0.732920
-1980-01-06 00:00:19.020000+00:00    0.979314
-1980-01-06 00:00:19.030000+00:00    0.961766
-1980-01-06 00:00:19.040000+00:00    0.502562
+1980-01-06 00:00:19+00:00          -0.636382
+1980-01-06 00:00:19.010000+00:00    0.676415
+1980-01-06 00:00:19.020000+00:00    1.116014
+1980-01-06 00:00:19.030000+00:00    0.759203
+1980-01-06 00:00:19.040000+00:00    0.781264
                                       ...
-1980-01-06 00:00:23.950000+00:00    0.088315
-1980-01-06 00:00:23.960000+00:00   -0.593380
-1980-01-06 00:00:23.970000+00:00   -1.196480
-1980-01-06 00:00:23.980000+00:00   -1.028677
-1980-01-06 00:00:23.990000+00:00   -0.113876
+1980-01-06 00:00:23.950000+00:00   -0.055949
+1980-01-06 00:00:23.960000+00:00   -0.751523
+1980-01-06 00:00:23.970000+00:00   -0.942458
+1980-01-06 00:00:23.980000+00:00   -1.047283
+1980-01-06 00:00:23.990000+00:00   -0.317186
 Name: Sensor 1, Length: 500, dtype: float64
 </pre></div></div>
 </div>
@@ -1262,8 +1344,8 @@ dl.xr-attrs {
   stroke-width: 0.8px;
 }
 </style><pre class='xr-text-repr-fallback'>&lt;xarray.DataArray &#x27;Sensor 1&#x27; (time: 500)&gt; Size: 4kB
-array([ 0.19052648,  0.73291964,  0.97931413, ..., -1.19648019,
-       -1.02867735, -0.11387553], shape=(500,))
+array([-0.63638168,  0.67641478,  1.11601357, ..., -0.94245798,
+       -1.04728331, -0.31718558], shape=(500,))
 Coordinates:
   * time     (time) datetime64[ns] 4kB 1980-01-06T00:00:19 ... 1980-01-06T00:...
 Attributes:
@@ -1271,11 +1353,11 @@ Attributes:
     name:        Sensor 1
     channel:     None
     epoch:       0.0
-    time_coord:  datetime</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-obj-name'>&#x27;Sensor 1&#x27;</div><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 500</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-93a27cb0-d407-43f0-8871-c573dc5bc83e' class='xr-array-in' type='checkbox' checked><label for='section-93a27cb0-d407-43f0-8871-c573dc5bc83e' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>0.1905 0.7329 0.9793 0.9618 0.5026 ... -0.5934 -1.196 -1.029 -0.1139</span></div><div class='xr-array-data'><pre>array([ 0.19052648,  0.73291964,  0.97931413, ..., -1.19648019,
-       -1.02867735, -0.11387553], shape=(500,))</pre></div></div></li><li class='xr-section-item'><input id='section-8ad8e6fb-1371-4ed3-b2b0-8378e6f1abae' class='xr-section-summary-in' type='checkbox'  checked><label for='section-8ad8e6fb-1371-4ed3-b2b0-8378e6f1abae' class='xr-section-summary' >Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>1980-01-06T00:00:19 ... 1980-01-...</div><input id='attrs-03e78055-bd42-4dd0-8872-572aba7f1864' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-03e78055-bd42-4dd0-8872-572aba7f1864' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-86db866a-7c3f-4972-8e33-26ae1ad5f3db' class='xr-var-data-in' type='checkbox'><label for='data-86db866a-7c3f-4972-8e33-26ae1ad5f3db' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;1980-01-06T00:00:19.000000000&#x27;, &#x27;1980-01-06T00:00:19.010000000&#x27;,
+    time_coord:  datetime</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-obj-name'>&#x27;Sensor 1&#x27;</div><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 500</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-cefac307-59cf-4112-80c4-b3120a43ba65' class='xr-array-in' type='checkbox' checked><label for='section-cefac307-59cf-4112-80c4-b3120a43ba65' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>-0.6364 0.6764 1.116 0.7592 0.7813 ... -0.7515 -0.9425 -1.047 -0.3172</span></div><div class='xr-array-data'><pre>array([-0.63638168,  0.67641478,  1.11601357, ..., -0.94245798,
+       -1.04728331, -0.31718558], shape=(500,))</pre></div></div></li><li class='xr-section-item'><input id='section-134b0b03-0449-465c-83cc-bd86334ee12b' class='xr-section-summary-in' type='checkbox'  checked><label for='section-134b0b03-0449-465c-83cc-bd86334ee12b' class='xr-section-summary' >Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>1980-01-06T00:00:19 ... 1980-01-...</div><input id='attrs-3b0f89a4-d082-4122-9ac8-53c39be8fb51' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-3b0f89a4-d082-4122-9ac8-53c39be8fb51' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-90e8e303-c651-452f-a4db-cabb7ca23f92' class='xr-var-data-in' type='checkbox'><label for='data-90e8e303-c651-452f-a4db-cabb7ca23f92' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;1980-01-06T00:00:19.000000000&#x27;, &#x27;1980-01-06T00:00:19.010000000&#x27;,
        &#x27;1980-01-06T00:00:19.020000000&#x27;, ..., &#x27;1980-01-06T00:00:23.970000000&#x27;,
        &#x27;1980-01-06T00:00:23.980000000&#x27;, &#x27;1980-01-06T00:00:23.990000000&#x27;],
-      shape=(500,), dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-7b696fed-87ca-4d8c-9be0-061a9ab3bf66' class='xr-section-summary-in' type='checkbox'  checked><label for='section-7b696fed-87ca-4d8c-9be0-061a9ab3bf66' class='xr-section-summary' >Attributes: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>unit :</span></dt><dd>V</dd><dt><span>name :</span></dt><dd>Sensor 1</dd><dt><span>channel :</span></dt><dd>None</dd><dt><span>epoch :</span></dt><dd>0.0</dd><dt><span>time_coord :</span></dt><dd>datetime</dd></dl></div></li></ul></div></div></div>
+      shape=(500,), dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-dc4f82fa-9fc7-46a4-8524-c0e64cdb54ad' class='xr-section-summary-in' type='checkbox'  checked><label for='section-dc4f82fa-9fc7-46a4-8524-c0e64cdb54ad' class='xr-section-summary' >Attributes: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>unit :</span></dt><dd>V</dd><dt><span>name :</span></dt><dd>Sensor 1</dd><dt><span>channel :</span></dt><dd>None</dd><dt><span>epoch :</span></dt><dd>0.0</dd><dt><span>time_coord :</span></dt><dd>datetime</dd></dl></div></li></ul></div></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
@@ -1305,7 +1387,7 @@ SQLite interop OK: my_sensor
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;sqlite3.Connection at 0x7d252240d3f0&gt;
+&lt;sqlite3.Connection at 0x7d1c8e18d990&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1337,69 +1419,107 @@ Torch interop OK (Shape: torch.Size([500]))
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-tensor([ 0.1905,  0.7329,  0.9793,  0.9618,  0.5026,  0.0244, -0.4995, -0.8560,
-        -0.7438, -0.3590,  0.4315,  0.6017,  1.0938,  0.7687,  0.3538,  0.0386,
-        -0.8166, -0.8610, -0.8587, -0.9734, -0.1436,  0.3413,  0.7748,  1.1392,
-         0.1909, -0.3266, -0.6395, -0.8075, -0.8033, -0.1222,  0.0228,  0.8790,
-         0.7133,  0.9384,  0.6695,  0.0867, -0.3568, -1.0443, -1.0986, -0.3750,
-         0.2303,  0.6101,  0.8253,  0.9267,  0.4136,  0.2456, -0.2674, -1.0176,
-        -1.0024, -0.7297, -0.0138,  0.7099,  0.7525,  0.5676,  0.4623, -0.0314,
-        -0.4306, -0.7861, -0.5783, -0.8013,  0.2947,  0.6470,  0.8219,  0.6098,
-         0.3509,  0.1578, -0.6743, -0.7666, -1.2158, -0.7408, -0.2626,  0.5047,
-         0.9111,  0.6116,  0.2607,  0.0253, -0.5166, -1.0319, -0.7572, -0.5431,
-         0.1488,  0.9121,  0.6946,  0.7006,  0.4431, -0.4669, -0.4097, -0.6911,
-        -1.1765, -0.6849,  0.0202,  0.5990,  1.0132,  0.9151,  0.2516,  0.3339,
-        -0.6578, -1.1198, -0.6040, -0.2667, -0.1820,  0.7744,  1.0903,  0.9737,
-         0.3262,  0.1236, -0.5618, -1.1516, -1.3324, -0.5676, -0.0402,  0.6717,
-         0.9823,  0.9753,  0.6101, -0.2415, -0.1749, -0.7757, -0.8379, -0.5616,
-         0.1514,  0.5077,  1.1837,  1.2967,  0.3213, -0.0080, -0.7843, -0.6808,
-        -1.0089, -0.7667,  0.1054,  0.7368,  1.4505,  0.7870,  0.7341, -0.0828,
-        -0.2921, -0.7015, -0.6796, -0.2877, -0.2846,  0.0850,  0.6040,  1.1167,
-         0.6196, -0.3299, -0.4656, -1.0164, -0.5917, -0.7929, -0.1988,  0.3757,
-         0.6553,  1.2722,  0.1200,  0.2373, -0.4554, -1.1798, -0.8172, -0.2958,
-        -0.2077,  0.9983,  1.1805,  0.6141,  0.4327, -0.0893, -0.5278, -0.9613,
-        -1.1692, -0.5041,  0.3527,  0.3136,  0.9442,  1.0654,  0.5116, -0.0534,
-        -0.5513, -1.1269, -0.8119, -0.9939,  0.1736,  0.5066,  0.9393,  0.9602,
-         0.9432,  0.3053, -0.1955, -1.0853, -0.9649, -0.6563, -0.0275,  0.7940,
-         1.0140,  0.9628,  0.7278,  0.2402, -1.0622, -1.0274, -0.9813, -0.7180,
-         0.2431,  0.6586,  0.8939,  1.0253,  0.8666,  0.1301, -0.6098, -1.0942,
-        -0.6147, -0.6223,  0.1680,  0.6174,  0.8952,  1.1663,  0.7144,  0.2318,
-        -0.5425, -0.8878, -0.6878, -0.4838,  0.0585,  0.7562,  0.7454,  0.8428,
-         0.4793, -0.3720, -0.9850, -1.2112, -0.8787, -0.6302,  0.0051,  0.4064,
-         0.8870,  1.0309,  0.6433, -0.0843, -0.4419, -0.8690, -0.9561, -0.4010,
-         0.0067,  0.6499,  0.8846,  0.8902,  0.4670,  0.3570, -0.8314, -1.1255,
-        -1.1806, -0.6328, -0.2017,  0.6886,  1.0208,  0.6508,  0.4106, -0.3329,
-        -0.2436, -1.3443, -0.7384, -0.7092,  0.0743,  0.7966,  0.8504,  1.1761,
-         0.5966,  0.1081, -1.0323, -0.7844, -0.9910, -0.7517,  0.0147,  0.8215,
-         0.7940,  0.9298,  0.6611,  0.1741, -0.6265, -0.8367, -0.8561, -0.5647,
-         0.0420,  0.6063,  1.1047,  1.1705,  0.2104,  0.1224, -0.3654, -1.2463,
-        -0.8066, -0.9138,  0.0252,  0.6926,  0.9656,  0.8138,  0.6851, -0.1244,
-        -0.7145, -0.8575, -1.0076, -0.6907,  0.1305,  0.2925,  0.8806,  0.9497,
-         0.4198, -0.2112, -0.6977, -0.5631, -1.1251, -0.6300, -0.1129,  0.7409,
-         0.8496,  0.8911,  0.2197, -0.1900, -0.3427, -1.0239, -0.7354, -0.8431,
-         0.1070,  0.5750,  1.2883,  0.8621,  0.5807,  0.1797, -0.4733, -0.7080,
-        -0.9078, -0.5335, -0.0614,  0.5946,  0.8217,  0.4674,  0.7632, -0.2013,
-        -0.8960, -1.0139, -1.3107, -0.3859,  0.2382,  0.3953,  1.1599,  0.6536,
-         0.4621,  0.0563, -0.5534, -0.8824, -0.8004, -0.6074,  0.0595,  0.6459,
-         0.4319,  1.0616,  0.8265, -0.0155, -0.6915, -0.9645, -1.0073, -0.5425,
-        -0.3182,  0.6860,  0.7517,  0.8432,  0.8116,  0.0440, -0.4349, -0.7030,
-        -0.8956, -0.5152, -0.1423,  0.7590,  1.1949,  0.9858,  0.8090,  0.0981,
-        -0.8040, -0.7529, -1.3291, -0.1183,  0.2462,  0.4238,  0.6920,  0.8973,
-         0.5951, -0.0240, -0.4416, -0.4632, -0.8700, -0.6463, -0.0096,  0.2997,
-         1.0180,  1.2423,  0.6042,  0.1004, -0.6425, -1.1238, -1.3446, -0.4613,
-         0.0183,  0.3581,  0.8251,  0.6823,  0.3876, -0.1193, -0.4092, -1.0795,
-        -0.8553, -0.7390,  0.0473,  0.4333,  1.1707,  0.9948,  0.4612, -0.0654,
-        -0.8986, -1.1182, -1.1233, -0.8203,  0.5007,  0.8618,  1.0352,  1.0775,
-         0.7382, -0.0597, -0.8371, -0.9680, -1.2206, -0.7588,  0.0573,  0.4905,
-         0.6810,  1.2072,  0.5353, -0.0653, -0.3932, -1.1532, -0.8820, -0.3302,
-         0.0597,  0.5650,  1.1196,  1.4067,  0.7303, -0.1360, -0.7323, -0.7522,
-        -0.9173, -0.3718, -0.5271,  0.7145,  0.8646,  1.0041,  0.7495,  0.1661,
-        -0.7615, -1.2943, -0.7821, -0.7262, -0.0251,  0.7557,  0.6954,  1.0826,
-         0.3674, -0.0193, -0.5339, -1.2800, -1.2813, -0.6173, -0.0832,  0.5626,
-         0.7382,  0.6195,  0.5574,  0.0312, -0.7956, -1.2285, -0.6701, -0.8449,
-         0.1312,  0.4278,  1.1099,  1.2109,  0.5567, -0.2307, -0.6997, -1.1786,
-        -1.0053, -0.6884, -0.2356,  0.4418,  0.7369,  0.8388,  0.4297,  0.0883,
-        -0.5934, -1.1965, -1.0287, -0.1139], dtype=torch.float64)
+tensor([-6.3638e-01,  6.7641e-01,  1.1160e+00,  7.5920e-01,  7.8126e-01,
+         1.3657e-01, -2.6177e-01, -7.3862e-01, -1.1639e+00, -7.1264e-01,
+         1.2782e-01,  3.6579e-01,  1.1532e+00,  7.0006e-01,  1.0020e+00,
+        -4.6525e-04, -6.7079e-01, -6.4592e-01, -9.8670e-01, -4.9694e-01,
+        -3.6860e-01,  8.6309e-01,  1.2715e+00,  1.2569e+00,  6.5845e-01,
+         6.4535e-02, -9.9536e-01, -1.1450e+00, -1.0607e+00, -5.4277e-01,
+        -1.5301e-01,  9.0327e-01,  9.6816e-01,  1.2301e+00,  5.2238e-01,
+        -9.2898e-02, -3.7634e-01, -9.8054e-01, -1.0980e+00, -4.2510e-01,
+         5.6261e-02,  6.4215e-01,  7.3113e-01,  7.9744e-01,  4.2517e-01,
+         3.4529e-02, -4.1318e-01, -8.8279e-01, -8.3199e-01, -5.3721e-01,
+        -9.0744e-04,  6.4147e-01,  1.0070e+00,  6.4092e-01,  4.3695e-01,
+         9.5694e-04, -7.6384e-01, -6.5442e-01, -6.8422e-01, -6.5023e-01,
+        -2.1650e-01,  5.9195e-01,  8.6410e-01,  7.7726e-01,  6.0960e-01,
+         2.1116e-01, -8.8103e-01, -9.4545e-01, -9.3727e-01, -7.4963e-01,
+        -2.8700e-02,  6.9192e-01,  7.4163e-01,  1.3361e+00,  9.4958e-01,
+        -6.1763e-01, -6.4311e-01, -7.9876e-01, -1.1970e+00, -3.3396e-01,
+         6.1007e-02,  7.5786e-01,  9.9856e-01,  7.9373e-01,  5.4001e-01,
+        -2.7069e-02, -5.5873e-01, -8.6877e-01, -7.2471e-01, -9.6357e-01,
+        -2.5661e-01,  6.5114e-01,  1.0268e+00,  7.4454e-01,  7.3579e-01,
+        -1.8972e-02, -6.0452e-01, -7.1839e-01, -1.3672e+00, -4.4196e-01,
+         3.0173e-01,  4.9634e-01,  8.2261e-01,  8.7831e-01,  7.9364e-01,
+        -5.3706e-01, -4.8186e-01, -1.6434e+00, -8.6148e-01, -8.9989e-01,
+        -3.1784e-03,  1.7921e-01,  8.7111e-01,  1.0472e+00,  8.9261e-01,
+         2.1520e-01, -6.2104e-01, -9.3042e-01, -1.1791e+00, -5.8179e-01,
+        -2.9092e-01,  8.6254e-01,  5.2193e-01,  8.8639e-01,  6.6124e-01,
+         3.5460e-02, -3.2722e-01, -1.2308e+00, -1.3842e+00, -5.5664e-01,
+        -1.0241e-01,  6.4978e-01,  8.6346e-01,  8.5417e-01,  6.9292e-01,
+        -4.2478e-01, -6.3406e-01, -5.5574e-01, -1.2147e+00, -7.2476e-01,
+         1.9084e-01,  3.3760e-01,  5.8700e-01,  8.2358e-01,  6.5142e-01,
+        -7.8208e-02, -5.5255e-01, -6.9083e-01, -8.6221e-01, -4.4560e-01,
+        -9.6294e-02,  4.0081e-01,  1.0242e+00,  1.3146e+00,  3.8421e-01,
+         2.4865e-02, -5.4191e-01, -9.6942e-01, -7.3908e-01, -5.0855e-01,
+        -9.5777e-02,  6.7380e-01,  9.4548e-01,  1.0025e+00,  5.6348e-01,
+         3.9798e-01, -6.8343e-01, -5.9873e-01, -7.8043e-01, -5.0606e-01,
+        -6.2500e-02,  8.1899e-01,  7.5552e-01,  1.1723e+00,  5.6911e-01,
+         1.2597e-01, -8.0608e-01, -8.3604e-01, -1.1160e+00, -5.7039e-01,
+        -9.3086e-02,  6.4493e-01,  1.2995e+00,  9.4864e-01,  4.8078e-01,
+         3.3034e-01, -5.8550e-01, -1.1274e+00, -1.0370e+00, -4.2450e-01,
+         6.8504e-02,  6.1352e-01,  7.9583e-01,  6.6160e-01,  5.0435e-01,
+        -3.6722e-01, -9.5470e-01, -1.0149e+00, -7.5449e-01, -4.7328e-01,
+        -1.9107e-01,  5.8703e-01,  7.5926e-01,  8.5751e-01,  3.0853e-01,
+         1.2966e-01, -4.6353e-01, -1.1628e+00, -1.0573e+00, -9.0094e-01,
+        -1.2727e-01,  5.9735e-01,  1.1456e+00,  1.1399e+00,  5.3929e-01,
+         1.5000e-01, -6.7051e-01, -1.0820e+00, -1.1361e+00, -5.8206e-01,
+         3.9915e-01,  4.2464e-01,  1.0827e+00,  1.1296e+00,  4.6833e-01,
+        -5.9938e-02, -4.6909e-01, -7.3688e-01, -1.0265e+00, -6.6582e-01,
+        -8.9836e-02,  6.1641e-01,  9.5619e-01,  1.2051e+00,  6.7386e-01,
+        -6.4407e-02, -4.9532e-01, -1.0066e+00, -1.2643e+00, -6.4568e-01,
+        -2.7575e-02,  7.5624e-01,  1.1008e+00,  1.1856e+00,  4.6571e-01,
+         2.3059e-01, -9.3990e-01, -8.2802e-01, -1.0490e+00, -8.0488e-01,
+        -2.5584e-01,  5.6379e-01,  6.2477e-01,  1.3896e+00,  6.2948e-01,
+        -1.5103e-01, -4.2666e-01, -9.4321e-01, -8.8529e-01, -8.3132e-01,
+         5.1499e-02,  7.8214e-01,  9.1642e-01,  1.0213e+00,  6.5815e-01,
+         6.0050e-02, -9.8273e-01, -9.8268e-01, -7.5888e-01, -6.3304e-01,
+        -5.8662e-02,  4.6378e-01,  1.1307e+00,  1.1574e+00,  7.8416e-01,
+        -2.4404e-01, -6.9463e-01, -1.1879e+00, -7.4371e-01, -9.8793e-01,
+        -2.3735e-01,  5.2249e-01,  1.1107e+00,  7.9962e-01,  5.8551e-01,
+         4.3762e-01, -2.5446e-01, -1.0948e+00, -6.4674e-01, -4.0147e-01,
+         1.2068e-01,  3.9736e-01,  1.1049e+00,  7.9655e-01,  4.7364e-01,
+        -1.5081e-01, -5.4113e-01, -8.4360e-01, -8.4831e-01, -8.0948e-01,
+         1.5246e-01,  5.4047e-01,  1.0736e+00,  9.3266e-01,  6.7679e-01,
+         1.6012e-01, -7.4484e-01, -1.1145e+00, -1.0464e+00, -5.4539e-01,
+        -1.9740e-01,  1.1780e-01,  1.0492e+00,  9.4982e-01,  6.5403e-01,
+         5.2777e-01, -7.0338e-01, -8.4149e-01, -6.7412e-01, -3.8964e-01,
+         1.7975e-01,  2.7576e-01,  1.2365e+00,  1.3625e+00,  5.2295e-01,
+        -1.7426e-02, -7.5603e-01, -9.1407e-01, -7.6402e-01, -3.5380e-01,
+        -2.5199e-01,  3.0022e-01,  1.2446e+00,  8.5517e-01,  1.3271e-01,
+        -1.6105e-01, -7.2224e-01, -9.0989e-01, -1.1625e+00,  2.1464e-01,
+         9.9925e-02,  6.6522e-01,  1.1383e+00,  9.4246e-01,  7.9605e-01,
+         5.4794e-02, -4.9515e-01, -9.5789e-01, -8.5802e-01, -7.9534e-01,
+         1.8644e-01,  6.5431e-01,  7.9577e-01,  1.0953e+00,  7.4103e-01,
+        -6.4670e-02, -7.2105e-01, -1.5253e+00, -1.0335e+00, -7.6243e-01,
+        -8.2993e-02,  4.5922e-01,  1.2096e+00,  9.4637e-01,  5.6968e-01,
+        -2.9099e-02, -5.4460e-01, -6.6125e-01, -8.6894e-01, -3.3902e-01,
+        -3.1590e-01,  6.7426e-01,  1.0201e+00,  6.6829e-01,  8.9959e-01,
+        -2.1811e-02, -8.4027e-01, -8.3044e-01, -9.5808e-01, -9.3775e-01,
+        -6.9966e-02,  6.1574e-01,  9.2618e-01,  1.0452e+00,  5.1286e-01,
+        -3.5872e-01, -8.2034e-01, -1.0533e+00, -1.3295e+00, -7.7849e-01,
+         1.0286e-01,  4.7753e-01,  1.2227e+00,  1.1164e+00,  5.0470e-01,
+        -2.5514e-01, -6.3390e-01, -9.9684e-01, -9.8914e-01, -8.7038e-01,
+         1.8209e-02,  2.6530e-01,  8.2612e-01,  9.4441e-01,  8.0652e-01,
+        -3.2462e-02, -6.9176e-01, -9.8582e-01, -9.5322e-01, -8.0845e-01,
+        -3.0934e-01,  5.7734e-01,  7.0783e-01,  1.0123e+00,  8.5944e-01,
+         1.1071e-01, -3.8784e-01, -6.6907e-01, -9.7191e-01, -7.7359e-01,
+         3.5439e-01,  8.3590e-01,  9.6693e-01,  8.6037e-01,  7.8054e-01,
+        -1.1467e-01, -8.8561e-01, -1.2529e+00, -1.1716e+00, -5.8219e-01,
+        -1.6079e-02,  6.4736e-01,  1.0612e+00,  1.0101e+00,  5.8696e-01,
+         1.0695e-02, -5.1202e-01, -6.9059e-01, -9.5483e-01, -7.8234e-01,
+         3.4276e-02,  7.5282e-01,  1.0358e+00,  8.4272e-01,  4.9329e-01,
+        -1.7179e-01, -6.7215e-01, -1.2013e+00, -1.1622e+00, -4.2640e-01,
+        -4.2038e-01,  4.3034e-01,  8.1882e-01,  8.3635e-01,  3.6387e-01,
+        -1.7863e-01, -6.3739e-01, -1.0032e+00, -1.0368e+00, -2.4604e-01,
+        -1.4373e-01,  1.9569e-01,  8.8210e-01,  1.0729e+00,  4.6905e-01,
+        -5.9037e-03, -5.7981e-01, -1.0684e+00, -6.8551e-01, -4.6180e-01,
+        -4.2030e-02,  5.4248e-01,  1.2287e+00,  1.3280e+00,  7.0356e-01,
+        -2.1004e-01, -8.6234e-01, -8.6845e-01, -1.1801e+00, -5.6203e-01,
+        -1.1960e-01,  5.2928e-01,  6.5498e-01,  1.0602e+00,  7.1368e-01,
+        -2.7387e-01, -4.0585e-01, -8.7202e-01, -1.1227e+00, -5.4000e-01,
+        -2.5969e-01,  7.7238e-01,  1.2223e+00,  1.0280e+00,  6.7696e-01,
+        -5.5949e-02, -7.5152e-01, -9.4246e-01, -1.0473e+00, -3.1719e-01],
+       dtype=torch.float64)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1423,8 +1543,8 @@ except ImportError: pass
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-2026-01-24 19:39:54.474875: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-2026-01-24 19:39:54.517087: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+2026-01-25 19:48:23.998051: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-01-25 19:48:24.039740: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX512_FP16 AVX_VNNI AMX_TILE AMX_INT8 AMX_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 /home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/attr_value.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
   warnings.warn(
@@ -1482,8 +1602,8 @@ TensorFlow interop OK
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-I0000 00:00:1769251196.001198  630172 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5943 MB memory:  -&gt; device: 0, name: NVIDIA RTX A1000, pci bus id: 0000:55:00.0, compute capability: 8.6
-I0000 00:00:1769251196.001818  630172 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 3735 MB memory:  -&gt; device: 1, name: Quadro P2000, pci bus id: 0000:a2:00.0, compute capability: 6.1
+I0000 00:00:1769338105.781426  848629 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5942 MB memory:  -&gt; device: 0, name: NVIDIA RTX A1000, pci bus id: 0000:55:00.0, compute capability: 8.6
+I0000 00:00:1769338105.781911  848629 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 3667 MB memory:  -&gt; device: 1, name: Quadro P2000, pci bus id: 0000:a2:00.0, compute capability: 6.1
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1492,8 +1612,8 @@ I0000 00:00:1769251196.001818  630172 gpu_device.cc:2020] Created device /job:lo
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 &lt;tf.Tensor: shape=(500,), dtype=float64, numpy=
-array([ 0.19052648,  0.73291964,  0.97931413, ..., -1.19648019,
-       -1.02867735, -0.11387553], shape=(500,))&gt;
+array([-0.63638168,  0.67641478,  1.11601357, ..., -0.94245798,
+       -1.04728331, -0.31718558], shape=(500,))&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">

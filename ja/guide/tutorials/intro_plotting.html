@@ -145,7 +145,7 @@ np.random.seed(42)
 <li><p><strong>Auto-GPS</strong>: 時間軸の場合、デフォルトで <code class="docutils literal notranslate"><span class="pre">auto-gps</span></code> スケールが適用され、GPS時刻（大きなオフセット）が適切に処理されます。</p></li>
 <li><p><strong>レイアウト</strong>: 行・列の構造に合わせて <code class="docutils literal notranslate"><span class="pre">figsize</span></code> が自動調整されます。</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -165,6 +165,13 @@ plot.show()
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_plotting_3_0.png" src="../../_images/guide_tutorials_intro_plotting_3_0.png" />
+</div>
+</div>
 </section>
 <section id="2.-FrequencySeriesMatrix-Plotting">
 <h2>2. FrequencySeriesMatrix Plotting<a class="headerlink" href="#2.-FrequencySeriesMatrix-Plotting" title="Link to this heading"></a></h2>
@@ -173,7 +180,7 @@ plot.show()
 <li><p><strong>対数軸</strong>: データサイズ等の条件に応じて、X軸（周波数）やY軸（振幅）が自動的に対数スケールになります。</p></li>
 <li><p><strong>軸ラベル</strong>: “Frequency [Hz]” や “[unit]” が自動設定されます。</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
@@ -198,11 +205,18 @@ plot.show()
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_plotting_5_0.png" src="../../_images/guide_tutorials_intro_plotting_5_0.png" />
+</div>
+</div>
 </section>
 <section id="3.-FrequencySeriesList-Plotting-(参考)">
 <h2>3. FrequencySeriesList Plotting (参考)<a class="headerlink" href="#3.-FrequencySeriesList-Plotting-(参考)" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code> (または Dict) は、グリッド構造を持たない単純なリストです。 これも同様にプロット可能です。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -214,6 +228,13 @@ fs_list = FrequencySeriesList([fs1, fs2])
 
 fs_list.plot();
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_plotting_7_0.png" src="../../_images/guide_tutorials_intro_plotting_7_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -234,14 +255,14 @@ gc.collect()
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-5681
+16601
 </pre></div></div>
 </div>
 </section>
 <section id="4.-SpectrogramList-Plotting">
 <h2>4. SpectrogramList Plotting<a class="headerlink" href="#4.-SpectrogramList-Plotting" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> のプロットは、デフォルトで <code class="docutils literal notranslate"><span class="pre">geometry=(N,</span> <span class="pre">1)</span></code> の縦並びレイアウト、対数カラーバーなどが適用されます。 スペクトログラムも時間軸を持つため、GPS時刻を与えると <code class="docutils literal notranslate"><span class="pre">auto-gps</span></code> が機能します。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
@@ -255,6 +276,13 @@ spec_list = SpectrogramList([Spectrogram(np.random.rand(100, 50),    times=t, fr
                              Spectrogram(np.random.rand(100, 50)*10, times=t, frequencies=f, unit=u.count, name=&#39;Spec 2&#39;)])
 spec_list.plot();
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_plotting_10_0.png" src="../../_images/guide_tutorials_intro_plotting_10_0.png" />
 </div>
 </div>
 </section>
@@ -286,7 +314,7 @@ plot_opt.show();
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -294,6 +322,13 @@ plot_opt.show();
 Original samples: 100000000
 Plotted points: 10000
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_plotting_12_1.png" src="../../_images/guide_tutorials_intro_plotting_12_1.png" />
+</div>
 </div>
 <section id="コレクション・行列への適用とパラメータ指定">
 <h3>コレクション・行列への適用とパラメータ指定<a class="headerlink" href="#コレクション・行列への適用とパラメータ指定" title="Link to this heading"></a></h3>
@@ -316,13 +351,20 @@ plot_custom.show();
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Original: 20000, Plotted: 2000
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_plotting_14_1.png" src="../../_images/guide_tutorials_intro_plotting_14_1.png" />
+</div>
 </div>
 </section>
 </section>
@@ -357,14 +399,21 @@ plt.show();
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/washimi/work/gwexpy/gwexpy/plot/plot.py:843: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/gwexpy/plot/plot.py:843: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
   fig.tight_layout()
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_plotting_16_1.png" src="../../_images/guide_tutorials_intro_plotting_16_1.png" />
+</div>
 </div>
 </section>
 <section id="6.-PairPlot-Example">
@@ -397,13 +446,20 @@ pair.show()
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_plotting_18_0.png" src="../../_images/guide_tutorials_intro_plotting_18_0.png" />
+</div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;gwexpy.plot.pairplot.PairPlot at 0x750b629dcb00&gt;
+&lt;gwexpy.plot.pairplot.PairPlot at 0x7f39d0284920&gt;
 </pre></div></div>
 </div>
 </section>

@@ -187,7 +187,7 @@ tsm.plot();
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
@@ -295,6 +295,13 @@ tsm.plot();
     </tr>
   </tbody>
 </table></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_3_1.png" src="../../_images/guide_tutorials_matrix_timeseries_3_1.png" />
+</div>
 </div>
 </section>
 <section id="多様な入力パターン（コンストラクタ例）">
@@ -386,7 +393,7 @@ sub.plot(subplots=True, xscale=&quot;seconds&quot;);
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -396,6 +403,20 @@ sub.plot(subplots=True, xscale=&quot;seconds&quot;);
 [r0,c1] name ch01 channel X:B
 tsm[:,0] -&gt; &lt;class &#39;gwexpy.timeseries.matrix.TimeSeriesMatrix&#39;&gt; (2, 1, 1024)
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_7_1.png" src="../../_images/guide_tutorials_matrix_timeseries_7_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_7_2.png" src="../../_images/guide_tutorials_matrix_timeseries_7_2.png" />
+</div>
 </div>
 </section>
 <section id="サンプル軸編集">
@@ -422,7 +443,7 @@ padded.plot(subplots=True, xscale=&quot;seconds&quot;);
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -431,6 +452,27 @@ cropped &lt;class &#39;gwexpy.timeseries.matrix.TimeSeriesMatrix&#39;&gt; (2, 2,
 diffed (2, 2, 1023) dt 0.00390625 s
 padded (2, 2, 1124) t0 -0.1953125 s
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_9_1.png" src="../../_images/guide_tutorials_matrix_timeseries_9_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_9_2.png" src="../../_images/guide_tutorials_matrix_timeseries_9_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_9_3.png" src="../../_images/guide_tutorials_matrix_timeseries_9_3.png" />
+</div>
 </div>
 </section>
 <section id="時間領域処理（TimeSeries-メソッドの要素ごと適用）">
@@ -453,7 +495,7 @@ rs.plot(subplots=True, xscale=&quot;seconds&quot;);
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -462,6 +504,20 @@ original (2, 2, 1024) sample_rate 256.0 Hz
 bandpass (2, 2, 1024) sample_rate 256.0 Hz
 resample (2, 2, 512) sample_rate 128.0 Hz
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_11_1.png" src="../../_images/guide_tutorials_matrix_timeseries_11_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_11_2.png" src="../../_images/guide_tutorials_matrix_timeseries_11_2.png" />
+</div>
 </div>
 </section>
 <section id="欠損値処理-(Imputation)">
@@ -551,15 +607,36 @@ plt.close()
 <br/><br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 PCA Scores shape: (2, 1, 1024)
 Explained variance ratio: [0.57128681 0.41742564]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_17_1.png" src="../../_images/guide_tutorials_matrix_timeseries_17_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
 ICA Sources shape: (2, 1, 1024)
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_17_3.png" src="../../_images/guide_tutorials_matrix_timeseries_17_3.png" />
+</div>
 </div>
 </section>
 <section id="相互運用性-(Interop)-入門">
@@ -610,7 +687,7 @@ plt.yscale(&#39;log&#39;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -619,6 +696,13 @@ fft &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; 
 psd (2, 2, 129) unit V2 / Hz
 asd (2, 2, 129) unit V / Hz(1/2)
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_21_1.png" src="../../_images/guide_tutorials_matrix_timeseries_21_1.png" />
+</div>
 </div>
 </section>
 <section id="bivariate-スペクトル解析（coherence-例）">
@@ -644,7 +728,7 @@ except Exception as e:
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -652,6 +736,13 @@ except Exception as e:
 coherence &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 129) unit coherence
 shape mismatch -&gt; IndexError index 1 is out of bounds for axis 1 with size 1
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_23_1.png" src="../../_images/guide_tutorials_matrix_timeseries_23_1.png" />
+</div>
 </div>
 </section>
 <section id="表示系:-repr-/-plot-/-step">
@@ -706,7 +797,7 @@ c1   col1
 3    V  ch11     Y:B    1    1
 </pre></div></div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
@@ -814,6 +905,20 @@ c1   col1
     </tr>
   </tbody>
 </table></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_25_2.png" src="../../_images/guide_tutorials_matrix_timeseries_25_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_timeseries_25_3.png" src="../../_images/guide_tutorials_matrix_timeseries_25_3.png" />
+</div>
 </div>
 </section>
 <section id="まとめ">

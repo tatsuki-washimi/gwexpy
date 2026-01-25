@@ -203,7 +203,7 @@ asd (2, 2, 129) unit V / Hz(1/2)
 frequencies[:5] [0. 1. 2. 3. 4.] Hz
 </pre></div></div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
@@ -312,6 +312,13 @@ frequencies[:5] [0. 1. 2. 3. 4.] Hz
   </tbody>
 </table></div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_frequencyseries_3_2.png" src="../../_images/guide_tutorials_matrix_frequencyseries_3_2.png" />
+</div>
+</div>
 </section>
 <section id="多様な入力パターン（コンストラクタ例）">
 <h2>多様な入力パターン（コンストラクタ例）<a class="headerlink" href="#多様な入力パターン（コンストラクタ例）" title="Link to this heading"></a></h2>
@@ -415,7 +422,7 @@ plt.yscale(&quot;log&quot;)
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -426,18 +433,31 @@ plt.yscale(&quot;log&quot;)
 asd[:,0] -&gt; &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 1, 129)
 </pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_frequencyseries_7_1.png" src="../../_images/guide_tutorials_matrix_frequencyseries_7_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_frequencyseries_7_2.png" src="../../_images/guide_tutorials_matrix_frequencyseries_7_2.png" />
+</div>
+</div>
 </section>
 <section id="サンプル軸編集（frequency-axis）">
 <h2>サンプル軸編集（frequency axis）<a class="headerlink" href="#サンプル軸編集（frequency-axis）" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">diff</span></code> / <code class="docutils literal notranslate"><span class="pre">pad</span></code> は <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> を返す</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">crop</span></code> は現在 <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> を返すので、<code class="docutils literal notranslate"><span class="pre">view(FrequencySeriesMatrix)</span></code> で戻します（中身は同じ）</p></li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>band = asd.crop(start=5 * u.Hz, end=40 * u.Hz).view(FrequencySeriesMatrix)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>band = asd.crop(start=5 * u.Hz, end=40 * u.Hz)
 print(&quot;band&quot;, type(band), band.shape, &quot;span&quot;, band.xspan)
 band.plot(subplots=True)
 plt.xscale(&quot;log&quot;)
@@ -451,7 +471,7 @@ print(&quot;padded&quot;, type(padded), padded.shape, &quot;f0&quot;, padded.f0)
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -460,6 +480,13 @@ band &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt;
 diffed &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 34) df 1.0 Hz
 padded &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 45) f0 0.0 Hz
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_frequencyseries_9_1.png" src="../../_images/guide_tutorials_matrix_frequencyseries_9_1.png" />
+</div>
 </div>
 </section>
 <section id="演算（ufunc-/-apply_response）">
@@ -486,7 +513,7 @@ plt.yscale(&quot;log&quot;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -494,6 +521,13 @@ plt.yscale(&quot;log&quot;)
 scaled unit V / Hz(1/2)
 apply_response (2, 2, 35) dtype float64 unit V / Hz(1/2)
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_frequencyseries_11_1.png" src="../../_images/guide_tutorials_matrix_frequencyseries_11_1.png" />
+</div>
 </div>
 </section>
 <section id="filter（magnitude-only）">
@@ -519,7 +553,7 @@ tsm_filt[0, 0].plot(xscale=&quot;seconds&quot;);
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -527,6 +561,13 @@ tsm_filt[0, 0].plot(xscale=&quot;seconds&quot;);
 fft_filt (2, 2, 513) df 0.25 Hz
 tsm_filt (2, 2, 1024) dt 0.00390625 s
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_frequencyseries_13_1.png" src="../../_images/guide_tutorials_matrix_frequencyseries_13_1.png" />
+</div>
 </div>
 </section>
 <section id="ifft（FFT-から時間領域へ）">
@@ -546,7 +587,7 @@ tsm_back[0, 0].plot(xscale=&quot;seconds&quot;);
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -554,6 +595,20 @@ tsm_back[0, 0].plot(xscale=&quot;seconds&quot;);
 ifft back (2, 2, 1024) dt 0.00390625 s t0 0.0 s
 rms error (cell 0,0) 8.131556499372449e-17
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_frequencyseries_15_1.png" src="../../_images/guide_tutorials_matrix_frequencyseries_15_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_frequencyseries_15_2.png" src="../../_images/guide_tutorials_matrix_frequencyseries_15_2.png" />
+</div>
 </div>
 </section>
 <section id="表示系:-repr-/-plot-/-step">
@@ -613,7 +668,7 @@ c1   col1
 3  V / Hz(1/2)  ch11     Y:B    1    1
 </pre></div></div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
@@ -721,6 +776,20 @@ c1   col1
     </tr>
   </tbody>
 </table></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_frequencyseries_17_2.png" src="../../_images/guide_tutorials_matrix_frequencyseries_17_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_frequencyseries_17_3.png" src="../../_images/guide_tutorials_matrix_frequencyseries_17_3.png" />
+</div>
 </div>
 </section>
 <section id="まとめ">

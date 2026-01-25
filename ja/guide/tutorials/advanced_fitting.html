@@ -134,7 +134,7 @@ plt.rcParams[&#39;figure.figsize&#39;] = (10, 6)
 <section id="1.-データの準備">
 <h2>1. データの準備<a class="headerlink" href="#1.-データの準備" title="Link to this heading"></a></h2>
 <p>ここでは、ガウス関数にノイズを加えたダミーデータを作成します。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -153,6 +153,13 @@ y_noise = y_true + np.random.normal(0, 1.0, size=len(x))
 ts = TimeSeries(y_noise, dt=0.1, name=&#39;Noisy Gaussian&#39;, unit=&#39;V&#39;)
 ts.plot(title=&#39;Noisy Data for Gaussian Fit&#39;);
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_advanced_fitting_3_0.png" src="../../_images/guide_tutorials_advanced_fitting_3_0.png" />
 </div>
 </div>
 </section>
@@ -295,7 +302,7 @@ plt.show()
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -305,6 +312,13 @@ Errors: {&#39;a&#39;: 0.21465022616772478, &#39;mu&#39;: 0.028783389431543863, &
 Chi2: 125.15392927134539
 NDOF: 97
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_advanced_fitting_7_1.png" src="../../_images/guide_tutorials_advanced_fitting_7_1.png" />
+</div>
 </div>
 </section>
 <section id="3.-文字列によるモデル指定">
@@ -329,7 +343,7 @@ result_str.plot();
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
@@ -429,11 +443,18 @@ result_str.plot();
     </tr>
 </table></div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_advanced_fitting_9_1.png" src="../../_images/guide_tutorials_advanced_fitting_9_1.png" />
+</div>
+</div>
 </section>
 <section id="4.-複素数フィッティング-(伝達関数)">
 <h2>4. 複素数フィッティング (伝達関数)<a class="headerlink" href="#4.-複素数フィッティング-(伝達関数)" title="Link to this heading"></a></h2>
 <p>伝達関数などの複素数データに対してもフィッティングを行えます。 コスト関数として <span class="math notranslate nohighlight">\(\chi^2 = \sum (Re_{diff})^2 + \sum (Im_{diff})^2\)</span> を最小化し、実部と虚部を同時にフィットします。 結果のプロットは自動的にボード線図（振幅・位相）になります。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
@@ -467,6 +488,13 @@ plt.show()
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_advanced_fitting_11_0.png" src="../../_images/guide_tutorials_advanced_fitting_11_0.png" />
+</div>
+</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -497,7 +525,7 @@ plt.show()
 Fit Start...
 </pre></div></div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
@@ -597,6 +625,13 @@ Fit Start...
     </tr>
 </table></div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_advanced_fitting_12_2.png" src="../../_images/guide_tutorials_advanced_fitting_12_2.png" />
+</div>
+</div>
 </section>
 <section id="5.-MCMC-解析-(emcee)">
 <h2>5. MCMC 解析 (emcee)<a class="headerlink" href="#5.-MCMC-解析-(emcee)" title="Link to this heading"></a></h2>
@@ -624,15 +659,22 @@ except Exception as e:
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 /home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/astropy/units/quantity.py:1329: ComplexWarning: Casting complex values to real discards the imaginary part
   return float(self.to_value(dimensionless_unscaled))
-100%|██████████| 1000/1000 [00:02&lt;00:00, 436.73it/s]
+100%|███████████████████████████████████████| 1000/1000 [00:02&lt;00:00, 455.34it/s]
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_advanced_fitting_14_1.png" src="../../_images/guide_tutorials_advanced_fitting_14_1.png" />
+</div>
 </div>
 </section>
 <section id="新しい共通モデルの使用例">
@@ -760,11 +802,18 @@ Power law alpha: -1.5073254489014472
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_advanced_fitting_16_2.png" src="../../_images/guide_tutorials_advanced_fitting_16_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 Damped oscillation frequency: 9.993425925552769
 </pre></div></div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
@@ -885,6 +934,13 @@ Damped oscillation frequency: 9.993425925552769
         <td> 6.74e-05 </td>
     </tr>
 </table></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_advanced_fitting_16_5.png" src="../../_images/guide_tutorials_advanced_fitting_16_5.png" />
+</div>
 </div>
 </section>
 </section>

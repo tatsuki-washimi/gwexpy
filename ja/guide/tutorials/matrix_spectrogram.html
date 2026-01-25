@@ -174,7 +174,7 @@ plt.show()
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
@@ -283,6 +283,13 @@ plt.show()
   </tbody>
 </table></div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_spectrogram_3_1.png" src="../../_images/guide_tutorials_matrix_spectrogram_3_1.png" />
+</div>
+</div>
 </section>
 <section id="2.-SpectrogramMatrix-の作成">
 <h2>2. SpectrogramMatrix の作成<a class="headerlink" href="#2.-SpectrogramMatrix-の作成" title="Link to this heading"></a></h2>
@@ -299,7 +306,7 @@ spec_matrix.plot();
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -307,6 +314,13 @@ spec_matrix.plot();
 Type: &lt;class &#39;gwexpy.spectrogram.matrix.SpectrogramMatrix&#39;&gt;
 Shape: (2, 2, 2, 33)
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_spectrogram_5_1.png" src="../../_images/guide_tutorials_matrix_spectrogram_5_1.png" />
+</div>
 </div>
 <section id="属性へのアクセス">
 <h3>属性へのアクセス<a class="headerlink" href="#属性へのアクセス" title="Link to this heading"></a></h3>
@@ -361,7 +375,7 @@ Mean Data Shape: (2, 2, 33)
 <section id="4.-プロット">
 <h2>4. プロット<a class="headerlink" href="#4.-プロット" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">plot()</span></code> メソッドを使用すると、データを可視化できます。 3次元データ（Batch, Time, Freq）に対して <code class="docutils literal notranslate"><span class="pre">plot()</span></code> を呼び出すと、デフォルトでは<strong>バッチ方向の平均</strong>がプロットされます。 これは複数のイベントの平均的な特徴を確認するのに便利です。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
@@ -370,8 +384,15 @@ plt.show()
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_spectrogram_11_0.png" src="../../_images/guide_tutorials_matrix_spectrogram_11_0.png" />
+</div>
+</div>
 <p>特定のチャネルだけをプロットしたい場合は、<code class="docutils literal notranslate"><span class="pre">monitor</span></code> 引数にインデックスを指定します。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
@@ -383,6 +404,20 @@ plot0.show()
 plot5 = spec_matrix.plot(monitor=3, title=&quot;Channel 5 Spectrogram&quot;)
 plot5.show()
 </pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_spectrogram_13_0.png" src="../../_images/guide_tutorials_matrix_spectrogram_13_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_matrix_spectrogram_13_1.png" src="../../_images/guide_tutorials_matrix_spectrogram_13_1.png" />
 </div>
 </div>
 </section>
@@ -422,7 +457,8 @@ else:
 <div class="highlight"><pre>
 PyTorch Tensor: &lt;class &#39;torch.Tensor&#39;&gt;
 Shape: torch.Size([2, 2, 2, 33])
-CuPy is not installed or GPU driver is not working.
+CuPy Array: &lt;class &#39;cupy.ndarray&#39;&gt;
+Shape: (2, 2, 2, 33)
 </pre></div></div>
 </div>
 </section>

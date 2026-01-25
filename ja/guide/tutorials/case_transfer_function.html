@@ -184,7 +184,7 @@ Plot(ts_input,ts_output,separate=True);
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -193,12 +193,19 @@ Input data shape: (122880,)
 Output data shape: (122880,)
 </pre></div></div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_case_transfer_function_3_1.png" src="../../_images/guide_tutorials_case_transfer_function_3_1.png" />
+</div>
+</div>
 </section>
 <section id="2.-伝達関数の推定">
 <h2>2. 伝達関数の推定<a class="headerlink" href="#2.-伝達関数の推定" title="Link to this heading"></a></h2>
 <p>入出力の時系列データ <code class="docutils literal notranslate"><span class="pre">ts_input</span></code> と <code class="docutils literal notranslate"><span class="pre">ts_output</span></code> から、周波数応答関数（伝達関数）を推定します。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">transfer_function</span></code> メソッドを使用します。</p>
 <p>また、測定の信頼性を確認するために<strong>コヒーレンス（Coherence）</strong>も計算します。 コヒーレンスが 1 に近い周波数帯域は、入出力の関係が線形であり、ノイズの影響が少ないことを示します。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
@@ -241,6 +248,13 @@ ax.grid(True, which=&quot;both&quot;, alpha=0.5)
 plt.tight_layout()
 plt.show()
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_case_transfer_function_5_0.png" src="../../_images/guide_tutorials_case_transfer_function_5_0.png" />
 </div>
 </div>
 </section>
@@ -293,8 +307,8 @@ print(result)
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                                Migrad                                   │
 ├──────────────────────────────────┬──────────────────────────────────────┤
-│ FCN = 6.983 (χ²/ndof = 0.0)      │              Nfcn = 118              │
-│ EDM = 4.22e-06 (Goal: 0.0002)    │                                      │
+│ FCN = 5.474 (χ²/ndof = 0.0)      │              Nfcn = 116              │
+│ EDM = 7.46e-06 (Goal: 0.0002)    │                                      │
 ├──────────────────────────────────┼──────────────────────────────────────┤
 │          Valid Minimum           │   Below EDM threshold (goal x 10)    │
 ├──────────────────────────────────┼──────────────────────────────────────┤
@@ -305,16 +319,16 @@ print(result)
 ┌───┬──────┬───────────┬───────────┬────────────┬────────────┬─────────┬─────────┬───────┐
 │   │ Name │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │
 ├───┼──────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤
-│ 0 │ amp  │   0.935   │   0.007   │            │            │         │         │       │
-│ 1 │ f0   │  299.997  │   0.021   │            │            │         │         │       │
-│ 2 │ Q    │   49.5    │    0.5    │            │            │         │         │       │
+│ 0 │ amp  │   0.934   │   0.007   │            │            │         │         │       │
+│ 1 │ f0   │  299.994  │   0.021   │            │            │         │         │       │
+│ 2 │ Q    │   49.6    │    0.5    │            │            │         │         │       │
 └───┴──────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘
 ┌─────┬────────────────────────────┐
 │     │      amp       f0        Q │
 ├─────┼────────────────────────────┤
-│ amp │ 4.33e-05       -0 -2.29e-3 │
-│  f0 │       -0 0.000451  -0.1e-3 │
-│   Q │ -2.29e-3  -0.1e-3    0.241 │
+│ amp │ 4.33e-05       -0 -2.30e-3 │
+│  f0 │       -0 0.000448  -0.1e-3 │
+│   Q │ -2.30e-3  -0.1e-3    0.243 │
 └─────┴────────────────────────────┘
 </pre></div></div>
 </div>
@@ -339,16 +353,23 @@ plt.show()
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 --- Estimated Parameters ---
-Resonance Frequency (f0): 299.9966 Hz (True: 300.0)
-Quality Factor (Q):       49.5111      (True: 50.0)
-Gain (Amp):               0.9348
+Resonance Frequency (f0): 299.9944 Hz (True: 300.0)
+Quality Factor (Q):       49.5975      (True: 50.0)
+Gain (Amp):               0.9343
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_case_transfer_function_9_1.png" src="../../_images/guide_tutorials_case_transfer_function_9_1.png" />
+</div>
 </div>
 </section>
 </section>

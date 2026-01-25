@@ -187,6 +187,25 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import os
+
+os.environ.setdefault(&quot;TF_CPP_MIN_LOG_LEVEL&quot;, &quot;3&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;3&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
 import numpy as np
 from astropy import units as u
@@ -227,7 +246,7 @@ import lal
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># サンプルデータの作成
@@ -266,7 +285,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_3_1.png" src="../../_images/guide_tutorials_intro_interop_3_1.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_4_1.png" src="../../_images/guide_tutorials_intro_interop_4_1.png" />
 </div>
 </div>
 </section>
@@ -286,7 +305,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> メソッドを使うと、<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を <code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> に変換できます。 インデックスは <code class="docutils literal notranslate"><span class="pre">datetime</span></code> (UTC), <code class="docutils literal notranslate"><span class="pre">gps</span></code>, <code class="docutils literal notranslate"><span class="pre">seconds</span></code> (Unix timestamp) から選択可能です。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -343,7 +362,7 @@ Name: demo_signal, Length: 1000, dtype: float64
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_7_2.png" src="../../_images/guide_tutorials_intro_interop_7_2.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_8_2.png" src="../../_images/guide_tutorials_intro_interop_8_2.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -370,7 +389,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">to_polars()</span></code> で Polars DataFrame/Series に変換できます。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -424,7 +443,7 @@ shape: (5, 2)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_9_1.png" src="../../_images/guide_tutorials_intro_interop_9_1.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_10_1.png" src="../../_images/guide_tutorials_intro_interop_10_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -449,7 +468,7 @@ Recovered from Polars: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">xarray</span></code> は多次元のラベル付き配列を扱う強力なライブラリです。<code class="docutils literal notranslate"><span class="pre">to_xarray()</span></code> でメタデータを保持したまま変換できます。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -502,7 +521,7 @@ Attributes: {&#39;unit&#39;: &#39;V&#39;, &#39;name&#39;: &#39;demo_signal&#39;,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_11_1.png" src="../../_images/guide_tutorials_intro_interop_11_1.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_12_1.png" src="../../_images/guide_tutorials_intro_interop_12_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -528,7 +547,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div><p><strong>Dask</strong>: Dask は並列計算のためのライブラリで、NumPy/Pandas を超える大規模データの処理を可能にします。 📚 <a class="reference external" href="https://www.dask.org/">Dask Documentation</a></p>
 </div></blockquote>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -575,7 +594,7 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">to_json()</span></code> や <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> で JSON 互換の辞書形式を出力できます。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import json
@@ -638,7 +657,7 @@ del ts_json, ts_dict_temp, ts_recovered
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_15_1.png" src="../../_images/guide_tutorials_intro_interop_15_1.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_16_1.png" src="../../_images/guide_tutorials_intro_interop_16_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -666,7 +685,7 @@ Recovered from JSON: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">to_hdf5_dataset()</span></code> で HDF5 への保存をサポート。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -722,7 +741,7 @@ Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_18_1.png" src="../../_images/guide_tutorials_intro_interop_18_1.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_19_1.png" src="../../_images/guide_tutorials_intro_interop_19_1.png" />
 </div>
 </div>
 </section>
@@ -733,7 +752,7 @@ Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">to_sqlite()</span></code> で DB 永続化をサポート。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sqlite3
@@ -783,7 +802,7 @@ Recovered from SQLite: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_20_1.png" src="../../_images/guide_tutorials_intro_interop_20_1.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_21_1.png" src="../../_images/guide_tutorials_intro_interop_21_1.png" />
 </div>
 </div>
 </section>
@@ -794,7 +813,7 @@ Recovered from SQLite: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code> でクラウドストレージ向き形式に対応。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -861,7 +880,7 @@ Recovered from Zarr: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_22_1.png" src="../../_images/guide_tutorials_intro_interop_22_1.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_23_1.png" src="../../_images/guide_tutorials_intro_interop_23_1.png" />
 </div>
 </div>
 </section>
@@ -872,7 +891,7 @@ Recovered from Zarr: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">to_netcdf4()</span></code> で気象・海洋データの標準に対応。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -906,13 +925,36 @@ except ImportError:
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-netCDF4 not installed.
+--- netCDF4 Variable Info ---
+&lt;class &#39;netCDF4.Variable&#39;&gt;
+float64 my_signal(time)
+    t0: 1234567890.0
+    dt: 0.01
+    units: V
+    long_name: demo_signal
+unlimited dimensions:
+current shape = (1000,)
+filling on, default _FillValue of 9.969209968386869e+36 used
+Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: V,
+           t0: 1234567890.0 s,
+           dt: 0.01 s,
+           name: demo_signal,
+           channel: None)
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_25_1.png" src="../../_images/guide_tutorials_intro_interop_25_1.png" />
+</div>
 </div>
 </section>
 </section>
@@ -925,7 +967,7 @@ netCDF4 not installed.
 </div></blockquote>
 <p>ディープラーニングの前処理として、<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を直接 <code class="docutils literal notranslate"><span class="pre">torch.Tensor</span></code> に変換できます。GPU転送も可能です。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -975,7 +1017,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div></blockquote>
 <p>GPU 上での計算を可能にする CuPy 配列へ変換できます。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from gwexpy.interop import is_cupy_available
@@ -1008,12 +1050,35 @@ else:
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--- CuPy Array (on GPU) ---
+[ 0.          0.06279052  0.12533323 ... -0.18738131 -0.12533323
+ -0.06279052]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_30_1.png" src="../../_images/guide_tutorials_intro_interop_30_1.png" />
+</div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-CuPy or CUDA driver not available.
+Recovered from CuPy: TimeSeries([ 0.        ,  0.12558104,  0.25066647, ...,
+            -0.37476263, -0.25066647, -0.12558104]
+           unit: dimensionless,
+           t0: 1234567890.0 1 / Hz,
+           dt: 0.01 1 / Hz,
+           name: None,
+           channel: None)
 </pre></div></div>
 </div>
 </section>
@@ -1023,7 +1088,7 @@ CuPy or CUDA driver not available.
 <div><p><strong>TensorFlow</strong>: TensorFlow は Google が開発した機械学習プラットフォームで、大規模な本番環境での利用に優れています。 📚 <a class="reference external" href="https://www.tensorflow.org/">TensorFlow Documentation</a></p>
 </div></blockquote>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1051,9 +1116,6 @@ except ImportError:
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-2026-01-24 19:40:49.843800: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-2026-01-24 19:40:49.883708: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
-To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX512_FP16 AVX_VNNI AMX_TILE AMX_INT8 AMX_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 /home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/attr_value.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
   warnings.warn(
 /home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/tensor.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
@@ -1120,8 +1182,8 @@ Recovered from TF: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-I0000 00:00:1769251251.461627  630814 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5943 MB memory:  -&gt; device: 0, name: NVIDIA RTX A1000, pci bus id: 0000:55:00.0, compute capability: 8.6
-I0000 00:00:1769251251.462126  630814 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 3735 MB memory:  -&gt; device: 1, name: Quadro P2000, pci bus id: 0000:a2:00.0, compute capability: 6.1
+I0000 00:00:1769342196.568425  876747 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5938 MB memory:  -&gt; device: 0, name: NVIDIA RTX A1000, pci bus id: 0000:55:00.0, compute capability: 8.6
+I0000 00:00:1769342196.568982  876747 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 3667 MB memory:  -&gt; device: 1, name: Quadro P2000, pci bus id: 0000:a2:00.0, compute capability: 6.1
 </pre></div></div>
 </div>
 </section>
@@ -1131,7 +1193,7 @@ I0000 00:00:1769251251.462126  630814 gpu_device.cc:2020] Created device /job:lo
 <div><p><strong>JAX</strong>: JAX は Google が開発した高性能数値計算ライブラリで、自動微分と XLA コンパイルによる高速化が特徴です。 📚 <a class="reference external" href="https://jax.readthedocs.io/">JAX Documentation</a></p>
 </div></blockquote>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1161,7 +1223,7 @@ except ImportError:
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-WARNING:2026-01-24 19:40:51,584:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+WARNING:2026-01-25 20:56:36,683:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1202,7 +1264,7 @@ Recovered from JAX: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div></blockquote>
 <p>天文学分野で標準的な <code class="docutils literal notranslate"><span class="pre">astropy.timeseries.TimeSeries</span></code> との相互変換もサポートしています。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1248,7 +1310,7 @@ except ImportError:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_37_1.png" src="../../_images/guide_tutorials_intro_interop_37_1.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_38_1.png" src="../../_images/guide_tutorials_intro_interop_38_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1275,7 +1337,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> は、Astropy エコシステムのスペクトル解析ライブラリ <code class="docutils literal notranslate"><span class="pre">specutils</span></code> の <code class="docutils literal notranslate"><span class="pre">Spectrum1D</span></code> オブジェクトと相互変換可能です。 単位 (Units) や周波数軸が適切に保持されます。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1307,8 +1369,8 @@ except ImportError:
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 specutils Spectrum1D: Spectrum (length=100)
-Flux=[0.71245823 0.58766184 0.71875827 ... 0.51528888 0.64642943
-      0.4609671 ] Jy,  mean=0.50999 Jy
+Flux=[0.76947961 0.77852583 0.20217518 ... 0.73100724 0.63882659
+      0.18566241] Jy,  mean=0.43060 Jy
 Spectral Axis=[ 10.          10.90909091  11.81818182 ...
                 98.18181818  99.09090909 100.        ] Hz,  mean=55.00000 Hz
 Spectral axis unit: Hz
@@ -1323,7 +1385,7 @@ Restored FrequencySeries unit: Jy
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> は、汎用的なスペクトル解析ツールキット <code class="docutils literal notranslate"><span class="pre">pyspeckit</span></code> の <code class="docutils literal notranslate"><span class="pre">Spectrum</span></code> オブジェクトとも連携可能です。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1367,7 +1429,7 @@ pyspeckit library not found. Skipping example.
 <p>高エネルギー物理学で標準的なツールである <strong>ROOT</strong> との相互運用が強化されました。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の Series オブジェクトを ROOT の <code class="docutils literal notranslate"><span class="pre">TGraph</span></code> や <code class="docutils literal notranslate"><span class="pre">TH1D</span></code>, <code class="docutils literal notranslate"><span class="pre">TH2D</span></code> に高速に変換したり、ROOT ファイルを作成することができます。 逆に、ROOT オブジェクトから <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> などを復元することも可能です。</p>
 <p><strong>Note</strong>: この機能を使用するには <code class="docutils literal notranslate"><span class="pre">ROOT</span></code> (PyROOT) がインストールされている必要があります。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1432,7 +1494,7 @@ Created TH1D: signal with 1000 bins
 </div></blockquote>
 <p>既存の ROOT ファイルにあるヒストグラムやグラフを読み込んで、解析しやすい <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> オブジェクトに戻すことができます。</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1468,7 +1530,7 @@ except ImportError:
 </div></blockquote>
 <p>地震学で標準的な ObsPy との相互運用をサポート。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1507,7 +1569,7 @@ except ImportError:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_49_1.png" src="../../_images/guide_tutorials_intro_interop_49_1.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_50_1.png" src="../../_images/guide_tutorials_intro_interop_50_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1515,8 +1577,8 @@ except ImportError:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Recovered from ObsPy: TimeSeries([-0.71446678,  0.01550151, -0.65943426, ...,
-             0.11631675, -0.21327438, -0.40719474]
+Recovered from ObsPy: TimeSeries([ 0.65027877, -0.06123054, -0.46661033, ...,
+            -0.01863597, -0.58434576,  0.41377832]
            unit: dimensionless,
            t0: 0.0 s,
            dt: 0.01001001001001001 s,
@@ -1525,7 +1587,7 @@ Recovered from ObsPy: TimeSeries([-0.71446678,  0.01550151, -0.65943426, ...,
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1557,7 +1619,7 @@ ObsPy Trace: .signal.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:10.00000
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、地球物理学のフォワード計算・反転モデリングライブラリである <code class="docutils literal notranslate"><span class="pre">SimPEG</span></code> との連携をサポートしています。 <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> (TDEM) および <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> (FDEM) を <code class="docutils literal notranslate"><span class="pre">simpeg.data.Data</span></code> オブジェクトに変換したり、その逆を行ったりできます。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1592,7 +1654,8 @@ except ImportError:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-SimPEG library not found. Skipping example.
+SimPEG TDEM data shape: (100,)
+SimPEG FDEM data shape: (10,)
 </pre></div></div>
 </div>
 </section>
@@ -1603,7 +1666,7 @@ SimPEG library not found. Skipping example.
 </div></blockquote>
 <p>地磁気地電流法データの MTH5 保存に対応。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1639,28 +1702,51 @@ except ImportError:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:54.576066+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterSurvey, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:54.577479+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Reports, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:54.833050+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Standards, skipping from_dict.</span>
-<span class="ansi-bold">2026-01-24T19:40:54.838311+0900 | INFO | mth5.mth5 | _initialize_file | Initialized MTH5 0.2.0 file /tmp/tmp0fmumz5q.h5 in mode a</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:54.841810+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterStation, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:54.842519+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Reports, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:54.843296+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Filters, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:55.070556+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Standards, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:55.076393+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Station, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:55.079527+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for TransferFunctions, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:55.080246+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterFC, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:55.081339+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterFeatures, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:55.082556+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Run, skipping from_dict.</span>
-<span class="ansi-bold">2026-01-24T19:40:55.091533+0900 | INFO | mth5.mth5 | close_mth5 | Flushing and closing /tmp/tmp0fmumz5q.h5</span>
-Saved to MTH5 file: /tmp/tmp0fmumz5q.h5
-<span class="ansi-bold">2026-01-24T19:40:55.100275+0900 | INFO | mth5.mth5 | close_mth5 | Flushing and closing /tmp/tmp0fmumz5q.h5</span>
-Recovered from MTH5: TimeSeries([-0.71446678,  0.01550151, -0.65943426, ...,
-             0.11631675, -0.21327438, -0.40719474]
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.431698+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterSurvey, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.432932+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Reports, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.672727+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Standards, skipping from_dict.</span>
+<span class="ansi-bold">2026-01-25T20:56:39.678086+0900 | INFO | mth5.mth5 | _initialize_file | Initialized MTH5 0.2.0 file /tmp/tmp8ceso69r.h5 in mode a</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.681710+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterStation, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.682543+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Reports, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.683581+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Filters, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.923706+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Standards, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.930230+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Station, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.933714+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for TransferFunctions, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.934433+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterFC, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.935043+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterFeatures, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.936129+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Run, skipping from_dict.</span>
+<span class="ansi-bold">2026-01-25T20:56:39.950396+0900 | INFO | mth5.mth5 | close_mth5 | Flushing and closing /tmp/tmp8ceso69r.h5</span>
+Saved to MTH5 file: /tmp/tmp8ceso69r.h5
+<span class="ansi-bold">2026-01-25T20:56:39.961567+0900 | INFO | mth5.mth5 | close_mth5 | Flushing and closing /tmp/tmp8ceso69r.h5</span>
+Recovered from MTH5: TimeSeries([ 1.37697923,  2.74600371,  0.57303984, -0.48362728,
+            -0.96553122, -0.70018454, -0.08524377,  0.99799384,
+            -0.82295412, -1.06086331, -1.50269587,  0.58525061,
+             0.96779232,  0.35802838, -1.24321113,  0.62656488,
+            -0.57134632,  0.41579589, -2.0817127 ,  1.27706321,
+             0.69441331,  1.45134997,  1.05988574, -1.11001549,
+             0.68599805,  0.17873185, -1.05380419,  1.4889685 ,
+            -0.32326462,  0.47210844, -1.58942958, -0.55613864,
+             0.56195833, -0.44565946,  1.19371384,  0.29236831,
+            -0.95442692, -0.06685253, -1.84991027, -0.89180937,
+            -1.02650529, -1.1641888 , -0.19633189,  0.35450968,
+             0.83668577,  1.58025183, -0.49110584,  0.68944012,
+             0.36510761,  0.59129525, -1.50778215,  1.21943731,
+             1.8128744 , -0.21861869,  1.32687524, -1.21533771,
+             0.18979871,  0.53607996,  1.40211139, -0.08524264,
+             0.76481784, -2.84872041,  0.14370894,  1.44605315,
+             0.71567087,  1.12744524,  1.41941416,  1.45615169,
+            -0.87680923, -0.47460987, -1.17364865,  0.89696646,
+            -0.23824109,  0.11302793, -1.12196987,  0.74600902,
+            -0.43916108, -1.70279169, -0.61829908,  1.02956078,
+            -0.36119488, -0.55727432, -0.56320475, -0.47863558,
+            -0.19090784, -0.83583309, -0.56740253, -0.30680165,
+             0.63053984,  1.12227422, -0.82175944,  0.07673619,
+             0.42627604,  1.48997376,  0.46014614,  1.18616558,
+            -0.24757655, -1.04212506,  1.8282951 , -1.44792572]
            unit: dimensionless,
            t0: 0.0 s,
            dt: 1.0 s,
-           name: signal,
+           name: Ex,
            channel: None)
 </pre></div></div>
 </div>
@@ -1668,7 +1754,7 @@ Recovered from MTH5: TimeSeries([-0.71446678,  0.01550151, -0.65943426, ...,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_54_1.png" src="../../_images/guide_tutorials_intro_interop_54_1.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_55_1.png" src="../../_images/guide_tutorials_intro_interop_55_1.png" />
 </div>
 </div>
 </section>
@@ -1685,7 +1771,7 @@ Recovered from MTH5: TimeSeries([-0.71446678,  0.01550151, -0.65943426, ...,
 </div></blockquote>
 <p>音声処理ライブラリ Librosa や Pydub との連携をサポート。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1719,14 +1805,14 @@ except ImportError:
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 --- Librosa Data ---
-Signal shape: (1000,), Sample rate: 99
+Signal shape: (100,), Sample rate: 100
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_57_1.png" src="../../_images/guide_tutorials_intro_interop_57_1.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_58_1.png" src="../../_images/guide_tutorials_intro_interop_58_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1734,11 +1820,34 @@ Signal shape: (1000,), Sample rate: 99
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Recovered from Librosa: TimeSeries([-0.7144668 ,  0.01550151, -0.65943426, ...,
-             0.11631675, -0.21327437, -0.40719473]
+Recovered from Librosa: TimeSeries([ 1.3769792 ,  2.7460036 ,  0.5730398 , -0.4836273 ,
+            -0.96553123, -0.7001845 , -0.08524377,  0.9979938 ,
+            -0.8229541 , -1.0608633 , -1.5026959 ,  0.5852506 ,
+             0.96779233,  0.35802838, -1.2432112 ,  0.62656486,
+            -0.57134634,  0.4157959 , -2.0817127 ,  1.2770633 ,
+             0.6944133 ,  1.45135   ,  1.0598857 , -1.1100155 ,
+             0.685998  ,  0.17873184, -1.0538042 ,  1.4889685 ,
+            -0.32326463,  0.47210845, -1.5894296 , -0.55613863,
+             0.5619583 , -0.44565946,  1.1937138 ,  0.2923683 ,
+            -0.95442694, -0.06685253, -1.8499103 , -0.89180934,
+            -1.0265052 , -1.1641887 , -0.19633189,  0.35450968,
+             0.8366858 ,  1.5802518 , -0.49110582,  0.68944013,
+             0.36510763,  0.59129524, -1.5077821 ,  1.2194374 ,
+             1.8128744 , -0.21861869,  1.3268752 , -1.2153378 ,
+             0.18979871,  0.53607994,  1.4021114 , -0.08524264,
+             0.76481783, -2.8487203 ,  0.14370894,  1.4460531 ,
+             0.7156709 ,  1.1274452 ,  1.4194142 ,  1.4561517 ,
+            -0.87680924, -0.47460988, -1.1736486 ,  0.89696646,
+            -0.23824109,  0.11302793, -1.1219698 ,  0.746009  ,
+            -0.43916106, -1.7027917 , -0.61829907,  1.0295608 ,
+            -0.36119488, -0.55727434, -0.56320477, -0.47863558,
+            -0.19090784, -0.8358331 , -0.56740254, -0.30680165,
+             0.63053983,  1.1222743 , -0.82175946,  0.07673619,
+             0.42627603,  1.4899738 ,  0.46014613,  1.1861656 ,
+            -0.24757655, -1.0421251 ,  1.8282951 , -1.4479257 ]
            unit: dimensionless,
            t0: 0.0 s,
-           dt: 0.010101010101010102 s,
+           dt: 0.01 s,
            name: None,
            channel: None)
 </pre></div></div>
@@ -1754,7 +1863,7 @@ Recovered from Librosa: TimeSeries([-0.7144668 ,  0.01550151, -0.65943426, ...,
 </div></blockquote>
 <p>脳電図 (EEG/MEG) 解析パッケージ MNE との連携。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1785,14 +1894,14 @@ except ImportError:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Creating RawArray with float64 data, n_channels=1, n_times=1000
-    Range : 0 ... 999 =      0.000 ...    10.000 secs
+Creating RawArray with float64 data, n_channels=1, n_times=100
+    Range : 0 ... 99 =      0.000 ...     0.990 secs
 Ready.
 --- MNE Raw ---
-&lt;RawArray | 1 x 1000 (10.0 s), ~13 KiB, data loaded&gt;
+&lt;RawArray | 1 x 100 (1.0 s), ~6 KiB, data loaded&gt;
 &lt;Info | 7 non-empty values
  bads: []
- ch_names: signal
+ ch_names: ch0
  chs: 1 misc
  custom_ref_applied: False
  highpass: 0.0 Hz
@@ -1800,19 +1909,42 @@ Ready.
  meas_date: unspecified
  nchan: 1
  projs: []
- sfreq: 99.9 Hz
+ sfreq: 100.0 Hz
 &gt;
-Recovered from MNE: TimeSeries([-0.71446678,  0.01550151, -0.65943426, ...,
-             0.11631675, -0.21327438, -0.40719474]
+Recovered from MNE: TimeSeries([ 1.37697923,  2.74600371,  0.57303984, -0.48362728,
+            -0.96553122, -0.70018454, -0.08524377,  0.99799384,
+            -0.82295412, -1.06086331, -1.50269587,  0.58525061,
+             0.96779232,  0.35802838, -1.24321113,  0.62656488,
+            -0.57134632,  0.41579589, -2.0817127 ,  1.27706321,
+             0.69441331,  1.45134997,  1.05988574, -1.11001549,
+             0.68599805,  0.17873185, -1.05380419,  1.4889685 ,
+            -0.32326462,  0.47210844, -1.58942958, -0.55613864,
+             0.56195833, -0.44565946,  1.19371384,  0.29236831,
+            -0.95442692, -0.06685253, -1.84991027, -0.89180937,
+            -1.02650529, -1.1641888 , -0.19633189,  0.35450968,
+             0.83668577,  1.58025183, -0.49110584,  0.68944012,
+             0.36510761,  0.59129525, -1.50778215,  1.21943731,
+             1.8128744 , -0.21861869,  1.32687524, -1.21533771,
+             0.18979871,  0.53607996,  1.40211139, -0.08524264,
+             0.76481784, -2.84872041,  0.14370894,  1.44605315,
+             0.71567087,  1.12744524,  1.41941416,  1.45615169,
+            -0.87680923, -0.47460987, -1.17364865,  0.89696646,
+            -0.23824109,  0.11302793, -1.12196987,  0.74600902,
+            -0.43916108, -1.70279169, -0.61829908,  1.02956078,
+            -0.36119488, -0.55727432, -0.56320475, -0.47863558,
+            -0.19090784, -0.83583309, -0.56740253, -0.30680165,
+             0.63053984,  1.12227422, -0.82175944,  0.07673619,
+             0.42627604,  1.48997376,  0.46014614,  1.18616558,
+            -0.24757655, -1.04212506,  1.8282951 , -1.44792572]
            unit: dimensionless,
            t0: 0.0 s,
-           dt: 0.01001001001001001 s,
-           name: signal,
+           dt: 0.01 s,
+           name: ch0,
            channel: None)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1832,10 +1964,10 @@ except ImportError:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Creating RawArray with float64 data, n_channels=1, n_times=1000
-    Range : 0 ... 999 =      0.000 ...    10.000 secs
+Creating RawArray with float64 data, n_channels=1, n_times=100
+    Range : 0 ... 99 =      0.000 ...     0.990 secs
 Ready.
-MNE Raw: &lt;RawArray | 1 x 1000 (10.0 s), ~13 KiB, data loaded&gt;
+MNE Raw: &lt;RawArray | 1 x 100 (1.0 s), ~6 KiB, data loaded&gt;
 </pre></div></div>
 </div>
 </section>
@@ -1844,7 +1976,7 @@ MNE Raw: &lt;RawArray | 1 x 1000 (10.0 s), ~13 KiB, data loaded&gt;
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> や <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> は、<code class="docutils literal notranslate"><span class="pre">quantities.Quantity</span></code> オブジェクトと相互変換可能です。 これは Elephant や Neo との連携に役立ちます。</p>
 <p>※ 事前に <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">quantities</span></code> が必要です。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1878,32 +2010,32 @@ except ImportError:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Quantities object: [239.69530208 361.72580148 439.7445373  192.54139345
- 521.33791358 571.14150625 447.63515626 203.91490693
- 942.1610939  672.84859018 207.43235439 853.17968312
- 520.12293892 606.93416933 891.28989347 437.50506001
-  76.22167082 785.18733074 714.2387838  679.70457191
- 994.3106082  613.29924397 385.1868727  355.13466817
- 536.71066818 763.76982648 989.37106689  44.87016592
- 778.75149103 244.30919244 231.52462874 992.9552284
- 410.69026471 613.2328485  790.60127954 663.13604225
- 566.66602843 816.24241828 817.20769284 904.72496082
- 868.87362281 638.4903775  748.34716321 404.19970736
- 269.96521155 104.93654675 498.76456568 116.2178876
- 404.91223752 267.10149269 829.01225337 470.4548261
- 291.75601919 741.33968263  60.36965048  48.37617324
- 786.29111375 837.52395334 998.51047778 700.81529257
- 277.13946501 841.07216821 252.41440236 169.48360749
- 760.64516339 488.70337282 606.64061106 577.81911901
- 766.14579282 284.38064555 427.35120301 552.36685853
- 195.67872662 794.01693656 871.90260548 745.96111065
- 775.47935942 619.0389246  880.59411968 890.97138301
- 974.0229149  383.35943474 671.46555061 848.51499181
- 214.56810743 272.17252778 562.27509162 991.58452002
- 426.39226754  43.43952725 620.90297628 574.57891463
- 942.24828712 439.98734824 414.61111343 592.81982358
- 872.4082627  464.43333833 310.25887747 355.52107008
- 684.27380395] mV
+Quantities object: [ 15.81608925 752.98483078  24.72547363 144.51628594
+ 214.32932705 200.42267588 739.82568485 135.47985311
+ 640.01545789 559.50533316   5.69614253 200.02784218
+ 768.04102342 903.95362763 395.33110766 489.09599556
+ 180.3017241  426.32334648 574.85398845 820.69910971
+ 964.17971075 578.39473516 212.14270287 142.49981321
+ 731.86090217 311.377196   557.94520695 584.93105318
+  40.80640136 631.68944016 836.03253181 329.13934202
+ 402.7914657   73.93266668  61.06459887 866.72322773
+ 453.00444668 497.81654835 576.19232129 390.48186662
+  88.95723072 197.64563216 125.14799417 635.59725698
+ 435.48720445 463.36157347 718.48503157 943.63542519
+  91.65132826 320.40017851 528.74706589 288.93260417
+ 683.23507876 606.7956871  413.8774318  250.05522479
+ 209.12606513 497.85663591 635.85855813 130.81356845
+ 707.52091187 130.21639147 325.76429004 952.1717244
+ 707.27537209 872.99294786 246.98162862 809.39348485
+ 722.67100602 372.64538896 222.55272929 335.34166876
+ 809.63936761 798.69696411  45.91659748 272.46810133
+ 464.05535142 466.21621639 956.4247953  956.44925196
+ 225.93556811 832.20650191 279.59647914 945.65024325
+ 920.82419018 695.11479443 961.78123501 267.099643
+  31.41421421 716.3175536  317.37072499 841.58027036
+ 885.86855259 161.63614016 391.13172992 533.67246916
+ 429.88138345 325.70097236 431.24374014 932.7890833
+ 645.36612443] mV
 Restored FrequencySeries unit: mV
 </pre></div></div>
 </div>
@@ -1915,7 +2047,7 @@ Restored FrequencySeries unit: mV
 </div></blockquote>
 <p>電気生理データの共通規格 Neo への変換をサポート。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
@@ -1961,20 +2093,113 @@ except ImportError:
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 --- Neo AnalogSignal ---
-[[-0.71446678]
- [ 0.01550151]
- [-0.65943426]
- ...
- [ 0.11631675]
- [-0.21327438]
- [-0.40719474]] dimensionless
+[[ 1.37697923]
+ [ 2.74600371]
+ [ 0.57303984]
+ [-0.48362728]
+ [-0.96553122]
+ [-0.70018454]
+ [-0.08524377]
+ [ 0.99799384]
+ [-0.82295412]
+ [-1.06086331]
+ [-1.50269587]
+ [ 0.58525061]
+ [ 0.96779232]
+ [ 0.35802838]
+ [-1.24321113]
+ [ 0.62656488]
+ [-0.57134632]
+ [ 0.41579589]
+ [-2.0817127 ]
+ [ 1.27706321]
+ [ 0.69441331]
+ [ 1.45134997]
+ [ 1.05988574]
+ [-1.11001549]
+ [ 0.68599805]
+ [ 0.17873185]
+ [-1.05380419]
+ [ 1.4889685 ]
+ [-0.32326462]
+ [ 0.47210844]
+ [-1.58942958]
+ [-0.55613864]
+ [ 0.56195833]
+ [-0.44565946]
+ [ 1.19371384]
+ [ 0.29236831]
+ [-0.95442692]
+ [-0.06685253]
+ [-1.84991027]
+ [-0.89180937]
+ [-1.02650529]
+ [-1.1641888 ]
+ [-0.19633189]
+ [ 0.35450968]
+ [ 0.83668577]
+ [ 1.58025183]
+ [-0.49110584]
+ [ 0.68944012]
+ [ 0.36510761]
+ [ 0.59129525]
+ [-1.50778215]
+ [ 1.21943731]
+ [ 1.8128744 ]
+ [-0.21861869]
+ [ 1.32687524]
+ [-1.21533771]
+ [ 0.18979871]
+ [ 0.53607996]
+ [ 1.40211139]
+ [-0.08524264]
+ [ 0.76481784]
+ [-2.84872041]
+ [ 0.14370894]
+ [ 1.44605315]
+ [ 0.71567087]
+ [ 1.12744524]
+ [ 1.41941416]
+ [ 1.45615169]
+ [-0.87680923]
+ [-0.47460987]
+ [-1.17364865]
+ [ 0.89696646]
+ [-0.23824109]
+ [ 0.11302793]
+ [-1.12196987]
+ [ 0.74600902]
+ [-0.43916108]
+ [-1.70279169]
+ [-0.61829908]
+ [ 1.02956078]
+ [-0.36119488]
+ [-0.55727432]
+ [-0.56320475]
+ [-0.47863558]
+ [-0.19090784]
+ [-0.83583309]
+ [-0.56740253]
+ [-0.30680165]
+ [ 0.63053984]
+ [ 1.12227422]
+ [-0.82175944]
+ [ 0.07673619]
+ [ 0.42627604]
+ [ 1.48997376]
+ [ 0.46014614]
+ [ 1.18616558]
+ [-0.24757655]
+ [-1.04212506]
+ [ 1.8282951 ]
+ [-1.44792572]] dimensionless
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/guide_tutorials_intro_interop_65_1.png" src="../../_images/guide_tutorials_intro_interop_65_1.png" />
+<img alt="../../_images/guide_tutorials_intro_interop_66_1.png" src="../../_images/guide_tutorials_intro_interop_66_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1982,12 +2207,12 @@ except ImportError:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Recovered from Neo: SeriesMatrix(shape=(1, 1, 1000),  name=&#39;&#39;)
+Recovered from Neo: SeriesMatrix(shape=(1, 1, 100),  name=&#39;&#39;)
   epoch   : 0.0
   x0      : 0.0 s
-  dx      : 0.01001001001001001 s
+  dx      : 0.01 s
   xunit   : s
-  samples : 1000
+  samples : 100
 
 [ Row metadata ]
      name channel unit
@@ -2000,8 +2225,8 @@ key
 col0
 
 [ Elements metadata ]
-  unit    name channel  row  col
-0       signal    None    0    0
+  unit  name channel  row  col
+0       None    None    0    0
 </pre></div></div>
 </div>
 </section>

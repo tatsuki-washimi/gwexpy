@@ -116,7 +116,7 @@
 <h1>SpectrogramList と SpectrogramDict のチュートリアル<a class="headerlink" href="#SpectrogramList-と-SpectrogramDict-のチュートリアル" title="Link to this heading"></a></h1>
 <p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> で新しく導入された <code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> および <code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code> クラスの使い方を紹介します。</p>
 <p>これらのクラスは、複数のスペクトログラムデータ（<code class="docutils literal notranslate"><span class="pre">gwpy.spectrogram.Spectrogram</span></code>）をまとめて管理し、一括して処理（クロップ、再ビン化、プロットなど）を行うためのコンテナです。 時系列データを扱う <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> と似たインターフェースを持っていますが、2次元データ（時間 × 周波数）を扱う点が特徴です。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -126,36 +126,6 @@ from gwexpy.noise.wave import gaussian, sine
 from gwexpy.spectrogram import SpectrogramDict, SpectrogramList
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/gwpy/time/__init__.py:36: UserWarning: Wswiglal-redir-stdio:
-
-SWIGLAL standard output/error redirection is enabled in IPython.
-This may lead to performance penalties. To disable locally, use:
-
-with lal.no_swig_redirect_standard_output_error():
-    ...
-
-To disable globally, use:
-
-lal.swig_redirect_standard_output_error(False)
-
-Note however that this will likely lead to error messages from
-LAL functions being either misdirected or lost when called from
-Jupyter notebooks.
-
-To suppress this warning, use:
-
-import warnings
-warnings.filterwarnings(&#34;ignore&#34;, &#34;Wswiglal-redir-stdio&#34;)
-import lal
-
-  from lal import LIGOTimeGPS
-</pre></div></div>
 </div>
 <section id="1.-データの準備">
 <h2>1. データの準備<a class="headerlink" href="#1.-データの準備" title="Link to this heading"></a></h2>
@@ -176,7 +146,6 @@ def make_signal(freq, name):
     n = gaussian(duration=duration, sample_rate=sample_rate, std=noise_amp)
     ts = s + n
     ts.name = name
-    # Fix: use override_unit instead of setting .unit directly for gwpy TimeSeries
     ts.override_unit(&#39;strain&#39;)
     return ts
 
@@ -315,7 +284,7 @@ Keys: [&#39;low_freq&#39;, &#39;mid_freq&#39;, &#39;high_freq&#39;]
 <section id="4.-可視化-(plot)">
 <h2>4. 可視化 (<code class="docutils literal notranslate"><span class="pre">plot</span></code>)<a class="headerlink" href="#4.-可視化-(plot)" title="Link to this heading"></a></h2>
 <p>リストや辞書の <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> メソッドを呼ぶと、含まれるすべてのスペクトログラムをまとめてプロットできます。 内部では <code class="docutils literal notranslate"><span class="pre">gwpy.plot.Plot</span></code> を使用しています。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
@@ -324,6 +293,13 @@ Keys: [&#39;low_freq&#39;, &#39;mid_freq&#39;, &#39;high_freq&#39;]
 plot = spec_dict.plot(figsize=(12, 8), sharex=True, sharey=True)
 plt.show()
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_spectrogram_13_0.png" src="../../_images/guide_tutorials_intro_spectrogram_13_0.png" />
 </div>
 </div>
 </section>

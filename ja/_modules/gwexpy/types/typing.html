@@ -262,11 +262,11 @@
 <span class="n">UnitLike</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">UnitBase</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
 
 <span class="c1"># Metadata types</span>
-<span class="n">MetaDataType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+<span class="n">MetaDataType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>  <span class="c1"># noqa: UP007</span>
     <span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="n">MetaDataLike</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 <span class="p">]</span>
 
-<span class="n">MetaDataCollectionType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+<span class="n">MetaDataCollectionType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>  <span class="c1"># noqa: UP007</span>
     <span class="n">MetaDataDictLike</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MetaDataType</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">MetaDataType</span><span class="p">],</span> <span class="kc">None</span>
 <span class="p">]</span>
 

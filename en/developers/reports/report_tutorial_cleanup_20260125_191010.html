@@ -1,0 +1,173 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作業報告書: チュートリアル警告/ログ抑制 (ARIMA/TensorFlow) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">作業報告書: チュートリアル警告/ログ抑制 (ARIMA/TensorFlow)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_tutorial_cleanup_20260125_191010.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="arima-tensorflow">
+<h1>作業報告書: チュートリアル警告/ログ抑制 (ARIMA/TensorFlow)<a class="headerlink" href="#arima-tensorflow" title="Link to this heading"></a></h1>
+<section id="id1">
+<h2>概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Task B: ARIMA (pmdarima/statsmodels) の警告抑制を実装。</p></li>
+<li><p>Task C: TensorFlow のログ抑制を interop import 前に設定。</p></li>
+<li><p>チュートリアル <code class="docutils literal notranslate"><span class="pre">intro_interop.ipynb</span></code> に環境変数設定セルを追加。</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>変更内容<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/arima.py</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">pm.auto_arima</span></code> 実行時の <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> 起因 <code class="docutils literal notranslate"><span class="pre">FutureWarning</span></code> を抑制。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">statsmodels</span></code> の <code class="docutils literal notranslate"><span class="pre">ConvergenceWarning</span></code>、<code class="docutils literal notranslate"><span class="pre">verbose</span></code>/<code class="docutils literal notranslate"><span class="pre">disp</span></code> の <code class="docutils literal notranslate"><span class="pre">FutureWarning</span></code> を抑制。</p></li>
+<li><p>docstring に警告抑制の注記を追加。</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/interop/__init__.py</span></code></p>
+<ul>
+<li><p>import 前に <code class="docutils literal notranslate"><span class="pre">TF_CPP_MIN_LOG_LEVEL=3</span></code> を設定。</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/ja/guide/tutorials/intro_interop.ipynb</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">TF_CPP_MIN_LOG_LEVEL</span></code> を設定するコードセルを冒頭に追加。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id3">
+<h2>実行コマンド / 結果<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ruff</span> <span class="pre">check</span> <span class="pre">.</span></code> -&gt; 既存の未修正エラーで失敗（<code class="docutils literal notranslate"><span class="pre">gwexpy/gui/streaming.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/_signal.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/types/typing.py</span></code>）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">.</span></code> -&gt; 成功（294 files）。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h2>未解決 / 残課題<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Task A（gwexpy 内部 deprecation 修正）未対応。</p></li>
+<li><p>Task C の残り（MTH5 / LAL の stdout/stderr 抑制）未対応。</p></li>
+<li><p>Ruff の既存エラーを整理する必要あり（今回の変更とは無関係）。</p></li>
+</ul>
+</section>
+<section id="id5">
+<h2>メタデータ<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>LLM: GPT-5 (Codex)</p></li>
+<li><p>作業時間: 約25分（推定）</p></li>
+<li><p>参照計画書: <code class="docutils literal notranslate"><span class="pre">docs/developers/plans/handover_tutorial_cleanup_20260125.md</span></code></p></li>
+</ul>
+</section>
+<section id="id6">
+<h2>スキル化<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>新規スキル追加: なし</p></li>
+<li><p>既存スキル更新: なし</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

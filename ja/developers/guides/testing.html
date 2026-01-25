@@ -145,8 +145,12 @@ without skips.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pytest
 </pre></div>
 </div>
-<p>GUI tests are included by default. The test harness sets <code class="docutils literal notranslate"><span class="pre">QT_QPA_PLATFORM=offscreen</span></code>
-to allow headless execution, but you can override it if you need a real display.</p>
+<p>GUI tests run by default when a display is available. In headless environments
+(no <code class="docutils literal notranslate"><span class="pre">DISPLAY</span></code>/<code class="docutils literal notranslate"><span class="pre">WAYLAND_DISPLAY</span></code> or <code class="docutils literal notranslate"><span class="pre">QT_QPA_PLATFORM=offscreen/minimal</span></code>), the
+harness skips GUI tests and disables pytest plugin autoloading to avoid Qt
+crashes. To run GUI tests in headless CI, use xvfb (see
+<code class="docutils literal notranslate"><span class="pre">docs/developers/guides/gui_testing.md</span></code>) and ensure
+<code class="docutils literal notranslate"><span class="pre">PYTEST_DISABLE_PLUGIN_AUTOLOAD</span></code> is unset.</p>
 </section>
 </section>
 

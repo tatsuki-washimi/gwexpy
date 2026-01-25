@@ -131,7 +131,7 @@ from gwexpy import FrequencySeries, TimeSeries
 </div>
 <section id="1.-FrequencySeries-でのピーク検出">
 <h2>1. FrequencySeries でのピーク検出<a class="headerlink" href="#1.-FrequencySeries-でのピーク検出" title="Link to this heading"></a></h2>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -161,6 +161,13 @@ plt.legend(); plt.show()
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_advanced_peak_detection_3_0.png" src="../../_images/guide_tutorials_advanced_peak_detection_3_0.png" />
+</div>
+</div>
 </section>
 <section id="2.-物理単位による制約-(Distance-&amp;-Width)">
 <h2>2. 物理単位による制約 (Distance &amp; Width)<a class="headerlink" href="#2.-物理単位による制約-(Distance-&-Width)" title="Link to this heading"></a></h2>
@@ -182,18 +189,25 @@ print(f&quot;Detected peaks: {peaks_adv.frequencies}&quot;)
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_advanced_peak_detection_5_0.png" src="../../_images/guide_tutorials_advanced_peak_detection_5_0.png" />
+</div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Detected peaks: [  6.   26.   50.   74.5 120.  300. ] Hz
+Detected peaks: [  5.   27.5  50.   71.5 125.  300. ] Hz
 </pre></div></div>
 </div>
 </section>
 <section id="3.-TimeSeries-でのピーク検出">
 <h2>3. TimeSeries でのピーク検出<a class="headerlink" href="#3.-TimeSeries-でのピーク検出" title="Link to this heading"></a></h2>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -218,6 +232,13 @@ plt.title(&quot;Pulse Detection in TimeSeries&quot;)
 plt.xlabel(&quot;Time [s]&quot;); plt.ylabel(&quot;Raw Counts&quot;)
 plt.legend(); plt.show()
 <br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_advanced_peak_detection_7_0.png" src="../../_images/guide_tutorials_advanced_peak_detection_7_0.png" />
 </div>
 </div>
 </section>
