@@ -521,7 +521,7 @@ class SpectrogramMatrix(
         # Handle tuple keys (Row, Col) or (Row, Col, Time, Freq)
         if isinstance(key, tuple):
             new_key = list(key)
-            
+
             # Row index (0)
             if len(new_key) > 0:
                 if isinstance(new_key[0], str):
