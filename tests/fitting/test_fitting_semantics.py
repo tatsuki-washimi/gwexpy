@@ -13,7 +13,15 @@ import pytest
 from astropy import units as u
 from gwpy.frequencyseries import FrequencySeries
 
-from gwexpy.fitting import GLS, Fitter, models
+try:
+    from gwexpy.fitting import GLS, Fitter, models
+except ImportError:
+    GLS = None
+    Fitter = None
+    models = None
+
+
+@pytest.mark.skipif(Fitter is None, reason="gwexpy.fitting requires optional dependencies (e.g. iminuit)")
 
 
 class TestFittingSemantics:

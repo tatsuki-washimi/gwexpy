@@ -15,7 +15,11 @@ import warnings
 
 import numpy as np
 from gwpy.io import registry as io_registry
-from obspy import Stream, Trace, UTCDateTime
+try:
+    from obspy import Stream, Trace, UTCDateTime
+    HAS_OBSPY = True
+except ImportError:
+    HAS_OBSPY = False
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
@@ -60,6 +64,9 @@ def _read_win_fixed(filename, century="20"):
             mi = f"{buff[4]:x}"
             sec = f"{buff[5]:x}"
 
+            # Only create UTCDateTime if we actually need it / module exists
+            # Logic flow: this function is only called via read_win_file -> registry -> only if HAS_OBSPY
+            
             date = UTCDateTime(int(yy), int(mm), int(dd), int(hh), int(mi), int(sec))
             if start == 0:
                 start = date
@@ -155,7 +162,7 @@ def _read_win_fixed(filename, century="20"):
                         )
                         raise NotImplementedError(msg)
 
-    traces: list[Trace] = []
+    traces = []
     for i in output.keys():
         t = Trace(data=np.array(output[i], dtype=np.int32))
         t.stats.channel = str(i)
@@ -169,6 +176,9 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
     """
     Read a WIN/WIN32 format file using fixed ObsPy-based reader.
     """
+    if not HAS_OBSPY:
+        raise ImportError("obspy is required to read WIN format files")
+        
     stream = _read_win_fixed(source, **kwargs)
 
     # Merge if necessary (simple gap handling)
@@ -201,29 +211,30 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
 
 
 # -- Registration
-for fmt in ["win", "win32"]:
-    io_registry.register_reader(fmt, TimeSeriesDict, read_win_file, force=True)
-    io_registry.register_reader(
-        fmt,
-        TimeSeries,
-        lambda *a, **k: read_win_file(*a, **k)[
-            next(iter(read_win_file(*a, **k).keys()))
-        ],
-        force=True,
-    )
-    io_registry.register_reader(
-        fmt,
-        TimeSeriesMatrix,
-        lambda *a, **k: read_win_file(*a, **k).to_matrix(),
-        force=True,
-    )
-    io_registry.register_identifier(
-        fmt,
-        TimeSeriesDict,
-        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
-    )
-    io_registry.register_identifier(
-        fmt,
-        TimeSeries,
-        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
-    )
+if HAS_OBSPY:
+    for fmt in ["win", "win32"]:
+        io_registry.register_reader(fmt, TimeSeriesDict, read_win_file, force=True)
+        io_registry.register_reader(
+            fmt,
+            TimeSeries,
+            lambda *a, **k: read_win_file(*a, **k)[
+                next(iter(read_win_file(*a, **k).keys()))
+            ],
+            force=True,
+        )
+        io_registry.register_reader(
+            fmt,
+            TimeSeriesMatrix,
+            lambda *a, **k: read_win_file(*a, **k).to_matrix(),
+            force=True,
+        )
+        io_registry.register_identifier(
+            fmt,
+            TimeSeriesDict,
+            lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
+        )
+        io_registry.register_identifier(
+            fmt,
+            TimeSeries,
+            lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
+        )
