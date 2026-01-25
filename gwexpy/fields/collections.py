@@ -46,9 +46,11 @@ class FieldList(list):
         for i, item in enumerate(self[1:], 1):
             if not isinstance(item, ScalarField):
                 raise TypeError(f"Item {i}: Expected ScalarField, got {type(item)}")
-            if item.unit != ref_unit:
+            u_item = item.unit if item.unit is not None else u.dimensionless_unscaled
+            u_ref = ref_unit if ref_unit is not None else u.dimensionless_unscaled
+            if not u_item.is_equivalent(u_ref):
                 raise ValueError(
-                    f"Item {i}: Inconsistent unit. Expected {ref_unit}, got {item.unit}"
+                    f"Item {i}: Inconsistent unit. Expected equivalent to {ref_unit}, got {item.unit}"
                 )
             if item.axis_names != ref_axis_names:
                 raise ValueError(
@@ -198,10 +200,12 @@ class FieldDict(dict):
         for key, item in list(self.items())[1:]:
             if not isinstance(item, ScalarField):
                 raise TypeError(f"Key '{key}': Expected ScalarField, got {type(item)}")
-            if item.unit != ref_unit:
+            u_item = item.unit if item.unit is not None else u.dimensionless_unscaled
+            u_ref = ref_unit if ref_unit is not None else u.dimensionless_unscaled
+            if not u_item.is_equivalent(u_ref):
                 raise ValueError(
                     f"Key '{key}': Inconsistent unit. "
-                    f"Expected {ref_unit}, got {item.unit}"
+                    f"Expected equivalent to {ref_unit}, got {item.unit}"
                 )
             if item.axis_names != ref_axis_names:
                 raise ValueError(
