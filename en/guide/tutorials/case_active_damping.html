@@ -1,0 +1,532 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="API Reference" href="../../reference/api/index.html" />
+    <link rel="prev" title="チュートリアル: 伝達関数の測定" href="case_transfer_function.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#i-core-data-structures">I. Core Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#vi-case-studies">VI. Case Studies</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="case_noise_budget.html">ノイズバジェッティングと多チャンネル相関解析</a></li>
+<li class="toctree-l3"><a class="reference internal" href="case_transfer_function.html">チュートリアル: 伝達関数の測定</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#1.-6自由度アクティブ防振装置のシミュレーション-(Plant-Model)">1. 6自由度アクティブ防振装置のシミュレーション (Plant Model)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#2.-MIMO伝達関数の測定">2. MIMO伝達関数の測定</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#3-&amp;-4.-モード制御系の設計-(Modal-Control-Design)">3 &amp; 4. モード制御系の設計 (Modal Control Design)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#5-&amp;-6.-閉ループ検証-(インパルス応答-&amp;-ASD)">5 &amp; 6. 閉ループ検証 (インパルス応答 &amp; ASD)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/case_active_damping.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="6自由度アクティブ防振装置のアクティブダンピング-(非コロケート配置)">
+<h1>6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)<a class="headerlink" href="#6自由度アクティブ防振装置のアクティブダンピング-(非コロケート配置)" title="Link to this heading"></a></h1>
+<p>このチュートリアルでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> と <code class="docutils literal notranslate"><span class="pre">python-control</span></code> を組み合わせて、多自由度（MIMO）システムのシミュレーション、システム同定、そして制御系設計を行う一連の流れを実演します。</p>
+<p><strong>シナリオ:</strong> 3つの足で支持された正三角形の防振台（6自由度剛体）を想定します。 今回は、<strong>アクチュエータとセンサーの位置が異なる（非コロケート）</strong> 構成を扱います。</p>
+<ul class="simple">
+<li><p><strong>アクチュエータ</strong>: 3つの足の位置（支持点）に設置 (<span class="math notranslate nohighlight">\(0^\circ, 120^\circ, 240^\circ\)</span>)</p></li>
+<li><p><strong>センサー</strong>: 足と足の中間地点に設置 (<span class="math notranslate nohighlight">\(60^\circ, 180^\circ, 300^\circ\)</span>)</p></li>
+</ul>
+<p>このように入出力位置がずれている場合、単純な各軸独立制御ではうまくいかないため、<strong>モード空間（Modal Space）</strong> での制御器設計を行います。</p>
+<p><strong>ステップ:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>物理モデルの構築</strong>: センサー・アクチュエータ配置を考慮した状態空間モデルを作成します。</p></li>
+<li><p><strong>MIMO伝達関数の測定</strong>: <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> で非対角成分を含む伝達関数行列を可視化します。</p></li>
+<li><p><strong>システム同定</strong>: 物理パラメータと幾何学配置から制御用モデルを定義します。</p></li>
+<li><p><strong>ダンピング制御器の設計</strong>: センサー信号をモード座標に変換し、モードごとにダンピングをかける「モード制御」を設計します。</p></li>
+<li><p><strong>閉ループ検証</strong>: インパルス応答とASD比較により制振性能を確認します。</p></li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import control
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import signal
+
+from gwexpy import TimeSeries, TimeSeriesDict
+from gwexpy.frequencyseries import FrequencySeriesMatrix
+</pre></div>
+</div>
+</div>
+<section id="1.-6自由度アクティブ防振装置のシミュレーション-(Plant-Model)">
+<h2>1. 6自由度アクティブ防振装置のシミュレーション (Plant Model)<a class="headerlink" href="#1.-6自由度アクティブ防振装置のシミュレーション-(Plant-Model)" title="Link to this heading"></a></h2>
+<p>剛体の運動方程式 <span class="math notranslate nohighlight">\(M \ddot{q} + C \dot{q} + K q = F\)</span> を定義します。 ここでは垂直3自由度（<span class="math notranslate nohighlight">\(z, \theta_x, \theta_y\)</span>）に焦点を当てます。</p>
+<p><strong>座標変換:</strong> モード座標 <span class="math notranslate nohighlight">\(q = [z, \theta_x, \theta_y]^T\)</span> に対し、</p>
+<ul class="simple">
+<li><p>アクチュエータ物理座標 <span class="math notranslate nohighlight">\(p_{act}\)</span>: <span class="math notranslate nohighlight">\(0^\circ, 120^\circ, 240^\circ\)</span></p></li>
+<li><p>センサー物理座標 <span class="math notranslate nohighlight">\(p_{sen}\)</span>: <span class="math notranslate nohighlight">\(60^\circ, 180^\circ, 300^\circ\)</span></p></li>
+</ul>
+<p>それぞれの変換行列 <span class="math notranslate nohighlight">\(T_{act}, T_{sen}\)</span> を定義し、状態空間モデルに組み込みます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 物理パラメータ
+m = 100.0       # 質量 [kg]
+I_x = 20.0      # 慣性モーメント [kg m^2]
+I_y = 20.0
+
+# 支持バネ・ダンパ (アクチュエータ位置 = 足の位置)
+k_leg = 2000.0  # バネ定数 [N/m]
+c_leg = 0.20    # 減衰係数 [N s/m]
+
+# ジオメトリ: 半径R
+R = 0.5         # [m]
+
+# 角度設定 (deg -&gt; rad)
+deg2rad = np.pi / 180.0
+# アクチュエータ: 足の位置
+angles_act = np.array([0, 120, 240]) * deg2rad
+# センサー: 足の間
+angles_sen = np.array([60, 180, 300]) * deg2rad
+
+# 座標変換行列の作成関数
+# p = T * q  =&gt;  [z_i] = [1, R*sin(th), -R*cos(th)] @ [z, tx, ty]
+def make_transform_matrix(angles, radius):
+    T = np.zeros((3, 3))
+    for i, ang in enumerate(angles):
+        T[i, 0] = 1.0
+        T[i, 1] = radius * np.sin(ang)
+        T[i, 2] = -radius * np.cos(ang)
+    return T
+
+T_act = make_transform_matrix(angles_act, R)
+T_sen = make_transform_matrix(angles_sen, R)
+
+print(&quot;Actuator Transform Matrix T_act:&quot;)
+print(np.round(T_act, 2))
+print(&quot;Sensor Transform Matrix T_sen:&quot;)
+print(np.round(T_sen, 2))
+
+# モーダル空間での M, K, C 行列
+M_modal = np.diag([m, I_x, I_y])
+
+# 物理空間(足位置)での K, C
+K_phys = np.diag([k_leg, k_leg, k_leg])
+C_phys = np.diag([c_leg, c_leg, c_leg])
+
+# モーダル空間へ投影: K_modal = T_act.T * K_phys * T_act
+# (バネ・ダンパは足の位置にあるため T_act を使用)
+K_modal = T_act.T @ K_phys @ T_act
+C_modal = T_act.T @ C_phys @ T_act
+
+# 状態空間モデルの作成
+# x = [q, q_dot]^T
+A_sys = np.block([
+    [np.zeros((3, 3)), np.eye(3)],
+    [-np.linalg.inv(M_modal) @ K_modal, -np.linalg.inv(M_modal) @ C_modal]
+])
+B_sys_modal = np.block([
+    [np.zeros((3, 3))],
+    [np.linalg.inv(M_modal)]
+])
+C_sys_modal = np.block([np.eye(3), np.zeros((3, 3))])
+D_sys = np.zeros((3, 3))
+
+# 入出力を物理座標に変換
+# Input: Actuator Forces u (at angles_act) -&gt; Generalized Force Q = T_act.T * u
+# Output: Sensor Displacements y (at angles_sen) -&gt; y = T_sen * q
+B_sys = B_sys_modal @ T_act.T
+C_sys = T_sen @ C_sys_modal
+
+sys = control.StateSpace(A_sys, B_sys, C_sys, D_sys,
+                         inputs=[&quot;ACT1&quot;, &quot;ACT2&quot;, &quot;ACT3&quot;],
+                         outputs=[&quot;SEN1&quot;, &quot;SEN2&quot;, &quot;SEN3&quot;])
+print(sys)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Actuator Transform Matrix T_act:
+[[ 1.    0.   -0.5 ]
+ [ 1.    0.43  0.25]
+ [ 1.   -0.43  0.25]]
+Sensor Transform Matrix T_sen:
+[[ 1.    0.43 -0.25]
+ [ 1.    0.    0.5 ]
+ [ 1.   -0.43 -0.25]]
+&lt;StateSpace&gt;: sys[0]
+Inputs (3): [&#39;ACT1&#39;, &#39;ACT2&#39;, &#39;ACT3&#39;]
+Outputs (3): [&#39;SEN1&#39;, &#39;SEN2&#39;, &#39;SEN3&#39;]
+States (6): [&#39;x[0]&#39;, &#39;x[1]&#39;, &#39;x[2]&#39;, &#39;x[3]&#39;, &#39;x[4]&#39;, &#39;x[5]&#39;]
+
+A = [[ 0.00000000e+00  0.00000000e+00  0.00000000e+00
+       1.00000000e+00  0.00000000e+00  0.00000000e+00]
+     [ 0.00000000e+00  0.00000000e+00  0.00000000e+00
+       0.00000000e+00  1.00000000e+00  0.00000000e+00]
+     [ 0.00000000e+00  0.00000000e+00  0.00000000e+00
+       0.00000000e+00  0.00000000e+00  1.00000000e+00]
+     [-6.00000000e+01 -3.33955086e-15 -2.16715534e-15
+      -6.00000000e-03 -3.68259567e-19 -2.35922393e-19]
+     [-1.70530257e-14 -3.75000000e+01  9.61481343e-15
+      -2.08166817e-18 -3.75000000e-03  9.61481343e-19]
+     [-1.13686838e-14  9.93438680e-15 -3.75000000e+01
+      -1.04083409e-18  9.61481343e-19 -3.75000000e-03]]
+
+B = [[ 0.          0.          0.        ]
+     [ 0.          0.          0.        ]
+     [ 0.          0.          0.        ]
+     [ 0.01        0.01        0.01      ]
+     [ 0.          0.02165064 -0.02165064]
+     [-0.025       0.0125      0.0125    ]]
+
+C = [[ 1.00000000e+00  4.33012702e-01 -2.50000000e-01
+       0.00000000e+00  0.00000000e+00  0.00000000e+00]
+     [ 1.00000000e+00  6.12323400e-17  5.00000000e-01
+       0.00000000e+00  0.00000000e+00  0.00000000e+00]
+     [ 1.00000000e+00 -4.33012702e-01 -2.50000000e-01
+       0.00000000e+00  0.00000000e+00  0.00000000e+00]]
+
+D = [[0. 0. 0.]
+     [0. 0. 0.]
+     [0. 0. 0.]]
+</pre></div></div>
+</div>
+</section>
+<section id="2.-MIMO伝達関数の測定">
+<h2>2. MIMO伝達関数の測定<a class="headerlink" href="#2.-MIMO伝達関数の測定" title="Link to this heading"></a></h2>
+<p>センサーとアクチュエータの位置が異なるため、対角成分（ACT1-&gt;SEN1）だけでなく、非対角成分にも強い応答が現れるはずです。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fs = 64
+duration = 1024.0
+t = np.arange(0, duration, 1/fs)
+n_samples = len(t)
+
+# 入力信号: 3ch ホワイトノイズ
+np.random.seed(0)
+u_data = np.random.normal(0, 1.0, (3, n_samples))
+
+# 時間応答
+time_response = control.forced_response(sys, T=t, U=u_data)
+
+# gwexpy TimeSeriesDict
+tsd_input = TimeSeriesDict({f&quot;ACT{i+1}&quot;:TimeSeries(u_data[i],
+                                                   t0=0,
+                                                   sample_rate=fs,
+                                                   name=f&quot;Actuator {i+1}&quot;,
+                                                   unit=&quot;N&quot;)
+                            for i in range(3)})
+
+tsd_output = TimeSeriesDict.from_control(time_response, unit=&quot;m&quot;)
+for i in range(3):
+    tsd_output[f&quot;SEN{i+1}&quot;].name = f&quot;Sensor {i+1}&quot;
+
+# MIMO TF 計算
+tfs = [[tsd_input[f&quot;ACT{j+1}&quot;].transfer_function(tsd_output[f&quot;SEN{i+1}&quot;], fftlength=5)
+        for j in range(3)] for i in range(3)]
+
+tf_matrix = FrequencySeriesMatrix([[tf.value for tf in row] for row in tfs],
+                                  frequencies=tfs[0][0].frequencies)
+
+tf_data = tf_matrix.value
+freqs = tf_matrix.frequencies
+
+# plot
+tf_matrix.abs().plot(figsize=(12, 10), xscale=&quot;log&quot;, yscale=&quot;log&quot;).suptitle(&quot;MIMO Transfer Function Matrix (Non-collocated)\n\n&quot;)
+plt.tight_layout()
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="3-&amp;-4.-モード制御系の設計-(Modal-Control-Design)">
+<h2>3 &amp; 4. モード制御系の設計 (Modal Control Design)<a class="headerlink" href="#3-&-4.-モード制御系の設計-(Modal-Control-Design)" title="Link to this heading"></a></h2>
+<p>アクチュエータとセンサーの位置が一致していないため、単純な分散制御（<span class="math notranslate nohighlight">\(F_i \propto \dot{y}_i\)</span>）では不安定になる恐れがあります。 そこで、<strong>座標変換行列を用いてセンサー信号からモード変位を推定し、モード空間でダンピングをかけた後、アクチュエータ推力に分配する</strong> 手法を採ります。</p>
+<p><strong>制御フロー:</strong></p>
+<ol class="arabic">
+<li><p><strong>Sensing</strong>: センサー出力 <span class="math notranslate nohighlight">\(y\)</span> からモード変位 <span class="math notranslate nohighlight">\(q\)</span> を推定</p>
+<div class="math notranslate nohighlight">
+\[q_{est} = T_{sen}^{-1} y\]</div>
+</li>
+<li><p><strong>Modal Damping</strong>: モードごとに擬似微分フィルタ <span class="math notranslate nohighlight">\(K(s)\)</span> を適用し、モード力 <span class="math notranslate nohighlight">\(F_{modal}\)</span> を計算</p>
+<div class="math notranslate nohighlight">
+\[F_{modal} = -K_{modal}(s) q_{est}\]</div>
+</li>
+<li><p><strong>Actuation</strong>: モード力 <span class="math notranslate nohighlight">\(F_{modal}\)</span> をアクチュエータ推力 <span class="math notranslate nohighlight">\(u\)</span> に分配</p>
+<div class="math notranslate nohighlight">
+\[u = (T_{act}^T)^{-1} F_{modal}\]</div>
+</li>
+</ol>
+<p>全体として、コントローラ <span class="math notranslate nohighlight">\(K_{MIMO}\)</span> は以下のようになります。</p>
+<div class="math notranslate nohighlight">
+\[K_{MIMO}(s) = (T_{act}^T)^{-1} \cdot \mathrm{diag}(K_{z}(s), K_{\theta x}(s), K_{\theta y}(s)) \cdot T_{sen}^{-1}\]</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># --- 1. Sensing &amp; Actuation Matrix の準備 ---
+# 推定モデルに基づいて変換行列を用意します（ここでは真値を使用）
+# Sensing Matrix: y -&gt; q
+S_sensing = np.linalg.inv(T_sen)
+
+# Actuation Matrix: F_modal -&gt; u
+# F_modal = T_act.T * u  =&gt;  u = inv(T_act.T) * F_modal
+D_actuation = np.linalg.inv(T_act.T)
+
+print(&quot;Sensing Matrix (Sensor -&gt; Mode):&quot;)
+print(np.round(S_sensing, 2))
+print(&quot;Actuation Matrix (Mode Force -&gt; Actuator):&quot;)
+print(np.round(D_actuation, 2))
+
+# --- 2. Modal Damping Filter Design ---
+# 各モードに対してダンピングゲインを設定
+# 並進モード(z)と回転モード(tx, ty)でゲインを変えることも可能ですが、
+# ここでは簡単のためすべて同じゲイン・フィルタとします。
+gain = 1000.0  # Modal Damping Gain
+fc_l = 0.1
+fc_h = 20.0
+w_l = 2 * np.pi * fc_l
+w_h = 2 * np.pi * fc_h
+
+s = control.tf(&#39;s&#39;)
+K_filter = gain * s / ((1 + s/w_l) * (1 + s/w_h))
+
+# 対角行列化 (3モード分)
+K_modal_diag = []
+for _ in range(3):
+    K_modal_diag.append(control.ss(K_filter))
+
+# control.append は対角ブロック結合をするが、入出力数が変わるため注意が必要。
+# ここでは手動で状態空間モデルを結合するより、
+# python-control の演算機能を使って K_MIMO を構築します。
+
+# K_modal_block: 3-input 3-output Diagonal System
+#  [ K_f  0    0   ]
+#  [ 0    K_f  0   ]
+#  [ 0    0    K_f ]
+K_modal_block = control.append(K_modal_diag[0], K_modal_diag[1], K_modal_diag[2])
+
+
+# --- 3. MIMO Controller Construction ---
+# K_MIMO = D_actuation * K_modal_block * S_sensing
+# python-control では定数行列とSSの積はそのまま書けます
+
+# S_sensing (Static Gain) * y
+# K_modal_block * (S_sensing * y)
+# D_actuation * (K_modal_block * S_sensing * y)
+
+# Note: 行列積の順序に注意。Control object の乗算は直列結合。
+# Sys2 * Sys1 は Out &lt;--- Sys2 &lt;--- Sys1 &lt;--- In
+# 数式: u = D * K * S * y
+# Code: K_mimo = D * K * S
+# しかし D, S は numpy array。control.ss(D) などで変換が必要。
+
+K_mimo = D_actuation * K_modal_block * S_sensing
+
+print(&quot;MIMO Controller States:&quot;, K_mimo.nstates)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Sensing Matrix (Sensor -&gt; Mode):
+[[ 0.33  0.33  0.33]
+ [ 1.15 -0.   -1.15]
+ [-0.67  1.33 -0.67]]
+Actuation Matrix (Mode Force -&gt; Actuator):
+[[ 0.33 -0.   -1.33]
+ [ 0.33  1.15  0.67]
+ [ 0.33 -1.15  0.67]]
+MIMO Controller States: 6
+</pre></div></div>
+</div>
+</section>
+<section id="5-&amp;-6.-閉ループ検証-(インパルス応答-&amp;-ASD)">
+<h2>5 &amp; 6. 閉ループ検証 (インパルス応答 &amp; ASD)<a class="headerlink" href="#5-&-6.-閉ループ検証-(インパルス応答-&-ASD)" title="Link to this heading"></a></h2>
+<p>構築したモード制御系を用いて、閉ループシミュレーションを行います。 アクチュエータ1へのインパルス外乱、および全軸への定常地面振動に対する応答を確認します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 閉ループシステム
+sys_cl = control.feedback(sys, K_mimo, sign=-1)
+
+# --- Impulse Response ---
+u_impulse = np.zeros((3, n_samples))
+u_impulse[0, 100] = 100.0 * fs # Impulse on Actuator 1
+
+resp_ol = control.forced_response(sys, T=t, U=u_impulse)
+resp_cl = control.forced_response(sys_cl, T=t, U=u_impulse)
+
+fig, axes = plt.subplots(3, 1, figsize=(10, 8), sharex=True)
+for i in range(3):
+    ax = axes[i]
+    ax.plot(t, resp_ol.outputs[i], label=&quot;Open Loop&quot;, alpha=0.6)
+    ax.plot(t, resp_cl.outputs[i], label=&quot;Closed Loop (Modal Control)&quot;, linewidth=2)
+    ax.set_ylabel(f&quot;SEN{i+1}&quot;)
+    ax.grid(True)
+    if i == 0: ax.legend(loc=&quot;upper right&quot;)
+axes[0].set_title(&quot;Impulse Response Comparison (Impulse on ACT1)&quot;)
+plt.show()
+
+# --- ASD Comparison ---
+# Ground Vibration Simulation
+np.random.seed(42)
+wn = np.random.normal(0, 1.0, (3, n_samples))
+b, a = signal.butter(1, 5.0, fs=fs, btype=&#39;low&#39;)
+dist = signal.lfilter(b, a, wn) * 50.0
+
+resp_ol_noise = control.forced_response(sys, T=t, U=dist)
+resp_cl_noise = control.forced_response(sys_cl, T=t, U=dist)
+
+tsd_ol = TimeSeriesDict.from_control(resp_ol_noise)
+for i in range(3):
+    tsd_ol[list(tsd_ol.keys())[i]].name = f&quot;SEN{i+1}&quot;
+tsd_ol = TimeSeriesDict({ts.name: ts for ts in tsd_ol.values()})
+tsd_cl = TimeSeriesDict.from_control(resp_cl_noise)
+for i in range(3):
+    tsd_cl[list(tsd_cl.keys())[i]].name = f&quot;SEN{i+1}&quot;
+tsd_cl = TimeSeriesDict({ts.name: ts for ts in tsd_cl.values()})
+
+fig, axes = plt.subplots(1, 3, figsize=(18, 5), sharey=True)
+for i in range(3):
+    ax = axes[i]
+    asd_ol = tsd_ol[f&quot;SEN{i+1}&quot;].asd(fftlength=16, overlap=8, method=&quot;welch&quot;).crop(0.1,10)
+    asd_cl = tsd_cl[f&quot;SEN{i+1}&quot;].asd(fftlength=16, overlap=8, method=&quot;welch&quot;).crop(0.1,10)
+
+    ax.loglog(asd_ol, label=&quot;Open Loop&quot;, alpha=0.8)
+    ax.loglog(asd_cl, label=&quot;Closed Loop&quot;, linewidth=2)
+    ax.set_title(f&quot;Sensor {i+1} ASD&quot;)
+    ax.grid(True, which=&quot;both&quot;, alpha=0.5)
+    if i==0:
+        ax.set_ylabel(r&quot;ASD [$\mathrm{m}/\sqrt{\mathrm{Hz}}$]&quot;)
+        ax.legend()
+plt.tight_layout()
+plt.show()
+
+# センサーとアクチュエータの位置が異なっていても、
+# 適切なモード座標変換を行うことで有効なダンピングが得られています。
+<br/></pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="case_transfer_function.html" class="btn btn-neutral float-left" title="チュートリアル: 伝達関数の測定" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../reference/api/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

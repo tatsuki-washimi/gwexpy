@@ -1,24 +1,24 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="ja" data-content_root="../../../">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwexpy.spectrogram.spectrogram &mdash; gwexpy  ドキュメント</title>
+  <title>gwexpy.spectrogram.spectrogram &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../../_static/translations.js?v=4755f45a"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,20 +40,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">開発者ガイド (Developers Guide)</a></li>
 </ul>
 
         </div>
@@ -70,7 +71,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html">モジュールコード</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
       <li class="breadcrumb-item active">gwexpy.spectrogram.spectrogram</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -80,26 +81,33 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>gwexpy.spectrogram.spectrogram のソースコード</h1><div class="highlight"><pre>
+  <h1>Source code for gwexpy.spectrogram.spectrogram</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spectrogram</span> <span class="k">as</span> <span class="n">BaseSpectrogram</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">InteropMixin</span><span class="p">,</span> <span class="n">PhaseMethodsMixin</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesList</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesList</span>
+
 
 <div class="viewcode-block" id="Spectrogram">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Spectrogram</span><span class="p">(</span><span class="n">PhaseMethodsMixin</span><span class="p">,</span> <span class="n">InteropMixin</span><span class="p">,</span> <span class="n">BaseSpectrogram</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extends gwpy.spectrogram.Spectrogram with additional interop methods.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Spectrogram.plot">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.plot">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot this Spectrogram. Delegates to gwexpy.plot.Plot.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
@@ -107,8 +115,24 @@
         <span class="k">return</span> <span class="n">Plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Custom getitem to handle 1D views safely.</span>
+
+<span class="sd">        In some environments (e.g. newer matplotlib/astropy), iterating over a</span>
+<span class="sd">        2D Spectrogram yields 1D Spectrogram views. GWpy&#39;s Array2D.__getitem__</span>
+<span class="sd">        implementation expects 2D data and fails with a ValueError when</span>
+<span class="sd">        unpacking slices for ndim=1. This override detects ndim=1 and falls</span>
+<span class="sd">        back to the parent (Series) implementation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.types.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
+
+            <span class="k">return</span> <span class="n">Series</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Spectrogram.bootstrap">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.bootstrap">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.bootstrap">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_boot</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
@@ -150,7 +174,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.bootstrap_asd">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.bootstrap_asd">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.bootstrap_asd">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap_asd</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_boot</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
@@ -182,7 +206,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.to_th2d">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_th2d">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_th2d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_th2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to ROOT TH2D.</span>
@@ -193,7 +217,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.to_quantities">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_quantities">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_quantities">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_quantities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to quantities.Quantity (Elephant/Neo compatible).</span>
@@ -204,7 +228,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.from_quantities">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_quantities">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_quantities">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_quantities</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -225,7 +249,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.from_root">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_root">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_root">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_root</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">return_error</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -237,7 +261,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.to_mne">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_mne">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_mne">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_mne</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to MNE-Python object.</span>
@@ -257,7 +281,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.from_mne">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_mne">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_mne">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_mne</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tfr</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -280,7 +304,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.to_obspy">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_obspy">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_obspy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_obspy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to Obspy Stream.</span>
@@ -295,7 +319,7 @@
 
 
 <div class="viewcode-block" id="Spectrogram.from_obspy">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_obspy">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_obspy">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_obspy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">stream</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -317,22 +341,89 @@
         <span class="k">return</span> <span class="n">from_obspy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Spectrogram.rebin">
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.rebin">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rebin</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrogram</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rebin the spectrogram in time and/or frequency.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dt : float or Quantity, optional</span>
+<span class="sd">            New time bin width in seconds.</span>
+<span class="sd">        df : float or Quantity, optional</span>
+<span class="sd">            New frequency bin width in Hz.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Spectrogram</span>
+<span class="sd">            The rebinned spectrogram.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span>
+
+        <span class="c1"># Frequency rebinning</span>
+        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">):</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">orig_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span>
+            <span class="n">bin_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">df</span> <span class="o">/</span> <span class="n">orig_df</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">bin_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">nt</span><span class="p">,</span> <span class="n">nf</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+                <span class="n">nf_new</span> <span class="o">=</span> <span class="n">nf</span> <span class="o">//</span> <span class="n">bin_size</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">data</span><span class="p">[:,</span> <span class="p">:</span> <span class="n">nf_new</span> <span class="o">*</span> <span class="n">bin_size</span><span class="p">]</span>
+                    <span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nf_new</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[:</span> <span class="n">nf_new</span> <span class="o">*</span> <span class="n">bin_size</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nf_new</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Time rebinning</span>
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">):</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">orig_dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+            <span class="n">bin_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">dt</span> <span class="o">/</span> <span class="n">orig_dt</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">bin_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">nt</span><span class="p">,</span> <span class="n">nf</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+                <span class="n">nt_new</span> <span class="o">=</span> <span class="n">nt</span> <span class="o">//</span> <span class="n">bin_size</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">data</span><span class="p">[:</span> <span class="n">nt_new</span> <span class="o">*</span> <span class="n">bin_size</span><span class="p">,</span> <span class="p">:]</span>
+                    <span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nt_new</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">nf</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">times</span> <span class="o">=</span> <span class="n">times</span><span class="p">[:</span> <span class="n">nt_new</span> <span class="o">*</span> <span class="n">bin_size</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nt_new</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">,</span>
+            <span class="n">epoch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Spectrogram.imshow">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.imshow">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.imshow">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot using imshow. Inherited from gwpy.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Spectrogram.pcolormesh">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.pcolormesh">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.pcolormesh">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">pcolormesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot using pcolormesh. Inherited from gwpy.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Spectrogram.radian">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.radian">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.radian">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrogram</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the phase of this Spectrogram in radians.</span>
@@ -351,7 +442,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Copy to preserve all metadata (times, frequencies, channel, epoch, metadata dict, etc.)</span>
         <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        
+
         <span class="c1"># Calculate phase values</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">unwrap</span><span class="p">:</span>
@@ -370,12 +461,12 @@
             <span class="n">new</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_phase&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;phase&quot;</span>
-            
+
         <span class="k">return</span> <span class="n">new</span></div>
 
 
 <div class="viewcode-block" id="Spectrogram.degree">
-<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.degree">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.degree">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrogram</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the phase of this Spectrogram in degrees.</span>
@@ -393,10 +484,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Re-use radian() implementation which handles unwrap and metadata preservation</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radian</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="n">unwrap</span><span class="p">)</span>
-        
+
         <span class="c1"># Convert values to degrees</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span>
-        
+
         <span class="c1"># Create final object (p already has correct metadata and is real-valued)</span>
         <span class="n">new</span> <span class="o">=</span> <span class="n">p</span>
         <span class="c1"># Use raw ndarray view for assignment to bypass Astropy&#39;s unit check</span>
@@ -406,8 +497,154 @@
             <span class="n">new</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_phase_deg&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;phase_deg&quot;</span>
-            
+
         <span class="k">return</span> <span class="n">new</span></div>
+
+
+<div class="viewcode-block" id="Spectrogram.to_timeseries_list">
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_timeseries_list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_timeseries_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">TimeSeriesList</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert this Spectrogram to a list of TimeSeries, one per frequency bin.</span>
+
+<span class="sd">        For a Spectrogram with shape ``(ntimes, nfreqs)``, this extracts each</span>
+<span class="sd">        column (frequency bin) as a TimeSeries with the same time axis.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ts_list : TimeSeriesList</span>
+<span class="sd">            A list of TimeSeries, one for each frequency bin.</span>
+<span class="sd">            Each TimeSeries has length ``ntimes``.</span>
+<span class="sd">        frequencies : Quantity</span>
+<span class="sd">            The frequency axis of this Spectrogram (length ``nfreqs``).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Each TimeSeries inherits ``unit``, ``epoch``, ``channel`` from this</span>
+<span class="sd">          Spectrogram.</span>
+<span class="sd">        - ``name`` is set to ``&quot;{original_name}_f{freq}&quot;`` or ``&quot;f{freq}&quot;`` if</span>
+<span class="sd">          the Spectrogram has no name, where ``freq`` is the frequency value.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; spec = Spectrogram(data, t0=0, dt=0.1, f0=10, df=5, name=&quot;test&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; ts_list, freqs = spec.to_timeseries_list()</span>
+<span class="sd">        &gt;&gt;&gt; len(ts_list)  # equals nfreqs</span>
+<span class="sd">        5</span>
+<span class="sd">        &gt;&gt;&gt; ts_list[0].name</span>
+<span class="sd">        &#39;test_f10.0Hz&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesList</span>
+
+        <span class="n">ntimes</span><span class="p">,</span> <span class="n">nfreqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+        <span class="c1"># Extract raw ndarray to avoid unit doubling</span>
+        <span class="n">data_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span>
+        <span class="n">frequencies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span>
+        <span class="c1"># Convert epoch to GPS float to avoid astropy.Time interpretation issues</span>
+        <span class="n">epoch</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="o">.</span><span class="n">gps</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span> <span class="s2">&quot;gps&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">)</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span>
+        <span class="n">base_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="n">ts_list</span> <span class="o">=</span> <span class="n">TimeSeriesList</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nfreqs</span><span class="p">):</span>
+            <span class="n">freq_val</span> <span class="o">=</span> <span class="n">frequencies</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="c1"># Create descriptive name</span>
+            <span class="k">if</span> <span class="n">base_name</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">_f</span><span class="si">{</span><span class="n">freq_val</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;f</span><span class="si">{</span><span class="n">freq_val</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="c1"># Extract column i (all times, single frequency)</span>
+            <span class="n">ts_data</span> <span class="o">=</span> <span class="n">data_raw</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+            <span class="c1"># Create TimeSeries with explicit unit</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
+                <span class="n">ts_data</span><span class="p">,</span>
+                <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+                <span class="n">epoch</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># Bypass validation by using list.append</span>
+            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ts_list</span><span class="p">,</span> <span class="n">ts</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ts_list</span><span class="p">,</span> <span class="n">frequencies</span></div>
+
+
+<div class="viewcode-block" id="Spectrogram.to_frequencyseries_list">
+<a class="viewcode-back" href="../../../reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_frequencyseries_list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_frequencyseries_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FrequencySeriesList</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert this Spectrogram to a list of FrequencySeries, one per time bin.</span>
+
+<span class="sd">        For a Spectrogram with shape ``(ntimes, nfreqs)``, this extracts each</span>
+<span class="sd">        row (time bin) as a FrequencySeries with the same frequency axis.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        fs_list : FrequencySeriesList</span>
+<span class="sd">            A list of FrequencySeries, one for each time bin.</span>
+<span class="sd">            Each FrequencySeries has length ``nfreqs``.</span>
+<span class="sd">        times : Quantity</span>
+<span class="sd">            The time axis of this Spectrogram (length ``ntimes``).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Each FrequencySeries inherits ``unit``, ``epoch``, ``channel`` from</span>
+<span class="sd">          this Spectrogram.</span>
+<span class="sd">        - ``name`` is set to ``&quot;{original_name}_t{time}&quot;`` or ``&quot;t{time}&quot;`` if</span>
+<span class="sd">          the Spectrogram has no name, where ``time`` is the time value.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; spec = Spectrogram(data, t0=0, dt=0.1, f0=10, df=5, name=&quot;test&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; fs_list, times = spec.to_frequencyseries_list()</span>
+<span class="sd">        &gt;&gt;&gt; len(fs_list)  # equals ntimes</span>
+<span class="sd">        10</span>
+<span class="sd">        &gt;&gt;&gt; fs_list[0].name</span>
+<span class="sd">        &#39;test_t0.0s&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">FrequencySeriesList</span>
+
+        <span class="n">ntimes</span><span class="p">,</span> <span class="n">nfreqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+        <span class="c1"># Extract raw ndarray to avoid unit doubling</span>
+        <span class="n">data_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span>
+        <span class="n">frequencies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span>
+        <span class="c1"># Convert epoch to GPS float to avoid astropy.Time interpretation issues</span>
+        <span class="n">epoch</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="o">.</span><span class="n">gps</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span> <span class="s2">&quot;gps&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">)</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span>
+        <span class="n">base_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="n">fs_list</span> <span class="o">=</span> <span class="n">FrequencySeriesList</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ntimes</span><span class="p">):</span>
+            <span class="n">time_val</span> <span class="o">=</span> <span class="n">times</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="c1"># Create descriptive name</span>
+            <span class="k">if</span> <span class="n">base_name</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">_t</span><span class="si">{</span><span class="n">time_val</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;t</span><span class="si">{</span><span class="n">time_val</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="c1"># Extract row j (single time, all frequencies)</span>
+            <span class="n">fs_data</span> <span class="o">=</span> <span class="n">data_raw</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+            <span class="c1"># Create FrequencySeries with explicit unit</span>
+            <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+                <span class="n">fs_data</span><span class="p">,</span>
+                <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+                <span class="n">epoch</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># Bypass validation by using list.append</span>
+            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fs_list</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fs_list</span><span class="p">,</span> <span class="n">times</span></div>
 </div>
 
 

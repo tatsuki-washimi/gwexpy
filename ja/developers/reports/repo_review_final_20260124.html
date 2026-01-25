@@ -1,0 +1,205 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Repository Review Report: gwexpy (Final) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="作業報告書: 広範な例外処理のリファクタリング - 2026/01/24" href="report_refactor_exceptions_20260124_153045.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">開発者ガイド (Developers Guide)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">設計方針とコントラクト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">開発ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">技術分析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">進行中の計画</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id5">最近のレポート</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="report_comprehensive_quality_improvement_20260124.html">作業包括報告書: GWExPy コード品質改善 - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_refactor_exceptions_20260124_153045.html">作業報告書: 広範な例外処理のリファクタリング - 2026/01/24</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Repository Review Report: gwexpy (Final)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">1. Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#strengths">2. Strengths</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#areas-for-improvement">3. Areas for Improvement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conclusion">4. Conclusion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">開発者ガイド (Developers Guide)</a></li>
+      <li class="breadcrumb-item active">Repository Review Report: gwexpy (Final)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/repo_review_final_20260124.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="repository-review-report-gwexpy-final">
+<h1>Repository Review Report: gwexpy (Final)<a class="headerlink" href="#repository-review-report-gwexpy-final" title="Link to this heading"></a></h1>
+<p><strong>Date</strong>: 2026-01-24<br />
+<strong>Reviewer</strong>: AI Agent (Gemini 3 Pro)<br />
+<strong>Target</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> repository (main branch)</p>
+<hr class="docutils" />
+<section id="overview">
+<h2>1. Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> is an unofficial extension library for GWpy, aimed at advanced experimental physics and gravitational wave data analysis. The project is mature, well-structured, and emphasizes type safety and test coverage.</p>
+<ul class="simple">
+<li><p><strong>Scale</strong>: ~550 Python files, 70 Notebooks, 220+ Markdown docs.</p></li>
+<li><p><strong>Dependencies</strong>: Modern stack (Python 3.9+, GWpy, NumPy, SciPy, Astropy).</p></li>
+<li><p><strong>Testing</strong>: Highly robust. <strong>2684 tests</strong> are collected, covering unit, integration, and CLI scenarios. CI flows (<code class="docutils literal notranslate"><span class="pre">test.yml</span></code>) are configured.</p></li>
+<li><p><strong>Quality</strong>: Recent refactoring has significantly improved error handling logic and MyPy type safety. Core packages (<code class="docutils literal notranslate"><span class="pre">timeseries</span></code>, <code class="docutils literal notranslate"><span class="pre">frequencyseries</span></code>, <code class="docutils literal notranslate"><span class="pre">spectrogram</span></code>) are fully typed.</p></li>
+</ul>
+</section>
+<section id="strengths">
+<h2>2. Strengths<a class="headerlink" href="#strengths" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Strict Type Checking</strong>: Core components (<code class="docutils literal notranslate"><span class="pre">frequencyseries</span></code>, <code class="docutils literal notranslate"><span class="pre">spectrogram</span></code>, <code class="docutils literal notranslate"><span class="pre">timeseries</span></code>) are checked by MyPy without file-level exclusions.</p></li>
+<li><p><strong>Modular Architecture</strong>: Extensive use of Mixins (e.g., <code class="docutils literal notranslate"><span class="pre">SignalAnalysisMixin</span></code>) promotes code reuse across <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>, and Matrix types. Protocol-based typing for Mixins (<code class="docutils literal notranslate"><span class="pre">self:</span> <span class="pre">_ProtocolLike</span></code>) is a notable best practice.</p></li>
+<li><p><strong>Comprehensive Documentation</strong>: Extensive docstrings with updated <code class="docutils literal notranslate"><span class="pre">Parameters</span></code>/<code class="docutils literal notranslate"><span class="pre">Returns</span></code> sections. Rich documentation site structure (<code class="docutils literal notranslate"><span class="pre">docs/</span></code>).</p></li>
+<li><p><strong>Clean Codebase</strong>: No legacy baggage found (<code class="docutils literal notranslate"><span class="pre">sys.version</span></code> checks for Py2, <code class="docutils literal notranslate"><span class="pre">six</span></code> library usage, <code class="docutils literal notranslate"><span class="pre">FIXME</span></code>/<code class="docutils literal notranslate"><span class="pre">XXX</span></code> tags are virtually non-existent or addressed).</p></li>
+</ol>
+</section>
+<section id="areas-for-improvement">
+<h2>3. Areas for Improvement<a class="headerlink" href="#areas-for-improvement" title="Link to this heading"></a></h2>
+<section id="priority-1-high-none-identified">
+<h3>Priority 1: High (None identified)<a class="headerlink" href="#priority-1-high-none-identified" title="Link to this heading"></a></h3>
+<p><em>Critically blocking issues are resolved.</em></p>
+</section>
+<section id="priority-2-medium-maintenance-robustness">
+<h3>Priority 2: Medium (Maintenance &amp; Robustness)<a class="headerlink" href="#priority-2-medium-maintenance-robustness" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Expand MyPy Coverage</strong>:</p>
+<ul class="simple">
+<li><p>Several submodules are still excluded in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">gwexpy.types.series_matrix_*</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy.analysis.bruco</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy.gui.*</span></code>).</p></li>
+<li><p><em>Goal</em>: Gradually remove these exclusions.</p></li>
+</ul>
+</li>
+<li><p><strong>Refine GUI Exception Handling</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">grep</span></code> results indicate numerous <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception</span></code> blocks in the <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> package (e.g., <code class="docutils literal notranslate"><span class="pre">streaming.py</span></code>, <code class="docutils literal notranslate"><span class="pre">ui/main_window.py</span></code>). While typical for GUI apps to prevent crashing, adding logging or narrowing exception types is recommended.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="priority-3-low-polish">
+<h3>Priority 3: Low (Polish)<a class="headerlink" href="#priority-3-low-polish" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Clean up Stale TODOs</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/spectrogram/matrix.py</span></code> still contains a TODO comments about “Pickle limitation” even though <code class="docutils literal notranslate"><span class="pre">__reduce__</span></code> support was implemented.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/spectrogram/matrix_core.py</span></code> has a TODO about “Future 4D support” related to axis swapping.</p></li>
+</ul>
+</li>
+<li><p><strong>Warning Cleanup</strong>:</p>
+<ul class="simple">
+<li><p>Though greatly reduced, <code class="docutils literal notranslate"><span class="pre">pytest</span></code> still emits some <code class="docutils literal notranslate"><span class="pre">UserWarning:</span> <span class="pre">xindex</span> <span class="pre">was</span> <span class="pre">given</span> <span class="pre">to</span> <span class="pre">Spectrogram()</span></code> warnings from upstream GWpy interaction.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<section id="conclusion">
+<h2>4. Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading"></a></h2>
+<p>The repository is in excellent health. The recent quality improvement campaign successfully addressed major technical debts (broad exceptions, missing type checks, serialization bugs). The roadmap is now shifted towards maintenance (expanding coverage to GUI/edge modules) and final cleanup.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="report_refactor_exceptions_20260124_153045.html" class="btn btn-neutral float-left" title="作業報告書: 広範な例外処理のリファクタリング - 2026/01/24" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作業レポート: ScalarField 信号処理テスト拡張 (Phase 4 検証) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">開発者ガイド (Developers Guide)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">作業レポート: ScalarField 信号処理テスト拡張 (Phase 4 検証)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/reports/report_ScalarField_Test_Coverage_20260122_224425.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scalarfield-phase-4">
+<h1>作業レポート: ScalarField 信号処理テスト拡張 (Phase 4 検証)<a class="headerlink" href="#scalarfield-phase-4" title="Link to this heading"></a></h1>
+<p><strong>日付: 2026-01-23 10:30</strong></p>
+<section id="id1">
+<h2>概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>ScalarField の信号処理拡張 (Phase 4: 検証とドキュメント) に対応し、PSD・相互相関・コヒーレンス等のテストカバレッジを拡大しました。物理一貫性（軸・単位・メタデータ保持）とエッジケースを中心に、既存の物理検証スクリプト相当のロジックを pytest に移植しています。</p>
+</section>
+<section id="id2">
+<h2>実施内容<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>信号処理テスト追加</strong> (<code class="docutils literal notranslate"><span class="pre">tests/fields/test_scalarfield_signal.py</span></code> 新規)</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">compute_psd</span></code> の単一点・複数点・領域平均 (Welch との一致) を検証。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freq_space_map</span></code> の形状・単位・軸メタデータを確認し、<code class="docutils literal notranslate"><span class="pre">at</span></code> 未指定時の例外を確認。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compute_xcorr</span></code> で <code class="docutils literal notranslate"><span class="pre">scipy.signal.correlate</span></code> とのラグ一致と正規化範囲を検証。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_delay_map</span></code> でラグ値転写と軸メタデータを検証。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">coherence_map</span></code> のバンド平均・周波数分解結果の範囲 (0–1) と軸メタデータを検証。</p></li>
+<li><p>不正ドメイン/不均一時刻軸/短尺軸などエラーケースを追加。</p></li>
+</ul>
+</li>
+<li><p><strong>周辺テスト強化</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/fields/test_scalarfield_domain.py</span></code> 更新: スライス→FFT→スライスのドメイン保持、FFT/iFFT 繰り返し、グリッド間隔 (df, dk) の物理妥当性、軸ラベルの整合性を検証。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/fields/test_scalarfield_units.py</span></code> 新規: ドメインに応じた単位バリデーション、演算時の単位保存、FFT スケールの単位 (<code class="docutils literal notranslate"><span class="pre">V**2</span></code>) を確認。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/fields/test_scalarfield_metadata.py</span></code> 新規: name/channel/space_domains の保持とコピー動作を検証。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/fields/test_scalarfield_edge_cases.py</span></code> 新規: シングルトン軸での FFT エラー、非連続スライスでの FFT、NaN/Inf 混在データの動作、デフォルト単位の許容範囲を検証。</p></li>
+</ul>
+</li>
+<li><p><strong>GUI / NDS テストの CI セーフガード</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">PYTEST_DISABLE_PLUGIN_AUTOLOAD</span></code> 環境下では pytest-qt が無い前提で GUI 系をスキップするガードを <code class="docutils literal notranslate"><span class="pre">tests/gui/conftest.py</span></code> と <code class="docutils literal notranslate"><span class="pre">tests/nds/test_gui_nds_smoke.py</span></code> に追加。</p></li>
+<li><p>既存 GUI スモークもモジュールスキップへ変更し、非 GUI 環境での失敗を防止。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id3">
+<h2>テスト結果<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PYTEST_DISABLE_PLUGIN_AUTOLOAD=1</span> <span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pytest</span> <span class="pre">-q</span></code></p>
+<ul>
+<li><p>2465 passed / 167 skipped / 3 xfailed / 127 warnings (約 8 分 38 秒)</p></li>
+<li><p>GUI・NDS・TeX 依存はスキップ。新規 ScalarField 信号系テストはすべてパス。</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ruff</span> <span class="pre">check</span></code> ✅</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">.</span></code> ✅</p></li>
+</ul>
+</section>
+<section id="id4">
+<h2>留意点 / 今後の対応<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>GUI/NDS スモークは pytest-qt と Qt 環境が揃えばガードを外して実行可能。必要なら <code class="docutils literal notranslate"><span class="pre">PYTEST_DISABLE_PLUGIN_AUTOLOAD</span></code> を外し、依存を導入した上で再度実行する。</p></li>
+<li><p>スキップガードを恒久化するかどうかは CI ポリシーに応じて検討。</p></li>
+<li><p>追加でドキュメント同期が必要な場合は <code class="docutils literal notranslate"><span class="pre">sync_docs</span></code> などのワークフローを利用する。</p></li>
+</ul>
+</section>
+<section id="id5">
+<h2>使用モデル<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>OpenAI ChatGPT (assist) / Python 3.10 環境</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

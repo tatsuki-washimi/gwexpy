@@ -1,24 +1,24 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="ja" data-content_root="../../../">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwexpy.types.metadata &mdash; gwexpy  ドキュメント</title>
+  <title>gwexpy.types.metadata &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../../_static/translations.js?v=4755f45a"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,20 +40,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">開発者ガイド (Developers Guide)</a></li>
 </ul>
 
         </div>
@@ -70,7 +71,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html">モジュールコード</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
       <li class="breadcrumb-item active">gwexpy.types.metadata</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -80,11 +81,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>gwexpy.types.metadata のソースコード</h1><div class="highlight"><pre>
+  <h1>Source code for gwexpy.types.metadata</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -100,6 +101,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Channel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.types.array</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.types.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="n">_UFUNC_ABS_REAL</span> <span class="o">=</span> <span class="p">{</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">negative</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">positive</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">}</span>
 <span class="n">_UFUNC_CONJ</span> <span class="o">=</span> <span class="p">{</span><span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">}</span>
@@ -123,7 +128,7 @@
 
 
 <div class="viewcode-block" id="MetaData">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaData">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaData">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MetaData</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
@@ -185,7 +190,7 @@
             <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span>
 
 <div class="viewcode-block" id="MetaData.from_series">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaData.from_series">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaData.from_series">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_series</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
@@ -196,7 +201,7 @@
 
 
 <div class="viewcode-block" id="MetaData.as_meta">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaData.as_meta">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaData.as_meta">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">as_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">MetaData</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">obj</span>
@@ -345,17 +350,24 @@
 
 
 <div class="viewcode-block" id="MetaDataDict">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataDict">[ドキュメント]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">MetaDataDict</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">):</span>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataDict">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MetaDataDict</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MetaData</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ordered dictionary mapping keys to MetaData instances.</span>
+
+<span class="sd">    This container enforces that all values are MetaData objects,</span>
+<span class="sd">    providing a type-safe collection for row/column metadata in</span>
+<span class="sd">    SeriesMatrix and related classes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">entries</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">MetaDataDict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">expected_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">key_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="n">final_entries</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-        <span class="n">actual_size</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">final_entries</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MetaData</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="n">actual_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">entries</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">expected_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -400,13 +412,6 @@
                     <span class="n">MetaData</span><span class="p">(</span><span class="o">**</span><span class="n">entry</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">entry</span>
                 <span class="p">)</span>
             <span class="c1"># Dict insertion order is guaranteed in Python 3.7+ as part of language spec.</span>
-            <span class="c1"># For Python 3.6 or lower, explicitly suggest OrderedDict if order matters.</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="s2">&quot;Order of a standard dict is not guaranteed; consider using OrderedDict&quot;</span><span class="p">,</span>
-                    <span class="ne">RuntimeWarning</span><span class="p">,</span>
-                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">pd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
             <span class="n">actual_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span>
@@ -427,19 +432,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">final_entries</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of names from all MetaData entries.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">entry</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">channels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Channel</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of channels from all MetaData entries.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">entry</span><span class="o">.</span><span class="n">channel</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">UnitBase</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of units from all MetaData entries.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">entry</span><span class="o">.</span><span class="n">unit</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
 
 <div class="viewcode-block" id="MetaDataDict.to_dataframe">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataDict.to_dataframe">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataDict.to_dataframe">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">pd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;pandas is required for to_dataframe()&quot;</span><span class="p">)</span>
@@ -449,13 +457,13 @@
 
 
 <div class="viewcode-block" id="MetaDataDict.write">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataDict.write">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataDict.write">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MetaDataDict.read">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataDict.read">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataDict.read">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">pd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -465,7 +473,7 @@
 
 
 <div class="viewcode-block" id="MetaDataDict.from_series">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataDict.from_series">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataDict.from_series">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_series</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
@@ -559,7 +567,7 @@
 <span class="c1"># MetaDataMatrix: matrix container for unit/name per element</span>
 <span class="c1"># =============================</span>
 <div class="viewcode-block" id="MetaDataMatrix">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MetaDataMatrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -626,14 +634,14 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="MetaDataMatrix.fill">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix.fill">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix.fill">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fill the matrix with a single MetaData value.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        value : Union[MetaData, dict]</span>
+<span class="sd">        value : MetaData | dict</span>
 <span class="sd">            MetaData instance used as-is, or mapping passed once to ``MetaData(**value)``.</span>
 
 <span class="sd">        Notes</span>
@@ -687,14 +695,14 @@
             <span class="n">m</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span>
 
 <div class="viewcode-block" id="MetaDataMatrix.from_array">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix.from_array">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix.from_array">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_array</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">array2d</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">array2d</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MetaDataMatrix.to_dataframe">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix.to_dataframe">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix.to_dataframe">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
@@ -715,7 +723,7 @@
 
 
 <div class="viewcode-block" id="MetaDataMatrix.from_dataframe">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix.from_dataframe">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix.from_dataframe">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_dataframe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -728,13 +736,13 @@
 
 
 <div class="viewcode-block" id="MetaDataMatrix.write">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix.write">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix.write">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MetaDataMatrix.read">
-<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix.read">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/types.html#gwexpy.types.MetaDataMatrix.read">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">pd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

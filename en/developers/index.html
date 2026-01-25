@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Developers Guide &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
@@ -16,11 +16,10 @@
       <script src="../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwexpy Numerical Logic (A2) Contract" href="contracts/numerical.html" />
-    <link rel="prev" title="SeriesMatrix" href="../reference/en/SeriesMatrix.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -52,14 +51,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference/en/index.html">Detailed Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Developers Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="contracts/numerical.html">gwexpy Numerical Logic (A2) Contract</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guides/gui_testing.html">GUI Testing (Headless)</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/ja/index.html">詳細リファレンス</a></li>
 </ul>
 
         </div>
@@ -88,34 +80,75 @@
              
   <section id="developers-guide">
 <h1>Developers Guide<a class="headerlink" href="#developers-guide" title="Link to this heading"></a></h1>
+<section id="core-design-contracts">
+<h2>Core Design &amp; Contracts<a class="headerlink" href="#core-design-contracts" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="contracts/numerical.html">gwexpy Numerical Logic (A2) Contract</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="contracts/numerical.html#axis-alignment-and-resampling">1. Axis Alignment and Resampling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contracts/numerical.html#unit-consistency">2. Unit Consistency</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contracts/numerical.html#metadata-propagation">3. Metadata Propagation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contracts/numerical.html#signal-processing-and-spectral-analysis">4. Signal Processing and Spectral Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contracts/numerical.html#fitting-and-modeling">5. Fitting and Modeling</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="guides/gui_testing.html">GUI Testing (Headless)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guides/gui_testing.html#quick-run">Quick Run</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guides/gui_testing.html#core-dumps">Core Dumps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guides/gui_testing.html#gdb-single-test">gdb (Single Test)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guides/gui_testing.html#valgrind-single-test">valgrind (Single Test)</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="contracts/numerical.html">gwexpy Numerical Logic (A2) Contract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/REFACTORING_PLAN.html">TimeSeries Refactoring Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/repo_improvement_plan.html">タスク: リポジトリ品質改善</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/stlt_implementation_plan.html">STLT (Short-Time Laplace Transform) 実装計画</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui/implementation_map.html">Source Code Status Report: gwexpy/gui</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui/reference_analysis.html">DTT (diaggui) リファレンス解析レポート</a></li>
 </ul>
 </div>
+</section>
+<section id="development-guides">
+<h2>Development Guides<a class="headerlink" href="#development-guides" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guides/testing.html">Full Test Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/gui_testing.html">GUI Testing (Headless)</a></li>
+</ul>
+</div>
+</section>
+<section id="technical-analysis">
+<h2>Technical Analysis<a class="headerlink" href="#technical-analysis" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="analysis/scalarfield_physics_review_20260120.html">ScalarField Physics Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html">DTT (Diagnostic Test Tools) Comprehensive Analysis Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-1-documentation-ui-audit-phase-1">Part 1: Documentation &amp; UI Audit (Phase 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-2-core-code-analysis-phase-2">Part 2: Core Code Analysis (Phase 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-3-deep-dive-analysis">Part 3: Deep Dive Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-4-architecture-analysis">Part 4: Architecture Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-5-additional-modules-analysis">Part 5: Additional Modules Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-6-external-dependencies-python-integration">Part 6: External Dependencies &amp; Python Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-7-gap-analysis-recommendations">Part 7: Gap Analysis &amp; Recommendations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-8-data-flow-class-interaction-diagrams">Part 8: Data Flow &amp; Class Interaction Diagrams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-9-file-analysis-summary">Part 9: File Analysis Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-10-conclusion">Part 10: Conclusion</a></li>
+</ul>
+</div>
+</section>
+<section id="active-plans-2026-01-24">
+<h2>Active Plans (2026-01-24)<a class="headerlink" href="#active-plans-2026-01-24" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_refactor_exceptions_20260124_152245.html">作業計画書: 広範な例外処理のリファクタリング</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_QA_Verification_20260124.html">作業計画書: QA検証 (Lint &amp; Test) - 2026/01/24</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/test_coverage_expansion_plan_20260124.html">Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_mypy_expansion_phase1_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 1: FrequencySeries)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_mypy_expansion_phase2_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 2: Spectrogram)</a></li>
+</ul>
+</div>
+</section>
+<section id="recent-reports">
+<h2>Recent Reports<a class="headerlink" href="#recent-reports" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_comprehensive_quality_improvement_20260124.html">作業包括報告書: GWExPy コード品質改善 - 2026/01/24</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_refactor_exceptions_20260124_153045.html">作業報告書: 広範な例外処理のリファクタリング - 2026/01/24</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/repo_review_final_20260124.html">Repository Review Report: gwexpy (Final)</a></li>
+</ul>
+</div>
+</section>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../reference/en/SeriesMatrix.html" class="btn btn-neutral float-left" title="SeriesMatrix" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="contracts/numerical.html" class="btn btn-neutral float-right" title="gwexpy Numerical Logic (A2) Contract" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

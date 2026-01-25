@@ -1,0 +1,677 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bruco (Brute force coherence) Pythonチュートリアル &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="ノイズバジェッティングと多チャンネル相関解析" href="case_noise_budget.html" />
+    <link rel="prev" title="統計的相関機能" href="advanced_correlation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#i-core-data-structures">I. Core Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Bruco (Brute force coherence) Pythonチュートリアル</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#並列処理によるコヒーレンス計算">並列処理によるコヒーレンス計算</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#vi-case-studies">VI. Case Studies</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Bruco (Brute force coherence) Pythonチュートリアル</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/advanced_bruco.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Bruco-(Brute-force-coherence)-Pythonチュートリアル">
+<h1>Bruco (Brute force coherence) Pythonチュートリアル<a class="headerlink" href="#Bruco-(Brute-force-coherence)-Pythonチュートリアル" title="Link to this heading"></a></h1>
+<p>Brucoは<strong>「総当たりコヒーレンス（Brute force coherence）」</strong>を計算するためのツールです。重力波検出器（LIGOやVirgo）の主チャンネル（ターゲット）と、多数の補助チャンネルとの間のコヒーレンスを計算し、ノイズ源を特定することを目的としています。</p>
+<section id="並列処理によるコヒーレンス計算">
+<h2>並列処理によるコヒーレンス計算<a class="headerlink" href="#並列処理によるコヒーレンス計算" title="Link to this heading"></a></h2>
+<p>Pythonの <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> モジュールを使用して複数のCPUコアで並列実行されます。</p>
+<ol class="arabic simple">
+<li><p><strong>タスク分割</strong>: 全補助チャンネルリストをCPU数に応じて分割し、各プロセスに割り当てます。</p></li>
+<li><p><strong>データ取得と前処理</strong>:</p></li>
+</ol>
+<ul class="simple">
+<li><p>各補助チャンネルのデータを取得します。</p></li>
+<li><p>データが一定（フラット）の場合はスキップします。</p></li>
+<li><p>サンプリングレートが出力要求レート (<code class="docutils literal notranslate"><span class="pre">outfs</span></code>) より高い場合、<code class="docutils literal notranslate"><span class="pre">decimate</span></code> 関数を用いてダウンサンプリングします。</p></li>
+</ul>
+<ol class="arabic simple" start="3">
+<li><p><strong>コヒーレンス算出</strong>:</p></li>
+</ol>
+<ul class="simple">
+<li><p>補助チャンネルのFFTとPSD（パワースペクトル密度）を計算します。</p></li>
+<li><p>ターゲットチャンネルとのCSD（クロススペクトル密度）を計算します。</p></li>
+<li><p>コヒーレンス を以下の式で計算します：</p></li>
+</ul>
+<ol class="arabic simple" start="4">
+<li><p><strong>Top N の選出</strong>:</p></li>
+</ol>
+<ul class="simple">
+<li><p>すべての周波数ビンについて、計算されたコヒーレンス値が既存の上位リスト（<code class="docutils literal notranslate"><span class="pre">top</span></code>）よりも高い場合、その値を更新します。これにより、全チャンネルの結果を保持するのではなく、相関の高い上位チャンネルのみを効率的に記録します。</p></li>
+</ul>
+<ol class="arabic simple" start="5">
+<li><p><strong>結果の集約と出力</strong>:</p></li>
+</ol>
+<ul class="simple">
+<li><p>各プロセスから返された <code class="docutils literal notranslate"><span class="pre">cohtab</span></code>（コヒーレンス値）と <code class="docutils literal notranslate"><span class="pre">idxtab</span></code>（チャンネルID）を結合・ソートし、最終的な上位リストを作成します。</p></li>
+<li><p><strong>HTMLレポート作成</strong>: <code class="docutils literal notranslate"><span class="pre">markup.py</span></code> を使用して <code class="docutils literal notranslate"><span class="pre">index.html</span></code> を生成します。これには、周波数ごとの上位相関チャンネルの表（ヒートマップ形式の着色あり）や、プロット画像へのリンクが含まれます。</p></li>
+<li><p><strong>プロット作成</strong>: <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> を使用して、コヒーレンスとスペクトルのグラフ（PNGまたはPDF）を生成します。</p></li>
+</ul>
+<p>この実装は、大量のチャンネルデータを効率的に処理するために、<strong>FFTの事前計算</strong>、<strong>並列処理</strong>、および<strong>メモリ効率の良いTop-N記録方式</strong>を採用している点が特徴です。</p>
+<p>オリジナルのBruco実装は以下で公開されています。設計詳細やCLIの挙動を確認したい場合はこちらを参照してください。</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/mikelovskij/bruco">https://github.com/mikelovskij/bruco</a></p></li>
+</ul>
+<p>このノートブックでは <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">Bruco</span></code> モジュールを <strong>Pythonライブラリとして</strong> 使う利点を体感するために、 対話的な解析・柔軟なデータ操作・高度な仮説検証を一通り実演します。</p>
+<ul class="simple">
+<li><p>実データは使わず、<code class="docutils literal notranslate"><span class="pre">gwpy</span></code> / <code class="docutils literal notranslate"><span class="pre">numpy</span></code> で生成した擬似データを利用します。</p></li>
+<li><p>CLIでは難しい「非線形結合」や「変調」の仮説検証を、Python APIで高速に試します。</p></li>
+</ul>
+<section id="セットアップとモックデータ生成">
+<h3>セットアップとモックデータ生成<a class="headerlink" href="#セットアップとモックデータ生成" title="Link to this heading"></a></h3>
+<div class="line-block">
+<div class="line"><strong>何をするか</strong>: ターゲット/補助チャンネルの擬似データを作り、Brucoに食わせるための <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を準備します。</div>
+<div class="line"><strong>なぜ重要か</strong>: 実運用ではNDSやフレームから取得しますが、ノートブック上で自由に信号を設計できると仮説検証が加速します。</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># ruff: noqa: I001
+from astropy import units as u
+import matplotlib.pyplot as plt
+import numpy as np
+
+from gwexpy.analysis import Bruco
+from gwexpy.analysis.bruco import FastCoherenceEngine
+from gwexpy.astro import inspiral_range
+from gwexpy.frequencyseries import FrequencySeriesDict
+from gwexpy.noise.asd import from_pygwinc
+from gwexpy.noise.wave import from_asd
+from gwexpy.plot import Plot
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>rng = np.random.default_rng(7)
+
+duration = 128  # seconds
+sample_rate = 2048  # Hz
+fftlength = 4.0  # seconds
+overlap = 2.0  # seconds
+
+t = np.arange(0, duration, 1 / sample_rate)
+
+# aLIGOの感度曲線(ASD)を取得
+fmax = sample_rate / 2  # Nyquist frequency
+asd_aligo = from_pygwinc(&#39;aLIGO&#39;, fmin=4.0, fmax=fmax, df=1.0/duration, quantity=&#39;strain&#39;)
+
+# aLIGOの感度曲線に基づくターゲットノイズを生成
+target = from_asd(asd_aligo, duration, sample_rate, t0=0, rng=rng).highpass(1)
+target.channel=&quot;H1:TARGET&quot;
+
+# 補助チャンネル用の信号
+fast_line = np.sin(2 * np.pi * 60.0 * t)
+slow_motion = 70 * np.sin(2 * np.pi * 2.3 * t) + 30 * np.sin(2 * np.pi * 7.1 * t)
+
+aux1_data = 0.8 * fast_line   + 0.2 * rng.normal(0, 1.0, size=t.size)
+aux2_data = 0.9 * slow_motion + 0.2 * rng.normal(0, 1.0, size=t.size) +1
+aux1 = TimeSeries(aux1_data, sample_rate=sample_rate, t0=0,unit=&#39;V&#39;, channel=&quot;H1:AUX1_FAST&quot;)
+aux2 = TimeSeries(aux2_data, sample_rate=sample_rate, t0=0,unit=&#39;V&#39;, channel=&quot;H1:AUX2_SLOW&quot;).lowpass(30)
+
+# ターゲットへの注入信号: aLIGOベースノイズ + 線形カップリング + 非線形注入
+target = target + 1e-22*target.unit * (aux1/u.V + aux2/u.V + (aux1/u.V/2)**2 + 0.01*(aux1*aux2/u.V**2))
+
+
+target.name = target.channel
+aux1.name = aux1.channel
+aux2.name = aux2.channel
+
+aux_dict = TimeSeriesDict({
+    aux1.channel: aux1,
+    aux2.channel: aux2,
+})
+
+print(f&#39;aLIGO ASD at 100 Hz: {asd_aligo.crop(99, 101).value[0]:.2e} strain/sqrt(Hz)&#39;)
+print(f&#39;Target data std: {target.std():.2e}&#39;)
+
+plot = Plot([target.asd(8,4),asd_aligo],aux1.asd(8,4),aux2.asd(8,4),
+            figsize=(10,12), sharex=True)
+axes = plot.get_axes()
+axes[0].set_xlim(1,1e3)
+axes[0].set_ylim(1e-24,1e-19)
+axes[1].set_ylim(1e-3,1e1)
+axes[2].set_ylim(1e-4,1e3)
+axes[0].legend([target.name,&#39;Model ASD&#39;])
+axes[1].legend([aux1.name])
+axes[2].legend([aux2.name])
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+aLIGO ASD at 100 Hz: 3.71e-24 strain/sqrt(Hz)
+Target data std: 5.08e-19
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.legend.Legend at 0x748f9b38b200&gt;
+</pre></div></div>
+</div>
+</section>
+<section id="Section-1:-基本的なBruco解析の実行-(Jupyter上での再現)">
+<h3>Section 1: 基本的なBruco解析の実行 (Jupyter上での再現)<a class="headerlink" href="#Section-1:-基本的なBruco解析の実行-(Jupyter上での再現)" title="Link to this heading"></a></h3>
+<div class="line-block">
+<div class="line"><strong>何をするか</strong>: <code class="docutils literal notranslate"><span class="pre">Bruco</span></code> クラスで総当たりコヒーレンス解析を実行し、結果をテーブルとプロットで確認します。</div>
+<div class="line"><strong>なぜ重要か</strong>: Python APIなら、対話的に条件や可視化を変えながら“犯人探し”を素早く試せます。</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span># Brucoの初期化。
+# ここではデータは全て手動で渡すため、NDSからの自動取得チャンネルリスト(aux_channels)は空リストを指定します。
+bruco = Bruco(target_channel=target.name, aux_channels=[])
+
+# computeメソッドに target_data と aux_data を渡すことで、内部Fetchをスキップして解析を実行できます。
+result = bruco.compute(
+    start=0,
+    duration=int(duration),
+    fftlength=fftlength,
+    overlap=overlap,
+    nproc=1,
+    batch_size=2,
+    top_n=3,
+    target_data=target, # 事前に生成したターゲットデータ
+    aux_data=aux_dict   # 事前に生成した補助チャンネルデータの辞書
+)
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df = result.to_dataframe(ranks=[0])
+
+df_sorted = (
+    df.sort_values(&quot;coherence&quot;, ascending=False)
+    .dropna(subset=[&quot;channel&quot;])
+    .head(15)
+    .reset_index(drop=True)
+)
+
+df_sorted
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>frequency</th>
+      <th>rank</th>
+      <th>channel</th>
+      <th>coherence</th>
+      <th>projection</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>60.00</td>
+      <td>1</td>
+      <td>H1:AUX1_FAST</td>
+      <td>0.998699</td>
+      <td>1.118712e-22</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>59.75</td>
+      <td>1</td>
+      <td>H1:AUX1_FAST</td>
+      <td>0.994909</td>
+      <td>5.587699e-23</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>60.25</td>
+      <td>1</td>
+      <td>H1:AUX1_FAST</td>
+      <td>0.994519</td>
+      <td>5.570859e-23</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>7.25</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.973445</td>
+      <td>1.888851e-21</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>7.00</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.968398</td>
+      <td>2.211076e-21</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>62.25</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.709532</td>
+      <td>2.210663e-23</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>62.50</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.695847</td>
+      <td>1.435894e-23</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7.50</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.680465</td>
+      <td>2.682833e-22</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>6.75</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.641778</td>
+      <td>5.413037e-22</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>62.00</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.615101</td>
+      <td>7.153501e-24</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>131.25</td>
+      <td>1</td>
+      <td>H1:AUX1_FAST</td>
+      <td>0.482609</td>
+      <td>1.772034e-24</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>203.75</td>
+      <td>1</td>
+      <td>H1:AUX1_FAST</td>
+      <td>0.471606</td>
+      <td>1.572731e-24</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>57.75</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.451528</td>
+      <td>1.428494e-23</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>57.50</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.440484</td>
+      <td>9.442593e-24</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>67.25</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.430697</td>
+      <td>3.624043e-24</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>result.plot_projection(coherence_threshold=0.5)
+plt.xlim(4,1000)
+plt.show()
+
+result.plot_coherence(coherence_threshold=0.5)
+plt.xlim(1,1000)
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>report_path = result.generate_report(&quot;bruco_report&quot;, coherence_threshold=0.4)
+report_path
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;bruco_report/index.html&#39;
+</pre></div></div>
+</div>
+</section>
+<section id="Section-2:-高度な前処理と仮説検証-(Deep-Dive:-Nonlinear-&amp;-Bilinear)">
+<h3>Section 2: 高度な前処理と仮説検証 (Deep Dive: Nonlinear &amp; Bilinear)<a class="headerlink" href="#Section-2:-高度な前処理と仮説検証-(Deep-Dive:-Nonlinear-&-Bilinear)" title="Link to this heading"></a></h3>
+<div class="line-block">
+<div class="line"><strong>何をするか</strong>: 既存の線形相関だけでは説明できないノイズを想定し、非線形結合（2乗）や変調（積）を仮説として検定します。</div>
+<div class="line"><strong>なぜ重要か</strong>: <code class="docutils literal notranslate"><span class="pre">FastCoherenceEngine</span></code> を使うと、ターゲットのFFTを再計算せずに仮想チャンネルを高速に試せます。</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ts_sq = aux1**2
+ts_sq.name = f&quot;{aux1.name}^2&quot;
+
+ts_prod = aux1 * aux2
+ts_prod.name = f&quot;{aux1.name}*{aux2.name}&quot;
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>engine = FastCoherenceEngine(target, fftlength=fftlength, overlap=overlap)
+
+coh_linear = engine.compute_coherence(aux1)
+coh_sq = engine.compute_coherence(ts_sq)
+coh_prod = engine.compute_coherence(ts_prod)
+
+freqs = engine.frequencies
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(figsize=(12, 6))
+ax.semilogx(freqs, coh_linear, label=f&quot;Linear: {aux1.name}&quot;)
+ax.semilogx(freqs, coh_sq, label=f&quot;Squared: {ts_sq.name}&quot;)
+ax.semilogx(freqs, coh_prod, label=f&quot;Product: {ts_prod.name}&quot;)
+
+ax.set_xlabel(&quot;Frequency [Hz]&quot;)
+ax.set_ylabel(&quot;Coherence&quot;)
+ax.set_ylim(0.0, 1.0)
+ax.grid(True, which=&quot;both&quot;, ls=&quot;-&quot;, alpha=0.4)
+ax.legend()
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Section-3:-下流解析への接続-(Actionable-Outcome)">
+<h3>Section 3: 下流解析への接続 (Actionable Outcome)<a class="headerlink" href="#Section-3:-下流解析への接続-(Actionable-Outcome)" title="Link to this heading"></a></h3>
+<div class="line-block">
+<div class="line"><strong>何をするか</strong>: もっとも寄与が大きいノイズ仮説を用いて残差スペクトルを推定し、BNS Rangeの改善量を見積もります。</div>
+<div class="line"><strong>なぜ重要か</strong>: Bruco結果を“見つけて終わり”にせず、感度改善やノイズ除去ワークフローにつなげられます。</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>target_asd = target.asd(fftlength=fftlength, overlap=overlap)
+target_asd_vals = target_asd.value
+
+coh_map = {
+    aux1.name: coh_linear,
+    ts_sq.name: coh_sq,
+    ts_prod.name: coh_prod,
+}
+
+dominant_label = max(coh_map, key=lambda k: np.nanmax(coh_map[k]))
+dominant_coh = coh_map[dominant_label]
+
+# Brucoの投影式と同じ定義で、仮想チャンネルの寄与をASDで推定
+projected_asd = target_asd_vals * np.sqrt(dominant_coh)
+residual_asd_vals = np.sqrt(np.maximum(target_asd_vals ** 2 - projected_asd ** 2, 0.0))
+
+residual_asd = target_asd.copy()
+residual_asd.value[:] = residual_asd_vals
+
+fig, ax = plt.subplots(figsize=(12, 6))
+#ax.loglog(target_asd.frequencies.value, target_asd_vals, label=&quot;Target ASD&quot;)
+#ax.loglog(target_asd.frequencies.value, residual_asd_vals, label=&quot;Residual ASD&quot;)
+ax.loglog(target_asd, label=&quot;Target ASD&quot;)
+ax.loglog(residual_asd, label=&quot;Residual ASD&quot;)
+ax.set_xlabel(&quot;Frequency [Hz]&quot;)
+ax.set_ylabel(&quot;ASD&quot;)
+ax.grid(True, which=&quot;both&quot;, ls=&quot;-&quot;, alpha=0.4)
+ax.legend()
+plt.show()
+
+# BNS Rangeの比較
+bns_range_before = inspiral_range(target_asd ** 2, mass1=1.4, mass2=1.4, fmin=10)
+bns_range_after = inspiral_range(residual_asd ** 2, mass1=1.4, mass2=1.4, fmin=10)
+
+print(f&quot;Dominant hypothesis: {dominant_label}&quot;)
+print(f&quot;BNS range (before): {bns_range_before.to_value(u.Mpc):.2f} Mpc&quot;)
+print(f&quot;BNS range (after):  {bns_range_after.to_value(u.Mpc):.2f} Mpc&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Dominant hypothesis: H1:AUX1_FAST
+BNS range (before): 182.48 Mpc
+BNS range (after):  186.24 Mpc
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>virtual_channels = {
+    aux1.name: aux1,
+    ts_sq.name: ts_sq,
+    ts_prod.name: ts_prod,
+}
+
+culprit_channels = [dominant_label]
+witnesses = TimeSeriesDict({name: virtual_channels[name] for name in culprit_channels})
+
+cxx = witnesses.csd_matrix(fftlength=8.0)
+cyx = TimeSeriesDict({&quot;TARGET&quot;: target}).csd_matrix(other=witnesses, fftlength=8.0)
+
+# 行列演算 H = Cyx @ Cxx^-1
+H_lowres = cyx @ cxx.inv()
+
+# 推定された伝達関数の表示
+H_lowres.abs().plot(xscale=&quot;log&quot;, yscale=&quot;log&quot;).suptitle(&quot;Estimated MIMO Coupling (H)&quot;)
+plt.show()
+
+# フル解像度のFFT
+
+
+tsd = TimeSeriesDict({&quot;MAIN&quot;: target, **witnesses})
+aux_names = culprit_channels
+
+tsd_fft = tsd.fft()
+main_fft = tsd_fft[&quot;MAIN&quot;]
+
+# フィルターの補間と行列演算
+H = H_lowres.interpolate(main_fft.frequencies)
+X_mat = FrequencySeriesDict({k: tsd_fft[k] for k in aux_names}).to_matrix()
+
+# 投影と減算
+Y_proj = (H @ X_mat)[0, 0]
+cleaned_fft = main_fft - Y_proj
+
+# 時間領域へ
+cleaned_ts = cleaned_fft.ifft()
+<br/></pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="advanced_correlation.html" class="btn btn-neutral float-left" title="統計的相関機能" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="case_noise_budget.html" class="btn btn-neutral float-right" title="ノイズバジェッティングと多チャンネル相関解析" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

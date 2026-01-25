@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作業計画書: 型チェックカバレッジの拡大 (Phase 1: FrequencySeries) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="作業計画書: 型チェックカバレッジの拡大 (Phase 2: Spectrogram)" href="plan_mypy_expansion_phase2_20260124.html" />
+    <link rel="prev" title="Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)" href="test_coverage_expansion_plan_20260124.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">開発者ガイド (Developers Guide)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">設計方針とコントラクト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">開発ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">技術分析</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id4">進行中の計画</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="plan_refactor_exceptions_20260124_152245.html">作業計画書: 広範な例外処理のリファクタリング</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_QA_Verification_20260124.html">作業計画書: QA検証 (Lint &amp; Test) - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_coverage_expansion_plan_20260124.html">Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">作業計画書: 型チェックカバレッジの拡大 (Phase 1: FrequencySeries)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">1. 目的とゴール</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">2. 詳細ロードマップ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">3. テスト・検証計画</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">4. 推奨モデル、スキル、工数見積もり</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">5. 承認確認</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plan_mypy_expansion_phase2_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 2: Spectrogram)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id5">最近のレポート</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">開発者ガイド (Developers Guide)</a></li>
+      <li class="breadcrumb-item active">作業計画書: 型チェックカバレッジの拡大 (Phase 1: FrequencySeries)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/plans/plan_mypy_expansion_phase1_20260124.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="phase-1-frequencyseries">
+<h1>作業計画書: 型チェックカバレッジの拡大 (Phase 1: FrequencySeries)<a class="headerlink" href="#phase-1-frequencyseries" title="Link to this heading"></a></h1>
+<p><strong>作成日時</strong>: 2026-01-24 17:55
+<strong>タスク</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy.frequencyseries</span></code> パッケージの MyPy 除外を解除し、型エラーを修正する</p>
+<hr class="docutils" />
+<section id="id1">
+<h2>1. 目的とゴール<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>リポジトリ全体の型安全性を向上させるため、現在 <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> で <code class="docutils literal notranslate"><span class="pre">ignore_errors</span> <span class="pre">=</span> <span class="pre">true</span></code> に設定されているモジュールの除外を段階的に解除します。最初のステップとして、コアコンポーネントである <code class="docutils literal notranslate"><span class="pre">gwexpy.frequencyseries</span></code> を対象にします。</p>
+<p><strong>ゴール</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.frequencyseries</span></code> パッケージ全体の MyPy チェックをパスさせる。</p></li>
+<li><p>Mixin クラスにおける属性未定義エラーを適切に解決する。</p></li>
+<li><p>静的な型定義の重複を排除する。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id2">
+<h2>2. 詳細ロードマップ<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="gwexpy-frequencyseries-frequencyseries-py-5">
+<h3>フェーズ 1: <code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/frequencyseries.py</span></code> の修正 (5分)<a class="headerlink" href="#gwexpy-frequencyseries-frequencyseries-py-5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SeriesType</span></code> の再定義エラーを <code class="docutils literal notranslate"><span class="pre">TYPE_CHECKING</span></code> ガードを使用して回避。</p></li>
+</ul>
+</section>
+<section id="mixin-15">
+<h3>フェーズ 2: Mixin クラスの型定義改善 (15分)<a class="headerlink" href="#mixin-15" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrixAnalysisMixin</span></code> 等において、<code class="docutils literal notranslate"><span class="pre">self</span></code> が期待する属性（<code class="docutils literal notranslate"><span class="pre">value</span></code>, <code class="docutils literal notranslate"><span class="pre">meta</span></code>, <code class="docutils literal notranslate"><span class="pre">shape</span></code>等）を定義。</p></li>
+<li><p>必要に応じて <code class="docutils literal notranslate"><span class="pre">typing.Protocol</span></code> または <code class="docutils literal notranslate"><span class="pre">self:</span> <span class="pre">TargetClass</span></code> 注釈を使用。</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>フェーズ 3: コレクション型の修正 (10分)<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">collections.py</span></code> におけるジェネリクス (<code class="docutils literal notranslate"><span class="pre">TypeVar</span></code>) と <code class="docutils literal notranslate"><span class="pre">super()</span></code> 呼び出しの整合性を確認し修正。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>フェーズ 4: 検証と定着 (5分)<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">-p</span> <span class="pre">gwexpy.frequencyseries</span></code> を実行し、エラーがゼロであることを確認。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> からの除外設定が完全に削除されていることを最終確認。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h2>3. テスト・検証計画<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>MyPy</strong>: <code class="docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">-p</span> <span class="pre">gwexpy.frequencyseries</span> <span class="pre">--ignore-missing-imports</span></code></p></li>
+<li><p><strong>Pytest</strong>: 既存の <code class="docutils literal notranslate"><span class="pre">frequencyseries</span></code> 関連テストを実行し、リグレッションがないことを確認。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>4. 推奨モデル、スキル、工数見積もり<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="id7">
+<h3>推奨モデル<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Claude Sonnet 4.5</strong></p>
+<ul>
+<li><p>複雑な Mixin の型推論とリファクタリングに最適。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id8">
+<h3>推定時間<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>合計</strong>: 35 〜 45 分</p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>項目</p></th>
+<th class="head text-left"><p>時間</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>分析と準備</p></td>
+<td class="text-left"><p>5分</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>実装と修正</p></td>
+<td class="text-left"><p>25分</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>検証</p></td>
+<td class="text-left"><p>10分</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>5. 承認確認<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p>この計画で進めてよろしいでしょうか？承認いただければ、フェーズ1から順次着手します。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="test_coverage_expansion_plan_20260124.html" class="btn btn-neutral float-left" title="Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plan_mypy_expansion_phase2_20260124.html" class="btn btn-neutral float-right" title="作業計画書: 型チェックカバレッジの拡大 (Phase 2: Spectrogram)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

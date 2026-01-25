@@ -1,0 +1,189 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>リポジトリ品質改善報告書 (2026-01-20) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">開発者ガイド (Developers Guide)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">リポジトリ品質改善報告書 (2026-01-20)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/reviews/improvement_report_20260120.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>リポジトリ品質改善報告書 (2026-01-20)<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p><strong>日付:</strong> 2026-01-20 09:45 JST
+<strong>担当:</strong> Antigravity (AI Coding Assistant)</p>
+<section id="id2">
+<h2>1. 概要<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">docs/developers/reviews/repo_review_20260120.md</span></code> および <code class="docutils literal notranslate"><span class="pre">docs/developers/plans/repo_improvement_plan.md</span></code> に基づき、コード品質の改善作業を実施しました。</p>
+</section>
+<section id="id3">
+<h2>2. 実施内容<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="p2">
+<h3>P2: 例外処理の改善<a class="headerlink" href="#p2" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>対象</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/matrix.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/matrix.py</span></code></p></li>
+<li><p><strong>修正内容</strong>: <code class="docutils literal notranslate"><span class="pre">__new__</span></code> メソッド内でのチャンネル名再形成処理において、広範な <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code> を <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">(ValueError,</span> <span class="pre">TypeError,</span> <span class="pre">AttributeError):</span></code> に置き換えました。これにより、意図しないバグの隠蔽を防止し、デバッグ性を向上させました。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>P2: 空ブロックのレビュー<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>対象</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/matrix.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/frequencyseries.py</span></code></p></li>
+<li><p><strong>修正内容</strong>: オプション依存関係やGWpyのバージョン互換性のための <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> ブロックに説明コメントを追加しました。なぜ <code class="docutils literal notranslate"><span class="pre">pass</span></code> やフォールバックが安全であるかを明示しました。</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>P2: 型安全性の強化<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>対象</strong>: <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></p></li>
+<li><p><strong>修正内容</strong>: <code class="docutils literal notranslate"><span class="pre">[tool.mypy.overrides]</span></code> から <code class="docutils literal notranslate"><span class="pre">gwexpy.types.metadata</span></code> を削除しました。これにより、当該モジュールの型チェックが有効化されました。</p></li>
+<li><p><strong>対象 (追加)</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/matrix_interop.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/preprocess.py</span></code>, その他関連ファイル</p></li>
+<li><p><strong>追加修正内容</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.timeseries.matrix_interop</span></code> を <code class="docutils literal notranslate"><span class="pre">mypy</span></code> 無視リストから削除し、有効化しました。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/types/metadata.py</span></code> および <code class="docutils literal notranslate"><span class="pre">matrix_interop.py</span></code> の型チェック有効化に伴い、以下のファイルを修正しました:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/preprocess.py</span></code>: <code class="docutils literal notranslate"><span class="pre">TypeAlias</span></code> の使用方法を修正。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/_signal.py</span></code>: SyntaxWarning (<code class="docutils literal notranslate"><span class="pre">\c</span></code>) の修正と <code class="docutils literal notranslate"><span class="pre">dt</span></code> の None チェック追加。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/_analysis.py</span></code>: <code class="docutils literal notranslate"><span class="pre">standardize</span></code> 等のメソッド呼び出し時の型キャスト追加。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/fitting/models.py</span></code>: <code class="docutils literal notranslate"><span class="pre">MODELS</span></code> 辞書の型ヒントを明示化し、代入エラーを解消。</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/matrix.py</span></code>, <code class="docutils literal notranslate"><span class="pre">matrix_analysis.py</span></code>, <code class="docutils literal notranslate"><span class="pre">matrix_core.py</span></code>, <code class="docutils literal notranslate"><span class="pre">matrix_spectral.py</span></code> について、シグネチャの不整合や <code class="docutils literal notranslate"><span class="pre">attr-defined</span></code> エラーを解消し、型チェックを有効化しました（<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> の無視リストから削除）。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="p3-docstring">
+<h3>P3: Docstring の改善<a class="headerlink" href="#p3-docstring" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>対象</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/matrix.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/frequencyseries.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/matrix.py</span></code></p></li>
+<li><p><strong>修正内容</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> の動的メソッドラッパーに、詳細な説明を含む docstring を生成するように修正しました。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> の <code class="docutils literal notranslate"><span class="pre">angle</span></code> メソッドなどに詳細な説明を追加しました。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> のクラス docstring を拡充しました。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="id6">
+<h2>3. 検証結果<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>指定されたすべての修正箇所について、コードの適用を確認しました。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">gwexpy</span></code> を実行し、パッケージ全体の型チェックがエラーなしで通過することを確認しました（<code class="docutils literal notranslate"><span class="pre">matrix.py</span></code> 関連を含む）。</p></li>
+</ul>
+</section>
+<section id="id7">
+<h2>4. 今後の課題<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>残りの <code class="docutils literal notranslate"><span class="pre">mypy</span></code> 無視設定（<code class="docutils literal notranslate"><span class="pre">frequencyseries</span></code>, <code class="docutils literal notranslate"><span class="pre">spectrogram</span></code>, <code class="docutils literal notranslate"><span class="pre">types.seriesmatrix_base</span></code> 等）を段階的に解除する。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/gui/</span></code> 以下の例外処理（<code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span> <span class="pre">pass</span></code>）についても、必要に応じて精査する。</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

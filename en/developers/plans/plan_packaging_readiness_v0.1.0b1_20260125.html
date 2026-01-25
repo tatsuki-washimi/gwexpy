@@ -1,0 +1,241 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Packaging Readiness (PyPI Metadata &amp; Structure) 実行計画書 &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Packaging Readiness (PyPI Metadata &amp; Structure) 実行計画書</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/plans/plan_packaging_readiness_v0.1.0b1_20260125.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="packaging-readiness-pypi-metadata-structure">
+<h1>Packaging Readiness (PyPI Metadata &amp; Structure) 実行計画書<a class="headerlink" href="#packaging-readiness-pypi-metadata-structure" title="Link to this heading"></a></h1>
+<section id="id1">
+<h2>概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>初の一般公開版 v0.1.0b1 (Beta 1) のPyPI公開に向けた、パッケージング、テスト、ドキュメント、GUI安定性の最終確認と修正作業の計画です。</p>
+<p><strong>作成日</strong>: 2026-01-25
+<strong>対象バージョン</strong>: v0.1.0b1</p>
+</section>
+<hr class="docutils" />
+<section id="packaging-readiness-pypi">
+<h2>1. Packaging Readiness (PyPIメタデータと構成)<a class="headerlink" href="#packaging-readiness-pypi" title="Link to this heading"></a></h2>
+<p>パッケージ情報が正確で、PyPIへのアップロードに適しているか確認します。</p>
+<section id="id2">
+<h3>アクションアイテム<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>[x] <strong>メタデータの整合性確認</strong>: <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> と <code class="docutils literal notranslate"><span class="pre">gwexpy/_version.py</span></code> が共に <code class="docutils literal notranslate"><span class="pre">0.1.0b1</span></code> であることを確認済み。</p></li>
+<li><p>[ ] <strong>リリース日の更新</strong>: リリース直前に <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code> の “Unreleased” を確定した日付に変更する。</p></li>
+<li><p>[x] <strong>Optional依存関係の修正</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/interop/_optional.py</span></code> の <code class="docutils literal notranslate"><span class="pre">_EXTRA_MAP</span></code> に不足しているマッピング（<code class="docutils literal notranslate"><span class="pre">corner</span></code>, <code class="docutils literal notranslate"><span class="pre">emcee</span></code>, <code class="docutils literal notranslate"><span class="pre">mtpy</span></code>）を追加済み。</p></li>
+<li><p>[x] <strong>設定ファイルの整理</strong>: レガシーな <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>/<code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code> が存在しないことを確認済み。</p></li>
+<li><p>[x] <strong>配布パッケージのテスト</strong>:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">build</span></code> を実行済み。</p></li>
+<li><p>生成された <code class="docutils literal notranslate"><span class="pre">sdist</span></code> に <code class="docutils literal notranslate"><span class="pre">LICENSE</span></code> や <code class="docutils literal notranslate"><span class="pre">py.typed</span></code> が含まれているか検証済み。</p></li>
+<li><p>クリーンな環境で <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">...[all]</span></code> を実行し、インストールを検証（<strong>注</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy[all]</span></code> のインストールで <code class="docutils literal notranslate"><span class="pre">nds2-client</span></code> が見つからないエラーが発生したが、これは環境依存の可能性があるため、本体 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> のインストールと動作確認を優先）。</p></li>
+</ol>
+</li>
+</ul>
+</section>
+</section>
+<section id="testing-static-analysis-ci-pytest-mypy-ruff">
+<h2>2. Testing &amp; Static Analysis (CI, Pytest, Mypy, Ruff)<a class="headerlink" href="#testing-static-analysis-ci-pytest-mypy-ruff" title="Link to this heading"></a></h2>
+<p>コード品質を保証し、CIでの警告を排除します。</p>
+<section id="id3">
+<h3>アクションアイテム<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>[x] <strong>MyPy設定のクリーンアップ</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> の <code class="docutils literal notranslate"><span class="pre">gwexpy.types.series_matrix_math</span></code> 等に対する <code class="docutils literal notranslate"><span class="pre">ignore_errors</span> <span class="pre">=</span> <span class="pre">false</span></code> 設定を整理。</p></li>
+<li><p>[x] <strong>目標</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/</span></code> ディレクトリをMyPyの除外リストから外し、型エラーを修正する（<code class="docutils literal notranslate"><span class="pre">dttxml.py</span></code>と<code class="docutils literal notranslate"><span class="pre">stubs.py</span></code>の循環インポート問題を解消済み）。</p></li>
+</ul>
+</li>
+<li><p>[x] <strong>Ruffによる修正</strong>: <code class="docutils literal notranslate"><span class="pre">ruff</span> <span class="pre">check</span> <span class="pre">.</span> <span class="pre">--fix</span></code> を実行し、軽微なLintエラーを一掃する。</p></li>
+</ul>
+<ul class="simple">
+<li><p>[ ] <strong>Pytest警告の対応</strong>:</p>
+<ul>
+<li><p>既知のサードパーティ製警告（例: <code class="docutils literal notranslate"><span class="pre">scitokens</span></code> からの <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code>）を無視するよう設定。</p></li>
+<li><p>内部警告の修正: <code class="docutils literal notranslate"><span class="pre">tests/gui/</span></code> 内の非推奨 <code class="docutils literal notranslate"><span class="pre">waitForWindowShown</span></code> を <code class="docutils literal notranslate"><span class="pre">qtbot.waitExposed</span></code> に置換。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="documentation-examples-sphinx-docs">
+<h2>3. Documentation &amp; Examples (Sphinx Docs)<a class="headerlink" href="#documentation-examples-sphinx-docs" title="Link to this heading"></a></h2>
+<p>ドキュメントのビルド警告をゼロにし、リンク切れを防ぎます。</p>
+<section id="id4">
+<h3>アクションアイテム<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>[x] <strong>Sphinxビルド検証</strong>: ローカルで <code class="docutils literal notranslate"><span class="pre">sphinx-build</span> <span class="pre">-nW</span></code> (warnings as errors) を実行し、全ての警告を解消済み。</p>
+<ul>
+<li><p><strong>対応</strong>: <code class="docutils literal notranslate"><span class="pre">intersphinx</span></code> を有効化し、<code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">astropy</span></code> 等へのマッピングを設定。<code class="docutils literal notranslate"><span class="pre">nitpick_ignore</span></code> で解決できない外部型参照（<code class="docutils literal notranslate"><span class="pre">numpy.dtype</span></code>等）を抑制。</p></li>
+</ul>
+</li>
+<li><p>[ ] <strong>チュートリアル確認</strong>: <code class="docutils literal notranslate"><span class="pre">docs/guide/tutorials/</span></code> 内の新しいノートブックが正しくレンダリングされているか確認。</p></li>
+<li><p>[ ] <strong>APIリファレンス</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code> (遅延読み込み) や <code class="docutils literal notranslate"><span class="pre">gwexpy.interop</span></code> (ML連携) の関数がドキュメントに含まれているか確認。</p></li>
+</ul>
+</li>
+<li><p>[ ] <strong>リンク切れチェック</strong>: <code class="docutils literal notranslate"><span class="pre">linkcheck</span></code> ビルダーを実行し、外部デッドリンクを検出・修正。</p></li>
+</ul>
+</section>
+</section>
+<section id="gui-streaming-stability">
+<h2>4. GUI &amp; Streaming Stability<a class="headerlink" href="#gui-streaming-stability" title="Link to this heading"></a></h2>
+<p>GUIのクラッシュを防ぎ、未完成機能を整理します。</p>
+<section id="id5">
+<h3>アクションアイテム<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>[x] <strong>例外処理の強化</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/gui/streaming.py</span></code> での <code class="docutils literal notranslate"><span class="pre">SpectralAccumulator</span></code> ロジック（<code class="docutils literal notranslate"><span class="pre">add_chunk</span></code>, <code class="docutils literal notranslate"><span class="pre">_process_buffers</span></code>）を <code class="docutils literal notranslate"><span class="pre">try...except</span> <span class="pre">logger.exception</span></code> で保護済み。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MainWindow.update_graphs()</span></code>: レンダリングループ全体を例外保護済み。</p></li>
+</ul>
+</li>
+<li><p>[x] <strong>未実装機能の対処</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Calibration</span></code>, <code class="docutils literal notranslate"><span class="pre">Reference</span></code> ボタンを <code class="docutils literal notranslate"><span class="pre">setEnabled(False)</span></code> で無効化済み。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="modern-python-3-9-compatibility">
+<h2>5. Modern Python (3.9+ Compatibility)<a class="headerlink" href="#modern-python-3-9-compatibility" title="Link to this heading"></a></h2>
+<p>古いPythonバージョン向けの互換コードを削除し、コードベースを最新化します。</p>
+<section id="id6">
+<h3>アクションアイテム<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>[x] <strong>レガシーバージョンチェックの削除</strong>: プロジェクト内を検索しましたが <code class="docutils literal notranslate"><span class="pre">sys.version_info</span></code> による分岐は見つからず、既にクリーンアップ済みであることを確認。</p></li>
+<li><p>[x] <strong>型ヒントのモダン化</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/types/typing.py</span></code> 内の <code class="docutils literal notranslate"><span class="pre">Union[...]</span></code> をパイプ演算子 <code class="docutils literal notranslate"><span class="pre">|</span></code> に置換済み。</p></li>
+<li><p>プロジェクト全体で <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span> <span class="pre">annotations</span></code> が適用されていることを確認。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="api-design-public-interface-stability">
+<h2>6. API Design &amp; Public Interface Stability<a class="headerlink" href="#api-design-public-interface-stability" title="Link to this heading"></a></h2>
+<p>公開APIを明確にし、内部実装との境界を定義します。</p>
+<section id="id7">
+<h3>アクションアイテム<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>[x] <strong>公開APIの監査</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/__init__.py</span></code> の <code class="docutils literal notranslate"><span class="pre">__all__</span></code> を確認し、主要モジュール（<code class="docutils literal notranslate"><span class="pre">timeseries</span></code>等）とクラス（<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>等）が正しく公開されていることを確認済み。</p></li>
+<li><p>実験的な <code class="docutils literal notranslate"><span class="pre">analysis</span></code> モジュールは <code class="docutils literal notranslate"><span class="pre">__all__</span></code> に含まれておらず、意図通り隠蔽されています。</p></li>
+</ul>
+</li>
+<li><p>[x] <strong>ドキュメントの整合性</strong>:</p>
+<ul>
+<li><p>Phase 3のSphinx検証にて、公開APIがドキュメントに含まれていることを確認済み。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

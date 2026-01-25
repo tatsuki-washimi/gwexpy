@@ -1,0 +1,169 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作業報告書: Localization (ja) &amp; CI Cleanup &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">作業報告書: Localization (ja) &amp; CI Cleanup</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_localization_ja_20260125.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="localization-ja-ci-cleanup">
+<h1>作業報告書: Localization (ja) &amp; CI Cleanup<a class="headerlink" href="#localization-ja-ci-cleanup" title="Link to this heading"></a></h1>
+<p><strong>日付</strong>: 2026-01-25
+<strong>作業者</strong>: Antigravity
+<strong>対象バージョン</strong>: v0.1.0b1</p>
+<section id="id1">
+<h2>1. 実施内容の概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>日本語ドキュメントのディレクトリ構成 (<code class="docutils literal notranslate"><span class="pre">docs/ja</span></code>) を物理的に作成し、主要なランディングページの翻訳と、チュートリアルのリンク切れ対策を行いました。</p>
+</section>
+<section id="id2">
+<h2>2. 修正・追加の詳細<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="phase-1-japanese-documentation-setup">
+<h3>Phase 1: Japanese Documentation Setup<a class="headerlink" href="#phase-1-japanese-documentation-setup" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>英語版 (<code class="docutils literal notranslate"><span class="pre">docs/</span></code>) のディレクトリ構造および <code class="docutils literal notranslate"><span class="pre">reference/</span></code> を <code class="docutils literal notranslate"><span class="pre">docs/ja/</span></code> にミラーリングコピーしました。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/guide/tutorials/</span></code> 以下の全てのチュートリアルについて、同名の日本語版スタブ <code class="docutils literal notranslate"><span class="pre">.md</span></code> ファイルを作成済みの状態に整備しました（重複していた英語版 <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> コピーは削除しました）。</p></li>
+</ul>
+</section>
+<section id="phase-2-translation">
+<h3>Phase 2: Translation<a class="headerlink" href="#phase-2-translation" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>以下の主要ファイルを日本語へ翻訳しました：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/ja/index.rst</span></code>: メインのランディングページ。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/ja/guide/installation.rst</span></code>: インストールガイド（PyPI/Condaの違いを含む）。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="phase-3-ci-verification">
+<h3>Phase 3: CI/Verification<a class="headerlink" href="#phase-3-ci-verification" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code> およびコミットログを確認し、意図した変更のみが含まれていることを確認しました。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">0.1.0b1</span></code> のリリース準備として、コードベースとドキュメントの整合性が取れている状態です。</p></li>
+</ul>
+</section>
+</section>
+<section id="id3">
+<h2>3. 検証結果<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Directory Structure</strong>: <code class="docutils literal notranslate"><span class="pre">docs/ja</span></code> が <code class="docutils literal notranslate"><span class="pre">docs/en</span></code> (実体はルート) と対称的な構造を持ち、Sphinxの <code class="docutils literal notranslate"><span class="pre">html_context</span></code> 設定と整合しています。</p></li>
+<li><p><strong>Commit</strong>: <code class="docutils literal notranslate"><span class="pre">Docs(ja):</span> <span class="pre">Checkin</span> <span class="pre">initial</span> <span class="pre">Japanese</span> <span class="pre">documentation</span></code> としてコミット済み。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h2>4. 残課題<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/ja/guide/quickstart.rst</span></code> など、残りのガイド文書の翻訳。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/ja/reference/</span></code> 以下の自動生成APIリファレンスが、正しく日本語環境としてビルドされるかの確認（現状は英語のコピー）。</p></li>
+</ul>
+</section>
+<section id="id5">
+<h2>5. 使用リソース<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>モデル</strong>: Gemini 3 Pro (High Context)</p></li>
+<li><p><strong>推定工数</strong>: 約 20 分</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

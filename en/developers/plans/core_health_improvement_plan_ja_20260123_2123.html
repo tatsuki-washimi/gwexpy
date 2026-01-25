@@ -1,0 +1,196 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>コアコードの品質および堅牢性向上計画書 (2026-01-23 21:23:55) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">コアコードの品質および堅牢性向上計画書 (2026-01-23 21:23:55)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/plans/core_health_improvement_plan_ja_20260123_2123.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>コアコードの品質および堅牢性向上計画書 (2026-01-23 21:23:55)<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<section id="id2">
+<h2>1. 目的と目標<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の非GUIコアモジュールに焦点を当て、エンジニアリング品質と堅牢性を向上させます。この作業は Gemini 3 Flash の高いクオータとスピードを活用して効率的に行います。</p>
+<ul class="simple">
+<li><p><strong>堅牢性 (Robustness)</strong>: 漠然とした <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code> を具体的な例外捕捉、または適切なログ出力に置き換えます。</p></li>
+<li><p><strong>完全性 (Completeness)</strong>: 信号処理やフィッティングモジュール内に残っている軽微な <code class="docutils literal notranslate"><span class="pre">TODO</span></code> 項目を解消します。</p></li>
+<li><p><strong>近代化 (Modernization)</strong>: Python 3.9 以上を前提とし、不要になった古いバージョン互換コードを削除します。</p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>2. 詳細ロードマップ<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="gui">
+<h3>フェーズ 1: 例外処理の監査と厳密化（非GUI）<a class="headerlink" href="#gui" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>目標</strong>: エラーが発生した際に、原因が特定しやすく、かつ意図しないバグを隠さないようにします。</p></li>
+<li><p><strong>対象ファイル</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/fitting/core.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/types/series_matrix_validation_mixin.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/plot/skymap.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/interop/specutils_.py</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>内容</strong>: コードの文脈から想定される例外（<code class="docutils literal notranslate"><span class="pre">ImportError</span></code>, <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>, <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> 等）を特定し、置き換えます。不明な場合は <code class="docutils literal notranslate"><span class="pre">logging.exception()</span></code> を追加します。</p></li>
+</ul>
+</section>
+<section id="todo">
+<h3>フェーズ 2: コアモジュールの TODO 解消<a class="headerlink" href="#todo" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>目標</strong>: 数学・信号処理エリアの技術負債を解消します。</p></li>
+<li><p><strong>対象</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/fitting/core.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/spectrogram/matrix_core.py</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>内容</strong>: 実装内容が明確な TODO 項目を埋め、ドキュメントを更新します。</p></li>
+</ul>
+</section>
+<section id="python">
+<h3>フェーズ 3: Python コードの近代化<a class="headerlink" href="#python" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>目標</strong>: コードをシンプルに保ち、最新の構文を活用可能にします。</p></li>
+<li><p><strong>対象</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/types/metadata.py</span></code> 等の互換レイヤー。</p></li>
+<li><p><strong>内容</strong>: <code class="docutils literal notranslate"><span class="pre">sys.version_info</span></code> による分岐を削除し、Python 3.9+ の標準的な書き方に統一します。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>フェーズ 4: 検証<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>目標</strong>: 変更によるデグレがないことを確認します。</p></li>
+<li><p><strong>タスク</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">ruff</span> <span class="pre">check</span> <span class="pre">.</span></code> および <code class="docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">.</span></code> の実行。</p></li>
+<li><p>コア機能のテスト (<code class="docutils literal notranslate"><span class="pre">tests/fitting</span></code>, <code class="docutils literal notranslate"><span class="pre">tests/spectrogram</span></code>, <code class="docutils literal notranslate"><span class="pre">tests/types</span></code>) の実行。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="id5">
+<h2>3. 使用モデルとリソース最適化<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<section id="id6">
+<h3>使用モデル<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>モデル</strong>: <code class="docutils literal notranslate"><span class="pre">Gemini</span> <span class="pre">3</span> <span class="pre">Flash</span></code></p></li>
+<li><p><strong>選定理由</strong>: 多くのファイルにわたる小規模な修正を高速に行うのに最適であり、クオータを有効活用できるため。</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3>リソース管理<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>クオータ</strong>: 100% 残っている Flash モデルのクオータを使用して、一気に全フェーズを完了させます。</p></li>
+</ul>
+</section>
+</section>
+<section id="id8">
+<h2>4. リスクと懸念事項<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>例外の誤特定</strong>: 実際にどのような不具合が起きうるかを正確に読み取らないと、捕捉すべきエラーを逃す可能性があります。</p></li>
+<li><p><strong>テストカバレッジ</strong>: 修正箇所のテストが十分でない場合、デグレに気づかないリスクがあります。</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

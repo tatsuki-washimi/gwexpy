@@ -1,0 +1,215 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScalarField テストカバレッジの強化 計画書 (2026-01-22 21:53:41) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">開発者ガイド (Developers Guide)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> テストカバレッジの強化 計画書 (2026-01-22 21:53:41)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/plans/scalarfield_test_coverage_plan_20260122_215341.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scalarfield-2026-01-22-21-53-41">
+<h1><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> テストカバレッジの強化 計画書 (2026-01-22 21:53:41)<a class="headerlink" href="#scalarfield-2026-01-22-21-53-41" title="Link to this heading"></a></h1>
+<section id="id1">
+<h2>目的<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> APIのテストスイートを拡張・堅牢化し、サポートされているすべての操作において、正確なドメイン伝播、単位の一貫性、およびメタデータの完全性を保証する。</p>
+</section>
+<section id="id2">
+<h2>作業範囲<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>1. ドメイン伝播テスト (最優先事項)<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>以下のケースにおいて、ドメインメタデータが正しく保持、変換、または拒否されることを検証する：</p>
+<ul class="simple">
+<li><p>完全なFFTおよび逆FFT (iFFT)</p></li>
+<li><p>軸のサブセットに対する部分的なFFT</p></li>
+<li><p>FFT / iFFT サイクルの繰り返し</p></li>
+<li><p>データのスライシング、クロッピング、サブセッティング</p></li>
+<li><p>連鎖的な操作 (例: スライス → FFT → スライス)</p></li>
+<li><p><strong>検証項目</strong>: ドメインタイプ (時間、周波数、空間など)、軸の順序とラベル、グリッド間隔、物理적意味の整合性。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>2. 単位の一貫性と検証<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>以下の事項を保証するためのテストを強化する：</p>
+<ul class="simple">
+<li><p>すべてのサポートされている変換における単位の正しい伝播。</p></li>
+<li><p>FFT操作における単位のスケーリングと正規化の正確な適用。</p></li>
+<li><p>無効または矛盾する単位の組み合わせに対する明示的な例外スロー。</p></li>
+<li><p>誤った単位の使用に対するネガティブテスト。</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>3. メタデータの完全性<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>がメタデータを正しく保持・更新することを検証する：</p>
+<ul class="simple">
+<li><p>スライスや変換後も軸記述子が維持されていること。</p></li>
+<li><p>明示的に破棄されない限り、カスタムメタデータフィールドが保持されていること。</p></li>
+<li><p>メタデータのクローン作成と参照の正確さ (意図しないミューテーションの防止)。</p></li>
+<li><p>メタデータを考慮した等価性比較セマンティクス。</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>4. 境界条件とエッジケース<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p>以下のエッジ条件に対する回帰テストを追加する：</p>
+<ul class="simple">
+<li><p>長さゼロまたはシングルトン(長さ1)の軸。</p></li>
+<li><p>非連続なスライス。</p></li>
+<li><p>特殊なFFTサイズ (長さ1、素数サイズなど)。</p></li>
+<li><p>NaN / Inf の処理。</p></li>
+<li><p>空または最小限のメタデータ辞書。</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3>5. テスト構造と配置<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/fields/</span></code> 配下の以下のファイルを更新または作成する：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_scalarfield_domain.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_scalarfield_fft.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_scalarfield_units.py</span></code></p></li>
+</ul>
+</li>
+<li><p>pytestスタイルの明示的なアサーションを使用する。</p></li>
+</ul>
+</section>
+</section>
+<section id="id8">
+<h2>品質ゲート (合格必須)<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> がすべて成功すること (新規のskipやxfailがないこと)。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">.</span></code> がパスすること。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ruff</span> <span class="pre">check</span></code> がパスすること。</p></li>
+<li><p>テスト失敗時のメッセージが具体的で解決に役立つこと。</p></li>
+</ul>
+</section>
+<section id="id9">
+<h2>受理基準<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>主要なすべての操作が正常系・異常系テストでカバーされていること。</p></li>
+<li><p>ドメインや単位のエラーがユーザー報告ではなくテストで検出されること。</p></li>
+<li><p>テストコード内にレガシーな <code class="docutils literal notranslate"><span class="pre">Field4D</span></code> や過去の互換性に関する言及がないこと。</p></li>
+<li><p>テストスイート自体が <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の意図した物理的・数学的セマンティクスを文書化していること。</p></li>
+</ul>
+</section>
+<section id="id10">
+<h2>使用モデルとリソース最適化<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<section id="id11">
+<h3>推奨モデル<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>モデル</strong>: <code class="docutils literal notranslate"><span class="pre">Claude</span> <span class="pre">Sonnet</span> <span class="pre">4.5</span></code></p></li>
+<li><p><strong>理由</strong>: 論理的な検証とユニットテストの実装において高い信頼性があり、コンテキスト消費のバランスが良いため。</p></li>
+</ul>
+</section>
+<section id="id12">
+<h3>リソース管理戦略<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>クオータ管理</strong>: テストケースの実装を適切にグループ化し、ファイル書き込みとテスト実行のサイクルを最小限に抑えることでトークンを節約する。</p></li>
+<li><p><strong>コンテキスト最適化</strong>: 関連するソースコードの断片のみを参照し、不要な履歴の蓄積を避ける。</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

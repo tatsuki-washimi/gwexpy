@@ -1,0 +1,180 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作業報告：ScalarField 可視化（1D/2D）強化の実装 &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">作業報告：ScalarField 可視化（1D/2D）強化の実装</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/reports/report_visualize-methods_ScalarField_20260121.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scalarfield-1d-2d">
+<h1>作業報告：ScalarField 可視化（1D/2D）強化の実装<a class="headerlink" href="#scalarfield-1d-2d" title="Link to this heading"></a></h1>
+<p><strong>日付</strong>: 2026-01-21T13:11 JST<br />
+<strong>担当</strong>: Antigravity (Claude Opus 4.5 連携)</p>
+<section id="id1">
+<h2>1. 概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">docs/developers/plans/visualize-methods_ScalarField.md</span></code> に基づき、<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> クラスの可視化および解析機能を大幅に強化しました。空間・時間データの柔軟な抽出と、物理単位を維持した高度な描画機能を実現しました。</p>
+</section>
+<section id="id2">
+<h2>2. 実施内容<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="gwexpy-plot-coord-py">
+<h3>2.1 共通インフラの構築 (<code class="docutils literal notranslate"><span class="pre">gwexpy/plot/_coord.py</span></code>)<a class="headerlink" href="#gwexpy-plot-coord-py" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>座標→インデックス変換</strong>: 物理量（Quantity）を受け取り、最近傍インデックスを返す <code class="docutils literal notranslate"><span class="pre">nearest_index</span></code> を実装。単位不一致や範囲外の厳密なエラーチェックを導入。</p></li>
+<li><p><strong>スライスユーティリティ</strong>: 4D構造を維持（軸の長さを1として残す）するための <code class="docutils literal notranslate"><span class="pre">slice_from_index</span></code>, <code class="docutils literal notranslate"><span class="pre">slice_from_value</span></code> を作成。</p></li>
+<li><p><strong>データ成分抽出</strong>: 複素数データから <code class="docutils literal notranslate"><span class="pre">real</span></code>, <code class="docutils literal notranslate"><span class="pre">imag</span></code>, <code class="docutils literal notranslate"><span class="pre">abs</span></code>, <code class="docutils literal notranslate"><span class="pre">angle</span></code>, <code class="docutils literal notranslate"><span class="pre">power</span></code> を一元的に抽出する <code class="docutils literal notranslate"><span class="pre">select_value</span></code> 関数を実装（<code class="docutils literal notranslate"><span class="pre">power</span></code> 時の単位二乗も考慮）。</p></li>
+</ul>
+</section>
+<section id="api-gwexpy-fields-scalar-py">
+<h3>2.2 抽出APIの実装 (<code class="docutils literal notranslate"><span class="pre">gwexpy/fields/scalar.py</span></code>)<a class="headerlink" href="#api-gwexpy-fields-scalar-py" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">extract_points()</span></code>: 指定した3次元座標群から時系列を抽出し、<code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> として返す機能。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extract_profile()</span></code>: 指定した軸に沿った1Dプロファイルを抽出。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">slice_map2d()</span></code>: 指定した平面（xy, xz, yz, tx 等）を 4D 構造を維持したまま抽出。</p></li>
+</ul>
+</section>
+<section id="gwexpy-fields-scalar-py">
+<h3>2.3 可視化機能の実装 (<code class="docutils literal notranslate"><span class="pre">gwexpy/fields/scalar.py</span></code>)<a class="headerlink" href="#gwexpy-fields-scalar-py" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">plot_map2d()</span></code>: 高機能な2Dヒートマップ描画。不均一軸に強い <code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code> を既定とし、自動カラーバー、単位付きラベルに対応。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plot_timeseries_points()</span></code>: 抽出した複数点の時系列を一括プロット。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plot_profile()</span></code>: 指定軸の1D物理量分布をプロット。</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>2.4 比較・要約解析メソッドの実装 (<code class="docutils literal notranslate"><span class="pre">gwexpy/fields/scalar.py</span></code>)<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">diff()</span></code>: フィールド間の差分、比率、パーセント変化の計算（単位系の正確な伝播）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">zscore()</span></code>: 指定したベースライン期間による標準化。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_stat_map()</span></code>: 時間軸方向の統計要約（mean, std, rms, max, min）による 2D マップ作成。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_space_map()</span></code> / <code class="docutils literal notranslate"><span class="pre">plot_time_space_map()</span></code>: 時間と空間一軸を用いた 2D マップ（ストリークカメラ的描画）の抽出と描画。</p></li>
+</ul>
+</section>
+</section>
+<section id="id4">
+<h2>3. 検証結果<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>合計テスト数</strong>: 137件（新規追加 49件、既存 88件）</p></li>
+<li><p><strong>結果</strong>: 全件合格 (PASSED)</p>
+<ul>
+<li><p>座標変換の tie-break ロジックや単位変換の厳密性を検証。</p></li>
+<li><p>抽出データの shape および単位の整合性を確認。</p></li>
+<li><p>各描画メソッドが matplotlib オブジェクトを正しく返すことを確認。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id5">
+<h2>4. 作成・修正ファイル<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/plot/_coord.py</span></code> (新規)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/fields/scalar.py</span></code> (機能追加)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/plot/test_coord.py</span></code> (新規テスト)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/fields/test_scalarfield_visualization.py</span></code> (新規テスト)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/developers/plans/visualize-methods_ScalarField.md</span></code> (進捗追記・リント修正)</p></li>
+</ul>
+<hr class="docutils" />
+<p><strong>ステータス</strong>: Phase 0-2 完了。Phase 3 (相関解析等) は今後の拡張として予約。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

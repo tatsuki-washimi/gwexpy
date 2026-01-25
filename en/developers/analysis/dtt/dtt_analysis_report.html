@@ -1,0 +1,941 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DTT (Diagnostic Test Tools) Comprehensive Analysis Report &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">DTT (Diagnostic Test Tools) Comprehensive Analysis Report</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/analysis/dtt/dtt_analysis_report.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dtt-diagnostic-test-tools-comprehensive-analysis-report">
+<h1>DTT (Diagnostic Test Tools) Comprehensive Analysis Report<a class="headerlink" href="#dtt-diagnostic-test-tools-comprehensive-analysis-report" title="Link to this heading"></a></h1>
+<p><strong>Created:</strong> 2026-01-22
+<strong>Target:</strong> <code class="docutils literal notranslate"><span class="pre">gwexpy/gui/reference-dtt/dtt-master/</span></code>
+<strong>Author:</strong> Antigravity Agent</p>
+</section>
+<hr class="docutils" />
+<section id="part-1-documentation-ui-audit-phase-1">
+<h1>Part 1: Documentation &amp; UI Audit (Phase 1)<a class="headerlink" href="#part-1-documentation-ui-audit-phase-1" title="Link to this heading"></a></h1>
+<section id="executive-summary">
+<h2>1.1 Executive Summary<a class="headerlink" href="#executive-summary" title="Link to this heading"></a></h2>
+<p>The legacy Diagnostic Test Tool (DTT) is a C++ application built upon the CERN ROOT framework. It follows a client-server architecture where <code class="docutils literal notranslate"><span class="pre">diaggui</span></code> handles the user interface and parameter configuration, while the heavy lifting (signal processing, data acquisition) is performed by a diagnostic kernel (<code class="docutils literal notranslate"><span class="pre">diagd</span></code> or internal classes).</p>
+</section>
+<section id="documentation-review">
+<h2>1.2 Documentation Review<a class="headerlink" href="#documentation-review" title="Link to this heading"></a></h2>
+<p>Since the PDF contents (<code class="docutils literal notranslate"><span class="pre">T990013-v3</span></code>, <code class="docutils literal notranslate"><span class="pre">G000079-00</span></code>) are binary specifications, we inferred their role from the project structure and markdown summaries:</p>
+<ul class="simple">
+<li><p><strong>T990013 (Diagnostics Test Software)</strong>: Defines the core requirements for LIGO diagnostics, including FFT performance, Swept Sine accuracy, and real-time data access.</p></li>
+<li><p><strong>G000079</strong>: Likely the user manual or GUI specification, detailing the operational modes.</p></li>
+</ul>
+</section>
+<section id="ui-ux-architecture-analysis">
+<h2>1.3 UI/UX Architecture Analysis<a class="headerlink" href="#ui-ux-architecture-analysis" title="Link to this heading"></a></h2>
+<section id="framework">
+<h3>Framework<a class="headerlink" href="#framework" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Base Library</strong>: ROOT (<code class="docutils literal notranslate"><span class="pre">TApplication</span></code>, <code class="docutils literal notranslate"><span class="pre">TGMainFrame</span></code>).</p></li>
+<li><p><strong>Custom Wrapper</strong>: <code class="docutils literal notranslate"><span class="pre">TLG</span></code> (The LIGO GUI) classes in <code class="docutils literal notranslate"><span class="pre">src/dtt/gui/dttgui/</span></code>.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">TLGMainWindow</span></code>: Base window layout with Menu, Status, Plot area.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TLGPlot</span></code>: Advanced plotting widget supporting Zoom, Log/Linear toggles, multiple traces.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TLGChannelBox</span></code>: Hierarchical tree view for selecting NDS channels.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="key-operational-modes-tabs">
+<h3>Key Operational Modes (Tabs)<a class="headerlink" href="#key-operational-modes-tabs" title="Link to this heading"></a></h3>
+<p>The screenshots and source code structure (<code class="docutils literal notranslate"><span class="pre">src/dtt/diag/</span></code>) indicate four primary measurement modes:</p>
+<ol class="arabic simple">
+<li><p><strong>Fourier Tools (FFT)</strong>:</p>
+<ul class="simple">
+<li><p>computes Power Spectral Density (PSD), Cross Spectral Density (CSD), Coherence.</p></li>
+<li><p>Parameters: Start/Stop Freq, BW, Window (Hann/Flat-top), Averages.</p></li>
+</ul>
+</li>
+<li><p><strong>Swept Sine</strong>:</p>
+<ul class="simple">
+<li><p>Measures Transfer Functions (Bode Plots) by injecting a sine wave and sweeping frequency.</p></li>
+<li><p>Critical for servo characterization.</p></li>
+</ul>
+</li>
+<li><p><strong>Time Series</strong>:</p>
+<ul class="simple">
+<li><p>Oscilloscope-like view of raw channel data.</p></li>
+</ul>
+</li>
+<li><p><strong>Excitation</strong>:</p>
+<ul class="simple">
+<li><p>Configuration of output signals (Gaussian Noise, Sine, Swept Sine) for system identification.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="part-2-core-code-analysis-phase-2">
+<h1>Part 2: Core Code Analysis (Phase 2)<a class="headerlink" href="#part-2-core-code-analysis-phase-2" title="Link to this heading"></a></h1>
+<section id="fft-based-measurement-logic-ffttools-cc">
+<h2>2.1 FFT-Based Measurement Logic (<code class="docutils literal notranslate"><span class="pre">ffttools.cc</span></code>)<a class="headerlink" href="#fft-based-measurement-logic-ffttools-cc" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ffttest</span></code> class is the engine for all FFT-based measurements (PSD, CSD, Coherence).</p>
+<section id="class-hierarchy">
+<h3>Class Hierarchy<a class="headerlink" href="#class-hierarchy" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>diagtest (abstract base)
+  └── stdtest (common measurement logic: channels, stimuli, averages)
+        └── ffttest (FFT-based: PSD, CSD, Coherence)
+        └── sweptsine (Swept sine: Transfer Function)
+        └── sineresponse (Single frequency)
+        └── timeseries (Oscilloscope mode)
+</pre></div>
+</div>
+</section>
+<section id="key-parameters-diagnames-h">
+<h3>Key Parameters (<code class="docutils literal notranslate"><span class="pre">diagnames.h</span></code>)<a class="headerlink" href="#key-parameters-diagnames-h" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>C++ Parameter</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>gwexpy Equivalent</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fftStartFrequency</span></code></p></td>
+<td><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fmin</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fftStopFrequency</span></code></p></td>
+<td><p>900</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fmax</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fftBW</span></code></p></td>
+<td><p>1 Hz</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">df</span></code> (resolution, <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">segment_duration</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fftOverlap</span></code></p></td>
+<td><p>0.5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">overlap</span></code> (Welch overlap fraction)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fftWindow</span></code></p></td>
+<td><p>1 (Hann)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">window</span></code> (scipy/gwpy window name)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fftRemoveDC</span></code></p></td>
+<td><p>false</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">detrend='constant'</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fftAverages</span></code></p></td>
+<td><p>10</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">n_avg</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fftAverageType</span></code></p></td>
+<td><p>0 (Linear)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">method='median'</span></code> or <code class="docutils literal notranslate"><span class="pre">'mean'</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="core-fft-workflow-ffttest-analyze">
+<h3>Core FFT Workflow (<code class="docutils literal notranslate"><span class="pre">ffttest::analyze</span></code>)<a class="headerlink" href="#core-fft-workflow-ffttest-analyze" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Allocate Temporary Storage (<code class="docutils literal notranslate"><span class="pre">tmps</span></code>):</strong> For each channel, allocate <code class="docutils literal notranslate"><span class="pre">fftPoints</span></code> complex floats for intermediate FFT results.</p></li>
+<li><p><strong>Iterate <code class="docutils literal notranslate"><span class="pre">ffttest::fft()</span></code> per Channel:</strong></p>
+<ul class="simple">
+<li><p>Get time-series data from <code class="docutils literal notranslate"><span class="pre">gdsDataObject</span></code>.</p></li>
+<li><p>Apply window (<code class="docutils literal notranslate"><span class="pre">psGen(PS_INIT_ALL,</span> <span class="pre">...)</span></code>).</p></li>
+<li><p>Compute FFT (<code class="docutils literal notranslate"><span class="pre">psGen(PS_TAKE_FFT,</span> <span class="pre">...)</span></code>).</p></li>
+<li><p><strong>Zoom FFT:</strong> If <code class="docutils literal notranslate"><span class="pre">fZoom</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, data undergoes complex heterodyne transformation (shifting center frequency to baseband), followed by decimation (<code class="docutils literal notranslate"><span class="pre">decimate2</span></code>) and standard FFT.</p></li>
+<li><p><strong>Convert to PSD (<code class="docutils literal notranslate"><span class="pre">fftToPs</span></code>):</strong> Apply power normalization.</p></li>
+<li><p><strong>Averaging (<code class="docutils literal notranslate"><span class="pre">avg()</span></code>):</strong> Linear (<code class="docutils literal notranslate"><span class="pre">AVG_LINEAR_SQUARE</span></code>) or Exponential (<code class="docutils literal notranslate"><span class="pre">AVG_EXPON_SQUARE</span></code>).</p></li>
+</ul>
+</li>
+<li><p><strong>Iterate <code class="docutils literal notranslate"><span class="pre">ffttest::cross()</span></code> per A-channel pair:</strong></p>
+<ul class="simple">
+<li><p>Compute Cross-Spectral Density (<code class="docutils literal notranslate"><span class="pre">crossPower</span></code>).</p></li>
+<li><p>Average complex CSD.</p></li>
+<li><p>Compute Coherence (<code class="docutils literal notranslate"><span class="pre">coherenceCP</span></code>): <code class="docutils literal notranslate"><span class="pre">|CSD_AB|^2</span> <span class="pre">/</span> <span class="pre">(PSD_AA</span> <span class="pre">*</span> <span class="pre">PSD_BB)</span></code>.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="window-normalization">
+<h3>Window Normalization<a class="headerlink" href="#window-normalization" title="Link to this heading"></a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// calculate resolution (window) bandwidth</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">windowNorm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sMean</span><span class="w"> </span><span class="p">(</span><span class="n">fftPlan</span><span class="p">.</span><span class="n">window_coeff</span><span class="p">,</span><span class="w"> </span><span class="n">fftPoints</span><span class="p">);</span>
+<span class="n">windowNorm</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">windowNorm</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">windowNorm</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">windowBW</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BW</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">windowNorm</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">BW</span></code> is the <em>resolution bandwidth</em> (1/segment_duration).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowBW</span></code> is the <em>Equivalent Noise Bandwidth (ENBW)</em>, adjusted for window amplitude loss.</p></li>
+<li><p><strong>Critical for gwexpy:</strong> <code class="docutils literal notranslate"><span class="pre">scipy.signal.welch</span></code> returns PSD already normalized for ENBW when <code class="docutils literal notranslate"><span class="pre">scaling='density'</span></code>. Ensure <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> uses consistent units.</p></li>
+</ul>
+</section>
+</section>
+<section id="swept-sine-implementation">
+<h2>2.2 Swept Sine Implementation<a class="headerlink" href="#swept-sine-implementation" title="Link to this heading"></a></h2>
+<p>This is the most complex measurement mode and is <strong>not currently implemented in gwexpy</strong>.</p>
+<section id="core-concepts">
+<h3>Core Concepts<a class="headerlink" href="#core-concepts" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Sweep Points (<code class="docutils literal notranslate"><span class="pre">sweeppoints</span></code>):</strong> A list of <code class="docutils literal notranslate"><span class="pre">(freq,</span> <span class="pre">ampl,</span> <span class="pre">phase)</span></code> tuples.</p></li>
+<li><p><strong>Sweep Types:</strong> Linear, Logarithmic, or from a file.</p></li>
+<li><p><strong>Per-Point Measurement:</strong> At each frequency:</p>
+<ol class="arabic simple">
+<li><p>Inject a single-frequency sine wave excitation.</p></li>
+<li><p>Wait for settling time.</p></li>
+<li><p>Acquire response for <code class="docutils literal notranslate"><span class="pre">measurementTime</span></code>.</p></li>
+<li><p>Compute sine amplitude and phase using <code class="docutils literal notranslate"><span class="pre">sinedet()</span></code> (demodulation).</p></li>
+<li><p>Store coefficients.</p></li>
+</ol>
+</li>
+<li><p><strong>Transfer Function Calculation (<code class="docutils literal notranslate"><span class="pre">transfn()</span></code>):</strong> <code class="docutils literal notranslate"><span class="pre">H</span> <span class="pre">=</span> <span class="pre">Y_response</span> <span class="pre">/</span> <span class="pre">X_excitation</span></code>.</p></li>
+</ul>
+</section>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>C++ Parameter</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ssStartFrequency</span></code></p></td>
+<td><p>1 Hz</p></td>
+<td><p>Start of sweep</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ssStopFrequency</span></code></p></td>
+<td><p>1000 Hz</p></td>
+<td><p>End of sweep</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ssNumberOfPoints</span></code></p></td>
+<td><p>61</p></td>
+<td><p>Number of frequency points</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ssSweepType</span></code></p></td>
+<td><p>1 (Log)</p></td>
+<td><p>0: Linear, 1: Log</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ssMeasurementTime[2]</span></code></p></td>
+<td><p>{0.1, 10}</p></td>
+<td><p>Range for adaptive meas. time</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ssSettlingTime</span></code></p></td>
+<td><p>0.25</p></td>
+<td><p>Settling time (as fraction of meas. time)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ssHarmonicOrder</span></code></p></td>
+<td><p>1</p></td>
+<td><p>For detecting harmonics</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="part-3-deep-dive-analysis">
+<h1>Part 3: Deep Dive Analysis<a class="headerlink" href="#part-3-deep-dive-analysis" title="Link to this heading"></a></h1>
+<section id="swept-sine-detailed-algorithm">
+<h2>3.1 Swept Sine Detailed Algorithm<a class="headerlink" href="#swept-sine-detailed-algorithm" title="Link to this heading"></a></h2>
+<section id="sweep-point-generation">
+<h3>Sweep Point Generation<a class="headerlink" href="#sweep-point-generation" title="Link to this heading"></a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">sweepType</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="k">case</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span><span class="w">  </span><span class="c1">// Linear sweep</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">nSweep</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fStart</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">nSweep</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.0</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">fStop</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">fStart</span><span class="p">);</span>
+<span class="w">         </span><span class="n">fPoints</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">sweeppoint</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">ampl</span><span class="p">));</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">   </span><span class="k">case</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span><span class="w">  </span><span class="c1">// Logarithmic sweep</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">nSweep</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fStart</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">power</span><span class="p">(</span><span class="n">fStop</span><span class="o">/</span><span class="n">fStart</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">nSweep</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.0</span><span class="p">));</span>
+<span class="w">         </span><span class="n">fPoints</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">sweeppoint</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">ampl</span><span class="p">));</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="synchronous-detection-sinedet">
+<h3>Synchronous Detection (<code class="docutils literal notranslate"><span class="pre">sinedet</span></code>)<a class="headerlink" href="#synchronous-detection-sinedet" title="Link to this heading"></a></h3>
+<p>At each frequency point, the excitation frequency component is extracted from the response signal.</p>
+<p><strong>Estimated Logic of <code class="docutils literal notranslate"><span class="pre">sineAnalyze</span></code>:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="n">Σ</span> <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">j</span> <span class="o">*</span> <span class="mi">2</span><span class="n">π</span> <span class="o">*</span> <span class="n">f_target</span> <span class="o">*</span> <span class="n">n</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is equivalent to computing a specific frequency bin of the Discrete Fourier Transform and can be implemented using <code class="docutils literal notranslate"><span class="pre">scipy.signal</span></code> or <code class="docutils literal notranslate"><span class="pre">numpy</span></code>.</p>
+</section>
+</section>
+<section id="zoom-fft-high-resolution-spectrum">
+<h2>3.2 Zoom FFT (High-Resolution Spectrum)<a class="headerlink" href="#zoom-fft-high-resolution-spectrum" title="Link to this heading"></a></h2>
+<p>With standard FFT, <code class="docutils literal notranslate"><span class="pre">df</span> <span class="pre">=</span> <span class="pre">fs</span> <span class="pre">/</span> <span class="pre">N</span></code>, making it difficult to simultaneously achieve a wide frequency range and high resolution. Zoom FFT uses complex heterodyne transformation to analyze a specific narrow frequency band with high resolution.</p>
+<section id="algorithm">
+<h3>Algorithm<a class="headerlink" href="#algorithm" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Heterodyne (Frequency Shift)</strong>: <code class="docutils literal notranslate"><span class="pre">x_shifted[n]</span> <span class="pre">=</span> <span class="pre">x[n]</span> <span class="pre">*</span> <span class="pre">exp(-j</span> <span class="pre">*</span> <span class="pre">2π</span> <span class="pre">*</span> <span class="pre">f_zoom</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">/</span> <span class="pre">fs)</span></code></p></li>
+<li><p><strong>Decimation (Downsampling)</strong>: Reduce sampling rate so that Nyquist frequency matches the new bandwidth</p></li>
+<li><p><strong>FFT Execution</strong>: Perform FFT on the shifted &amp; decimated data</p></li>
+<li><p><strong>Data Rotation</strong>: Restore the frequency axis to its original position</p></li>
+</ol>
+</section>
+<section id="implementation-plan-for-gwexpy">
+<h3>Implementation Plan for gwexpy<a class="headerlink" href="#implementation-plan-for-gwexpy" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">zoom_fft</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">f_center</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+             <span class="n">df</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hann&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">decimate</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    
+    <span class="c1"># Step 1: Heterodyne (shift to baseband)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">x_shifted</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f_center</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+    
+    <span class="c1"># Step 2: Low-pass filter and decimate</span>
+    <span class="n">decim_factor</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">bandwidth</span><span class="p">)</span>
+    <span class="n">x_decimated</span> <span class="o">=</span> <span class="n">decimate</span><span class="p">(</span><span class="n">x_shifted</span><span class="p">,</span> <span class="n">decim_factor</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s1">&#39;fir&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Step 3: FFT</span>
+    <span class="n">n_fft</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">/</span> <span class="n">df</span><span class="p">)</span> <span class="k">if</span> <span class="n">df</span> <span class="k">else</span> <span class="mi">1024</span>
+    <span class="n">spectrum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">x_decimated</span><span class="p">[:</span><span class="n">n_fft</span><span class="p">]</span> <span class="o">*</span> <span class="n">get_window</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">n_fft</span><span class="p">))</span>
+    <span class="n">spectrum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
+    
+    <span class="c1"># Step 4: Build frequency axis</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">n_fft</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="n">decim_factor</span><span class="o">/</span><span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+    <span class="n">freqs</span> <span class="o">+=</span> <span class="n">f_center</span>
+    
+    <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">spectrum</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="burst-noise-measurement">
+<h2>3.3 Burst Noise Measurement<a class="headerlink" href="#burst-noise-measurement" title="Link to this heading"></a></h2>
+<p>In standard FFT measurements, the excitation signal is applied continuously, but in Burst Noise mode, the excitation signal is intermittent (gated), with quiet periods to capture the response ringing.</p>
+<section id="timing-diagram">
+<h3>Timing Diagram<a class="headerlink" href="#timing-diagram" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|&lt;--</span> <span class="n">pitch</span> <span class="o">--&gt;|&lt;--</span> <span class="n">pitch</span> <span class="o">--&gt;|&lt;--</span> <span class="n">pitch</span> <span class="o">--&gt;|</span>
+<span class="p">[</span><span class="n">RAMP</span><span class="p">][</span><span class="o">==</span><span class="n">EXCITATION</span><span class="o">==</span><span class="p">][</span><span class="n">RAMP</span><span class="p">][</span><span class="n">QUIET</span><span class="p">][</span><span class="n">MEASURE</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="part-4-architecture-analysis">
+<h1>Part 4: Architecture Analysis<a class="headerlink" href="#part-4-architecture-analysis" title="Link to this heading"></a></h1>
+<section id="stdtest-base-class">
+<h2>4.1 <code class="docutils literal notranslate"><span class="pre">stdtest</span></code> Base Class<a class="headerlink" href="#stdtest-base-class" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">stdtest</span></code> is the common base class for all measurement types in DTT (FFT, Swept Sine, Sine Response, Time Series).</p>
+<section id="key-inner-classes-and-data-types">
+<h3>Key Inner Classes and Data Types<a class="headerlink" href="#key-inner-classes-and-data-types" title="Link to this heading"></a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">stimulus</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">;</span><span class="w">          </span><span class="c1">// Excitation channel name</span>
+<span class="w">   </span><span class="kt">bool</span><span class="w"> </span><span class="n">isReadback</span><span class="p">;</span><span class="w">           </span><span class="c1">// Readback usage flag</span>
+<span class="w">   </span><span class="n">AWG_WaveType</span><span class="w"> </span><span class="n">waveform</span><span class="p">;</span><span class="w">     </span><span class="c1">// Waveform type (Sine, Square, Noise, etc.)</span>
+<span class="w">   </span><span class="kt">double</span><span class="w"> </span><span class="n">freq</span><span class="p">,</span><span class="w"> </span><span class="n">ampl</span><span class="p">,</span><span class="w"> </span><span class="n">offs</span><span class="p">,</span><span class="w"> </span><span class="n">phas</span><span class="p">;</span><span class="w">  </span><span class="c1">// Frequency, amplitude, offset, phase</span>
+<span class="p">};</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">measurementchannel</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">;</span><span class="w">          </span><span class="c1">// Channel name</span>
+<span class="w">   </span><span class="n">gdsChnInfo_t</span><span class="w"> </span><span class="n">info</span><span class="p">;</span><span class="w">         </span><span class="c1">// Channel information</span>
+<span class="w">   </span><span class="n">partitionlist</span><span class="w"> </span><span class="n">partitions</span><span class="p">;</span><span class="w">  </span><span class="c1">// Data partitions</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="virtual-methods-measurement-lifecycle">
+<h3>Virtual Methods: Measurement Lifecycle<a class="headerlink" href="#virtual-methods-measurement-lifecycle" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>begin() → setup() → [syncAction() → analyze()] * N → end()
+         ↓
+         calcTimes()
+         calcMeasurements()
+         startMeasurements()
+</pre></div>
+</div>
+</section>
+</section>
+<section id="awg-arbitrary-waveform-generator-api">
+<h2>4.2 AWG (Arbitrary Waveform Generator) API<a class="headerlink" href="#awg-arbitrary-waveform-generator-api" title="Link to this heading"></a></h2>
+<section id="key-functions">
+<h3>Key Functions<a class="headerlink" href="#key-functions" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">awg_client()</span></code></p></td>
+<td><p>Initialize AWG client interface</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">awgSetChannel(name)</span></code></p></td>
+<td><p>Associate channel name with slot</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">awgAddWaveform(slot,</span> <span class="pre">comp,</span> <span class="pre">num)</span></code></p></td>
+<td><p>Add waveform component</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">awgSetWaveform(slot,</span> <span class="pre">y,</span> <span class="pre">len)</span></code></p></td>
+<td><p>Download arbitrary waveform</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">awgSendWaveform(slot,</span> <span class="pre">time,</span> <span class="pre">epoch,</span> <span class="pre">y,</span> <span class="pre">len)</span></code></p></td>
+<td><p>Send stream data</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">awgStopWaveform(slot,</span> <span class="pre">terminate,</span> <span class="pre">time)</span></code></p></td>
+<td><p>Stop waveform (reset/freeze/phase-out)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">awgSetGain(slot,</span> <span class="pre">gain,</span> <span class="pre">time)</span></code></p></td>
+<td><p>Set overall gain (ramp capable)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">awgSetFilter(slot,</span> <span class="pre">y,</span> <span class="pre">len)</span></code></p></td>
+<td><p>Set IIR filter (SOS format)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="waveform-types-awg-wavetype">
+<h3>Waveform Types (<code class="docutils literal notranslate"><span class="pre">AWG_WaveType</span></code>)<a class="headerlink" href="#waveform-types-awg-wavetype" title="Link to this heading"></a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">AWG_WaveType</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">awgNone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">   </span><span class="n">awgSine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">       </span><span class="c1">// Sine wave</span>
+<span class="w">   </span><span class="n">awgSquare</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">     </span><span class="c1">// Square wave</span>
+<span class="w">   </span><span class="n">awgRamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">       </span><span class="c1">// Ramp wave</span>
+<span class="w">   </span><span class="n">awgTriangle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">   </span><span class="c1">// Triangle wave</span>
+<span class="w">   </span><span class="n">awgImpulse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">    </span><span class="c1">// Impulse</span>
+<span class="w">   </span><span class="n">awgConst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">      </span><span class="c1">// Constant offset</span>
+<span class="w">   </span><span class="n">awgNoiseN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w">     </span><span class="c1">// Normal (Gaussian) noise</span>
+<span class="w">   </span><span class="n">awgNoiseU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">     </span><span class="c1">// Uniform noise</span>
+<span class="w">   </span><span class="n">awgArb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w">        </span><span class="c1">// Arbitrary waveform</span>
+<span class="w">   </span><span class="n">awgStream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="w">     </span><span class="c1">// Stream waveform</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="nds2-data-input">
+<h2>4.3 NDS2 Data Input<a class="headerlink" href="#nds2-data-input" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">nds2input.hh</span></code> / <code class="docutils literal notranslate"><span class="pre">nds2input.cc</span></code> implements a client that retrieves real-time or archive data from NDS2 (Network Data Server v2).</p>
+<section id="key-classes">
+<h3>Key Classes<a class="headerlink" href="#key-classes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">nds2Manager</span></code></strong>: Manages NDS2 connections, adding/removing channels, starting/stopping data flow</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">NDS2Connection</span></code></strong>: Single NDS2 connection instance, asynchronous data reading thread</p></li>
+</ul>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="part-5-additional-modules-analysis">
+<h1>Part 5: Additional Modules Analysis<a class="headerlink" href="#part-5-additional-modules-analysis" title="Link to this heading"></a></h1>
+<section id="foton-filter-design-tool">
+<h2>5.1 Foton - Filter Design Tool<a class="headerlink" href="#foton-filter-design-tool" title="Link to this heading"></a></h2>
+<p>Foton (Filter Online Tool) is a GUI tool for designing IIR filters used in LIGO/KAGRA.</p>
+<section id="relevance-to-gwexpy">
+<h3>Relevance to gwexpy<a class="headerlink" href="#relevance-to-gwexpy" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">FotonFilter</span><span class="p">:</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;FotonFilter&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load filter from Foton .txt file.&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_sos</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to Second Order Sections format for scipy.signal.&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="stripchart-real-time-plotting">
+<h2>5.2 StripChart - Real-Time Plotting<a class="headerlink" href="#stripchart-real-time-plotting" title="Link to this heading"></a></h2>
+<p>StripChart is a widget for plotting time-varying data in real-time.</p>
+</section>
+<section id="dfm-data-flow-manager">
+<h2>5.3 DFM - Data Flow Manager<a class="headerlink" href="#dfm-data-flow-manager" title="Link to this heading"></a></h2>
+<p>DFM (Data Flow Manager) is an abstraction layer that provides unified access to multiple data sources (NDS, File, Shared Memory, Tape).</p>
+<section id="data-service-types">
+<h3>Data Service Types<a class="headerlink" href="#data-service-types" title="Link to this heading"></a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">dataservicetype</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">st_Invalid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">   </span><span class="n">st_LARS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">     </span><span class="c1">// LARS/DFM server</span>
+<span class="w">   </span><span class="n">st_NDS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">      </span><span class="c1">// NDS server (v1)</span>
+<span class="w">   </span><span class="n">st_SENDS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">    </span><span class="c1">// NDS2 server</span>
+<span class="w">   </span><span class="n">st_File</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">     </span><span class="c1">// Local file system</span>
+<span class="w">   </span><span class="n">st_Tape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">     </span><span class="c1">// Local tape drive/robot</span>
+<span class="w">   </span><span class="n">st_SM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">       </span><span class="c1">// Online shared memory</span>
+<span class="w">   </span><span class="n">st_Func</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="w">      </span><span class="c1">// User callback</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="part-6-external-dependencies-python-integration">
+<h1>Part 6: External Dependencies &amp; Python Integration<a class="headerlink" href="#part-6-external-dependencies-python-integration" title="Link to this heading"></a></h1>
+<section id="dttxml-package-dtt-data-access-in-python">
+<h2>6.1 dttxml Package - DTT Data Access in Python<a class="headerlink" href="#dttxml-package-dtt-data-access-in-python" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">dttxml</span></code> is a Python library for parsing XML files output by DTT (diaggui).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dttxml</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiagAccess</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DiagAccess</span><span class="p">(</span><span class="s1">&#39;measurement.xml&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get PSD (ASD)</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="s1">&#39;K1:PEM-MIC_BOOTH_ENV_OUT_DQ&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get Transfer Function</span>
+<span class="n">tf</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">xfer</span><span class="p">(</span><span class="s1">&#39;K1:SAS-ITMY_TM_OPLEV_SERVO_OUT&#39;</span><span class="p">,</span> <span class="s1">&#39;K1:SUS-ITMX_SUS_OUT&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get Coherence</span>
+<span class="n">coh</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span><span class="s1">&#39;Channel1&#39;</span><span class="p">,</span> <span class="s1">&#39;Channel2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="python-re-implementation-of-sineanalyze">
+<h2>6.2 Python Re-implementation of sineAnalyze<a class="headerlink" href="#python-re-implementation-of-sineanalyze" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">windows</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sine_analyze</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">freq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                 <span class="n">window</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hann&#39;</span><span class="p">,</span> <span class="n">n_avg</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                 <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">complex</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the complex amplitude at a specific frequency using lock-in detection.</span>
+<span class="sd">    This is equivalent to DTT&#39;s sineAnalyze function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">segment_len</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="n">n_avg</span>
+    
+    <span class="n">win</span> <span class="o">=</span> <span class="n">windows</span><span class="o">.</span><span class="n">get_window</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">segment_len</span><span class="p">)</span>
+    <span class="n">win_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">win</span><span class="p">)</span>
+    
+    <span class="n">coeffs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_avg</span><span class="p">):</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">segment_len</span>
+        <span class="n">segment</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">start_idx</span> <span class="o">+</span> <span class="n">segment_len</span><span class="p">]</span> <span class="o">*</span> <span class="n">win</span>
+        
+        <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">segment_len</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs</span> <span class="o">+</span> <span class="n">t0</span> <span class="o">+</span> <span class="n">start_idx</span> <span class="o">/</span> <span class="n">fs</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">freq</span> <span class="o">*</span> <span class="n">t</span>
+        <span class="n">ref_cos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+        <span class="n">ref_sin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+        
+        <span class="n">I</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">segment</span> <span class="o">*</span> <span class="n">ref_cos</span><span class="p">)</span> <span class="o">/</span> <span class="n">win_sum</span>
+        <span class="n">Q</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">segment</span> <span class="o">*</span> <span class="n">ref_sin</span><span class="p">)</span> <span class="o">/</span> <span class="n">win_sum</span>
+        
+        <span class="n">coeffs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">I</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">Q</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="part-7-gap-analysis-recommendations">
+<h1>Part 7: Gap Analysis &amp; Recommendations<a class="headerlink" href="#part-7-gap-analysis-recommendations" title="Link to this heading"></a></h1>
+<section id="feature-gap-analysis">
+<h2>7.1 Feature Gap Analysis<a class="headerlink" href="#feature-gap-analysis" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>DTT Feature</p></th>
+<th class="head"><p>gwexpy Status</p></th>
+<th class="head"><p>Required Work</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>FFT/PSD</strong></p></td>
+<td><p>✅ <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> / <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code></p></td>
+<td><p>Minor: Verify ENBW normalization.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>CSD</strong></p></td>
+<td><p>✅ <code class="docutils literal notranslate"><span class="pre">FrequencySeries.csd()</span></code></p></td>
+<td><p>Minor: Verify phase convention.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Coherence</strong></p></td>
+<td><p>✅ <code class="docutils literal notranslate"><span class="pre">coherence()</span></code> function</p></td>
+<td><p>None.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Swept Sine</strong></p></td>
+<td><p>❌ Not Implemented</p></td>
+<td><p>Major: Requires AWG API, sync demod.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Zoom FFT</strong></p></td>
+<td><p>❌ Not Implemented</p></td>
+<td><p>Medium: Complex heterodyne + decimate.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Burst Noise</strong></p></td>
+<td><p>❌ Not Implemented</p></td>
+<td><p>Medium: Gated excitation logic.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Plot Save/Load</strong></p></td>
+<td><p>Partial (HDF5)</p></td>
+<td><p>Medium: JSON schema for GUI state.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Linear/Exp Avg</strong></p></td>
+<td><p>✅ <code class="docutils literal notranslate"><span class="pre">method</span></code> param</p></td>
+<td><p>None.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="implementation-roadmap">
+<h2>7.2 Implementation Roadmap<a class="headerlink" href="#implementation-roadmap" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Phase</p></th>
+<th class="head"><p>Goal</p></th>
+<th class="head"><p>Effort Estimate</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Phase 1</strong></p></td>
+<td><p>PSD/CSD/Coherence Normalization Verification</p></td>
+<td><p>2-4 hours</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Phase 2</strong></p></td>
+<td><p>Zoom FFT Implementation</p></td>
+<td><p>1-2 days</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Phase 3</strong></p></td>
+<td><p>MeasurementState JSON Schema</p></td>
+<td><p>1-2 days</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Phase 4</strong></p></td>
+<td><p>BaseMeasurement Abstract Class Design</p></td>
+<td><p>2-3 days</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Phase 5</strong></p></td>
+<td><p>Swept Sine Prototype (Simulation)</p></td>
+<td><p>1 week</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Phase 6</strong></p></td>
+<td><p>AWG API Python Bindings</p></td>
+<td><p>1-2 weeks</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Phase 7</strong></p></td>
+<td><p>NDS2 Real-Time Integration</p></td>
+<td><p>1 week</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="recommendations">
+<h2>7.3 Recommendations<a class="headerlink" href="#recommendations" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Priority 1: Verify PSD Normalization.</strong> Write a test that compares <code class="docutils literal notranslate"><span class="pre">gwexpy.Spectrogram</span></code> PSD output against known DTT output for identical input signals and parameters.</p></li>
+<li><p><strong>Priority 2: Design Swept Sine API.</strong> Draft a class <code class="docutils literal notranslate"><span class="pre">SweptSineMeasurement</span></code> with methods <code class="docutils literal notranslate"><span class="pre">setup()</span></code>, <code class="docutils literal notranslate"><span class="pre">measure_point()</span></code>, <code class="docutils literal notranslate"><span class="pre">next_point()</span></code>, <code class="docutils literal notranslate"><span class="pre">get_transfer_function()</span></code>.</p></li>
+<li><p><strong>Priority 3: Define Measurement State Schema.</strong> Create a <code class="docutils literal notranslate"><span class="pre">MeasurementState</span></code> dataclass for JSON serialization that mirrors <code class="docutils literal notranslate"><span class="pre">PlotSet</span></code>.</p></li>
+</ol>
+</section>
+</section>
+<hr class="docutils" />
+<section id="part-8-data-flow-class-interaction-diagrams">
+<h1>Part 8: Data Flow &amp; Class Interaction Diagrams<a class="headerlink" href="#part-8-data-flow-class-interaction-diagrams" title="Link to this heading"></a></h1>
+<section id="class-interaction-diagram">
+<h2>8.1 Class Interaction Diagram<a class="headerlink" href="#class-interaction-diagram" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────────────────────┐
+│                      GUI (diagmain, diagctrl)                    │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   standardsupervisory                            │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐ │
+│   │ gdsStorage  │  │ dataBroker  │  │ testExcitation (AWG)    │ │
+│   └──────┬──────┘  └──────┬──────┘  └────────────┬────────────┘ │
+└──────────│────────────────│──────────────────────│──────────────┘
+           │                │                      │
+           ▼                ▼                      ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                         stdtest                                   │
+│   ┌───────────┐  ┌───────────────┐  ┌───────────────────────┐    │
+│   │ stimulus  │  │measurementchn │  │       interval        │    │
+│   │  list     │  │     list      │  │        list           │    │
+│   └───────────┘  └───────────────┘  └───────────────────────┘    │
+└──────────────────────────────────────────────────────────────────┘
+                                │
+            ┌───────────────────┼───────────────────┐
+            ▼                   ▼                   ▼
+     ┌────────────┐      ┌────────────┐      ┌────────────┐
+     │  ffttest   │      │ sweptsine  │      │ timeseries │
+     └────────────┘      └────────────┘      └────────────┘
+</pre></div>
+</div>
+</section>
+<section id="data-flow-diagram">
+<h2>8.2 Data Flow Diagram<a class="headerlink" href="#data-flow-diagram" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[NDS2/RTDD/File]
+       │
+       ▼
+┌──────────────┐
+│  dataBroker  │  ─────  Channel subscription/data reception
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│ chnCallback  │  ─────  Data delivery via callback
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐              ┌──────────────┐
+│  gdsStorage  │ ◄──────────► │  gdsDatum    │
+│              │              │  (Data)      │
+│  - Results   │              └──────────────┘
+│  - Index     │
+│  - Test      │              ┌──────────────┐
+│  - References│ ◄──────────► │ gdsParameter │
+│              │              │  (Settings)  │
+└──────────────┘              └──────────────┘
+       │
+       ▼
+┌──────────────┐
+│   PlotSet    │  ─────  Plot data management
+└──────┬───────┘
+       │
+       ▼
+    [XML Save]
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="part-9-file-analysis-summary">
+<h1>Part 9: File Analysis Summary<a class="headerlink" href="#part-9-file-analysis-summary" title="Link to this heading"></a></h1>
+<section id="analyzed-files-31-items">
+<h2>9.1 Analyzed Files (31 items)<a class="headerlink" href="#analyzed-files-31-items" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Category</p></th>
+<th class="head"><p>File</p></th>
+<th class="head"><p>Lines</p></th>
+<th class="head"><p>Status</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Core Tests</strong></p></td>
+<td><p>ffttools.hh/.cc</p></td>
+<td><p>379/1272</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p>sweptsine.hh/.cc</p></td>
+<td><p>396/1356</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p>sineresponse.hh/.cc</p></td>
+<td><p>313/1123</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p>timeseries.hh/.cc</p></td>
+<td><p>313/958</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Base Classes</strong></p></td>
+<td><p>stdtest.hh/.cc</p></td>
+<td><p>700/1645</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p>diagtest.hh/.cc</p></td>
+<td><p>313/…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p>diagnames.h/.c</p></td>
+<td><p>800/…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Storage</strong></p></td>
+<td><p>diagdatum.hh/.cc</p></td>
+<td><p>1884/…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p>gdsdatum.hh/.cc</p></td>
+<td><p>2019/…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p>channelinput.hh/.cc</p></td>
+<td><p>819/…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p>databroker.hh/.cc</p></td>
+<td><p>425/…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p>nds2input.hh/.cc</p></td>
+<td><p>400/…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Sync/Control</strong></p></td>
+<td><p>testsync.hh/.cc</p></td>
+<td><p>522/…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p>supervisory.hh/.cc</p></td>
+<td><p>277/…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p>stdsuper.hh/.cc</p></td>
+<td><p>242/…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>AWG</strong></p></td>
+<td><p>awgapi.h, awgtype.h</p></td>
+<td><p>…/…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>GUI</strong></p></td>
+<td><p>diagmain.hh, diagctrl.hh</p></td>
+<td><p>…/…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Tools</strong></p></td>
+<td><p>foton.cc</p></td>
+<td><p>642</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p>StripChart.hh</p></td>
+<td><p>…</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p>dfmtype.hh</p></td>
+<td><p>166</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Containers</strong></p></td>
+<td><p>PlotSet.hh, DataDesc.hh</p></td>
+<td><p>597/800</p></td>
+<td><p>✅</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="part-10-conclusion">
+<h1>Part 10: Conclusion<a class="headerlink" href="#part-10-conclusion" title="Link to this heading"></a></h1>
+<p>The complete source code analysis of the DTT repository has been finished.</p>
+<p><strong>Key Findings:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Class Hierarchy</strong>: <code class="docutils literal notranslate"><span class="pre">diagtest</span> <span class="pre">→</span> <span class="pre">stdtest</span> <span class="pre">→</span> <span class="pre">{ffttest,</span> <span class="pre">sweptsine,</span> <span class="pre">timeseries,</span> <span class="pre">sineresponse}</span></code></p></li>
+<li><p><strong>Data Structures</strong>: Multi-dimensional data management based on <code class="docutils literal notranslate"><span class="pre">gdsDatum</span></code></p></li>
+<li><p><strong>Measurement Flow</strong>: Parameter reading → Time calculation → Measurement setup → Callback analysis</p></li>
+<li><p><strong>External Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">gdsalgorithm.h</span></code> (libgds) is non-public, but algorithms can be re-implemented</p></li>
+<li><p><strong>Python Integration</strong>: DTT XML data can be loaded using the <code class="docutils literal notranslate"><span class="pre">dttxml</span></code> package</p></li>
+</ol>
+<hr class="docutils" />
+<p><em>This analysis provides a comprehensive understanding of the core architecture and signal processing pipeline of DTT.</em></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

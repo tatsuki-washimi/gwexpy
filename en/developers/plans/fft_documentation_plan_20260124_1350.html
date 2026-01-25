@@ -1,0 +1,186 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Plan: FFT Specifications &amp; Conventions Documentation &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Task Plan: FFT Specifications &amp; Conventions Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/plans/fft_documentation_plan_20260124_1350.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="task-plan-fft-specifications-conventions-documentation">
+<h1>Task Plan: FFT Specifications &amp; Conventions Documentation<a class="headerlink" href="#task-plan-fft-specifications-conventions-documentation" title="Link to this heading"></a></h1>
+<p><strong>Date</strong>: 2026-01-24
+<strong>Author</strong>: Antigravity</p>
+<section id="objectives-goals">
+<h2>Objectives &amp; Goals<a class="headerlink" href="#objectives-goals" title="Link to this heading"></a></h2>
+<p>Clarify the FFT implementation details in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> to ensure users can correctly interpret physical units, sign conventions, and normalization.</p>
+</section>
+<section id="detailed-roadmap">
+<h2>Detailed Roadmap<a class="headerlink" href="#detailed-roadmap" title="Link to this heading"></a></h2>
+<section id="phase-1-verification-research">
+<h3>Phase 1: Verification (Research)<a class="headerlink" href="#phase-1-verification-research" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Verify the sign convention ($e^{\pm i \omega t}$) and normalization factor ($1/N$ vs $1$) for all FFT methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ScalarField.fft_time</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ScalarField.ifft_time</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ScalarField.fft_space</span></code> (and related Vector/Tensor methods)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ScalarField.spectral_density</span></code> (Welch’s method normalization)</p></li>
+</ul>
+</li>
+<li><p>Research GWpy and Matplotlib default behaviors to ensure compatibility.</p></li>
+</ol>
+</section>
+<section id="phase-2-implementation-documentation">
+<h3>Phase 2: Implementation (Documentation)<a class="headerlink" href="#phase-2-implementation-documentation" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">docs/reference/en/FFT_Conventions.md</span></code> containing:</p>
+<ul class="simple">
+<li><p><strong>Temporal FFT</strong>: 1/N normalization, One-sided (rfft).</p></li>
+<li><p><strong>Spatial FFT</strong>: Multi-dimensional (fftn), Two-sided, $k = 2\pi f$ (angular wavenumber).</p></li>
+<li><p><strong>Sign Conventions</strong>: Explicitly state the transform pairs.</p></li>
+<li><p><strong>Normalization</strong>: Behavior of <code class="docutils literal notranslate"><span class="pre">nfft</span></code> and spectral scaling.</p></li>
+<li><p><strong>Shift Handling</strong>: Note that zero-frequency is at index 0 (not shifted by default).</p></li>
+</ul>
+</li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">docs/reference/en/ScalarField.md</span></code> and others to link to this convention page.</p></li>
+<li><p>Add Japanese version <code class="docutils literal notranslate"><span class="pre">docs/reference/ja/FFT_Conventions.md</span></code>.</p></li>
+</ol>
+</section>
+<section id="phase-3-review-sync">
+<h3>Phase 3: Review &amp; Sync<a class="headerlink" href="#phase-3-review-sync" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">check_physics</span></code> to confirm the documented math matches the code exactly.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">sync_docs</span></code> to update any outdated docstrings.</p></li>
+</ol>
+</section>
+</section>
+<section id="testing-verification-plan">
+<h2>Testing &amp; Verification Plan<a class="headerlink" href="#testing-verification-plan" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>None (Documentation only, but verified by <code class="docutils literal notranslate"><span class="pre">check_physics</span></code> logic).</p></li>
+</ul>
+</section>
+<section id="models-recommended-skills-and-effort-estimates">
+<h2>Models, Recommended Skills, and Effort Estimates<a class="headerlink" href="#models-recommended-skills-and-effort-estimates" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Suggested Model</strong>: <code class="docutils literal notranslate"><span class="pre">Gemini</span> <span class="pre">2.0</span> <span class="pre">Flash</span></code> (Documentation-heavy, low reasoning complexity).</p></li>
+<li><p><strong>Recommended Skills</strong>: <code class="docutils literal notranslate"><span class="pre">check_physics</span></code>, <code class="docutils literal notranslate"><span class="pre">sync_docs</span></code>, <code class="docutils literal notranslate"><span class="pre">search_web_research</span></code>.</p></li>
+<li><p><strong>Effort Estimate</strong>:</p>
+<ul>
+<li><p><strong>Estimated Total Time</strong>: 25 minutes</p></li>
+<li><p><strong>Estimated Quota Consumption</strong>: Low</p></li>
+<li><p><strong>Breakdown</strong>:</p>
+<ul>
+<li><p>Code Review: 5 mins</p></li>
+<li><p>Writing EN/JA Docs: 15 mins</p></li>
+<li><p>Linking &amp; Sync: 5 mins</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Concerns</strong>: Consistency between <code class="docutils literal notranslate"><span class="pre">fft_time</span></code> (normalized) and <code class="docutils literal notranslate"><span class="pre">fft_space</span></code> (unnormalized) might confuse users if not explained clearly.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

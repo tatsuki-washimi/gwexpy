@@ -1,0 +1,233 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Implementation Plan: MainWindow logic refactoring and modularization &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">開発者ガイド (Developers Guide)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Implementation Plan: MainWindow logic refactoring and modularization</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/plans/mainwindow_refactoring_plan_20260123.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="implementation-plan-mainwindow-logic-refactoring-and-modularization">
+<h1>Implementation Plan: MainWindow logic refactoring and modularization<a class="headerlink" href="#implementation-plan-mainwindow-logic-refactoring-and-modularization" title="Link to this heading"></a></h1>
+<p><strong>Date</strong>: 2026-01-23
+<strong>Status</strong>: Draft
+<strong>Reference</strong>: <code class="docutils literal notranslate"><span class="pre">docs/developers/plans/repo_improvement_report_20260123.md</span></code></p>
+<section id="objectives-goals">
+<h2>1. Objectives &amp; Goals<a class="headerlink" href="#objectives-goals" title="Link to this heading"></a></h2>
+<p>Refactor the monolithic <code class="docutils literal notranslate"><span class="pre">MainWindow.update_graphs</span></code> method in <code class="docutils literal notranslate"><span class="pre">gwexpy/gui/ui/main_window.py</span></code> to improve maintainability and extensibility.</p>
+<ul class="simple">
+<li><p><strong>Decoupling</strong>: Separate rendering and excitation logic into dedicated classes.</p></li>
+<li><p><strong>Abstraction</strong>: Enable support for diverse result types (Series, Spectrogram, SweptSine) without modifying the main loop.</p></li>
+<li><p><strong>DTT Compatibility</strong>: Introduce selectable normalization logic (Standard vs. DTT-compatible).</p></li>
+<li><p><strong>Maintainability</strong>: Reduce the size of <code class="docutils literal notranslate"><span class="pre">main_window.py</span></code> and improve readability.</p></li>
+</ul>
+</section>
+<section id="detailed-roadmap">
+<h2>2. Detailed Roadmap<a class="headerlink" href="#detailed-roadmap" title="Link to this heading"></a></h2>
+<section id="phase-1-shared-signal-logic">
+<h3>Phase 1: Shared Signal Logic<a class="headerlink" href="#phase-1-shared-signal-logic" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Goal</strong>: Implement normalization and ENBW correction logic.</p></li>
+<li><p><strong>Tasks</strong>:</p>
+<ul>
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">gwexpy/signal/normalization.py</span></code>.</p></li>
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">get_normalization_factor(window_name,</span> <span class="pre">n_fft,</span> <span class="pre">fs,</span> <span class="pre">mode='standard')</span></code>.</p></li>
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">detect_dtt_normalization_ratio(window)</span></code> based on DTT analysis findings.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="phase-2-excitation-manager-modularization">
+<h3>Phase 2: Excitation Manager Modularization<a class="headerlink" href="#phase-2-excitation-manager-modularization" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Goal</strong>: Extract signal generation and injection logic.</p></li>
+<li><p><strong>Tasks</strong>:</p>
+<ul>
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">gwexpy/gui/ui/excitation_manager.py</span></code>.</p></li>
+<li><p>Define <code class="docutils literal notranslate"><span class="pre">ExcitationManager</span></code> class to handle <code class="docutils literal notranslate"><span class="pre">GeneratorParams</span></code> creation and signal injection into <code class="docutils literal notranslate"><span class="pre">data_map</span></code>.</p></li>
+<li><p>Migrate logic from lines ~741-800 of <code class="docutils literal notranslate"><span class="pre">main_window.py</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="phase-3-plot-renderer-modularization">
+<h3>Phase 3: Plot Renderer Modularization<a class="headerlink" href="#phase-3-plot-renderer-modularization" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Goal</strong>: Extract rendering logic for all plot types.</p></li>
+<li><p><strong>Tasks</strong>:</p>
+<ul>
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">gwexpy/gui/ui/plot_renderer.py</span></code>.</p></li>
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">PlotRenderer</span></code> class with methods:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">render_results(info_root,</span> <span class="pre">results)</span></code>: High-level entry point.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">render_trace(trace_item,</span> <span class="pre">result,</span> <span class="pre">config)</span></code>: Abstract dispatcher.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_draw_series(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">_draw_spectrogram(...)</span></code>: Low-level rendering.</p></li>
+</ul>
+</li>
+<li><p>Handle unit conversions (dB, Phase, Magnitude) and coordinate transformations (Log-Y).</p></li>
+<li><p>Migrate logic from lines ~883-1143 of <code class="docutils literal notranslate"><span class="pre">main_window.py</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="phase-4-mainwindow-integration">
+<h3>Phase 4: MainWindow Integration<a class="headerlink" href="#phase-4-mainwindow-integration" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Goal</strong>: Refactor the main loop to use new managers.</p></li>
+<li><p><strong>Tasks</strong>:</p>
+<ul>
+<li><p>Initialize <code class="docutils literal notranslate"><span class="pre">ExcitationManager</span></code> and <code class="docutils literal notranslate"><span class="pre">PlotRenderer</span></code> in <code class="docutils literal notranslate"><span class="pre">MainWindow.__init__</span></code>.</p></li>
+<li><p>Rewrite <code class="docutils literal notranslate"><span class="pre">MainWindow.update_graphs</span></code> into a pipeline of private calls:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">_collect_data_map()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_check_stop_conditions()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.excitation_manager.inject(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.plot_renderer.render(...)</span></code></p></li>
+</ul>
+</li>
+<li><p>Ensure thread-safety and performance (aim for &lt; 20ms execution per cycle).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="phase-5-verification">
+<h3>Phase 5: Verification<a class="headerlink" href="#phase-5-verification" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Goal</strong>: Ensure no regressions in UI behavior.</p></li>
+<li><p><strong>Tasks</strong>:</p>
+<ul>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests/gui</span></code>.</p></li>
+<li><p>Manual verification of Spectrogram log-scale rendering.</p></li>
+<li><p>Verify DTT normalization toggle (if UI checkbox added or as a hidden setting).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="recommended-models-skills">
+<h2>3. Recommended Models &amp; Skills<a class="headerlink" href="#recommended-models-skills" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Model</strong>: <code class="docutils literal notranslate"><span class="pre">Claude</span> <span class="pre">Opus</span> <span class="pre">4.5</span> <span class="pre">(Thinking)</span></code> or <code class="docutils literal notranslate"><span class="pre">Gemini</span> <span class="pre">3</span> <span class="pre">Pro</span> <span class="pre">(High)</span></code> for architectural integrity.</p></li>
+<li><p><strong>Skills</strong>: <code class="docutils literal notranslate"><span class="pre">lint</span></code>, <code class="docutils literal notranslate"><span class="pre">test_gui</span></code>, <code class="docutils literal notranslate"><span class="pre">visualize_fields</span></code> (for reference).</p></li>
+<li><p><strong>Estimated Effort</strong>:</p>
+<ul>
+<li><p>Total Time: 60 - 90 minutes (AI wall-clock time).</p></li>
+<li><p>Quota Consumption: <strong>High</strong> (Large file edits and multiple new files).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="risks-concerns">
+<h2>4. Risks &amp; Concerns<a class="headerlink" href="#risks-concerns" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Performance</strong>: Inter-object communication overhead (should be negligible in Python).</p></li>
+<li><p><strong>State Sync</strong>: Ensuring <code class="docutils literal notranslate"><span class="pre">PlotRenderer</span></code> has up-to-date config from <code class="docutils literal notranslate"><span class="pre">MainWindow</span></code> widgets.</p></li>
+<li><p><strong>Unit Consistency</strong>: Ensuring normalization factors are applied exactly once.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

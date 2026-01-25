@@ -1,0 +1,256 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>実装計画：ScalarField 描画機能の実践とドキュメント拡充 &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">実装計画：ScalarField 描画機能の実践とドキュメント拡充</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/plans/visualize-ScalarField-docs.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scalarfield">
+<h1>実装計画：ScalarField 描画機能の実践とドキュメント拡充<a class="headerlink" href="#scalarfield" title="Link to this heading"></a></h1>
+<p><strong>作成日</strong>: 2026-01-21T13:22 JST<br />
+<strong>担当</strong>: Antigravity (Claude Opus 4.5 連携)</p>
+<section id="id1">
+<h2>1. 目的<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> クラスの強力な描画・解析機能をユーザーが直感的に利用できるよう、チュートリアルを整理・拡充し、同時に数値的正当性を保証する不変量チェックを導入する。</p>
+</section>
+<section id="id2">
+<h2>2. 目標<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>ノートブックの分割</strong>: <code class="docutils literal notranslate"><span class="pre">intro_ScalarField.ipynb</span></code> (コア) と <code class="docutils literal notranslate"><span class="pre">plot_ScalarField.ipynb</span></code> (描画) に分離し、保守性を向上。</p></li>
+<li><p><strong>再現性の確保</strong>: 乱数 seed・単位・軸間隔を固定した標準データ生成セルの規格化。</p></li>
+<li><p><strong>数値的検証の強化</strong>: FFT不変量チェックや波長計算の spot check セルを導入。</p></li>
+<li><p><strong>CLI用静止画例の作成</strong>: <code class="docutils literal notranslate"><span class="pre">examples/</span></code> に最小限のプロットスクリプトを追加。</p></li>
+</ol>
+</section>
+<section id="id3">
+<h2>3. 実装詳細<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="a">
+<h3>A. チュートリアル構成の刷新<a class="headerlink" href="#a" title="Link to this heading"></a></h3>
+<section id="intro-scalarfield-ipynb-core-specifications">
+<h4>1. <code class="docutils literal notranslate"><span class="pre">intro_ScalarField.ipynb</span></code> (Core Specifications)<a class="headerlink" href="#intro-scalarfield-ipynb-core-specifications" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>基本構成:</p>
+<ul>
+<li><p>初期化、メタデータ（Domain/AxisNames）</p></li>
+<li><p><strong>4D維持スライス規約</strong>の説明</p></li>
+<li><p>時間FFT/IFFT（GWpy互換性の実証）</p></li>
+<li><p>空間FFT/IFFT（両側、角波数の規約）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FieldList</span></code> / <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> の基本操作</p></li>
+</ul>
+</li>
+<li><p><strong>数値的不変量チェック（追加）</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">ifft_time(fft_time(f))</span> <span class="pre">≈</span> <span class="pre">f</span></code> の検証</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ifft_space(fft_space(f))</span> <span class="pre">≈</span> <span class="pre">f</span></code> の検証</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">k=0</span></code> における <code class="docutils literal notranslate"><span class="pre">wavelength</span> <span class="pre">=</span> <span class="pre">inf</span></code> の確認</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="plot-scalarfield-ipynb-visualization-practice">
+<h4>2. <code class="docutils literal notranslate"><span class="pre">plot_ScalarField.ipynb</span></code> (Visualization Practice)<a class="headerlink" href="#plot-scalarfield-ipynb-visualization-practice" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>可視化ユースケース:</p>
+<ul>
+<li><p>2D断面マップ（<code class="docutils literal notranslate"><span class="pre">plot_map2d</span></code>）</p></li>
+<li><p>多点時系列抽出と重ね書き（<code class="docutils literal notranslate"><span class="pre">plot_timeseries_points</span></code>）</p></li>
+<li><p>1D分布プロファイル（<code class="docutils literal notranslate"><span class="pre">plot_profile</span></code>）</p></li>
+<li><p>応用解析（<code class="docutils literal notranslate"><span class="pre">diff</span></code>, <code class="docutils literal notranslate"><span class="pre">zscore</span></code>, <code class="docutils literal notranslate"><span class="pre">time_stat_map</span></code>, <code class="docutils literal notranslate"><span class="pre">time_space_map</span></code>）</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="b">
+<h3>B. 再現性用標準データ生成セルの導入<a class="headerlink" href="#b" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span>
+
+<span class="c1"># 共通設定</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>  <span class="c1"># 2D case</span>
+<span class="c1"># ... ガウス波や平面波など、期待値が明瞭なデータの生成</span>
+</pre></div>
+</div>
+</section>
+<section id="c-examples-plot-scalarfield-demo-py">
+<h3>C. 静止画スクリプト (<code class="docutils literal notranslate"><span class="pre">examples/plot_scalarfield_demo.py</span></code>)<a class="headerlink" href="#c-examples-plot-scalarfield-demo-py" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>ヘッドレス環境でも動作する <code class="docutils literal notranslate"><span class="pre">matplotlib.use('Agg')</span></code> を用いた最短プロット例。</p></li>
+</ul>
+</section>
+</section>
+<section id="id4">
+<h2>4. 検証計画<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>[x] <strong>T5</strong>: 分割された各ノートブックを <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--execute</span></code> で一括実行し、全セルがエラーなく終了すること。✅ PASSED</p></li>
+<li><p>[x] <strong>T6</strong>: FFT不変量チェックセルの Assertion が全てパスすること。✅ PASSED</p></li>
+<li><p>[x] <strong>T7</strong>: 静止画スクリプトがエラーなく <code class="docutils literal notranslate"><span class="pre">.png</span></code> を出力すること。✅ PASSED</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="t13-30-jst">
+<h2>7. 実装完了 (2026-01-21T13:30 JST)<a class="headerlink" href="#t13-30-jst" title="Link to this heading"></a></h2>
+<section id="id5">
+<h3>成果物<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>ファイル</p></th>
+<th class="head text-left"><p>説明</p></th>
+<th class="head text-left"><p>状態</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">examples/tutorials/intro_ScalarField.ipynb</span></code></p></td>
+<td class="text-left"><p>コア機能 + 数値的不変量チェック</p></td>
+<td class="text-left"><p>✅ 更新済み</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">examples/tutorials/plot_ScalarField.ipynb</span></code></p></td>
+<td class="text-left"><p>描画機能の実践チュートリアル</p></td>
+<td class="text-left"><p>✅ 新規作成</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">examples/plot_scalarfield_demo.py</span></code></p></td>
+<td class="text-left"><p>ヘッドレス静止画スクリプト</p></td>
+<td class="text-left"><p>✅ 新規作成</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">scalarfield_demo.png</span></code></p></td>
+<td class="text-left"><p>上記スクリプトの出力サンプル</p></td>
+<td class="text-left"><p>✅ 生成確認</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id6">
+<h3>所要時間<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>計画時間</strong>: 約40分</p></li>
+<li><p><strong>実績時間</strong>: 約8分</p></li>
+<li><p><strong>効率化要因</strong>: 詳細な実装計画の存在とAIネイティブなコード生成</p></li>
+</ul>
+</section>
+</section>
+<section id="using-skills">
+<h2>5. 実行戦略 (Using Skills)<a class="headerlink" href="#using-skills" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Model</strong>: <strong>Claude 4 Opus</strong>（複雑なプロットと物理検証の両立）</p></li>
+<li><p><strong>Skills</strong>: <code class="docutils literal notranslate"><span class="pre">make_notebook</span></code>, <code class="docutils literal notranslate"><span class="pre">check_physics</span></code>, <code class="docutils literal notranslate"><span class="pre">estimate_effort</span></code>, <code class="docutils literal notranslate"><span class="pre">test_notebooks</span></code></p></li>
+<li><p><strong>Total Time</strong>: <strong>~40 mins</strong> (Estimated by <code class="docutils literal notranslate"><span class="pre">estimate_effort</span></code>)</p></li>
+<li><p><strong>Quota</strong>: <strong>High</strong> (Large notebook generation &amp; cell outputs)</p></li>
+</ul>
+</section>
+<section id="id7">
+<h2>6. 注意事項<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>再現性重視</strong>: 全てのランダムプロセスに seed を明示。</p></li>
+<li><p><strong>依存性</strong>: 描画は <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code> を基本とし、外部依存（seaborn等）は避ける。</p></li>
+<li><p><strong>アウトライン</strong>: 各ノートブックには「何を示すセルか」を明記した Markdown ヘッダーを付与する。</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

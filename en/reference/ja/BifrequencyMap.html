@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BifrequencyMap &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Array2D" href="Array2D.html" />
+    <link rel="prev" title="SpectrogramMatrix" href="SpectrogramMatrix.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">詳細リファレンス</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesList.html">TimeSeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeries.html">FrequencySeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesDict.html">FrequencySeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesList.html">FrequencySeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesMatrix.html">FrequencySeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramDict.html">SpectrogramDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramList.html">SpectrogramList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramMatrix.html">SpectrogramMatrix</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">BifrequencyMap</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">構成要素</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">メソッド</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#from-points"><code class="docutils literal notranslate"><span class="pre">from_points</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">パラメータ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">戻り値</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#propagate"><code class="docutils literal notranslate"><span class="pre">propagate</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">パラメータ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">戻り値</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#convolute"><code class="docutils literal notranslate"><span class="pre">convolute</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">パラメータ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">戻り値</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#diagonal"><code class="docutils literal notranslate"><span class="pre">diagonal</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">パラメータ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">戻り値</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#get-slice"><code class="docutils literal notranslate"><span class="pre">get_slice</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">パラメータ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">戻り値</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#plot"><code class="docutils literal notranslate"><span class="pre">plot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plot-lines"><code class="docutils literal notranslate"><span class="pre">plot_lines</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">パラメータ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">戻り値</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Array2D.html">Array2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Array4D.html">Array4D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScalarField.html">ScalarField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorField.html">VectorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TensorField.html">TensorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldList.html">FieldList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldDict.html">FieldDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plot.html">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Noise.html">Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Transform.html">Transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImputeTransform.html">ImputeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StandardizeTransform.html">StandardizeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WhitenTransform.html">WhitenTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PCATransform.html">PCATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting.html">gwexpy.fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Spectral.html">スペクトル推定</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">詳細リファレンス</a></li>
+      <li class="breadcrumb-item active">BifrequencyMap</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/reference/ja/BifrequencyMap.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bifrequencymap">
+<h1>BifrequencyMap<a class="headerlink" href="#bifrequencymap" title="Link to this heading"></a></h1>
+<p><strong>継承元:</strong> <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code></p>
+<p>2つの周波数軸間の関係を表すマップ（周波数1 → 周波数2）。
+通常、入力周波数（<code class="docutils literal notranslate"><span class="pre">frequency1</span></code>）から出力周波数（<code class="docutils literal notranslate"><span class="pre">frequency2</span></code>）へエネルギーが伝達される伝達関数、結合関数、散乱行列を表すために使用されます。</p>
+<section id="id1">
+<h2>構成要素<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>周波数1 (<code class="docutils literal notranslate"><span class="pre">frequency1</span></code>)</strong>: 入力またはソース周波数軸（列）。</p></li>
+<li><p><strong>周波数2 (<code class="docutils literal notranslate"><span class="pre">frequency2</span></code>)</strong>: 出力またはターゲット周波数軸（行）。</p></li>
+<li><p><strong>値</strong>: 各 (f2, f1) 点での結合強度または伝達関数スカラー。</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>メソッド<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="from-points">
+<h3><code class="docutils literal notranslate"><span class="pre">from_points</span></code><a class="headerlink" href="#from-points" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">from_points</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>2D配列と2つの周波数軸から <code class="docutils literal notranslate"><span class="pre">BifrequencyMap</span></code> を作成します。</p>
+</section>
+</section>
+<section id="id3">
+<h2>パラメータ<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>data : array-like
+形状 (len(f2), len(f1)) の2D配列。
+f2 : array-like
+周波数軸2（行、出力）。
+f1 : array-like
+周波数軸1（列、入力）。
+**kwargs
+コンストラクタに渡される追加引数（name, unit など）。</p>
+</section>
+<section id="id4">
+<h2>戻り値<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>BifrequencyMap</p>
+<section id="propagate">
+<h3><code class="docutils literal notranslate"><span class="pre">propagate</span></code><a class="headerlink" href="#propagate" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">propagate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_spectrum</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>入力スペクトルをマップを通して伝播させ、出力スペクトルを計算します。
+行列積を実行: $S_{\text{out}} = M \cdot S_{\text{in}}$</p>
+</section>
+</section>
+<section id="id5">
+<h2>パラメータ<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>input_spectrum : <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>
+入力スペクトル $S_{\text{in}}(f_1)$。
+interpolate : bool, optional
+True の場合、入力スペクトルをマップの <code class="docutils literal notranslate"><span class="pre">frequency1</span></code> 軸に補間します。
+fill_value : float, optional
+範囲外の補間に使用する値。</p>
+</section>
+<section id="id6">
+<h2>戻り値<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>
+投影された出力スペクトル $S_{\text{out}}(f_2)$。</p>
+<section id="convolute">
+<h3><code class="docutils literal notranslate"><span class="pre">convolute</span></code><a class="headerlink" href="#convolute" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">convolute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_spectrum</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>マップと入力スペクトルを畳み込みます（f1に沿った積分）。
+計算: $S_{\text{out}}(f_2) = \int M(f_2, f_1) S_{\text{in}}(f_1) df_1$</p>
+</section>
+</section>
+<section id="id7">
+<h2>パラメータ<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p>input_spectrum : <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>
+入力スペクトル。
+interpolate : bool, optional
+True の場合、入力スペクトルを補間します。</p>
+</section>
+<section id="id8">
+<h2>戻り値<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>
+周波数積分で調整された単位を持つ出力スペクトル。</p>
+<section id="diagonal">
+<h3><code class="docutils literal notranslate"><span class="pre">diagonal</span></code><a class="headerlink" href="#diagonal" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">diagonal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>対角軸（$f_2 - f_1$）に沿った統計量を計算します。</p>
+</section>
+</section>
+<section id="id9">
+<h2>パラメータ<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p>method : str, optional
+統計手法: ‘mean’, ‘median’, ‘max’, ‘min’, ‘std’, ‘rms’, ‘percentile’。
+デフォルトで NaN を無視します。
+bins : int or array-like, optional
+ビン数。None の場合、解像度から自動的に決定されます。
+absolute : bool, optional
+True の場合、$|f_2 - f_1|$ に沿って統計を計算します。
+**kwargs
+追加引数（例: <code class="docutils literal notranslate"><span class="pre">percentile</span></code> 値）。</p>
+</section>
+<section id="id10">
+<h2>戻り値<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>
+周波数差の関数としての統計量。</p>
+<section id="get-slice">
+<h3><code class="docutils literal notranslate"><span class="pre">get_slice</span></code><a class="headerlink" href="#get-slice" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">get_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">at</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="n">xaxis</span><span class="o">=</span><span class="s1">&#39;remaining&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>特定の周波数でマップのスライスを抽出します。</p>
+</section>
+</section>
+<section id="id11">
+<h2>パラメータ<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<p>at : float
+抽出する周波数値。
+axis : str, optional
+固定する軸: ‘f1’ または ‘f2’。
+xaxis : str, optional
+結果のx軸の定義: ‘remaining’, ‘diff’, ‘abs_diff’ など。</p>
+</section>
+<section id="id12">
+<h2>戻り値<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>
+抽出された1Dスライス。</p>
+<section id="plot">
+<h3><code class="docutils literal notranslate"><span class="pre">plot</span></code><a class="headerlink" href="#plot" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>マップを2D画像（スペクトログラム風）としてプロットします。</p>
+</section>
+<section id="plot-lines">
+<h3><code class="docutils literal notranslate"><span class="pre">plot_lines</span></code><a class="headerlink" href="#plot-lines" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xaxis</span><span class="o">=</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;f2&#39;</span><span class="p">,</span> <span class="n">num_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>マップを1D線のセットとしてプロットします。</p>
+</section>
+</section>
+<section id="id13">
+<h2>パラメータ<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<p>xaxis : str, optional
+線のX軸: ‘f1’, ‘f2’, ‘diff’ など。
+color : str, optional
+色付け/スライスのパラメータ: ‘f1’, ‘f2’。
+num_lines : int, optional
+プロットする最大線数。
+ax : matplotlib Axes, optional
+プロットするAxes。
+cmap : colormap, optional
+線のカラーマップ。</p>
+</section>
+<section id="id14">
+<h2>戻り値<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
+<p>matplotlib Axes</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="SpectrogramMatrix.html" class="btn btn-neutral float-left" title="SpectrogramMatrix" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Array2D.html" class="btn btn-neutral float-right" title="Array2D" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

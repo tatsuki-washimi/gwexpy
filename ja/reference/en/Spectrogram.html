@@ -1,25 +1,25 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="ja" data-content_root="../../">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spectrogram &mdash; gwexpy  ドキュメント</title>
+  <title>Spectrogram &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../_static/translations.js?v=4755f45a"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../../genindex.html" />
-    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="SpectrogramDict" href="SpectrogramDict.html" />
     <link rel="prev" title="FrequencySeriesMatrix" href="FrequencySeriesMatrix.html" /> 
 </head>
@@ -43,15 +43,16 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ja/index.html">詳細リファレンス</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Detailed Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
@@ -226,6 +227,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#step"><code class="docutils literal notranslate"><span class="pre">step</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-cupy"><code class="docutils literal notranslate"><span class="pre">to_cupy</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-dask"><code class="docutils literal notranslate"><span class="pre">to_dask</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#to-frequencyseries-list"><code class="docutils literal notranslate"><span class="pre">to_frequencyseries_list</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-jax"><code class="docutils literal notranslate"><span class="pre">to_jax</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-mne"><code class="docutils literal notranslate"><span class="pre">to_mne</span></code></a></li>
 </ul>
@@ -239,6 +241,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#to-quantities"><code class="docutils literal notranslate"><span class="pre">to_quantities</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-tensorflow"><code class="docutils literal notranslate"><span class="pre">to_tensorflow</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-th2d"><code class="docutils literal notranslate"><span class="pre">to_th2d</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#to-timeseries-list"><code class="docutils literal notranslate"><span class="pre">to_timeseries_list</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-torch"><code class="docutils literal notranslate"><span class="pre">to_torch</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-zarr"><code class="docutils literal notranslate"><span class="pre">to_zarr</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tostring"><code class="docutils literal notranslate"><span class="pre">tostring</span></code></a></li>
@@ -294,6 +297,12 @@
 <li class="toctree-l2"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Array2D.html">Array2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Array4D.html">Array4D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScalarField.html">ScalarField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorField.html">VectorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TensorField.html">TensorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldList.html">FieldList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldDict.html">FieldDict</a></li>
 <li class="toctree-l2"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Plot.html">Plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Noise.html">Noise</a></li>
@@ -310,9 +319,9 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">開発者ガイド (Developers Guide)</a></li>
 </ul>
 
         </div>
@@ -388,7 +397,7 @@ array([1, 2, 3, 4])</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>absolute(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True[, signature, extobj])</p>
+<p>absolute(x, /, out=None, *, where=True, casting=’same_kind’, order=’K’, dtype=None, subok=True[, signature, extobj])</p>
 <p>Calculate the absolute value element-wise.</p>
 <p><code class="docutils literal notranslate"><span class="pre">np.abs</span></code> is a shorthand for this function.</p>
 </section>
@@ -456,7 +465,7 @@ plt.show()</p>
 <div><blockquote>
 <div><blockquote>
 <div><p>xx = x + 1j * x[:, np.newaxis]
-plt.imshow(np.abs(xx), extent=[-10, 10, -10, 10], cmap='gray')
+plt.imshow(np.abs(xx), extent=[-10, 10, -10, 10], cmap=’gray’)
 plt.show()</p>
 </div></blockquote>
 </div></blockquote>
@@ -505,7 +514,7 @@ otherwise copy data and return new series, default: <code class="docutils litera
 value with which to pad discontiguous series,
 by default gaps will result in a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
 <p>gap : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-action to perform if there's a gap between the other series
+action to perform if there’s a gap between the other series
 and this one. One of</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- ``&#39;raise&#39;`` - raise a `ValueError`
 - ``&#39;ignore&#39;`` - remove gap and join data
@@ -543,16 +552,16 @@ a new series containing joined data sets</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>a.copy(order='C')</p>
+<p>a.copy(order=’C’)</p>
 <p>Return a copy of the array.</p>
 </section>
 </section>
 <section id="id4">
 <h2>Parameters<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
-<p>order : {'C', 'F', 'A', 'K'}, optional
-Controls the memory layout of the copy. 'C' means C-order,
-'F' means F-order, 'A' means 'F' if <code class="docutils literal notranslate"><span class="pre">a</span></code> is Fortran contiguous,
-'C' otherwise. 'K' means match the layout of <code class="docutils literal notranslate"><span class="pre">a</span></code> as closely
+<p>order : {‘C’, ‘F’, ‘A’, ‘K’}, optional
+Controls the memory layout of the copy. ‘C’ means C-order,
+‘F’ means F-order, ‘A’ means ‘F’ if <code class="docutils literal notranslate"><span class="pre">a</span></code> is Fortran contiguous,
+‘C’ otherwise. ‘K’ means match the layout of <code class="docutils literal notranslate"><span class="pre">a</span></code> as closely
 as possible. (Note that this function and :func:<code class="docutils literal notranslate"><span class="pre">numpy.copy</span></code> are very
 similar but have different default values for their order=
 arguments, and this function always passes sub-classes through.)</p>
@@ -565,7 +574,7 @@ numpy.copyto</p>
 <section id="notes">
 <h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
 <p>This function is the preferred method for creating an array copy.  The
-function :func:<code class="docutils literal notranslate"><span class="pre">numpy.copy</span></code> is similar, but it defaults to using order 'K',
+function :func:<code class="docutils literal notranslate"><span class="pre">numpy.copy</span></code> is similar, but it defaults to using order ‘K’,
 and will not pass sub-classes through by default.</p>
 </section>
 <section id="id6">
@@ -573,7 +582,7 @@ and will not pass sub-classes through by default.</p>
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>x = np.array([[1,2,3],[4,5,6]], order='F')</p>
+<div><p>x = np.array([[1,2,3],[4,5,6]], order=’F’)</p>
 </div></blockquote>
 </div></blockquote>
 </div></blockquote>
@@ -612,7 +621,7 @@ array([[1, 2, 3],
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>y.flags['C_CONTIGUOUS']
+<div><p>y.flags[‘C_CONTIGUOUS’]
 True</p>
 </div></blockquote>
 </div></blockquote>
@@ -785,14 +794,14 @@ and the result is returned as a <code class="docutils literal notranslate"><span
 </section>
 <section id="id18">
 <h2>Parameters<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
-<p>order : {'C', 'F', 'A', 'K'}, optional
-'C' means to flatten in row-major (C-style) order.
-'F' means to flatten in column-major (Fortran-
-style) order. 'A' means to flatten in column-major
+<p>order : {‘C’, ‘F’, ‘A’, ‘K’}, optional
+‘C’ means to flatten in row-major (C-style) order.
+‘F’ means to flatten in column-major (Fortran-
+style) order. ‘A’ means to flatten in column-major
 order if <code class="docutils literal notranslate"><span class="pre">a</span></code> is Fortran <em>contiguous</em> in memory,
-row-major order otherwise. 'K' means to flatten
+row-major order otherwise. ‘K’ means to flatten
 <code class="docutils literal notranslate"><span class="pre">a</span></code> in the order the elements occur in memory.
-The default is 'C'.</p>
+The default is ‘C’.</p>
 </section>
 <section id="id19">
 <h2>Returns<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
@@ -809,7 +818,7 @@ flat : A 1-D flat iterator over the array.</p>
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>a = Array([[1,2], [3,4]], unit='m', name='Test')
+<div><p>a = Array([[1,2], [3,4]], unit=’m’, name=’Test’)
 a.flatten()
 &lt;Quantity [1., 2., 3., 4.] m&gt;</p>
 </div></blockquote>
@@ -1236,7 +1245,7 @@ otherwise copy data and return new series, default: <code class="docutils litera
 value with which to pad discontiguous series,
 by default gaps will result in a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
 <p>gap : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-action to perform if there's a gap between the other series
+action to perform if there’s a gap between the other series
 and this one. One of</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- ``&#39;raise&#39;`` - raise a `ValueError`
 - ``&#39;ignore&#39;`` - remove gap and join data
@@ -1290,7 +1299,7 @@ a new <code class="docutils literal notranslate"><span class="pre">Spectrogram</
 <section id="id58">
 <h2>Raises<a class="headerlink" href="#id58" title="Link to this heading"></a></h2>
 <p>ValueError
-if <code class="docutils literal notranslate"><span class="pre">operand</span></code> is given as a <code class="docutils literal notranslate"><span class="pre">str</span></code> that isn't supported</p>
+if <code class="docutils literal notranslate"><span class="pre">operand</span></code> is given as a <code class="docutils literal notranslate"><span class="pre">str</span></code> that isn’t supported</p>
 <section id="read">
 <h3><code class="docutils literal notranslate"><span class="pre">read</span></code><a class="headerlink" href="#read" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">read</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1354,13 +1363,13 @@ a negative value to shift backwards in time</p>
 <div><blockquote>
 <div><blockquote>
 <div><p>from gwpy.types import Series
-a = Series([1, 2, 3, 4, 5], x0=0, dx=1, xunit='m')
+a = Series([1, 2, 3, 4, 5], x0=0, dx=1, xunit=’m’)
 print(a.x0)
 0.0 m
 a.shift(5)
 print(a.x0)
 5.0 m
-a.shift('-1 km')
+a.shift(‘-1 km’)
 -995.0 m</p>
 </div></blockquote>
 </div></blockquote>
@@ -1385,6 +1394,19 @@ a.shift('-1 km')
 </pre></div>
 </div>
 <p>Convert to Dask Array.</p>
+</section>
+<section id="to-frequencyseries-list">
+<h3><code class="docutils literal notranslate"><span class="pre">to_frequencyseries_list</span></code><a class="headerlink" href="#to-frequencyseries-list" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_frequencyseries_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FrequencySeriesList</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Convert this Spectrogram to a list of FrequencySeries, one per time bin.</p>
+<p>For a Spectrogram with shape <code class="docutils literal notranslate"><span class="pre">(ntimes,</span> <span class="pre">nfreqs)</span></code>, this extracts each row (time bin) as a FrequencySeries with the same frequency axis.</p>
+<p><strong>Returns</strong></p>
+<ul class="simple">
+<li><p><strong>fs_list</strong> : <code class="docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code> - A list of FrequencySeries, one for each time bin. Each FrequencySeries has length <code class="docutils literal notranslate"><span class="pre">nfreqs</span></code>.</p></li>
+<li><p><strong>times</strong> : <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> - The time axis of this Spectrogram (length <code class="docutils literal notranslate"><span class="pre">ntimes</span></code>).</p></li>
+</ul>
 </section>
 <section id="to-jax">
 <h3><code class="docutils literal notranslate"><span class="pre">to_jax</span></code><a class="headerlink" href="#to-jax" title="Link to this heading"></a></h3>
@@ -1441,6 +1463,19 @@ MNE Info object.</p>
 </div>
 <p>Convert to ROOT TH2D.</p>
 </section>
+<section id="to-timeseries-list">
+<h3><code class="docutils literal notranslate"><span class="pre">to_timeseries_list</span></code><a class="headerlink" href="#to-timeseries-list" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_timeseries_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">TimeSeriesList</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Convert this Spectrogram to a list of TimeSeries, one per frequency bin.</p>
+<p>For a Spectrogram with shape <code class="docutils literal notranslate"><span class="pre">(ntimes,</span> <span class="pre">nfreqs)</span></code>, this extracts each column (frequency bin) as a TimeSeries with the same time axis.</p>
+<p><strong>Returns</strong></p>
+<ul class="simple">
+<li><p><strong>ts_list</strong> : <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> - A list of TimeSeries, one for each frequency bin. Each TimeSeries has length <code class="docutils literal notranslate"><span class="pre">ntimes</span></code>.</p></li>
+<li><p><strong>frequencies</strong> : <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> - The frequency axis of this Spectrogram (length <code class="docutils literal notranslate"><span class="pre">nfreqs</span></code>).</p></li>
+</ul>
+</section>
 <section id="to-torch">
 <h3><code class="docutils literal notranslate"><span class="pre">to_torch</span></code><a class="headerlink" href="#to-torch" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">requires_grad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
@@ -1460,7 +1495,7 @@ MNE Info object.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tostring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>a.tobytes(order='C')</p>
+<p>a.tobytes(order=’C’)</p>
 <p>Construct Python bytes containing the raw data bytes in the array.</p>
 <p>Constructs Python bytes showing a copy of the raw contents of
 data memory. The bytes object is produced in C-order by default.
@@ -1470,15 +1505,15 @@ This behavior is controlled by the <code class="docutils literal notranslate"><s
 </section>
 <section id="id67">
 <h2>Parameters<a class="headerlink" href="#id67" title="Link to this heading"></a></h2>
-<p>order : {'C', 'F', 'A'}, optional
-Controls the memory layout of the bytes object. 'C' means C-order,
-'F' means F-order, 'A' (short for <em>Any</em>) means 'F' if <code class="docutils literal notranslate"><span class="pre">a</span></code> is
-Fortran contiguous, 'C' otherwise. Default is 'C'.</p>
+<p>order : {‘C’, ‘F’, ‘A’}, optional
+Controls the memory layout of the bytes object. ‘C’ means C-order,
+‘F’ means F-order, ‘A’ (short for <em>Any</em>) means ‘F’ if <code class="docutils literal notranslate"><span class="pre">a</span></code> is
+Fortran contiguous, ‘C’ otherwise. Default is ‘C’.</p>
 </section>
 <section id="id68">
 <h2>Returns<a class="headerlink" href="#id68" title="Link to this heading"></a></h2>
 <p>s : bytes
-Python bytes exhibiting a copy of <code class="docutils literal notranslate"><span class="pre">a</span></code>'s raw data.</p>
+Python bytes exhibiting a copy of <code class="docutils literal notranslate"><span class="pre">a</span></code>’s raw data.</p>
 </section>
 <section id="id69">
 <h2>See also<a class="headerlink" href="#id69" title="Link to this heading"></a></h2>
@@ -1491,13 +1526,13 @@ bytes.</p>
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>x = np.array([[0, 1], [2, 3]], dtype='&lt;u2')
+<div><p>x = np.array([[0, 1], [2, 3]], dtype=’&lt;u2’)
 x.tobytes()
-b'\x00\x00\x01\x00\x02\x00\x03\x00'
-x.tobytes('C') == x.tobytes()
+b’\x00\x00\x01\x00\x02\x00\x03\x00’
+x.tobytes(‘C’) == x.tobytes()
 True
-x.tobytes('F')
-b'\x00\x00\x02\x00\x01\x00\x03\x00'</p>
+x.tobytes(‘F’)
+b’\x00\x00\x02\x00\x01\x00\x03\x00’</p>
 </div></blockquote>
 </div></blockquote>
 </div></blockquote>

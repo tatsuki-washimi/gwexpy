@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpectrogramDict &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="SpectrogramList" href="SpectrogramList.html" />
+    <link rel="prev" title="Spectrogram" href="Spectrogram.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">詳細リファレンス</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesList.html">TimeSeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeries.html">FrequencySeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesDict.html">FrequencySeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesList.html">FrequencySeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrequencySeriesMatrix.html">FrequencySeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SpectrogramDict</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">メソッド</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#init"><code class="docutils literal notranslate"><span class="pre">__init__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#angle"><code class="docutils literal notranslate"><span class="pre">angle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bootstrap-asd"><code class="docutils literal notranslate"><span class="pre">bootstrap_asd</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#crop"><code class="docutils literal notranslate"><span class="pre">crop</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">パラメータ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">戻り値</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#crop-frequencies"><code class="docutils literal notranslate"><span class="pre">crop_frequencies</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">パラメータ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">戻り値</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#degree"><code class="docutils literal notranslate"><span class="pre">degree</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#interpolate"><code class="docutils literal notranslate"><span class="pre">interpolate</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">パラメータ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">戻り値</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#phase"><code class="docutils literal notranslate"><span class="pre">phase</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">パラメータ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">戻り値</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#plot"><code class="docutils literal notranslate"><span class="pre">plot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plot-summary"><code class="docutils literal notranslate"><span class="pre">plot_summary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#radian"><code class="docutils literal notranslate"><span class="pre">radian</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rebin"><code class="docutils literal notranslate"><span class="pre">rebin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">パラメータ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">戻り値</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#to-matrix"><code class="docutils literal notranslate"><span class="pre">to_matrix</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">戻り値</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#to-cupy-to-dask-to-jax-to-tensorflow-to-torch"><code class="docutils literal notranslate"><span class="pre">to_cupy</span></code> / <code class="docutils literal notranslate"><span class="pre">to_dask</span></code> / <code class="docutils literal notranslate"><span class="pre">to_jax</span></code> / <code class="docutils literal notranslate"><span class="pre">to_tensorflow</span></code> / <code class="docutils literal notranslate"><span class="pre">to_torch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#write"><code class="docutils literal notranslate"><span class="pre">write</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramList.html">SpectrogramList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectrogramMatrix.html">SpectrogramMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Array2D.html">Array2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Array4D.html">Array4D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScalarField.html">ScalarField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorField.html">VectorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TensorField.html">TensorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldList.html">FieldList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldDict.html">FieldDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plot.html">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Noise.html">Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Transform.html">Transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImputeTransform.html">ImputeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StandardizeTransform.html">StandardizeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WhitenTransform.html">WhitenTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PCATransform.html">PCATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting.html">gwexpy.fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Spectral.html">スペクトル推定</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">詳細リファレンス</a></li>
+      <li class="breadcrumb-item active">SpectrogramDict</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/reference/ja/SpectrogramDict.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="spectrogramdict">
+<h1>SpectrogramDict<a class="headerlink" href="#spectrogramdict" title="Link to this heading"></a></h1>
+<p><strong>継承元:</strong> PhaseMethodsMixin, UserDict</p>
+<p>Spectrogram オブジェクトの辞書。</p>
+<p>.. note::
+Spectrogram オブジェクトはメモリを大量に消費する可能性があります。
+可能な限り <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code> を使用してコンテナをその場で更新してください。</p>
+<section id="id1">
+<h2>メソッド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="init">
+<h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>self を初期化します。正確なシグネチャは help(type(self)) を参照してください。</p>
+<p><em>(PhaseMethodsMixin から継承)</em></p>
+</section>
+<section id="angle">
+<h3><code class="docutils literal notranslate"><span class="pre">angle</span></code><a class="headerlink" href="#angle" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">deg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">phase(unwrap=unwrap,</span> <span class="pre">deg=deg)</span></code> のエイリアス。</p>
+</section>
+<section id="bootstrap-asd">
+<h3><code class="docutils literal notranslate"><span class="pre">bootstrap_asd</span></code><a class="headerlink" href="#bootstrap-asd" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstrap_asd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>辞書内の各スペクトログラムからロバスト ASD を推定します（FrequencySeriesDict を返します）。</p>
+</section>
+<section id="crop">
+<h3><code class="docutils literal notranslate"><span class="pre">crop</span></code><a class="headerlink" href="#crop" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>各スペクトログラムを時間方向でクロップします。</p>
+</section>
+</section>
+<section id="id2">
+<h2>パラメータ<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>t0, t1 : float
+開始時刻と終了時刻。
+inplace : bool, optional
+True の場合、その場で変更します。</p>
+</section>
+<section id="id3">
+<h2>戻り値<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>SpectrogramDict</p>
+<section id="crop-frequencies">
+<h3><code class="docutils literal notranslate"><span class="pre">crop_frequencies</span></code><a class="headerlink" href="#crop-frequencies" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crop_frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>各スペクトログラムを周波数方向でクロップします。</p>
+</section>
+</section>
+<section id="id4">
+<h2>パラメータ<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>f0, f1 : float or Quantity
+開始周波数と終了周波数。
+inplace : bool, optional
+True の場合、その場で変更します。</p>
+</section>
+<section id="id5">
+<h2>戻り値<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>SpectrogramDict</p>
+<section id="degree">
+<h3><code class="docutils literal notranslate"><span class="pre">degree</span></code><a class="headerlink" href="#degree" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;&#39;SpectrogramDict&#39;&quot;</span>
+</pre></div>
+</div>
+<p>各スペクトログラムの位相（度単位）を計算します。</p>
+</section>
+<section id="interpolate">
+<h3><code class="docutils literal notranslate"><span class="pre">interpolate</span></code><a class="headerlink" href="#interpolate" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>各スペクトログラムを新しい解像度に補間します。</p>
+</section>
+</section>
+<section id="id6">
+<h2>パラメータ<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>dt : float
+新しい時間解像度。
+df : float
+新しい周波数解像度。
+inplace : bool, optional
+True の場合、その場で変更します。</p>
+</section>
+<section id="id7">
+<h2>戻り値<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p>SpectrogramDict</p>
+<section id="phase">
+<h3><code class="docutils literal notranslate"><span class="pre">phase</span></code><a class="headerlink" href="#phase" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">deg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+</pre></div>
+</div>
+<p>データの位相を計算します。</p>
+</section>
+</section>
+<section id="id8">
+<h2>パラメータ<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p>unwrap : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
+<code class="docutils literal notranslate"><span class="pre">True</span></code> の場合、不連続性を除去するために位相をアンラップします。デフォルトは <code class="docutils literal notranslate"><span class="pre">False</span></code>。
+deg : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
+<code class="docutils literal notranslate"><span class="pre">True</span></code> の場合、位相を度で返します。デフォルトは <code class="docutils literal notranslate"><span class="pre">False</span></code>（ラジアン）。</p>
+</section>
+<section id="id9">
+<h2>戻り値<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Series</span></code> or <code class="docutils literal notranslate"><span class="pre">Matrix</span></code> or <code class="docutils literal notranslate"><span class="pre">Collection</span></code>
+データの位相。</p>
+<section id="plot">
+<h3><code class="docutils literal notranslate"><span class="pre">plot</span></code><a class="headerlink" href="#plot" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>すべてのスペクトログラムを縦に積み重ねてプロットします。</p>
+</section>
+<section id="plot-summary">
+<h3><code class="docutils literal notranslate"><span class="pre">plot_summary</span></code><a class="headerlink" href="#plot-summary" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>辞書をスペクトログラムとパーセンタイルサマリーを並べてプロットします。</p>
+</section>
+<section id="radian">
+<h3><code class="docutils literal notranslate"><span class="pre">radian</span></code><a class="headerlink" href="#radian" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">radian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;&#39;SpectrogramDict&#39;&quot;</span>
+</pre></div>
+</div>
+<p>各スペクトログラムの位相（ラジアン単位）を計算します。</p>
+</section>
+<section id="rebin">
+<h3><code class="docutils literal notranslate"><span class="pre">rebin</span></code><a class="headerlink" href="#rebin" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>各スペクトログラムを新しい時間/周波数解像度にリビンします。</p>
+</section>
+</section>
+<section id="id10">
+<h2>パラメータ<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<p>dt : float
+新しい時間ビンサイズ。
+df : float
+新しい周波数ビンサイズ。
+inplace : bool, optional
+True の場合、その場で変更します。</p>
+</section>
+<section id="id11">
+<h2>戻り値<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<p>SpectrogramDict</p>
+<section id="to-matrix">
+<h3><code class="docutils literal notranslate"><span class="pre">to_matrix</span></code><a class="headerlink" href="#to-matrix" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>SpectrogramMatrix に変換します。</p>
+</section>
+</section>
+<section id="id12">
+<h2>戻り値<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<p>SpectrogramMatrix
+(N, Time, Freq) の3D配列。</p>
+<section id="to-cupy-to-dask-to-jax-to-tensorflow-to-torch">
+<h3><code class="docutils literal notranslate"><span class="pre">to_cupy</span></code> / <code class="docutils literal notranslate"><span class="pre">to_dask</span></code> / <code class="docutils literal notranslate"><span class="pre">to_jax</span></code> / <code class="docutils literal notranslate"><span class="pre">to_tensorflow</span></code> / <code class="docutils literal notranslate"><span class="pre">to_torch</span></code><a class="headerlink" href="#to-cupy-to-dask-to-jax-to-tensorflow-to-torch" title="Link to this heading"></a></h3>
+<p>各アイテムを対応するフレームワークのテンソル/配列に変換します。辞書を返します。</p>
+</section>
+<section id="write">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>辞書をファイルに書き込みます。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Spectrogram.html" class="btn btn-neutral float-left" title="Spectrogram" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="SpectrogramList.html" class="btn btn-neutral float-right" title="SpectrogramList" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

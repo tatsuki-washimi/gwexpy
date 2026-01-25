@@ -1,0 +1,1737 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# gwexpy TimeSeries 新機能チュートリアル\n",
+    "\n",
+    "このノートブックでは、`gwpy` を拡張した `gwexpy` の `TimeSeries` クラスに追加された新しいメソッドとその使い方を解説します。\n",
+    "\n",
+    "`gwexpy` は GWpy との高い互換性を維持しつつ、信号処理、統計解析、他ライブラリとの相互運用性を大幅に強化しています。\n",
+    "\n",
+    "## 目次\n",
+    "1. [環境セットアップ](#setup)\n",
+    "2. [信号処理と復調 (Hilbert, Phase, Demodulation)](#signal-processing)\n",
+    "3. [スペクトル解析と相関 (FFT, Transfer Function, xcorr)](#spectral)\n",
+    "4. [統計・前処理 (Impute, Standardize, ARIMA, Hurst, Rolling)](#stats)\n",
+    "5. [リサンプリングと再インデックス (asfreq, resample)](#resampling)\n",
+    "6. [相互運用性 (Pandas, Xarray, Torch, and more)](#interop)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<a id=\"setup\"></a>\n",
+    "## 1. 環境セットアップ\n",
+    "\n",
+    "まずは必要なライブラリをインポートし、デモ用のサンプルデータを生成します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:47.873704Z",
+     "iopub.status.busy": "2026-01-24T10:39:47.873212Z",
+     "iopub.status.idle": "2026-01-24T10:39:49.931757Z",
+     "shell.execute_reply": "2026-01-24T10:39:49.931023Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "from astropy import units as u\n",
+    "\n",
+    "from gwexpy.noise.wave import chirp, exponential, gaussian, sine\n",
+    "from gwexpy.plot import Plot\n",
+    "from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "# サンプルデータの生成 (100Hzでサンプリングされた5秒間のデータ)\n",
+    "fs = 100\n",
+    "duration = 5.0\n",
+    "# Restore 't' for compatibility with downstream cells if they use it\n",
+    "t = np.arange(0, duration, 1/fs)\n",
+    "\n",
+    "# Sensor 1: 10Hzの正弦波 + ノイズ\n",
+    "s1 = sine(duration=duration, sample_rate=fs, frequency=10, amplitude=1.0)\n",
+    "n1 = gaussian(duration=duration, sample_rate=fs, std=0.2)\n",
+    "ts1 = s1 + n1\n",
+    "ts1.name = 'Sensor 1'\n",
+    "ts1.override_unit('V')\n",
+    "\n",
+    "# Sensor 2: チャープ信号 (周波数が時間とともに変化: 5Hz -> 25Hz) + 指数関数的な増幅\n",
+    "s2 = chirp(duration=duration, sample_rate=fs, f0=5, f1=25, t1=duration)\n",
+    "env = exponential(duration=duration, sample_rate=fs, tau=2.0, decay=False, amplitude=0.2)\n",
+    "ts2 = s2 * env\n",
+    "ts2.name = 'Chirp Signal'\n",
+    "ts2.override_unit('V')\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<a id=\"signal-processing\"></a>\n",
+    "## 2. 信号処理と復調\n",
+    "\n",
+    "`gwexpy` では、ヒルベルト変換や包絡線、瞬時周波数の計算、さらにロックインアンプのような復調機能が統合されています。"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### ヒルベルト変換と包絡線\n",
+    "`hilbert` と `envelope` を使用します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:49.934542Z",
+     "iopub.status.busy": "2026-01-24T10:39:49.934127Z",
+     "iopub.status.idle": "2026-01-24T10:39:49.991789Z",
+     "shell.execute_reply": "2026-01-24T10:39:49.991061Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# 分析信号 (Analytic Signal) の計算\n",
+    "ts_analytic = ts2.hilbert()\n",
+    "# 包絡線 (Envelope) の計算\n",
+    "ts_env = ts2.envelope()\n",
+    "\n",
+    "plot = Plot(ts2, ts_env, figsize=(10, 4))\n",
+    "ax = plot.gca()\n",
+    "ax.get_lines()[0].set_label('Original (Chirp)')\n",
+    "ax.get_lines()[0].set_alpha(0.5)\n",
+    "ax.get_lines()[1].set_label('Envelope')\n",
+    "ax.get_lines()[1].set_color('red')\n",
+    "ax.get_lines()[1].set_linewidth(2)\n",
+    "ax.legend()\n",
+    "ax.set_title('Hilbert Transform and Envelope')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 瞬時位相と瞬時周波数\n",
+    "`instantaneous_phase` と `instantaneous_frequency` を使用します。位相のアンラップ (`unwrap`) や度の単位 (`deg`) も指定可能です。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:49.995379Z",
+     "iopub.status.busy": "2026-01-24T10:39:49.995263Z",
+     "iopub.status.idle": "2026-01-24T10:39:50.189708Z",
+     "shell.execute_reply": "2026-01-24T10:39:50.188286Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# 瞬時位相 (unwrap=True で位相跳びを解消)\n",
+    "phase_rad = ts2.instantaneous_phase(unwrap=True)\n",
+    "phase_deg = ts2.instantaneous_phase(deg=True, unwrap=True)\n",
+    "\n",
+    "# 瞬時周波数\n",
+    "freq = ts2.instantaneous_frequency()\n",
+    "\n",
+    "plot = Plot(phase_rad, freq, separate=True, sharex=True, figsize=(10, 6))\n",
+    "ax = plot.axes\n",
+    "ax[0].set_ylabel('Phase [rad]')\n",
+    "ax[0].set_title('Instantaneous Phase (Unwrapped)')\n",
+    "ax[1].set_ylabel('Frequency [Hz]')\n",
+    "ax[1].set_title('Instantaneous Frequency')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 混合と復調 (Mix-down, Baseband, Lock-in)\n",
+    "特定の周波数成分を抽出したり、直流成分へ落とし込むための機能です。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:50.191913Z",
+     "iopub.status.busy": "2026-01-24T10:39:50.191752Z",
+     "iopub.status.idle": "2026-01-24T10:39:50.290848Z",
+     "shell.execute_reply": "2026-01-24T10:39:50.289717Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "TimeSeries([0.92524157, 1.01052698, 0.83160748, 0.98983979,\n",
+      "            0.95640578, 0.79329431, 0.93440113, 0.84457421,\n",
+      "            0.91706051, 0.9082904 , 1.12723257, 0.91667357,\n",
+      "            1.07364718, 0.9329322 , 0.87454484, 0.89378692,\n",
+      "            1.04037195, 1.02972315, 1.03514776, 1.14641592,\n",
+      "            1.01430299, 0.96930373, 1.05442117, 0.93487983,\n",
+      "            1.0797398 , 0.95698737, 1.0973161 , 0.96421097,\n",
+      "            1.0697921 , 1.02096688, 0.90928353, 0.91870064,\n",
+      "            0.97065871, 1.00145278, 0.90385531, 0.97779889,\n",
+      "            0.90362796, 1.10402866, 0.8047971 , 1.13757768,\n",
+      "            0.87742296, 1.14622714, 1.20054564, 0.95197451,\n",
+      "            1.08100401, 1.10346222, 1.09301454, 0.9439661 ,\n",
+      "            1.13723119, 0.90875096]\n",
+      "           unit: V,\n",
+      "           t0: 0.0 s,\n",
+      "           dt: 0.1 s,\n",
+      "           name: Sensor 1,\n",
+      "           channel: None)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# 1. mix_down: 特定の周波数 f0 で複調 (複素信号になる)\n",
+    "ts_mixed = ts1.mix_down(f0=10)\n",
+    "\n",
+    "# 2. baseband: demodulation + lowpass + resampling を一括実行\n",
+    "ts_base = ts1.baseband(f0=10, lowpass=5, output_rate=20)\n",
+    "\n",
+    "# 3. lock_in: ロックイン検波 (振幅と位相を抽出)\n",
+    "amp, ph = ts1.lock_in(f0=10, stride=0.1) # 0.1秒ごとの平均を出力\n",
+    "res_complex = ts1.lock_in(f0=10, stride=0.1, output='complex') # 複素数での出力\n",
+    "\n",
+    "print(amp)\n",
+    "\n",
+    "plot = Plot(amp, ph, separate=True, sharex=True, figsize=(10, 6))\n",
+    "ax = plot.axes\n",
+    "ax[0].get_lines()[0].set_label('Amplitude')\n",
+    "ax[0].axhline(1.0, color='gray', linestyle='--', label='Theoretical (Sine amp=1)')\n",
+    "ax[0].set_ylabel('Amplitude')\n",
+    "ax[0].legend()\n",
+    "ax[1].get_lines()[0].set_color('orange')\n",
+    "ax[1].get_lines()[0].set_label('Phase [deg]')\n",
+    "ax[1].set_ylabel('Phase [deg]')\n",
+    "plot.figure.suptitle('Lock-in Amplification Result at 10Hz')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<a id=\"spectral\"></a>\n",
+    "## 3. スペクトル解析と相関\n",
+    "\n",
+    "GWpy の機能を継承しつつ、過渡信号向けの `transient` モード FFT や、FFT の直接比による伝達関数計算が追加されています。"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 拡張された FFT\n",
+    "`mode=\"transient\"` を使用すると、ゼロパディングや高速な長さへの調整、左右個別のパディング指定が可能です。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:50.316684Z",
+     "iopub.status.busy": "2026-01-24T10:39:50.316116Z",
+     "iopub.status.idle": "2026-01-24T10:39:50.336076Z",
+     "shell.execute_reply": "2026-01-24T10:39:50.335229Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# 通常の FFT (GWpy互換)\n",
+    "fs_gwpy = ts1.fft()\n",
+    "\n",
+    "# Transient モード:\n",
+    "# pad_left/right でパディング量を指定。nfft_mode=\"next_fast_len\" で計算効率の良い長さに調整。\n",
+    "fs_trans = ts1.fft(mode=\"transient\", pad_left=0.5, pad_right=0.5, nfft_mode=\"next_fast_len\")\n",
+    "\n",
+    "plot = Plot(fs_gwpy.abs(), fs_trans.abs(), yscale='log', xlim=(0, 50), figsize=(10, 4))\n",
+    "ax = plot.gca()\n",
+    "ax.get_lines()[0].set_label('Standard FFT')\n",
+    "ax.get_lines()[1].set_label('Transient FFT (Padded)')\n",
+    "ax.get_lines()[1].set_alpha(0.7)\n",
+    "ax.legend()\n",
+    "ax.set_title('Comparison of FFT modes')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 伝達関数 (Transfer Function) と相互相関 (xcorr)\n",
+    "`transfer_function` では Welch法 (`method=\"gwpy\"`) だけでなく、FFT の直接比 (`method=\"fft\"`) も選択できます。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:50.338042Z",
+     "iopub.status.busy": "2026-01-24T10:39:50.337931Z",
+     "iopub.status.idle": "2026-01-24T10:39:50.378498Z",
+     "shell.execute_reply": "2026-01-24T10:39:50.377603Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_630172/1615014204.py:3: DeprecationWarning: The 'method' parameter is deprecated. Use 'mode' instead: 'gwpy'/'csd_psd' -> mode='steady', 'fft' -> mode='transient'.\n",
+      "  tf_fft = ts2.transfer_function(ts1, method=\"fft\") # 全区間FFT比 (過渡応答解析などに有用)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# 伝達関数の計算 (Sensor 1 に対する Chirp Signal の伝達関数)\n",
+    "tf_welch = ts2.transfer_function(ts1, fftlength=1)\n",
+    "tf_fft = ts2.transfer_function(ts1, method=\"fft\") # 全区間FFT比 (過渡応答解析などに有用)\n",
+    "\n",
+    "# 相互相関 (xcorr)\n",
+    "corr = ts1.xcorr(ts2, maxlag=0.5, normalize='coeff')\n",
+    "\n",
+    "plot = Plot(figsize=(10, 6))\n",
+    "ax1 = plot.add_subplot(2, 1, 1)\n",
+    "ax1.semilogy(tf_welch.frequencies, np.abs(tf_welch), label='Welch method')\n",
+    "ax1.semilogy(tf_fft.frequencies, np.abs(tf_fft), label='Direct FFT ratio', alpha=0.5)\n",
+    "ax1.set_title('Transfer Function Magnitude')\n",
+    "ax1.legend()\n",
+    "\n",
+    "ax2 = plot.add_subplot(2, 1, 2)\n",
+    "lag = corr.times.value - corr.t0.value\n",
+    "ax2.plot(lag, corr)\n",
+    "ax2.set_title('Cross-Correlation (normalized)')\n",
+    "ax2.set_xlabel('Lag [s]')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### STLT (Short-Time Laplace Transform)\n",
+    "\n",
+    "STLT (Short-Time Laplace Transform) は、信号の時間変化に伴う局所的な構造（対称な2軸を持つ特徴量）を抽出するための変換です。\n",
+    "`gwexpy` では、このような3Dデータ (時間 x 軸1 x 軸2) を扱うために `TimePlaneTransform` クラスを提供しています。\n",
+    "\n",
+    "以下は、`stlt` メソッドを使用して STLT を計算し、特定時刻のスライス (`Plane2D`) を抽出する例です。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:50.380245Z",
+     "iopub.status.busy": "2026-01-24T10:39:50.380131Z",
+     "iopub.status.idle": "2026-01-24T10:39:50.385049Z",
+     "shell.execute_reply": "2026-01-24T10:39:50.384545Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Kind: stlt\n",
+      "Shape: (17, 1, 101) (Time x Axis1 x Axis2)\n",
+      "Time Axis: 17 steps\n",
+      "Plane at 5.0s shape: (1, 101)\n",
+      "Axis 1: sigma\n",
+      "Axis 2: frequency\n"
+     ]
+    }
+   ],
+   "source": [
+    "# データの準備 (デモ用)\n",
+    "import numpy as np\n",
+    "\n",
+    "from gwexpy.plot import Plot\n",
+    "\n",
+    "t = np.linspace(0, 10, 1000)\n",
+    "data = TimeSeries(np.sin(2 * np.pi * 1 * t), times=t*u.s, unit='V', name='Demo Data')\n",
+    "\n",
+    "# STLT の実行\n",
+    "# stride: 時間ステップ, window: 解析ウィンドウ長\n",
+    "stlt_result = data.stlt(stride='0.5s', window='2s')\n",
+    "\n",
+    "print(f\"Kind: {stlt_result.kind}\")\n",
+    "print(f\"Shape: {stlt_result.shape} (Time x Axis1 x Axis2)\")\n",
+    "print(f\"Time Axis: {len(stlt_result.times)} steps\")\n",
+    "\n",
+    "# 特定時刻 (t=5.0s) の平面を抽出\n",
+    "plane_at_5s = stlt_result.at_time(5.0 * u.s)\n",
+    "print(f\"Plane at 5.0s shape: {plane_at_5s.shape}\")\n",
+    "\n",
+    "# Plane2D としての振る舞いを確認\n",
+    "print(f\"Axis 1: {plane_at_5s.axis1.name}\")\n",
+    "print(f\"Axis 2: {plane_at_5s.axis2.name}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 4. Hilbert-Huang Transform (HHT)\n",
+    "非線形・非定常信号解析のためのヒルベルト・ファン変換 (HHT) 機能です。\n",
+    "Empirical Mode Decomposition (EMD) とヒルベルトスペクトル解析を組み合わせます。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:50.386238Z",
+     "iopub.status.busy": "2026-01-24T10:39:50.386125Z",
+     "iopub.status.idle": "2026-01-24T10:39:50.726149Z",
+     "shell.execute_reply": "2026-01-24T10:39:50.725059Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Extracted IMFs: ['IMF1', 'IMF2', 'IMF3', 'residual']\n"
+     ]
+    }
+   ],
+   "source": [
+    "# HHT (Hilbert-Huang Transform)\n",
+    "# Empirical Mode Decomposition (EMD) を実行し、IMFs (Intrinsic Mode Functions) を抽出\n",
+    "# 注意: 実行には PyEMD (EMD-signal) が必要です: `pip install EMD-signal`\n",
+    "\n",
+    "try:\n",
+    "    # EMDの実行 (戻り値は辞書)\n",
+    "    # method=\"emd\" (標準EMD) または \"eemd\" (Ensemble EMD)\n",
+    "    # ここでは ts2 (Chirp信号を含む例) を使用します\n",
+    "    imfs = ts2.emd(method=\"emd\", max_imf=3)\n",
+    "\n",
+    "    print(f\"Extracted IMFs: {list(imfs.keys())}\")\n",
+    "\n",
+    "    # IMFのプロット\n",
+    "    sorted_keys = sorted([k for k in imfs.keys() if k.startswith(\"IMF\")], key=lambda x: int(x[3:]))\n",
+    "    if \"residual\" in imfs:\n",
+    "        sorted_keys.append(\"residual\")\n",
+    "\n",
+    "    # gwexpy.plot.Plot を使用して一括プロット\n",
+    "    plot_data = [ts2] + [imfs[k] for k in sorted_keys]\n",
+    "    plot = Plot(*plot_data, separate=True, sharex=True, figsize=(10, 8))\n",
+    "\n",
+    "    # Originalの設定\n",
+    "    ax0 = plot.axes[0]\n",
+    "    ax0.get_lines()[0].set_label(\"Original\")\n",
+    "    ax0.get_lines()[0].set_color('black')\n",
+    "    ax0.legend(loc=\"upper right\")\n",
+    "    ax0.set_title(\"Empirical Mode Decomposition\")\n",
+    "\n",
+    "    # IMFsの設定\n",
+    "    for i, key in enumerate(sorted_keys):\n",
+    "        ax = plot.axes[i+1]\n",
+    "        ax.get_lines()[0].set_label(key)\n",
+    "        ax.legend(loc=\"upper right\")\n",
+    "\n",
+    "    plt.show()\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"EMD-signal not installed. Skipping HHT demo.\")\n",
+    "except Exception as e:\n",
+    "    print(f\"HHT Error: {e}\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<a id=\"stats\"></a>\n",
+    "## 5. 統計・前処理\n",
+    "\n",
+    "欠損値補完、標準化、ARIMAモデル、ハースト指数、およびローリング統計量が TimeSeries メソッドとして利用可能です。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:50.729950Z",
+     "iopub.status.busy": "2026-01-24T10:39:50.729832Z",
+     "iopub.status.idle": "2026-01-24T10:39:50.770206Z",
+     "shell.execute_reply": "2026-01-24T10:39:50.769893Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# 欠損値を含むデータのテスト\n",
+    "ts_nan = ts1.copy()\n",
+    "ts_nan.value[100:150] = np.nan\n",
+    "\n",
+    "# 1. impute: 欠損値補完 (interpolation など)\n",
+    "ts_imputed = ts_nan.impute(method='interpolate')\n",
+    "\n",
+    "# 2. standardize: 標準化 (z-score, robust など)\n",
+    "ts_z = ts1.standardize(method='zscore')\n",
+    "ts_robust = ts1.standardize(method='zscore', robust=True) # Median/IQRを使用\n",
+    "\n",
+    "plot = Plot(ts_nan, ts_imputed, figsize=(10, 4))\n",
+    "ax = plot.gca()\n",
+    "ax.get_lines()[0].set_label('with NaNs')\n",
+    "ax.get_lines()[0].set_color('red')\n",
+    "ax.get_lines()[0].set_alpha(0.3)\n",
+    "ax.get_lines()[1].set_label('Imputed')\n",
+    "ax.get_lines()[1].set_linestyle('--')\n",
+    "ax.legend()\n",
+    "ax.set_title('Missing Value Imputation')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### ピーク検出 (Find Peaks)\n",
+    "`scipy.signal.find_peaks` をラップし、時系列データからピークを検出します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:50.773906Z",
+     "iopub.status.busy": "2026-01-24T10:39:50.773785Z",
+     "iopub.status.idle": "2026-01-24T10:39:50.814450Z",
+     "shell.execute_reply": "2026-01-24T10:39:50.813589Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Found 9 peaks\n",
+      "First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,\n",
+      "            0.81881855]\n",
+      "           unit: V,\n",
+      "           t0: 0.5 s,\n",
+      "           dt: 0.5 s,\n",
+      "           name: Chirp Signal_peaks,\n",
+      "           channel: None)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# ピーク検出 (Find Peaks)\n",
+    "# height, threshold, distance, prominence, width などのパラメータを指定可能\n",
+    "# 単位付きの閾値指定も可能です\n",
+    "\n",
+    "# ts2 (Chirp + Sine) からピークを探す\n",
+    "peaks, props = ts2.find_peaks(height=0.0, distance=50)\n",
+    "\n",
+    "print(f\"Found {len(peaks)} peaks\")\n",
+    "if len(peaks) > 0:\n",
+    "    print(\"First 5 peaks:\", peaks[:5])\n",
+    "\n",
+    "# プロット\n",
+    "plot = ts2.plot(figsize=(12, 4))\n",
+    "ax = plot.gca()\n",
+    "ax.scatter(peaks.times.value, peaks.value, marker=\"x\", color=\"red\", s=100, label=\"Peaks\", zorder=10)\n",
+    "ax.legend(loc=\"upper right\")\n",
+    "ax.set_title(\"Peak Detection Result\")\n",
+    "plt.show()\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### ARIMAモデルとハースト指数\n",
+    "※ これらの機能には `statsmodels`, `hurst` 等のライブラリが必要です。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:50.817583Z",
+     "iopub.status.busy": "2026-01-24T10:39:50.817467Z",
+     "iopub.status.idle": "2026-01-24T10:39:51.004528Z",
+     "shell.execute_reply": "2026-01-24T10:39:51.003488Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hurst.\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    # 3. fit_arima: ARIMA(1,0,0) フィッティングと予測\n",
+    "    model = ts1.fit_arima(order=(1, 0, 0))\n",
+    "    resid = model.residuals()\n",
+    "    forecast, conf = model.forecast(steps=30)\n",
+    "\n",
+    "    plot = Plot(ts1.tail(100), forecast, figsize=(10, 4))\n",
+    "    ax = plot.gca()\n",
+    "    ax.get_lines()[0].set_label('Measured')\n",
+    "    ax.get_lines()[1].set_label('Forecast')\n",
+    "    ax.get_lines()[1].set_color('orange')\n",
+    "\n",
+    "    # Fill between\n",
+    "    ax.fill_between(conf['lower'].times.value, conf['lower'].value, conf['upper'].value, alpha=0.2, color='orange')\n",
+    "\n",
+    "    ax.set_title('ARIMA(1,0,0) Fit & Forecast')\n",
+    "    ax.legend()\n",
+    "    plt.show()\n",
+    "except Exception as e:\n",
+    "    print(f\"ARIMA skipping: {e}\")\n",
+    "\n",
+    "try:\n",
+    "    # 4. hurst / local_hurst: ハースト指数 (長距離相関の指標)\n",
+    "    h_val = ts1.hurst()\n",
+    "    h_detail = ts1.hurst(return_details=True) # 詳細情報付き\n",
+    "    h_local = ts1.local_hurst(window=1.0) # 1秒窓での推移\n",
+    "\n",
+    "    plot = Plot(h_local, figsize=(10, 4))\n",
+    "    ax = plot.gca()\n",
+    "    ax.get_lines()[0].set_label('Local Hurst')\n",
+    "    ax.axhline(h_val, color='red', linestyle='--', label=f'Global H={h_val:.2f}')\n",
+    "    ax.set_ylim(0, 0.2)\n",
+    "    ax.set_title('Hurst Exponent Analysis')\n",
+    "    ax.legend()\n",
+    "    plt.show()\n",
+    "except Exception as e:\n",
+    "    print(f\"Hurst skipping: {e}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### ローリング統計量 (Rolling Statistics)\n",
+    "Pandas と同様の使い勝手で、`rolling_mean`, `std`, `median`, `min`, `max` が利用できます。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:51.008467Z",
+     "iopub.status.busy": "2026-01-24T10:39:51.008165Z",
+     "iopub.status.idle": "2026-01-24T10:39:51.066563Z",
+     "shell.execute_reply": "2026-01-24T10:39:51.065357Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "rw = 0.5 * u.s # 0.5秒窓\n",
+    "rmean = ts1.rolling_mean(rw)\n",
+    "rstd = ts1.rolling_std(rw)\n",
+    "rmed = ts1.rolling_median(rw)\n",
+    "rmin = ts1.rolling_min(rw)\n",
+    "rmax = ts1.rolling_max(rw)\n",
+    "\n",
+    "plot = Plot(ts1, rmean, rmed, figsize=(10, 4))\n",
+    "ax = plot.gca()\n",
+    "ax.get_lines()[0].set_label('Original')\n",
+    "ax.get_lines()[0].set_alpha(0.3)\n",
+    "ax.get_lines()[1].set_label('Rolling Mean')\n",
+    "ax.get_lines()[1].set_color('blue')\n",
+    "ax.get_lines()[2].set_label('Rolling Median')\n",
+    "ax.get_lines()[2].set_color('green')\n",
+    "ax.get_lines()[2].set_linestyle('--')\n",
+    "ax.fill_between(rmean.times.value, rmean.value - rstd.value, rmean.value + rstd.value, alpha=0.1, color='blue')\n",
+    "ax.legend()\n",
+    "ax.set_title('Rolling Statistics (Window=0.5s)')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<a id=\"resampling\"></a>\n",
+    "## 6. リサンプリングと再インデックス\n",
+    "\n",
+    "`asfreq` メソッドによる固定グリッドへの割り当てや、`resample` メソッドでの「時間ビン集計」が可能になりました。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:51.070163Z",
+     "iopub.status.busy": "2026-01-24T10:39:51.069947Z",
+     "iopub.status.idle": "2026-01-24T10:39:51.114022Z",
+     "shell.execute_reply": "2026-01-24T10:39:51.113370Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<matplotlib.legend.Legend at 0x7d25252988f0>"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# 1. asfreq: Pandasライクな名付け規則 ('50ms' など) で再インデックス\n",
+    "ts_reindexed = ts1.asfreq('50ms', method='pad')\n",
+    "Plot(ts1, ts_reindexed)\n",
+    "plt.legend(['Original', \".asfreq('50ms', method='pad')\"])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:51.116743Z",
+     "iopub.status.busy": "2026-01-24T10:39:51.116620Z",
+     "iopub.status.idle": "2026-01-24T10:39:51.128142Z",
+     "shell.execute_reply": "2026-01-24T10:39:51.127537Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# 2. resample:\n",
+    "# 数値 (10Hz) を指定すると信号処理的なリサンプリング (GWpy標準)\n",
+    "ts_sig = ts1.resample(10)\n",
+    "# 文字列 ('200ms') を指定すると、その時間幅のビンごとの統計量をとる (新機能)\n",
+    "ts_binned = ts1.resample('200ms') # デフォルトは mean\n",
+    "\n",
+    "# Plot doesn't have a direct 'step' method equivalent in args, so we use ax.step or pass to plot\n",
+    "# However, kwarg 'drawstyle'='steps-post' works in plot()? gwpy Plot wraps matplotlib.\n",
+    "# Let's assume we can modify axes after creation or use standard plot for simplicity if appropriate, but step is specific.\n",
+    "# Better strategy: Create Plot instance, then use ax.step\n",
+    "plot = Plot(figsize=(10, 4))\n",
+    "ax = plot.gca()\n",
+    "ax.plot(ts1, alpha=0.6, label='Original (100Hz)')\n",
+    "ax.step(ts_binned.times, ts_binned.value, where='post', label='Binned Mean (200ms)', linewidth=2)\n",
+    "ax.legend()\n",
+    "ax.set_title('Resampling: Signal Resampling vs Time Binning')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 7. 関数によるフィッティング\n",
+    "\n",
+    "`gwexpy` では `iminuit` をベースとした強力なフィッティング機能を提供しています。GWpy の元のクラスを汚染しないよう、`.fit()` メソッドはオプトイン方式になっています。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:51.129416Z",
+     "iopub.status.busy": "2026-01-24T10:39:51.129307Z",
+     "iopub.status.idle": "2026-01-24T10:39:52.172403Z",
+     "shell.execute_reply": "2026-01-24T10:39:52.171608Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "┌─────────────────────────────────────────────────────────────────────────┐\n",
+      "│                                Migrad                                   │\n",
+      "├──────────────────────────────────┬──────────────────────────────────────┤\n",
+      "│ FCN = 0.0005703 (χ²/ndof = 0.0)  │              Nfcn = 324              │\n",
+      "│ EDM = 0.000176 (Goal: 0.0002)    │                                      │\n",
+      "├──────────────────────────────────┼──────────────────────────────────────┤\n",
+      "│          Valid Minimum           │   Below EDM threshold (goal x 10)    │\n",
+      "├──────────────────────────────────┼──────────────────────────────────────┤\n",
+      "│      No parameters at limit      │           Below call limit           │\n",
+      "├──────────────────────────────────┼──────────────────────────────────────┤\n",
+      "│             Hesse ok             │         Covariance accurate          │\n",
+      "└──────────────────────────────────┴──────────────────────────────────────┘\n",
+      "┌───┬──────┬───────────┬───────────┬────────────┬────────────┬─────────┬─────────┬───────┐\n",
+      "│   │ Name │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │\n",
+      "├───┼──────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤\n",
+      "│ 0 │ A    │   1.00    │   0.06    │            │            │         │         │       │\n",
+      "│ 1 │ tau  │     0     │  0.06e6   │            │            │         │         │       │\n",
+      "│ 2 │ f    │  1.0000   │  0.0025   │            │            │         │         │       │\n",
+      "│ 3 │ phi  │   -0.00   │   0.09    │            │            │         │         │       │\n",
+      "└───┴──────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘\n",
+      "┌─────┬─────────────────────────────────────────────────────┐\n",
+      "│     │            A          tau            f          phi │\n",
+      "├─────┼─────────────────────────────────────────────────────┤\n",
+      "│   A │      0.00354 -2.4033831e3         3e-6      -0.0001 │\n",
+      "│ tau │ -2.4033831e3     3.78e+09    -8.714e-3       38.287 │\n",
+      "│   f │         3e-6    -8.714e-3     6.05e-06      -190e-6 │\n",
+      "│ phi │      -0.0001       38.287      -190e-6      0.00796 │\n",
+      "└─────┴─────────────────────────────────────────────────────┘\n"
+     ]
+    }
+   ],
+   "source": [
+    "from gwexpy.fitting.models import damped_oscillation\n",
+    "\n",
+    "# 減衰振動モデルでフィット (関数を直接渡す)\n",
+    "# 初期値: A=0.5, tau=0.5, f=15, phi=0\n",
+    "result = data.fit(damped_oscillation, A=0.5, tau=0.5, f=15, phi=0)\n",
+    "\n",
+    "# 結果の表示 (iminuit形式)\n",
+    "print(result)\n",
+    "\n",
+    "# ベストフィット曲線の取得\n",
+    "#注: x_data はデータ点に対応する時間の配列です\n",
+    "x_data = data.times.value\n",
+    "best_fit = result.model(x_data)\n",
+    "\n",
+    "# プロット\n",
+    "plot = data.plot(label=\"Noisy Signal\")\n",
+    "ax = plot.gca()\n",
+    "ax.plot(data.times, best_fit, label=\"Best Fit\", color=\"red\", linestyle=\"--\")\n",
+    "ax.legend()\n",
+    "ax.set_title(\"Damped Oscillation Fit\")\n",
+    "plt.show()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<a id=\"interop\"></a>\n",
+    "## 8. 相互運用性\n",
+    "\n",
+    "主要なデータサイエンス・機械学習ライブラリとの相互変換が非常にスムーズです。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:52.174474Z",
+     "iopub.status.busy": "2026-01-24T10:39:52.174133Z",
+     "iopub.status.idle": "2026-01-24T10:39:53.207498Z",
+     "shell.execute_reply": "2026-01-24T10:39:53.206783Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Pandas interop OK\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "time_utc\n",
+       "1980-01-06 00:00:19+00:00           0.190526\n",
+       "1980-01-06 00:00:19.010000+00:00    0.732920\n",
+       "1980-01-06 00:00:19.020000+00:00    0.979314\n",
+       "1980-01-06 00:00:19.030000+00:00    0.961766\n",
+       "1980-01-06 00:00:19.040000+00:00    0.502562\n",
+       "                                      ...   \n",
+       "1980-01-06 00:00:23.950000+00:00    0.088315\n",
+       "1980-01-06 00:00:23.960000+00:00   -0.593380\n",
+       "1980-01-06 00:00:23.970000+00:00   -1.196480\n",
+       "1980-01-06 00:00:23.980000+00:00   -1.028677\n",
+       "1980-01-06 00:00:23.990000+00:00   -0.113876\n",
+       "Name: Sensor 1, Length: 500, dtype: float64"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Xarray interop OK\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div><svg style=\"position: absolute; width: 0; height: 0; overflow: hidden\">\n",
+       "<defs>\n",
+       "<symbol id=\"icon-database\" viewBox=\"0 0 32 32\">\n",
+       "<path d=\"M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z\"></path>\n",
+       "<path d=\"M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z\"></path>\n",
+       "<path d=\"M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z\"></path>\n",
+       "</symbol>\n",
+       "<symbol id=\"icon-file-text2\" viewBox=\"0 0 32 32\">\n",
+       "<path d=\"M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z\"></path>\n",
+       "<path d=\"M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z\"></path>\n",
+       "<path d=\"M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z\"></path>\n",
+       "<path d=\"M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z\"></path>\n",
+       "</symbol>\n",
+       "</defs>\n",
+       "</svg>\n",
+       "<style>/* CSS stylesheet for displaying xarray objects in notebooks */\n",
+       "\n",
+       ":root {\n",
+       "  --xr-font-color0: var(\n",
+       "    --jp-content-font-color0,\n",
+       "    var(--pst-color-text-base rgba(0, 0, 0, 1))\n",
+       "  );\n",
+       "  --xr-font-color2: var(\n",
+       "    --jp-content-font-color2,\n",
+       "    var(--pst-color-text-base, rgba(0, 0, 0, 0.54))\n",
+       "  );\n",
+       "  --xr-font-color3: var(\n",
+       "    --jp-content-font-color3,\n",
+       "    var(--pst-color-text-base, rgba(0, 0, 0, 0.38))\n",
+       "  );\n",
+       "  --xr-border-color: var(\n",
+       "    --jp-border-color2,\n",
+       "    hsl(from var(--pst-color-on-background, white) h s calc(l - 10))\n",
+       "  );\n",
+       "  --xr-disabled-color: var(\n",
+       "    --jp-layout-color3,\n",
+       "    hsl(from var(--pst-color-on-background, white) h s calc(l - 40))\n",
+       "  );\n",
+       "  --xr-background-color: var(\n",
+       "    --jp-layout-color0,\n",
+       "    var(--pst-color-on-background, white)\n",
+       "  );\n",
+       "  --xr-background-color-row-even: var(\n",
+       "    --jp-layout-color1,\n",
+       "    hsl(from var(--pst-color-on-background, white) h s calc(l - 5))\n",
+       "  );\n",
+       "  --xr-background-color-row-odd: var(\n",
+       "    --jp-layout-color2,\n",
+       "    hsl(from var(--pst-color-on-background, white) h s calc(l - 15))\n",
+       "  );\n",
+       "}\n",
+       "\n",
+       "html[theme=\"dark\"],\n",
+       "html[data-theme=\"dark\"],\n",
+       "body[data-theme=\"dark\"],\n",
+       "body.vscode-dark {\n",
+       "  --xr-font-color0: var(\n",
+       "    --jp-content-font-color0,\n",
+       "    var(--pst-color-text-base, rgba(255, 255, 255, 1))\n",
+       "  );\n",
+       "  --xr-font-color2: var(\n",
+       "    --jp-content-font-color2,\n",
+       "    var(--pst-color-text-base, rgba(255, 255, 255, 0.54))\n",
+       "  );\n",
+       "  --xr-font-color3: var(\n",
+       "    --jp-content-font-color3,\n",
+       "    var(--pst-color-text-base, rgba(255, 255, 255, 0.38))\n",
+       "  );\n",
+       "  --xr-border-color: var(\n",
+       "    --jp-border-color2,\n",
+       "    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 10))\n",
+       "  );\n",
+       "  --xr-disabled-color: var(\n",
+       "    --jp-layout-color3,\n",
+       "    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 40))\n",
+       "  );\n",
+       "  --xr-background-color: var(\n",
+       "    --jp-layout-color0,\n",
+       "    var(--pst-color-on-background, #111111)\n",
+       "  );\n",
+       "  --xr-background-color-row-even: var(\n",
+       "    --jp-layout-color1,\n",
+       "    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 5))\n",
+       "  );\n",
+       "  --xr-background-color-row-odd: var(\n",
+       "    --jp-layout-color2,\n",
+       "    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 15))\n",
+       "  );\n",
+       "}\n",
+       "\n",
+       ".xr-wrap {\n",
+       "  display: block !important;\n",
+       "  min-width: 300px;\n",
+       "  max-width: 700px;\n",
+       "  line-height: 1.6;\n",
+       "}\n",
+       "\n",
+       ".xr-text-repr-fallback {\n",
+       "  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */\n",
+       "  display: none;\n",
+       "}\n",
+       "\n",
+       ".xr-header {\n",
+       "  padding-top: 6px;\n",
+       "  padding-bottom: 6px;\n",
+       "  margin-bottom: 4px;\n",
+       "  border-bottom: solid 1px var(--xr-border-color);\n",
+       "}\n",
+       "\n",
+       ".xr-header > div,\n",
+       ".xr-header > ul {\n",
+       "  display: inline;\n",
+       "  margin-top: 0;\n",
+       "  margin-bottom: 0;\n",
+       "}\n",
+       "\n",
+       ".xr-obj-type,\n",
+       ".xr-obj-name,\n",
+       ".xr-group-name {\n",
+       "  margin-left: 2px;\n",
+       "  margin-right: 10px;\n",
+       "}\n",
+       "\n",
+       ".xr-group-name::before {\n",
+       "  content: \"📁\";\n",
+       "  padding-right: 0.3em;\n",
+       "}\n",
+       "\n",
+       ".xr-group-name,\n",
+       ".xr-obj-type {\n",
+       "  color: var(--xr-font-color2);\n",
+       "}\n",
+       "\n",
+       ".xr-sections {\n",
+       "  padding-left: 0 !important;\n",
+       "  display: grid;\n",
+       "  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;\n",
+       "  margin-block-start: 0;\n",
+       "  margin-block-end: 0;\n",
+       "}\n",
+       "\n",
+       ".xr-section-item {\n",
+       "  display: contents;\n",
+       "}\n",
+       "\n",
+       ".xr-section-item input {\n",
+       "  display: inline-block;\n",
+       "  opacity: 0;\n",
+       "  height: 0;\n",
+       "  margin: 0;\n",
+       "}\n",
+       "\n",
+       ".xr-section-item input + label {\n",
+       "  color: var(--xr-disabled-color);\n",
+       "  border: 2px solid transparent !important;\n",
+       "}\n",
+       "\n",
+       ".xr-section-item input:enabled + label {\n",
+       "  cursor: pointer;\n",
+       "  color: var(--xr-font-color2);\n",
+       "}\n",
+       "\n",
+       ".xr-section-item input:focus + label {\n",
+       "  border: 2px solid var(--xr-font-color0) !important;\n",
+       "}\n",
+       "\n",
+       ".xr-section-item input:enabled + label:hover {\n",
+       "  color: var(--xr-font-color0);\n",
+       "}\n",
+       "\n",
+       ".xr-section-summary {\n",
+       "  grid-column: 1;\n",
+       "  color: var(--xr-font-color2);\n",
+       "  font-weight: 500;\n",
+       "}\n",
+       "\n",
+       ".xr-section-summary > span {\n",
+       "  display: inline-block;\n",
+       "  padding-left: 0.5em;\n",
+       "}\n",
+       "\n",
+       ".xr-section-summary-in:disabled + label {\n",
+       "  color: var(--xr-font-color2);\n",
+       "}\n",
+       "\n",
+       ".xr-section-summary-in + label:before {\n",
+       "  display: inline-block;\n",
+       "  content: \"►\";\n",
+       "  font-size: 11px;\n",
+       "  width: 15px;\n",
+       "  text-align: center;\n",
+       "}\n",
+       "\n",
+       ".xr-section-summary-in:disabled + label:before {\n",
+       "  color: var(--xr-disabled-color);\n",
+       "}\n",
+       "\n",
+       ".xr-section-summary-in:checked + label:before {\n",
+       "  content: \"▼\";\n",
+       "}\n",
+       "\n",
+       ".xr-section-summary-in:checked + label > span {\n",
+       "  display: none;\n",
+       "}\n",
+       "\n",
+       ".xr-section-summary,\n",
+       ".xr-section-inline-details {\n",
+       "  padding-top: 4px;\n",
+       "}\n",
+       "\n",
+       ".xr-section-inline-details {\n",
+       "  grid-column: 2 / -1;\n",
+       "}\n",
+       "\n",
+       ".xr-section-details {\n",
+       "  display: none;\n",
+       "  grid-column: 1 / -1;\n",
+       "  margin-top: 4px;\n",
+       "  margin-bottom: 5px;\n",
+       "}\n",
+       "\n",
+       ".xr-section-summary-in:checked ~ .xr-section-details {\n",
+       "  display: contents;\n",
+       "}\n",
+       "\n",
+       ".xr-group-box {\n",
+       "  display: inline-grid;\n",
+       "  grid-template-columns: 0px 20px auto;\n",
+       "  width: 100%;\n",
+       "}\n",
+       "\n",
+       ".xr-group-box-vline {\n",
+       "  grid-column-start: 1;\n",
+       "  border-right: 0.2em solid;\n",
+       "  border-color: var(--xr-border-color);\n",
+       "  width: 0px;\n",
+       "}\n",
+       "\n",
+       ".xr-group-box-hline {\n",
+       "  grid-column-start: 2;\n",
+       "  grid-row-start: 1;\n",
+       "  height: 1em;\n",
+       "  width: 20px;\n",
+       "  border-bottom: 0.2em solid;\n",
+       "  border-color: var(--xr-border-color);\n",
+       "}\n",
+       "\n",
+       ".xr-group-box-contents {\n",
+       "  grid-column-start: 3;\n",
+       "}\n",
+       "\n",
+       ".xr-array-wrap {\n",
+       "  grid-column: 1 / -1;\n",
+       "  display: grid;\n",
+       "  grid-template-columns: 20px auto;\n",
+       "}\n",
+       "\n",
+       ".xr-array-wrap > label {\n",
+       "  grid-column: 1;\n",
+       "  vertical-align: top;\n",
+       "}\n",
+       "\n",
+       ".xr-preview {\n",
+       "  color: var(--xr-font-color3);\n",
+       "}\n",
+       "\n",
+       ".xr-array-preview,\n",
+       ".xr-array-data {\n",
+       "  padding: 0 5px !important;\n",
+       "  grid-column: 2;\n",
+       "}\n",
+       "\n",
+       ".xr-array-data,\n",
+       ".xr-array-in:checked ~ .xr-array-preview {\n",
+       "  display: none;\n",
+       "}\n",
+       "\n",
+       ".xr-array-in:checked ~ .xr-array-data,\n",
+       ".xr-array-preview {\n",
+       "  display: inline-block;\n",
+       "}\n",
+       "\n",
+       ".xr-dim-list {\n",
+       "  display: inline-block !important;\n",
+       "  list-style: none;\n",
+       "  padding: 0 !important;\n",
+       "  margin: 0;\n",
+       "}\n",
+       "\n",
+       ".xr-dim-list li {\n",
+       "  display: inline-block;\n",
+       "  padding: 0;\n",
+       "  margin: 0;\n",
+       "}\n",
+       "\n",
+       ".xr-dim-list:before {\n",
+       "  content: \"(\";\n",
+       "}\n",
+       "\n",
+       ".xr-dim-list:after {\n",
+       "  content: \")\";\n",
+       "}\n",
+       "\n",
+       ".xr-dim-list li:not(:last-child):after {\n",
+       "  content: \",\";\n",
+       "  padding-right: 5px;\n",
+       "}\n",
+       "\n",
+       ".xr-has-index {\n",
+       "  font-weight: bold;\n",
+       "}\n",
+       "\n",
+       ".xr-var-list,\n",
+       ".xr-var-item {\n",
+       "  display: contents;\n",
+       "}\n",
+       "\n",
+       ".xr-var-item > div,\n",
+       ".xr-var-item label,\n",
+       ".xr-var-item > .xr-var-name span {\n",
+       "  background-color: var(--xr-background-color-row-even);\n",
+       "  border-color: var(--xr-background-color-row-odd);\n",
+       "  margin-bottom: 0;\n",
+       "  padding-top: 2px;\n",
+       "}\n",
+       "\n",
+       ".xr-var-item > .xr-var-name:hover span {\n",
+       "  padding-right: 5px;\n",
+       "}\n",
+       "\n",
+       ".xr-var-list > li:nth-child(odd) > div,\n",
+       ".xr-var-list > li:nth-child(odd) > label,\n",
+       ".xr-var-list > li:nth-child(odd) > .xr-var-name span {\n",
+       "  background-color: var(--xr-background-color-row-odd);\n",
+       "  border-color: var(--xr-background-color-row-even);\n",
+       "}\n",
+       "\n",
+       ".xr-var-name {\n",
+       "  grid-column: 1;\n",
+       "}\n",
+       "\n",
+       ".xr-var-dims {\n",
+       "  grid-column: 2;\n",
+       "}\n",
+       "\n",
+       ".xr-var-dtype {\n",
+       "  grid-column: 3;\n",
+       "  text-align: right;\n",
+       "  color: var(--xr-font-color2);\n",
+       "}\n",
+       "\n",
+       ".xr-var-preview {\n",
+       "  grid-column: 4;\n",
+       "}\n",
+       "\n",
+       ".xr-index-preview {\n",
+       "  grid-column: 2 / 5;\n",
+       "  color: var(--xr-font-color2);\n",
+       "}\n",
+       "\n",
+       ".xr-var-name,\n",
+       ".xr-var-dims,\n",
+       ".xr-var-dtype,\n",
+       ".xr-preview,\n",
+       ".xr-attrs dt {\n",
+       "  white-space: nowrap;\n",
+       "  overflow: hidden;\n",
+       "  text-overflow: ellipsis;\n",
+       "  padding-right: 10px;\n",
+       "}\n",
+       "\n",
+       ".xr-var-name:hover,\n",
+       ".xr-var-dims:hover,\n",
+       ".xr-var-dtype:hover,\n",
+       ".xr-attrs dt:hover {\n",
+       "  overflow: visible;\n",
+       "  width: auto;\n",
+       "  z-index: 1;\n",
+       "}\n",
+       "\n",
+       ".xr-var-attrs,\n",
+       ".xr-var-data,\n",
+       ".xr-index-data {\n",
+       "  display: none;\n",
+       "  border-top: 2px dotted var(--xr-background-color);\n",
+       "  padding-bottom: 20px !important;\n",
+       "  padding-top: 10px !important;\n",
+       "}\n",
+       "\n",
+       ".xr-var-attrs-in + label,\n",
+       ".xr-var-data-in + label,\n",
+       ".xr-index-data-in + label {\n",
+       "  padding: 0 1px;\n",
+       "}\n",
+       "\n",
+       ".xr-var-attrs-in:checked ~ .xr-var-attrs,\n",
+       ".xr-var-data-in:checked ~ .xr-var-data,\n",
+       ".xr-index-data-in:checked ~ .xr-index-data {\n",
+       "  display: block;\n",
+       "}\n",
+       "\n",
+       ".xr-var-data > table {\n",
+       "  float: right;\n",
+       "}\n",
+       "\n",
+       ".xr-var-data > pre,\n",
+       ".xr-index-data > pre,\n",
+       ".xr-var-data > table > tbody > tr {\n",
+       "  background-color: transparent !important;\n",
+       "}\n",
+       "\n",
+       ".xr-var-name span,\n",
+       ".xr-var-data,\n",
+       ".xr-index-name div,\n",
+       ".xr-index-data,\n",
+       ".xr-attrs {\n",
+       "  padding-left: 25px !important;\n",
+       "}\n",
+       "\n",
+       ".xr-attrs,\n",
+       ".xr-var-attrs,\n",
+       ".xr-var-data,\n",
+       ".xr-index-data {\n",
+       "  grid-column: 1 / -1;\n",
+       "}\n",
+       "\n",
+       "dl.xr-attrs {\n",
+       "  padding: 0;\n",
+       "  margin: 0;\n",
+       "  display: grid;\n",
+       "  grid-template-columns: 125px auto;\n",
+       "}\n",
+       "\n",
+       ".xr-attrs dt,\n",
+       ".xr-attrs dd {\n",
+       "  padding: 0;\n",
+       "  margin: 0;\n",
+       "  float: left;\n",
+       "  padding-right: 10px;\n",
+       "  width: auto;\n",
+       "}\n",
+       "\n",
+       ".xr-attrs dt {\n",
+       "  font-weight: normal;\n",
+       "  grid-column: 1;\n",
+       "}\n",
+       "\n",
+       ".xr-attrs dt:hover span {\n",
+       "  display: inline-block;\n",
+       "  background: var(--xr-background-color);\n",
+       "  padding-right: 10px;\n",
+       "}\n",
+       "\n",
+       ".xr-attrs dd {\n",
+       "  grid-column: 2;\n",
+       "  white-space: pre-wrap;\n",
+       "  word-break: break-all;\n",
+       "}\n",
+       "\n",
+       ".xr-icon-database,\n",
+       ".xr-icon-file-text2,\n",
+       ".xr-no-icon {\n",
+       "  display: inline-block;\n",
+       "  vertical-align: middle;\n",
+       "  width: 1em;\n",
+       "  height: 1.5em !important;\n",
+       "  stroke-width: 0;\n",
+       "  stroke: currentColor;\n",
+       "  fill: currentColor;\n",
+       "}\n",
+       "\n",
+       ".xr-var-attrs-in:checked + label > .xr-icon-file-text2,\n",
+       ".xr-var-data-in:checked + label > .xr-icon-database,\n",
+       ".xr-index-data-in:checked + label > .xr-icon-database {\n",
+       "  color: var(--xr-font-color0);\n",
+       "  filter: drop-shadow(1px 1px 5px var(--xr-font-color2));\n",
+       "  stroke-width: 0.8px;\n",
+       "}\n",
+       "</style><pre class='xr-text-repr-fallback'>&lt;xarray.DataArray &#x27;Sensor 1&#x27; (time: 500)&gt; Size: 4kB\n",
+       "array([ 0.19052648,  0.73291964,  0.97931413, ..., -1.19648019,\n",
+       "       -1.02867735, -0.11387553], shape=(500,))\n",
+       "Coordinates:\n",
+       "  * time     (time) datetime64[ns] 4kB 1980-01-06T00:00:19 ... 1980-01-06T00:...\n",
+       "Attributes:\n",
+       "    unit:        V\n",
+       "    name:        Sensor 1\n",
+       "    channel:     None\n",
+       "    epoch:       0.0\n",
+       "    time_coord:  datetime</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-obj-name'>&#x27;Sensor 1&#x27;</div><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 500</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-93a27cb0-d407-43f0-8871-c573dc5bc83e' class='xr-array-in' type='checkbox' checked><label for='section-93a27cb0-d407-43f0-8871-c573dc5bc83e' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>0.1905 0.7329 0.9793 0.9618 0.5026 ... -0.5934 -1.196 -1.029 -0.1139</span></div><div class='xr-array-data'><pre>array([ 0.19052648,  0.73291964,  0.97931413, ..., -1.19648019,\n",
+       "       -1.02867735, -0.11387553], shape=(500,))</pre></div></div></li><li class='xr-section-item'><input id='section-8ad8e6fb-1371-4ed3-b2b0-8378e6f1abae' class='xr-section-summary-in' type='checkbox'  checked><label for='section-8ad8e6fb-1371-4ed3-b2b0-8378e6f1abae' class='xr-section-summary' >Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>1980-01-06T00:00:19 ... 1980-01-...</div><input id='attrs-03e78055-bd42-4dd0-8872-572aba7f1864' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-03e78055-bd42-4dd0-8872-572aba7f1864' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-86db866a-7c3f-4972-8e33-26ae1ad5f3db' class='xr-var-data-in' type='checkbox'><label for='data-86db866a-7c3f-4972-8e33-26ae1ad5f3db' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;1980-01-06T00:00:19.000000000&#x27;, &#x27;1980-01-06T00:00:19.010000000&#x27;,\n",
+       "       &#x27;1980-01-06T00:00:19.020000000&#x27;, ..., &#x27;1980-01-06T00:00:23.970000000&#x27;,\n",
+       "       &#x27;1980-01-06T00:00:23.980000000&#x27;, &#x27;1980-01-06T00:00:23.990000000&#x27;],\n",
+       "      shape=(500,), dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-7b696fed-87ca-4d8c-9be0-061a9ab3bf66' class='xr-section-summary-in' type='checkbox'  checked><label for='section-7b696fed-87ca-4d8c-9be0-061a9ab3bf66' class='xr-section-summary' >Attributes: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>unit :</span></dt><dd>V</dd><dt><span>name :</span></dt><dd>Sensor 1</dd><dt><span>channel :</span></dt><dd>None</dd><dt><span>epoch :</span></dt><dd>0.0</dd><dt><span>time_coord :</span></dt><dd>datetime</dd></dl></div></li></ul></div></div>"
+      ],
+      "text/plain": [
+       "<xarray.DataArray 'Sensor 1' (time: 500)> Size: 4kB\n",
+       "array([ 0.19052648,  0.73291964,  0.97931413, ..., -1.19648019,\n",
+       "       -1.02867735, -0.11387553], shape=(500,))\n",
+       "Coordinates:\n",
+       "  * time     (time) datetime64[ns] 4kB 1980-01-06T00:00:19 ... 1980-01-06T00:...\n",
+       "Attributes:\n",
+       "    unit:        V\n",
+       "    name:        Sensor 1\n",
+       "    channel:     None\n",
+       "    epoch:       0.0\n",
+       "    time_coord:  datetime"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "# Pandas & Xarray\n",
+    "try:\n",
+    "    df = ts1.to_pandas(index='datetime')\n",
+    "    ts_p = TimeSeries.from_pandas(df)\n",
+    "    print(\"Pandas interop OK\")\n",
+    "    display(df)\n",
+    "except ImportError: pass\n",
+    "\n",
+    "try:\n",
+    "    xr = ts1.to_xarray()\n",
+    "    ts_xr = TimeSeries.from_xarray(xr)\n",
+    "    print(\"Xarray interop OK\")\n",
+    "    display(xr)\n",
+    "except ImportError: pass\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:53.210067Z",
+     "iopub.status.busy": "2026-01-24T10:39:53.209563Z",
+     "iopub.status.idle": "2026-01-24T10:39:53.214392Z",
+     "shell.execute_reply": "2026-01-24T10:39:53.213960Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "SQLite interop OK: my_sensor\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "<sqlite3.Connection at 0x7d252240d3f0>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "# SQLite (シリアライズ保存)\n",
+    "import sqlite3\n",
+    "\n",
+    "with sqlite3.connect(':memory:') as conn:\n",
+    "    ts1.to_sqlite(conn, series_id='my_sensor')\n",
+    "    ts_sql = TimeSeries.from_sqlite(conn, series_id='my_sensor')\n",
+    "    print(f\"SQLite interop OK: {ts_sql.name}\")\n",
+    "    display(conn)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:53.215361Z",
+     "iopub.status.busy": "2026-01-24T10:39:53.215251Z",
+     "iopub.status.idle": "2026-01-24T10:39:54.304498Z",
+     "shell.execute_reply": "2026-01-24T10:39:54.303740Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Torch interop OK (Shape: torch.Size([500]))\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "tensor([ 0.1905,  0.7329,  0.9793,  0.9618,  0.5026,  0.0244, -0.4995, -0.8560,\n",
+       "        -0.7438, -0.3590,  0.4315,  0.6017,  1.0938,  0.7687,  0.3538,  0.0386,\n",
+       "        -0.8166, -0.8610, -0.8587, -0.9734, -0.1436,  0.3413,  0.7748,  1.1392,\n",
+       "         0.1909, -0.3266, -0.6395, -0.8075, -0.8033, -0.1222,  0.0228,  0.8790,\n",
+       "         0.7133,  0.9384,  0.6695,  0.0867, -0.3568, -1.0443, -1.0986, -0.3750,\n",
+       "         0.2303,  0.6101,  0.8253,  0.9267,  0.4136,  0.2456, -0.2674, -1.0176,\n",
+       "        -1.0024, -0.7297, -0.0138,  0.7099,  0.7525,  0.5676,  0.4623, -0.0314,\n",
+       "        -0.4306, -0.7861, -0.5783, -0.8013,  0.2947,  0.6470,  0.8219,  0.6098,\n",
+       "         0.3509,  0.1578, -0.6743, -0.7666, -1.2158, -0.7408, -0.2626,  0.5047,\n",
+       "         0.9111,  0.6116,  0.2607,  0.0253, -0.5166, -1.0319, -0.7572, -0.5431,\n",
+       "         0.1488,  0.9121,  0.6946,  0.7006,  0.4431, -0.4669, -0.4097, -0.6911,\n",
+       "        -1.1765, -0.6849,  0.0202,  0.5990,  1.0132,  0.9151,  0.2516,  0.3339,\n",
+       "        -0.6578, -1.1198, -0.6040, -0.2667, -0.1820,  0.7744,  1.0903,  0.9737,\n",
+       "         0.3262,  0.1236, -0.5618, -1.1516, -1.3324, -0.5676, -0.0402,  0.6717,\n",
+       "         0.9823,  0.9753,  0.6101, -0.2415, -0.1749, -0.7757, -0.8379, -0.5616,\n",
+       "         0.1514,  0.5077,  1.1837,  1.2967,  0.3213, -0.0080, -0.7843, -0.6808,\n",
+       "        -1.0089, -0.7667,  0.1054,  0.7368,  1.4505,  0.7870,  0.7341, -0.0828,\n",
+       "        -0.2921, -0.7015, -0.6796, -0.2877, -0.2846,  0.0850,  0.6040,  1.1167,\n",
+       "         0.6196, -0.3299, -0.4656, -1.0164, -0.5917, -0.7929, -0.1988,  0.3757,\n",
+       "         0.6553,  1.2722,  0.1200,  0.2373, -0.4554, -1.1798, -0.8172, -0.2958,\n",
+       "        -0.2077,  0.9983,  1.1805,  0.6141,  0.4327, -0.0893, -0.5278, -0.9613,\n",
+       "        -1.1692, -0.5041,  0.3527,  0.3136,  0.9442,  1.0654,  0.5116, -0.0534,\n",
+       "        -0.5513, -1.1269, -0.8119, -0.9939,  0.1736,  0.5066,  0.9393,  0.9602,\n",
+       "         0.9432,  0.3053, -0.1955, -1.0853, -0.9649, -0.6563, -0.0275,  0.7940,\n",
+       "         1.0140,  0.9628,  0.7278,  0.2402, -1.0622, -1.0274, -0.9813, -0.7180,\n",
+       "         0.2431,  0.6586,  0.8939,  1.0253,  0.8666,  0.1301, -0.6098, -1.0942,\n",
+       "        -0.6147, -0.6223,  0.1680,  0.6174,  0.8952,  1.1663,  0.7144,  0.2318,\n",
+       "        -0.5425, -0.8878, -0.6878, -0.4838,  0.0585,  0.7562,  0.7454,  0.8428,\n",
+       "         0.4793, -0.3720, -0.9850, -1.2112, -0.8787, -0.6302,  0.0051,  0.4064,\n",
+       "         0.8870,  1.0309,  0.6433, -0.0843, -0.4419, -0.8690, -0.9561, -0.4010,\n",
+       "         0.0067,  0.6499,  0.8846,  0.8902,  0.4670,  0.3570, -0.8314, -1.1255,\n",
+       "        -1.1806, -0.6328, -0.2017,  0.6886,  1.0208,  0.6508,  0.4106, -0.3329,\n",
+       "        -0.2436, -1.3443, -0.7384, -0.7092,  0.0743,  0.7966,  0.8504,  1.1761,\n",
+       "         0.5966,  0.1081, -1.0323, -0.7844, -0.9910, -0.7517,  0.0147,  0.8215,\n",
+       "         0.7940,  0.9298,  0.6611,  0.1741, -0.6265, -0.8367, -0.8561, -0.5647,\n",
+       "         0.0420,  0.6063,  1.1047,  1.1705,  0.2104,  0.1224, -0.3654, -1.2463,\n",
+       "        -0.8066, -0.9138,  0.0252,  0.6926,  0.9656,  0.8138,  0.6851, -0.1244,\n",
+       "        -0.7145, -0.8575, -1.0076, -0.6907,  0.1305,  0.2925,  0.8806,  0.9497,\n",
+       "         0.4198, -0.2112, -0.6977, -0.5631, -1.1251, -0.6300, -0.1129,  0.7409,\n",
+       "         0.8496,  0.8911,  0.2197, -0.1900, -0.3427, -1.0239, -0.7354, -0.8431,\n",
+       "         0.1070,  0.5750,  1.2883,  0.8621,  0.5807,  0.1797, -0.4733, -0.7080,\n",
+       "        -0.9078, -0.5335, -0.0614,  0.5946,  0.8217,  0.4674,  0.7632, -0.2013,\n",
+       "        -0.8960, -1.0139, -1.3107, -0.3859,  0.2382,  0.3953,  1.1599,  0.6536,\n",
+       "         0.4621,  0.0563, -0.5534, -0.8824, -0.8004, -0.6074,  0.0595,  0.6459,\n",
+       "         0.4319,  1.0616,  0.8265, -0.0155, -0.6915, -0.9645, -1.0073, -0.5425,\n",
+       "        -0.3182,  0.6860,  0.7517,  0.8432,  0.8116,  0.0440, -0.4349, -0.7030,\n",
+       "        -0.8956, -0.5152, -0.1423,  0.7590,  1.1949,  0.9858,  0.8090,  0.0981,\n",
+       "        -0.8040, -0.7529, -1.3291, -0.1183,  0.2462,  0.4238,  0.6920,  0.8973,\n",
+       "         0.5951, -0.0240, -0.4416, -0.4632, -0.8700, -0.6463, -0.0096,  0.2997,\n",
+       "         1.0180,  1.2423,  0.6042,  0.1004, -0.6425, -1.1238, -1.3446, -0.4613,\n",
+       "         0.0183,  0.3581,  0.8251,  0.6823,  0.3876, -0.1193, -0.4092, -1.0795,\n",
+       "        -0.8553, -0.7390,  0.0473,  0.4333,  1.1707,  0.9948,  0.4612, -0.0654,\n",
+       "        -0.8986, -1.1182, -1.1233, -0.8203,  0.5007,  0.8618,  1.0352,  1.0775,\n",
+       "         0.7382, -0.0597, -0.8371, -0.9680, -1.2206, -0.7588,  0.0573,  0.4905,\n",
+       "         0.6810,  1.2072,  0.5353, -0.0653, -0.3932, -1.1532, -0.8820, -0.3302,\n",
+       "         0.0597,  0.5650,  1.1196,  1.4067,  0.7303, -0.1360, -0.7323, -0.7522,\n",
+       "        -0.9173, -0.3718, -0.5271,  0.7145,  0.8646,  1.0041,  0.7495,  0.1661,\n",
+       "        -0.7615, -1.2943, -0.7821, -0.7262, -0.0251,  0.7557,  0.6954,  1.0826,\n",
+       "         0.3674, -0.0193, -0.5339, -1.2800, -1.2813, -0.6173, -0.0832,  0.5626,\n",
+       "         0.7382,  0.6195,  0.5574,  0.0312, -0.7956, -1.2285, -0.6701, -0.8449,\n",
+       "         0.1312,  0.4278,  1.1099,  1.2109,  0.5567, -0.2307, -0.6997, -1.1786,\n",
+       "        -1.0053, -0.6884, -0.2356,  0.4418,  0.7369,  0.8388,  0.4297,  0.0883,\n",
+       "        -0.5934, -1.1965, -1.0287, -0.1139], dtype=torch.float64)"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "# Deep Learning (Torch)\n",
+    "try:\n",
+    "    import torch\n",
+    "    _ = torch\n",
+    "    t_torch = ts1.to_torch()\n",
+    "    ts_f_torch = TimeSeries.from_torch(t_torch, t0=ts1.t0, dt=ts1.dt)\n",
+    "    print(f\"Torch interop OK (Shape: {t_torch.shape})\")\n",
+    "    display(t_torch)\n",
+    "except ImportError: pass\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:54.308532Z",
+     "iopub.status.busy": "2026-01-24T10:39:54.307991Z",
+     "iopub.status.idle": "2026-01-24T10:39:56.092798Z",
+     "shell.execute_reply": "2026-01-24T10:39:56.092033Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "2026-01-24 19:39:54.474875: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.\n",
+      "2026-01-24 19:39:54.517087: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.\n",
+      "To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX512_FP16 AVX_VNNI AMX_TILE AMX_INT8 AMX_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/attr_value.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/tensor.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/resource_handle.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/tensor_shape.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/types.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/full_type.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/function.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/node_def.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/op_def.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/graph.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/graph_debug_info.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/versions.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/protobuf/config.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at xla/tsl/protobuf/coordination_config.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/cost_graph.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/step_stats.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/allocation_description.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/tensor_description.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/protobuf/cluster.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/protobuf/debug.proto. Please update the gencode to avoid compatibility violations in the next runtime release.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "TensorFlow interop OK\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n",
+      "I0000 00:00:1769251196.001198  630172 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5943 MB memory:  -> device: 0, name: NVIDIA RTX A1000, pci bus id: 0000:55:00.0, compute capability: 8.6\n",
+      "I0000 00:00:1769251196.001818  630172 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 3735 MB memory:  -> device: 1, name: Quadro P2000, pci bus id: 0000:a2:00.0, compute capability: 6.1\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "<tf.Tensor: shape=(500,), dtype=float64, numpy=\n",
+       "array([ 0.19052648,  0.73291964,  0.97931413, ..., -1.19648019,\n",
+       "       -1.02867735, -0.11387553], shape=(500,))>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "# Deep Learning (TensorFlow)\n",
+    "try:\n",
+    "    import tensorflow as tf\n",
+    "    _ = tf\n",
+    "    t_tf = ts1.to_tensorflow()\n",
+    "    ts_f_tf = TimeSeries.from_tensorflow(t_tf, t0=ts1.t0, dt=ts1.dt)\n",
+    "    print(\"TensorFlow interop OK\")\n",
+    "    display(t_tf)\n",
+    "except ImportError: pass\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:39:56.095036Z",
+     "iopub.status.busy": "2026-01-24T10:39:56.094349Z",
+     "iopub.status.idle": "2026-01-24T10:39:56.113268Z",
+     "shell.execute_reply": "2026-01-24T10:39:56.112554Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ObsPy interop OK: .Sensor 1..\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       ".Sensor 1.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:04.990000Z | 100.0 Hz, 500 samples"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "# ObsPy (地震波形・時系列解析)\n",
+    "try:\n",
+    "    import obspy\n",
+    "    _ = obspy\n",
+    "    tr = ts1.to_obspy()\n",
+    "    ts_f_obspy = TimeSeries.from_obspy(tr)\n",
+    "    print(f\"ObsPy interop OK: {tr.id}\")\n",
+    "    display(tr)\n",
+    "except ImportError: pass\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### まとめ\n",
+    "\n",
+    "`gwexpy` の `TimeSeries` クラスは、従来の GWpy の使い勝手はそのままに、より現代的で広範な分析ニーズに応える機能を備えています。\n",
+    "是非、皆さんのプロジェクトで活用してください！"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "base",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

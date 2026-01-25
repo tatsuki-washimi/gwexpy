@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Index &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
@@ -15,6 +15,7 @@
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -49,10 +50,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/en/index.html">Detailed Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/ja/index.html">詳細リファレンス</a></li>
 </ul>
 
         </div>
@@ -148,23 +146,19 @@
 </li>
       <li><a href="reference/api/types.html#gwexpy.types.Array3D">Array3D (class in gwexpy.types)</a>
 </li>
+      <li><a href="reference/api/types.html#gwexpy.types.Array4D">Array4D (class in gwexpy.types)</a>
+</li>
       <li><a href="reference/api/types.html#gwexpy.types.MetaData.as_meta">as_meta() (gwexpy.types.MetaData method)</a>
 </li>
-      <li><a href="reference/api/types.html#gwexpy.types.as_series">as_series() (in module gwexpy.types)</a>
-</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.asd">asd() (gwexpy.timeseries.TimeSeriesDict method)</a>
 
       <ul>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.asd">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.asfreq">asfreq() (gwexpy.timeseries.TimeSeriesDict method)</a>
-</li>
-      <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.at_sigma">at_sigma() (gwexpy.types.TimePlaneTransform method)</a>
-</li>
-      <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.at_time">at_time() (gwexpy.types.TimePlaneTransform method)</a>
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.auto_coherence">auto_coherence() (gwexpy.timeseries.TimeSeriesMatrix method)</a>
 </li>
@@ -181,25 +175,19 @@
 </li>
         <li><a href="reference/api/types.html#gwexpy.types.Array3D.axes">(gwexpy.types.Array3D property)</a>
 </li>
-        <li><a href="reference/api/types.html#gwexpy.types.AxisApiMixin.axes">(gwexpy.types.AxisApiMixin property)</a>
+        <li><a href="reference/api/types.html#gwexpy.types.Array4D.axes">(gwexpy.types.Array4D property)</a>
 </li>
-        <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.axes">(gwexpy.types.TimePlaneTransform property)</a>
+        <li><a href="reference/api/types.html#gwexpy.types.AxisApiMixin.axes">(gwexpy.types.AxisApiMixin property)</a>
 </li>
       </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisApiMixin.axis">axis() (gwexpy.types.AxisApiMixin method)</a>
 </li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.axis0_domain">axis0_domain (gwexpy.fields.ScalarField attribute)</a>
+</li>
       <li><a href="reference/api/types.html#gwexpy.types.Plane2D.axis1">axis1 (gwexpy.types.Plane2D property)</a>
-
-      <ul>
-        <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.axis1">(gwexpy.types.TimePlaneTransform property)</a>
 </li>
-      </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.Plane2D.axis2">axis2 (gwexpy.types.Plane2D property)</a>
-
-      <ul>
-        <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.axis2">(gwexpy.types.TimePlaneTransform property)</a>
 </li>
-      </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisApiMixin.axis_names">axis_names (gwexpy.types.AxisApiMixin property)</a>
 </li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisApiMixin">AxisApiMixin (class in gwexpy.types)</a>
@@ -245,7 +233,11 @@
       <li><a href="reference/api/spectral.html#gwexpy.spectral.calculate_correlation_factor">calculate_correlation_factor() (in module gwexpy.spectral)</a>
 </li>
       <li><a href="reference/api/types.html#gwexpy.types.MetaData.channel">channel (gwexpy.types.MetaData property)</a>
+
+      <ul>
+        <li><a href="reference/api/types.html#gwexpy.types.MetaDataLike.channel">(gwexpy.types.MetaDataLike attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.MetaDataDict.channels">channels (gwexpy.types.MetaDataDict property)</a>
 
       <ul>
@@ -264,14 +256,18 @@
       </ul></li>
       <li><a href="reference/api/noise.html#gwexpy.noise.wave.chirp">chirp() (in module gwexpy.noise.wave)</a>
 </li>
-      <li><a href="reference/api/types.html#gwexpy.types.coerce_1d_quantity">coerce_1d_quantity() (in module gwexpy.types)</a>
-</li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.coherence">coherence() (gwexpy.timeseries.TimeSeriesDict method)</a>
 
       <ul>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.coherence">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.coherence">(gwexpy.timeseries.TimeSeriesMatrix method)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.coherence_map">coherence_map() (gwexpy.fields.ScalarField method)</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.coherence_map">(in module gwexpy.fields)</a>
 </li>
       </ul></li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.coherence_matrix">coherence_matrix() (gwexpy.timeseries.TimeSeriesDict method)</a>
@@ -288,13 +284,33 @@
 </li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.coupling.CouplingFunctionAnalysis.compute">compute() (gwexpy.analysis.coupling.CouplingFunctionAnalysis method)</a>
 </li>
-      <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.convolute">convolute() (gwexpy.frequencyseries.BifrequencyMap method)</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.compute_freq_space">compute_freq_space() (in module gwexpy.fields)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.copy">copy() (gwexpy.frequencyseries.FrequencySeriesBaseDict method)</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.compute_psd">compute_psd() (gwexpy.fields.ScalarField method)</a>
 
       <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.compute_psd">(in module gwexpy.fields)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.compute_xcorr">compute_xcorr() (gwexpy.fields.ScalarField method)</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.compute_xcorr">(in module gwexpy.fields)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.convolute">convolute() (gwexpy.frequencyseries.BifrequencyMap method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.FieldDict.copy">copy() (gwexpy.fields.FieldDict method)</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.copy">(gwexpy.fields.TensorField method)</a>, <a href="reference/api/fields.html#id12">[1]</a>
+</li>
+        <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.copy">(gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id1">[1]</a>
+</li>
+        <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.copy">(gwexpy.frequencyseries.FrequencySeriesBaseDict method)</a>
+</li>
         <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.copy">(gwexpy.frequencyseries.FrequencySeriesBaseList method)</a>
 </li>
       </ul></li>
@@ -332,6 +348,8 @@
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.crop_frequencies">(gwexpy.spectrogram.SpectrogramList method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.cross">cross() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id2">[1]</a>
+</li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.csd">csd() (gwexpy.timeseries.TimeSeriesDict method)</a>
 
       <ul>
@@ -388,9 +406,11 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.degree">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/types.html#gwexpy.types.AxisDescriptor.delta">delta (gwexpy.types.AxisDescriptor property)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/api/types.html#gwexpy.types.AxisDescriptor.delta">delta (gwexpy.types.AxisDescriptor property)</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.det">det() (gwexpy.fields.TensorField method)</a>, <a href="reference/api/fields.html#id13">[1]</a>
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.detrend">detrend() (gwexpy.timeseries.TimeSeriesDict method)</a>
 
@@ -412,6 +432,8 @@
       </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.DictClass">DictClass (gwexpy.frequencyseries.FrequencySeries attribute)</a>
 </li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.diff">diff() (gwexpy.fields.ScalarField method)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.differentiate">differentiate() (gwexpy.frequencyseries.FrequencySeries method)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.differentiate_time">differentiate_time() (gwexpy.frequencyseries.FrequencySeries method)</a>
@@ -424,12 +446,18 @@
       </ul></li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.distance_correlation">distance_correlation() (gwexpy.timeseries.TimeSeriesDict method)</a>
 </li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.dot">dot() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id3">[1]</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/api/extra.html#gwexpy.fitting.enable_fitting_monkeypatch">enable_fitting_monkeypatch() (in module gwexpy.fitting)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.fitting.enable_series_fit">enable_series_fit() (in module gwexpy.fitting)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.EntryClass">EntryClass (gwexpy.frequencyseries.FrequencySeriesBaseDict attribute)</a>
 
       <ul>
@@ -460,6 +488,10 @@
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.extend">(gwexpy.spectrogram.SpectrogramList method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.extract_points">extract_points() (gwexpy.fields.ScalarField method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.extract_profile">extract_profile() (gwexpy.fields.ScalarField method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -472,11 +504,33 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.fft">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/api/types.html#gwexpy.types.MetaDataMatrix.fill">fill() (gwexpy.types.MetaDataMatrix method)</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.fft_space">fft_space() (gwexpy.fields.ScalarField method)</a>
 </li>
-      <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.filter">filter() (gwexpy.frequencyseries.FrequencySeriesDict method)</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.FieldDict.fft_space_all">fft_space_all() (gwexpy.fields.FieldDict method)</a>
 
       <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.FieldList.fft_space_all">(gwexpy.fields.FieldList method)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.fft_time">fft_time() (gwexpy.fields.ScalarField method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.FieldDict.fft_time_all">fft_time_all() (gwexpy.fields.FieldDict method)</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.FieldList.fft_time_all">(gwexpy.fields.FieldList method)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.FieldDict">FieldDict (class in gwexpy.fields)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.FieldList">FieldList (class in gwexpy.fields)</a>
+</li>
+      <li><a href="reference/api/types.html#gwexpy.types.MetaDataMatrix.fill">fill() (gwexpy.types.MetaDataMatrix method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.filter">filter() (gwexpy.fields.ScalarField method)</a>
+
+      <ul>
+        <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.filter">(gwexpy.frequencyseries.FrequencySeriesDict method)</a>
+</li>
         <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.filter">(gwexpy.frequencyseries.FrequencySeriesList method)</a>
 </li>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.filter">(gwexpy.timeseries.TimeSeriesDict method)</a>
@@ -484,6 +538,12 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.filter">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.filter">(gwexpy.timeseries.TimeSeriesMatrix method)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.FieldDict.filter_all">filter_all() (gwexpy.fields.FieldDict method)</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.FieldList.filter_all">(gwexpy.fields.FieldList method)</a>
 </li>
       </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.filterba">filterba() (gwexpy.frequencyseries.FrequencySeries method)</a>
@@ -504,6 +564,8 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.WhitenTransform.fit">(gwexpy.timeseries.WhitenTransform method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.fitting.fit_bootstrap_spectrum">fit_bootstrap_spectrum() (in module gwexpy.fitting)</a>
+</li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.Pipeline.fit_transform">fit_transform() (gwexpy.timeseries.Pipeline method)</a>
 
       <ul>
@@ -512,6 +574,12 @@
       </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.SeriesType.FREQ">FREQ (gwexpy.frequencyseries.SeriesType attribute)</a>
 </li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.freq_space_map">freq_space_map() (gwexpy.fields.ScalarField method)</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.freq_space_map">(in module gwexpy.fields)</a>
+</li>
+      </ul></li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.frequencies">frequencies (gwexpy.analysis.coupling.CouplingResult property)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.frequency1">frequency1 (gwexpy.frequencyseries.BifrequencyMap property)</a>
@@ -532,7 +600,13 @@
 </li>
       <li><a href="reference/api/types.html#gwexpy.types.MetaDataMatrix.from_array">from_array() (gwexpy.types.MetaDataMatrix class method)</a>
 </li>
-      <li><a href="reference/api/noise.html#gwexpy.noise.wave.from_asd">from_asd() (in module gwexpy.noise.wave)</a>
+      <li><a href="reference/api/noise.html#gwexpy.noise.from_asd">from_asd() (in module gwexpy.noise)</a>
+
+      <ul>
+        <li><a href="reference/api/noise.html#gwexpy.noise.wave.from_asd">(in module gwexpy.noise.wave)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_astropy_timeseries">from_astropy_timeseries() (in module gwexpy.interop)</a>
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.from_control">from_control() (gwexpy.timeseries.TimeSeries class method)</a>
 
@@ -540,17 +614,41 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.from_control">(gwexpy.timeseries.TimeSeriesDict class method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_control_frd">from_control_frd() (gwexpy.frequencyseries.FrequencySeries class method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.from_control_frd">(in module gwexpy.interop)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_control_response">from_control_response() (in module gwexpy.interop)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_cupy">from_cupy() (gwexpy.frequencyseries.FrequencySeries class method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.from_cupy">(in module gwexpy.interop)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_dask">from_dask() (in module gwexpy.interop)</a>
 </li>
       <li><a href="reference/api/types.html#gwexpy.types.MetaDataMatrix.from_dataframe">from_dataframe() (gwexpy.types.MetaDataMatrix class method)</a>
 </li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_dict">from_dict() (in module gwexpy.interop)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_hdf5">from_hdf5() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_hdf5_dataset">from_hdf5_dataset() (gwexpy.frequencyseries.FrequencySeries class method)</a>
 </li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_hdf5_frequencyseries">from_hdf5_frequencyseries() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_jax">from_jax() (gwexpy.frequencyseries.FrequencySeries class method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.from_jax">(in module gwexpy.interop)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_json">from_json() (in module gwexpy.interop)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_mne">from_mne() (gwexpy.frequencyseries.FrequencySeries class method)</a>
 
@@ -559,21 +657,41 @@
 </li>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.from_mne">(gwexpy.timeseries.TimeSeriesDict class method)</a>
 </li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.from_mne">(in module gwexpy.interop)</a>
+</li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_mne_raw">from_mne_raw() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_neo">from_neo() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_netcdf4">from_netcdf4() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_obspy">from_obspy() (gwexpy.frequencyseries.FrequencySeries class method)</a>
 
       <ul>
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_obspy">(gwexpy.spectrogram.Spectrogram class method)</a>
 </li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.from_obspy">(in module gwexpy.interop)</a>
+</li>
+        <li><a href="reference/api/noise.html#gwexpy.noise.from_obspy">(in module gwexpy.noise)</a>
+</li>
         <li><a href="reference/api/noise.html#gwexpy.noise.asd.from_obspy">(in module gwexpy.noise.asd)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_obspy_trace">from_obspy_trace() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_pandas">from_pandas() (gwexpy.frequencyseries.FrequencySeries class method)</a>
 
       <ul>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.from_pandas">(gwexpy.timeseries.TimeSeriesDict class method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_pandas_dataframe">from_pandas_dataframe() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_pandas_frequencyseries">from_pandas_frequencyseries() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_pandas_series">from_pandas_series() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.from_points">from_points() (gwexpy.frequencyseries.BifrequencyMap class method)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_polars">from_polars() (gwexpy.frequencyseries.FrequencySeries class method)</a>
@@ -582,20 +700,40 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.from_polars">(gwexpy.timeseries.TimeSeriesDict class method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/api/noise.html#gwexpy.noise.asd.from_pygwinc">from_pygwinc() (in module gwexpy.noise.asd)</a>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_polars_dataframe">from_polars_dataframe() (in module gwexpy.interop)</a>
 </li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_polars_dict">from_polars_dict() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_polars_series">from_polars_series() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_pydub">from_pydub() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/noise.html#gwexpy.noise.from_pygwinc">from_pygwinc() (in module gwexpy.noise)</a>
+
+      <ul>
+        <li><a href="reference/api/noise.html#gwexpy.noise.asd.from_pygwinc">(in module gwexpy.noise.asd)</a>
+</li>
+      </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_pyspeckit">from_pyspeckit() (gwexpy.frequencyseries.FrequencySeries class method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.from_pyspeckit">(in module gwexpy.interop)</a>
 </li>
+      </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_quantities">from_quantities() (gwexpy.frequencyseries.FrequencySeries class method)</a>
 
       <ul>
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_quantities">(gwexpy.spectrogram.Spectrogram class method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_quantity">from_quantity() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_root">from_root() (gwexpy.frequencyseries.FrequencySeries class method)</a>
 
       <ul>
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.from_root">(gwexpy.spectrogram.Spectrogram class method)</a>
+</li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.from_root">(in module gwexpy.interop)</a>
 </li>
       </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.MetaData.from_series">from_series() (gwexpy.types.MetaData class method)</a>
@@ -609,14 +747,36 @@
       <ul>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.from_simpeg">(gwexpy.timeseries.TimeSeries class method)</a>
 </li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.from_simpeg">(in module gwexpy.interop)</a>
+</li>
       </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_specutils">from_specutils() (gwexpy.frequencyseries.FrequencySeries class method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.from_specutils">(in module gwexpy.interop)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_sqlite">from_sqlite() (in module gwexpy.interop)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_tensorflow">from_tensorflow() (gwexpy.frequencyseries.FrequencySeries class method)</a>
 </li>
-      <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_torch">from_torch() (gwexpy.frequencyseries.FrequencySeries class method)</a>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_tf">from_tf() (in module gwexpy.interop)</a>
 </li>
+      <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_torch">from_torch() (gwexpy.frequencyseries.FrequencySeries class method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.from_torch">(in module gwexpy.interop)</a>
+</li>
+      </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_xarray">from_xarray() (gwexpy.frequencyseries.FrequencySeries class method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.from_xarray">(in module gwexpy.interop)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_xarray_frequencyseries">from_xarray_frequencyseries() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.from_zarr">from_zarr() (in module gwexpy.interop)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -654,6 +814,20 @@
 </li>
       </ul></li>
       <li>
+    gwexpy.fields
+
+      <ul>
+        <li><a href="reference/api/fields.html#module-gwexpy.fields">module</a>
+</li>
+      </ul></li>
+      <li>
+    gwexpy.fitting
+
+      <ul>
+        <li><a href="reference/api/extra.html#module-gwexpy.fitting">module</a>
+</li>
+      </ul></li>
+      <li>
     gwexpy.frequencyseries
 
       <ul>
@@ -662,6 +836,13 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    gwexpy.interop
+
+      <ul>
+        <li><a href="reference/api/extra.html#module-gwexpy.interop">module</a>
+</li>
+      </ul></li>
       <li>
     gwexpy.noise
 
@@ -757,6 +938,22 @@
         <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.ifft">(gwexpy.frequencyseries.FrequencySeriesList method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.ifft_space">ifft_space() (gwexpy.fields.ScalarField method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.FieldDict.ifft_space_all">ifft_space_all() (gwexpy.fields.FieldDict method)</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.FieldList.ifft_space_all">(gwexpy.fields.FieldList method)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.ifft_time">ifft_time() (gwexpy.fields.ScalarField method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.FieldDict.ifft_time_all">ifft_time_all() (gwexpy.fields.FieldDict method)</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.FieldList.ifft_time_all">(gwexpy.fields.FieldList method)</a>
+</li>
+      </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisDescriptor.iloc_nearest">iloc_nearest() (gwexpy.types.AxisDescriptor method)</a>
 </li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisDescriptor.iloc_slice">iloc_slice() (gwexpy.types.AxisDescriptor method)</a>
@@ -787,14 +984,14 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.instantaneous_frequency">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.instantaneous_phase">instantaneous_phase() (gwexpy.timeseries.TimeSeriesDict method)</a>
 
       <ul>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.instantaneous_phase">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.integrate">integrate() (gwexpy.frequencyseries.FrequencySeries method)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.integrate_time">integrate_time() (gwexpy.frequencyseries.FrequencySeries method)</a>
@@ -839,7 +1036,17 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.is_contiguous">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.is_cupy_available">is_cupy_available() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisApiMixin.isel">isel() (gwexpy.types.AxisApiMixin method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.FieldDict.isel_all">isel_all() (gwexpy.fields.FieldDict method)</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.FieldList.isel_all">(gwexpy.fields.FieldList method)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/types.html#gwexpy.types.MetaDataDictLike.items">items() (gwexpy.types.MetaDataDictLike method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -847,7 +1054,7 @@
 <h2 id="K">K</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.kind">kind (gwexpy.types.TimePlaneTransform property)</a>
+      <li><a href="reference/api/types.html#gwexpy.types.MetaDataDictLike.keys">keys() (gwexpy.types.MetaDataDictLike method)</a>
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.ktau">ktau() (gwexpy.timeseries.TimeSeriesDict method)</a>
 </li>
@@ -893,6 +1100,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.ma">ma() (gwexpy.timeseries.TimeSeries method)</a>
 </li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.make_demo_scalar_field">make_demo_scalar_field() (in module gwexpy.fields)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.make_propagating_gaussian">make_propagating_gaussian() (in module gwexpy.fields)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.make_sinusoidal_wave">make_sinusoidal_wave() (in module gwexpy.fields)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.make_standing_wave">make_standing_wave() (in module gwexpy.fields)</a>
+</li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.mask">mask() (gwexpy.timeseries.TimeSeriesDict method)</a>
 
       <ul>
@@ -911,11 +1126,13 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.mean">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.meta">meta (gwexpy.types.TimePlaneTransform property)</a>
-</li>
       <li><a href="reference/api/types.html#gwexpy.types.MetaData">MetaData (class in gwexpy.types)</a>
 </li>
       <li><a href="reference/api/types.html#gwexpy.types.MetaDataDict">MetaDataDict (class in gwexpy.types)</a>
+</li>
+      <li><a href="reference/api/types.html#gwexpy.types.MetaDataDictLike">MetaDataDictLike (class in gwexpy.types)</a>
+</li>
+      <li><a href="reference/api/types.html#gwexpy.types.MetaDataLike">MetaDataLike (class in gwexpy.types)</a>
 </li>
       <li><a href="reference/api/types.html#gwexpy.types.MetaDataMatrix">MetaDataMatrix (class in gwexpy.types)</a>
 </li>
@@ -945,7 +1162,13 @@
       <ul>
         <li><a href="reference/api/analysis.html#module-gwexpy.analysis.coupling">gwexpy.analysis.coupling</a>
 </li>
+        <li><a href="reference/api/fields.html#module-gwexpy.fields">gwexpy.fields</a>
+</li>
+        <li><a href="reference/api/extra.html#module-gwexpy.fitting">gwexpy.fitting</a>
+</li>
         <li><a href="reference/api/frequencyseries.html#module-gwexpy.frequencyseries">gwexpy.frequencyseries</a>
+</li>
+        <li><a href="reference/api/extra.html#module-gwexpy.interop">gwexpy.interop</a>
 </li>
         <li><a href="reference/api/noise.html#module-gwexpy.noise">gwexpy.noise</a>
 </li>
@@ -973,6 +1196,8 @@
       <ul>
         <li><a href="reference/api/types.html#gwexpy.types.MetaData.name">(gwexpy.types.MetaData property)</a>
 </li>
+        <li><a href="reference/api/types.html#gwexpy.types.MetaDataLike.name">(gwexpy.types.MetaDataLike attribute)</a>
+</li>
       </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.MetaDataDict.names">names (gwexpy.types.MetaDataDict property)</a>
 
@@ -982,7 +1207,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.ndim">ndim (gwexpy.types.TimePlaneTransform property)</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.norm">norm() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id4">[1]</a>
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.notch">notch() (gwexpy.timeseries.TimeSeriesDict method)</a>
 
@@ -1039,16 +1264,14 @@
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.Pipeline">Pipeline (class in gwexpy.timeseries)</a>
 </li>
       <li><a href="reference/api/types.html#gwexpy.types.Array3D.plane">plane() (gwexpy.types.Array3D method)</a>
-
-      <ul>
-        <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.plane">(gwexpy.types.TimePlaneTransform method)</a>
 </li>
-      </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.Plane2D">Plane2D (class in gwexpy.types)</a>
 </li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot">plot() (gwexpy.analysis.coupling.CouplingResult method)</a>
 
       <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.plot">(gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id5">[1]</a>
+</li>
         <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.plot">(gwexpy.frequencyseries.BifrequencyMap method)</a>
 </li>
         <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.plot">(gwexpy.frequencyseries.FrequencySeries method)</a>
@@ -1090,7 +1313,15 @@
       </ul></li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot_cf">plot_cf() (gwexpy.analysis.coupling.CouplingResult method)</a>
 </li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.plot_components">plot_components() (gwexpy.fields.TensorField method)</a>, <a href="reference/api/fields.html#id14">[1]</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.plot_lines">plot_lines() (gwexpy.frequencyseries.BifrequencyMap method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.plot_magnitude">plot_magnitude() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id6">[1]</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.plot_map2d">plot_map2d() (gwexpy.fields.ScalarField method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.plot_profile">plot_profile() (gwexpy.fields.ScalarField method)</a>
 </li>
       <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.plot_summary">plot_summary() (gwexpy.spectrogram.SpectrogramDict method)</a>
 
@@ -1100,6 +1331,10 @@
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.plot_summary">(gwexpy.spectrogram.SpectrogramMatrix method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.plot_time_space_map">plot_time_space_map() (gwexpy.fields.ScalarField method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.plot_timeseries_points">plot_timeseries_points() (gwexpy.fields.ScalarField method)</a>
+</li>
       <li><a href="reference/api/noise.html#gwexpy.noise.asd.power_law">power_law() (in module gwexpy.noise.asd)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.prepend">prepend() (gwexpy.frequencyseries.FrequencySeriesDict method)</a>
@@ -1108,11 +1343,15 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.prepend">(gwexpy.timeseries.TimeSeriesDict method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.project">project() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id7">[1]</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.propagate">propagate() (gwexpy.frequencyseries.BifrequencyMap method)</a>
 </li>
-      <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.psd">psd() (gwexpy.timeseries.TimeSeriesDict method)</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.psd">psd() (gwexpy.fields.ScalarField method)</a>
 
       <ul>
+        <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.psd">(gwexpy.timeseries.TimeSeriesDict method)</a>
+</li>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.psd">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
       </ul></li>
@@ -1131,6 +1370,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.quadrature_sum">quadrature_sum() (gwexpy.frequencyseries.FrequencySeries method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.quiver">quiver() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id8">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1166,9 +1407,17 @@
         <li><a href="reference/api/types.html#gwexpy.types.MetaDataMatrix.read">(gwexpy.types.MetaDataMatrix class method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.rebin">rebin() (gwexpy.spectrogram.SpectrogramDict method)</a>
+      <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.rebin">rebin() (gwexpy.frequencyseries.FrequencySeries method)</a>
 
       <ul>
+        <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.rebin">(gwexpy.frequencyseries.FrequencySeriesDict method)</a>
+</li>
+        <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.rebin">(gwexpy.frequencyseries.FrequencySeriesList method)</a>
+</li>
+        <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.rebin">(gwexpy.spectrogram.Spectrogram method)</a>
+</li>
+        <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.rebin">(gwexpy.spectrogram.SpectrogramDict method)</a>
+</li>
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.rebin">(gwexpy.spectrogram.SpectrogramList method)</a>
 </li>
       </ul></li>
@@ -1184,12 +1433,22 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.resample">resample() (gwexpy.timeseries.TimeSeriesDict method)</a>
+      <li><a href="reference/api/extra.html#gwexpy.interop.require_optional">require_optional() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.resample">resample() (gwexpy.fields.ScalarField method)</a>
 
       <ul>
+        <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.resample">(gwexpy.timeseries.TimeSeriesDict method)</a>
+</li>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.resample">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.resample">(gwexpy.timeseries.TimeSeriesMatrix method)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.FieldDict.resample_all">resample_all() (gwexpy.fields.FieldDict method)</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.FieldList.resample_all">(gwexpy.fields.FieldList method)</a>
 </li>
       </ul></li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.rms">rms() (gwexpy.timeseries.TimeSeriesDict method)</a>
@@ -1242,12 +1501,20 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/noise.html#gwexpy.noise.wave.sawtooth">sawtooth() (in module gwexpy.noise.wave)</a>
 </li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField">ScalarField (class in gwexpy.fields)</a>
+</li>
       <li><a href="reference/api/noise.html#gwexpy.noise.asd.schumann_resonance">schumann_resonance() (in module gwexpy.noise.asd)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.segments">segments (gwexpy.frequencyseries.FrequencySeriesBaseList property)</a>
 </li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisApiMixin.sel">sel() (gwexpy.types.AxisApiMixin method)</a>
 </li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.FieldDict.sel_all">sel_all() (gwexpy.fields.FieldDict method)</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.FieldList.sel_all">(gwexpy.fields.FieldList method)</a>
+</li>
+      </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix.series_class">series_class (gwexpy.frequencyseries.FrequencySeriesMatrix attribute)</a>
 
       <ul>
@@ -1262,13 +1529,9 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.series_type">(gwexpy.timeseries.TimeSeriesMatrix attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/api/types.html#gwexpy.types.SeriesMatrix">SeriesMatrix (class in gwexpy.types)</a>
-</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.SeriesType">SeriesType (class in gwexpy.frequencyseries)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.setdefault">setdefault() (gwexpy.frequencyseries.FrequencySeriesBaseDict method)</a>
-</li>
-      <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.shape">shape (gwexpy.types.TimePlaneTransform property)</a>
 </li>
       <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.shape3D">shape3D (gwexpy.spectrogram.SpectrogramMatrix property)</a>
 </li>
@@ -1280,6 +1543,8 @@
       </ul></li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.coupling.SigmaThreshold">SigmaThreshold (class in gwexpy.analysis.coupling)</a>
 </li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.simulate">simulate() (gwexpy.fields.ScalarField class method)</a>
+</li>
       <li><a href="reference/api/noise.html#gwexpy.noise.wave.sine">sine() (in module gwexpy.noise.wave)</a>
 </li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisDescriptor.size">size (gwexpy.types.AxisDescriptor property)</a>
@@ -1290,6 +1555,8 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.skewness">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.slice_map2d">slice_map2d() (gwexpy.fields.ScalarField method)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.smooth">smooth() (gwexpy.frequencyseries.FrequencySeriesDict method)</a>
 
       <ul>
@@ -1298,7 +1565,11 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.space_domains">space_domains (gwexpy.fields.ScalarField attribute)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.span">span (gwexpy.frequencyseries.FrequencySeriesBaseDict property)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.spectral_density">spectral_density() (gwexpy.fields.ScalarField method)</a>
 </li>
       <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram">Spectrogram (class in gwexpy.spectrogram)</a>
 </li>
@@ -1334,6 +1605,8 @@
       </ul></li>
       <li><a href="reference/api/noise.html#gwexpy.noise.wave.step">step() (in module gwexpy.noise.wave)</a>
 </li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.streamline">streamline() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id9">[1]</a>
+</li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.ICATransform.supports_inverse">supports_inverse (gwexpy.timeseries.ICATransform attribute)</a>
 
       <ul>
@@ -1347,6 +1620,8 @@
 </li>
       </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisApiMixin.swapaxes">swapaxes() (gwexpy.types.AxisApiMixin method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.symmetrize">symmetrize() (gwexpy.fields.TensorField method)</a>, <a href="reference/api/fields.html#id15">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1366,6 +1641,8 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.taper">(gwexpy.timeseries.TimeSeriesMatrix method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField">TensorField (class in gwexpy.fields)</a>, <a href="reference/api/fields.html#id11">[1]</a>
+</li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.coupling.PercentileThreshold.threshold">threshold() (gwexpy.analysis.coupling.PercentileThreshold method)</a>
 
       <ul>
@@ -1380,9 +1657,15 @@
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.SeriesType.TIME">TIME (gwexpy.frequencyseries.SeriesType attribute)</a>
 </li>
-      <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform">TimePlaneTransform (class in gwexpy.types)</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.time_delay_map">time_delay_map() (gwexpy.fields.ScalarField method)</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.time_delay_map">(in module gwexpy.fields)</a>
 </li>
-      <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.times">times (gwexpy.types.TimePlaneTransform property)</a>
+      </ul></li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.time_space_map">time_space_map() (gwexpy.fields.ScalarField method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.time_stat_map">time_stat_map() (gwexpy.fields.ScalarField method)</a>
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeries">TimeSeries (class in gwexpy.timeseries)</a>
 </li>
@@ -1392,7 +1675,15 @@
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix">TimeSeriesMatrix (class in gwexpy.timeseries)</a>
 </li>
-      <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.to_array3d">to_array3d() (gwexpy.types.TimePlaneTransform method)</a>
+      <li><a href="reference/api/extra.html#gwexpy.interop.TimeSeriesWindowDataset">TimeSeriesWindowDataset (class in gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.to_array">to_array() (gwexpy.fields.TensorField method)</a>, <a href="reference/api/fields.html#id16">[1]</a>
+
+      <ul>
+        <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.to_array">(gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id10">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_astropy_timeseries">to_astropy_timeseries() (in module gwexpy.interop)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_control_frd">to_control_frd() (gwexpy.frequencyseries.FrequencySeries method)</a>
 
@@ -1400,6 +1691,8 @@
         <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_control_frd">(gwexpy.frequencyseries.FrequencySeriesDict method)</a>
 </li>
         <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_control_frd">(gwexpy.frequencyseries.FrequencySeriesList method)</a>
+</li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_control_frd">(in module gwexpy.interop)</a>
 </li>
       </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_cupy">to_cupy() (gwexpy.frequencyseries.FrequencySeries method)</a>
@@ -1413,11 +1706,15 @@
 </li>
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_cupy">(gwexpy.spectrogram.SpectrogramList method)</a>
 </li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_cupy">(in module gwexpy.interop)</a>
+</li>
       </ul></li>
       <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.to_dask">to_dask() (gwexpy.spectrogram.SpectrogramDict method)</a>
 
       <ul>
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_dask">(gwexpy.spectrogram.SpectrogramList method)</a>
+</li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_dask">(in module gwexpy.interop)</a>
 </li>
       </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.MetaDataDict.to_dataframe">to_dataframe() (gwexpy.types.MetaDataDict method)</a>
@@ -1435,8 +1732,18 @@
 </li>
       </ul></li>
       <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.to_dict">to_dict() (gwexpy.spectrogram.SpectrogramMatrix method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_dict">(in module gwexpy.interop)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_frequencyseries_list">to_frequencyseries_list() (gwexpy.spectrogram.Spectrogram method)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_hdf5">to_hdf5() (in module gwexpy.interop)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_hdf5_dataset">to_hdf5_dataset() (gwexpy.frequencyseries.FrequencySeries method)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_hdf5_frequencyseries">to_hdf5_frequencyseries() (in module gwexpy.interop)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_jax">to_jax() (gwexpy.frequencyseries.FrequencySeries method)</a>
 
@@ -1449,7 +1756,13 @@
 </li>
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_jax">(gwexpy.spectrogram.SpectrogramList method)</a>
 </li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_jax">(in module gwexpy.interop)</a>
+</li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_json">to_json() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_librosa">to_librosa() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.to_list">to_list() (gwexpy.spectrogram.SpectrogramMatrix method)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_matrix">to_matrix() (gwexpy.frequencyseries.FrequencySeriesDict method)</a>
@@ -1471,15 +1784,27 @@
 </li>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.to_mne">(gwexpy.timeseries.TimeSeriesDict method)</a>
 </li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_mne">(in module gwexpy.interop)</a>
+</li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_mne_rawarray">to_mne_rawarray() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_neo">to_neo() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_netcdf4">to_netcdf4() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_obspy">to_obspy() (gwexpy.frequencyseries.FrequencySeries method)</a>
 
       <ul>
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_obspy">(gwexpy.spectrogram.Spectrogram method)</a>
 </li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_obspy">(in module gwexpy.interop)</a>
+</li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_obspy_trace">to_obspy_trace() (in module gwexpy.interop)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_pandas">to_pandas() (gwexpy.frequencyseries.FrequencySeries method)</a>
 
       <ul>
@@ -1492,20 +1817,42 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.to_pandas">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_pandas_dataframe">to_pandas_dataframe() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_pandas_frequencyseries">to_pandas_frequencyseries() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_pandas_series">to_pandas_series() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_polars">to_polars() (gwexpy.frequencyseries.FrequencySeries method)</a>
 
       <ul>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.to_polars">(gwexpy.timeseries.TimeSeriesDict method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_pyspeckit">to_pyspeckit() (gwexpy.frequencyseries.FrequencySeries method)</a>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_polars_dataframe">to_polars_dataframe() (in module gwexpy.interop)</a>
 </li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_polars_dict">to_polars_dict() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_polars_frequencyseries">to_polars_frequencyseries() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_polars_series">to_polars_series() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_pydub">to_pydub() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_pyspeckit">to_pyspeckit() (gwexpy.frequencyseries.FrequencySeries method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_pyspeckit">(in module gwexpy.interop)</a>
+</li>
+      </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_quantities">to_quantities() (gwexpy.frequencyseries.FrequencySeries method)</a>
 
       <ul>
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_quantities">(gwexpy.spectrogram.Spectrogram method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_quantity">to_quantity() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.to_series_1Dlist">to_series_1Dlist() (gwexpy.spectrogram.SpectrogramMatrix method)</a>
 </li>
       <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.to_series_2Dlist">to_series_2Dlist() (gwexpy.spectrogram.SpectrogramMatrix method)</a>
@@ -1515,8 +1862,16 @@
       <ul>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.to_simpeg">(gwexpy.timeseries.TimeSeries method)</a>
 </li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_simpeg">(in module gwexpy.interop)</a>
+</li>
       </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_specutils">to_specutils() (gwexpy.frequencyseries.FrequencySeries method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_specutils">(in module gwexpy.interop)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_sqlite">to_sqlite() (in module gwexpy.interop)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_tensorflow">to_tensorflow() (gwexpy.frequencyseries.FrequencySeries method)</a>
 
@@ -1530,11 +1885,27 @@
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_tensorflow">(gwexpy.spectrogram.SpectrogramList method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_tf">to_tf() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_tgraph">to_tgraph() (gwexpy.frequencyseries.FrequencySeries method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_tgraph">(in module gwexpy.interop)</a>
 </li>
+      </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_th1d">to_th1d() (gwexpy.frequencyseries.FrequencySeries method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_th1d">(in module gwexpy.interop)</a>
 </li>
+      </ul></li>
       <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_th2d">to_th2d() (gwexpy.spectrogram.Spectrogram method)</a>
+
+      <ul>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_th2d">(in module gwexpy.interop)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.to_timeseries_list">to_timeseries_list() (gwexpy.spectrogram.Spectrogram method)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_tmultigraph">to_tmultigraph() (gwexpy.frequencyseries.FrequencySeriesDict method)</a>
 
@@ -1544,6 +1915,8 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.to_tmultigraph">(gwexpy.timeseries.TimeSeriesDict method)</a>
 </li>
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.to_tmultigraph">(gwexpy.timeseries.TimeSeriesList method)</a>
+</li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_tmultigraph">(in module gwexpy.interop)</a>
 </li>
       </ul></li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_torch">to_torch() (gwexpy.frequencyseries.FrequencySeries method)</a>
@@ -1557,7 +1930,13 @@
 </li>
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.to_torch">(gwexpy.spectrogram.SpectrogramList method)</a>
 </li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_torch">(in module gwexpy.interop)</a>
+</li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_torch_dataloader">to_torch_dataloader() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_torch_dataset">to_torch_dataset() (in module gwexpy.interop)</a>
+</li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisDescriptor.to_value">to_value() (gwexpy.types.AxisDescriptor method)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_xarray">to_xarray() (gwexpy.frequencyseries.FrequencySeries method)</a>
@@ -1567,7 +1946,15 @@
 </li>
         <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_xarray">(gwexpy.frequencyseries.FrequencySeriesList method)</a>
 </li>
+        <li><a href="reference/api/extra.html#gwexpy.interop.to_xarray">(in module gwexpy.interop)</a>
+</li>
       </ul></li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_xarray_frequencyseries">to_xarray_frequencyseries() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/extra.html#gwexpy.interop.to_zarr">to_zarr() (in module gwexpy.interop)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.trace">trace() (gwexpy.fields.TensorField method)</a>, <a href="reference/api/fields.html#id17">[1]</a>
+</li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.transfer_function">transfer_function() (gwexpy.timeseries.TimeSeriesMatrix method)</a>
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.Transform">Transform (class in gwexpy.timeseries)</a>
@@ -1605,7 +1992,7 @@
       <ul>
         <li><a href="reference/api/types.html#gwexpy.types.MetaData.unit">(gwexpy.types.MetaData property)</a>
 </li>
-        <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.unit">(gwexpy.types.TimePlaneTransform property)</a>
+        <li><a href="reference/api/types.html#gwexpy.types.MetaDataLike.unit">(gwexpy.types.MetaDataLike attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1630,8 +2017,6 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/api/types.html#gwexpy.types.TimePlaneTransform.value">value (gwexpy.types.TimePlaneTransform property)</a>
-</li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.value_at">value_at() (gwexpy.timeseries.TimeSeriesDict method)</a>
 
       <ul>
@@ -1640,6 +2025,10 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/api/types.html#gwexpy.types.MetaDataDictLike.values">values() (gwexpy.types.MetaDataDictLike method)</a>
+</li>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField">VectorField (class in gwexpy.fields)</a>, <a href="reference/api/fields.html#id0">[1]</a>
+</li>
       <li><a href="reference/api/noise.html#gwexpy.noise.asd.voigt_line">voigt_line() (in module gwexpy.noise.asd)</a>
 </li>
   </ul></td>
@@ -1648,6 +2037,8 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.wavelength">wavelength() (gwexpy.fields.ScalarField method)</a>
+</li>
       <li><a href="reference/api/noise.html#gwexpy.noise.asd.white_noise">white_noise() (in module gwexpy.noise.asd)</a>
 
       <ul>
@@ -1687,6 +2078,10 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/api/extra.html#gwexpy.interop.write_root_file">write_root_file() (in module gwexpy.interop)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="Z">Z</h2>
@@ -1702,6 +2097,10 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.zpk">(gwexpy.timeseries.TimeSeriesList method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.zscore">zscore() (gwexpy.fields.ScalarField method)</a>
+</li>
   </ul></td>
 </tr></table>
 

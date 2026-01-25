@@ -1,0 +1,196 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DTT解析・gwexpyへの統合要件定義 計画書 (2026-01-21 23:45:00) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">DTT解析・gwexpyへの統合要件定義 計画書 (2026-01-21 23:45:00)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/analysis/dtt/dtt_analysis_plan_20260121_234500.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dttgwexpy-2026-01-21-23-45-00">
+<h1>DTT解析・gwexpyへの統合要件定義 計画書 (2026-01-21 23:45:00)<a class="headerlink" href="#dttgwexpy-2026-01-21-23-45-00" title="Link to this heading"></a></h1>
+<p>この計画書は、<code class="docutils literal notranslate"><span class="pre">gwexpy/gui/reference-dtt/</span></code> に含まれるリファレンス資料を分析し、レガシーシステムである DTT (Diagnostic Test Tool) のアーキテクチャ、データ処理ロジック、UI構成を理解することで、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> のGUIおよび解析パイプラインの開発に役立てるための手順を定義します。</p>
+<section id="id1">
+<h2>1. 目的・目標<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>DTT ソースコードから主要なアルゴリズム（FFT、伝達関数推定、励起信号生成など）を抽出する。</p></li>
+<li><p>ドキュメントとUIスクリーンショットから、操作モード（Excitation, Input, Measurement, Results）の仕様を整理する。</p></li>
+<li><p>DTT の機能と <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の既存機能の対応マップを作成する。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> が DTT を代替する上で不足している必須機能を特定する。</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>2. ロードマップ<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="phase-1-ui">
+<h3>Phase 1: ドキュメントおよびUIの監査<a class="headerlink" href="#phase-1-ui" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>目標</strong>: ユーザー向け機能とシステム要件の把握。</p></li>
+<li><p><strong>タスク</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Diagnostics_Test_Software_DCC_T990013-v3.pdf</span></code> および <code class="docutils literal notranslate"><span class="pre">G000079-00.pdf</span></code> の内容要約。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">diaggui-GUI-Implementation-Map.md</span></code> を読み解き、現在の実装状況を確認。</p></li>
+<li><p>UIスクリーンショット (<code class="docutils literal notranslate"><span class="pre">diaggui_*.png</span></code>) から、主要なインタラクティブコンポーネントを特定。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="phase-2-dtt-master">
+<h3>Phase 2: コード分析 (dtt-master)<a class="headerlink" href="#phase-2-dtt-master" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>目標</strong>: 基盤となる C++/Python 実装の理解。</p></li>
+<li><p><strong>タスク</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">dtt-master/src/</span></code> を分析し、計算エンジン（コアロジック）を特定。</p></li>
+<li><p>Python バインディングやラッパー（<code class="docutils literal notranslate"><span class="pre">scripts/</span></code>, <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>）の構造をレビュー。</p></li>
+<li><p>DTT が使用しているデータフォーマットおよび通信プロトコルを文書化。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="phase-3">
+<h3>Phase 3: 統合整理とギャップ分析<a class="headerlink" href="#phase-3" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>目標</strong>: DTT 機能を <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の要件に変換。</p></li>
+<li><p><strong>タスク</strong>:</p>
+<ul>
+<li><p>比較テーブルの作成: DTT 機能 vs <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の対応クラス/メソッド。</p></li>
+<li><p>継承すべき物理・数学的仕様の特定（<code class="docutils literal notranslate"><span class="pre">check_physics</span></code> スキルを活用）。</p></li>
+<li><p>不足機能の実装計画ドラフト作成。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="id3">
+<h2>3. テスト・検証計画<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>モック実装</strong>: <code class="docutils literal notranslate"><span class="pre">make_notebook</span></code> を使用し、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> のデータ構造を用いた簡易的な DTT 風「測定」プロセスを再現する。</p></li>
+<li><p><strong>論理検証</strong>: 抽出した周波数ドメイン計算ロジックがライブラリ標準と一致するか <code class="docutils literal notranslate"><span class="pre">check_physics</span></code> で確認する。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h2>4. 使用モデルとリソース最適化<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<section id="id5">
+<h3>推奨モデルと選定理由<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>モデル</strong>: <code class="docutils literal notranslate"><span class="pre">Gemini</span> <span class="pre">3</span> <span class="pre">Pro</span> <span class="pre">(High)</span></code></p></li>
+<li><p><strong>理由</strong>: PDFや画像（UIスクリーンショット）を含むマルチモーダルな情報の統合分析に加え、<code class="docutils literal notranslate"><span class="pre">dtt-master</span></code> リポジトリ全体の広範なコンテキストを扱うのに適しているため。</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>リソース管理戦略<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>コンテキスト圧縮</strong>: 大規模な C++ ファイルの分析時には、関数のシグネチャとdocstringのみを抽出して俯瞰し、必要な箇所のみ詳細に読み込む。</p></li>
+<li><p><strong>バッチ処理</strong>: PDFドキュメントの要約は個別に行い、最後に統合することで、一度のトークン消費量を抑える。</p></li>
+</ul>
+</section>
+</section>
+<section id="id7">
+<h2>5. 工数見積もり<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>総工数</strong>: 約 8〜12 時間</p></li>
+<li><p><strong>クオータ</strong>: High (リポジトリ全体の解析による消費)</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

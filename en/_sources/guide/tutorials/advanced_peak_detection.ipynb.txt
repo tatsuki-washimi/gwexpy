@@ -1,0 +1,186 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Peak Detection (ピーク検出)\n",
+    "\n",
+    "`gwexpy` では、`TimeSeries` や `FrequencySeries` に含まれる信号のピークを簡単に検出するための `find_peaks` メソッドを提供しています。これは内部的に `scipy.signal.find_peaks` をラップしていますが、物理単位（Hz, 秒など）を用いた直感的なパラメータ指定が可能です。\n",
+    "\n",
+    "`find_peaks` メソッドは、以下の2つを返します。\n",
+    "- **Peak Series**: ピーク点のみを抽出した新しい Series オブジェクト\n",
+    "- **Properties**: scipy が返すピーク特性（プロミネンスや幅など）の辞書\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:38:30.140063Z",
+     "iopub.status.busy": "2026-01-24T10:38:30.139906Z",
+     "iopub.status.idle": "2026-01-24T10:38:32.210870Z",
+     "shell.execute_reply": "2026-01-24T10:38:32.210280Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "from astropy import units as u\n",
+    "\n",
+    "from gwexpy import FrequencySeries, TimeSeries"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 1. FrequencySeries でのピーク検出\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:38:32.214943Z",
+     "iopub.status.busy": "2026-01-24T10:38:32.214498Z",
+     "iopub.status.idle": "2026-01-24T10:38:32.226959Z",
+     "shell.execute_reply": "2026-01-24T10:38:32.226493Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# 擬似データの作成\n",
+    "df = 0.5 * u.Hz\n",
+    "f_axis = np.arange(0, 500, df.value) * u.Hz\n",
+    "data = np.exp(-f_axis.value / 100) + np.random.normal(0, 0.05, len(f_axis))\n",
+    "\n",
+    "# ピークを追加\n",
+    "peak_freqs_true = [50, 60, 120, 125, 300] * u.Hz\n",
+    "for f in peak_freqs_true:\n",
+    "    idx = int(f.value / df.value)\n",
+    "    data[idx] += 1.0\n",
+    "\n",
+    "spec = FrequencySeries(data, df=df, unit=\"V/Hz\")\n",
+    "\n",
+    "# --- 基本的な検出 (しきい値のみ) ---\n",
+    "# peaks は FrequencySeries オブジェクトとして返ってきます\n",
+    "peaks, _ = spec.find_peaks(threshold=0.5)\n",
+    "\n",
+    "plt.figure(figsize=(10, 5))\n",
+    "plt.plot(spec, label=\"Spectrum\", alpha=0.7)\n",
+    "plt.plot(peaks, \"x\", color=\"red\", label=\"Basic Peaks\")\n",
+    "plt.title(\"Basic Peak Detection\")\n",
+    "plt.xlabel(\"Frequency [Hz]\"); plt.ylabel(\"Amplitude [V/Hz]\")\n",
+    "plt.legend(); plt.show()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 2. 物理単位による制約 (Distance & Width)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:38:32.230408Z",
+     "iopub.status.busy": "2026-01-24T10:38:32.230299Z",
+     "iopub.status.idle": "2026-01-24T10:38:32.331579Z",
+     "shell.execute_reply": "2026-01-24T10:38:32.330257Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Detected peaks: [  6.   26.   50.   74.5 120.  300. ] Hz\n"
+     ]
+    }
+   ],
+   "source": [
+    "dist_constraint = 20 * u.Hz\n",
+    "peaks_adv, props = spec.find_peaks(threshold=0.5, distance=dist_constraint)\n",
+    "\n",
+    "plt.figure(figsize=(10, 5))\n",
+    "plt.plot(spec, label=\"Spectrum\", alpha=0.7)\n",
+    "plt.plot(peaks_adv, \"o\", color=\"orange\", label=\"Distance Constraint (20Hz)\")\n",
+    "plt.title(f\"Peak Detection with Distance Constraint ({dist_constraint})\")\n",
+    "plt.xlabel(\"Frequency [Hz]\"); plt.ylabel(\"Amplitude [V/Hz]\")\n",
+    "plt.legend(); plt.show()\n",
+    "\n",
+    "print(f\"Detected peaks: {peaks_adv.frequencies}\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 3. TimeSeries でのピーク検出\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:38:32.356794Z",
+     "iopub.status.busy": "2026-01-24T10:38:32.356623Z",
+     "iopub.status.idle": "2026-01-24T10:38:32.367700Z",
+     "shell.execute_reply": "2026-01-24T10:38:32.367145Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "fs = 1024.0\n",
+    "t = np.arange(0, 2.0, 1/fs)\n",
+    "ts_data = np.random.normal(0, 0.1, len(t))\n",
+    "\n",
+    "# パルスを追加\n",
+    "ts_data[int(0.5*fs)] = 2.0\n",
+    "ts_data[int(0.55*fs)] = 1.8\n",
+    "ts_data[int(1.2*fs)] = 1.5\n",
+    "\n",
+    "ts = TimeSeries(ts_data, sample_rate=fs, unit=\"counts\")\n",
+    "\n",
+    "# 0.1秒以内の連続したパルスは無視する設定\n",
+    "peaks_t, _ = ts.find_peaks(height=0.5, distance=0.1 * u.s)\n",
+    "\n",
+    "plt.figure(figsize=(10, 5))\n",
+    "plt.plot(ts)\n",
+    "plt.plot(peaks_t, \"v\", color=\"red\", label=\"Detected pulses (>100ms apart)\")\n",
+    "plt.title(\"Pulse Detection in TimeSeries\")\n",
+    "plt.xlabel(\"Time [s]\"); plt.ylabel(\"Raw Counts\")\n",
+    "plt.legend(); plt.show()\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "base",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

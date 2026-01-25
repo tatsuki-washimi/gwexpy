@@ -1,0 +1,519 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyaggui 開発計画: LLMモデル推奨と工数見積もり &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">開発者ガイド (Developers Guide)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pyaggui 開発計画: LLMモデル推奨と工数見積もり</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/plans/pyaggui_model_effort_estimate.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyaggui-llm">
+<h1>pyaggui 開発計画: LLMモデル推奨と工数見積もり<a class="headerlink" href="#pyaggui-llm" title="Link to this heading"></a></h1>
+<p><strong>作成日:</strong> 2026-01-22<br />
+<strong>対象:</strong> <code class="docutils literal notranslate"><span class="pre">pyaggui_development_plan.md</span></code> の実行プラン<br />
+<strong>目的:</strong> 各フェーズに最適なLLMモデルの提案と、作業時間・クオータ消費の見積もり</p>
+<hr class="docutils" />
+<section id="id1">
+<h2>1. フェーズ別モデル推奨<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="phase-1-1-2">
+<h3>Phase 1: コアロジックの検証と基盤強化 (1-2週間)<a class="headerlink" href="#phase-1-1-2" title="Link to this heading"></a></h3>
+<p><strong>主なタスク:</strong></p>
+<ul class="simple">
+<li><p>PSD/CSD 正規化の検証（数学的厳密性が必要）</p></li>
+<li><p>MeasurementState スキーマ定義（設計タスク）</p></li>
+<li><p>DTT XML 互換性実装（パース処理）</p></li>
+</ul>
+<p><strong>推奨モデル:</strong></p>
+<ul class="simple">
+<li><p><strong>メインモデル</strong>: <code class="docutils literal notranslate"><span class="pre">Claude</span> <span class="pre">Sonnet</span> <span class="pre">4.5</span></code> (標準版)</p>
+<ul>
+<li><p><strong>理由</strong>: 数式検証とコード実装のバランスが良い。scipy との比較検証に最適。</p></li>
+<li><p><strong>用途</strong>: PSD正規化検証コードの実装、テストケース作成</p></li>
+</ul>
+</li>
+<li><p><strong>サブモデル</strong>: <code class="docutils literal notranslate"><span class="pre">Gemini</span> <span class="pre">3</span> <span class="pre">Flash</span></code></p>
+<ul>
+<li><p><strong>理由</strong>: 高速な反復テストとドキュメント生成</p></li>
+<li><p><strong>用途</strong>: ノートブック作成、簡単なリファクタリング</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>工数見積もり:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>タスク</p></th>
+<th class="head"><p>推定時間</p></th>
+<th class="head"><p>クオータ消費</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Task 1.1: PSD正規化検証</p></td>
+<td><p>2-3時間</p></td>
+<td><p>Medium</p></td>
+<td><p>数式検証 + pytest実装</p></td>
+</tr>
+<tr class="row-odd"><td><p>Task 1.2: MeasurementState設計</p></td>
+<td><p>1-2時間</p></td>
+<td><p>Low-Medium</p></td>
+<td><p>Pydantic モデル定義</p></td>
+</tr>
+<tr class="row-even"><td><p>Task 1.3: DTT XML互換性</p></td>
+<td><p>2-3時間</p></td>
+<td><p>Medium</p></td>
+<td><p>dttxml連携、テスト</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Phase 1 合計</strong></p></td>
+<td><p><strong>5-8時間</strong></p></td>
+<td><p><strong>Medium</strong></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>懸念事項:</strong></p>
+<ul class="simple">
+<li><p>DTT の実データが無い場合、検証が困難（→ 合成データで代替）</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="phase-2-swept-sine-3-4">
+<h3>Phase 2: Swept Sine (伝達関数測定) の実装 (3-4週間)<a class="headerlink" href="#phase-2-swept-sine-3-4" title="Link to this heading"></a></h3>
+<p><strong>主なタスク:</strong></p>
+<ul class="simple">
+<li><p>SweptSineMeasurement クラス設計（アーキテクチャ設計）</p></li>
+<li><p>同期検波 (Lock-in Detection) アルゴリズム実装（信号処理）</p></li>
+<li><p>GUI 統合（PySide6/Qt）</p></li>
+</ul>
+<p><strong>推奨モデル:</strong></p>
+<ul class="simple">
+<li><p><strong>メインモデル</strong>: <code class="docutils literal notranslate"><span class="pre">Claude</span> <span class="pre">Opus</span> <span class="pre">4.5</span> <span class="pre">(Thinking)</span></code></p>
+<ul>
+<li><p><strong>理由</strong>: 複雑な信号処理アルゴリズムと物理的整合性の検証に最適。Thinking版で論理構築の透明性を確保。</p></li>
+<li><p><strong>用途</strong>: SweptSine アルゴリズム実装、数値安定性の検証</p></li>
+</ul>
+</li>
+<li><p><strong>サブモデル</strong>: <code class="docutils literal notranslate"><span class="pre">Gemini</span> <span class="pre">3</span> <span class="pre">Flash</span></code></p>
+<ul>
+<li><p><strong>理由</strong>: GUI部分の高速実装</p></li>
+<li><p><strong>用途</strong>: Qt ウィジェット追加、ボタン配置など</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>工数見積もり:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>タスク</p></th>
+<th class="head"><p>推定時間</p></th>
+<th class="head"><p>クオータ消費</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Task 2.1: Swept Sine実装</p></td>
+<td><p>6-10時間</p></td>
+<td><p>High</p></td>
+<td><p>アルゴリズム + テスト</p></td>
+</tr>
+<tr class="row-odd"><td><p>Task 2.2: GUI統合</p></td>
+<td><p>3-5時間</p></td>
+<td><p>Medium</p></td>
+<td><p>Qt実装、イベント処理</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Phase 2 合計</strong></p></td>
+<td><p><strong>9-15時間</strong></p></td>
+<td><p><strong>High</strong></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>懸念事項:</strong></p>
+<ul class="simple">
+<li><p>シミュレーション環境での検証のみ。実測定データとの比較ができない可能性。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="phase-3-2-3">
+<h3>Phase 3: 高度な解析機能とデータ処理 (2-3週間)<a class="headerlink" href="#phase-3-2-3" title="Link to this heading"></a></h3>
+<p><strong>主なタスク:</strong></p>
+<ul class="simple">
+<li><p>Zoom FFT 実装（ヘテロダイン変換 + デシメーション）</p></li>
+<li><p>単位変換ロジック拡充</p></li>
+<li><p>バーストノイズ測定</p></li>
+</ul>
+<p><strong>推奨モデル:</strong></p>
+<ul class="simple">
+<li><p><strong>メインモデル</strong>: <code class="docutils literal notranslate"><span class="pre">Claude</span> <span class="pre">Sonnet</span> <span class="pre">4.5</span> <span class="pre">(Thinking)</span></code></p>
+<ul>
+<li><p><strong>理由</strong>: Zoom FFT の複雑な数値処理に対応。Thinking版で周波数シフトとデシメーションのロジック構築。</p></li>
+<li><p><strong>用途</strong>: Zoom FFT 実装、単位変換マトリクス設計</p></li>
+</ul>
+</li>
+<li><p><strong>サブモデル</strong>: <code class="docutils literal notranslate"><span class="pre">Gemini</span> <span class="pre">3</span> <span class="pre">Flash</span></code></p>
+<ul>
+<li><p><strong>理由</strong>: テストケースや簡単なリファクタリング</p></li>
+<li><p><strong>用途</strong>: pytest追加、ドキュメント更新</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>工数見積もり:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>タスク</p></th>
+<th class="head"><p>推定時間</p></th>
+<th class="head"><p>クオータ消費</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Task 3.1: Zoom FFT</p></td>
+<td><p>4-6時間</p></td>
+<td><p>Medium-High</p></td>
+<td><p>複雑なDSP処理</p></td>
+</tr>
+<tr class="row-odd"><td><p>Task 3.2: 単位変換</p></td>
+<td><p>2-3時間</p></td>
+<td><p>Low-Medium</p></td>
+<td><p>変換テーブル実装</p></td>
+</tr>
+<tr class="row-even"><td><p>Task 3.3: バーストノイズ</p></td>
+<td><p>3-4時間</p></td>
+<td><p>Medium</p></td>
+<td><p>ゲーティングロジック</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Phase 3 合計</strong></p></td>
+<td><p><strong>9-13時間</strong></p></td>
+<td><p><strong>Medium-High</strong></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>懸念事項:</strong></p>
+<ul class="simple">
+<li><p>Zoom FFT のエッジケース（境界処理）で数値誤差が発生する可能性。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="phase-4-4">
+<h3>Phase 4: バックエンド統合と高度なシミュレーション (4週間〜)<a class="headerlink" href="#phase-4-4" title="Link to this heading"></a></h3>
+<p><strong>主なタスク:</strong></p>
+<ul class="simple">
+<li><p>NDS2 リアルタイムストリーミング堅牢化（非同期処理、エラーハンドリング）</p></li>
+<li><p>AWG シミュレーション拡張（任意波形、フィルタ適用）</p></li>
+<li><p>Foton フィルタファイル連携</p></li>
+</ul>
+<p><strong>推奨モデル:</strong></p>
+<ul class="simple">
+<li><p><strong>メインモデル</strong>: <code class="docutils literal notranslate"><span class="pre">Gemini</span> <span class="pre">3</span> <span class="pre">Pro</span> <span class="pre">(High)</span></code> または <code class="docutils literal notranslate"><span class="pre">Claude</span> <span class="pre">Sonnet</span> <span class="pre">4.5</span></code></p>
+<ul>
+<li><p><strong>理由</strong>: 長時間の非同期処理ロジックやファイルパース処理に最適。</p></li>
+<li><p><strong>用途</strong>: NDS2 クライアント再設計、Foton パーサー実装</p></li>
+</ul>
+</li>
+<li><p><strong>サブモデル</strong>: <code class="docutils literal notranslate"><span class="pre">Gemini</span> <span class="pre">3</span> <span class="pre">Flash</span></code></p>
+<ul>
+<li><p><strong>理由</strong>: GUI 改良と可視化機能追加</p></li>
+<li><p><strong>用途</strong>: 波形エクスポート UI、フィルタ適用前後の比較表示</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>工数見積もり:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>タスク</p></th>
+<th class="head"><p>推定時間</p></th>
+<th class="head"><p>クオータ消費</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Task 4.1: NDS2堅牢化</p></td>
+<td><p>6-8時間</p></td>
+<td><p>Medium-High</p></td>
+<td><p>非同期処理、再接続ロジック</p></td>
+</tr>
+<tr class="row-odd"><td><p>Task 4.2: AWGシミュレーション</p></td>
+<td><p>4-6時間</p></td>
+<td><p>Medium</p></td>
+<td><p>波形生成・エクスポート</p></td>
+</tr>
+<tr class="row-even"><td><p>Task 4.3: Foton連携</p></td>
+<td><p>3-5時間</p></td>
+<td><p>Medium</p></td>
+<td><p>テキストパース、SOS適用</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Phase 4 合計</strong></p></td>
+<td><p><strong>13-19時間</strong></p></td>
+<td><p><strong>Medium-High</strong></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>懸念事項:</strong></p>
+<ul class="simple">
+<li><p>NDS2 サーバーの実環境テストが必要。シミュレーションのみでは不十分な可能性。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id2">
+<h2>2. 全体サマリー<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>総工数見積もり<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Phase</p></th>
+<th class="head"><p>推定時間</p></th>
+<th class="head"><p>クオータ消費</p></th>
+<th class="head"><p>推奨メインモデル</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Phase 1</p></td>
+<td><p>5-8時間</p></td>
+<td><p>Medium</p></td>
+<td><p>Claude Sonnet 4.5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Phase 2</p></td>
+<td><p>9-15時間</p></td>
+<td><p>High</p></td>
+<td><p>Claude Opus 4.5 (Thinking)</p></td>
+</tr>
+<tr class="row-even"><td><p>Phase 3</p></td>
+<td><p>9-13時間</p></td>
+<td><p>Medium-High</p></td>
+<td><p>Claude Sonnet 4.5 (Thinking)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Phase 4</p></td>
+<td><p>13-19時間</p></td>
+<td><p>Medium-High</p></td>
+<td><p>Gemini 3 Pro (High)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>合計</strong></p></td>
+<td><p><strong>36-55時間</strong></p></td>
+<td><p><strong>High</strong></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id4">
+<h3>モデル使用時間の配分（推奨）<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Claude Opus 4.5 (Thinking):  9-15時間 (Phase 2専用)
+Claude Sonnet 4.5:          14-21時間 (Phase 1, 3)
+Gemini 3 Pro (High):        13-19時間 (Phase 4)
+Gemini 3 Flash:             補助的に使用 (ドキュメント、簡単な修正)
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>クオータ管理戦略<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Phase 2 (Swept Sine) は最もクオータを消費</strong></p>
+<ul class="simple">
+<li><p>可能であれば、Phase 1で基盤を固めてから一気に実装する。</p></li>
+<li><p>中断・再開が必要な場合は、詳細な実装メモを残す。</p></li>
+</ul>
+</li>
+<li><p><strong>Gemini Flash を積極活用</strong></p>
+<ul class="simple">
+<li><p>テストコード生成、ドキュメント更新などの定型作業は Flash で高速化。</p></li>
+<li><p>クオータ節約と並行して作業効率も向上。</p></li>
+</ul>
+</li>
+<li><p><strong>段階的実装の推奨</strong></p>
+<ul class="simple">
+<li><p>Phase 2, 3 は一度に全機能を実装せず、最小機能版 (MVP) を先に完成させる。</p></li>
+<li><p>動作確認後に拡張する戦略でリスクを低減。</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>3. コストパフォーマンス評価<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="roi">
+<h3>ROI (投資対効果) 分析<a class="headerlink" href="#roi" title="Link to this heading"></a></h3>
+<p><strong>投資:</strong></p>
+<ul class="simple">
+<li><p>LLM クオータ: High (特に Phase 2)</p></li>
+<li><p>作業時間: 36-55時間（人間単独なら 200-300時間相当）</p></li>
+</ul>
+<p><strong>リターン:</strong></p>
+<ul class="simple">
+<li><p>DTT 互換ツールの完成 → LIGO/KAGRA での診断業務効率化</p></li>
+<li><p>Python ベースのモダンなUI → 保守性向上、新機能追加が容易</p></li>
+<li><p>安全なシミュレーション環境 → 実機リスクなしでの検証</p></li>
+</ul>
+<p><strong>結論:</strong></p>
+<ul class="simple">
+<li><p><strong>投資価値: 極めて高い</strong></p></li>
+<li><p>LLM を活用することで、人手作業の約 1/5 の時間で同等品質のツールを開発可能。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h2>4. リスクとその軽減策<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<section id="dtt">
+<h3>リスク 1: DTT 実データが無く検証不十分<a class="headerlink" href="#dtt" title="Link to this heading"></a></h3>
+<p><strong>軽減策:</strong></p>
+<ul class="simple">
+<li><p>合成データ（既知のスペクトルを持つ信号）で代替検証</p></li>
+<li><p>DTT XML サンプルデータを探索（過去の測定記録など）</p></li>
+</ul>
+</section>
+<section id="swept-sine">
+<h3>リスク 2: Swept Sine 実装の複雑さでクオータ超過<a class="headerlink" href="#swept-sine" title="Link to this heading"></a></h3>
+<p><strong>軽減策:</strong></p>
+<ul class="simple">
+<li><p>Phase 2 を細分化（2.1a シミュレーション版, 2.1b GUI統合）</p></li>
+<li><p>各サブタスクごとに検証・コミットして進捗を可視化</p></li>
+</ul>
+</section>
+<section id="nds2">
+<h3>リスク 3: NDS2 実環境でのテスト不能<a class="headerlink" href="#nds2" title="Link to this heading"></a></h3>
+<p><strong>軽減策:</strong></p>
+<ul class="simple">
+<li><p>モックサーバーでの動作確認を優先</p></li>
+<li><p>実環境テストは別途スケジュール</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h2>5. 推奨される次のアクション<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<section id="phase-1">
+<h3>即座に開始可能なタスク (Phase 1)<a class="headerlink" href="#phase-1" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Task 1.1: PSD正規化検証ノートブック作成</strong></p>
+<ul class="simple">
+<li><p><strong>推奨モデル</strong>: <code class="docutils literal notranslate"><span class="pre">Claude</span> <span class="pre">Sonnet</span> <span class="pre">4.5</span></code></p></li>
+<li><p><strong>推定時間</strong>: 1-2時間</p></li>
+<li><p><strong>目的</strong>: scipy と DTT の窓関数正規化の違いを定量化</p></li>
+</ul>
+</li>
+<li><p><strong>Task 1.2: MeasurementState 設計</strong></p>
+<ul class="simple">
+<li><p><strong>推奨モデル</strong>: <code class="docutils literal notranslate"><span class="pre">Claude</span> <span class="pre">Sonnet</span> <span class="pre">4.5</span></code></p></li>
+<li><p><strong>推定時間</strong>: 1時間</p></li>
+<li><p><strong>目的</strong>: データクラスの定義と JSON シリアライズ実装</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="id9">
+<h3>開始の判断基準<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>クオータに余裕がある場合</strong>: Phase 1 全体を一気に実施</p></li>
+<li><p><strong>クオータが限られている場合</strong>: Task 1.1 のみ実施し、結果を確認してから次へ</p></li>
+</ul>
+<p>どのタスクから着手しますか？</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

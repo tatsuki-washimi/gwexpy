@@ -1,0 +1,913 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# TimeSeriesMatrix チュートリアル\n",
+    "\n",
+    "`TimeSeriesMatrix` は `SeriesMatrix` を TimeSeries 用に拡張した 3 次元配列コンテナです（shape: Nrow × Ncol × Nsample）。\n",
+    "\n",
+    "- `dt / t0 / times` など TimeSeries 互換のエイリアス\n",
+    "- 要素アクセスで `TimeSeries` を返す（`tsm[i, j]`）\n",
+    "- 時間領域処理（detrend/bandpass/resample ...）を要素ごとに適用\n",
+    "- FFT/PSD/ASD や coherence などのスペクトル解析（返り値は `FrequencySeriesMatrix`）\n",
+    "- 表示系 (`plot`, `step`, `repr`, `_repr_html_`) をそのまま使用\n",
+    "\n",
+    "このノートブックでは追加のユーティリティ関数は定義せず、クラスメソッドを直接呼び出して動作を確認します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:14.000224Z",
+     "iopub.status.busy": "2026-01-24T10:40:14.000127Z",
+     "iopub.status.idle": "2026-01-24T10:40:15.982050Z",
+     "shell.execute_reply": "2026-01-24T10:40:15.980806Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "from astropy import units as u\n",
+    "\n",
+    "from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 代表データを用意\n",
+    "- 2×2 の `TimeSeriesMatrix` を作り、`dt/t0/times` やメタデータ（unit/name/channel）を確認します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:15.984467Z",
+     "iopub.status.busy": "2026-01-24T10:40:15.984003Z",
+     "iopub.status.idle": "2026-01-24T10:40:16.256452Z",
+     "shell.execute_reply": "2026-01-24T10:40:16.255520Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<h3>SeriesMatrix: shape=(2, 2, 1024), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 s, <b>dx:</b> 0.00390625 s, <b>N_samples:</b> 1024</li><li><b>xunit:</b> s</li></ul><h4>Row Metadata</h4><table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>name</th>\n",
+       "      <th>channel</th>\n",
+       "      <th>unit</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>key</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>r0</th>\n",
+       "      <td>row0</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>r1</th>\n",
+       "      <td>row1</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table><h4>Column Metadata</h4><table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>name</th>\n",
+       "      <th>channel</th>\n",
+       "      <th>unit</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>key</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>c0</th>\n",
+       "      <td>col0</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>c1</th>\n",
+       "      <td>col1</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table><h4>Element Metadata</h4><table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>unit</th>\n",
+       "      <th>name</th>\n",
+       "      <th>channel</th>\n",
+       "      <th>row</th>\n",
+       "      <th>col</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>V</td>\n",
+       "      <td>ch00</td>\n",
+       "      <td>X:A</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>V</td>\n",
+       "      <td>ch01</td>\n",
+       "      <td>X:B</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>V</td>\n",
+       "      <td>ch10</td>\n",
+       "      <td>Y:A</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>V</td>\n",
+       "      <td>ch11</td>\n",
+       "      <td>Y:B</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>"
+      ],
+      "text/plain": [
+       "<SeriesMatrix shape=(2, 2, 1024) rows=('r0', 'r1') cols=('c0', 'c1')>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "rng = np.random.default_rng(0)\n",
+    "\n",
+    "# サンプル設定\n",
+    "n = 1024\n",
+    "dt = (1 / 256) * u.s\n",
+    "t0 = 0 * u.s\n",
+    "\n",
+    "t = (np.arange(n) * dt).to_value(u.s)\n",
+    "\n",
+    "tone10 = np.sin(2 * np.pi * 10 * t)\n",
+    "tone20 = np.sin(2 * np.pi * 20 * t + 0.3)\n",
+    "\n",
+    "data = np.empty((2, 2, n), dtype=float)\n",
+    "data[0, 0] = 0.5 * tone10 + 0.05 * rng.normal(size=n)\n",
+    "data[0, 1] = 0.5 * tone20 + 0.05 * rng.normal(size=n)\n",
+    "data[1, 0] = 0.3 * tone10 + 0.3 * tone20 + 0.05 * rng.normal(size=n)\n",
+    "data[1, 1] = 0.2 * tone10 - 0.4 * tone20 + 0.05 * rng.normal(size=n)\n",
+    "\n",
+    "units = np.full((2, 2), u.V)\n",
+    "names = [[\"ch00\", \"ch01\"], [\"ch10\", \"ch11\"]]\n",
+    "channels = [[\"X:A\", \"X:B\"], [\"Y:A\", \"Y:B\"]]\n",
+    "\n",
+    "tsm = TimeSeriesMatrix(\n",
+    "    data,\n",
+    "    dt=dt,\n",
+    "    t0=t0,\n",
+    "    units=units,\n",
+    "    names=names,\n",
+    "    channels=channels,\n",
+    "    rows={\"r0\": {\"name\": \"row0\"}, \"r1\": {\"name\": \"row1\"}},\n",
+    "    cols={\"c0\": {\"name\": \"col0\"}, \"c1\": {\"name\": \"col1\"}},\n",
+    "    name=\"demo\",\n",
+    ")\n",
+    "\n",
+    "display(tsm)\n",
+    "tsm.plot();"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 多様な入力パターン（コンストラクタ例）\n",
+    "`dt/t0` のほか、`sample_rate` や `times`、`TimeSeries` の 2D リスト、`Quantity` 入力などを確認します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:16.258784Z",
+     "iopub.status.busy": "2026-01-24T10:40:16.258658Z",
+     "iopub.status.idle": "2026-01-24T10:40:16.266132Z",
+     "shell.execute_reply": "2026-01-24T10:40:16.265703Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "=== TimeSeriesMatrix コンストラクタ例 ===\n",
+      "case1 sample_rate dt 0.00390625 s sample_rate 256.0 Hz\n",
+      "case2 times dt 0.00390625 s t0 0.0 s N 1024\n",
+      "case3 from TimeSeries (2, 2, 1024) dt 0.00390625 s\n",
+      "case4 Quantity meta unit mV\n",
+      "error {'dt': <Quantity 0.00390625 s>, 'sample_rate': <Quantity 256. Hz>, 't0': <Quantity 0. s>} -> ValueError give only one of sample_rate or dt\n",
+      "error {'dt': <Quantity 0.00390625 s>, 't0': <Quantity 0. s>, 'epoch': <Quantity 0. s>} -> ValueError give only one of epoch or t0\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"=== TimeSeriesMatrix コンストラクタ例 ===\")\n",
+    "times = tsm.times\n",
+    "\n",
+    "# ケース 1: sample_rate 指定（dt の代わり）\n",
+    "tsm_sr = TimeSeriesMatrix(\n",
+    "    data,\n",
+    "    sample_rate=256 * u.Hz,\n",
+    "    t0=t0,\n",
+    "    units=units,\n",
+    "    names=names,\n",
+    "    channels=channels,\n",
+    ")\n",
+    "print(\"case1 sample_rate\", \"dt\", tsm_sr.dt, \"sample_rate\", tsm_sr.sample_rate)\n",
+    "\n",
+    "# ケース 2: times 指定（不規則サンプルにも対応）\n",
+    "tsm_times = TimeSeriesMatrix(data, times=times, units=units, names=names)\n",
+    "print(\"case2 times\", \"dt\", tsm_times.dt, \"t0\", tsm_times.t0, \"N\", tsm_times.N_samples)\n",
+    "\n",
+    "# ケース 3: TimeSeries の 2D リストから構築\n",
+    "ts00 = TimeSeries(data[0, 0], times=times, unit=u.V, name=\"ch00\", channel=\"X:A\")\n",
+    "ts01 = TimeSeries(data[0, 1], times=times, unit=u.V, name=\"ch01\", channel=\"X:B\")\n",
+    "ts10 = TimeSeries(data[1, 0], times=times, unit=u.V, name=\"ch10\", channel=\"Y:A\")\n",
+    "ts11 = TimeSeries(data[1, 1], times=times, unit=u.V, name=\"ch11\", channel=\"Y:B\")\n",
+    "tsm_from_ts = TimeSeriesMatrix([[ts00, ts01], [ts10, ts11]])\n",
+    "print(\"case3 from TimeSeries\", tsm_from_ts.shape, \"dt\", tsm_from_ts.dt)\n",
+    "\n",
+    "# ケース 4: Quantity 入力（units を自動設定）\n",
+    "tsm_q = TimeSeriesMatrix((data * u.mV), dt=dt, t0=t0)\n",
+    "print(\"case4 Quantity meta unit\", tsm_q.meta[0, 0].unit)\n",
+    "\n",
+    "# 例外: dt と sample_rate / t0 と epoch は同時指定できない\n",
+    "for kwargs in [\n",
+    "    dict(dt=dt, sample_rate=256 * u.Hz, t0=t0),\n",
+    "    dict(dt=dt, t0=t0, epoch=t0),\n",
+    "]:\n",
+    "    try:\n",
+    "        _ = TimeSeriesMatrix(data, **kwargs)\n",
+    "    except Exception as e:\n",
+    "        print(\"error\", kwargs, \"->\", type(e).__name__, e)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 参照・切り出し\n",
+    "- `tsm[i, j]` は `TimeSeries` を返す\n",
+    "- スライスは `TimeSeriesMatrix` を返す\n",
+    "- row/col ラベルでもアクセスできる"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:16.267592Z",
+     "iopub.status.busy": "2026-01-24T10:40:16.267485Z",
+     "iopub.status.idle": "2026-01-24T10:40:16.372515Z",
+     "shell.execute_reply": "2026-01-24T10:40:16.371798Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0,0] type <class 'gwexpy.timeseries.timeseries.TimeSeries'> dt 0.00390625 s t0 0.0 s unit V\n",
+      "[0,0] name ch00 channel X:A\n",
+      "[r0,c1] name ch01 channel X:B\n",
+      "tsm[:,0] -> <class 'gwexpy.timeseries.matrix.TimeSeriesMatrix'> (2, 1, 1024)\n"
+     ]
+    }
+   ],
+   "source": [
+    "s00 = tsm[0, 0]\n",
+    "print(\"[0,0]\", \"type\", type(s00), \"dt\", s00.dt, \"t0\", s00.t0, \"unit\", s00.unit)\n",
+    "print(\"[0,0]\", \"name\", s00.name, \"channel\", s00.channel)\n",
+    "s00.plot(xscale=\"seconds\")\n",
+    "\n",
+    "s01 = tsm[\"r0\", \"c1\"]\n",
+    "print(\"[r0,c1]\", \"name\", s01.name, \"channel\", s01.channel)\n",
+    "\n",
+    "sub = tsm[:, 0]\n",
+    "print(\"tsm[:,0] ->\", type(sub), sub.shape)\n",
+    "sub.plot(subplots=True, xscale=\"seconds\");\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## サンプル軸編集\n",
+    "- `diff` / `pad` は `TimeSeriesMatrix` を返す\n",
+    "- `crop` は現在 `SeriesMatrix` を返すので、`view(TimeSeriesMatrix)` で戻します（中身は同じ）"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:16.374450Z",
+     "iopub.status.busy": "2026-01-24T10:40:16.374337Z",
+     "iopub.status.idle": "2026-01-24T10:40:16.792694Z",
+     "shell.execute_reply": "2026-01-24T10:40:16.791659Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "cropped <class 'gwexpy.timeseries.matrix.TimeSeriesMatrix'> (2, 2, 256) span (<Quantity 1. s>, <Quantity 2. s>)\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "diffed (2, 2, 1023) dt 0.00390625 s\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "padded (2, 2, 1124) t0 -0.1953125 s\n"
+     ]
+    }
+   ],
+   "source": [
+    "cropped = tsm.crop(start=1 * u.s, end=2 * u.s).view(TimeSeriesMatrix)\n",
+    "print(\"cropped\", type(cropped), cropped.shape, \"span\", cropped.span)\n",
+    "cropped.plot(subplots=True, xscale=\"seconds\")\n",
+    "\n",
+    "diffed = tsm.diff(n=1)\n",
+    "print(\"diffed\", diffed.shape, \"dt\", diffed.dt)\n",
+    "diffed.plot(subplots=True, xscale=\"seconds\")\n",
+    "\n",
+    "padded = tsm.pad(50)\n",
+    "print(\"padded\", padded.shape, \"t0\", padded.t0)\n",
+    "padded.plot(subplots=True, xscale=\"seconds\");\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 時間領域処理（TimeSeries メソッドの要素ごと適用）\n",
+    "`TimeSeries` のメソッド（`detrend`, `bandpass`, `resample` など）を行列要素ごとに適用します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:16.794524Z",
+     "iopub.status.busy": "2026-01-24T10:40:16.794407Z",
+     "iopub.status.idle": "2026-01-24T10:40:17.083285Z",
+     "shell.execute_reply": "2026-01-24T10:40:17.082421Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "original (2, 2, 1024) sample_rate 256.0 Hz\n",
+      "bandpass (2, 2, 1024) sample_rate 256.0 Hz\n",
+      "resample (2, 2, 512) sample_rate 128.0 Hz\n"
+     ]
+    }
+   ],
+   "source": [
+    "detr = tsm.detrend(\"constant\")\n",
+    "bp = detr.bandpass(5, 40)\n",
+    "rs = bp.resample(128)\n",
+    "\n",
+    "print(\"original\", tsm.shape, \"sample_rate\", tsm.sample_rate)\n",
+    "print(\"bandpass\", bp.shape, \"sample_rate\", bp.sample_rate)\n",
+    "print(\"resample\", rs.shape, \"sample_rate\", rs.sample_rate)\n",
+    "\n",
+    "bp.plot(subplots=True, xscale=\"seconds\")\n",
+    "rs.plot(subplots=True, xscale=\"seconds\");\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 欠損値処理 (Imputation)\n",
+    "Matrix内の欠損値 (NaN) を補完します。各チャンネルごとに適用されます。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:17.086578Z",
+     "iopub.status.busy": "2026-01-24T10:40:17.086456Z",
+     "iopub.status.idle": "2026-01-24T10:40:17.093604Z",
+     "shell.execute_reply": "2026-01-24T10:40:17.093128Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Before impute (Has NaN): False\n",
+      "After impute (Has NaN): False\n"
+     ]
+    }
+   ],
+   "source": [
+    "# 欠損値を含むデータの作成 (デモ用)\n",
+    "tsm_miss = tsm.copy()\n",
+    "# 最初のチャンネルの一部をNaNにする (アクセスの仕方に注意: tsm[0,0] は time series)\n",
+    "tsm_miss[0, 0].value[50:60] = np.nan\n",
+    "\n",
+    "print(\"Before impute (Has NaN):\", np.isnan(tsm_miss[0,0].value).any())\n",
+    "\n",
+    "# 補完 (線形補間)\n",
+    "tsm_imp = tsm_miss.impute(method=\"interpolate\")\n",
+    "print(\"After impute (Has NaN):\", np.isnan(tsm_imp[0,0].value).any())\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 前処理: 標準化と白色化\n",
+    "多変量解析の前処理として有用です。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:17.095036Z",
+     "iopub.status.busy": "2026-01-24T10:40:17.094908Z",
+     "iopub.status.idle": "2026-01-24T10:40:17.098742Z",
+     "shell.execute_reply": "2026-01-24T10:40:17.098295Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Standardized shape: (2, 2, 1024)\n",
+      "Whitened shape: (4, 1, 1024)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# 標準化 (Standardize): 平均0, 分散1にスケーリング\n",
+    "tsm_std = tsm.standardize(method=\"zscore\")\n",
+    "\n",
+    "# 白色化 (Whiten): チャンネル間の相関(共分散)を除去\n",
+    "# PCAを用いて無相関化します\n",
+    "tsm_white, w_model = tsm_std.whiten_channels(return_model=True)\n",
+    "\n",
+    "print(\"Standardized shape:\", tsm_std.shape)\n",
+    "print(\"Whitened shape:\", tsm_white.shape)\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 成分分解 (PCA / ICA)\n",
+    "効率的な次元圧縮や、信号源分離を行います。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:17.099886Z",
+     "iopub.status.busy": "2026-01-24T10:40:17.099769Z",
+     "iopub.status.idle": "2026-01-24T10:40:17.242859Z",
+     "shell.execute_reply": "2026-01-24T10:40:17.242224Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "PCA Scores shape: (2, 1, 1024)\n",
+      "Explained variance ratio: [0.57128681 0.41742564]\n",
+      "ICA Sources shape: (2, 1, 1024)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# 主成分分析 (PCA)\n",
+    "# 次元を圧縮 (例: 3チャンネル -> 2主成分)\n",
+    "n_comp = min(2, tsm.shape[0])\n",
+    "pca_scores, pca_res = tsm_std.pca(n_components=n_comp, return_model=True)\n",
+    "\n",
+    "print(\"PCA Scores shape:\", pca_scores.shape)\n",
+    "print(\"Explained variance ratio:\", pca_res.explained_variance_ratio)\n",
+    "pca_scores.plot()\n",
+    "plt.show()\n",
+    "plt.close()\n",
+    "\n",
+    "# 独立成分分析 (ICA)\n",
+    "# 信号源分離 (Blind Source Separation)\n",
+    "ica_sources = tsm_std.ica(n_components=n_comp, random_state=42)\n",
+    "print(\"ICA Sources shape:\", ica_sources.shape)\n",
+    "ica_sources.plot()\n",
+    "plt.show()\n",
+    "plt.close()\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 相互運用性 (Interop) 入門\n",
+    "PyTorchなどの外部ライブラリへデータを渡すことができます。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:17.244624Z",
+     "iopub.status.busy": "2026-01-24T10:40:17.244505Z",
+     "iopub.status.idle": "2026-01-24T10:40:18.195272Z",
+     "shell.execute_reply": "2026-01-24T10:40:18.194343Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Converted to PyTorch: torch.Size([2, 2, 1024])\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    # PyTorch Tensorへ変換\n",
+    "    import torch\n",
+    "    _ = torch\n",
+    "    tensor = tsm.to_torch()\n",
+    "    print(\"Converted to PyTorch:\", tensor.shape)\n",
+    "except ImportError:\n",
+    "    print(\"PyTorch not installed\")\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## スペクトル解析（FFT / PSD / ASD）\n",
+    "`fft/psd/asd` は `FrequencySeriesMatrix` を返します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:18.197437Z",
+     "iopub.status.busy": "2026-01-24T10:40:18.196987Z",
+     "iopub.status.idle": "2026-01-24T10:40:18.288896Z",
+     "shell.execute_reply": "2026-01-24T10:40:18.287786Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "fft <class 'gwexpy.frequencyseries.matrix.FrequencySeriesMatrix'> (2, 2, 513) df 0.25 Hz f0 0.0 Hz\n",
+      "psd (2, 2, 129) unit V2 / Hz\n",
+      "asd (2, 2, 129) unit V / Hz(1/2)\n"
+     ]
+    }
+   ],
+   "source": [
+    "fft = tsm.fft()\n",
+    "print(\"fft\", type(fft), fft.shape, \"df\", fft.df, \"f0\", fft.f0)\n",
+    "\n",
+    "psd = tsm.psd(fftlength=1, overlap=0.5)\n",
+    "asd = tsm.asd(fftlength=1, overlap=0.5)\n",
+    "print(\"psd\", psd.shape, \"unit\", psd[0, 0].unit)\n",
+    "print(\"asd\", asd.shape, \"unit\", asd[0, 0].unit)\n",
+    "\n",
+    "asd.plot(subplots=True)\n",
+    "plt.xscale('log')\n",
+    "plt.yscale('log')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## bivariate スペクトル解析（coherence 例）\n",
+    "`TimeSeriesMatrix.coherence(other)` は要素ごとに coherence を計算し、`FrequencySeriesMatrix` を返します。\n",
+    "\n",
+    "- `other` に `TimeSeries` を渡すと「全要素 vs 同一参照」の比較になります\n",
+    "- `other` に `TimeSeriesMatrix` を渡す場合は shape (Nrow, Ncol) が一致している必要があります"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:18.290678Z",
+     "iopub.status.busy": "2026-01-24T10:40:18.290563Z",
+     "iopub.status.idle": "2026-01-24T10:40:18.345909Z",
+     "shell.execute_reply": "2026-01-24T10:40:18.345141Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "coherence <class 'gwexpy.frequencyseries.matrix.FrequencySeriesMatrix'> (2, 2, 129) unit coherence\n",
+      "shape mismatch -> IndexError index 1 is out of bounds for axis 1 with size 1\n"
+     ]
+    }
+   ],
+   "source": [
+    "ref = tsm[0, 0]\n",
+    "coh = tsm.coherence(ref, fftlength=1, overlap=0.5)\n",
+    "print(\"coherence\", type(coh), coh.shape, \"unit\", coh[0, 0].unit)\n",
+    "coh.plot(subplots=True)\n",
+    "\n",
+    "try:\n",
+    "    _ = tsm.coherence(tsm[:, :1], fftlength=1)\n",
+    "except Exception as e:\n",
+    "    print(\"shape mismatch ->\", type(e).__name__, e)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 表示系: repr / plot / step\n",
+    "- `repr`: テキスト表示\n",
+    "- `_repr_html_`: ノートブックでは `display(tsm)` で表形式\n",
+    "- `plot` / `step`: クラスメソッドで直接描画"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:18.347464Z",
+     "iopub.status.busy": "2026-01-24T10:40:18.347332Z",
+     "iopub.status.idle": "2026-01-24T10:40:18.625505Z",
+     "shell.execute_reply": "2026-01-24T10:40:18.624716Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "repr:\n",
+      " SeriesMatrix(shape=(2, 2, 1024),  name='demo')\n",
+      "  epoch   : 0.0 s\n",
+      "  x0      : 0.0 s\n",
+      "  dx      : 0.00390625 s\n",
+      "  xunit   : s\n",
+      "  samples : 1024\n",
+      "\n",
+      "[ Row metadata ]\n",
+      "     name channel unit\n",
+      "key                   \n",
+      "r0   row0             \n",
+      "r1   row1             \n",
+      "\n",
+      "[ Column metadata ]\n",
+      "     name channel unit\n",
+      "key                   \n",
+      "c0   col0             \n",
+      "c1   col1             \n",
+      "\n",
+      "[ Elements metadata ]\n",
+      "  unit  name channel  row  col\n",
+      "0    V  ch00     X:A    0    0\n",
+      "1    V  ch01     X:B    0    1\n",
+      "2    V  ch10     Y:A    1    0\n",
+      "3    V  ch11     Y:B    1    1\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<h3>SeriesMatrix: shape=(2, 2, 1024), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 s, <b>dx:</b> 0.00390625 s, <b>N_samples:</b> 1024</li><li><b>xunit:</b> s</li></ul><h4>Row Metadata</h4><table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>name</th>\n",
+       "      <th>channel</th>\n",
+       "      <th>unit</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>key</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>r0</th>\n",
+       "      <td>row0</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>r1</th>\n",
+       "      <td>row1</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table><h4>Column Metadata</h4><table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>name</th>\n",
+       "      <th>channel</th>\n",
+       "      <th>unit</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>key</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>c0</th>\n",
+       "      <td>col0</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>c1</th>\n",
+       "      <td>col1</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table><h4>Element Metadata</h4><table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>unit</th>\n",
+       "      <th>name</th>\n",
+       "      <th>channel</th>\n",
+       "      <th>row</th>\n",
+       "      <th>col</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>V</td>\n",
+       "      <td>ch00</td>\n",
+       "      <td>X:A</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>V</td>\n",
+       "      <td>ch01</td>\n",
+       "      <td>X:B</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>V</td>\n",
+       "      <td>ch10</td>\n",
+       "      <td>Y:A</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>V</td>\n",
+       "      <td>ch11</td>\n",
+       "      <td>Y:B</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>"
+      ],
+      "text/plain": [
+       "<SeriesMatrix shape=(2, 2, 1024) rows=('r0', 'r1') cols=('c0', 'c1')>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "print(\"repr:\\n\", tsm)\n",
+    "display(tsm)\n",
+    "\n",
+    "tsm.plot(subplots=True, xscale=\"seconds\")\n",
+    "tsm.step(where=\"post\", xscale=\"seconds\");\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## まとめ\n",
+    "- `TimeSeriesMatrix` は TimeSeries 互換の軸情報（`dt/t0/times`）と要素メタデータを保ったまま、行列として一括処理できる。\n",
+    "- 時間領域処理（detrend/bandpass/resample 等）やスペクトル解析（asd/psd/coherence 等）を、要素ごとにまとめて適用できる。\n",
+    "- まず `tsm[i, j]` で `TimeSeries` を取り出して挙動を確認し、慣れたら行列のまま処理するのが簡単。"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "base",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

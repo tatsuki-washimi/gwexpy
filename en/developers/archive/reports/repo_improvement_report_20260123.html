@@ -1,0 +1,202 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Repository Review Report &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Repository Review Report</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/reports/repo_improvement_report_20260123.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="repository-review-report">
+<h1>Repository Review Report<a class="headerlink" href="#repository-review-report" title="Link to this heading"></a></h1>
+<p><strong>Date</strong>: 2026-01-23
+<strong>Version</strong>: gwexpy v0.4.0</p>
+<section id="overview">
+<h2>1. Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> repository is a robust extension library for <code class="docutils literal notranslate"><span class="pre">gwpy</span></code>, designed for advanced time-series analysis and experimental physics.</p>
+<ul class="simple">
+<li><p><strong>Scale</strong>: Moderate to Large. Core package <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> contains ~300 files.</p></li>
+<li><p><strong>Testing</strong>: Extensive test suite with 2669 tests collected (via pytest).</p></li>
+<li><p><strong>Structure</strong>: Well-organized standard Python project structure (<code class="docutils literal notranslate"><span class="pre">gwexpy/</span></code>, <code class="docutils literal notranslate"><span class="pre">tests/</span></code>, <code class="docutils literal notranslate"><span class="pre">docs/</span></code>, <code class="docutils literal notranslate"><span class="pre">examples/</span></code>).</p></li>
+<li><p><strong>Documentation</strong>: Rich set of tutorials (<code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>) and straightforward <code class="docutils literal notranslate"><span class="pre">README.md</span></code>.</p></li>
+</ul>
+</section>
+<section id="strengths">
+<h2>2. Strengths<a class="headerlink" href="#strengths" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Testing Culture</strong>: The high number of tests implies strong reliability goals. <code class="docutils literal notranslate"><span class="pre">tests</span></code> directory mirrors the package structure well.</p></li>
+<li><p><strong>Modern Configurations</strong>: usage of <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> for build, dependencies, and tools (<code class="docutils literal notranslate"><span class="pre">ruff</span></code>, <code class="docutils literal notranslate"><span class="pre">mypy</span></code>, <code class="docutils literal notranslate"><span class="pre">pytest</span></code>) is standard and clean.</p></li>
+<li><p><strong>Type Hinting</strong>: Major classes (e.g., <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">Fitter</span></code>) utilize type hints (<code class="docutils literal notranslate"><span class="pre">typing</span></code>, <code class="docutils literal notranslate"><span class="pre">__future__</span> <span class="pre">annotations</span></code>), improving maintainability and IDE support.</p></li>
+<li><p><strong>Documentation</strong>: A dedicated <code class="docutils literal notranslate"><span class="pre">docs</span></code> folder with tutorials covers advanced topics like <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> and signal processing.</p></li>
+</ul>
+</section>
+<section id="improvements">
+<h2>3. Improvements<a class="headerlink" href="#improvements" title="Link to this heading"></a></h2>
+<section id="p1-high-priority-code-health-maintainability">
+<h3>P1: High Priority (Code Health &amp; Maintainability)<a class="headerlink" href="#p1-high-priority-code-health-maintainability" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Refactor <code class="docutils literal notranslate"><span class="pre">gwexpy/gui/ui/main_window.py</span></code></strong>:</p>
+<ul>
+<li><p><strong>Issue</strong>: This file is <strong>1804 lines</strong> long.</p></li>
+<li><p><strong>Detail</strong>: The <code class="docutils literal notranslate"><span class="pre">update_graphs</span></code> method alone spans ~500 lines (663-1169). This makes logic hard to follow and bug-prone.</p></li>
+<li><p><strong>Action</strong>: Extract logic into dedicated helpers or sub-classes (e.g., <code class="docutils literal notranslate"><span class="pre">GraphManager</span></code>, <code class="docutils literal notranslate"><span class="pre">PlotUpdater</span></code>).</p></li>
+</ul>
+</li>
+<li><p><strong>Address <code class="docutils literal notranslate"><span class="pre">TODO</span></code>s in Core Modules</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/fitting/core.py</span></code>: Check valid TODOs regarding functionality.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/spectrogram/matrix_core.py</span></code>: Ensure matrix operations are fully implemented.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="p2-medium-priority-robustness">
+<h3>P2: Medium Priority (Robustness)<a class="headerlink" href="#p2-medium-priority-robustness" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Audit generic <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code></strong>:</p>
+<ul>
+<li><p><strong>Issue</strong>: <code class="docutils literal notranslate"><span class="pre">grep</span></code> revealed multiple instances (approx 25) of broad exception catching.</p></li>
+<li><p><strong>Risk</strong>: This can hide unexpected bugs.</p></li>
+<li><p><strong>Action</strong>: Replace with specific exception types where possible, or ensure proper logging is in place.</p></li>
+</ul>
+</li>
+<li><p><strong>Resolve <code class="docutils literal notranslate"><span class="pre">FIXME</span></code> / <code class="docutils literal notranslate"><span class="pre">XXX</span></code></strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/gui/ui/main_window.py</span></code> contains <code class="docutils literal notranslate"><span class="pre">XXX</span></code>.</p></li>
+<li><p>Investigate and resolve or promote to a tracked issue.</p></li>
+</ul>
+</li>
+<li><p><strong>MyPy Strictness</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> has extensive <code class="docutils literal notranslate"><span class="pre">ignore_errors</span> <span class="pre">=</span> <span class="pre">true</span></code> blocks.</p></li>
+<li><p><strong>Action</strong>: Gradually remove these blocks and fix type errors to get full benefit of static analysis.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="p3-low-priority-cleanup">
+<h3>P3: Low Priority (Cleanup)<a class="headerlink" href="#p3-low-priority-cleanup" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Legacy Code Checks</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/types/metadata.py</span></code> uses <code class="docutils literal notranslate"><span class="pre">sys.version_info</span></code>. Verify if this is still needed given <code class="docutils literal notranslate"><span class="pre">requires-python</span> <span class="pre">=</span> <span class="pre">&quot;&gt;=3.9&quot;</span></code>.</p></li>
+</ul>
+</li>
+<li><p><strong>Unused imports/variables</strong>:</p>
+<ul>
+<li><p>Continue using <code class="docutils literal notranslate"><span class="pre">ruff</span></code> to clean up, as configured.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="recommended-next-steps">
+<h2>4. Recommended Next Steps<a class="headerlink" href="#recommended-next-steps" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Immediate</strong>: Create a task to refactor <code class="docutils literal notranslate"><span class="pre">MainWindow.update_graphs</span></code>.</p></li>
+<li><p><strong>Short-term</strong>: Scan and fix critical <code class="docutils literal notranslate"><span class="pre">TODO</span></code>s.</p></li>
+<li><p><strong>Long-term</strong>: Plan for increasing MyPy coverage.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,25 +1,25 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="ja" data-content_root="../../">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FrequencySeries &mdash; gwexpy  ドキュメント</title>
+  <title>FrequencySeries &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../_static/translations.js?v=4755f45a"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../../genindex.html" />
-    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="FrequencySeriesDict" href="FrequencySeriesDict.html" />
     <link rel="prev" title="TimeSeriesMatrix" href="TimeSeriesMatrix.html" /> 
 </head>
@@ -43,15 +43,16 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ja/index.html">詳細リファレンス</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Detailed Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
@@ -416,6 +417,12 @@
 <li class="toctree-l2"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Array2D.html">Array2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Array4D.html">Array4D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScalarField.html">ScalarField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorField.html">VectorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TensorField.html">TensorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldList.html">FieldList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldDict.html">FieldDict</a></li>
 <li class="toctree-l2"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Plot.html">Plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Noise.html">Noise</a></li>
@@ -432,9 +439,9 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">開発者ガイド (Developers Guide)</a></li>
 </ul>
 
         </div>
@@ -465,7 +472,7 @@
   <section id="frequencyseries">
 <h1>FrequencySeries<a class="headerlink" href="#frequencyseries" title="Link to this heading"></a></h1>
 <p><strong>Inherits from:</strong> SignalAnalysisMixin, RegularityMixin, FittingMixin, StatisticalMethodsMixin, BaseFrequencySeries (gwpy.frequencyseries.FrequencySeries)</p>
-<p>Light wrapper of gwpy's FrequencySeries for compatibility and future extension.</p>
+<p>Light wrapper of gwpy’s FrequencySeries for compatibility and future extension.</p>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
 <section id="abs">
@@ -473,7 +480,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>absolute(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True[, signature, extobj])</p>
+<p>absolute(x, /, out=None, *, where=True, casting=’same_kind’, order=’K’, dtype=None, subok=True[, signature, extobj])</p>
 <p>Calculate the absolute value element-wise.</p>
 <p><code class="docutils literal notranslate"><span class="pre">np.abs</span></code> is a shorthand for this function.</p>
 </section>
@@ -541,7 +548,7 @@ plt.show()</p>
 <div><blockquote>
 <div><blockquote>
 <div><p>xx = x + 1j * x[:, np.newaxis]
-plt.imshow(np.abs(xx), extent=[-10, 10, -10, 10], cmap='gray')
+plt.imshow(np.abs(xx), extent=[-10, 10, -10, 10], cmap=’gray’)
 plt.show()</p>
 </div></blockquote>
 </div></blockquote>
@@ -590,7 +597,7 @@ otherwise copy data and return new series, default: <code class="docutils litera
 value with which to pad discontiguous series,
 by default gaps will result in a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
 <p>gap : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-action to perform if there's a gap between the other series
+action to perform if there’s a gap between the other series
 and this one. One of</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- ``&#39;raise&#39;`` - raise a `ValueError`
 - ``&#39;ignore&#39;`` - remove gap and join data
@@ -620,16 +627,16 @@ a new series containing joined data sets</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>a.copy(order='C')</p>
+<p>a.copy(order=’C’)</p>
 <p>Return a copy of the array.</p>
 </section>
 </section>
 <section id="id3">
 <h2>Parameters<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<p>order : {'C', 'F', 'A', 'K'}, optional
-Controls the memory layout of the copy. 'C' means C-order,
-'F' means F-order, 'A' means 'F' if <code class="docutils literal notranslate"><span class="pre">a</span></code> is Fortran contiguous,
-'C' otherwise. 'K' means match the layout of <code class="docutils literal notranslate"><span class="pre">a</span></code> as closely
+<p>order : {‘C’, ‘F’, ‘A’, ‘K’}, optional
+Controls the memory layout of the copy. ‘C’ means C-order,
+‘F’ means F-order, ‘A’ means ‘F’ if <code class="docutils literal notranslate"><span class="pre">a</span></code> is Fortran contiguous,
+‘C’ otherwise. ‘K’ means match the layout of <code class="docutils literal notranslate"><span class="pre">a</span></code> as closely
 as possible. (Note that this function and :func:<code class="docutils literal notranslate"><span class="pre">numpy.copy</span></code> are very
 similar but have different default values for their order=
 arguments, and this function always passes sub-classes through.)</p>
@@ -642,7 +649,7 @@ numpy.copyto</p>
 <section id="notes">
 <h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
 <p>This function is the preferred method for creating an array copy.  The
-function :func:<code class="docutils literal notranslate"><span class="pre">numpy.copy</span></code> is similar, but it defaults to using order 'K',
+function :func:<code class="docutils literal notranslate"><span class="pre">numpy.copy</span></code> is similar, but it defaults to using order ‘K’,
 and will not pass sub-classes through by default.</p>
 </section>
 <section id="id4">
@@ -650,7 +657,7 @@ and will not pass sub-classes through by default.</p>
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>x = np.array([[1,2,3],[4,5,6]], order='F')</p>
+<div><p>x = np.array([[1,2,3],[4,5,6]], order=’F’)</p>
 </div></blockquote>
 </div></blockquote>
 </div></blockquote>
@@ -689,7 +696,7 @@ array([[1, 2, 3],
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>y.flags['C_CONTIGUOUS']
+<div><p>y.flags[‘C_CONTIGUOUS’]
 True</p>
 </div></blockquote>
 </div></blockquote>
@@ -865,7 +872,7 @@ Inherited from gwpy.</p>
 <p>threshold : <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional
 Height threshold. If None, no threshold.
 method : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-'amplitude', 'power', 'db', 'complex', 'abs'. Defines what metric to search on.
+‘amplitude’, ‘power’, ‘db’, ‘complex’, ‘abs’. Defines what metric to search on.
 **kwargs
 Passed to <code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code> (e.g. distance, prominence, width).</p>
 </section>
@@ -894,14 +901,14 @@ and the result is returned as a <code class="docutils literal notranslate"><span
 </section>
 <section id="id19">
 <h2>Parameters<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
-<p>order : {'C', 'F', 'A', 'K'}, optional
-'C' means to flatten in row-major (C-style) order.
-'F' means to flatten in column-major (Fortran-
-style) order. 'A' means to flatten in column-major
+<p>order : {‘C’, ‘F’, ‘A’, ‘K’}, optional
+‘C’ means to flatten in row-major (C-style) order.
+‘F’ means to flatten in column-major (Fortran-
+style) order. ‘A’ means to flatten in column-major
 order if <code class="docutils literal notranslate"><span class="pre">a</span></code> is Fortran <em>contiguous</em> in memory,
-row-major order otherwise. 'K' means to flatten
+row-major order otherwise. ‘K’ means to flatten
 <code class="docutils literal notranslate"><span class="pre">a</span></code> in the order the elements occur in memory.
-The default is 'C'.</p>
+The default is ‘C’.</p>
 </section>
 <section id="id20">
 <h2>Returns<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
@@ -918,7 +925,7 @@ flat : A 1-D flat iterator over the array.</p>
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>a = Array([[1,2], [3,4]], unit='m', name='Test')
+<div><p>a = Array([[1,2], [3,4]], unit=’m’, name=’Test’)
 a.flatten()
 &lt;Quantity [1., 2., 3., 4.] m&gt;</p>
 </div></blockquote>
@@ -1182,7 +1189,7 @@ A new FrequencySeries representing the group delay in seconds.</p>
 </section>
 <section id="id42">
 <h2>Parameters<a class="headerlink" href="#id42" title="Link to this heading"></a></h2>
-<p>mode : {&quot;auto&quot;, &quot;gwpy&quot;, &quot;transient&quot;}
+<p>mode : {“auto”, “gwpy”, “transient”}
 auto: use transient restoration if <code class="docutils literal notranslate"><span class="pre">_gwex_fft_mode==&quot;transient&quot;</span></code> is detected, otherwise GWpy compatible.
 trim : bool
 Whether to remove padding and trim to original length during transient mode.
@@ -1558,7 +1565,7 @@ otherwise copy data and return new series, default: <code class="docutils litera
 value with which to pad discontiguous series,
 by default gaps will result in a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
 <p>gap : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-action to perform if there's a gap between the other series
+action to perform if there’s a gap between the other series
 and this one. One of</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- ``&#39;raise&#39;`` - raise a `ValueError`
 - ``&#39;ignore&#39;`` - remove gap and join data
@@ -1669,13 +1676,13 @@ a negative value to shift backwards in time</p>
 <div><blockquote>
 <div><blockquote>
 <div><p>from gwpy.types import Series
-a = Series([1, 2, 3, 4, 5], x0=0, dx=1, xunit='m')
+a = Series([1, 2, 3, 4, 5], x0=0, dx=1, xunit=’m’)
 print(a.x0)
 0.0 m
 a.shift(5)
 print(a.x0)
 5.0 m
-a.shift('-1 km')
+a.shift(‘-1 km’)
 -995.0 m</p>
 </div></blockquote>
 </div></blockquote>
@@ -1694,12 +1701,12 @@ a.shift('-1 km')
 Number of samples for the smoothing winow (e.g. rolling mean size).
 method : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
 Smoothing target:
-- 'amplitude': Smooth absolute value |X|, keep phase 'original' (or 0?).
+- ‘amplitude’: Smooth absolute value |X|, keep phase ‘original’ (or 0?).
 Actually, strictly smoothing magnitude destroys phase coherence.
 Returns REAL series (magnitude only).
-- 'power': Smooth power |X|^2. Returns REAL series.
-- 'complex': Smooth real and imaginary parts separately. Preserves complex.
-- 'db': Smooth dB values. Returns REAL series (in dB).
+- ‘power’: Smooth power |X|^2. Returns REAL series.
+- ‘complex’: Smooth real and imaginary parts separately. Preserves complex.
+- ‘db’: Smooth dB values. Returns REAL series (in dB).
 ignore_nan : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
 If True, ignore NaNs during smoothing. Default is True.</p>
 </section>
@@ -1848,9 +1855,9 @@ MNE Info object.</p>
 <p>name : str, optional
 Name for the polars Series/Column.
 as_dataframe : bool, default True
-If True, returns a DataFrame with a 'frequency' column.
+If True, returns a DataFrame with a ‘frequency’ column.
 If False, returns a raw Series of values.
-frequencies : str, default &quot;frequency&quot;
+frequencies : str, default “frequency”
 Name of the frequency column (only if as_dataframe=True).</p>
 </section>
 <section id="id93">
@@ -1919,9 +1926,9 @@ Target units.</p>
 <p>location : array_like, optional
 Rx location (x, y, z). Default is [0, 0, 0].
 rx_type : str, optional
-Receiver class name. Default &quot;PointElectricField&quot;.
+Receiver class name. Default “PointElectricField”.
 orientation : str, optional
-Receiver orientation ('x', 'y', 'z'). Default 'x'.</p>
+Receiver orientation (‘x’, ‘y’, ‘z’). Default ‘x’.</p>
 </section>
 <section id="id101">
 <h2>Returns<a class="headerlink" href="#id101" title="Link to this heading"></a></h2>
@@ -1978,7 +1985,7 @@ Arguments passed to Spectrum1D constructor.</p>
 <section id="id105">
 <h2>Parameters<a class="headerlink" href="#id105" title="Link to this heading"></a></h2>
 <p>device : <code class="docutils literal notranslate"><span class="pre">str</span></code> or <code class="docutils literal notranslate"><span class="pre">torch.device</span></code>, optional
-Target device (e.g. 'cpu', 'cuda').
+Target device (e.g. ‘cpu’, ‘cuda’).
 dtype : <code class="docutils literal notranslate"><span class="pre">torch.dtype</span></code>, optional
 Target data type. Defaults to preserving complex64/128 or float32/64.
 requires_grad : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
@@ -2001,7 +2008,7 @@ If <code class="docutils literal notranslate"><span class="pre">True</span></cod
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tostring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>a.tobytes(order='C')</p>
+<p>a.tobytes(order=’C’)</p>
 <p>Construct Python bytes containing the raw data bytes in the array.</p>
 <p>Constructs Python bytes showing a copy of the raw contents of
 data memory. The bytes object is produced in C-order by default.
@@ -2011,15 +2018,15 @@ This behavior is controlled by the <code class="docutils literal notranslate"><s
 </section>
 <section id="id107">
 <h2>Parameters<a class="headerlink" href="#id107" title="Link to this heading"></a></h2>
-<p>order : {'C', 'F', 'A'}, optional
-Controls the memory layout of the bytes object. 'C' means C-order,
-'F' means F-order, 'A' (short for <em>Any</em>) means 'F' if <code class="docutils literal notranslate"><span class="pre">a</span></code> is
-Fortran contiguous, 'C' otherwise. Default is 'C'.</p>
+<p>order : {‘C’, ‘F’, ‘A’}, optional
+Controls the memory layout of the bytes object. ‘C’ means C-order,
+‘F’ means F-order, ‘A’ (short for <em>Any</em>) means ‘F’ if <code class="docutils literal notranslate"><span class="pre">a</span></code> is
+Fortran contiguous, ‘C’ otherwise. Default is ‘C’.</p>
 </section>
 <section id="id108">
 <h2>Returns<a class="headerlink" href="#id108" title="Link to this heading"></a></h2>
 <p>s : bytes
-Python bytes exhibiting a copy of <code class="docutils literal notranslate"><span class="pre">a</span></code>'s raw data.</p>
+Python bytes exhibiting a copy of <code class="docutils literal notranslate"><span class="pre">a</span></code>’s raw data.</p>
 </section>
 <section id="id109">
 <h2>See also<a class="headerlink" href="#id109" title="Link to this heading"></a></h2>
@@ -2032,13 +2039,13 @@ bytes.</p>
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>x = np.array([[0, 1], [2, 3]], dtype='&lt;u2')
+<div><p>x = np.array([[0, 1], [2, 3]], dtype=’&lt;u2’)
 x.tobytes()
-b'\x00\x00\x01\x00\x02\x00\x03\x00'
-x.tobytes('C') == x.tobytes()
+b’\x00\x00\x01\x00\x02\x00\x03\x00’
+x.tobytes(‘C’) == x.tobytes()
 True
-x.tobytes('F')
-b'\x00\x00\x02\x00\x01\x00\x03\x00'</p>
+x.tobytes(‘F’)
+b’\x00\x00\x02\x00\x01\x00\x03\x00’</p>
 </div></blockquote>
 </div></blockquote>
 </div></blockquote>
@@ -2224,7 +2231,7 @@ for details on how a digital ZPK-format filter is applied</p>
 <section id="transformations-ifft">
 <h3>Transformations (IFFT)<a class="headerlink" href="#transformations-ifft" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><strong>Amplitude Preservation</strong>: <code class="docutils literal notranslate"><span class="pre">ifft()</span></code> is designed to invert GWpy's <code class="docutils literal notranslate"><span class="pre">fft()</span></code> (one-sided output). It automatically applies a <strong>0.5 scaling factor</strong> to non-DC/Nyquist components to strictly preserve the amplitude of the original time series (Parseval's theorem).</p></li>
+<li><p><strong>Amplitude Preservation</strong>: <code class="docutils literal notranslate"><span class="pre">ifft()</span></code> is designed to invert GWpy’s <code class="docutils literal notranslate"><span class="pre">fft()</span></code> (one-sided output). It automatically applies a <strong>0.5 scaling factor</strong> to non-DC/Nyquist components to strictly preserve the amplitude of the original time series (Parseval’s theorem).</p></li>
 </ul>
 </section>
 </section>

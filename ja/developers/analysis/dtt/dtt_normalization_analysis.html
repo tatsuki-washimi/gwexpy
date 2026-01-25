@@ -1,0 +1,564 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DTT FFT 正規化ロジック深掘り分析 &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">開発者ガイド (Developers Guide)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">DTT FFT 正規化ロジック深掘り分析</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/analysis/dtt/dtt_normalization_analysis.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dtt-fft">
+<h1>DTT FFT 正規化ロジック深掘り分析<a class="headerlink" href="#dtt-fft" title="Link to this heading"></a></h1>
+<p><strong>作成日:</strong> 2026-01-22<br />
+<strong>対象:</strong> DTT <code class="docutils literal notranslate"><span class="pre">ffttools.cc</span></code> の Window Normalization (ENBW) と <code class="docutils literal notranslate"><span class="pre">scipy.signal.welch</span></code> の比較<br />
+<strong>目的:</strong> Phase 1 タスク「PSD/CSD 正規化の検証」のための技術資料</p>
+<hr class="docutils" />
+<section id="dtt-window-normalization">
+<h2>1. DTT の Window Normalization ロジック<a class="headerlink" href="#dtt-window-normalization" title="Link to this heading"></a></h2>
+<section id="c">
+<h3>1.1 元のコード (C++)<a class="headerlink" href="#c" title="Link to this heading"></a></h3>
+<p><strong>DTT の <code class="docutils literal notranslate"><span class="pre">ffttools.cc</span></code> (行583-589) から実際に抽出:</strong></p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// calculate resolution (window) bandwidth</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">windowNorm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sMean</span><span class="p">(</span><span class="n">fftPlan</span><span class="p">.</span><span class="n">window_coeff</span><span class="p">,</span><span class="w"> </span><span class="n">fftPoints</span><span class="p">);</span>
+<span class="n">windowNorm</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">windowNorm</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">windowNorm</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">windowBW</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BW</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">windowNorm</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">windowBW</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BW</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>変数の定義:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">BW</span></code>: Resolution Bandwidth = <code class="docutils literal notranslate"><span class="pre">fs</span> <span class="pre">/</span> <span class="pre">N</span></code> (サンプリング周波数 / FFT点数)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fftPlan.window_coeff</span></code>: 窓関数の係数配列（例: Hann, Flattop）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fftPoints</span></code>: FFT点数（セグメント長）N</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sMean(w,</span> <span class="pre">N)</span></code>: 窓関数の平均値 = <code class="docutils literal notranslate"><span class="pre">(1/N)</span> <span class="pre">*</span> <span class="pre">Σw[n]</span></code> (GDS ライブラリの関数)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowNorm</span></code>: 窓関数の平均値の二乗 = <code class="docutils literal notranslate"><span class="pre">(Σw[n]</span> <span class="pre">/</span> <span class="pre">N)²</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowBW</span></code>: 実効ノイズ帯域幅 (Equivalent Noise Bandwidth, ENBW)</p></li>
+</ul>
+</section>
+<section id="b-psd-ffttools-cc-1059-1082">
+<h3>1.1b PSD計算の実際のフロー (ffttools.cc 行1059-1082)<a class="headerlink" href="#b-psd-ffttools-cc-1059-1082" title="Link to this heading"></a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// calculate PSD and do averaging</span>
+<span class="c1">// Use DATA_REAL to treat bin at f=0 special</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fftToPs</span><span class="p">(</span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">fStart</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mf">1E-12</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">DATA_COMPLEX</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">DATA_REAL</span><span class="p">,</span><span class="w"> </span>
+<span class="w">            </span><span class="n">tmps</span><span class="p">[</span><span class="n">resultnum</span><span class="p">].</span><span class="n">fft</span><span class="p">,</span><span class="w"> </span><span class="n">tmps</span><span class="p">[</span><span class="n">resultnum</span><span class="p">].</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// do averaging and store result</span>
+<span class="n">avg_specs</span><span class="w"> </span><span class="n">avgprm</span><span class="p">;</span>
+<span class="n">avgprm</span><span class="p">.</span><span class="n">avg_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">averageType</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span>
+<span class="w">   </span><span class="nl">AVG_LINEAR_SQUARE</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">AVG_EXPON_SQUARE</span><span class="p">;</span>
+<span class="n">avgprm</span><span class="p">.</span><span class="n">dataset_length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">points</span><span class="p">;</span>
+<span class="n">avgprm</span><span class="p">.</span><span class="n">data_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DATA_REAL</span><span class="p">;</span>
+<span class="n">avgprm</span><span class="p">.</span><span class="n">number_of_averages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">averages</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">num_so_far</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">measnum</span><span class="p">;</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">avg</span><span class="p">(</span><span class="o">&amp;</span><span class="n">avgprm</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">tmps</span><span class="p">[</span><span class="n">resultnum</span><span class="p">].</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">num_so_far</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="p">(</span><span class="kt">float</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">res</span><span class="o">-&gt;</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>重要な発見:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fftToPs</span></code> 関数が FFT 結果を PSD に変換（GDS ライブラリ関数）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">avg</span></code> 関数が平均化処理を実行</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowBW</span></code> は <strong>パラメータとして保存されるのみ</strong> で、PSD計算には直接使われていない可能性がある</p></li>
+</ul>
+</section>
+<section id="id1">
+<h3>1.2 数式による表現<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>windowNorm = (1/N * Σ w[n])²
+ENBW = BW / windowNorm = (fs / N) / (1/N * Σ w[n])²
+</pre></div>
+</div>
+<p>ここで、<code class="docutils literal notranslate"><span class="pre">Σ</span> <span class="pre">w[n]</span></code> は窓関数の総和（DCゲイン）を表す。</p>
+</section>
+<section id="id2">
+<h3>1.3 物理的意味<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>窓関数を適用すると、スペクトルのメインローブが広がり、実質的な周波数分解能が低下する。ENBW は、矩形窓（窓なし）と同じノイズパワーを通過させる等価な帯域幅を表す。</p>
+<p><strong>主要な窓関数の ENBW 係数:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Window Type</p></th>
+<th class="head"><p>ENBW Factor</p></th>
+<th class="head"><p>DCゲイン (Σw/N)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Rectangle</p></td>
+<td><p>1.00</p></td>
+<td><p>1.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hann</p></td>
+<td><p>1.50</p></td>
+<td><p>0.50</p></td>
+</tr>
+<tr class="row-even"><td><p>Hamming</p></td>
+<td><p>1.36</p></td>
+<td><p>0.54</p></td>
+</tr>
+<tr class="row-odd"><td><p>Blackman</p></td>
+<td><p>1.73</p></td>
+<td><p>0.42</p></td>
+</tr>
+<tr class="row-even"><td><p>Flattop</p></td>
+<td><p>3.77</p></td>
+<td><p>0.22</p></td>
+</tr>
+</tbody>
+</table>
+<p>DTT の実装では、<code class="docutils literal notranslate"><span class="pre">windowNorm</span> <span class="pre">=</span> <span class="pre">(DCゲイン)²</span></code> であり、<code class="docutils literal notranslate"><span class="pre">ENBW</span> <span class="pre">=</span> <span class="pre">BW</span> <span class="pre">/</span> <span class="pre">(DCゲイン)²</span></code> となる。</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="scipy-signal-welch">
+<h2>2. scipy.signal.welch の正規化ロジック<a class="headerlink" href="#scipy-signal-welch" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>2.1 実装の確認<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">scipy.signal.welch</span></code> の内部では、以下の正規化が行われている（<code class="docutils literal notranslate"><span class="pre">scaling='density'</span></code> の場合）：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># scipy/signal/spectral.py (概念コード)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">welch</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="s1">&#39;density&#39;</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+    <span class="n">win</span> <span class="o">=</span> <span class="n">get_window</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">nperseg</span><span class="p">)</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">fs</span> <span class="o">*</span> <span class="p">(</span><span class="n">win</span><span class="o">*</span><span class="n">win</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    
+    <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">:</span>
+        <span class="n">Pxx</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">segment</span> <span class="o">*</span> <span class="n">win</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">scale</span>
+    
+    <span class="n">Pxx</span> <span class="o">/=</span> <span class="n">n_averages</span>
+</pre></div>
+</div>
+<p><strong>ポイント:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">scale</span> <span class="pre">=</span> <span class="pre">1.0</span> <span class="pre">/</span> <span class="pre">(fs</span> <span class="pre">*</span> <span class="pre">(win*win).sum())</span></code> という正規化係数が使われている。</p></li>
+<li><p>これは、パワースペクトル密度 [単位²/Hz] を得るための標準的な正規化。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>2.2 数式による表現<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>scale = 1 / (fs * Σ(w[n]²))
+PSD[k] = (1/M) * Σ_m |FFT(x_m * w)|² * scale
+</pre></div>
+</div>
+<p>ここで:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Σ(w[n]²)</span></code>: 窓関数のパワー総和（二乗和）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">M</span></code>: 平均化回数</p></li>
+</ul>
+</section>
+<section id="enbw">
+<h3>2.3 ENBW との関係<a class="headerlink" href="#enbw" title="Link to this heading"></a></h3>
+<p>ENBW は以下の式で定義される：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>ENBW = N * Σ(w[n]²) / (Σ w[n])²
+</pre></div>
+</div>
+<p>これを使うと、scipy の正規化は次のように書き直せる：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>scale = 1 / (fs * Σ(w[n]²))
+      = 1 / (fs * N) * (Σ w[n])² / Σ(w[n]²)
+      = (1/BW) * (Σ w[n])² / (N * Σ(w[n]²))
+      = (1/BW) * 1/ENBW
+</pre></div>
+</div>
+<p>つまり、<strong>scipy は既に ENBW 補正を内部で行っている</strong>ことが分かる。</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="dtt-scipy">
+<h2>3. DTT と scipy の比較<a class="headerlink" href="#dtt-scipy" title="Link to this heading"></a></h2>
+<section id="id5">
+<h3>3.1 正規化方式の違い<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>項目</p></th>
+<th class="head"><p>DTT</p></th>
+<th class="head"><p>scipy.signal.welch</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>窓の正規化</strong></p></td>
+<td><p>DCゲイン (<code class="docutils literal notranslate"><span class="pre">Σw/N</span></code>) の二乗で除算</p></td>
+<td><p>パワー総和 (<code class="docutils literal notranslate"><span class="pre">Σw²</span></code>) で除算</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>ENBW補正</strong></p></td>
+<td><p>明示的に <code class="docutils literal notranslate"><span class="pre">windowBW</span></code> を計算</p></td>
+<td><p>暗黙的に <code class="docutils literal notranslate"><span class="pre">scale</span></code> に含まれる</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>最終単位</strong></p></td>
+<td><p>PSD [単位²/Hz]</p></td>
+<td><p>PSD [単位²/Hz]</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id6">
+<h3>3.2 数学的等価性の検証<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p>DTT の実装を scipy に合わせて書き直すと：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># DTT式の実装</span>
+<span class="n">windowNorm</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">window</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># (Σw/N)²</span>
+<span class="n">windowBW</span> <span class="o">=</span> <span class="n">BW</span> <span class="o">/</span> <span class="n">windowNorm</span>         <span class="c1"># ENBW調整後の帯域幅</span>
+
+<span class="c1"># scipy式の実装</span>
+<span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">fs</span> <span class="o">*</span> <span class="p">(</span><span class="n">window</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+<span class="c1"># 関係式の確認</span>
+<span class="c1"># DTT: PSD_factor = 1 / windowBW = windowNorm / BW = (Σw/N)² / (fs/N)</span>
+<span class="c1">#                 = N * (Σw)² / fs</span>
+<span class="c1"># scipy: 1/scale = fs * Σw²</span>
+
+<span class="c1"># これらが一致するか？</span>
+<span class="c1"># DTT方式: factor ∝ (Σw)²</span>
+<span class="c1"># scipy方式: factor ∝ Σw²</span>
+</pre></div>
+</div>
+<p><strong>結論:</strong> DTT と scipy は<strong>異なる正規化を使用している</strong>。</p>
+<p>DTT は <strong>DCゲインの二乗</strong> で正規化しており、scipy は <strong>パワー総和</strong> で正規化している。これらは一般には一致しない。</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h2>4. 実装上の課題と解決策<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<section id="id8">
+<h3>4.1 問題点<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> が <code class="docutils literal notranslate"><span class="pre">scipy.signal.welch</span></code> をそのまま使用すると、DTT と異なる PSD 値が得られる可能性がある。</p>
+</section>
+<section id="id9">
+<h3>4.2 解決策オプション<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<p><strong>オプション A: DTT 方式を採用する (推奨しない)</strong></p>
+<p>scipy を使わず、独自のFFT実装を書く。保守性が低下する。</p>
+<p><strong>オプション B: scipy 結果を DTT 方式に変換する</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">dtt_compatible_psd</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="o">**</span><span class="n">welch_params</span><span class="p">):</span>
+    <span class="c1"># scipy で計算</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">Pxx</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">welch</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="o">**</span><span class="n">welch_params</span><span class="p">)</span>
+    
+    <span class="c1"># 窓関数の取得</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">get_window</span><span class="p">(</span><span class="n">welch_params</span><span class="p">[</span><span class="s1">&#39;window&#39;</span><span class="p">],</span> <span class="n">welch_params</span><span class="p">[</span><span class="s1">&#39;nperseg&#39;</span><span class="p">])</span>
+    
+    <span class="c1"># DTT式への変換係数</span>
+    <span class="n">dc_gain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+    <span class="n">power_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">window</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">conversion_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">dc_gain</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">window</span><span class="p">))</span> <span class="o">/</span> <span class="n">power_sum</span>
+    
+    <span class="c1"># 変換</span>
+    <span class="n">Pxx_dtt</span> <span class="o">=</span> <span class="n">Pxx</span> <span class="o">*</span> <span class="n">conversion_factor</span>
+    
+    <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="n">Pxx_dtt</span>
+</pre></div>
+</div>
+<p><strong>オプション C: scipy の正規化が正しいことを検証し、DTT に合わせない</strong></p>
+<p>実は、<strong>scipy の正規化方式が業界標準</strong>である。DTT が独自の正規化を使っている可能性があるため、むしろ DTT の結果を scipy に合わせて解釈すべき。</p>
+</section>
+<section id="id10">
+<h3>4.3 推奨アプローチ<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>まず scipy の正規化が正しいことを確認する</strong>（文献との照合）。</p></li>
+<li><p><strong>DTT の出力データ（XML）を読み込み、同じ入力信号で scipy の結果と比較する</strong>。</p></li>
+<li><p><strong>差異があれば、変換係数を特定して <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> に適用する</strong>。</p></li>
+</ol>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id11">
+<h2>5. 検証タスク<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<section id="task-1-enbw">
+<h3>Task 1: 窓関数の ENBW 値を計算・比較<a class="headerlink" href="#task-1-enbw" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_window</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_enbw</span><span class="p">(</span><span class="n">window_name</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">get_window</span><span class="p">(</span><span class="n">window_name</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+    <span class="n">dc_gain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="n">power_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="n">enbw</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">power_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">window_name</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  DC Gain: </span><span class="si">{</span><span class="n">dc_gain</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ENBW Factor: </span><span class="si">{</span><span class="n">enbw</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  DTT windowNorm: </span><span class="si">{</span><span class="n">dc_gain</span><span class="o">**</span><span class="mi">2</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">enbw</span>
+
+<span class="k">for</span> <span class="n">win</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;hann&#39;</span><span class="p">,</span> <span class="s1">&#39;hamming&#39;</span><span class="p">,</span> <span class="s1">&#39;blackman&#39;</span><span class="p">,</span> <span class="s1">&#39;flattop&#39;</span><span class="p">]:</span>
+    <span class="n">calculate_enbw</span><span class="p">(</span><span class="n">win</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="task-2-dtt">
+<h3>Task 2: 既存の DTT データとの比較テスト<a class="headerlink" href="#task-2-dtt" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>DTT で測定した PSD データ（XML）を用意する。</p></li>
+<li><p>同じ入力信号（可能であれば生データ）を scipy で処理する。</p></li>
+<li><p>両者のスペクトルをプロットして視覚的に比較する。</p></li>
+<li><p>必要に応じて変換係数を導出する。</p></li>
+</ol>
+<hr class="docutils" />
+</section>
+</section>
+<hr class="docutils" />
+<section id="dtt">
+<h2>6. DTT ソースコード分析の結論<a class="headerlink" href="#dtt" title="Link to this heading"></a></h2>
+<section id="id12">
+<h3>6.1 実装の確認事項<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<p><strong>確認できたこと:</strong></p>
+<ol class="arabic">
+<li><p><strong>Window Normalization の計算</strong>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">windowNorm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sMean</span><span class="p">(</span><span class="n">fftPlan</span><span class="p">.</span><span class="n">window_coeff</span><span class="p">,</span><span class="w"> </span><span class="n">fftPoints</span><span class="p">);</span><span class="w">  </span><span class="c1">// (1/N)Σw[n]</span>
+<span class="n">windowNorm</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">windowNorm</span><span class="p">;</span><span class="w">  </span><span class="c1">// ((1/N)Σw[n])²</span>
+<span class="n">windowBW</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BW</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">windowNorm</span><span class="p">;</span><span class="w">  </span><span class="c1">// fs/N / ((1/N)Σw[n])²</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>FFT → PSD変換</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">psGen()</span></code> 関数がFFT実行と窓関数適用を一括処理</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fftToPs()</span></code> 関数がFFT結果をPSDに変換</p></li>
+<li><p>これらは GDS ライブラリ (libgds) の関数で、ソースコードは非公開</p></li>
+</ul>
+</li>
+<li><p><strong>psGen の引数</strong>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">psGen</span><span class="p">(</span><span class="n">psmode</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tmps</span><span class="p">[</span><span class="n">resultnum</span><span class="p">].</span><span class="n">prm</span><span class="p">,</span><span class="w"> </span><span class="n">fftPoints</span><span class="p">,</span><span class="w"> </span><span class="n">dtype</span><span class="p">,</span><span class="w"> </span>
+<span class="w">      </span><span class="p">(</span><span class="kt">float</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">chndat</span><span class="o">-&gt;</span><span class="n">value</span><span class="p">,</span><span class="w">  </span><span class="c1">// 入力時系列</span>
+<span class="w">      </span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">fSample</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">decimate2</span><span class="p">),</span><span class="w">  </span><span class="c1">// サンプリング周期 dt</span>
+<span class="w">      </span><span class="n">OUTPUT_GDSFORMAT</span><span class="p">,</span><span class="w"> </span><span class="n">window</span><span class="p">,</span><span class="w"> </span><span class="n">tmps</span><span class="p">[</span><span class="n">resultnum</span><span class="p">].</span><span class="n">fft</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">=</span> <span class="pre">1/fs</span></code> が明示的に渡されている</p></li>
+<li><p>これはPSD正規化 <code class="docutils literal notranslate"><span class="pre">[単位²/Hz]</span></code> に必要な情報</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="id13">
+<h3>6.2 推定される正規化方式<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<p>GDS ライブラリの <code class="docutils literal notranslate"><span class="pre">fftToPs</span></code> と <code class="docutils literal notranslate"><span class="pre">psGen</span></code> の実装は確認できないが、以下のように推定できる:</p>
+<section id="a-scipy">
+<h4>仮説A: scipy と同じ正規化<a class="headerlink" href="#a-scipy" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># scipy方式（標準的）</span>
+<span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">fs</span> <span class="o">*</span> <span class="p">(</span><span class="n">window</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="n">PSD</span> <span class="o">=</span> <span class="o">|</span><span class="n">FFT</span><span class="o">|</span><span class="err">²</span> <span class="o">*</span> <span class="n">scale</span>
+</pre></div>
+</div>
+<p>この場合、<code class="docutils literal notranslate"><span class="pre">windowBW</span></code> は <strong>メタデータとしての記録のみ</strong> で、実際のPSD計算には直接使用されない。</p>
+</section>
+<section id="b-dtt">
+<h4>仮説B: DTT独自の正規化<a class="headerlink" href="#b-dtt" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># DTT方式（推定）</span>
+<span class="n">windowBW</span> <span class="o">=</span> <span class="n">BW</span> <span class="o">/</span> <span class="p">((</span><span class="n">window</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">windowBW</span>
+<span class="n">PSD</span> <span class="o">=</span> <span class="o">|</span><span class="n">FFT</span><span class="o">|</span><span class="err">²</span> <span class="o">*</span> <span class="n">scale</span>
+</pre></div>
+</div>
+<p>この場合、scipy と異なる結果になる。</p>
+</section>
+</section>
+<section id="id14">
+<h3>6.3 検証方法<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<p><strong>必須タスク:</strong></p>
+<ol class="arabic">
+<li><p><strong>実データ比較テスト</strong></p>
+<ul class="simple">
+<li><p>DTT で既知の入力信号（例: 白色ノイズ）を測定</p></li>
+<li><p>同じ信号を scipy で処理</p></li>
+<li><p>PSD の絶対値を比較（相対値ではなく）</p></li>
+</ul>
+</li>
+<li><p><strong>窓関数別の変換係数計算</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calculate_dtt_scipy_ratio</span><span class="p">(</span><span class="n">window_name</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">get_window</span><span class="p">(</span><span class="n">window_name</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+    <span class="n">dc_gain</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="n">power_sum</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">N</span>
+    
+    <span class="c1"># DTT方式の係数（推定）</span>
+    <span class="n">dtt_factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">dc_gain</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="c1"># scipy方式の係数</span>
+    <span class="n">scipy_factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">power_sum</span>
+    
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">dtt_factor</span> <span class="o">/</span> <span class="n">scipy_factor</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">window_name</span><span class="si">}</span><span class="s2">: DTT/scipy = </span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ratio</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>XML データの解析</strong></p>
+<ul class="simple">
+<li><p>DTT 出力 XML ファイルから <code class="docutils literal notranslate"><span class="pre">windowBW</span></code> パラメータを読み取る</p></li>
+<li><p>理論値 <code class="docutils literal notranslate"><span class="pre">BW</span> <span class="pre">/</span> <span class="pre">(Σw/N)²</span></code> と一致するか確認</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="id15">
+<h3>6.4 最終推奨<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<p><strong>Phase 1 の実装方針:</strong></p>
+<ol class="arabic">
+<li><p><strong>デフォルトは scipy を使用</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">scipy.signal.welch</span></code> の正規化は信頼できる業界標準</p></li>
+</ul>
+</li>
+<li><p><strong>DTT互換モードを提供</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">gwexpy_psd</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="n">dtt_compatible</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">Pxx</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">welch</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">dtt_compatible</span><span class="p">:</span>
+        <span class="c1"># 実データ比較テストで求めた変換係数を適用</span>
+        <span class="n">conversion</span> <span class="o">=</span> <span class="n">calculate_dtt_conversion_factor</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;window&#39;</span><span class="p">])</span>
+        <span class="n">Pxx</span> <span class="o">*=</span> <span class="n">conversion</span>
+    
+    <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="n">Pxx</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>変換係数の実測</strong></p>
+<ul class="simple">
+<li><p>DTT の実測データがある場合のみ、変換係数をキャリブレーション</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id16">
+<h2>7. 次のステップ: 実装タスク<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
+<section id="task-1">
+<h3>Task 1: 検証ノートブックの作成<a class="headerlink" href="#task-1" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">notebooks/verification/dtt_psd_comparison.ipynb</span></code> を作成:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. 窓関数のENBW値を計算</span>
+<span class="c1"># 2. scipy と DTT推定式の比較</span>
+<span class="c1"># 3. （可能であれば）DTT XMLデータとの比較</span>
+</pre></div>
+</div>
+</section>
+<section id="task-2-gwexpy">
+<h3>Task 2: gwexpy への統合<a class="headerlink" href="#task-2-gwexpy" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy/signal/spectral.py</span></code> に以下を追加:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">welch_dtt_compatible</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DTT-compatible PSD calculation.</span>
+<span class="sd">    </span>
+<span class="sd">    This function computes PSD using scipy.signal.welch and optionally</span>
+<span class="sd">    applies a conversion factor to match DTT&#39;s normalization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</section>
+<section id="task-3">
+<h3>Task 3: ドキュメント化<a class="headerlink" href="#task-3" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>DTT と scipy の正規化の違いを明記</p></li>
+<li><p>ユーザーがどちらを使うべきか判断できるガイドを作成</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

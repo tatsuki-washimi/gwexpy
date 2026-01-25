@@ -1,0 +1,195 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>タイムスタンプ &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">開発者ガイド (Developers Guide)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">タイムスタンプ</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/plans/implementation_plan_scalar_vector_tensor_field_20260122.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>タイムスタンプ<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>2026-01-22 18:05 JST（update）</p></li>
+</ul>
+</section>
+<section id="id2">
+<h1>目的・目標<a class="headerlink" href="#id2" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.fields</span></code> に Scalar/Vector/Tensor Field を新設し、明示的な時間/周波数・位置/波数ドメインメタデータを軸ごとに保持する統一 Field API を実装する。</p></li>
+<li><p>形状不変性（軸削除なし、2D/3D は長さ1軸で表現）と部分FFT時のドメイン伝播を保証し、物理単位とドメインの整合性を検証可能にする。</p></li>
+<li><p>ScalarField 時代の「4D」表記をユーザAPIから排除しつつ、Vector/Tensor 拡張を前提にコンポーネント軸を常に終端に保持する設計を定着させる。</p></li>
+</ul>
+</section>
+<section id="phase">
+<h1>詳細なロードマップ（Phase単位）<a class="headerlink" href="#phase" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><strong>Phase 1: 構造リファクタ</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/fields/</span></code> パッケージを新設し、旧4Dフィールドクラスを ScalarField として移動/整理。ScalarFieldList/Dict → FieldList/FieldDict。公開 import を <code class="docutils literal notranslate"><span class="pre">gwexpy.fields</span></code> に統一。</p></li>
+<li><p>既存 <code class="docutils literal notranslate"><span class="pre">types/array4d.py</span></code> 等の低レベルは温存し、内部参照を更新。</p></li>
+<li><p>CI 影響範囲のモジュール import 修正。</p></li>
+</ul>
+</li>
+<li><p><strong>Phase 2: ベースクラスとドメインメタデータ</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">FieldBase</span></code> を追加し、<code class="docutils literal notranslate"><span class="pre">axis0_domain</span> <span class="pre">∈</span> <span class="pre">{time,</span> <span class="pre">frequency}</span></code> と <code class="docutils literal notranslate"><span class="pre">space_domain</span> <span class="pre">∈</span> <span class="pre">{position,</span> <span class="pre">wavenumber}^3</span></code> を保持。単位とドメインの整合チェック（time↔s, frequency↔Hz, position↔length, wavenumber↔1/length）を実装。</p></li>
+<li><p>スライスで軸・メタデータを保持する挙動を固定化（長さ1 Quantity を維持）。</p></li>
+</ul>
+</li>
+<li><p><strong>Phase 3: FFTとドメイン伝播</strong></p>
+<ul>
+<li><p>時間軸FFTで <code class="docutils literal notranslate"><span class="pre">time→frequency</span></code>、空間軸FFTで該当軸を <code class="docutils literal notranslate"><span class="pre">position→wavenumber</span></code> に更新。部分FFT対応。<code class="docutils literal notranslate"><span class="pre">fftshift</span></code> 等のシフト処理はドメインと独立に扱う。</p></li>
+<li><p>ドメイン更新と単位の組み合わせをテストで網羅し、非変換軸のドメイン/単位が保持されることを確認。</p></li>
+</ul>
+</li>
+<li><p><strong>Phase 4: ScalarField向け信号処理</strong></p>
+<ul>
+<li><p>PSD(Welch), 相互相関, coherence, 時間遅延マップを ScalarField 用に移植/実装。Vector/Tensor は component/magnitude 経由でスカラー化してから利用。</p></li>
+</ul>
+</li>
+<li><p><strong>Phase 5: プロットとドキュメント</strong></p>
+<ul>
+<li><p>ドメイン対応ラベルのプロットヘルパーを ScalarField に提供。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/examples</span></code>/<code class="docutils literal notranslate"><span class="pre">docs</span></code> に部分FFT例、ドメイン不変性、スライス挙動を追加。docstring も同期。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id3">
+<h1>テスト・検証計画<a class="headerlink" href="#id3" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> でドメイン伝播・部分FFT・スライス（軸保持/Quantity維持）・単位整合のケースを追加。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ruff</span></code> と <code class="docutils literal notranslate"><span class="pre">mypy</span></code> を全体実行し、フィールド新規APIに対する型整合を確認。</p></li>
+<li><p>物理整合チェック: wavenumber 定義と単位逆数を <code class="docutils literal notranslate"><span class="pre">check_physics</span></code> スキルで確認予定。</p></li>
+<li><p>スライスによる軸長=1維持（例: z=0, kx=0）とメタデータ保持を明示検証。</p></li>
+<li><p>2D/3D 退化ケース（長さ1軸含む）の FFT で軸数が変化しないことを確認。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h1>使用モデル・推奨スキル・工数見積もり<a class="headerlink" href="#id4" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><strong>推奨モデル</strong>: コード中心かつ物理メタデータ厳格さが必要なため <code class="docutils literal notranslate"><span class="pre">GPT-5.2-Codex</span></code>（実装と型整合）、複雑な物理/FFT仕様検証には <code class="docutils literal notranslate"><span class="pre">Claude</span> <span class="pre">Opus</span> <span class="pre">4.5</span> <span class="pre">(Thinking)</span></code> をバックアップ。軽量レビュー・小修正には <code class="docutils literal notranslate"><span class="pre">Gemini</span> <span class="pre">3</span> <span class="pre">Flash</span></code>。</p></li>
+<li><p><strong>推奨スキル</strong>: <code class="docutils literal notranslate"><span class="pre">lint</span></code>（ruff/mypy実行）、<code class="docutils literal notranslate"><span class="pre">check_physics</span></code>（ドメインと単位検証）、<code class="docutils literal notranslate"><span class="pre">sync_docs</span></code>（docstring/docs反映）、<code class="docutils literal notranslate"><span class="pre">wrap_up_gwexpy</span></code>（最終整備）、必要に応じ <code class="docutils literal notranslate"><span class="pre">visualize_fields</span></code>（描画確認）。</p></li>
+<li><p><strong>工数見積もり</strong> (<code class="docutils literal notranslate"><span class="pre">estimate_effort</span></code> 規約):</p>
+<ul>
+<li><p>Phase1-2: 35-45分（リファクタ＋メタデータ実装/単位チェック）</p></li>
+<li><p>Phase3: 20-30分（FFTドメイン伝播とテスト）</p></li>
+<li><p>Phase4: 20分（信号処理移植）</p></li>
+<li><p>Phase5: 15分（プロット/ドキュメント）</p></li>
+<li><p>合計目安: 90-110分、クオータ消費は Medium-High（型/テスト/ドキュメント更新と複数ツール呼び出しのため）。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id5">
+<h1>承認待ち<a class="headerlink" href="#id5" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>上記計画とモデル選択方針に問題なければ承認ください。承認後 Phase 1 から着手します。</p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

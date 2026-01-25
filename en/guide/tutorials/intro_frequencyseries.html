@@ -1,0 +1,4196 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FrequencySeries の新機能と高度な操作 &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="SpectrogramList と SpectrogramDict のチュートリアル" href="intro_spectrogram.html" />
+    <link rel="prev" title="gwexpy TimeSeries 新機能チュートリアル" href="intro_timeseries.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#i-core-data-structures">I. Core Data Structures</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="intro_timeseries.html">gwexpy TimeSeries 新機能チュートリアル</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">FrequencySeries の新機能と高度な操作</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#1.-データの準備">1. データの準備</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#2.-複素スペクトルの可視化と変換">2. 複素スペクトルの可視化と変換</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#3.-周波数ドメインでの微積分">3. 周波数ドメインでの微積分</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#4.-スペクトルのスムージングとピーク検出">4. スペクトルのスムージングとピーク検出</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#5.-高度な解析機能">5. 高度な解析機能</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#6.-他ライブラリとの連携">6. 他ライブラリとの連携</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#7.-位相と群遅延の解析-(Phase-&amp;-Group-Delay)">7. 位相と群遅延の解析 (Phase &amp; Group Delay)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#8.-Python-Control-Library-との連携">8. Python Control Library との連携</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#9.-求積和-(Quadrature-Sum)">9. 求積和 (Quadrature Sum)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="intro_spectrogram.html">SpectrogramList と SpectrogramDict のチュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro_plotting.html">gwexpy Plotting Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro_mapplotting.html">チュートリアル: 全天マップと地理マップのプロット</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro_interop.html">GWExPy TimeSeries 相互運用性 (Interop) チュートリアル</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#vi-case-studies">VI. Case Studies</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">FrequencySeries の新機能と高度な操作</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/intro_frequencyseries.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="FrequencySeries-の新機能と高度な操作">
+<h1>FrequencySeries の新機能と高度な操作<a class="headerlink" href="#FrequencySeries-の新機能と高度な操作" title="Link to this heading"></a></h1>
+<p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> で拡張された <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> クラスの新しいメソッドと機能について紹介します。 主に複素スペクトルの扱い、微積分、フィルタリング（スムージング）、および他ライブラリとの連携機能に焦点を当てます。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+import numpy as np
+
+from gwexpy.frequencyseries import FrequencySeries
+from gwexpy.plot import Plot
+from gwexpy.timeseries import TimeSeries
+
+plt.rcParams[&#39;figure.figsize&#39;] = (10, 6)
+</pre></div>
+</div>
+</div>
+<section id="1.-データの準備">
+<h2>1. データの準備<a class="headerlink" href="#1.-データの準備" title="Link to this heading"></a></h2>
+<p>まずは <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> から FFT を用いて <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> を作成します。 ここでは、特定の周波数成分を持つテスト信号を生成します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fs = 1024
+t = np.arange(0, 4, 1/fs)
+exp = np.exp(-t/1.5)
+exp[:int(exp.size/4)]=0
+data = np.sin(2 * np.pi * 10.1 * t) + 5*exp * np.sin(2 * np.pi * 100.1 * t) + np.random.normal(scale=0.3, size=len(t))
+ts = TimeSeries(data, dt=1/fs, unit=&#39;um&#39;, name=&#39;Test Signal&#39;)
+print(ts)
+ts.plot(title=ts.name)
+
+# FFT を実行して FrequencySeries を取得 (transient モードを使用してパディングを適用)
+spec = ts.fft(mode=&quot;transient&quot;, pad_left=1.0, pad_right=1.0, nfft_mode=&quot;next_fast_len&quot;)
+print(f&quot;Type: {type(spec)}&quot;)
+print(f&quot;Length: {len(spec)}&quot;)
+print(f&quot;df: {spec.df}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+TimeSeries([0.40091404, 0.21741547, 0.06890398, ..., 0.99928464,
+            1.07351371, 0.94065684]
+           unit: um,
+           t0: 0.0 s,
+           dt: 0.0009765625 s,
+           name: Test Signal,
+           channel: None)
+Type: &lt;class &#39;gwexpy.frequencyseries.frequencyseries.FrequencySeries&#39;&gt;
+Length: 3073
+df: 0.16666666666666666 Hz
+</pre></div></div>
+</div>
+</section>
+<section id="2.-複素スペクトルの可視化と変換">
+<h2>2. 複素スペクトルの可視化と変換<a class="headerlink" href="#2.-複素スペクトルの可視化と変換" title="Link to this heading"></a></h2>
+<section id="位相と振幅">
+<h3>位相と振幅<a class="headerlink" href="#位相と振幅" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">phase()</span></code>, <code class="docutils literal notranslate"><span class="pre">degree()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_db()</span></code> メソッドを使用すると、複素スペクトルを直感的な単位に変換できます。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 振幅を dB に変換 (ref=1.0, 20*log10)
+spec_db = spec.to_db()
+
+# 位相を取得 (度数表記、unwrap=True で連続化)
+spec_phase = spec.degree(unwrap=True)
+
+plot = Plot(spec_db, spec_phase, separate=True, sharex=True, xscale=&#39;log&#39;)
+ax = plot.axes
+ax[0].set_ylabel(&#39;Magnitude [dB (m)]&#39;)
+ax[0].grid(True, which=&#39;both&#39;)
+
+ax[1].set_ylabel(&#39;Phase [deg]&#39;)
+ax[1].set_xlabel(&#39;Frequency [Hz]&#39;)
+ax[1].grid(True, which=&#39;both&#39;)
+plot.figure.suptitle(&#39;Complex Spectrum Analysis&#39;)
+plot.show()
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="3.-周波数ドメインでの微積分">
+<h2>3. 周波数ドメインでの微積分<a class="headerlink" href="#3.-周波数ドメインでの微積分" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">differentiate()</span></code> および <code class="docutils literal notranslate"><span class="pre">integrate()</span></code> メソッドにより、周波数ドメインで微分・積分を行うことができます。 引数 <code class="docutils literal notranslate"><span class="pre">order</span></code> で階数を指定できます（デフォルトは1）。 これは「変位・速度・加速度」の変換（<span class="math notranslate nohighlight">\((2 \pi i f)^n\)</span> の乗算・除算）を簡単に行うための機能です。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 変位 (m) -&gt; 速度 (m/s) に微分 (order=1)
+vel_spec = spec.differentiate()
+
+# 変位 (m) -&gt; 加速度 (m/s^2) に 2回微分 (order=2)
+accel_spec = spec.differentiate(order=2)
+
+# 積分も可能: 加速度 -&gt; 速度
+vel_from_accel = accel_spec.integrate()
+
+plot = Plot(spec.abs(), vel_spec.abs(), accel_spec.abs(), xscale=&#39;log&#39;, yscale=&#39;log&#39;, alpha=0.8)
+ax = plot.gca()
+ax.get_lines()[0].set_label(&#39;Displacement [m]&#39;)
+ax.get_lines()[1].set_label(&#39;Velocity [m/s]&#39;)
+ax.get_lines()[2].set_label(&#39;Acceleration [m/s^2]&#39;)
+ax.legend()
+ax.grid(True, which=&#39;both&#39;)
+ax.set_title(&#39;Calculus in Frequency Domain&#39;)
+ax.set_ylabel(&#39;Magnitude&#39;)
+plot.show()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="4.-スペクトルのスムージングとピーク検出">
+<h2>4. スペクトルのスムージングとピーク検出<a class="headerlink" href="#4.-スペクトルのスムージングとピーク検出" title="Link to this heading"></a></h2>
+<section id="スムージング">
+<h3>スムージング<a class="headerlink" href="#スムージング" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">smooth()</span></code> メソッドを使用すると、移動平均などによるスペクトルの平滑化が可能です。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 振幅ドメインで 11 サンプルのスムージング
+spec_smooth = spec.smooth(width=11)
+
+plot = Plot(spec.abs(), spec_smooth.abs(), xscale=&#39;log&#39;, yscale=&#39;log&#39;)
+ax = plot.gca()
+ax.get_lines()[0].set_label(&#39;Original&#39;)
+ax.get_lines()[0].set_alpha(0.6)
+ax.get_lines()[1].set_label(&#39;Smoothed (width=11)&#39;)
+ax.get_lines()[1].set_color(&#39;red&#39;)
+ax.legend()
+ax.grid(True, which=&#39;both&#39;)
+ax.set_title(&#39;Spectrum Smoothing&#39;)
+plot.show()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="ピーク検出">
+<h3>ピーク検出<a class="headerlink" href="#ピーク検出" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">find_peaks()</span></code> メソッドは <code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code> をラップしており、特定の閾値を超えるピークを簡単に抽出できます。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 振幅 0.2 以上のピークを探す
+peaks, props = spec.find_peaks(threshold=0.2)
+
+plot = Plot(spec.abs())
+ax = plot.gca()
+ax.plot(peaks.abs(), color=&#39;red&#39;, marker=&#39;.&#39;,ms=15, lw=0, zorder=3, label=&#39;Detected Peaks&#39;)
+ax.set_xlim(1, 150)
+ax.set_xscale(&#39;log&#39;)
+ax.set_yscale(&#39;log&#39;)
+ax.set_title(&#39;Peak Detection&#39;)
+ax.legend()
+plot.show()
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="5.-高度な解析機能">
+<h2>5. 高度な解析機能<a class="headerlink" href="#5.-高度な解析機能" title="Link to this heading"></a></h2>
+<section id="群遅延-(Group-Delay)">
+<h3>群遅延 (Group Delay)<a class="headerlink" href="#群遅延-(Group-Delay)" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">group_delay()</span></code> メソッドは、位相の周波数微分から群遅延（信号のエンベロープの遅延）を計算します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>gd = spec.group_delay()
+
+plot = Plot(gd)
+ax = plot.gca()
+ax.set_ylabel(&#39;Group Delay [s]&#39;)
+ax.set_xlabel(&#39;Frequency [Hz]&#39;)
+ax.set_xlim(0, 200)
+ax.set_title(&#39;Group Delay Calculation&#39;)
+plot.show()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="逆FFT-(ifft)">
+<h3>逆FFT (ifft)<a class="headerlink" href="#逆FFT-(ifft)" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ifft()</span></code> メソッドは、<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を返します。<code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code> で FFT した結果であっても、情報を引き継いで元の長さに戻す (trim=True) などの制御が可能です。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 逆 FFT で TimeSeries に戻す
+# mode=&quot;auto&quot; は、入力 FrequencySeries が持つ transient 情報を読み取って適切に処理します
+inv_ts = spec.ifft(mode=&quot;auto&quot;)
+red_ts = inv_ts - ts
+
+plot = Plot(ts, inv_ts, red_ts)
+ax = plot.gca()
+ax.get_lines()[0].set_label(&#39;Original&#39;)
+ax.get_lines()[1].set_label(&#39;IFFT Result&#39;)
+ax.get_lines()[2].set_label(&#39;Residual&#39;)
+ax.get_lines()[1].set_linestyle(&#39;--&#39;)
+ax.get_lines()[1].set_alpha(0.8)
+ax.get_lines()[2].set_color(&#39;black&#39;)
+ax.legend()
+ax.set_title(&#39;Time Domain Round-trip (FFT -&gt; IFFT)&#39;)
+plot.show()
+
+red_ts.plot(title=&#39;Residual Time Series after IFFT&#39;);
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="6.-他ライブラリとの連携">
+<h2>6. 他ライブラリとの連携<a class="headerlink" href="#6.-他ライブラリとの連携" title="Link to this heading"></a></h2>
+<p>Pandas, xarray, control ライブラリとの相互変換が追加されています。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Pandas Series へ変換
+pd_series = spec.to_pandas()
+print(&quot;Pandas index sample:&quot;, pd_series.index[:5])
+display(pd_series)
+
+# xarray DataArray へ変換
+da = spec.to_xarray()
+print(&quot;xarray coord name:&quot;, list(da.coords))
+display(da)
+
+# control.FRD へ変換 (制御系の解析に使用可能)
+try:
+    from control import FRD
+    _ = FRD
+    frd_obj = spec.to_control_frd()
+    print(&quot;Successfully converted to control.FRD&quot;)
+    display(frd_obj)
+except ImportError:
+    print(&quot;python-control library not installed&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Pandas index sample: Index([0.0, 0.16666666666666666, 0.3333333333333333, 0.5, 0.6666666666666666], dtype=&#39;float64&#39;, name=&#39;frequency&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+frequency
+0.000000      0.001449+0.000000j
+0.166667      0.010320-0.011870j
+0.333333     -0.006504+0.004246j
+0.500000     -0.009963+0.000811j
+0.666667     -0.006889-0.000481j
+                     ...
+511.333333   -0.001078+0.006015j
+511.500000   -0.002647-0.003730j
+511.666667    0.004322-0.005484j
+511.833333    0.004209+0.005888j
+512.000000   -0.005132+0.000000j
+Name: Test Signal, Length: 3073, dtype: complex128
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+xarray coord name: [&#39;frequency&#39;]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<symbol id="icon-database" viewBox="0 0 32 32">
+<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
+<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+</symbol>
+<symbol id="icon-file-text2" viewBox="0 0 32 32">
+<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+</symbol>
+</defs>
+</svg>
+<style>/* CSS stylesheet for displaying xarray objects in notebooks */
+
+:root {
+  --xr-font-color0: var(
+    --jp-content-font-color0,
+    var(--pst-color-text-base rgba(0, 0, 0, 1))
+  );
+  --xr-font-color2: var(
+    --jp-content-font-color2,
+    var(--pst-color-text-base, rgba(0, 0, 0, 0.54))
+  );
+  --xr-font-color3: var(
+    --jp-content-font-color3,
+    var(--pst-color-text-base, rgba(0, 0, 0, 0.38))
+  );
+  --xr-border-color: var(
+    --jp-border-color2,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 10))
+  );
+  --xr-disabled-color: var(
+    --jp-layout-color3,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 40))
+  );
+  --xr-background-color: var(
+    --jp-layout-color0,
+    var(--pst-color-on-background, white)
+  );
+  --xr-background-color-row-even: var(
+    --jp-layout-color1,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 5))
+  );
+  --xr-background-color-row-odd: var(
+    --jp-layout-color2,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 15))
+  );
+}
+
+html[theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"],
+body.vscode-dark {
+  --xr-font-color0: var(
+    --jp-content-font-color0,
+    var(--pst-color-text-base, rgba(255, 255, 255, 1))
+  );
+  --xr-font-color2: var(
+    --jp-content-font-color2,
+    var(--pst-color-text-base, rgba(255, 255, 255, 0.54))
+  );
+  --xr-font-color3: var(
+    --jp-content-font-color3,
+    var(--pst-color-text-base, rgba(255, 255, 255, 0.38))
+  );
+  --xr-border-color: var(
+    --jp-border-color2,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 10))
+  );
+  --xr-disabled-color: var(
+    --jp-layout-color3,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 40))
+  );
+  --xr-background-color: var(
+    --jp-layout-color0,
+    var(--pst-color-on-background, #111111)
+  );
+  --xr-background-color-row-even: var(
+    --jp-layout-color1,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 5))
+  );
+  --xr-background-color-row-odd: var(
+    --jp-layout-color2,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 15))
+  );
+}
+
+.xr-wrap {
+  display: block !important;
+  min-width: 300px;
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+.xr-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
+
+.xr-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: solid 1px var(--xr-border-color);
+}
+
+.xr-header > div,
+.xr-header > ul {
+  display: inline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xr-obj-type,
+.xr-obj-name,
+.xr-group-name {
+  margin-left: 2px;
+  margin-right: 10px;
+}
+
+.xr-group-name::before {
+  content: "📁";
+  padding-right: 0.3em;
+}
+
+.xr-group-name,
+.xr-obj-type {
+  color: var(--xr-font-color2);
+}
+
+.xr-sections {
+  padding-left: 0 !important;
+  display: grid;
+  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+.xr-section-item {
+  display: contents;
+}
+
+.xr-section-item input {
+  display: inline-block;
+  opacity: 0;
+  height: 0;
+  margin: 0;
+}
+
+.xr-section-item input + label {
+  color: var(--xr-disabled-color);
+  border: 2px solid transparent !important;
+}
+
+.xr-section-item input:enabled + label {
+  cursor: pointer;
+  color: var(--xr-font-color2);
+}
+
+.xr-section-item input:focus + label {
+  border: 2px solid var(--xr-font-color0) !important;
+}
+
+.xr-section-item input:enabled + label:hover {
+  color: var(--xr-font-color0);
+}
+
+.xr-section-summary {
+  grid-column: 1;
+  color: var(--xr-font-color2);
+  font-weight: 500;
+}
+
+.xr-section-summary > span {
+  display: inline-block;
+  padding-left: 0.5em;
+}
+
+.xr-section-summary-in:disabled + label {
+  color: var(--xr-font-color2);
+}
+
+.xr-section-summary-in + label:before {
+  display: inline-block;
+  content: "►";
+  font-size: 11px;
+  width: 15px;
+  text-align: center;
+}
+
+.xr-section-summary-in:disabled + label:before {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-summary-in:checked + label:before {
+  content: "▼";
+}
+
+.xr-section-summary-in:checked + label > span {
+  display: none;
+}
+
+.xr-section-summary,
+.xr-section-inline-details {
+  padding-top: 4px;
+}
+
+.xr-section-inline-details {
+  grid-column: 2 / -1;
+}
+
+.xr-section-details {
+  display: none;
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  margin-bottom: 5px;
+}
+
+.xr-section-summary-in:checked ~ .xr-section-details {
+  display: contents;
+}
+
+.xr-group-box {
+  display: inline-grid;
+  grid-template-columns: 0px 20px auto;
+  width: 100%;
+}
+
+.xr-group-box-vline {
+  grid-column-start: 1;
+  border-right: 0.2em solid;
+  border-color: var(--xr-border-color);
+  width: 0px;
+}
+
+.xr-group-box-hline {
+  grid-column-start: 2;
+  grid-row-start: 1;
+  height: 1em;
+  width: 20px;
+  border-bottom: 0.2em solid;
+  border-color: var(--xr-border-color);
+}
+
+.xr-group-box-contents {
+  grid-column-start: 3;
+}
+
+.xr-array-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 20px auto;
+}
+
+.xr-array-wrap > label {
+  grid-column: 1;
+  vertical-align: top;
+}
+
+.xr-preview {
+  color: var(--xr-font-color3);
+}
+
+.xr-array-preview,
+.xr-array-data {
+  padding: 0 5px !important;
+  grid-column: 2;
+}
+
+.xr-array-data,
+.xr-array-in:checked ~ .xr-array-preview {
+  display: none;
+}
+
+.xr-array-in:checked ~ .xr-array-data,
+.xr-array-preview {
+  display: inline-block;
+}
+
+.xr-dim-list {
+  display: inline-block !important;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.xr-dim-list li {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.xr-dim-list:before {
+  content: "(";
+}
+
+.xr-dim-list:after {
+  content: ")";
+}
+
+.xr-dim-list li:not(:last-child):after {
+  content: ",";
+  padding-right: 5px;
+}
+
+.xr-has-index {
+  font-weight: bold;
+}
+
+.xr-var-list,
+.xr-var-item {
+  display: contents;
+}
+
+.xr-var-item > div,
+.xr-var-item label,
+.xr-var-item > .xr-var-name span {
+  background-color: var(--xr-background-color-row-even);
+  border-color: var(--xr-background-color-row-odd);
+  margin-bottom: 0;
+  padding-top: 2px;
+}
+
+.xr-var-item > .xr-var-name:hover span {
+  padding-right: 5px;
+}
+
+.xr-var-list > li:nth-child(odd) > div,
+.xr-var-list > li:nth-child(odd) > label,
+.xr-var-list > li:nth-child(odd) > .xr-var-name span {
+  background-color: var(--xr-background-color-row-odd);
+  border-color: var(--xr-background-color-row-even);
+}
+
+.xr-var-name {
+  grid-column: 1;
+}
+
+.xr-var-dims {
+  grid-column: 2;
+}
+
+.xr-var-dtype {
+  grid-column: 3;
+  text-align: right;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-preview {
+  grid-column: 4;
+}
+
+.xr-index-preview {
+  grid-column: 2 / 5;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-name,
+.xr-var-dims,
+.xr-var-dtype,
+.xr-preview,
+.xr-attrs dt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.xr-var-name:hover,
+.xr-var-dims:hover,
+.xr-var-dtype:hover,
+.xr-attrs dt:hover {
+  overflow: visible;
+  width: auto;
+  z-index: 1;
+}
+
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  display: none;
+  border-top: 2px dotted var(--xr-background-color);
+  padding-bottom: 20px !important;
+  padding-top: 10px !important;
+}
+
+.xr-var-attrs-in + label,
+.xr-var-data-in + label,
+.xr-index-data-in + label {
+  padding: 0 1px;
+}
+
+.xr-var-attrs-in:checked ~ .xr-var-attrs,
+.xr-var-data-in:checked ~ .xr-var-data,
+.xr-index-data-in:checked ~ .xr-index-data {
+  display: block;
+}
+
+.xr-var-data > table {
+  float: right;
+}
+
+.xr-var-data > pre,
+.xr-index-data > pre,
+.xr-var-data > table > tbody > tr {
+  background-color: transparent !important;
+}
+
+.xr-var-name span,
+.xr-var-data,
+.xr-index-name div,
+.xr-index-data,
+.xr-attrs {
+  padding-left: 25px !important;
+}
+
+.xr-attrs,
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  grid-column: 1 / -1;
+}
+
+dl.xr-attrs {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 125px auto;
+}
+
+.xr-attrs dt,
+.xr-attrs dd {
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+  width: auto;
+}
+
+.xr-attrs dt {
+  font-weight: normal;
+  grid-column: 1;
+}
+
+.xr-attrs dt:hover span {
+  display: inline-block;
+  background: var(--xr-background-color);
+  padding-right: 10px;
+}
+
+.xr-attrs dd {
+  grid-column: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.xr-icon-database,
+.xr-icon-file-text2,
+.xr-no-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1.5em !important;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+.xr-var-attrs-in:checked + label > .xr-icon-file-text2,
+.xr-var-data-in:checked + label > .xr-icon-database,
+.xr-index-data-in:checked + label > .xr-icon-database {
+  color: var(--xr-font-color0);
+  filter: drop-shadow(1px 1px 5px var(--xr-font-color2));
+  stroke-width: 0.8px;
+}
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.DataArray &#x27;Test Signal&#x27; (frequency: 3073)&gt; Size: 49kB
+array([ 0.00144928+0.j        ,  0.01031991-0.01187033j,
+       -0.00650399+0.00424637j, ...,  0.00432164-0.00548429j,
+        0.004209  +0.00588788j, -0.00513173+0.j        ],
+      shape=(3073,))
+Coordinates:
+  * frequency  (frequency) float64 25kB 0.0 0.1667 0.3333 ... 511.7 511.8 512.0
+Attributes:
+    unit:     um
+    channel:  None
+    epoch:    0.0</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-obj-name'>&#x27;Test Signal&#x27;</div><ul class='xr-dim-list'><li><span class='xr-has-index'>frequency</span>: 3073</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-812cfcce-f396-45e7-bac8-d174b4a7c79f' class='xr-array-in' type='checkbox' checked><label for='section-812cfcce-f396-45e7-bac8-d174b4a7c79f' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>(0.001449279053150888+0j) ... (-0.005131734647443058+0j)</span></div><div class='xr-array-data'><pre>array([ 0.00144928+0.j        ,  0.01031991-0.01187033j,
+       -0.00650399+0.00424637j, ...,  0.00432164-0.00548429j,
+        0.004209  +0.00588788j, -0.00513173+0.j        ],
+      shape=(3073,))</pre></div></div></li><li class='xr-section-item'><input id='section-d73d7a2f-5c29-411b-9593-4d637fce79c3' class='xr-section-summary-in' type='checkbox'  checked><label for='section-d73d7a2f-5c29-411b-9593-4d637fce79c3' class='xr-section-summary' >Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>frequency</span></div><div class='xr-var-dims'>(frequency)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>0.0 0.1667 0.3333 ... 511.8 512.0</div><input id='attrs-22f9e3ec-f403-42ca-9d89-2512b4664b13' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-22f9e3ec-f403-42ca-9d89-2512b4664b13' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1beb2414-6534-481a-b1db-3ee66a22cf46' class='xr-var-data-in' type='checkbox'><label for='data-1beb2414-6534-481a-b1db-3ee66a22cf46' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([0.000000e+00, 1.666667e-01, 3.333333e-01, ..., 5.116667e+02,
+       5.118333e+02, 5.120000e+02], shape=(3073,))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-5b4fea71-5fa1-41b2-a690-e57cd5d9c5aa' class='xr-section-summary-in' type='checkbox'  checked><label for='section-5b4fea71-5fa1-41b2-a690-e57cd5d9c5aa' class='xr-section-summary' >Attributes: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>unit :</span></dt><dd>um</dd><dt><span>channel :</span></dt><dd>None</dd><dt><span>epoch :</span></dt><dd>0.0</dd></dl></div></li></ul></div></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Successfully converted to control.FRD
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+FrequencyResponseData(
+array([[[ 0.00144928+0.j        ,  0.01031991-0.01187033j,
+         -0.00650399+0.00424637j, ...,
+          0.00432164-0.00548429j,  0.004209  +0.00588788j,
+         -0.00513173+0.j        ]]], shape=(1, 1, 3073)),
+array([0.00000000e+00, 1.66666667e-01, 3.33333333e-01, ...,
+       5.11666667e+02, 5.11833333e+02, 5.12000000e+02],
+      shape=(3073,)),
+outputs=1, inputs=1)
+</pre></div></div>
+</div>
+</section>
+<section id="7.-位相と群遅延の解析-(Phase-&amp;-Group-Delay)">
+<h2>7. 位相と群遅延の解析 (Phase &amp; Group Delay)<a class="headerlink" href="#7.-位相と群遅延の解析-(Phase-&-Group-Delay)" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> クラスには、位相 (<code class="docutils literal notranslate"><span class="pre">phase</span></code>, <code class="docutils literal notranslate"><span class="pre">angle</span></code>) や群遅延 (<code class="docutils literal notranslate"><span class="pre">group_delay</span></code>) を計算する便利なメソッドが追加されています。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 単一チャンネルを取り出す
+fs = spec
+
+# 位相の計算 (ラジアン)
+phi = fs.phase(unwrap=True)
+print(&quot;\nUnwrapped Phase (rad) at 10Hz:&quot;, phi.value[10])
+
+# 位相の計算 (度)
+deg = fs.degree(unwrap=True)
+print(&quot;Unwrapped Phase (deg) at 10Hz:&quot;, deg.value[10])
+
+# 群遅延 (Group Delay) の計算
+# Group Delay = -d(phi)/d(omega)
+gd = fs.group_delay()
+print(&quot;\nGroup Delay (s) at 10Hz:&quot;, gd.value[10])
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Unwrapped Phase (rad) at 10Hz: -9.496520098413084
+Unwrapped Phase (deg) at 10Hz: -544.110521700231
+
+Group Delay (s) at 10Hz: 0.10865188796554402
+</pre></div></div>
+</div>
+</section>
+<section id="8.-Python-Control-Library-との連携">
+<h2>8. Python Control Library との連携<a class="headerlink" href="#8.-Python-Control-Library-との連携" title="Link to this heading"></a></h2>
+<p>制御工学の分野で標準的な <code class="docutils literal notranslate"><span class="pre">control</span></code> ライブラリの <strong>Frequency Response Data (FRD)</strong> オブジェクトと相互変換が可能です。 これにより、GWExPyで計測した伝達関数を、制御系の設計や解析に直接利用できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import control
+
+    # FrequencySeries -&gt; control.FRD 変換
+    # frequency_unit=&quot;Hz&quot; を指定すると、内部で rad/s に適切に変換して渡します
+    frd_sys = fs.to_control_frd(frequency_unit=&quot;Hz&quot;)
+
+    print(&quot;\n--- Converted to Control FRD ---&quot;)
+    print(frd_sys)
+
+    # ボード線図のプロット (controlライブラリの機能)
+    control.bode(frd_sys) # (プロット環境があれば実行可能)
+
+    # control.FRD -&gt; FrequencySeries 復元
+    fs_restored = FrequencySeries.from_control_frd(frd_sys, frequency_unit=&quot;Hz&quot;)
+
+    print(&quot;\n--- Restored FrequencySeries ---&quot;)
+    print(fs_restored)
+
+except ImportError:
+    print(&quot;Python Control Systems Library is not installed.&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+--- Converted to Control FRD ---
+&lt;FrequencyResponseData&gt;: sys[1]
+Inputs (1): [&#39;u[0]&#39;]
+Outputs (1): [&#39;y[0]&#39;]
+
+Freq [rad/s]  Response
+------------  ---------------------
+       0.000    0.001449        +0j
+       0.167     0.01032  -0.01187j
+       0.333   -0.006504 +0.004246j
+       0.500   -0.009963+0.0008108j
+       0.667   -0.006889-0.0004805j
+       0.833    0.005685 +0.006237j
+       1.000     0.01394 -0.004365j
+       1.167    0.004055 -0.001612j
+       1.333    -0.01494 -0.003388j
+       1.500    0.001734  +0.00457j
+       1.667   -0.006212+0.0004465j
+       1.833    0.002353 +0.003513j
+       2.000    0.006004 -0.004325j
+       2.167    0.008131  -0.00279j
+       2.333  -0.0008135+0.0007241j
+       2.500    -0.01079  +0.00491j
+       2.667    -0.01057 -0.006372j
+       2.833    0.005445 +0.009547j
+       3.000     0.01476  -0.00383j
+       3.167    0.003131 -0.009323j
+       3.333   -0.006254 +0.007953j
+       3.500   -0.006552 +0.000775j
+       3.667   -0.005198 -0.002624j
+       3.833    -0.00563  +0.00374j
+       4.000     0.02035+0.0001713j
+       4.167    0.004856 -0.005257j
+       4.333   -0.004266 -0.004164j
+       4.500    -0.01166   +0.0084j
+       4.667   -0.007045 +0.005157j
+       4.833  -0.0006344 -0.008692j
+       5.000     0.01608 +0.002625j
+       5.167      0.0111 -0.004837j
+       5.333   -0.004701 +0.002679j
+       5.500    -0.01508 +0.001117j
+       5.667    -0.01546 +0.005331j
+       5.833    0.009036 -0.004341j
+       6.000      0.0224  -0.00153j
+       6.167    0.003067 -0.003703j
+       6.333   -0.004725 +0.003042j
+       6.500     -0.0188 +0.003969j
+       6.667   -0.007453+0.0003873j
+       6.833      0.0056 -0.004092j
+       7.000     0.01794  +0.00339j
+       7.167    0.009764 -0.003814j
+       7.333   -0.001841 -0.005835j
+       7.500    -0.02027 +0.008082j
+       7.667    -0.02219 +0.006111j
+       7.833     0.01108-0.0002508j
+       8.000     0.02742  -0.01116j
+       8.167     0.01731 -0.003423j
+       8.333    -0.01047  +0.00511j
+       8.500    -0.02638  +0.00681j
+       8.667     -0.0312 +0.001333j
+       8.833    0.009878  +0.00429j
+       9.000     0.04855  -0.01234j
+       9.167     0.03897  -0.01409j
+       9.333    -0.01325  +0.00545j
+       9.500    -0.08199   +0.0209j
+       9.667    -0.09365  +0.02563j
+       9.833     0.04604 -0.005912j
+      10.000      0.4845   -0.1526j
+      10.167     -0.5646   +0.1788j
+      10.333     0.04195  -0.01833j
+      10.500      0.1205   -0.0385j
+      10.667      0.0635  -0.01977j
+      10.833    -0.01365  +0.00727j
+      11.000    -0.04919   +0.0169j
+      11.167    -0.03354 +0.009324j
+      11.333    0.006829 -0.003073j
+      11.500     0.03155  -0.01042j
+      11.667     0.01857  -0.01008j
+      11.833  -0.0001089 +0.004561j
+      12.000     -0.0232  +0.01047j
+      12.167    -0.01487 +0.005375j
+      12.333    0.002434 -0.003534j
+      12.500     0.01342  -0.01365j
+      12.667     0.01041 +0.004833j
+      12.833    0.004804 +0.001631j
+      13.000   -0.009573 +0.002511j
+      13.167    -0.01493 +0.006274j
+      13.333   -0.007776 -0.006011j
+      13.500     0.01742 -0.006506j
+      13.667     0.01094 +0.005703j
+      13.833    0.003946  -0.00546j
+      14.000    -0.01494  +0.01253j
+      14.167     -0.0104 -0.007791j
+      14.333   0.0005577-9.197e-05j
+      14.500     0.01111 +0.001015j
+      14.667    0.007421 -0.003764j
+      14.833   0.0002276 +0.005302j
+      15.000    -0.00675 -0.003928j
+      15.167    -0.01012 +0.004225j
+      15.333   -0.000953  -0.00137j
+      15.500    0.009807 -0.001916j
+      15.667    0.007478  +0.00104j
+      15.833    0.001382 -0.002051j
+      16.000    -0.01506 +0.001572j
+      16.167    0.003227 +0.001492j
+      16.333   -0.002372 +0.003087j
+      16.500    0.001583 -0.006613j
+      16.667    0.009731 -0.001337j
+      16.833  -0.0006924 +0.005886j
+      17.000   -0.001283 -0.000463j
+      17.167    -0.01476 -0.003254j
+      17.333    0.003927  +0.00232j
+      17.500    0.009733-0.0008905j
+      17.667    0.003146 +0.001374j
+      17.833   -0.003787 -0.003149j
+      18.000   -0.006232 +0.003357j
+      18.167    0.002607 -0.005241j
+      18.333  -0.0007106 +0.008395j
+      18.500   -0.002137  -0.00505j
+      18.667    0.008339+0.0003336j
+      18.833   -0.002279 +0.001039j
+      19.000    0.001399 -0.005827j
+      19.167   -0.007645 +0.007194j
+      19.333   -0.001232 -0.003386j
+      19.500    0.005076 +0.009624j
+      19.667    0.001978  -0.01299j
+      19.833    0.002957 -0.001575j
+      20.000   -1.87e-05  +0.00743j
+      20.167    -0.01368 +0.003231j
+      20.333    0.006708 -0.005993j
+      20.500    0.001164 +0.003574j
+      20.667    0.006275 -0.003182j
+      20.833   -0.002488 -0.003023j
+      21.000    -0.00299 +0.004569j
+      21.167   -0.002482 +0.001289j
+      21.333  -0.0006593-0.0009166j
+      21.500    0.001573 +0.002276j
+      21.667    0.007612 -0.006121j
+      21.833   -0.004579-0.0003838j
+      22.000  -2.145e-05 +0.002307j
+      22.167   -0.004133 +0.003078j
+      22.333   -0.001381 +0.004389j
+      22.500    0.003762  -0.00809j
+      22.667    0.005941 -0.003433j
+      22.833   -0.003359 +0.002291j
+      23.000   -0.002277  +0.00662j
+      23.167   -0.003186 -0.002829j
+      23.333   -0.001246 +0.002319j
+      23.500    0.008467 -0.003057j
+      23.667  -0.0005759 -0.009857j
+      23.833   -0.002914  +0.01281j
+      24.000   -0.001947+5.443e-05j
+      24.167    0.001853 -0.001397j
+      24.333   -0.006369 -0.002932j
+      24.500     0.01168 -0.003359j
+      24.667   -0.003147 +0.006672j
+      24.833     -0.0033-0.0001308j
+      25.000   -0.003635 -0.003429j
+      25.167    0.008321 -0.003106j
+      25.333   -0.005183 +0.008433j
+      25.500     0.00256 +0.002745j
+      25.667   -0.002382  -0.01359j
+      25.833   3.149e-05  +0.00196j
+      26.000    0.004666 +0.006016j
+      26.167   -0.003924 +0.005876j
+      26.333  -0.0008092 -0.006304j
+      26.500   0.0004886 -0.003219j
+      26.667   -0.001324 -0.002689j
+      26.833    0.005893 +0.005528j
+      27.000   -0.002078  +0.00373j
+      27.167   -0.003386 -0.002276j
+      27.333   -0.001668 -0.002519j
+      27.500    0.005828 -0.001954j
+      27.667   -0.002282 +0.003655j
+      27.833   -0.002315 -0.006195j
+      28.000    0.004123  +0.01223j
+      28.167    0.002166 -0.006425j
+      28.333   -0.009616 -0.002802j
+      28.500    0.005611 +0.002394j
+      28.667   -0.003064 -0.003764j
+      28.833    0.006536 +0.006644j
+      29.000   0.0005014 -0.003622j
+      29.167   -0.004768 +0.002544j
+      29.333   -0.005454  -0.00186j
+      29.500    0.005443-0.0005339j
+      29.667    0.002049  -0.00619j
+      29.833    0.002493  +0.01306j
+      30.000   2.344e-05 -0.005746j
+      30.167    -0.01163 -0.002779j
+      30.333    0.006253 +0.002338j
+      30.500    0.002358+0.0008334j
+      30.667     0.00453 -0.003319j
+      30.833    -0.00886 +0.001124j
+      31.000    0.006372 +0.003187j
+      31.167    -0.00841+0.0006273j
+      31.333     0.00811 -0.004795j
+      31.500  -0.0003965+0.0007149j
+      31.667   -0.007179-0.0006819j
+      31.833    0.005984  +0.00533j
+      32.000    0.005984 -0.003172j
+      32.167    -0.01237+0.0007209j
+      32.333    0.002478 -0.003288j
+      32.500    0.006042  +0.00299j
+      32.667   -0.004141 -0.001015j
+      32.833    0.001493+0.0009419j
+      33.000    0.001566 +0.001061j
+      33.167   -0.003675 -0.002955j
+      33.333    0.001177 +0.001048j
+      33.500   -0.000982 +0.001541j
+      33.667  -0.0006021 -0.001841j
+      33.833    0.007604-0.0008828j
+      34.000   -0.004366 +0.003962j
+      34.167   -0.004705 -0.002894j
+      34.333   -0.001005-0.0001846j
+      34.500    0.009148  +0.00124j
+      34.667   -0.004609+0.0003616j
+      34.833   0.0002384 -0.004861j
+      35.000  -0.0002523 +0.005668j
+      35.167  -0.0004637 +0.002255j
+      35.333    -0.00218 -0.006472j
+      35.500    0.003563+0.0006919j
+      35.667    0.002264 +0.001828j
+      35.833   -0.006375+1.089e-05j
+      36.000    0.004262  +0.00374j
+      36.167   0.0003375 -0.005577j
+      36.333    -0.00558 -0.002224j
+      36.500    0.006881 +0.007562j
+      36.667   -0.003054 -0.002074j
+      36.833    -0.00032 -0.004638j
+      37.000    0.001786 +0.004467j
+      37.167    -0.00186 -0.002875j
+      37.333    0.001073 +0.002996j
+      37.500   -0.001241 +0.003148j
+      37.667   -0.001004  -0.01179j
+      37.833      0.0043 +0.006607j
+      38.000  -0.0005289 +0.004624j
+      38.167   -0.003286+2.965e-05j
+      38.333   -0.001782  -0.01246j
+      38.500    0.004901  +0.01182j
+      38.667  -0.0009582 -0.002541j
+      38.833   -0.002064-0.0001713j
+      39.000    0.004971   -0.0047j
+      39.167   -0.007033  +0.00584j
+      39.333    0.001848 +0.001584j
+      39.500    0.003887 -0.004757j
+      39.667   -0.002769 -0.001012j
+      39.833   0.0004602+0.0006853j
+      40.000   -0.001128 +0.003669j
+      40.167    0.004587 +0.001419j
+      40.333   -0.008899 -0.004774j
+      40.500    0.006669+0.0006044j
+      40.667     0.00263  -0.00363j
+      40.833   -0.007903 +0.007906j
+      41.000    0.004729  -0.00387j
+      41.167   -0.000801 +0.004253j
+      41.333     0.00156 -0.004764j
+      41.500   -0.002466 -0.005621j
+      41.667   0.0004832 +0.008304j
+      41.833   -0.001686 +0.001687j
+      42.000     0.00296 -0.004782j
+      42.167    0.006733 +0.003611j
+      42.333     -0.0155 -0.002787j
+      42.500    0.007024  -0.00709j
+      42.667    0.003236  +0.01184j
+      42.833   -0.001711-3.703e-05j
+      43.000    0.001443 -0.006314j
+      43.167   -0.005506 +0.001151j
+      43.333     0.00344+0.0007215j
+      43.500    0.001136 -0.002784j
+      43.667   0.0008716  +0.00583j
+      43.833   -0.007466  -0.00082j
+      44.000     0.00781 -0.002064j
+      44.167    0.001567 -0.004326j
+      44.333   -0.004619 +0.006878j
+      44.500   -0.003775  -0.00259j
+      44.667    0.003036 -0.001579j
+      44.833    0.005464 +0.004057j
+      45.000   -0.002238 -0.001541j
+      45.167   -0.001384 -0.003613j
+      45.333   -0.004418 +0.004074j
+      45.500    0.002694 -0.005052j
+      45.667    0.002176 +0.008208j
+      45.833    0.003613 -0.003814j
+      46.000   -0.005846 -0.002225j
+      46.167   0.0009585 -0.001076j
+      46.333   -0.003646 +0.004959j
+      46.500    0.006906 -0.001696j
+      46.667  -0.0006437 -0.003335j
+      46.833   -0.005911 +0.005765j
+      47.000    0.006647 -0.002374j
+      47.167    -0.00458 -0.004509j
+      47.333     0.00468 +0.004777j
+      47.500   -0.008374+0.0003928j
+      47.667     0.00802 -0.004113j
+      47.833   -0.004799 +0.009367j
+      48.000    0.007141  -0.01104j
+      48.167   -0.005641 +0.001537j
+      48.333   -0.002557 +0.003157j
+      48.500     0.00101 +0.006059j
+      48.667     0.00502 -0.009096j
+      48.833   -0.001881+0.0007277j
+      49.000  -0.0006129 +0.002391j
+      49.167     0.00025 -0.002063j
+      49.333   -0.003258 +0.006209j
+      49.500    0.002803 -0.004445j
+      49.667   -0.004085 -0.005621j
+      49.833     0.01067  +0.01001j
+      50.000    -0.00487 -0.005037j
+      50.167   -0.002704 -0.002316j
+      50.333   -0.007762 +0.006309j
+      50.500    0.009103 -0.001871j
+      50.667    0.007584 -0.005853j
+      50.833   -0.008846 +0.003387j
+      51.000    0.002248 +0.005742j
+      51.167   -0.007959 -0.006246j
+      51.333    0.002326-0.0009195j
+      51.500     0.01216 +0.005591j
+      51.667   -0.004695 -0.005171j
+      51.833   -0.008659-0.0003165j
+      52.000    0.007708 +0.005995j
+      52.167   -0.008427 -0.003564j
+      52.333    0.007999 -0.001783j
+      52.500    0.003633 +0.002117j
+      52.667   -0.005978 -0.002665j
+      52.833   -0.005305 +0.002227j
+      53.000    0.008306 +0.004237j
+      53.167   -0.002676   -0.0043j
+      53.333   0.0001356  -0.00421j
+      53.500  -0.0006893 +0.003554j
+      53.667    0.005473 +0.001169j
+      53.833    -0.01187 +0.003023j
+      54.000    0.007604-0.0007881j
+      54.167    0.005551  -0.01006j
+      54.333   -0.009715 +0.007771j
+      54.500   0.0002957+0.0008923j
+      54.667    0.006918+0.0007334j
+      54.833   -0.002868 -0.002754j
+      55.000   -0.001612  +0.00291j
+      55.167    0.001399 -0.006746j
+      55.333   -0.006068 +0.001404j
+      55.500     0.01051 +0.009205j
+      55.667   -0.002061  -0.00502j
+      55.833    -0.00564  -0.00242j
+      56.000   -0.001203 -0.001005j
+      56.167    0.006072 +0.001496j
+      56.333   9.497e-05 +0.002088j
+      56.500   -0.002894 -0.001208j
+      56.667    0.001521 +0.004027j
+      56.833   -0.005562 -0.006062j
+      57.000    0.007838 -0.002695j
+      57.167   -0.001046  +0.00463j
+      57.333   -0.006584 +0.005121j
+      57.500    0.007822   -0.0043j
+      57.667     -0.0027 -0.002633j
+      57.833   -0.006806  -0.00089j
+      58.000     0.01335 +0.002209j
+      58.167   -0.007976 +0.003223j
+      58.333    -0.00542-0.0004512j
+      58.500     0.01052 -0.002192j
+      58.667   -0.001508 -0.005653j
+      58.833   -0.006605  +0.00584j
+      59.000    0.004478 +0.004066j
+      59.167   -0.001586 -0.002378j
+      59.333  -0.0008837 -0.005922j
+      59.500    0.009174 +0.003648j
+      59.667    -0.01021 -0.001226j
+      59.833    -0.00324 +0.004636j
+      60.000    0.009409+0.0002542j
+      60.167  -0.0007214 -0.006759j
+      60.333   -0.003855-0.0005828j
+      60.500    0.001521 +0.007843j
+      60.667  -0.0005512 -0.002583j
+      60.833    -0.00415 -0.003657j
+      61.000     0.01015 +0.007049j
+      61.167   -0.006841 -0.009863j
+      61.333   0.0007957 +0.004957j
+      61.500    -0.00086 +0.002117j
+      61.667    0.001772+0.0002271j
+      61.833   -0.001007 -0.003786j
+      62.000    0.001203 +0.002135j
+      62.167   -0.001354 -0.001534j
+      62.333     0.00142-0.0002007j
+      62.500   -0.001457 +0.003689j
+      62.667   0.0003426 -0.001561j
+      62.833   6.482e-05  -0.00086j
+      63.000   -0.001132 -0.002166j
+      63.167    0.005415 +0.002153j
+      63.333   -0.006353 +0.001106j
+      63.500   0.0005282+9.822e-05j
+      63.667    0.004265  -0.00253j
+      63.833   -0.005598 +0.002062j
+      64.000    0.006455-7.029e-05j
+      64.167    -0.00389 -0.003266j
+      64.333   -0.001045 +0.004306j
+      64.500    0.001117 -0.000541j
+      64.667    0.002091 -0.001567j
+      64.833   -0.003652 -0.001382j
+      65.000    0.006207  +0.00487j
+      65.167   -0.007561 -0.006068j
+      65.333   0.0002957 +0.005027j
+      65.500    0.007695 -0.001249j
+      65.667   -0.003675 -0.005119j
+      65.833   -0.003772 +0.007934j
+      66.000    0.002567-0.0004046j
+      66.167    0.001087   -0.0067j
+      66.333    -0.00286-4.766e-05j
+      66.500     0.00467 +0.006847j
+      66.667  -0.0003843 -0.001443j
+      66.833   -0.004901 -0.001042j
+      67.000   -0.002344 -0.003466j
+      67.167    0.008825 +0.002137j
+      67.333   -0.001244 +0.001017j
+      67.500   -0.002514 +0.001753j
+      67.667   -0.001735  -0.00665j
+      67.833   -0.002028 +0.009726j
+      68.000    0.005708 -0.004817j
+      68.167  -6.154e-05 -0.003538j
+      68.333   -0.001201+0.0002948j
+      68.500   -0.003932 +0.002814j
+      68.667    0.007695 +0.005972j
+      68.833    -0.01021  -0.00502j
+      69.000    0.005643 -0.002605j
+      69.167    0.002063 -0.005178j
+      69.333    0.001843 +0.007858j
+      69.500   -0.005092 +0.002035j
+      69.667   -0.002788 +0.001802j
+      69.833    0.001208 -0.004276j
+      70.000    0.007013 -0.005107j
+      70.167   0.0009072 -0.005974j
+      70.333     -0.0112  +0.01678j
+      70.500      0.0064 +0.006562j
+      70.667    0.001757  -0.01759j
+      70.833   -0.007053 -0.002288j
+      71.000    0.009199 +0.006242j
+      71.167   -0.003255-0.0006475j
+      71.333   -0.003004 +0.007852j
+      71.500    0.003898-0.0009162j
+      71.667   -0.004629  -0.01293j
+      71.833     0.00179 +0.003583j
+      72.000    0.003499 +0.007429j
+      72.167   -0.002547 -0.005896j
+      72.333     0.00131 +0.008269j
+      72.500   -0.003545 -0.006144j
+      72.667    0.003674 -0.005305j
+      72.833   -0.006106  +0.00637j
+      73.000    0.007995 +0.002052j
+      73.167    -0.00107  -0.00551j
+      73.333   -0.002049 +0.001655j
+      73.500   -0.001751 +0.005497j
+      73.667   -0.002525 -0.005304j
+      73.833    0.005783 -0.002116j
+      74.000     0.00183 +0.002039j
+      74.167   -0.003518+0.0001014j
+      74.333   -0.000923 +0.003985j
+      74.500   -0.003208+0.0003381j
+      74.667    0.008531 -0.009365j
+      74.833   -0.006597 +0.004415j
+      75.000    0.002455 +0.004154j
+      75.167    0.001247   -0.0037j
+      75.333   -0.002539+0.0004076j
+      75.500    0.003836 +0.005544j
+      75.667   -0.008433  -0.01072j
+      75.833    0.005753 +0.005682j
+      76.000    0.003469 +0.002077j
+      76.167   -0.001437 -0.004955j
+      76.333    -0.00581 +0.005738j
+      76.500    0.002867-0.0001257j
+      76.667    0.001389 -0.007906j
+      76.833   -0.000765 +0.002702j
+      77.000    0.001557  +0.01013j
+      77.167   -0.002028  -0.01207j
+      77.333   0.0005922 +0.003629j
+      77.500   0.0008617 +0.002772j
+      77.667   -0.001991 -0.002937j
+      77.833  -0.0005808 +0.001527j
+      78.000    0.001466+0.0002158j
+      78.167    0.004891 -0.004542j
+      78.333   -0.004821 +0.004349j
+      78.500   -0.001882 +0.002415j
+      78.667  -0.0004162  -0.00121j
+      78.833   0.0002059 -0.006502j
+      79.000     0.00981 +0.005033j
+      79.167   -0.007504-0.0009722j
+      79.333   -0.003838 +0.001207j
+      79.500    0.004139 +0.003603j
+      79.667   -0.001235 -0.006161j
+      79.833  -0.0002596 -0.001118j
+      80.000    0.004805 +0.003562j
+      80.167   -0.002339 -0.001755j
+      80.333   -0.003354 +0.006386j
+      80.500    0.002733 -0.005979j
+      80.667   -0.005182 -0.002062j
+      80.833    0.002098 +0.002302j
+      81.000     0.01298 +0.003602j
+      81.167   -0.008215 -0.007696j
+      81.333    -0.01141  +0.01113j
+      81.500    0.002606 -0.009515j
+      81.667     0.01606 +0.002038j
+      81.833    -0.00858 +0.001859j
+      82.000   -0.001502+0.0004809j
+      82.167   0.0007962 -0.004148j
+      82.333   -0.007376 +0.003444j
+      82.500     0.01053 +0.001987j
+      82.667   -0.001211 -0.002758j
+      82.833    -0.00151 -0.001482j
+      83.000  -0.0009672 +0.001352j
+      83.167   -0.003361 -0.001949j
+      83.333    0.002742 +0.006492j
+      83.500    0.006711 -0.002987j
+      83.667   -0.008201 -0.004621j
+      83.833   -0.002185 +0.001953j
+      84.000    0.009483 +0.005805j
+      84.167   -0.002885 -0.007488j
+      84.333   -0.008987 +0.001133j
+      84.500    0.009472 +0.007463j
+      84.667   -0.000296 -0.006383j
+      84.833   -0.003131 -0.003349j
+      85.000   -0.001904 +0.008061j
+      85.167    0.007043 -0.005249j
+      85.333   -0.007473 -0.002538j
+      85.500    0.002932 +0.009427j
+      85.667    0.002885 -0.003473j
+      85.833   -0.004449 -0.003607j
+      86.000  -0.0003494 -0.003043j
+      86.167    0.008863  +0.00352j
+      86.333    -0.01329  +0.00297j
+      86.500    0.007873 +0.008042j
+      86.667   0.0009644  -0.01568j
+      86.833   -0.004411 +0.000732j
+      87.000    0.003517 +0.005468j
+      87.167  -0.0006547 -0.001265j
+      87.333   -0.004515 +0.007184j
+      87.500    0.006483-0.0007349j
+      87.667   0.0001431  -0.01611j
+      87.833   -0.008569 +0.005115j
+      88.000    0.009055  +0.01501j
+      88.167   -0.003847 -0.009747j
+      88.333   0.0001171 -0.001401j
+      88.500    0.001932 +0.004823j
+      88.667   -0.002444 -0.009436j
+      88.833  -0.0009852 +0.004377j
+      89.000    0.002559  +0.01141j
+      89.167    0.004189  -0.01473j
+      89.333    -0.01017 +0.002082j
+      89.500    0.004241 +0.008505j
+      89.667    0.007173 -0.008352j
+      89.833    -0.01128  +0.00429j
+      90.000    0.007213   -0.0029j
+      90.167   -0.001402+0.0005882j
+      90.333   -0.004509+0.0007456j
+      90.500    0.007871 +0.005873j
+      90.667   4.437e-05 -0.009708j
+      90.833    -0.01459 +0.002519j
+      91.000     0.01578 +0.003653j
+      91.167   -0.002857 -0.006495j
+      91.333   -0.004596 +0.008173j
+      91.500     0.00189  -0.00023j
+      91.667    0.001844 -0.006066j
+      91.833    -0.00327 -0.003116j
+      92.000    0.001311 +0.009871j
+      92.167     0.00382 -0.006067j
+      92.333   -0.007888 +0.003275j
+      92.500    0.006341 +0.005432j
+      92.667    0.004095  -0.01974j
+      92.833    -0.01403  +0.01844j
+      93.000    0.008113 -0.003591j
+      93.167    0.003635 -0.006121j
+      93.333   -0.005246 +0.005713j
+      93.500    0.004514 +0.002923j
+      93.667   0.0003805  -0.01071j
+      93.833    -0.01597 +0.007762j
+      94.000      0.0171-0.0001622j
+      94.167    0.002144 -0.004241j
+      94.333   -0.009273 +0.001987j
+      94.500    0.003838 +0.009755j
+      94.667   -0.002966  -0.01701j
+      94.833   -0.003912 +0.006485j
+      95.000     0.01118 +0.008291j
+      95.167  -0.0003897  -0.01328j
+      95.333    -0.01321 +0.007199j
+      95.500     0.01287 +0.008468j
+      95.667   -0.001012  -0.01897j
+      95.833    -0.01565   +0.0102j
+      96.000      0.0165  +0.00946j
+      96.167     0.00199  -0.02253j
+      96.333    -0.01229  +0.01267j
+      96.500     0.01066  +0.01458j
+      96.667   -0.001169  -0.02288j
+      96.833    -0.02487  +0.00487j
+      97.000     0.03246 +0.009296j
+      97.167    0.003152   -0.0141j
+      97.333    -0.02851 +0.009747j
+      97.500     0.01651  +0.01448j
+      97.667    0.003786  -0.03132j
+      97.833    -0.02745  +0.01433j
+      98.000     0.03624    +0.015j
+      98.167  -0.0007088   -0.0332j
+      98.333    -0.03879  +0.02011j
+      98.500      0.0361  +0.02702j
+      98.667    0.002357  -0.05074j
+      98.833     -0.0544  +0.02025j
+      99.000     0.06314  +0.02753j
+      99.167    0.002125  -0.07042j
+      99.333    -0.07177   +0.0599j
+      99.500      0.0976  +0.04916j
+      99.667    -0.04579    -0.145j
+      99.833      -0.177   +0.1435j
+     100.000      0.4594   -0.1537j
+     100.167     -0.4904    +0.165j
+     100.333      0.2712  -0.03217j
+     100.500    -0.07907   -0.1322j
+     100.667    -0.02278   +0.1236j
+     100.833     0.09107  -0.01699j
+     101.000    -0.06801  -0.04419j
+     101.167    -0.02083  +0.05389j
+     101.333     0.05749  -0.01625j
+     101.500    -0.03627   -0.0393j
+     101.667   -0.001418  +0.04227j
+     101.833     0.03655 -0.007738j
+     102.000    -0.03021  -0.01667j
+     102.167   -0.006987  +0.02916j
+     102.333     0.02454  -0.01257j
+     102.500    -0.02125  -0.02693j
+     102.667   0.0005894  +0.03433j
+     102.833     0.02981 -0.008371j
+     103.000    -0.02229  -0.01391j
+     103.167    -0.01428  +0.02353j
+     103.333     0.02293  -0.01066j
+     103.500    -0.01103  -0.01703j
+     103.667   -0.002015  +0.02324j
+     103.833     0.02338 -0.007896j
+     104.000    -0.02308 -0.007981j
+     104.167    -0.00866  +0.01821j
+     104.333     0.02355  -0.00831j
+     104.500    -0.01336  -0.01498j
+     104.667    0.004917  +0.01739j
+     104.833    0.004363 -0.001694j
+     105.000   -0.009639 -0.008734j
+     105.167   -0.003511  +0.01054j
+     105.333     0.01737-0.0002337j
+     105.500    -0.01459  -0.01429j
+     105.667    0.002566  +0.01374j
+     105.833    0.009891 -0.004413j
+     106.000     -0.0145 -0.005518j
+     106.167    0.004618  +0.01726j
+     106.333     0.01107  -0.01336j
+     106.500    -0.01369 -0.004447j
+     106.667   -0.003313 +0.006193j
+     106.833     0.01788 +0.005415j
+     107.000   -0.009534 -0.009753j
+     107.167   -0.005775 +0.007915j
+     107.333     0.01179 -0.002783j
+     107.500    -0.01387 -0.003217j
+     107.667    0.005348  +0.00551j
+     107.833     0.01276 -0.006227j
+     108.000    -0.01298-0.0008906j
+     108.167   -0.002751  +0.01054j
+     108.333    0.006266 +0.001338j
+     108.500    0.001013  -0.01744j
+     108.667   -0.005948 +0.006437j
+     108.833    0.006787 +0.008158j
+     109.000  -0.0007885 -0.007409j
+     109.167   -0.005401 +0.007609j
+     109.333     0.00439  -0.00279j
+     109.500   -0.002848 -0.008978j
+     109.667   -0.002375  +0.00684j
+     109.833     0.01193-0.0008238j
+     110.000   -0.007138 +0.003393j
+     110.167    -0.00681+0.0008267j
+     110.333    0.008141 -0.004778j
+     110.500    -0.00296 -0.004418j
+     110.667   -0.002223 +0.009591j
+     110.833    0.009952 -0.003571j
+     111.000   -0.006165 -0.003639j
+     111.167    -0.00602 +0.005089j
+     111.333    0.004862 +0.004178j
+     111.500   0.0007859 -0.008783j
+     111.667   0.0006419 -0.002966j
+     111.833    0.003068 +0.006833j
+     112.000   -0.006769-0.0009633j
+     112.167  -0.0008054  +0.00724j
+     112.333    0.007091 -0.007414j
+     112.500   -0.005901 -0.007176j
+     112.667    0.001455 +0.008593j
+     112.833    0.008054 -0.003484j
+     113.000      -0.012 +0.005052j
+     113.167     0.00138 +0.002505j
+     113.333    0.006037   -0.0051j
+     113.500  -0.0004332 -0.008097j
+     113.667   -0.002805 +0.005524j
+     113.833   -0.002163 +0.005311j
+     114.000    0.004598 +0.004295j
+     114.167   -0.001259 -0.009372j
+     114.333  -0.0001471 -0.001721j
+     114.500   -0.001343 +0.003136j
+     114.667   -0.002422-0.0009001j
+     114.833     0.00754 +0.004697j
+     115.000   -0.002257 -0.001982j
+     115.167   -0.006977 +0.002827j
+     115.333     0.00918  -0.01243j
+     115.500   -0.006513 +0.008578j
+     115.667    -0.00104 +0.003837j
+     115.833    0.008805 -0.002268j
+     116.000   -0.004372 -0.006815j
+     116.167   -0.003066 +0.009267j
+     116.333    0.001145  -0.00656j
+     116.500   -0.001174 +0.004475j
+     116.667     0.00199 -0.003201j
+     116.833    0.006406 -0.001203j
+     117.000   -0.006058 +0.002695j
+     117.167    -0.00801 +0.005584j
+     117.333     0.00988 -0.009911j
+     117.500  -0.0005312 +0.002377j
+     117.667  -0.0008356 +0.004755j
+     117.833   0.0009013  -0.00695j
+     118.000   -0.006235 +0.001305j
+     118.167    0.007698  +0.01236j
+     118.333   -0.003897  -0.01118j
+     118.500   -0.001464 -0.005292j
+     118.667    0.003616 +0.005542j
+     118.833    0.003481 +0.003512j
+     119.000   -0.009834-0.0005101j
+     119.167    0.002193 +0.002155j
+     119.333    0.008787 -0.008181j
+     119.500   -0.006923-0.0003256j
+     119.667   -0.004586 +0.004408j
+     119.833     0.01074 +0.005269j
+     120.000   -0.003911 -0.004161j
+     120.167   -0.004889 -0.001776j
+     120.333    0.003988 -0.004467j
+     120.500   -0.001605 +0.005536j
+     120.667    0.003825 +0.004438j
+     120.833   -0.002478 -0.007134j
+     121.000   0.0005865 +0.003743j
+     121.167   -0.006635 -0.005735j
+     121.333     0.01173 +0.008804j
+     121.500   -0.006573 -0.006011j
+     121.667   -0.002521  +0.00145j
+     121.833     0.00591 -0.001013j
+     122.000   -0.002357-0.0004502j
+     122.167   0.0004437 +0.007572j
+     122.333   -0.003699 -0.009826j
+     122.500    0.001544 +0.003034j
+     122.667    0.005793+0.0003619j
+     122.833   -0.003807 +0.002887j
+     123.000   -0.002637 -0.004497j
+     123.167  -0.0008521+7.778e-06j
+     123.333    0.005767 +0.007107j
+     123.500    -0.00147 -0.003923j
+     123.667   -0.002344 -0.007628j
+     123.833   -0.001847 +0.004583j
+     124.000    0.007136 +0.005538j
+     124.167   -0.007286 +0.002091j
+     124.333    0.003212 -0.008059j
+     124.500    0.002458 -0.004301j
+     124.667   -0.007292 +0.008554j
+     124.833    0.007893 -0.002343j
+     125.000   -0.004579 +0.004332j
+     125.167    0.002327 -0.001301j
+     125.333   0.0002779 -0.009328j
+     125.500   -0.005576 +0.007165j
+     125.667     0.00338 -0.001647j
+     125.833    0.006707 +0.006492j
+     126.000   -0.006477 -0.008038j
+     126.167   -0.001927 +0.002082j
+     126.333    0.001046 +0.003237j
+     126.500    0.001536 -0.007026j
+     126.667    0.002205 +0.006776j
+     126.833   0.0009781 -0.003724j
+     127.000   -0.006522 +0.003391j
+     127.167   0.0004153 -0.003072j
+     127.333    0.003029 +0.003701j
+     127.500    0.004128 -0.006993j
+     127.667   -0.003179 +0.004284j
+     127.833   -0.005411 +0.002091j
+     128.000    0.004118 -0.002879j
+     128.167    0.002212 +0.002461j
+     128.333   -0.002203-0.0001536j
+     128.500   0.0006514  -0.00788j
+     128.667   -0.002527  +0.01053j
+     128.833    0.005125 -0.005311j
+     129.000   -0.004858+0.0006961j
+     129.167   0.0004548 +0.003571j
+     129.333    0.003339 -0.001996j
+     129.500   -0.002151 -0.007484j
+     129.667  -0.0005911 +0.007875j
+     129.833    0.002925-0.0002779j
+     130.000   -0.005145 +0.001201j
+     130.167    0.002948 -0.003552j
+     130.333    0.001286 +0.001893j
+     130.500   8.997e-05 -0.005839j
+     130.667   -0.000819 +0.007974j
+     130.833   -0.004985-0.0007104j
+     131.000    0.004746 -0.004796j
+     131.167    0.004848 +0.004272j
+     131.333    -0.00716 -0.001085j
+     131.500    0.000317 -0.002564j
+     131.667    0.001221 +0.002877j
+     131.833     0.00226 -0.005676j
+     132.000   -0.001679  +0.01127j
+     132.167  -0.0007786 -0.004006j
+     132.333   0.0003884 -0.007865j
+     132.500    0.001063 +0.003265j
+     132.667  -0.0004481 +0.005806j
+     132.833   -0.002753  -0.00545j
+     133.000    0.003719 +0.002563j
+     133.167    0.001228  +0.00299j
+     133.333   -0.003921 -0.007223j
+     133.500   -0.001989 +0.002537j
+     133.667    0.006059 -0.001654j
+     133.833   -0.001026 +0.004937j
+     134.000   -0.003136 +0.001454j
+     134.167   0.0005526 -0.003566j
+     134.333    0.001739  -0.00429j
+     134.500   -0.001394 +0.001557j
+     134.667    0.002009 +0.003504j
+     134.833   -0.001378 +0.002405j
+     135.000   -0.002085-0.0004267j
+     135.167     0.00261 -0.007585j
+     135.333    0.001386 +0.002395j
+     135.500   -0.004295 +0.003678j
+     135.667    0.004353-0.0008123j
+     135.833   -0.002235+0.0003626j
+     136.000   -0.002616  -0.00108j
+     136.167    0.004874 -0.001207j
+     136.333  -0.0005674 +0.003711j
+     136.500   -0.002793 -0.007669j
+     136.667    0.001929 +0.006497j
+     136.833   -0.003026 +0.001346j
+     137.000    0.004225 -0.002344j
+     137.167   -0.001733 +0.002302j
+     137.333    0.001135 -0.009605j
+     137.500   -0.002051  +0.00619j
+     137.667   -0.001486 +0.004802j
+     137.833    0.005457 -0.001247j
+     138.000   -0.005264 -0.001801j
+     138.167    0.002391  -0.01022j
+     138.333    0.002439  +0.01526j
+     138.500   -0.003166 -0.006804j
+     138.667   -0.004648+0.0006439j
+     138.833    0.008913+0.0005923j
+     139.000   -0.002184 +0.001011j
+     139.167   -0.003849 -0.002028j
+     139.333    0.002642 -0.002544j
+     139.500   0.0003404 +0.002809j
+     139.667    -0.00235 +0.002946j
+     139.833     0.00304 +0.002204j
+     140.000   -0.002708   -0.0124j
+     140.167    0.003415  +0.01056j
+     140.333   -0.005133   -0.0067j
+     140.500    0.007024 +0.008488j
+     140.667   -0.006576 -0.005749j
+     140.833    0.001358+0.0007632j
+     141.000    0.002209+0.0002661j
+     141.167   -0.001344 -0.001704j
+     141.333     0.00406 +0.001749j
+     141.500   -0.005955 +0.001835j
+     141.667  -0.0005031 -0.003898j
+     141.833    0.003622 +0.005877j
+     142.000     -0.0017 -0.007007j
+     142.167    0.005512+6.316e-05j
+     142.333   -0.003766 +0.006537j
+     142.500   -0.006497 -0.002822j
+     142.667    0.002488 +0.001039j
+     142.833     0.00801 -0.006774j
+     143.000  -0.0007204 +0.004845j
+     143.167   -0.008177 +0.005098j
+     143.333    0.003766 -0.005755j
+     143.500   -0.003951 -0.003146j
+     143.667    0.008632 +0.006255j
+     143.833   -0.001387-0.0008494j
+     144.000   -0.009134 -0.002626j
+     144.167    0.008353+0.0009718j
+     144.333  -0.0008172-0.0003277j
+     144.500    -0.00175 +0.001113j
+     144.667   -0.004667+0.0007495j
+     144.833    0.009299 -0.001139j
+     145.000   -0.003359 -0.003513j
+     145.167    -0.00179 +0.005809j
+     145.333  -0.0005917 -0.003506j
+     145.500   0.0007662 +0.004389j
+     145.667   0.0004234  -0.00704j
+     145.833     0.00262 +0.005033j
+     146.000   -0.001898 -0.003361j
+     146.167   -0.003913 +0.005401j
+     146.333     0.00468 -0.004013j
+     146.500  -4.972e-05 -0.001153j
+     146.667   -0.003607 +0.003048j
+     146.833    0.003647  -0.00216j
+     147.000  -0.0002282 +0.002362j
+     147.167   -0.002168 -0.002439j
+     147.333    0.000563-0.0003641j
+     147.500   0.0007831  +0.00598j
+     147.667   0.0005134 -0.008538j
+     147.833   -0.001773 +0.001863j
+     148.000   0.0007951 +0.007739j
+     148.167    0.002494    -0.009j
+     148.333   -0.004484 +0.003646j
+     148.500    0.003163+0.0006592j
+     148.667   -0.003514  -0.00359j
+     148.833    0.006412 +0.005665j
+     149.000   -0.005374    -0.004j
+     149.167  -0.0002701-0.0002105j
+     149.333    0.005104 +0.002412j
+     149.500   -0.005381 -0.002379j
+     149.667    0.000988 +0.002793j
+     149.833    0.002635 -0.003124j
+     150.000   -0.001172 +0.002269j
+     150.167   -0.001587 -0.002282j
+     150.333    0.002392 +0.003043j
+     150.500   -0.001058 -0.002056j
+     150.667     -0.0033+0.0006282j
+     150.833     0.00499+0.0002263j
+     151.000    0.001636 -0.001978j
+     151.167   -0.007083 +0.003534j
+     151.333    0.002555 -0.005249j
+     151.500    0.003035 +0.006045j
+     151.667   -0.001439+0.0003095j
+     151.833  -0.0005054 -0.004973j
+     152.000   -0.002521 -0.005186j
+     152.167    0.002388  +0.01065j
+     152.333    0.005065 +0.002941j
+     152.500   -0.008277 -0.007682j
+     152.667    0.002249 -0.002954j
+     152.833    0.001314 +0.001761j
+     153.000    0.001062 +0.002515j
+     153.167   -0.001869  +0.00605j
+     153.333     0.00118 -0.004136j
+     153.500  -0.0005007 -0.007997j
+     153.667  -0.0002208 +0.003459j
+     153.833   -0.002801 +0.003767j
+     154.000    0.003446 +0.002974j
+     154.167    0.004489 -0.002485j
+     154.333    -0.00726 -0.007399j
+     154.500   0.0004566 +0.005861j
+     154.667   0.0009865 +0.003765j
+     154.833     0.00249 -0.008357j
+     155.000   -0.004153 +0.006015j
+     155.167    0.007259-0.0006987j
+     155.333   -0.004373+0.0007999j
+     155.500   -0.005908 -0.003109j
+     155.667    0.005636 -0.002691j
+     155.833    0.002178 +0.006289j
+     156.000   -0.002016-0.0008019j
+     156.167   0.0006076+0.0008378j
+     156.333    0.000311 -0.004669j
+     156.500   -0.006466 +0.001619j
+     156.667    0.004305 -0.002719j
+     156.833    0.005569 +0.009997j
+     157.000    -0.00243 -0.007957j
+     157.167   -0.006193+0.0001092j
+     157.333    0.003251 +0.000725j
+     157.500    0.002269 +0.002279j
+     157.667   -0.003588 -0.001405j
+     157.833    0.005386 -0.002633j
+     158.000   -0.005465 +0.001666j
+     158.167    0.002538 +0.005866j
+     158.333     0.00237 -0.007583j
+     158.500   -0.009392 +0.001902j
+     158.667      0.0106-0.0001291j
+     158.833   -0.002338-0.0003808j
+     159.000   -0.003567 +0.002257j
+     159.167   -0.001136 +0.001349j
+     159.333    0.009064 -0.003117j
+     159.500   -0.007073-0.0006152j
+     159.667    -0.00365-0.0004863j
+     159.833    0.005194 -0.001324j
+     160.000    0.002656 +0.008203j
+     160.167   -0.001876+0.0001445j
+     160.333   -0.002521  -0.01122j
+     160.500   0.0002304 +0.001372j
+     160.667   -0.001818 +0.005851j
+     160.833     0.00244 +0.002439j
+     161.000     0.00878 -0.001862j
+     161.167     -0.0129 -0.002525j
+     161.333    0.003927 -0.004996j
+     161.500  -0.0009469 +0.008032j
+     161.667   0.0006934 -0.003204j
+     161.833    0.002307 +0.003419j
+     162.000    0.003248 -0.002508j
+     162.167   -0.007662 +0.001126j
+     162.333    -0.00065 -0.007885j
+     162.500    0.006829  +0.01042j
+     162.667   -0.005486 -0.004248j
+     162.833    0.003322 +0.002748j
+     163.000   0.0008147 -0.003037j
+     163.167   -0.001565 -0.001388j
+     163.333   -0.001294  +0.00329j
+     163.500   -0.002726 -0.002635j
+     163.667    0.004799 +0.003778j
+     163.833    0.001396 -0.003533j
+     164.000    0.001187 +0.002068j
+     164.167    -0.01028 -0.001004j
+     164.333      0.0084 -0.001008j
+     164.500  -0.0008143+0.0009047j
+     164.667   -0.003575 +0.001563j
+     164.833    0.004091 -0.001137j
+     165.000    0.001574+0.0001833j
+     165.167   -0.006197 -0.003692j
+     165.333    0.005461 +0.007097j
+     165.500   -0.006543 -0.004761j
+     165.667    0.004023 +0.001369j
+     165.833     0.00242 -0.003739j
+     166.000    0.003419 +0.005029j
+     166.167     -0.0121 +0.003479j
+     166.333    0.005396 -0.008627j
+     166.500    0.002978  -0.00219j
+     166.667   -0.004067  +0.01256j
+     166.833    0.006035 -0.008495j
+     167.000   -0.003534+0.0009376j
+     167.167   -0.002561 +0.002416j
+     167.333     0.00025 -0.003997j
+     167.500    0.003642 +0.002775j
+     167.667   -0.001183+0.0002078j
+     167.833   -0.001977 -0.003532j
+     168.000    0.003895 +0.007256j
+     168.167  -0.0008065 -0.004804j
+     168.333   -0.006662 -0.002596j
+     168.500    0.004491 +0.002474j
+     168.667    0.003705 +0.002613j
+     168.833   -0.003519 -0.001975j
+     169.000    0.002735 -0.001341j
+     169.167   -0.005718 +0.002721j
+     169.333    0.003043 -0.002086j
+     169.500    0.001046-0.0002299j
+     169.667   -0.001906 -0.002224j
+     169.833    0.001235 +0.008226j
+     170.000    0.005742 -0.005864j
+     170.167   -0.009077 -0.000739j
+     170.333   -0.001478 +0.001825j
+     170.500    0.004808   -0.0022j
+     170.667    0.004053+0.0004339j
+     170.833   -0.000216 +0.005778j
+     171.000   -0.009449  -0.00298j
+     171.167    0.004236 -0.005972j
+     171.333    0.002331 +0.004513j
+     171.500    0.001527 -0.001484j
+     171.667   -0.005967 +0.005533j
+     171.833    0.005826 -0.003964j
+     172.000  -0.0009241-0.0009618j
+     172.167   -0.003743-0.0004839j
+     172.333    0.001154 +9.56e-05j
+     172.500  -0.0007416 +0.002406j
+     172.667    0.006264  -0.00046j
+     172.833   -0.003341 +0.002779j
+     173.000   -0.003317 -0.007769j
+     173.167    0.001195  +0.00272j
+     173.333   -0.001155 +0.003313j
+     173.500    0.005412-0.0006575j
+     173.667   -0.003114-0.0008304j
+     173.833    0.003004-0.0002082j
+     174.000   -0.008151 -0.001168j
+     174.167    0.005044-0.0004859j
+     174.333   -0.001982  +0.00267j
+     174.500    0.007672 +0.002004j
+     174.667   -0.003166 -0.006642j
+     174.833   -0.009513 +0.005834j
+     175.000    0.004667 -0.002793j
+     175.167    0.006789 -0.002355j
+     175.333  -0.0006892 +0.005081j
+     175.500   -0.006323 -0.001631j
+     175.667   -0.002588+0.0006352j
+     175.833    0.008871-0.0009609j
+     176.000   -0.002417 -0.005719j
+     176.167   -0.005293 +0.005575j
+     176.333     0.01041 +0.008262j
+     176.500   -0.009095  -0.01151j
+     176.667   -0.002188-0.0004372j
+     176.833    0.006108 +0.003517j
+     177.000    0.003268 +0.001859j
+     177.167   -0.003401-0.0005491j
+     177.333   -0.005137 -0.001698j
+     177.500    0.003072+0.0005619j
+     177.667   -0.001229  -0.00277j
+     177.833    0.008709 +0.004793j
+     178.000   -0.006885 -0.002725j
+     178.167   -0.004369+0.0004625j
+     178.333    0.008583 +0.003234j
+     178.500   -0.007709  -0.00627j
+     178.667    0.004219 +0.002241j
+     178.833    0.002463 +0.001163j
+     179.000   4.719e-05 +0.002505j
+     179.167    -0.01008 -0.001985j
+     179.333    0.007935 -0.005964j
+     179.500    0.005059 +0.008741j
+     179.667   -0.009795 -0.003923j
+     179.833     0.00272 +0.001649j
+     180.000    0.001135 -0.005291j
+     180.167     0.00538 +0.007154j
+     180.333   -0.005696 -0.002079j
+     180.500    -0.00606 -0.003415j
+     180.667    0.005791 +0.004697j
+     180.833    0.006108 -0.006892j
+     181.000   -0.001912 +0.008313j
+     181.167   -0.007199 -0.004214j
+     181.333  -0.0006698 +0.002094j
+     181.500    0.005541 -0.003198j
+     181.667   0.0007251-0.0007602j
+     181.833     0.00264 +0.002978j
+     182.000    -0.01019 +0.001741j
+     182.167    0.007042 -0.001593j
+     182.333  -0.0008907 -0.000435j
+     182.500   -0.002748 -0.006839j
+     182.667    0.003453  +0.01032j
+     182.833  -0.0006861-0.0004793j
+     183.000    0.002738 -0.007957j
+     183.167   -0.005979 +0.007152j
+     183.333  -0.0003882 -0.001263j
+     183.500    0.005059 -0.005441j
+     183.667   -0.001647 +0.004121j
+     183.833    0.001334  +0.00314j
+     184.000  -0.0009143 -0.001836j
+     184.167   -0.001946 -0.003432j
+     184.333   -0.002062+0.0008099j
+     184.500    0.004249  +0.00156j
+     184.667    0.001154+0.0001569j
+     184.833  -0.0004111 +0.001947j
+     185.000     -0.0019 -0.002133j
+     185.167   -0.003018  -0.00346j
+     185.333    0.001142 +0.002145j
+     185.500    0.006583 +0.005231j
+     185.667   -0.005371 -0.003927j
+     185.833    0.002318 -0.002338j
+     186.000    -0.00227+0.0008873j
+     186.167   -0.002524 +0.003075j
+     186.333    0.004689+0.0002222j
+     186.500   0.0002512 -0.004577j
+     186.667    0.001077 +0.002413j
+     186.833   -0.008289-0.0003844j
+     187.000    0.006962 +0.002228j
+     187.167    0.001125-0.0003151j
+     187.333   -0.002401 -0.002937j
+     187.500   -0.003295 -0.001607j
+     187.667    0.004676 +0.006746j
+     187.833   -0.002674 -0.004686j
+     188.000    0.003997  +0.00291j
+     188.167   0.0007134  -0.00248j
+     188.333    -0.01148 -0.001018j
+     188.500    0.008138 +0.000527j
+     188.667    0.002069 +0.003733j
+     188.833    0.002952  -0.00193j
+     189.000   -0.008158+0.0002627j
+     189.167   0.0006238 -0.004161j
+     189.333   0.0007863 +0.001471j
+     189.500    0.002522 +0.005844j
+     189.667    0.003813 -0.003807j
+     189.833   -0.005468+8.968e-05j
+     190.000   -0.004667 -0.003082j
+     190.167    0.008141 +0.001518j
+     190.333  -0.0009192 +0.003846j
+     190.500    -0.00421 -0.001307j
+     190.667    0.001982 -0.001049j
+     190.833    0.001601 -0.004671j
+     191.000  -0.0002442 +0.006059j
+     191.167   0.0006678+0.0007825j
+     191.333   -0.005541 -0.004517j
+     191.500    0.001675 +0.004148j
+     191.667    0.003506 -0.005841j
+     191.833    0.005998 +0.007219j
+     192.000   -0.009348 -0.003846j
+     192.167   -0.002904 -0.002163j
+     192.333     0.00265 +0.004421j
+     192.500    0.005635-0.0008054j
+     192.667   0.0004224  -0.00112j
+     192.833   -0.003904 -0.003368j
+     193.000   -0.002097 +0.006357j
+     193.167   7.743e-06 -0.002445j
+     193.333   0.0009587 -0.002343j
+     193.500    0.005516 +0.001737j
+     193.667   -0.003324 +0.003572j
+     193.833     -0.0011 -0.005374j
+     194.000   -0.001258 -0.002257j
+     194.167   -0.001145 +0.009466j
+     194.333    0.003556 -0.007802j
+     194.500   0.0006209 +0.005933j
+     194.667   0.0008258 -0.004577j
+     194.833   -0.003785 -0.003485j
+     195.000   0.0002212  +0.00605j
+     195.167   -0.001314 +0.001757j
+     195.333    0.003736+0.0009058j
+     195.500    0.001733  -0.01193j
+     195.667   -0.003658  +0.00763j
+     195.833    0.001456 +0.003281j
+     196.000   -0.003915  -0.00131j
+     196.167    0.002327   -0.0027j
+     196.333    0.003214 -0.001847j
+     196.500    -0.00283 +0.004698j
+     196.667    0.004142-0.0005118j
+     196.833   -0.007903 -0.003078j
+     197.000    0.003363-0.0005874j
+     197.167  -0.0002164 +0.006245j
+     197.333    0.006267  -0.00282j
+     197.500   -0.006397 -0.004276j
+     197.667   -0.002472 +0.001445j
+     197.833    0.005847  +0.00531j
+     198.000   -0.001818 -0.006007j
+     198.167   0.0001001 +0.004274j
+     198.333   -0.002623+1.177e-05j
+     198.500    0.001867 -0.005993j
+     198.667    0.002759  +0.00373j
+     198.833   -0.001547 +0.002378j
+     199.000   -0.002966 -0.001289j
+     199.167   0.0004361-0.0002803j
+     199.333    0.001004 -0.002624j
+     199.500    0.004287 +0.004018j
+     199.667   -0.002342 -0.004507j
+     199.833   -0.004605 +0.003826j
+     200.000   0.0008825+0.0002349j
+     200.167    0.004816+9.153e-05j
+     200.333  -0.0008636 -0.005083j
+     200.500   -0.001899 +0.006162j
+     200.667   -0.001205 -0.008155j
+     200.833    0.001139  +0.01191j
+     201.000   0.0008462 -0.004609j
+     201.167   0.0004845 -0.007002j
+     201.333    0.001083 +0.004932j
+     201.500   -0.007202 +0.002436j
+     201.667    0.004335 +0.001575j
+     201.833    0.007616 -0.009285j
+     202.000   -0.005689 +0.005213j
+     202.167   -0.008744 +0.004918j
+     202.333    0.005003 -0.004027j
+     202.500     0.01169  -0.00385j
+     202.667   -0.008981+0.0008268j
+     202.833   -0.003579 +0.006906j
+     203.000    0.001106 -0.002488j
+     203.167    0.004587 -0.004857j
+     203.333  -0.0009056 +0.002195j
+     203.500   -0.003419+0.0009736j
+     203.667    0.005393 +0.003199j
+     203.833   -0.004789 -0.007379j
+     204.000   0.0001652 +0.004156j
+     204.167   0.0004903 +0.003097j
+     204.333    0.003983 -0.002881j
+     204.500   -0.005338 -0.002584j
+     204.667    0.004211 -0.001705j
+     204.833   -0.002671 +0.005458j
+     205.000   0.0007462 +0.008747j
+     205.167   -0.001829  -0.01848j
+     205.333    0.001466 +0.005581j
+     205.500    0.002864 +0.004637j
+     205.667   -0.002814-0.0008533j
+     205.833    0.002551-0.0001274j
+     206.000   -0.006952+6.658e-05j
+     206.167    0.003476 -0.004797j
+     206.333    0.003035 +0.004635j
+     206.500    0.001612   -0.0016j
+     206.667   -0.003195 +0.002403j
+     206.833   -0.002698 -0.001126j
+     207.000  -0.0008206 -0.002073j
+     207.167    0.002369 +0.003377j
+     207.333    0.007629 -0.005607j
+     207.500   -0.005953 +0.004155j
+     207.667   -0.004364 +0.002963j
+     207.833    0.001836 -0.004582j
+     208.000   -0.001282 +0.001463j
+     208.167        0.01  -0.00273j
+     208.333   -0.007084  +0.00196j
+     208.500  -0.0003614 +0.004778j
+     208.667   -0.003639 -0.006738j
+     208.833    0.004384 +0.001657j
+     209.000    0.002144 +0.001606j
+     209.167   -0.001634 -0.000371j
+     209.333   -0.001075-0.0005226j
+     209.500  -0.0005075 -0.001608j
+     209.667  -0.0003621 +0.001956j
+     209.833   -0.000907 +0.001931j
+     210.000    0.008924 -0.002224j
+     210.167   -0.009867 -0.002322j
+     210.333  -0.0001488 +0.002116j
+     210.500    0.005065 +0.001945j
+     210.667  -0.0009766  -0.00224j
+     210.833  -0.0005589+4.563e-05j
+     211.000  -0.0009863 +0.002896j
+     211.167   6.272e-05 -0.005694j
+     211.333   -0.001365 +0.004863j
+     211.500    0.003817 -0.005356j
+     211.667   6.411e-05 +0.009992j
+     211.833   -9.17e-05 -0.008113j
+     212.000   -0.008539 +0.001754j
+     212.167    0.005234 -0.004728j
+     212.333     0.00696 +0.009026j
+     212.500   -0.001837 -0.002448j
+     212.667    -0.00774 -0.002019j
+     212.833   0.0004617 -0.004553j
+     213.000     0.00389 +0.007868j
+     213.167    0.001499  -0.00121j
+     213.333    0.002944 -0.003387j
+     213.500   -0.008241+9.679e-06j
+     213.667     0.00282 +0.003064j
+     213.833   -0.002536 -0.001415j
+     214.000    0.006036-8.436e-06j
+     214.167   -0.001283 +0.001085j
+     214.333   -0.001037 -0.004235j
+     214.500   -0.001746 +0.002735j
+     214.667   -0.000118 +0.004666j
+     214.833    0.001685 -0.007702j
+     215.000   -0.001215 +0.006577j
+     215.167    0.001644  -0.00636j
+     215.333    0.003557 +0.001862j
+     215.500   -0.006259 +0.002338j
+     215.667   -0.002065 +0.003486j
+     215.833    0.002638  -0.00631j
+     216.000    0.004927 -0.003817j
+     216.167   0.0002996  +0.01013j
+     216.333   -0.004611 -0.003428j
+     216.500   -0.004477 -0.005669j
+     216.667    0.002464 +0.008907j
+     216.833    0.007889 -0.004489j
+     217.000  -0.0001063-0.0002602j
+     217.167    -0.00989 -0.004398j
+     217.333    0.002491 +0.009429j
+     217.500    0.002904 -0.006241j
+     217.667    0.000282 +0.005871j
+     217.833    0.003023  -0.00788j
+     218.000   -0.007272 +0.001828j
+     218.167    0.003573  +0.00246j
+     218.333    -0.00197+0.0004404j
+     218.500    0.005097 +0.001899j
+     218.667   -0.003529 -0.005602j
+     218.833    -0.00184-0.0001327j
+     219.000    0.003886 +0.005427j
+     219.167   -0.003512-0.0006083j
+     219.333    0.004169 -0.007478j
+     219.500   -0.004483 +0.007331j
+     219.667    0.003311 +0.003198j
+     219.833   -0.002785 -0.008391j
+     220.000    0.003041+0.0003469j
+     220.167   -0.001343 +0.001523j
+     220.333   -0.002699 +0.005457j
+     220.500     0.00556+0.0005819j
+     220.667    -0.00413  -0.01085j
+     220.833    0.001357 +0.004564j
+     221.000  -0.0009884 +0.003287j
+     221.167   -0.001834-0.0009876j
+     221.333     0.00704 +0.002702j
+     221.500   -0.002119 -0.008194j
+     221.667   -0.008399 +0.006328j
+     221.833    0.005146-0.0008084j
+     222.000     0.00349-0.0008275j
+     222.167   0.0008364 -0.003918j
+     222.333   -0.005788  +0.01038j
+     222.500   0.0007019 -0.009193j
+     222.667    0.001227 +0.004048j
+     222.833   0.0009833 -0.001951j
+     223.000     0.00287 -0.002617j
+     223.167    -0.00821 +0.005332j
+     223.333    0.007465 +0.002761j
+     223.500  -0.0004725 -0.008873j
+     223.667   -0.006344 +0.004701j
+     223.833    0.002738-0.0004161j
+     224.000    0.003388 -0.001705j
+     224.167    0.001685 +0.000144j
+     224.333   -0.003199 +0.007833j
+     224.500   -0.005753 -0.006875j
+     224.667    0.002404 -0.005767j
+     224.833    0.008337 +0.008134j
+     225.000   -0.004208-0.0006789j
+     225.167   0.0001307 -0.001824j
+     225.333   -0.005403 +0.004431j
+     225.500   0.0006964 -0.006451j
+     225.667    0.006378 -0.001362j
+     225.833   -0.000619 +0.008383j
+     226.000  -0.0008844 -0.004746j
+     226.167   -0.004359 -0.001427j
+     226.333  -0.0007702 +0.003022j
+     226.500    0.006018 +0.001563j
+     226.667  -1.976e-05 -0.007047j
+     226.833   -0.003866 +0.004949j
+     227.000    0.002308  -0.00172j
+     227.167   -0.001431 +0.003012j
+     227.333   -0.003657+0.0001732j
+     227.500     0.00993 -0.003213j
+     227.667   -0.005729 -0.003547j
+     227.833   -0.003631 +0.007708j
+     228.000     0.00327 -0.003782j
+     228.167    0.005855 +0.002267j
+     228.333   -0.008868+7.055e-05j
+     228.500    0.001722 -0.006017j
+     228.667    0.003195 +0.004908j
+     228.833  -0.0009479 +0.002369j
+     229.000   -0.002288   -0.0063j
+     229.167    0.005574  +0.00462j
+     229.333   -0.004821  +0.00052j
+     229.500   -0.005015 -0.001429j
+     229.667    0.009476 -0.002913j
+     229.833   0.0001257 +0.001836j
+     230.000   -0.005959-0.0003718j
+     230.167    0.002249 +0.007055j
+     230.333    -0.00202 -0.007074j
+     230.500    0.003649 -0.001353j
+     230.667  -0.0009375+0.0003744j
+     230.833   -0.001964 +0.003244j
+     231.000    0.003592+0.0008818j
+     231.167   -0.002069-0.0008827j
+     231.333   -0.002542 -0.001612j
+     231.500   0.0005985 -0.001971j
+     231.667    0.004197 +0.001455j
+     231.833   6.919e-05  +0.00236j
+     232.000   -0.002882+0.0004275j
+     232.167   -0.003091-0.0002404j
+     232.333    0.003173 -0.005642j
+     232.500    0.002216 +0.004992j
+     232.667   -0.001283-0.0009604j
+     232.833   0.0004158+0.0002711j
+     233.000   -0.003172-0.0002256j
+     233.167    0.001692 +0.002777j
+     233.333    0.000643 -0.004326j
+     233.500    0.001306 -0.001983j
+     233.667   -0.003487 +0.005527j
+     233.833    0.004414 -0.001657j
+     234.000   -0.002731  +0.00301j
+     234.167   -0.001487 -0.006013j
+     234.333   0.0004256+0.0008923j
+     234.500    0.003519 +0.001275j
+     234.667   0.0005429 +0.003929j
+     234.833   -0.005466  -0.00377j
+     235.000   0.0009994  -0.00104j
+     235.167    0.001913 +0.001135j
+     235.333    0.004554 +0.001906j
+     235.500   -0.008295 -0.006183j
+     235.667     0.00258  +0.01048j
+     235.833    0.004218 -0.007114j
+     236.000    -0.00705-0.0005907j
+     236.167    0.006247 -0.001362j
+     236.333  -0.0006196 +0.008612j
+     236.500   -0.002808 -0.006705j
+     236.667   -0.003868-0.0001515j
+     236.833    0.007282 +0.003928j
+     237.000    0.001306 -0.008193j
+     237.167   -0.001272  +0.01007j
+     237.333   -0.009471 -0.005997j
+     237.500     0.00499 +0.004951j
+     237.667    0.005398 -0.005494j
+     237.833    0.001693-0.0005706j
+     238.000   -0.005679 +0.001929j
+     238.167   -0.005188 +0.005656j
+     238.333    0.004886 -0.005959j
+     238.500    0.004776+0.0007599j
+     238.667   -0.003866-0.0009356j
+     238.833     0.00221-0.0001276j
+     239.000   -0.004597+0.0007192j
+     239.167    0.001983 +0.004835j
+     239.333   -0.002077 -0.003335j
+     239.500    0.003845 -0.003458j
+     239.667    0.002527+0.0005999j
+     239.833   -0.003293+0.0004188j
+     240.000   -0.003779  +0.00478j
+     240.167   -0.000375 +0.001816j
+     240.333    0.006876  -0.00894j
+     240.500   -0.001675-0.0007818j
+     240.667  -0.0006713 +0.006311j
+     240.833   -0.002942 +0.002383j
+     241.000    0.000694 -0.005447j
+     241.167    0.003198+0.0008527j
+     241.333   -0.003704+0.0004796j
+     241.500    0.001159 +0.001397j
+     241.667    0.004927  -0.00476j
+     241.833   -0.003688 +0.004557j
+     242.000   -0.004932 +0.002448j
+     242.167    0.002376 -0.005866j
+     242.333    0.003183 +0.002556j
+     242.500    0.005831 -0.001052j
+     242.667    -0.01087 +0.000843j
+     242.833   0.0007635-2.255e-05j
+     243.000    0.003002 -3.07e-05j
+     243.167    0.003696 +0.002563j
+     243.333   -0.004827 -0.003231j
+     243.500   -0.001289 -0.002108j
+     243.667    0.005554 +0.002555j
+     243.833   -0.001385 +0.001705j
+     244.000   -0.005346 +0.001115j
+     244.167    0.001605 -0.004773j
+     244.333    0.003903 +0.002967j
+     244.500     0.00369 -0.002608j
+     244.667    -0.01035 +0.001025j
+     244.833    0.004227 +0.002418j
+     245.000    0.001474  +0.00116j
+     245.167   -0.001285 -0.004004j
+     245.333   9.328e-05-0.0008052j
+     245.500    0.002114+0.0003847j
+     245.667   -0.002408 +0.003386j
+     245.833    0.002079 +0.002362j
+     246.000   -0.005465 -0.007993j
+     246.167    0.004892  +0.00461j
+     246.333  -0.0004876 -0.001318j
+     246.500   0.0005802 +0.000863j
+     246.667    0.004121 -0.001425j
+     246.833    -0.01266 +0.004958j
+     247.000    0.006733 -0.005947j
+     247.167    0.001209 +0.001592j
+     247.333    0.005267 +0.001411j
+     247.500   -0.005167 -0.003543j
+     247.667   -0.005313 +0.005907j
+     247.833    0.003182 -0.001549j
+     248.000    0.002613 -0.005683j
+     248.167    0.002879 +0.005051j
+     248.333   -0.003371-0.0002693j
+     248.500   -0.004733 -0.001028j
+     248.667    0.005136+0.0001379j
+     248.833   0.0007938 +0.001085j
+     249.000   -0.003812 -0.001267j
+     249.167    0.003102-0.0007021j
+     249.333  -4.133e-05+0.0002042j
+     249.500   6.127e-05 +0.003626j
+     249.667    -0.00418 -0.003931j
+     249.833    0.003589 +0.001962j
+     250.000   0.0009843 -0.003347j
+     250.167  -0.0009438 +0.001936j
+     250.333   -0.002377   +0.0063j
+     250.500    0.004794    -0.011j
+     250.667   -0.005833 +0.007147j
+     250.833    0.004143  -0.00193j
+     251.000  -0.0004478-0.0002321j
+     251.167   -0.003403 -0.001033j
+     251.333     0.00548 +0.003368j
+     251.500   -0.002292 -0.001008j
+     251.667  -0.0009356 -0.002477j
+     251.833   -0.003544+7.218e-05j
+     252.000    0.006757+0.0005092j
+     252.167   -0.001306 +0.003565j
+     252.333   -0.001807-0.0008998j
+     252.500  -0.0003474 -0.002246j
+     252.667   -0.000883 -0.005489j
+     252.833    0.001007 +0.007073j
+     253.000    0.004205 +0.005278j
+     253.167   -0.003956 -0.008351j
+     253.333   -0.001968-0.0003897j
+     253.500    0.001035  +0.00113j
+     253.667    0.002506 +0.002265j
+     253.833    0.002001+0.0001682j
+     254.000   -0.004499+0.0004086j
+     254.167   -0.002312 -0.003857j
+     254.333    0.002514+0.0001775j
+     254.500    0.006038 +0.003741j
+     254.667   -0.002942 +0.001016j
+     254.833   -0.008137 -0.006071j
+     255.000    0.007028 +0.004921j
+     255.167   -0.000911  -0.00396j
+     255.333   0.0008681  +0.00443j
+     255.500    0.001935   +0.0017j
+     255.667   -0.005306  -0.01072j
+     255.833      0.0012  +0.00712j
+     256.000   0.0009304 +0.006303j
+     256.167   0.0006784 -0.008482j
+     256.333    0.002149  -0.00213j
+     256.500   -0.003745 +0.005795j
+     256.667    0.002364 +0.001234j
+     256.833   -0.003588 -0.003919j
+     257.000    0.001404 -0.001001j
+     257.167    0.000889  +0.00294j
+     257.333     0.00693 -0.001316j
+     257.500     -0.0111 +0.004293j
+     257.667    0.004245 -0.007863j
+     257.833   -0.002968 +0.003773j
+     258.000    0.004088+0.0008092j
+     258.167    0.004392 +0.001021j
+     258.333   -0.008567 -0.002187j
+     258.500    0.002163 +0.002053j
+     258.667   0.0008756 -0.006502j
+     258.833  -0.0003628 +0.008431j
+     259.000    0.002559 -0.002495j
+     259.167   -0.001321 -0.002036j
+     259.333   -0.007227 +0.001134j
+     259.500     0.01443+0.0006825j
+     259.667   -0.009285 -0.001575j
+     259.833   -0.001577-0.0008292j
+     260.000   0.0009289 +0.004328j
+     260.167      0.0024-0.0002846j
+     260.333    0.005784  -0.00685j
+     260.500   -0.005319 +0.004608j
+     260.667   -0.009205 +0.002583j
+     260.833    0.008995  -0.00382j
+     261.000    0.001052 +0.001601j
+     261.167    0.000804 -0.001127j
+     261.333   0.0004024 +0.001119j
+     261.500    -0.00728 -0.002296j
+     261.667   0.0006895 +0.005915j
+     261.833    0.004446  -0.00582j
+     262.000    0.004373 -0.001282j
+     262.167   -0.005418 +0.005716j
+     262.333   -0.002249 -0.002056j
+     262.500      0.0031 -0.001062j
+     262.667   -0.002923 +0.001757j
+     262.833    0.003493 -0.006293j
+     263.000   2.109e-05  +0.01008j
+     263.167   0.0001345 -0.008453j
+     263.333   -0.003293 +0.005953j
+     263.500    0.002219 -0.002097j
+     263.667   0.0006301 -0.001582j
+     263.833   -0.005748 -0.001016j
+     264.000    0.008187 +0.002369j
+     264.167   0.0007274+0.0003355j
+     264.333   -0.004964 +0.004685j
+     264.500   -0.004234 -0.009526j
+     264.667    0.004161 +0.003498j
+     264.833    0.005131 -0.002915j
+     265.000   -0.002938 +0.007249j
+     265.167  -0.0008947 +0.001027j
+     265.333   -0.005005 -0.005973j
+     265.500    0.006731 -0.002723j
+     265.667  -0.0008488+0.0004098j
+     265.833   -0.003725  +0.01003j
+     266.000    0.005117 -0.005074j
+     266.167   -0.002532 -0.003458j
+     266.333  -0.0006129 +0.001184j
+     266.500  -0.0004031 +0.001696j
+     266.667   0.0007576-0.0009777j
+     266.833  -0.0002907 -0.001167j
+     267.000    0.002954 +0.001925j
+     267.167   -0.002623 +0.004701j
+     267.333   -0.001863  -0.00856j
+     267.500    0.004573 +0.001514j
+     267.667   -0.005846-2.001e-05j
+     267.833    0.002387 +0.004429j
+     268.000    0.005966+0.0002119j
+     268.167   -0.007332 -0.001877j
+     268.333    0.004439 -0.005306j
+     268.500   -0.006701 +0.002919j
+     268.667    0.003973 +0.002962j
+     268.833    0.004059 +0.001828j
+     269.000   -0.002514 -0.002922j
+     269.167   -0.001745 -0.003636j
+     269.333   -0.001734 +0.002295j
+     269.500    0.003681 +0.004667j
+     269.667  -0.0002237 -0.007235j
+     269.833   -0.004823 +0.004865j
+     270.000    0.009663 +0.001435j
+     270.167    -0.00821 -0.005005j
+     270.333    0.003954 +0.001136j
+     270.500   -0.005392  +0.00164j
+     270.667    0.003975-0.0003279j
+     270.833    0.001642 +0.001079j
+     271.000    7.91e-05 -0.002833j
+     271.167   -0.001685 +0.002682j
+     271.333   -0.001424 -0.001015j
+     271.500   -0.003647 -0.001449j
+     271.667    0.008897+0.0004478j
+     271.833   -0.002357  +0.00314j
+     272.000   -0.001534 -0.002279j
+     272.167  -0.0006465+0.0002628j
+     272.333   -0.001917 -0.002501j
+     272.500    0.003284 +0.005045j
+     272.667     -0.0015 -0.006648j
+     272.833    0.002818 +0.005893j
+     273.000   -0.001273 +0.000862j
+     273.167    0.000241 -0.004824j
+     273.333   -0.007966+0.0001916j
+     273.500    0.009521 +0.002081j
+     273.667   0.0001758 +0.001245j
+     273.833   -0.002304 -0.004358j
+     274.000   -0.003751 +0.006928j
+     274.167    0.005136 -0.004193j
+     274.333   -0.002001 -0.002918j
+     274.500   -0.002787+0.0005357j
+     274.667    0.005737 +0.004854j
+     274.833   -0.004103 +0.003015j
+     275.000    0.004084 -0.009702j
+     275.167   -0.003707 +0.001236j
+     275.333   -0.002179  +0.00616j
+     275.500    0.002178 -0.004604j
+     275.667    0.003166 +0.004884j
+     275.833   0.0009085 -0.007805j
+     276.000   -0.005042 +0.007559j
+     276.167    0.001383 -0.003378j
+     276.333   -0.005336 -0.002467j
+     276.500     0.01088  +0.00381j
+     276.667   -0.002364-0.0001243j
+     276.833   -0.005126-0.0001725j
+     277.000    0.004184 -0.002513j
+     277.167   -0.007791 +0.001629j
+     277.333    0.008045+0.0001208j
+     277.500    0.001903 -0.000114j
+     277.667   -0.004676 +0.001283j
+     277.833  -5.872e-05 -0.002073j
+     278.000   -0.002282+0.0005346j
+     278.167    0.004606-0.0001396j
+     278.333   0.0006512 +0.002305j
+     278.500   -0.002512 -0.003626j
+     278.667   -0.001266+0.0009514j
+     278.833  -0.0001976  +0.00307j
+     279.000    0.006045 -0.001581j
+     279.167   -0.004279 -0.003977j
+     279.333   -0.003408 +0.005003j
+     279.500    0.002054 -0.002794j
+     279.667    0.004547 +0.003681j
+     279.833   0.0009297 -0.004162j
+     280.000   -0.008079 +0.001094j
+     280.167   -0.001202+0.0006119j
+     280.333     0.01004-0.0004377j
+     280.500   -0.004377 +0.002206j
+     280.667    0.001594 -0.004235j
+     280.833   -0.004175 +0.004039j
+     281.000   -0.001759 -0.002501j
+     281.167    0.006628 -0.001169j
+     281.333   -0.001788  +0.00643j
+     281.500   0.0006469 -0.006849j
+     281.667   -0.004787-0.0003705j
+     281.833    0.004125 +0.007115j
+     282.000  -0.0009668 -0.006168j
+     282.167   -0.001245 +0.002142j
+     282.333    0.002052  -0.00125j
+     282.500    0.001229+0.0003658j
+     282.667   -0.001298 +0.003526j
+     282.833   -0.005958 -0.005147j
+     283.000    0.005744 +0.001447j
+     283.167    0.005113 +0.002495j
+     283.333     -0.0102 -0.003355j
+     283.500    0.006035 +0.003321j
+     283.667   1.512e-06 -0.003224j
+     283.833   -0.004073 +0.001269j
+     284.000   0.0004356 +0.002519j
+     284.167    0.005668 -0.005269j
+     284.333  -0.0006926 +0.004526j
+     284.500   -0.005811 -0.001784j
+     284.667    0.001155+5.202e-05j
+     284.833   0.0006876+0.0007127j
+     285.000    0.005061-0.0003395j
+     285.167   -0.003655 -0.002265j
+     285.333  -0.0006133 +0.002845j
+     285.500   -0.001739 +0.001011j
+     285.667   0.0008896 -0.002258j
+     285.833    0.004586-0.0003543j
+     286.000   -0.004612+0.0005728j
+     286.167   0.0006383 -0.002968j
+     286.333    0.004207 +0.009393j
+     286.500   -0.007649 -0.005593j
+     286.667    0.002288 -0.006517j
+     286.833     0.00443 +0.007336j
+     287.000   -0.000284 -0.001618j
+     287.167   -0.003254 +0.004044j
+     287.333    -0.00254 -0.004069j
+     287.500    0.004899 -0.004217j
+     287.667  -0.0008878  +0.00502j
+     287.833   -0.001091 +0.001913j
+     288.000   0.0007919 -0.001479j
+     288.167    0.002635  -0.00372j
+     288.333   -0.007561 +0.001713j
+     288.500    0.004208 +0.004874j
+     288.667    0.002825 -0.004279j
+     288.833  -0.0007743 -0.004214j
+     289.000   -0.003427 +0.005759j
+     289.167   0.0001513 +0.005844j
+     289.333    0.003008  -0.01407j
+     289.500  -0.0005974 +0.007733j
+     289.667   -0.001572 +0.002422j
+     289.833  -0.0001512 -0.005931j
+     290.000    0.002386 +0.003502j
+     290.167  -0.0006172-0.0001623j
+     290.333   -0.003453 +0.002045j
+     290.500    0.005353 -0.007557j
+     290.667   -0.006095 +0.008164j
+     290.833    0.005387 -0.004363j
+     291.000    -0.00156  +0.00256j
+     291.167    0.001426 -0.002364j
+     291.333   -0.004912+0.0008215j
+     291.500   0.0008174  +0.00154j
+     291.667    0.004123 -0.002024j
+     291.833    0.003204 +0.002004j
+     292.000   -0.009867  -0.00769j
+     292.167    0.004607  +0.01298j
+     292.333   0.0006327 -0.005465j
+     292.500   -0.002974 -0.002818j
+     292.667    0.008069 -0.001303j
+     292.833   -0.006313+0.0004131j
+     293.000   -0.004039 +0.009325j
+     293.167    0.005865 -0.006154j
+     293.333    0.002115 -0.001739j
+     293.500   -0.003249 -0.004779j
+     293.667    -0.00321 +0.008417j
+     293.833    0.003527 +0.001528j
+     294.000    0.001449 -0.005651j
+     294.167   0.0001802+0.0004747j
+     294.333   -0.003196  +0.00165j
+     294.500   -0.004074 -0.001142j
+     294.667    0.008283 +0.001151j
+     294.833    0.003841-9.894e-05j
+     295.000    -0.01185 -0.002555j
+     295.167    0.001697 +0.004444j
+     295.333    0.005877 +0.001047j
+     295.500  -0.0008315 -0.008147j
+     295.667   -0.001513+0.0006063j
+     295.833   -0.001849   +0.0102j
+     296.000    0.002082 -0.003199j
+     296.167  -0.0006115 -0.006009j
+     296.333    0.001272+0.0004318j
+     296.500   -0.001625 +0.005652j
+     296.667   -0.001175 -0.004216j
+     296.833    0.005322 +0.001037j
+     297.000   -0.005258 +0.001362j
+     297.167    0.001794  +0.00458j
+     297.333  -0.0009116  -0.01404j
+     297.500  -0.0007606 +0.007436j
+     297.667    0.005693 +0.004601j
+     297.833   -0.004657  -0.00117j
+     298.000   -0.001589 -0.002376j
+     298.167    0.002335 -0.003751j
+     298.333   0.0001908 +0.002194j
+     298.500   -0.001678  +0.00334j
+     298.667    0.003885 +0.001416j
+     298.833  -0.0007166 -0.007214j
+     299.000   -0.007335 +0.007592j
+     299.167    0.007059 -0.005905j
+     299.333   -0.001396-0.0007247j
+     299.500    0.001414 +0.003734j
+     299.667   -0.001715 +0.005479j
+     299.833  -0.0007055 -0.008592j
+     300.000   0.0002115  -0.00116j
+     300.167   0.0004942 +0.001052j
+     300.333  -0.0008793 +0.009024j
+     300.500     0.00348 -0.006894j
+     300.667   -0.002205 -0.002862j
+     300.833    0.001156 +0.003183j
+     301.000   -0.008324 +0.001504j
+     301.167     0.00834 -0.001229j
+     301.333    0.002926 -0.003092j
+     301.500   -0.001576 +0.005147j
+     301.667   -0.007668+0.0006543j
+     301.833  -0.0006815 -0.007143j
+     302.000     0.01241 +0.001456j
+     302.167   -0.005235  +0.00704j
+     302.333   -0.005505 -0.003672j
+     302.500    0.004896+0.0005419j
+     302.667   0.0002316 -0.005894j
+     302.833   -0.003499 +0.003881j
+     303.000  -0.0001568 +0.003779j
+     303.167    0.008019+0.0006064j
+     303.333   -0.005286 -0.008242j
+     303.500   -0.002626 +0.004692j
+     303.667    -0.00237+0.0003586j
+     303.833     0.00823 +3.46e-05j
+     304.000  -0.0007795-0.0004077j
+     304.167   -0.002101-3.715e-05j
+     304.333   -0.004706 +0.001754j
+     304.500    0.001712 -0.003341j
+     304.667    0.005691-3.858e-05j
+     304.833  -0.0003629+0.0001291j
+     305.000   -0.005598 +0.008364j
+     305.167   0.0006546 -0.009878j
+     305.333    0.002571 +0.002053j
+     305.500  -0.0004389-0.0001054j
+     305.667    0.001612+0.0007695j
+     305.833  -0.0008736 +0.002338j
+     306.000   -0.006509 -0.001093j
+     306.167    0.008226-0.0002855j
+     306.333  -0.0004672  -0.00392j
+     306.500   -0.002285 +0.001118j
+     306.667   -0.003551 +0.005757j
+     306.833    0.004903-5.952e-05j
+     307.000   0.0003136 -0.007693j
+     307.167   -0.001708 +0.001826j
+     307.333  -0.0005133 +0.006806j
+     307.500   0.0004851  -0.00691j
+     307.667   -0.001352 +0.001438j
+     307.833    0.002555 +0.005349j
+     308.000    0.001296 -0.008371j
+     308.167   -0.003316  +0.00556j
+     308.333    0.000249 -0.001158j
+     308.500   -0.003803 -0.003198j
+     308.667    0.009287 +0.004954j
+     308.833   -0.002215-0.0004346j
+     309.000   -0.003793 -0.003317j
+     309.167   -0.003487 +0.001038j
+     309.333    0.005644+1.254e-05j
+     309.500    0.001737 +0.001044j
+     309.667   -0.002198 +0.001118j
+     309.833  -6.282e-05 -0.002838j
+     310.000   -0.002371 +0.001534j
+     310.167    0.001285-0.0001056j
+     310.333  -0.0009283 -0.001687j
+     310.500     0.00516 +0.002041j
+     310.667  -0.0008999-0.0005189j
+     310.833   -0.005254 +0.002096j
+     311.000   -0.001477 -0.001956j
+     311.167     0.00442 -0.003699j
+     311.333    0.005423 +0.002686j
+     311.500   -0.006827 +0.002551j
+     311.667   -0.002247 +0.002486j
+     311.833    0.004849 -0.004314j
+     312.000   -0.001618 -0.006189j
+     312.167   -0.001221 +0.004246j
+     312.333    0.002514 +0.009259j
+     312.500   0.0003259 -0.004947j
+     312.667   -0.001974  -0.00714j
+     312.833   -0.001263 +0.003214j
+     313.000   0.0003145 +0.002827j
+     313.167    0.003918+0.0004183j
+     313.333   -0.001227 -0.001549j
+     313.500   -0.004316-0.0003265j
+     313.667    0.004168 +0.001259j
+     313.833   0.0009935 -0.003424j
+     314.000   -0.005141 +0.003356j
+     314.167   0.0005593 -0.002758j
+     314.333    0.008105  +0.00686j
+     314.500    -0.00653 -0.006881j
+     314.667   -0.001681+0.0001034j
+     314.833    0.004638 +0.001874j
+     315.000   -0.003871+0.0009175j
+     315.167  -0.0002068 -0.001367j
+     315.333    0.006097 -0.001301j
+     315.500   -0.002767 +0.006584j
+     315.667   -0.005092 -0.006208j
+     315.833    0.004026 -0.003483j
+     316.000   0.0008164 +0.005195j
+     316.167   -0.003678 +0.003374j
+     316.333    0.003556 -0.002898j
+     316.500     0.00565 -0.002586j
+     316.667    -0.01214 +0.001097j
+     316.833    0.004118  -0.00158j
+     317.000   -0.001143 +0.003494j
+     317.167    0.006151-9.789e-05j
+     317.333    0.001575 +0.001925j
+     317.500   -0.007394 -0.008361j
+     317.667   -0.003203 +0.008122j
+     317.833    0.004264 -0.005773j
+     318.000    0.006131 +0.001294j
+     318.167   -0.003979 +0.006956j
+     318.333   -0.002234 -0.003848j
+     318.500    0.001661 -0.005522j
+     318.667    -0.00278 +0.001624j
+     318.833  -3.334e-05 +0.002445j
+     319.000    0.006846  +0.00426j
+     319.167   -0.003214 -0.004972j
+     319.333   -0.002544+0.0004402j
+     319.500   0.0002101-0.0003726j
+     319.667   6.581e-06 -0.002874j
+     319.833    0.001203  +0.00606j
+     320.000   -0.000306 -0.002759j
+     320.167    0.005419 +0.002939j
+     320.333   -0.008913 -0.004297j
+     320.500    0.002335+0.0004289j
+     320.667    0.001273 -0.001112j
+     320.833   0.0008041 +0.002979j
+     321.000  -0.0005761 +0.001305j
+     321.167    0.002887+0.0006425j
+     321.333   -0.006271 -0.005743j
+     321.500    0.001732+0.0002601j
+     321.667    0.005199 +0.003616j
+     321.833   -0.006093-0.0004366j
+     322.000   5.164e-05 +0.003654j
+     322.167    0.007806 -0.006803j
+     322.333   -0.005732 +0.002342j
+     322.500   -0.002173 -0.003326j
+     322.667  -0.0009031 +0.008905j
+     322.833    0.006086 -0.005649j
+     323.000   0.0002081 -0.003105j
+     323.167   -0.004252 +0.006943j
+     323.333   0.0008748 -0.003577j
+     323.500  -0.0005673 -0.000532j
+     323.667   -0.001766 -0.001682j
+     323.833    0.007273 +0.004276j
+     324.000    -0.00434 -0.002653j
+     324.167  -0.0008339 +0.005035j
+     324.333   -0.002077 -0.007924j
+     324.500    0.005401 +0.003033j
+     324.667   -0.003006-0.0003603j
+     324.833   -0.002682 +0.002151j
+     325.000    0.007241 +0.002317j
+     325.167   -0.005273 -0.007421j
+     325.333    0.001134 +0.006393j
+     325.500  -0.0007081 -0.005692j
+     325.667   -0.001294 +0.006558j
+     325.833   0.0008619 -0.008464j
+     326.000    0.008869 +0.007749j
+     326.167    -0.01186 +0.005525j
+     326.333    0.001709  -0.01657j
+     326.500    0.001311 +0.006476j
+     326.667    0.003302 +0.001335j
+     326.833    0.001416  +0.00793j
+     327.000   -0.006966 -0.008528j
+     327.167   -0.000986-0.0008098j
+     327.333     0.01017+0.0005082j
+     327.500   -0.005608+0.0007027j
+     327.667   -0.003766+0.0009329j
+     327.833    0.002688 +0.004974j
+     328.000    0.003124 -0.005883j
+     328.167   -0.001394 -0.002594j
+     328.333   0.0007342 +0.002005j
+     328.500   -0.007124 +0.001643j
+     328.667    0.004896 +0.004064j
+     328.833    0.004841 -0.003728j
+     329.000   -0.003641 -0.004766j
+     329.167   -0.001292 +0.003435j
+     329.333   -0.001893 +0.003238j
+     329.500    0.001247 -0.002995j
+     329.667    0.004403+0.0007385j
+     329.833   -0.002153 +0.001535j
+     330.000   -0.003259 -0.005194j
+     330.167    0.004309 +0.002542j
+     330.333   -0.004252 +0.004784j
+     330.500    0.001434 -0.004842j
+     330.667    0.002603+0.0006854j
+     330.833  -1.457e-05 -0.001947j
+     331.000   -0.003498 +0.003317j
+     331.167  -0.0008655 +0.000964j
+     331.333    0.006473  -0.00388j
+     331.500   -0.004971+0.0006649j
+     331.667    -0.00194 +0.005143j
+     331.833    0.006403 -0.007219j
+     332.000   -0.002292 -0.001086j
+     332.167   -0.003804  +0.01216j
+     332.333   0.0009447 -0.007383j
+     332.500    0.007167 -0.005951j
+     332.667    -0.01134 +0.003794j
+     332.833     0.01109 +0.006253j
+     333.000   -0.007949 -0.003752j
+     333.167     0.00378 -0.002567j
+     333.333   -0.002303 +0.001453j
+     333.500     0.00185 -0.001608j
+     333.667  -0.0002699 +0.004931j
+     333.833    0.001259 -0.003559j
+     334.000   -0.003278-0.0008979j
+     334.167    0.001118 +0.001956j
+     334.333  -0.0005803 +0.001344j
+     334.500    0.006865 -0.004079j
+     334.667    -0.00915 +0.002275j
+     334.833    0.001277+0.0001786j
+     335.000     0.00438-0.0003219j
+     335.167    -0.00255+0.0002446j
+     335.333    0.001896 +0.001867j
+     335.500  -0.0005035 -0.003825j
+     335.667   -0.004727-0.0002441j
+     335.833   0.0006806 +0.002663j
+     336.000      0.0104+0.0002429j
+     336.167   -0.005617 +0.003016j
+     336.333   -0.009278   -0.0078j
+     336.500    0.008429 +0.002834j
+     336.667    0.002563  +0.00142j
+     336.833   -0.005289 -0.000985j
+     337.000     0.00341  +0.00352j
+     337.167   -0.001907-0.0004995j
+     337.333   -0.001358 -0.007372j
+     337.500     0.00109 +0.003851j
+     337.667    0.003566 +0.002249j
+     337.833   -0.005249+0.0006747j
+     338.000    0.003774+0.0007485j
+     338.167  -0.0003437 -0.005966j
+     338.333   -0.006211  +0.00252j
+     338.500    0.008888 +0.001452j
+     338.667   -0.003573 -0.001126j
+     338.833  -0.0005183  +0.00349j
+     339.000    -0.00171 -0.005316j
+     339.167    0.003656 +0.006077j
+     339.333   -0.001076 -0.008759j
+     339.500   -0.002216 +0.006025j
+     339.667    0.001837-0.0008192j
+     339.833  -0.0002663 +0.001834j
+     340.000     0.00342-0.0008905j
+     340.167   -0.008656  -0.00241j
+     340.333    0.006823 -0.001128j
+     340.500    0.001321 +0.001555j
+     340.667   -0.004731 +0.004948j
+     340.833  -4.247e-05 -0.004051j
+     341.000    0.004136+9.218e-05j
+     341.167   -0.002416 -0.001682j
+     341.333   0.0001976  -0.00196j
+     341.500   4.037e-05 +0.007582j
+     341.667   -0.001849 -0.001512j
+     341.833    0.004244 -0.005017j
+     342.000   -0.004428+0.0003876j
+     342.167    0.002708 +0.004355j
+     342.333    0.001916 -0.002049j
+     342.500   -0.005255 -0.001633j
+     342.667   -0.000697 +0.001283j
+     342.833    0.007395 +0.003858j
+     343.000   -0.001495 -0.007557j
+     343.167   -0.006259 +0.006485j
+     343.333    0.001164 -0.006848j
+     343.500     0.00784 +0.006499j
+     343.667   -0.008618   +0.0013j
+     343.833    0.004569 -0.006384j
+     344.000   -0.001588 +0.001238j
+     344.167  -0.0007967 +0.001822j
+     344.333    0.003346+0.0008762j
+     344.500   -0.002315+0.0003589j
+     344.667   -0.003498 -0.001828j
+     344.833    0.005259 -0.002559j
+     345.000   0.0009368 +0.003058j
+     345.167   -0.003427 +0.002843j
+     345.333   -0.002415 -0.002612j
+     345.500    0.005408 -0.003749j
+     345.667   -0.001274 +0.004738j
+     345.833   -0.003399 -0.001192j
+     346.000    0.004282-0.0008224j
+     346.167   -0.001081 +0.003602j
+     346.333   -0.002394 -0.006436j
+     346.500    0.002393 +0.003426j
+     346.667   -0.001119 +0.002518j
+     346.833   -0.001388 -0.003659j
+     347.000    0.006276+0.0004987j
+     347.167   -0.006843 +0.001325j
+     347.333    0.001605 +0.000538j
+     347.500    0.001806 -0.003715j
+     347.667   -0.003476 +0.003907j
+     347.833    0.004762-0.0006872j
+     348.000   -0.001045-0.0003524j
+     348.167   -0.002622 -0.004058j
+     348.333  -0.0003048 +0.007465j
+     348.500    0.001228 -0.003172j
+     348.667    0.004675 -0.002341j
+     348.833   -0.006929-0.0004762j
+     349.000  -0.0005926 +0.007028j
+     349.167    0.008946 -0.008133j
+     349.333   -0.006118  +0.00426j
+     349.500   -0.003691-0.0004111j
+     349.667    0.004179 +0.001927j
+     349.833    0.003187 -0.008637j
+     350.000   -0.004019 +0.009015j
+     350.167    0.001618 -0.001828j
+     350.333   -0.002623  +0.00156j
+     350.500   0.0004442 -0.004254j
+     350.667    0.002239 -0.002099j
+     350.833   0.0008403 +0.004067j
+     351.000  -0.0005555 +0.003692j
+     351.167   -0.004461 -0.002933j
+     351.333     0.00315 -0.001668j
+     351.500    0.001627 -0.003787j
+     351.667   -0.001518 +0.005004j
+     351.833  -0.0007674 +0.002791j
+     352.000   0.0007583 -0.004402j
+     352.167    0.002315 +0.003106j
+     352.333   -0.003705 -0.002478j
+     352.500   -0.001765 -0.005297j
+     352.667    0.005705  +0.00717j
+     352.833   -0.001893 +0.003993j
+     353.000    0.001043 -0.004818j
+     353.167   -0.004254 -0.004878j
+     353.333   0.0007759+0.0006523j
+     353.500      0.0054 +0.009129j
+     353.667   -0.006518 -0.004041j
+     353.833    0.004875 -0.004964j
+     354.000   -0.002451 +0.003337j
+     354.167    0.002435 +0.001871j
+     354.333   -0.003734 -0.001592j
+     354.500   -0.002509 -0.001806j
+     354.667    0.008102 +0.002133j
+     354.833    -0.00098+0.0005643j
+     355.000   -0.003296 -0.001257j
+     355.167   -0.002743 -0.001226j
+     355.333    0.001753 +0.004163j
+     355.500    0.002971 -0.004288j
+     355.667    0.001061+0.0002394j
+     355.833   -0.002727 +0.002203j
+     356.000   0.0002811 +0.001072j
+     356.167   -0.004677 -0.003285j
+     356.333    0.005185 +0.001755j
+     356.500    0.005134 -0.001739j
+     356.667   -0.009523 +0.002207j
+     356.833    0.003348 -0.001177j
+     357.000    0.001268+0.0003115j
+     357.167   7.003e-05 +0.001473j
+     357.333   -0.003209 -0.000317j
+     357.500    0.001999 -0.006234j
+     357.667    0.001253 +0.006622j
+     357.833      0.0034+0.0003739j
+     358.000   -0.007755 -0.001656j
+     358.167   -0.001778 +0.000949j
+     358.333    0.009462 -0.003687j
+     358.500   -0.002457 -0.001434j
+     358.667   0.0003411 +0.009608j
+     358.833   -0.009599  -0.00506j
+     359.000    0.009853 -0.003066j
+     359.167   0.0001407 +0.003326j
+     359.333   -0.003394 -0.002587j
+     359.500  -0.0006924 +0.002146j
+     359.667    0.003913+0.0003639j
+     359.833   -0.006926+0.0007304j
+     360.000    0.009648 -0.003425j
+     360.167   -0.007196 +0.001509j
+     360.333    0.001233+0.0003778j
+     360.500    0.001996 +0.001592j
+     360.667   -0.002972 -0.003353j
+     360.833    0.004483 +0.003007j
+     361.000   -0.003756 -0.002595j
+     361.167  -0.0008151 +0.003551j
+     361.333    0.006278 -0.004349j
+     361.500   -0.009896 +0.003663j
+     361.667      0.0089 -0.004627j
+     361.833   -0.004023 +0.006633j
+     362.000   0.0009789 -0.003303j
+     362.167   7.019e-05 -0.002953j
+     362.333   -0.001271 +0.004807j
+     362.500  -0.0007814 -0.004316j
+     362.667    0.002769 +0.003857j
+     362.833   0.0004137-0.0005807j
+     363.000  -0.0005181 -0.002527j
+     363.167   -0.003118  +0.00165j
+     363.333   0.0003262 -0.002122j
+     363.500   0.0007336 +0.007207j
+     363.667    0.006225 -0.009574j
+     363.833   -0.004724 +0.004995j
+     364.000   -0.002826-0.0007546j
+     364.167    -0.00239-0.0001968j
+     364.333    0.008307 +0.004205j
+     364.500   -0.001004 -0.007209j
+     364.667   -0.001654  +0.00189j
+     364.833   -0.005898+0.0004705j
+     365.000    0.006864 +0.005819j
+     365.167   -0.002641 -0.006676j
+     365.333    0.003372  +0.00216j
+     365.500   -0.004027-0.0008916j
+     365.667    0.000711 -0.003678j
+     365.833    0.002191 +0.005845j
+     366.000   -0.003271 +0.004735j
+     366.167    0.002657   -0.0079j
+     366.333  -8.687e-05 -0.002749j
+     366.500   -0.001511 +0.001201j
+     366.667  -0.0002976  +0.00771j
+     366.833    0.002553 -0.003391j
+     367.000   -0.001765+0.0009621j
+     367.167    0.001401 -0.006337j
+     367.333   -0.004769+0.0007905j
+     367.500    0.006427 +0.006373j
+     367.667   -0.004813+7.835e-05j
+     367.833    0.005269 -0.004201j
+     368.000   -0.004379 -0.001782j
+     368.167   0.0008214 +0.003628j
+     368.333   -0.003779 +0.002504j
+     368.500    0.006648 -0.007315j
+     368.667    0.002111 +0.003748j
+     368.833   -0.007198 +0.002819j
+     369.000  -0.0001583-0.0008448j
+     369.167    0.001966 -0.003713j
+     369.333    0.001437+0.0004052j
+     369.500    0.003828+0.0005378j
+     369.667   -0.006709 +0.004558j
+     369.833   0.0002265 -0.003856j
+     370.000   0.0007469 +0.001895j
+     370.167    0.003427 -0.004504j
+     370.333   -0.002353+0.0005382j
+     370.500    0.001168 +0.006898j
+     370.667   -0.001973  -0.00433j
+     370.833  -0.0007447 -0.002206j
+     371.000    0.003076 +0.003354j
+     371.167   -0.002992 -0.001293j
+     371.333    0.004478-0.0009887j
+     371.500    -0.00336+0.0009952j
+     371.667  -0.0009794-0.0006097j
+     371.833   -0.000615 +0.003469j
+     372.000    0.004539 -0.002618j
+     372.167  -0.0006027 -0.002553j
+     372.333   -0.002402+0.0008906j
+     372.500   -0.004749 +0.002027j
+     372.667    0.008564  +0.00202j
+     372.833   -0.001199+0.0002367j
+     373.000   -0.002169  -0.01027j
+     373.167   -0.003509  +0.01192j
+     373.333    0.005034   -0.0086j
+     373.500   -0.001189 +0.008866j
+     373.667  -0.0005671 -0.004757j
+     373.833    0.002843  -0.00144j
+     374.000    -0.00663 -0.001431j
+     374.167     0.00764 +0.006487j
+     374.333   -0.005487 -0.003969j
+     374.500   -0.001398 -0.002271j
+     374.667    0.008043 +0.008389j
+     374.833   -0.002544  -0.01153j
+     375.000   -0.004432 +0.006692j
+     375.167   -0.002148+0.0001982j
+     375.333    0.003449 +0.001127j
+     375.500     0.00857 -0.004228j
+     375.667   -0.005786 -0.001721j
+     375.833    -0.01018 +0.009125j
+     376.000    0.008673 -0.006407j
+     376.167     0.00207 -0.002302j
+     376.333   0.0009393 +0.008036j
+     376.500   -0.006026 -0.006984j
+     376.667   0.0003337-0.0002648j
+     376.833    0.004509 +0.003994j
+     377.000   0.0003655  +0.00185j
+     377.167   -0.007089 -0.004624j
+     377.333    0.004355 -0.002121j
+     377.500    0.004876 +0.005476j
+     377.667   -0.006529 -0.001216j
+     377.833   0.0005487  -0.00449j
+     378.000    0.001265 +0.009214j
+     378.167     0.00225 -0.004826j
+     378.333   -0.006619 -0.006933j
+     378.500    0.008818  +0.00403j
+     378.667   -0.004585 +0.009225j
+     378.833   -0.001793 -0.004618j
+     379.000    0.003522 -0.008286j
+     379.167   -0.003562  +0.00431j
+     379.333    0.001375 +0.003861j
+     379.500    0.003565-0.0009592j
+     379.667   -0.001967 -0.001416j
+     379.833   -0.003311 -0.001308j
+     380.000    0.003173+0.0002008j
+     380.167   -0.004146 +0.004835j
+     380.333    0.004259 -0.006235j
+     380.500    0.004156 +0.001014j
+     380.667   -0.005248 +0.002831j
+     380.833   -0.004829+0.0003229j
+     381.000    0.004227 +0.002334j
+     381.167    0.004152  -0.01467j
+     381.333   -0.004564  +0.01514j
+     381.500    0.002426 -0.001422j
+     381.667   0.0009401 -0.002265j
+     381.833   -0.005211 -0.004976j
+     382.000  -0.0006051 +0.006208j
+     382.167    0.005306 -0.004697j
+     382.333     0.00279 +0.007925j
+     382.500   -0.003351 -0.008279j
+     382.667   -0.005677 +0.002629j
+     382.833    0.003832 +0.000872j
+     383.000   0.0009599+0.0003681j
+     383.167     0.00148-0.0001061j
+     383.333   -0.002234  -0.00211j
+     383.500    0.004023 -0.001598j
+     383.667   -0.004736 +0.008174j
+     383.833   -0.004858 -0.004746j
+     384.000    0.007023 -0.003341j
+     384.167     0.00351  +0.00167j
+     384.333  -0.0009294  +0.00141j
+     384.500   -0.007381 +0.005172j
+     384.667  -0.0005622 -0.008463j
+     384.833    0.004531+0.0006374j
+     385.000    0.006196 +0.003521j
+     385.167   -0.006219 +0.003284j
+     385.333   -0.004235  -0.01041j
+     385.500    0.002664 +0.009079j
+     385.667    0.004806+0.0002399j
+     385.833  -0.0008159 -0.009541j
+     386.000   -0.006185 +0.009217j
+     386.167  -2.905e-05 -0.003031j
+     386.333     0.00907 +0.001838j
+     386.500   -0.003179 -0.001809j
+     386.667   -0.003689 -0.002263j
+     386.833   -0.003959-0.0006143j
+     387.000    0.007957 +0.009695j
+     387.167  -0.0003459 -0.006466j
+     387.333   -0.003233 -0.003601j
+     387.500     0.00527+0.0007773j
+     387.667   -0.008347 +0.005401j
+     387.833    0.001363 -0.001151j
+     388.000    0.002877 -0.002656j
+     388.167    0.004825 +0.001646j
+     388.333   -0.002783 -0.002521j
+     388.500   -0.005382 +0.002142j
+     388.667   -0.001139 -0.001556j
+     388.833    0.007426 +0.002878j
+     389.000    -0.00384  +0.00278j
+     389.167    0.004533 -0.008076j
+     389.333   -0.002514 +0.001447j
+     389.500   -0.005297-0.0001725j
+     389.667    0.000398 +0.007453j
+     389.833    0.008601 -0.002008j
+     390.000   -0.005481 -0.002825j
+     390.167    0.004123  -0.00947j
+     390.333   -0.006669  +0.01148j
+     390.500  -0.0001935+0.0009494j
+     390.667    0.005484 +0.001695j
+     390.833  -0.0004086   -0.0084j
+     391.000  -0.0002498-0.0002988j
+     391.167   -0.005655 +0.002261j
+     391.333    0.004054 +0.008398j
+     391.500     0.00391 -0.007406j
+     391.667   -0.003085 -0.003499j
+     391.833   -0.007238 +0.005354j
+     392.000    0.008235 +0.003029j
+     392.167    0.003562  -0.01008j
+     392.333   -0.007246 +0.005167j
+     392.500   0.0004366 +0.004644j
+     392.667   0.0004677 -0.002572j
+     392.833    0.001097 -0.003175j
+     393.000   0.0004956 -0.001142j
+     393.167    0.003666 +0.002211j
+     393.333   -0.006794 +0.004684j
+     393.500  -8.229e-05 -0.003895j
+     393.667    0.001746-0.0003082j
+     393.833    0.005936 -0.003139j
+     394.000   -0.007569 +0.004082j
+     394.167    0.005312 +0.002174j
+     394.333   -0.007385 -0.005581j
+     394.500    0.006375 +0.003057j
+     394.667   -0.002005  +0.00285j
+     394.833    0.003297 -0.007085j
+     395.000   -0.005312 +0.003372j
+     395.167   0.0005191 +0.001024j
+     395.333    0.002573 +0.002432j
+     395.500    0.002501  -0.00377j
+     395.667   -0.005233 -0.001943j
+     395.833  -0.0001674 +0.002932j
+     396.000    0.003123 +0.001129j
+     396.167   0.0004153-0.0008955j
+     396.333   -0.002871+0.0003012j
+     396.500    0.002935  -0.00213j
+     396.667   -0.002132 -0.001436j
+     396.833   0.0004572  +0.00465j
+     397.000   -0.001569 +0.002954j
+     397.167     0.00163 -0.007221j
+     397.333    0.002922 -0.001715j
+     397.500  -5.522e-05 +0.003829j
+     397.667   -0.006344 +0.003715j
+     397.833   -0.003075 +0.001417j
+     398.000     0.01449 -0.009508j
+     398.167   -0.008953+0.0003914j
+     398.333    0.002949 +0.004917j
+     398.500   -0.002743 +0.004866j
+     398.667    -0.00124 -0.004914j
+     398.833  -0.0007272 -0.002301j
+     399.000    0.005065   -0.0018j
+     399.167    0.002153 +0.002125j
+     399.333   -0.002656 +0.007156j
+     399.500   -0.006557 -0.005909j
+     399.667     8.5e-05 -0.002167j
+     399.833    0.007702 +0.005005j
+     400.000    0.001916 -0.007494j
+     400.167   -0.003647 +0.003989j
+     400.333   -0.003687 +0.006173j
+     400.500   -0.002721 -0.004503j
+     400.667    0.006614 -0.003172j
+     400.833    0.002611 +0.001374j
+     401.000   -0.002191 -0.003061j
+     401.167   -0.005901 +0.009297j
+     401.333    0.004082 -0.004371j
+     401.500    0.001034+0.0001097j
+     401.667   -0.001117 -0.003847j
+     401.833  -0.0002193  -0.00238j
+     402.000  -0.0008359  +0.01042j
+     402.167    0.003382 -0.001387j
+     402.333  -0.0005052 -0.007342j
+     402.500   -0.003236 +0.001708j
+     402.667   -0.003346 +0.002588j
+     402.833    0.006054+0.0001943j
+     403.000    0.004585-0.0009138j
+     403.167   -0.006858-0.0005529j
+     403.333  -0.0006562-0.0001832j
+     403.500    0.000417 +0.002897j
+     403.667  -0.0001703 -0.003606j
+     403.833    0.002313+0.0004536j
+     404.000     0.00372 +0.000753j
+     404.167   -0.005628 +0.001551j
+     404.333  -0.0006771-0.0002529j
+     404.500   0.0008219 -0.002979j
+     404.667  -0.0002395 +0.001454j
+     404.833   -0.001395 +0.001509j
+     405.000     0.01336 -0.001433j
+     405.167    -0.01371 -0.001947j
+     405.333   2.281e-05 +0.006898j
+     405.500   -0.005998 -0.005458j
+     405.667     0.01717  -0.00301j
+     405.833   -0.004115 +0.005231j
+     406.000   -0.003562-0.0006035j
+     406.167   -0.006372 +0.001631j
+     406.333   0.0008987 -0.005512j
+     406.500     0.01191 +0.002136j
+     406.667   -0.005883 +0.003647j
+     406.833  -0.0006693 -0.002018j
+     407.000   -0.006017 -0.003865j
+     407.167    0.008651 +0.002714j
+     407.333   -0.002687 +0.003238j
+     407.500   -0.001159-0.0004017j
+     407.667   0.0005243 -0.005479j
+     407.833  -3.898e-05 -0.000149j
+     408.000    0.002675 +0.006765j
+     408.167   -0.005298 -0.005072j
+     408.333    0.005079 +0.006361j
+     408.500   -0.004954 -0.006316j
+     408.667    0.004274 -0.002514j
+     408.833  -0.0009559 +0.002403j
+     409.000   -0.001613  +0.00563j
+     409.167    0.003597  -0.00101j
+     409.333   -0.005077 -0.003459j
+     409.500   0.0005745 -0.003446j
+     409.667     0.00455-1.036e-05j
+     409.833   0.0002261 +0.008857j
+     410.000   -0.006691-0.0005776j
+     410.167   9.727e-05 -0.005409j
+     410.333     0.01451 -0.005368j
+     410.500    -0.01734 +0.006009j
+     410.667    0.003716 +0.006096j
+     410.833    0.005249 -0.003069j
+     411.000   0.0003243 -0.009297j
+     411.167   -0.002051 +0.006448j
+     411.333   -0.002942 +0.002544j
+     411.500  -0.0006189 +0.001779j
+     411.667    0.004567 -0.008118j
+     411.833   5.661e-05  +0.00127j
+     412.000   0.0002146 +0.004938j
+     412.167   -0.004244-0.0006312j
+     412.333    0.003035+0.0002895j
+     412.500   -0.005814   -0.0036j
+     412.667     0.00858  -0.00101j
+     412.833   0.0006345 +0.001327j
+     413.000   -0.005979 +0.005457j
+     413.167  -0.0009194-0.0009016j
+     413.333    0.002286 -0.003044j
+     413.500    0.002355 -0.009536j
+     413.667   -0.001854  +0.01366j
+     413.833   0.0006037 -0.002914j
+     414.000  -0.0002726  +0.00279j
+     414.167   -0.001476 -0.006197j
+     414.333   0.0001416-0.0002504j
+     414.500   -7.24e-05+0.0002109j
+     414.667    0.005458 +0.003775j
+     414.833   -0.004178 +0.001652j
+     415.000    -0.00534 -0.003614j
+     415.167    0.006696 +0.002961j
+     415.333     0.00153  -0.01115j
+     415.500   -0.004737 +0.008797j
+     415.667   0.0001321 +0.006841j
+     415.833    0.002762 -0.005871j
+     416.000  -0.0006539 -0.005763j
+     416.167   -0.002498 +0.002321j
+     416.333    0.004347 +0.005116j
+     416.500    -0.00194 -0.002295j
+     416.667   -0.004221  -0.00137j
+     416.833    0.002921 -0.000232j
+     417.000    0.005975  +0.00603j
+     417.167    -0.00545  -0.01075j
+     417.333   -0.001405  +0.00577j
+     417.500   -0.001154 +0.001816j
+     417.667    0.002367-0.0006912j
+     417.833    0.006173 -0.002327j
+     418.000   -0.006328 +0.001797j
+     418.167    -0.00355+1.306e-05j
+     418.333    0.005507 -0.005034j
+     418.500   0.0009725 +0.006365j
+     418.667    -0.00607 +0.000907j
+     418.833    0.003919 -0.002393j
+     419.000     0.00498 -0.001194j
+     419.167   -0.007693 -0.005126j
+     419.333     0.00179 +0.008056j
+     419.500   -0.001344 +0.002702j
+     419.667    0.003204 -0.005842j
+     419.833  -0.0004324 +0.001098j
+     420.000    0.001636 -0.006684j
+     420.167  -0.0005821  +0.00865j
+     420.333   -0.007139 +0.003225j
+     420.500    0.001861 -0.006502j
+     420.667    0.008761 -0.001522j
+     420.833   -0.001262 +0.002299j
+     421.000   -0.005304+0.0008052j
+     421.167    -0.00283-7.341e-05j
+     421.333     0.00403+0.0002274j
+     421.500   0.0007098 +0.001546j
+     421.667  -0.0004675 -0.005837j
+     421.833    0.005392 +0.003379j
+     422.000   -0.008504 +0.001562j
+     422.167    0.001615+0.0001065j
+     422.333   -0.003623 -0.001068j
+     422.500      0.0109 -0.004064j
+     422.667   -0.005006 +0.007381j
+     422.833   0.0005936 -0.004119j
+     423.000   -0.004689 -0.002096j
+     423.167    0.001036 +0.004096j
+     423.333    0.003199 +0.001691j
+     423.500    0.001741 -0.006605j
+     423.667   -0.002699  +0.00207j
+     423.833    -0.00127 +0.005289j
+     424.000    0.001039 -0.006905j
+     424.167   0.0004335 +0.002945j
+     424.333   -0.001527 +0.004125j
+     424.500    0.001566 -0.007534j
+     424.667    0.001308+0.0009042j
+     424.833  -0.0001358 +0.006168j
+     425.000   -0.003394 -0.002074j
+     425.167   0.0003325 -0.003497j
+     425.333    0.001091 -0.001464j
+     425.500     0.00243 +0.006904j
+     425.667   0.0002772 -0.002265j
+     425.833    -0.00254 -0.001317j
+     426.000   -0.002264 -0.004569j
+     426.167    -0.00018 +0.006663j
+     426.333    0.005532+0.0005596j
+     426.500    0.002615-0.0002922j
+     426.667   -0.009445  -0.01043j
+     426.833    0.002022  +0.01091j
+     427.000   0.0009396  +0.00156j
+     427.167    0.005972 -0.005255j
+     427.333   -0.005893 -0.003447j
+     427.500   0.0007992 +0.005281j
+     427.667     -0.0034 +0.001934j
+     427.833    0.007368 -0.001672j
+     428.000   -0.003717 -0.002911j
+     428.167  -0.0003983 -0.003907j
+     428.333   -0.001001   +0.0103j
+     428.500    0.001832-9.218e-05j
+     428.667    0.000908 -0.006504j
+     428.833   -0.001045 -0.003971j
+     429.000   -0.003941 +0.006575j
+     429.167    0.006853 +0.004063j
+     429.333   -0.001816   -0.0042j
+     429.500   -0.003875 -0.001454j
+     429.667      0.0004 -0.001953j
+     429.833    0.005365 +0.002409j
+     430.000   -0.004491 +0.001239j
+     430.167    0.005318 +0.003396j
+     430.333   -0.008829 -0.004829j
+     430.500     0.00205 -0.002801j
+     430.667     0.00694 +0.001579j
+     430.833   -0.003702 +0.006023j
+     431.000    0.001117 -0.003617j
+     431.167   -0.005233 -0.002512j
+     431.333   0.0006424 +0.003191j
+     431.500    0.007212 -0.001589j
+     431.667   -0.003358  -0.00179j
+     431.833   -0.001906 +0.004713j
+     432.000   -0.001177 -0.003065j
+     432.167    0.004771 +0.001035j
+     432.333   -0.003466-0.0001054j
+     432.500    -0.00192 -0.003164j
+     432.667    0.005385 +0.005836j
+     432.833   -0.001579  -0.00579j
+     433.000  -0.0008833   +0.0047j
+     433.167   -0.001241 -0.001459j
+     433.333   -0.002837 -0.001357j
+     433.500     0.00855-5.054e-05j
+     433.667   -0.006761 +0.001265j
+     433.833    0.004843 +0.001254j
+     434.000    -0.00152 -0.005202j
+     434.167   -0.005461 +0.007529j
+     434.333    0.001464 -0.004069j
+     434.500    0.005707  -0.00257j
+     434.667    0.002998 +0.002549j
+     434.833   -0.008344 +0.002282j
+     435.000   -0.001259 -0.003449j
+     435.167   0.0006144 +0.003817j
+     435.333    0.008077  -0.00566j
+     435.500   -0.003448 +0.004033j
+     435.667   -0.001337 -0.001685j
+     435.833   -0.003455 +0.003895j
+     436.000    0.001639 -0.004663j
+     436.167    0.005545 -0.002443j
+     436.333   -0.006334 +0.008465j
+     436.500    0.003886-0.0008036j
+     436.667  -0.0003935  -0.01055j
+     436.833   -0.002475 +0.006971j
+     437.000   -0.001626 +0.001665j
+     437.167    0.007442-0.0006855j
+     437.333   -0.006986  +0.00372j
+     437.500    0.002947  -0.01215j
+     437.667    0.002825 +0.005919j
+     437.833    -0.00687  +0.00501j
+     438.000    0.001692 -0.003268j
+     438.167    0.007346 +0.003313j
+     438.333   -0.008652 -0.007275j
+     438.500    0.003021+0.0008766j
+     438.667    0.002299 +0.003885j
+     438.833   -0.003089+0.0006707j
+     439.000    0.001885-0.0005074j
+     439.167   -0.005369 -0.001069j
+     439.333    0.008831-0.0006112j
+     439.500   -0.003408  -0.00411j
+     439.667   -0.001198 +0.006792j
+     439.833   -0.003639 -0.001754j
+     440.000    0.004483 +0.003378j
+     440.167    0.003927 -0.004756j
+     440.333   -0.006528 -0.002257j
+     440.500    0.000338-0.0006493j
+     440.667    0.002841 +0.006938j
+     440.833   -0.001187 +0.001278j
+     441.000   -0.000444 -0.003539j
+     441.167    0.001582 -0.003375j
+     441.333  -4.256e-05 -0.004836j
+     441.500   -0.004685 +0.008798j
+     441.667    0.004923  +0.00842j
+     441.833  -0.0001533 -0.009855j
+     442.000   0.0007437 -0.008178j
+     442.167   -0.004777 +0.005561j
+     442.333    0.001787  +0.01011j
+     442.500    0.002405 -0.009213j
+     442.667  -0.0002973 +0.001913j
+     442.833   0.0009241-0.0006663j
+     443.000   -0.005542+0.0007039j
+     443.167    0.002795 -0.003047j
+     443.333    0.003654 +0.003303j
+     443.500   -0.002909 +0.004123j
+     443.667   -0.000985 -0.006524j
+     443.833     0.00055-0.0009873j
+     444.000    0.002496 +0.004535j
+     444.167   -0.001509 -0.002609j
+     444.333   -0.005716  +0.00355j
+     444.500    0.007495 -0.004633j
+     444.667    0.003581 +0.003217j
+     444.833   -0.009794  -0.00288j
+     445.000   0.0008992 +0.002444j
+     445.167    0.004804-5.377e-05j
+     445.333  -4.912e-05 -0.002225j
+     445.500   -0.002561  +0.00422j
+     445.667    0.001025   -0.0044j
+     445.833    0.002084+0.0002173j
+     446.000   -0.006126 +0.001583j
+     446.167    0.001791 +0.005005j
+     446.333     0.00698 -0.009823j
+     446.500   -0.002471 +0.004071j
+     446.667   -0.006543 +0.003253j
+     446.833    0.002689 -0.004079j
+     447.000    0.001036 +0.002672j
+     447.167    0.004494 -0.002071j
+     447.333   -0.003669 +0.001131j
+     447.500    -0.00314+0.0005234j
+     447.667    0.001205 -0.003283j
+     447.833    0.003288 +0.002787j
+     448.000  -2.964e-05 +0.004298j
+     448.167   -0.003256  -0.00655j
+     448.333   0.0006382 -0.003402j
+     448.500    0.003691  +0.01102j
+     448.667   -0.006762 -0.007051j
+     448.833    0.004479+0.0002014j
+     449.000    0.003862 +0.004899j
+     449.167   -0.005889 -0.006159j
+     449.333    -0.00255-0.0005718j
+     449.500    0.005112 +0.004964j
+     449.667    0.001842  +0.00142j
+     449.833   -0.002279 -0.003969j
+     450.000   -0.002325 -0.003516j
+     450.167  -0.0008123 +0.006093j
+     450.333    0.003685 -0.001887j
+     450.500   0.0006572+0.0009078j
+     450.667     0.00104   -0.0017j
+     450.833   -0.009263 +0.001529j
+     451.000    0.007354 -0.001669j
+     451.167    0.003051-0.0004336j
+     451.333   -0.005429 +0.001653j
+     451.500   -0.001106 +0.002198j
+     451.667    0.002519 -0.002911j
+     451.833    0.004934  -0.00154j
+     452.000   -0.007556 +0.001319j
+     452.167   0.0007085+0.0007876j
+     452.333    0.001329 +0.002624j
+     452.500    0.001766 -0.004848j
+     452.667    0.002447 +0.003217j
+     452.833   -0.003814 -0.003564j
+     453.000   -0.005515 +0.002217j
+     453.167     0.00512  +0.00227j
+     453.333    0.005824-0.0002676j
+     453.500    -0.00419 -0.005665j
+     453.667   -0.002883 +0.003286j
+     453.833   -0.001811 +0.002505j
+     454.000    0.006141-0.0002871j
+     454.167   -0.002473  -0.00355j
+     454.333    0.001519-0.0003802j
+     454.500    -0.00358 +0.004278j
+     454.667    0.003984 -0.001041j
+     454.833   -0.003687+3.248e-05j
+     455.000    0.001308 -0.004478j
+     455.167    0.001175 +0.003136j
+     455.333  -0.0007039+0.0009993j
+     455.500    0.001294 +0.004688j
+     455.667   -0.002724  -0.01041j
+     455.833    0.002294 +0.003624j
+     456.000   -0.002559 +0.003644j
+     456.167    0.000731 -0.002416j
+     456.333    0.004099-0.0003266j
+     456.500   -0.004626 +0.002841j
+     456.667    0.004448 -0.003789j
+     456.833   -0.007486+8.484e-05j
+     457.000    0.004255-0.0003885j
+     457.167    0.001599 +0.005343j
+     457.333   -0.001062 -0.001637j
+     457.500    0.003624 -0.005522j
+     457.667   -0.007419 +0.003251j
+     457.833   8.749e-05 +0.001074j
+     458.000    0.006912-0.0008414j
+     458.167   -0.006968-0.0008353j
+     458.333    0.009936 +0.004219j
+     458.500   -0.006616 -0.002131j
+     458.667   -0.004042 -0.009237j
+     458.833    0.001706  +0.01248j
+     459.000    0.002676 -0.002897j
+     459.167    0.005632 -0.002752j
+     459.333   -0.002727 +0.003176j
+     459.500    -0.01055 -0.003822j
+     459.667    0.006051 +0.000217j
+     459.833    0.001028  +0.00266j
+     460.000    0.007812-0.0003646j
+     460.167   -0.009719-0.0001181j
+     460.333  -0.0004739 +0.001988j
+     460.500     0.00346 -0.005558j
+     460.667  -1.856e-05-3.134e-05j
+     460.833   -0.003422 +0.002975j
+     461.000    0.004973 +0.008101j
+     461.167    0.000118 -0.009466j
+     461.333    -0.00345 -0.004775j
+     461.500  -0.0006233  +0.00728j
+     461.667    0.001594 +0.001091j
+     461.833   -0.004353 -0.001231j
+     462.000     0.01388 -0.000652j
+     462.167    -0.01088 -0.001249j
+     462.333   -0.002354-0.0009375j
+     462.500    0.002637 +0.003308j
+     462.667    0.001999+0.0001557j
+     462.833   0.0009972 -0.001973j
+     463.000   0.0006222 -0.002535j
+     463.167   -0.006664 +0.006131j
+     463.333    0.005255  -0.00237j
+     463.500    0.000377 -0.001994j
+     463.667   -0.004278 -0.001038j
+     463.833    0.002379 +0.002092j
+     464.000     0.00596 +0.003719j
+     464.167   -0.006431 -0.001719j
+     464.333   -0.004306 -0.005276j
+     464.500    0.007918+0.0007178j
+     464.667    -0.00219 +0.003197j
+     464.833   -0.001007 +0.003578j
+     465.000    0.001568 -0.001713j
+     465.167  -0.0001386 -0.006348j
+     465.333   -0.001462+0.0009682j
+     465.500   -0.003099 +0.003246j
+     465.667    0.004366 +0.005633j
+     465.833    0.003624 -0.005838j
+     466.000    -0.00302 -0.004147j
+     466.167   -0.007279 +0.003001j
+     466.333    0.007838 +0.003843j
+     466.500   -0.001992 -0.002491j
+     466.667    0.001292+0.0008784j
+     466.833  -0.0003048 -0.004077j
+     467.000   -0.002312 +0.004481j
+     467.167    0.002587 -0.001662j
+     467.333   -0.003298+0.0009962j
+     467.500    0.002436  -0.00217j
+     467.667    0.002656 +0.001964j
+     467.833   -0.005104 +0.000146j
+     468.000    0.001198 -0.002053j
+     468.167    0.004906 +0.001784j
+     468.333   -0.007098+0.0006568j
+     468.500    0.002719  -0.00252j
+     468.667   0.0004824-0.0004305j
+     468.833   0.0008497  +0.00686j
+     469.000    0.002845 -0.008585j
+     469.167   -0.007006 +0.003566j
+     469.333   0.0004617+8.824e-05j
+     469.500    0.003659 +0.001491j
+     469.667     0.00241 -0.001881j
+     469.833   -0.002623 -0.003686j
+     470.000   -0.002662 +0.008918j
+     470.167    0.002066 -0.005682j
+     470.333   -0.002645 -0.001359j
+     470.500    0.005074 +0.003816j
+     470.667  -0.0003271 -0.006444j
+     470.833   -0.003622  +0.01224j
+     471.000     0.00172 -0.009401j
+     471.167   -0.002109 -0.002822j
+     471.333    0.002014 +0.007138j
+     471.500   0.0004126-0.0006929j
+     471.667    0.001985  -0.00322j
+     471.833   -0.003275 +0.001442j
+     472.000  -0.0004219 +0.001502j
+     472.167   -0.001356 -0.003055j
+     472.333    0.005064-0.0002838j
+     472.500   -0.002824 +0.003565j
+     472.667    0.003674    +0.003j
+     472.833   -0.006256 -0.009708j
+     473.000     0.00124 +0.003152j
+     473.167   0.0001309 +0.002781j
+     473.333    0.006481 +0.004723j
+     473.500   -0.005283 -0.009559j
+     473.667   -0.001441 +0.002179j
+     473.833    0.001542 +0.003252j
+     474.000   -0.001912 -0.001845j
+     474.167    0.005456 +0.001375j
+     474.333   -0.004259-0.0009548j
+     474.500    0.003577 -0.001074j
+     474.667   -0.007451+0.0004912j
+     474.833    0.005813 +0.001371j
+     475.000    0.000825 -0.001306j
+     475.167   -0.001806+7.222e-05j
+     475.333   -0.002023  +0.00318j
+     475.500    0.003878  -0.00646j
+     475.667  -0.0002653  +0.00452j
+     475.833   -0.008082 -0.000927j
+     476.000     0.01131 +0.001758j
+     476.167   -0.004324 -0.003275j
+     476.333  -0.0005089 +0.001278j
+     476.500   -0.002286 +0.001676j
+     476.667    0.001974 -0.003203j
+     476.833    0.001605 +0.003337j
+     477.000  -0.0002681 -0.001915j
+     477.167   -0.001274 -0.002372j
+     477.333   -0.002022 +0.008746j
+     477.500    0.005313  -0.01078j
+     477.667   -0.006789 +0.005983j
+     477.833    0.005101 -0.001744j
+     478.000    0.002871 +0.001761j
+     478.167   -0.009133 -0.004464j
+     478.333    0.005969 +0.009552j
+     478.500    -0.00144 -0.007877j
+     478.667    0.001066 -0.005796j
+     478.833   0.0002173  +0.01161j
+     479.000   -0.001718-0.0002501j
+     479.167  -0.0004022 -0.006367j
+     479.333    0.004454 +0.003619j
+     479.500   -0.007934 -0.007582j
+     479.667    0.006295  +0.01015j
+     479.833    0.001717 -0.001198j
+     480.000   -0.005229 -0.003144j
+     480.167    0.001078 -0.001977j
+     480.333   -0.001504 +0.004214j
+     480.500    0.005249 -0.005564j
+     480.667   -0.001386 +0.008096j
+     480.833   -0.002421  -0.00334j
+     481.000   -0.002098 -0.003147j
+     481.167    0.005025 +0.001511j
+     481.333   -0.002301 +0.001422j
+     481.500   0.0006527-0.0007906j
+     481.667   9.883e-05 +0.001559j
+     481.833  -0.0007312 -0.003112j
+     482.000  -0.0006111 +0.002811j
+     482.167  -8.597e-05-0.0005002j
+     482.333    0.001758 -0.005441j
+     482.500    0.001953 +0.008578j
+     482.667   -0.004679-0.0008976j
+     482.833    0.000713    -0.006j
+     483.000  -0.0001179  +0.00117j
+     483.167    0.004381 +0.002341j
+     483.333   -0.002821  +0.00184j
+     483.500   7.981e-06-0.0006654j
+     483.667   -0.004277  -0.00464j
+     483.833    0.005583 +0.003691j
+     484.000     0.00077 -0.002724j
+     484.167   -0.002452 +0.004904j
+     484.333   -0.001665 -0.002991j
+     484.500    0.001467+0.0001762j
+     484.667   0.0006304 +0.003079j
+     484.833    0.000514  -0.01205j
+     485.000   0.0006924  +0.01286j
+     485.167   -0.004446+0.0009684j
+     485.333    0.003163 -0.007015j
+     485.500   0.0007432 +0.001474j
+     485.667  -0.0007873 -0.001187j
+     485.833    0.001009+0.0002039j
+     486.000   -0.004289 +0.006623j
+     486.167    0.003413 -0.005218j
+     486.333    0.002841 -0.002134j
+     486.500   -0.005321 +0.006015j
+     486.667    0.002049 -0.009961j
+     486.833   0.0003372 +0.008416j
+     487.000  -0.0005322+0.0004446j
+     487.167    0.001204 -0.001908j
+     487.333   -0.002675+0.0001235j
+     487.500    0.005079 -0.004786j
+     487.667   -0.005345 +0.002144j
+     487.833  -0.0003214  +0.00584j
+     488.000    0.004816-0.0006669j
+     488.167   -0.001258 -0.007337j
+     488.333   -0.002952 +0.003728j
+     488.500    0.003493 +0.002325j
+     488.667    -0.00352 -0.004599j
+     488.833   -0.001472 +0.001953j
+     489.000    0.007683  +0.00513j
+     489.167  -0.0007534 -0.004561j
+     489.333   -0.008542 -0.002904j
+     489.500    0.002259 +0.002835j
+     489.667    0.004086+0.0003942j
+     489.833    0.001531 -0.000909j
+     490.000   -0.002687 +0.004364j
+     490.167    -0.00147 -0.004859j
+     490.333   -0.000617 +0.001638j
+     490.500   0.0003114 -0.004308j
+     490.667    0.004294 +0.002761j
+     490.833   -0.001493 +0.006782j
+     491.000   -0.002132  -0.00668j
+     491.167   0.0003891 +0.002645j
+     491.333   -0.002611 -0.006556j
+     491.500    0.003873 +0.003257j
+     491.667    0.003148 +0.006777j
+     491.833   -0.005528  -0.00608j
+     492.000  -0.0006028 +0.001019j
+     492.167    0.004892 +0.001098j
+     492.333   -0.006676  -0.00365j
+     492.500    0.004859-9.115e-06j
+     492.667    0.002524 +0.005598j
+     492.833   -0.004706 -0.001287j
+     493.000   0.0002722 -0.003112j
+     493.167  -0.0006072 +0.002937j
+     493.333    0.002579  -0.00544j
+     493.500  -0.0005469 +0.002077j
+     493.667   0.0001985 +0.005347j
+     493.833   0.0002183 -0.001481j
+     494.000   -0.002582 -0.002067j
+     494.167   1.847e-05 -0.003789j
+     494.333    0.001325 +0.001352j
+     494.500    0.004597 +0.006043j
+     494.667    -0.00304 -0.001255j
+     494.833   -0.006121  -0.00584j
+     495.000    0.002548 +0.005293j
+     495.167    0.006675 -0.003362j
+     495.333  -0.0002227+0.0002659j
+     495.500   -0.009792 +0.003831j
+     495.667     0.00459 -0.004334j
+     495.833    0.003311 +0.002488j
+     496.000   -0.001095+4.118e-05j
+     496.167   -0.001232 -0.000249j
+     496.333   -0.001017 -0.003837j
+     496.500   0.0008181 +0.003367j
+     496.667  -0.0007391 +0.002193j
+     496.833    0.003195 -0.002107j
+     497.000  -0.0004206+0.0002762j
+     497.167   -0.003245-0.0006747j
+     497.333   -0.001593 -0.002872j
+     497.500     0.00296 +0.001979j
+     497.667    0.004246 +0.005364j
+     497.833  -0.0003866-0.0008201j
+     498.000    -0.01124  -0.00867j
+     498.167    0.005571 +0.003693j
+     498.333    0.007527 +0.002979j
+     498.500   -0.004601 -0.001479j
+     498.667   -0.003073 +0.002078j
+     498.833    0.001474-0.0009566j
+     499.000    0.001737 -0.002377j
+     499.167   -0.004957 -0.003804j
+     499.333    0.007938 +0.008143j
+     499.500   -0.001145-3.846e-05j
+     499.667   -0.007622 -0.004073j
+     499.833    0.003931 +0.001647j
+     500.000   0.0006807 -0.003337j
+     500.167    0.003294 +0.001347j
+     500.333    -0.00123 +0.004619j
+     500.500   -0.007365 -0.002384j
+     500.667    0.005147-0.0003262j
+     500.833    0.002643 -0.003163j
+     501.000  -0.0007891 +0.001128j
+     501.167   -0.002103 +0.003691j
+     501.333   -0.003862-0.0007363j
+     501.500     0.00805 -0.001397j
+     501.667   -0.003742 -0.001017j
+     501.833  -0.0007501-0.0003925j
+     502.000  -0.0009281-0.0008038j
+     502.167    0.006135 +0.006991j
+     502.333   -0.006175-0.0008382j
+     502.500   -0.001298   -0.0114j
+     502.667     0.00275 +0.005222j
+     502.833    0.005473 +0.004408j
+     503.000    -0.00633 +0.005146j
+     503.167    0.001388 -0.009447j
+     503.333   -0.006336 -0.004918j
+     503.500    0.008441 +0.007754j
+     503.667    0.002241 +0.002225j
+     503.833   -0.003512-5.212e-05j
+     504.000   -0.005292 -0.002558j
+     504.167   0.0007207 -0.004902j
+     504.333    0.008121 +0.002523j
+     504.500   -0.004267 +0.004253j
+     504.667   -0.000356 +0.001397j
+     504.833   0.0009305 -0.002762j
+     505.000   -0.004495 -0.004034j
+     505.167    0.004683 -0.002123j
+     505.333   -0.001047  +0.01305j
+     505.500   0.0009554   -0.0106j
+     505.667   0.0002515 +0.003841j
+     505.833   -0.002144 +0.000272j
+     506.000   -0.000357 -0.005403j
+     506.167   -0.001492 +0.007472j
+     506.333    0.007775 -0.004968j
+     506.500   -0.007372 +0.001566j
+     506.667    0.004704+0.0008949j
+     506.833   -0.004054-7.674e-05j
+     507.000    0.001218 +0.001304j
+     507.167   -0.002297  -0.00798j
+     507.333    0.005173 +0.006094j
+     507.500    0.001537  +0.00493j
+     507.667   -0.006082 -0.005267j
+     507.833  -0.0006101 -0.001883j
+     508.000    0.002351+0.0001028j
+     508.167    0.001915 +0.004145j
+     508.333  -0.0009319  -0.00168j
+     508.500   0.0008286 -0.002871j
+     508.667   -0.002275 +0.005278j
+     508.833  -0.0005784 -0.003803j
+     509.000   0.0002379 +0.001585j
+     509.167    0.000909 -0.002891j
+     509.333    0.003752+0.0009964j
+     509.500   -0.001817 +0.004702j
+     509.667   -0.003827 -0.004812j
+     509.833    -0.00181 +0.004151j
+     510.000    0.002845 -0.004903j
+     510.167    0.008561 -0.002983j
+     510.333   -0.008376 +0.008095j
+     510.500  -0.0002209 +0.001238j
+     510.667   -0.002622 -0.005968j
+     510.833    0.003766 +0.001359j
+     511.000    0.004145  -0.00267j
+     511.167   -0.003795  +0.00183j
+     511.333   -0.001078 +0.006015j
+     511.500   -0.002647  -0.00373j
+     511.667    0.004322 -0.005484j
+     511.833    0.004209 +0.005888j
+     512.000   -0.005132        +0j
+
+--- Restored FrequencySeries ---
+FrequencySeries([ 0.00144928+0.j        ,
+                  0.01031991-0.01187033j,
+                 -0.00650399+0.00424637j, ...,
+                  0.00432164-0.00548429j,
+                  0.004209  +0.00588788j,
+                 -0.00513173+0.j        ]
+                unit: dimensionless,
+                f0: 0.0 Hz,
+                df: 0.02652582384864922 Hz,
+                epoch: None,
+                name: None,
+                channel: None)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/control/frdata.py:427: FutureWarning: fresp attribute is deprecated; use frdata
+  warn(&#34;fresp attribute is deprecated; use frdata&#34;, FutureWarning)
+</pre></div></div>
+</div>
+</section>
+<section id="9.-求積和-(Quadrature-Sum)">
+<h2>9. 求積和 (Quadrature Sum)<a class="headerlink" href="#9.-求積和-(Quadrature-Sum)" title="Link to this heading"></a></h2>
+<p>直交位相の和を計算する機能です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Generate noisy data
+np.random.seed(42)
+f = spec.frequencies.value
+noise = np.abs(np.random.randn(f.size))
+peak = 10.0 * np.exp(-(f - 200)**2 / 50.0)
+data = noise + peak
+
+raw = FrequencySeries(data, frequencies=f, unit=&#39;V&#39;, name=&#39;Raw Data&#39;)
+
+# Smooth
+smoothed = raw.smooth(width=10, method=&#39;amplitude&#39;)
+smoothed.name = &#39;Smoothed&#39;
+
+# Convert to dB
+raw_db = raw.to_db()
+smoothed_db = smoothed.to_db()
+raw_db.name = &#39;Raw (dB)&#39;
+smoothed_db.name = &#39;Smoothed (dB)&#39;
+
+plot = raw_db.plot(label=&#39;Raw&#39;, title=&quot;Smoothing &amp; dB&quot;)
+ax = plot.gca()
+ax.plot(smoothed_db, label=&#39;Smoothed&#39;, linewidth=2)
+ax.legend()
+plot.show()
+plt.close()
+
+# Quadrature Sum (Noise Budget example)
+noise_a = FrequencySeries(np.ones_like(f), frequencies=f, unit=&#39;V&#39;, name=&#39;Noise A&#39;)
+noise_b = FrequencySeries(np.ones_like(f) * 2, frequencies=f, unit=&#39;V&#39;, name=&#39;Noise B&#39;)
+
+total = noise_a.quadrature_sum(noise_b)
+print(f&quot;Noise A: {noise_a.value[0]}, Noise B: {noise_b.value[0]}&quot;)
+print(f&quot;Total (Sqrt Sum): {total.value[0]}&quot;)
+Plot(total, noise_a, noise_b, alpha=0.8)
+plt.legend([&quot;Total&quot;, &quot;Noise A&quot;, &quot;Noise B&quot;])
+plt.xscale(&quot;log&quot;)
+plt.yscale(&quot;log&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Noise A: 1.0, Noise B: 2.0
+Total (Sqrt Sum): 2.23606797749979
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intro_timeseries.html" class="btn btn-neutral float-left" title="gwexpy TimeSeries 新機能チュートリアル" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="intro_spectrogram.html" class="btn btn-neutral float-right" title="SpectrogramList と SpectrogramDict のチュートリアル" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

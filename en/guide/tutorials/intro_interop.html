@@ -1,0 +1,2042 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GWExPy TimeSeries 相互運用性 (Interop) チュートリアル &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="TimeSeriesMatrix チュートリアル" href="matrix_timeseries.html" />
+    <link rel="prev" title="チュートリアル: 全天マップと地理マップのプロット" href="intro_mapplotting.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#i-core-data-structures">I. Core Data Structures</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="intro_timeseries.html">gwexpy TimeSeries 新機能チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries の新機能と高度な操作</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro_spectrogram.html">SpectrogramList と SpectrogramDict のチュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro_plotting.html">gwexpy Plotting Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro_mapplotting.html">チュートリアル: 全天マップと地理マップのプロット</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">GWExPy TimeSeries 相互運用性 (Interop) チュートリアル</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#目次">目次</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#1.-汎用データ形式・データ基盤">1. 汎用データ形式・データ基盤</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#2.-データベース・ストレージ層">2. データベース・ストレージ層</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#3.-情報科学・機械学習・加速計算">3. 情報科学・機械学習・加速計算</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#4.-天文学・重力波物理学">4. 天文学・重力波物理学</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#5.-素粒子物理学・高エネルギー物理">5. 素粒子物理学・高エネルギー物理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#6.-地球物理学・地震学・電磁気学">6. 地球物理学・地震学・電磁気学</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#7.-音響・音声解析">7. 音響・音声解析</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#8.-医学・生体信号解析">8. 医学・生体信号解析</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#9.-まとめ">9. まとめ</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#vi-case-studies">VI. Case Studies</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">GWExPy TimeSeries 相互運用性 (Interop) チュートリアル</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/intro_interop.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="GWExPy-TimeSeries-相互運用性-(Interop)-チュートリアル">
+<h1>GWExPy TimeSeries 相互運用性 (Interop) チュートリアル<a class="headerlink" href="#GWExPy-TimeSeries-相互運用性-(Interop)-チュートリアル" title="Link to this heading"></a></h1>
+<p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスに追加された新しい相互運用機能 (Interoperability Features) を紹介します。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、Pandas, Xarray, PyTorch, Astropy などの一般的なデータサイエンス・ライブラリとの間で、シームレスにデータを変換することができます。</p>
+<section id="目次">
+<h2>目次<a class="headerlink" href="#目次" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>1. 汎用データ形式・データ基盤</p>
+<ul>
+<li><p>1.1. NumPy [Original GWpy]</p></li>
+<li><p>1.2. Pandas との連携 [Original GWpy]</p></li>
+<li><p>1.3. Polars [GWExPy New]</p></li>
+<li><p>1.4. Xarray との連携 [Original GWpy]</p></li>
+<li><p>1.5. Dask との連携 [GWExPy New]</p></li>
+<li><p>1.6. JSON / Python Dict (to_json) (to_json) [GWExPy New]</p></li>
+</ul>
+</li>
+<li><p>2. データベース・ストレージ層</p>
+<ul>
+<li><p>2.1. HDF5 [Original GWpy]</p></li>
+<li><p>2.2. SQLite [GWExPy New]</p></li>
+<li><p>2.3. Zarr [GWExPy New]</p></li>
+<li><p>2.4. netCDF4 [GWExPy New]</p></li>
+</ul>
+</li>
+<li><p>3. 情報科学・機械学習・加速計算</p>
+<ul>
+<li><p>3.1. PyTorch との連携 [GWExPy New]</p></li>
+<li><p>3.2. CuPy (CUDA 加速) [GWExPy New]</p></li>
+<li><p>3.3. TensorFlow との連携 [GWExPy New]</p></li>
+<li><p>3.4. JAX との連携 [GWExPy New]</p></li>
+</ul>
+</li>
+<li><p>4. 天文学・重力波物理学</p>
+<ul>
+<li><p>4.1. PyCBC / LAL [Original GWpy]</p></li>
+<li><p>4.2. Astropy との連携 [Original GWpy]</p></li>
+<li><p>4.3. Specutils との連携 [GWExPy New]</p></li>
+<li><p>4.4. Pyspeckit との連携 [GWExPy New]</p></li>
+</ul>
+</li>
+<li><p>5. 素粒子物理学・高エネルギー物理</p>
+<ul>
+<li><p>5.1. CERN ROOT との連携 [GWExPy New]</p></li>
+<li><p><cite>5.2. ROOT オブジェクトからの復元 (``from_root`</cite>) &lt;#52-root-オブジェクトからの復元-%60from_root%60&gt;`__</p></li>
+</ul>
+</li>
+<li><p>6. 地球物理学・地震学・電磁気学</p>
+<ul>
+<li><p>6.1. ObsPy [Original GWpy]</p></li>
+<li><p>6.2. SimPEG との連携 [GWExPy New]</p></li>
+<li><p>6.3. MTH5 / MTpy [GWExPy New]</p></li>
+</ul>
+</li>
+<li><p>7. 音響・音声解析</p>
+<ul>
+<li><p>7.1. Librosa / Pydub [GWExPy New]</p></li>
+</ul>
+</li>
+<li><p>8. 医学・生体信号解析</p>
+<ul>
+<li><p>8.1. MNE-Python [GWExPy New]</p></li>
+<li><p>8.2. Elephant / quantities との連携 [GWExPy New]</p></li>
+<li><p>8.3. Neo [GWExPy New]</p></li>
+</ul>
+</li>
+<li><p>9. まとめ</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+import numpy as np
+from astropy import units as u
+from gwpy.time import LIGOTimeGPS
+
+from gwexpy.timeseries import TimeSeries
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/gwpy/time/__init__.py:36: UserWarning: Wswiglal-redir-stdio:
+
+SWIGLAL standard output/error redirection is enabled in IPython.
+This may lead to performance penalties. To disable locally, use:
+
+with lal.no_swig_redirect_standard_output_error():
+    ...
+
+To disable globally, use:
+
+lal.swig_redirect_standard_output_error(False)
+
+Note however that this will likely lead to error messages from
+LAL functions being either misdirected or lost when called from
+Jupyter notebooks.
+
+To suppress this warning, use:
+
+import warnings
+warnings.filterwarnings(&#34;ignore&#34;, &#34;Wswiglal-redir-stdio&#34;)
+import lal
+
+  from lal import LIGOTimeGPS
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># サンプルデータの作成
+# 10秒間、100Hzの正弦波データを生成します
+rate = 100 * u.Hz
+dt = 1 / rate
+t0 = LIGOTimeGPS(1234567890, 0)
+duration = 10 * u.s
+size = int(rate * duration)
+times = np.arange(size) * dt.value
+data = np.sin(2 * np.pi * 1.0 * times)  # 1Hz sine wave
+
+ts = TimeSeries(data, t0=t0, dt=dt, unit=&quot;V&quot;, name=&quot;demo_signal&quot;)
+print(&quot;Original TimeSeries:&quot;)
+print(ts)
+ts.plot(title=&quot;Original TimeSeries&quot;);
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Original TimeSeries:
+TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: V,
+           t0: 1234567890.0 1 / Hz,
+           dt: 0.01 1 / Hz,
+           name: demo_signal,
+           channel: None)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_3_1.png" src="../../_images/guide_tutorials_intro_interop_3_1.png" />
+</div>
+</div>
+</section>
+<section id="1.-汎用データ形式・データ基盤">
+<h2>1. 汎用データ形式・データ基盤<a class="headerlink" href="#1.-汎用データ形式・データ基盤" title="Link to this heading"></a></h2>
+<section id="1.1.-NumPy-[Original-GWpy]">
+<h3>1.1. NumPy [Original GWpy]<a class="headerlink" href="#1.1.-NumPy-[Original-GWpy]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>NumPy</strong>: NumPy は Python の数値計算の基盤となるライブラリで、多次元配列と高速な数学演算を提供します。 📚 <a class="reference external" href="https://numpy.org/">NumPy Documentation</a></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeries.value</span></code> や <code class="docutils literal notranslate"><span class="pre">np.asarray(ts)</span></code> で NumPy 配列を取得できます。</p>
+</section>
+<section id="1.2.-Pandas-との連携-[Original-GWpy]">
+<h3>1.2. Pandas との連携 [Original GWpy]<a class="headerlink" href="#1.2.-Pandas-との連携-[Original-GWpy]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>Pandas</strong>: Pandas はデータ分析・操作のための強力なライブラリで、DataFrame と Series による柔軟なデータ構造を提供します。 📚 <a class="reference external" href="https://pandas.pydata.org/">Pandas Documentation</a></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> メソッドを使うと、<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を <code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> に変換できます。 インデックスは <code class="docutils literal notranslate"><span class="pre">datetime</span></code> (UTC), <code class="docutils literal notranslate"><span class="pre">gps</span></code>, <code class="docutils literal notranslate"><span class="pre">seconds</span></code> (Unix timestamp) から選択可能です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    # Pandas Series への変換 (デフォルトは datetime index)
+    s_pd = ts.to_pandas(index=&quot;datetime&quot;)
+    print(&quot;\n--- Converted to Pandas Series ---&quot;)
+    display(s_pd)
+    s_pd.plot(title=&quot;Pandas Series&quot;)
+    plt.show()
+    plt.close()
+
+    # Pandas Series から TimeSeries への復元
+    ts_restored = TimeSeries.from_pandas(s_pd, unit=&quot;V&quot;)
+    print(&quot;\n--- Restored TimeSeries from Pandas ---&quot;)
+    print(ts_restored)
+
+    del s_pd,ts_restored
+
+except ImportError:
+    print(&quot;Pandas is not installed.&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+--- Converted to Pandas Series ---
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+time_utc
+2019-02-18 23:31:49+00:00           0.000000
+2019-02-18 23:31:49.010000+00:00    0.062791
+2019-02-18 23:31:49.020000+00:00    0.125333
+2019-02-18 23:31:49.030000+00:00    0.187381
+2019-02-18 23:31:49.040000+00:00    0.248690
+                                      ...
+2019-02-18 23:31:58.949991+00:00   -0.309017
+2019-02-18 23:31:58.959991+00:00   -0.248690
+2019-02-18 23:31:58.969990+00:00   -0.187381
+2019-02-18 23:31:58.979990+00:00   -0.125333
+2019-02-18 23:31:58.989990+00:00   -0.062791
+Name: demo_signal, Length: 1000, dtype: float64
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_7_2.png" src="../../_images/guide_tutorials_intro_interop_7_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+--- Restored TimeSeries from Pandas ---
+TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: V,
+           t0: 1234567927.0 s,
+           dt: 0.009999990463256836 s,
+           name: demo_signal,
+           channel: None)
+</pre></div></div>
+</div>
+</section>
+<section id="1.3.-Polars-[GWExPy-New]">
+<h3>1.3. Polars [GWExPy New]<a class="headerlink" href="#1.3.-Polars-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>Polars</strong>: Polars は Rust で実装された高速な DataFrame ライブラリで、大規模データの高速処理に優れています。 📚 <a class="reference external" href="https://pola.rs/">Polars Documentation</a></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">to_polars()</span></code> で Polars DataFrame/Series に変換できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import polars as pl
+    _ = pl
+    # TimeSeries -&gt; Polars DataFrame
+    df_pl = ts.to_polars()
+    print(&quot;--- Polars DataFrame ---&quot;)
+    print(df_pl.head())
+
+    # Plot using Polars/Matplotlib
+    plt.figure()
+    data_col = [c for c in df_pl.columns if c != &#39;time&#39;][0]
+    plt.plot(df_pl[&#39;time&#39;], df_pl[data_col])
+    plt.title(&quot;Polars Data Plot&quot;)
+    plt.show()
+
+    # Recover to TimeSeries
+    from gwexpy.timeseries import TimeSeries
+    ts_recovered = TimeSeries.from_polars(df_pl)
+    print(&quot;Recovered from Polars:&quot;, ts_recovered)
+
+    del df_pl, ts_recovered
+
+except ImportError:
+    print(&quot;Polars not installed.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--- Polars DataFrame ---
+shape: (5, 2)
+┌────────────────────────────┬─────────────┐
+│ time                       ┆ demo_signal │
+│ ---                        ┆ ---         │
+│ object                     ┆ f64         │
+╞════════════════════════════╪═════════════╡
+│ 2019-02-18 23:31:12        ┆ 0.0         │
+│ 2019-02-18 23:31:12.010000 ┆ 0.062791    │
+│ 2019-02-18 23:31:12.020000 ┆ 0.125333    │
+│ 2019-02-18 23:31:12.030000 ┆ 0.187381    │
+│ 2019-02-18 23:31:12.040000 ┆ 0.24869     │
+└────────────────────────────┴─────────────┘
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_9_1.png" src="../../_images/guide_tutorials_intro_interop_9_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Recovered from Polars: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: dimensionless,
+           t0: 1234567890.0 s,
+           dt: None,
+           name: demo_signal,
+           channel: None)
+</pre></div></div>
+</div>
+</section>
+<section id="1.4.-Xarray-との連携-[Original-GWpy]">
+<h3>1.4. Xarray との連携 [Original GWpy]<a class="headerlink" href="#1.4.-Xarray-との連携-[Original-GWpy]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>xarray</strong>: xarray は多次元ラベル付き配列のためのライブラリで、NetCDF データの操作や気象・地球科学データの解析に広く使用されます。 📚 <a class="reference external" href="https://docs.xarray.dev/">xarray Documentation</a></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">xarray</span></code> は多次元のラベル付き配列を扱う強力なライブラリです。<code class="docutils literal notranslate"><span class="pre">to_xarray()</span></code> でメタデータを保持したまま変換できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    # Xarray DataArray への変換
+    da = ts.to_xarray()
+    print(&quot;\n--- Converted to Xarray DataArray ---&quot;)
+    print(da)
+    # メタデータ (attrs) が保持されているか確認
+    print(&quot;Attributes:&quot;, da.attrs)
+
+    da.plot()
+    plt.title(&quot;Xarray DataArray&quot;)
+    plt.show()
+    plt.close()
+
+    # 復元
+    ts_x = TimeSeries.from_xarray(da)
+    print(&quot;\n--- Restored TimeSeries from Xarray ---&quot;)
+    print(ts_x)
+
+    del da, ts_x
+
+except ImportError:
+    print(&quot;Xarray is not installed.&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+--- Converted to Xarray DataArray ---
+&lt;xarray.DataArray &#39;demo_signal&#39; (time: 1000)&gt; Size: 8kB
+array([ 0.        ,  0.06279052,  0.12533323, ..., -0.18738131,
+       -0.12533323, -0.06279052], shape=(1000,))
+Coordinates:
+  * time     (time) datetime64[ns] 8kB 2019-02-18T23:31:49 ... 2019-02-18T23:...
+Attributes:
+    unit:        V
+    name:        demo_signal
+    channel:     None
+    epoch:       1234567890.0
+    time_coord:  datetime
+Attributes: {&#39;unit&#39;: &#39;V&#39;, &#39;name&#39;: &#39;demo_signal&#39;, &#39;channel&#39;: &#39;None&#39;, &#39;epoch&#39;: 1234567890.0, &#39;time_coord&#39;: &#39;datetime&#39;}
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_11_1.png" src="../../_images/guide_tutorials_intro_interop_11_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+--- Restored TimeSeries from Xarray ---
+TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: V,
+           t0: 1234567927.0 s,
+           dt: 0.009999990463256836 s,
+           name: demo_signal,
+           channel: None)
+</pre></div></div>
+</div>
+</section>
+<section id="1.5.-Dask-との連携-[GWExPy-New]">
+<h3>1.5. Dask との連携 [GWExPy New]<a class="headerlink" href="#1.5.-Dask-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>Dask</strong>: Dask は並列計算のためのライブラリで、NumPy/Pandas を超える大規模データの処理を可能にします。 📚 <a class="reference external" href="https://www.dask.org/">Dask Documentation</a></p>
+</div></blockquote>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import dask.array as da
+    _ = da
+    # Dask Array への変換
+    dask_arr = ts.to_dask(chunks=&#39;auto&#39;)
+    print(&quot;\n--- Converted to Dask Array ---&quot;)
+    print(dask_arr)
+
+    # 戻す (compute=True で即座にロード)
+    ts_from_dask = TimeSeries.from_dask(dask_arr, t0=ts.t0, dt=ts.dt, unit=ts.unit)
+    print(&quot;Recovered from Dask:&quot;, ts_from_dask)
+
+    del dask_arr, ts_from_dask
+
+except ImportError:
+    print(&quot;Dask not installed.&quot;)
+<br/><br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+--- Converted to Dask Array ---
+dask.array&lt;array, shape=(1000,), dtype=float64, chunksize=(1000,), chunktype=numpy.ndarray&gt;
+Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: V,
+           t0: 1234567890.0 1 / Hz,
+           dt: 0.01 1 / Hz,
+           name: None,
+           channel: None)
+</pre></div></div>
+</div>
+</section>
+<section id="1.6.-JSON-/-Python-Dict-(to_json)-[GWExPy-New]">
+<h3>1.6. JSON / Python Dict (to_json) [GWExPy New]<a class="headerlink" href="#1.6.-JSON-/-Python-Dict-(to_json)-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>JSON</strong>: JSON (JavaScript Object Notation) は軽量なデータ交換フォーマットで、Python 標準ライブラリでサポートされています。 📚 <a class="reference external" href="https://docs.python.org/3/library/json.html">JSON Documentation</a></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">to_json()</span></code> や <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> で JSON 互換の辞書形式を出力できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import json
+
+# TimeSeries -&gt; JSON string
+ts_json = ts.to_json()
+print(&quot;--- JSON Representation (Partial) ---&quot;)
+print(ts_json[:500] + &quot;...&quot;)
+
+# Plot data by loading back from JSON
+ts_dict_temp = json.loads(ts_json)
+plt.figure()
+plt.plot(ts_dict_temp[&#39;data&#39;])
+plt.title(&quot;Plot from JSON Data&quot;)
+plt.show()
+
+# Recover from JSON
+from gwexpy.timeseries import TimeSeries
+
+ts_recovered = TimeSeries.from_json(ts_json)
+print(&quot;Recovered from JSON:&quot;, ts_recovered)
+
+del ts_json, ts_dict_temp, ts_recovered
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--- JSON Representation (Partial) ---
+{
+  &#34;t0&#34;: 1234567890.0,
+  &#34;dt&#34;: 0.01,
+  &#34;unit&#34;: &#34;V&#34;,
+  &#34;name&#34;: &#34;demo_signal&#34;,
+  &#34;data&#34;: [
+    0.0,
+    0.06279051952931337,
+    0.12533323356430426,
+    0.1873813145857246,
+    0.2486898871648548,
+    0.3090169943749474,
+    0.3681245526846779,
+    0.4257792915650727,
+    0.4817536741017153,
+    0.5358267949789967,
+    0.5877852522924731,
+    0.6374239897486896,
+    0.6845471059286886,
+    0.7289686274214116,
+    0.7705132427757893,
+    0.8090169943749475,
+    0.8443279255020151,
+    0.876306680...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_15_1.png" src="../../_images/guide_tutorials_intro_interop_15_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Recovered from JSON: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: V,
+           t0: 1234567890.0 s,
+           dt: 0.01 s,
+           name: demo_signal,
+           channel: None)
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="2.-データベース・ストレージ層">
+<h2>2. データベース・ストレージ層<a class="headerlink" href="#2.-データベース・ストレージ層" title="Link to this heading"></a></h2>
+<section id="2.1.-HDF5-[Original-GWpy]">
+<h3>2.1. HDF5 [Original GWpy]<a class="headerlink" href="#2.1.-HDF5-[Original-GWpy]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>HDF5</strong>: HDF5 は大規模な科学データを効率的に保存・管理するための階層型データフォーマットです。h5py ライブラリで Python から利用できます。 📚 <a class="reference external" href="https://www.h5py.org/">HDF5 Documentation</a></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">to_hdf5_dataset()</span></code> で HDF5 への保存をサポート。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import tempfile
+
+    import h5py
+    with tempfile.NamedTemporaryFile(suffix=&#39;.h5&#39;) as tmp:
+        # TimeSeries -&gt; HDF5
+        with h5py.File(tmp.name, &#39;w&#39;) as f:
+            ts.to_hdf5_dataset(f, &quot;dataset_01&quot;)
+
+        # Read back and display
+        with h5py.File(tmp.name, &#39;r&#39;) as f:
+            ds = f[&#39;dataset_01&#39;]
+            print(&quot;--- HDF5 Dataset Info ---&quot;)
+            print(f&quot;Shape: {ds.shape}, Dtype: {ds.dtype}&quot;)
+            print(&quot;Attributes:&quot;, dict(ds.attrs))
+
+            # Recover
+            from gwexpy.timeseries import TimeSeries
+            ts_recovered = TimeSeries.from_hdf5_dataset(f, &quot;dataset_01&quot;)
+            print(&quot;Recovered from HDF5:&quot;, ts_recovered)
+
+            ts_recovered.plot()
+            plt.title(&quot;Recovered from HDF5&quot;)
+            plt.show()
+
+            del ds, ts_recovered
+
+except ImportError:
+    print(&quot;h5py not installed.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--- HDF5 Dataset Info ---
+Shape: (1000,), Dtype: float64
+Attributes: {&#39;dt&#39;: np.float64(0.01), &#39;name&#39;: &#39;demo_signal&#39;, &#39;t0&#39;: np.float64(1234567890.0), &#39;unit&#39;: &#39;V&#39;}
+Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: V,
+           t0: 1234567890.0 s,
+           dt: 0.01 s,
+           name: demo_signal,
+           channel: None)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_18_1.png" src="../../_images/guide_tutorials_intro_interop_18_1.png" />
+</div>
+</div>
+</section>
+<section id="2.2.-SQLite-[GWExPy-New]">
+<h3>2.2. SQLite [GWExPy New]<a class="headerlink" href="#2.2.-SQLite-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>SQLite</strong>: SQLite は軽量な組み込み型 SQL データベースエンジンで、Python 標準ライブラリに含まれています。 📚 <a class="reference external" href="https://docs.python.org/3/library/sqlite3.html">SQLite Documentation</a></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">to_sqlite()</span></code> で DB 永続化をサポート。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sqlite3
+
+conn = sqlite3.connect(&#39;:memory:&#39;)
+
+# TimeSeries -&gt; SQLite
+series_id = ts.to_sqlite(conn, series_id=&quot;test_series&quot;)
+print(f&quot;Saved to SQLite with ID: {series_id}&quot;)
+
+# Verify data in SQL
+cursor = conn.cursor()
+row = cursor.execute(&quot;SELECT * FROM series WHERE series_id=?&quot;, (series_id,)).fetchone()
+print(&quot;Metadata from SQL:&quot;, row)
+
+# Recover
+from gwexpy.timeseries import TimeSeries
+
+ts_recovered = TimeSeries.from_sqlite(conn, series_id)
+print(&quot;Recovered from SQLite:&quot;, ts_recovered)
+
+ts_recovered.plot()
+plt.title(&quot;Recovered from SQLite&quot;)
+plt.show()
+
+del series_id, conn, cursor, ts_recovered
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Saved to SQLite with ID: test_series
+Metadata from SQL: (&#39;test_series&#39;, &#39;&#39;, &#39;V&#39;, 1234567890.0, 0.01, 1000, &#39;{&#34;name&#34;: &#34;demo_signal&#34;}&#39;)
+Recovered from SQLite: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: V,
+           t0: 1234567890.0 s,
+           dt: 0.01 s,
+           name: test_series,
+           channel: None)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_20_1.png" src="../../_images/guide_tutorials_intro_interop_20_1.png" />
+</div>
+</div>
+</section>
+<section id="2.3.-Zarr-[GWExPy-New]">
+<h3>2.3. Zarr [GWExPy New]<a class="headerlink" href="#2.3.-Zarr-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>Zarr</strong>: Zarr はチャンク化・圧縮された多次元配列のためのストレージフォーマットで、クラウドストレージとの連携に優れています。 📚 <a class="reference external" href="https://zarr.dev/">Zarr Documentation</a></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code> でクラウドストレージ向き形式に対応。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import os
+    import tempfile
+
+    import zarr
+    with tempfile.TemporaryDirectory() as tmpdir:
+        store_path = os.path.join(tmpdir, &#39;test.zarr&#39;)
+        # TimeSeries -&gt; Zarr
+        ts.to_zarr(store_path, path=&quot;timeseries&quot;)
+
+        # Read back
+        z = zarr.open(store_path, mode=&#39;r&#39;)
+        ds = z[&#39;timeseries&#39;]
+        print(&quot;--- Zarr Array Info ---&quot;)
+        print(ds.info)
+
+        # Recover
+        from gwexpy.timeseries import TimeSeries
+        ts_recovered = TimeSeries.from_zarr(store_path, &quot;timeseries&quot;)
+        print(&quot;Recovered from Zarr:&quot;, ts_recovered)
+
+        ts_recovered.plot()
+        plt.title(&quot;Recovered from Zarr&quot;)
+        plt.show()
+
+        del z, ds, ts_recovered
+
+except ImportError:
+    print(&quot;zarr not installed.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--- Zarr Array Info ---
+Type               : Array
+Zarr format        : 3
+Data type          : Float64(endianness=&#39;little&#39;)
+Fill value         : 0.0
+Shape              : (1000,)
+Chunk shape        : (1000,)
+Order              : C
+Read-only          : True
+Store type         : LocalStore
+Filters            : ()
+Serializer         : BytesCodec(endian=&lt;Endian.little: &#39;little&#39;&gt;)
+Compressors        : (ZstdCodec(level=0, checksum=False),)
+No. bytes          : 8000 (7.8K)
+Recovered from Zarr: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: V,
+           t0: 1234567890.0 s,
+           dt: 0.01 s,
+           name: demo_signal,
+           channel: None)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_22_1.png" src="../../_images/guide_tutorials_intro_interop_22_1.png" />
+</div>
+</div>
+</section>
+<section id="2.4.-netCDF4-[GWExPy-New]">
+<h3>2.4. netCDF4 [GWExPy New]<a class="headerlink" href="#2.4.-netCDF4-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>netCDF4</strong>: netCDF4 は気象・海洋・地球科学データの標準フォーマットで、自己記述的なデータ構造を持ちます。 📚 <a class="reference external" href="https://unidata.github.io/netcdf4-python/">netCDF4 Documentation</a></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">to_netcdf4()</span></code> で気象・海洋データの標準に対応。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import tempfile
+
+    import netCDF4
+    with tempfile.NamedTemporaryFile(suffix=&#39;.nc&#39;) as tmp:
+        # TimeSeries -&gt; netCDF4
+        with netCDF4.Dataset(tmp.name, &#39;w&#39;) as ds:
+            ts.to_netcdf4(ds, &quot;my_signal&quot;)
+
+        # Read back
+        with netCDF4.Dataset(tmp.name, &#39;r&#39;) as ds:
+            v = ds.variables[&#39;my_signal&#39;]
+            print(&quot;--- netCDF4 Variable Info ---&quot;)
+            print(v)
+
+            # Recover
+            from gwexpy.timeseries import TimeSeries
+            ts_recovered = TimeSeries.from_netcdf4(ds, &quot;my_signal&quot;)
+            print(&quot;Recovered from netCDF4:&quot;, ts_recovered)
+
+            ts_recovered.plot()
+            plt.title(&quot;Recovered from netCDF4&quot;)
+            plt.show()
+
+            del v, ts_recovered
+
+except ImportError:
+    print(&quot;netCDF4 not installed.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+netCDF4 not installed.
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="3.-情報科学・機械学習・加速計算">
+<h2>3. 情報科学・機械学習・加速計算<a class="headerlink" href="#3.-情報科学・機械学習・加速計算" title="Link to this heading"></a></h2>
+<section id="3.1.-PyTorch-との連携-[GWExPy-New]">
+<h3>3.1. PyTorch との連携 [GWExPy New]<a class="headerlink" href="#3.1.-PyTorch-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>PyTorch</strong>: PyTorch は深層学習フレームワークで、動的計算グラフと GPU 加速をサポートします。 📚 <a class="reference external" href="https://pytorch.org/">PyTorch Documentation</a></p>
+</div></blockquote>
+<p>ディープラーニングの前処理として、<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を直接 <code class="docutils literal notranslate"><span class="pre">torch.Tensor</span></code> に変換できます。GPU転送も可能です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import torch
+
+    # PyTorch Tensor への変換
+    tensor = ts.to_torch(dtype=torch.float32)
+    print(&quot;\n--- Converted to PyTorch Tensor ---&quot;)
+    print(f&quot;Tensor shape: {tensor.shape}, dtype: {tensor.dtype}&quot;)
+
+    # Tensor からの復元 (t0, dt は別途指定が必要)
+    ts_torch = TimeSeries.from_torch(tensor, t0=ts.t0, dt=ts.dt, unit=&quot;V&quot;)
+    print(&quot;\n--- Restored from Torch ---&quot;)
+    print(ts_torch)
+
+    del tensor,ts_torch
+
+except ImportError:
+    print(&quot;PyTorch is not installed.&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+--- Converted to PyTorch Tensor ---
+Tensor shape: torch.Size([1000]), dtype: torch.float32
+
+--- Restored from Torch ---
+TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: V,
+           t0: 1234567890.0 1 / Hz,
+           dt: 0.01 1 / Hz,
+           name: None,
+           channel: None)
+</pre></div></div>
+</div>
+</section>
+<section id="3.2.-CuPy-(CUDA-加速)-[GWExPy-New]">
+<h3>3.2. CuPy (CUDA 加速) [GWExPy New]<a class="headerlink" href="#3.2.-CuPy-(CUDA-加速)-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>CuPy</strong>: CuPy は NumPy 互換の GPU 配列ライブラリで、NVIDIA CUDA を使用した高速計算を可能にします。 📚 <a class="reference external" href="https://cupy.dev/">CuPy Documentation</a></p>
+</div></blockquote>
+<p>GPU 上での計算を可能にする CuPy 配列へ変換できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from gwexpy.interop import is_cupy_available
+
+if is_cupy_available():
+    import cupy as cp
+    # TimeSeries -&gt; CuPy
+    y_gpu = ts.to_cupy()
+    print(&quot;--- CuPy Array (on GPU) ---&quot;)
+    print(y_gpu)
+
+    # Simple processing on GPU
+    y_gpu_filt = y_gpu * 2.0
+
+    # Plot (must move to CPU for plotting)
+    plt.figure()
+    plt.plot(cp.asnumpy(y_gpu_filt))
+    plt.title(&quot;CuPy Data (Moved to CPU for plot)&quot;)
+    plt.show()
+
+    # Recover
+    from gwexpy.timeseries import TimeSeries
+    ts_recovered = TimeSeries.from_cupy(y_gpu_filt, t0=ts.t0, dt=ts.dt)
+    print(&quot;Recovered from CuPy:&quot;, ts_recovered)
+
+    del y_gpu, y_gpu_filt, ts_recovered
+
+else:
+    print(&quot;CuPy or CUDA driver not available.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CuPy or CUDA driver not available.
+</pre></div></div>
+</div>
+</section>
+<section id="3.3.-TensorFlow-との連携-[GWExPy-New]">
+<h3>3.3. TensorFlow との連携 [GWExPy New]<a class="headerlink" href="#3.3.-TensorFlow-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>TensorFlow</strong>: TensorFlow は Google が開発した機械学習プラットフォームで、大規模な本番環境での利用に優れています。 📚 <a class="reference external" href="https://www.tensorflow.org/">TensorFlow Documentation</a></p>
+</div></blockquote>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import tensorflow as tf
+    _ = tf
+    # TensorFlow Tensor への変換
+    tf_tensor = ts.to_tensorflow()
+    print(&quot;\n--- Converted to TensorFlow Tensor ---&quot;)
+    print(f&quot;Tensor shape: {tf_tensor.shape}&quot;)
+    print(f&quot;Tensor dtype: {tf_tensor.dtype}&quot;)
+
+    # 戻す
+    ts_from_tensorflow = TimeSeries.from_tensorflow(tf_tensor, t0=ts.t0, dt=ts.dt, unit=ts.unit)
+    print(&quot;Recovered from TF:&quot;, ts_from_tensorflow)
+
+    del tf_tensor, ts_from_tensorflow
+
+except ImportError:
+    print(&quot;TensorFlow not installed.&quot;)
+<br/><br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2026-01-24 19:40:49.843800: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-01-24 19:40:49.883708: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX512_FP16 AVX_VNNI AMX_TILE AMX_INT8 AMX_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/attr_value.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/tensor.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/resource_handle.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/tensor_shape.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/types.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/full_type.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/function.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/node_def.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/op_def.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/graph.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/graph_debug_info.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/versions.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/protobuf/config.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at xla/tsl/protobuf/coordination_config.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/cost_graph.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/step_stats.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/allocation_description.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/framework/tensor_description.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/protobuf/cluster.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/google/protobuf/runtime_version.py:98: UserWarning: Protobuf gencode version 5.28.3 is exactly one major version older than the runtime version 6.31.1 at tensorflow/core/protobuf/debug.proto. Please update the gencode to avoid compatibility violations in the next runtime release.
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+--- Converted to TensorFlow Tensor ---
+Tensor shape: (1000,)
+Tensor dtype: &lt;dtype: &#39;float64&#39;&gt;
+Recovered from TF: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: V,
+           t0: 1234567890.0 1 / Hz,
+           dt: 0.01 1 / Hz,
+           name: None,
+           channel: None)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1769251251.461627  630814 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5943 MB memory:  -&gt; device: 0, name: NVIDIA RTX A1000, pci bus id: 0000:55:00.0, compute capability: 8.6
+I0000 00:00:1769251251.462126  630814 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 3735 MB memory:  -&gt; device: 1, name: Quadro P2000, pci bus id: 0000:a2:00.0, compute capability: 6.1
+</pre></div></div>
+</div>
+</section>
+<section id="3.4.-JAX-との連携-[GWExPy-New]">
+<h3>3.4. JAX との連携 [GWExPy New]<a class="headerlink" href="#3.4.-JAX-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>JAX</strong>: JAX は Google が開発した高性能数値計算ライブラリで、自動微分と XLA コンパイルによる高速化が特徴です。 📚 <a class="reference external" href="https://jax.readthedocs.io/">JAX Documentation</a></p>
+</div></blockquote>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import os
+    os.environ[&quot;XLA_PYTHON_CLIENT_PREALLOCATE&quot;] = &quot;false&quot;
+    import jax
+    _ = jax
+    import jax.numpy as jnp
+    _ = jnp
+    # JAX Array への変換
+    jax_arr = ts.to_jax()
+    print(&quot;\n--- Converted to JAX Array ---&quot;)
+    print(f&quot;Array shape: {jax_arr.shape}&quot;)
+
+    # 戻す
+    ts_from_jax = TimeSeries.from_jax(jax_arr, t0=ts.t0, dt=ts.dt, unit=ts.unit)
+    print(&quot;Recovered from JAX:&quot;, ts_from_jax)
+
+    del jax_arr, ts_from_jax
+except ImportError:
+    print(&quot;JAX not installed.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING:2026-01-24 19:40:51,584:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+--- Converted to JAX Array ---
+Array shape: (1000,)
+Recovered from JAX: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: V,
+           t0: 1234567890.0 1 / Hz,
+           dt: 0.01 1 / Hz,
+           name: None,
+           channel: None)
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="4.-天文学・重力波物理学">
+<h2>4. 天文学・重力波物理学<a class="headerlink" href="#4.-天文学・重力波物理学" title="Link to this heading"></a></h2>
+<section id="4.1.-PyCBC-/-LAL-[Original-GWpy]">
+<h3>4.1. PyCBC / LAL [Original GWpy]<a class="headerlink" href="#4.1.-PyCBC-/-LAL-[Original-GWpy]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>LAL</strong>: LAL (LIGO Algorithm Library) は LIGO/Virgo の公式解析ライブラリで、重力波解析の基盤を提供します。 📚 <a class="reference external" href="https://lscsoft.docs.ligo.org/lalsuite/">LAL Documentation</a></p>
+</div></blockquote>
+<blockquote>
+<div><p><strong>PyCBC</strong>: PyCBC は重力波データ解析のためのライブラリで、信号探索やパラメータ推定に使用されます。 📚 <a class="reference external" href="https://pycbc.org/">PyCBC Documentation</a></p>
+</div></blockquote>
+<p>重力波解析の標準ツールとの互換性を備えています。</p>
+</section>
+<section id="4.2.-Astropy-との連携-[Original-GWpy]">
+<h3>4.2. Astropy との連携 [Original GWpy]<a class="headerlink" href="#4.2.-Astropy-との連携-[Original-GWpy]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>Astropy</strong>: Astropy は天文学のための Python ライブラリで、座標変換、時間系変換、単位系などをサポートします。 📚 <a class="reference external" href="https://www.astropy.org/">Astropy Documentation</a></p>
+</div></blockquote>
+<p>天文学分野で標準的な <code class="docutils literal notranslate"><span class="pre">astropy.timeseries.TimeSeries</span></code> との相互変換もサポートしています。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    # Astropy TimeSeries への変換
+    ap_ts = ts.to_astropy_timeseries()
+    print(&quot;\n--- Converted to Astropy TimeSeries ---&quot;)
+    print(ap_ts[:5])
+    fig, ax = plt.subplots()
+    ax.plot(ap_ts.time.jd, ap_ts[&quot;value&quot;])
+    plt.title(&quot;Astropy TimeSeries&quot;)
+    plt.show()
+    plt.close()
+
+    # 復元
+    ts_astro = TimeSeries.from_astropy_timeseries(ap_ts)
+    print(&quot;\n--- Restored from Astropy ---&quot;)
+    print(ts_astro)
+
+    del ap_ts, ts_astro
+
+except ImportError:
+    print(&quot;Astropy is not installed.&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+--- Converted to Astropy TimeSeries ---
+     time            value
+------------- -------------------
+ 1234567890.0                 0.0
+1234567890.01 0.06279051952931337
+1234567890.02 0.12533323356430426
+1234567890.03  0.1873813145857246
+1234567890.04  0.2486898871648548
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_37_1.png" src="../../_images/guide_tutorials_intro_interop_37_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+--- Restored from Astropy ---
+TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+            -0.18738131, -0.12533323, -0.06279052]
+           unit: dimensionless,
+           t0: 1234567890.0 s,
+           dt: 0.009999990463256836 s,
+           name: None,
+           channel: None)
+</pre></div></div>
+</div>
+</section>
+<section id="4.3.-Specutils-との連携-[GWExPy-New]">
+<h3>4.3. Specutils との連携 [GWExPy New]<a class="headerlink" href="#4.3.-Specutils-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>specutils</strong>: specutils は天文スペクトルデータの操作・解析のための Astropy 関連パッケージです。 📚 <a class="reference external" href="https://specutils.readthedocs.io/">specutils Documentation</a></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> は、Astropy エコシステムのスペクトル解析ライブラリ <code class="docutils literal notranslate"><span class="pre">specutils</span></code> の <code class="docutils literal notranslate"><span class="pre">Spectrum1D</span></code> オブジェクトと相互変換可能です。 単位 (Units) や周波数軸が適切に保持されます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import specutils
+    _ = specutils
+
+    from gwexpy.frequencyseries import FrequencySeries
+
+    # FrequencySeries -&gt; specutils.Spectrum1D
+    fs = FrequencySeries(np.random.random(100), frequencies=np.linspace(10, 100, 100), unit=&#39;Jy&#39;)
+    spec = fs.to_specutils()
+    print(&quot;specutils Spectrum1D:&quot;, spec)
+    print(&quot;Spectral axis unit:&quot;, spec.spectral_axis.unit)
+
+    # specutils.Spectrum1D -&gt; FrequencySeries
+    fs_rec = FrequencySeries.from_specutils(spec)
+    print(&quot;Restored FrequencySeries unit:&quot;, fs_rec.unit)
+
+    del fs, spec, fs_rec
+
+except ImportError:
+    print(&quot;specutils library not found. Skipping example.&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+specutils Spectrum1D: Spectrum (length=100)
+Flux=[0.71245823 0.58766184 0.71875827 ... 0.51528888 0.64642943
+      0.4609671 ] Jy,  mean=0.50999 Jy
+Spectral Axis=[ 10.          10.90909091  11.81818182 ...
+                98.18181818  99.09090909 100.        ] Hz,  mean=55.00000 Hz
+Spectral axis unit: Hz
+Restored FrequencySeries unit: Jy
+</pre></div></div>
+</div>
+</section>
+<section id="4.4.-Pyspeckit-との連携-[GWExPy-New]">
+<h3>4.4. Pyspeckit との連携 [GWExPy New]<a class="headerlink" href="#4.4.-Pyspeckit-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>PySpecKit</strong>: PySpecKit は電波天文学のスペクトル解析ツールキットで、スペクトル線のフィッティングなどをサポートします。 📚 <a class="reference external" href="https://pyspeckit.readthedocs.io/">PySpecKit Documentation</a></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> は、汎用的なスペクトル解析ツールキット <code class="docutils literal notranslate"><span class="pre">pyspeckit</span></code> の <code class="docutils literal notranslate"><span class="pre">Spectrum</span></code> オブジェクトとも連携可能です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import pyspeckit
+    _ = pyspeckit
+    from gwexpy.frequencyseries import FrequencySeries
+
+    # FrequencySeries -&gt; pyspeckit.Spectrum
+    fs = FrequencySeries(np.random.random(100), frequencies=np.linspace(10, 100, 100))
+    spec = fs.to_pyspeckit()
+    print(&quot;pyspeckit Spectrum length:&quot;, len(spec.data))
+
+    # pyspeckit.Spectrum -&gt; FrequencySeries
+    fs_rec = FrequencySeries.from_pyspeckit(spec)
+    print(&quot;Restored FrequencySeries length:&quot;, len(fs_rec))
+
+    del fs, spec, fs_rec
+
+except ImportError:
+    print(&quot;pyspeckit library not found. Skipping example.&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+pyspeckit library not found. Skipping example.
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="5.-素粒子物理学・高エネルギー物理">
+<h2>5. 素粒子物理学・高エネルギー物理<a class="headerlink" href="#5.-素粒子物理学・高エネルギー物理" title="Link to this heading"></a></h2>
+<section id="5.1.-CERN-ROOT-との連携-[GWExPy-New]">
+<h3>5.1. CERN ROOT との連携 [GWExPy New]<a class="headerlink" href="#5.1.-CERN-ROOT-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>ROOT</strong>: ROOT は CERN が開発した高エネルギー物理学向けのデータ解析フレームワークです。 📚 <a class="reference external" href="https://root.cern/">ROOT Documentation</a></p>
+</div></blockquote>
+<p>高エネルギー物理学で標準的なツールである <strong>ROOT</strong> との相互運用が強化されました。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の Series オブジェクトを ROOT の <code class="docutils literal notranslate"><span class="pre">TGraph</span></code> や <code class="docutils literal notranslate"><span class="pre">TH1D</span></code>, <code class="docutils literal notranslate"><span class="pre">TH2D</span></code> に高速に変換したり、ROOT ファイルを作成することができます。 逆に、ROOT オブジェクトから <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> などを復元することも可能です。</p>
+<p><strong>Note</strong>: この機能を使用するには <code class="docutils literal notranslate"><span class="pre">ROOT</span></code> (PyROOT) がインストールされている必要があります。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import numpy as np
+    import ROOT
+
+    from gwexpy.timeseries import TimeSeries
+
+    # データの準備
+    t = np.linspace(0, 10, 1000)
+    data = np.sin(2 * np.pi * 1.0 * t) + np.random.normal(0, 0.5, size=len(t))
+    ts = TimeSeries(data, dt=t[1]-t[0], name=&quot;signal&quot;)
+
+    # --- 1. TGraph への変換 ---
+    # ベクトル化された高速な変換
+    graph = ts.to_tgraph()
+
+    # ROOT キャンバスでのプロット
+    c1 = ROOT.TCanvas(&quot;c1&quot;, &quot;TGraph Example&quot;, 800, 600)
+    graph.SetTitle(&quot;ROOT TGraph;GPS Time [s];Amplitude&quot;)
+    graph.Draw(&quot;AL&quot;)
+    c1.Draw()
+    # c1.SaveAs(&quot;signal_graph.png&quot;) # 画像として保存する場合
+
+    print(f&quot;Created TGraph: {graph.GetName()} with {graph.GetN()} points&quot;)
+
+    # --- 2. TH1D (ヒストグラム) への変換 ---
+    # ヒストグラムとして変換 (ビン詰めは自動または指定可能)
+    hist = ts.to_th1d()
+
+    c2 = ROOT.TCanvas(&quot;c2&quot;, &quot;TH1D Example&quot;, 800, 600)
+    hist.SetTitle(&quot;ROOT TH1D;GPS Time [s];Amplitude&quot;)
+    hist.SetLineColor(ROOT.kRed)
+    hist.Draw()
+    c2.Draw()
+
+    print(f&quot;Created TH1D: {hist.GetName()} with {hist.GetNbinsX()} bins&quot;)
+
+    del t, data, graph, hist, c1, c2
+
+except ImportError:
+    print(&quot;ROOT is not installed. Skipping ROOT examples.&quot;)
+except Exception as e:
+    print(f&quot;An error occurred: {e}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Created TGraph: signal with 1000 points
+Created TH1D: signal with 1000 bins
+</pre></div></div>
+</div>
+</section>
+<section id="5.2.-ROOT-オブジェクトからの復元-(from_root)">
+<h3>5.2. ROOT オブジェクトからの復元 (<code class="docutils literal notranslate"><span class="pre">from_root</span></code>)<a class="headerlink" href="#5.2.-ROOT-オブジェクトからの復元-(from_root)" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>ROOT</strong>: ROOT は CERN が開発した高エネルギー物理学向けのデータ解析フレームワークです。 📚 <a class="reference external" href="https://root.cern/">ROOT Documentation</a></p>
+</div></blockquote>
+<p>既存の ROOT ファイルにあるヒストグラムやグラフを読み込んで、解析しやすい <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> オブジェクトに戻すことができます。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    if &#39;hist&#39; in locals() and hist:
+        # ROOT TH1D -&gt; TimeSeries
+        # ヒストグラムのビン内容を時系列データとして読み込みます
+        ts_restored = from_root(TimeSeries, hist)
+
+        print(f&quot;Restored TimeSeries: {ts_restored.name}&quot;)
+        print(ts_restored)
+
+        # TGraph からの復元も同様
+        ts_from_graph = from_root(TimeSeries, graph)
+        print(f&quot;Restored from TGraph: {len(ts_from_graph)} samples&quot;)
+
+        del ts_restored, ts_from_graph
+
+except NameError:
+    pass # hist や graph が作成されなかった場合
+except ImportError:
+    pass
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="6.-地球物理学・地震学・電磁気学">
+<h2>6. 地球物理学・地震学・電磁気学<a class="headerlink" href="#6.-地球物理学・地震学・電磁気学" title="Link to this heading"></a></h2>
+<section id="6.1.-ObsPy-[Original-GWpy]">
+<h3>6.1. ObsPy [Original GWpy]<a class="headerlink" href="#6.1.-ObsPy-[Original-GWpy]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>ObsPy</strong>: ObsPy は地震学データの取得・処理・解析のための Python ライブラリで、MiniSEED 形式などをサポートします。 📚 <a class="reference external" href="https://docs.obspy.org/">ObsPy Documentation</a></p>
+</div></blockquote>
+<p>地震学で標準的な ObsPy との相互運用をサポート。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import obspy
+    _ = obspy
+    # TimeSeries -&gt; ObsPy Trace
+    tr = ts.to_obspy()
+    print(&quot;--- ObsPy Trace ---&quot;)
+    print(tr)
+
+    # Plot using ObsPy
+    tr.plot()
+
+    # Recover to TimeSeries
+    from gwexpy.timeseries import TimeSeries
+    ts_recovered = TimeSeries.from_obspy(tr)
+    print(&quot;Recovered from ObsPy:&quot;, ts_recovered)
+
+    del tr, ts_recovered
+
+except ImportError:
+    print(&quot;ObsPy not installed.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--- ObsPy Trace ---
+.signal.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:10.000000Z | 99.9 Hz, 1000 samples
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_49_1.png" src="../../_images/guide_tutorials_intro_interop_49_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Recovered from ObsPy: TimeSeries([-0.71446678,  0.01550151, -0.65943426, ...,
+             0.11631675, -0.21327438, -0.40719474]
+           unit: dimensionless,
+           t0: 0.0 s,
+           dt: 0.01001001001001001 s,
+           name: .signal..,
+           channel: None)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import obspy
+    _ = obspy
+    tr = ts.to_obspy()
+    print(&quot;ObsPy Trace:&quot;, tr)
+
+    del tr
+
+except ImportError:
+    print(&quot;ObsPy not installed.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ObsPy Trace: .signal.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:10.000000Z | 99.9 Hz, 1000 samples
+</pre></div></div>
+</div>
+</section>
+<section id="6.2.-SimPEG-との連携-[GWExPy-New]">
+<h3>6.2. SimPEG との連携 [GWExPy New]<a class="headerlink" href="#6.2.-SimPEG-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>SimPEG</strong>: SimPEG は地球物理学的逆問題のシミュレーション・推定フレームワークです。 📚 <a class="reference external" href="https://simpeg.xyz/">SimPEG Documentation</a></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、地球物理学のフォワード計算・反転モデリングライブラリである <code class="docutils literal notranslate"><span class="pre">SimPEG</span></code> との連携をサポートしています。 <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> (TDEM) および <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> (FDEM) を <code class="docutils literal notranslate"><span class="pre">simpeg.data.Data</span></code> オブジェクトに変換したり、その逆を行ったりできます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import numpy as np
+    import simpeg
+    _ = simpeg
+    from simpeg import maps
+    _ = maps
+
+    from gwexpy.frequencyseries import FrequencySeries
+    from gwexpy.timeseries import TimeSeries
+
+    # --- TimeSeries -&gt; SimPEG (TDEM想定) ---
+    ts = TimeSeries(np.random.normal(size=100), dt=0.01, unit=&#39;A/m^2&#39;)
+    simpeg_data_td = ts.to_simpeg(location=np.array([0, 0, 0]))
+    print(&quot;SimPEG TDEM data shape:&quot;, simpeg_data_td.dobs.shape)
+
+    # --- FrequencySeries -&gt; SimPEG (FDEM想定) ---
+    fs = FrequencySeries(np.random.normal(size=10) + 1j*0.1, frequencies=np.logspace(0, 3, 10))
+    simpeg_data_fd = fs.to_simpeg(location=np.array([0, 0, 0]), orientation=&#39;z&#39;)
+    print(&quot;SimPEG FDEM data shape:&quot;, simpeg_data_fd.dobs.shape)
+
+    del simpeg_data_td, simpeg_data_fd, fs
+
+except ImportError:
+    print(&quot;SimPEG library not found. Skipping example.&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+SimPEG library not found. Skipping example.
+</pre></div></div>
+</div>
+</section>
+<section id="6.3.-MTH5-/-MTpy-[GWExPy-New]">
+<h3>6.3. MTH5 / MTpy [GWExPy New]<a class="headerlink" href="#6.3.-MTH5-/-MTpy-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>MTH5</strong>: MTH5 は磁気地電流 (MT) データのための HDF5 ベースのデータフォーマットです。 📚 <a class="reference external" href="https://mth5.readthedocs.io/">MTH5 Documentation</a></p>
+</div></blockquote>
+<p>地磁気地電流法データの MTH5 保存に対応。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import tempfile
+
+    import mth5
+    _ = mth5
+    with tempfile.NamedTemporaryFile(suffix=&#39;.h5&#39;) as tmp:
+        from gwexpy.interop.mt_ import from_mth5, to_mth5
+        # TimeSeries -&gt; MTH5
+        # We need to provide station and run names for MTH5 structure
+        to_mth5(ts, tmp.name, station=&quot;SITE01&quot;, run=&quot;RUN01&quot;)
+        print(f&quot;Saved to MTH5 file: {tmp.name}&quot;)
+
+        # Display structure info if needed, or just recover
+        # Recover
+        ts_recovered = from_mth5(tmp.name, &quot;SITE01&quot;, &quot;RUN01&quot;, ts.name or &quot;Ex&quot;)
+        print(&quot;Recovered from MTH5:&quot;, ts_recovered)
+
+        ts_recovered.plot()
+        plt.title(&quot;Recovered from MTH5&quot;)
+        plt.show()
+
+        del ts_recovered
+
+except ImportError:
+    print(&quot;mth5 not installed.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:54.576066+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterSurvey, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:54.577479+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Reports, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:54.833050+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Standards, skipping from_dict.</span>
+<span class="ansi-bold">2026-01-24T19:40:54.838311+0900 | INFO | mth5.mth5 | _initialize_file | Initialized MTH5 0.2.0 file /tmp/tmp0fmumz5q.h5 in mode a</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:54.841810+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterStation, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:54.842519+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Reports, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:54.843296+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Filters, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:55.070556+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Standards, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:55.076393+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Station, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:55.079527+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for TransferFunctions, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:55.080246+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterFC, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:55.081339+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterFeatures, skipping from_dict.</span>
+<span class="ansi-yellow-intense-fg ansi-bold">2026-01-24T19:40:55.082556+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Run, skipping from_dict.</span>
+<span class="ansi-bold">2026-01-24T19:40:55.091533+0900 | INFO | mth5.mth5 | close_mth5 | Flushing and closing /tmp/tmp0fmumz5q.h5</span>
+Saved to MTH5 file: /tmp/tmp0fmumz5q.h5
+<span class="ansi-bold">2026-01-24T19:40:55.100275+0900 | INFO | mth5.mth5 | close_mth5 | Flushing and closing /tmp/tmp0fmumz5q.h5</span>
+Recovered from MTH5: TimeSeries([-0.71446678,  0.01550151, -0.65943426, ...,
+             0.11631675, -0.21327438, -0.40719474]
+           unit: dimensionless,
+           t0: 0.0 s,
+           dt: 1.0 s,
+           name: signal,
+           channel: None)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_54_1.png" src="../../_images/guide_tutorials_intro_interop_54_1.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="7.-音響・音声解析">
+<h2>7. 音響・音声解析<a class="headerlink" href="#7.-音響・音声解析" title="Link to this heading"></a></h2>
+<section id="7.1.-Librosa-/-Pydub-[GWExPy-New]">
+<h3>7.1. Librosa / Pydub [GWExPy New]<a class="headerlink" href="#7.1.-Librosa-/-Pydub-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>pydub</strong>: pydub はオーディオファイルの操作（編集・変換・エフェクト）のためのシンプルなライブラリです。 📚 <a class="reference external" href="https://github.com/jiaaro/pydub">pydub Documentation</a></p>
+</div></blockquote>
+<blockquote>
+<div><p><strong>librosa</strong>: librosa は音声・音楽解析のためのライブラリで、スペクトル解析やビート検出などの機能を提供します。 📚 <a class="reference external" href="https://librosa.org/">librosa Documentation</a></p>
+</div></blockquote>
+<p>音声処理ライブラリ Librosa や Pydub との連携をサポート。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import librosa
+    _ = librosa
+    import matplotlib.pyplot as plt
+    # TimeSeries -&gt; Librosa (y, sr)
+    y, sr = ts.to_librosa()
+    print(f&quot;--- Librosa Data ---\nSignal shape: {y.shape}, Sample rate: {sr}&quot;)
+
+    # Plot using librosa style (matplotlib)
+    plt.figure()
+    plt.plot(y[:1000]) # Plot first 1000 samples
+    plt.title(&quot;Librosa Audio Signal (Zoom)&quot;)
+    plt.show()
+
+    # Recover to TimeSeries
+    from gwexpy.timeseries import TimeSeries
+    ts_recovered = TimeSeries(y, dt=1.0/sr)
+    print(&quot;Recovered from Librosa:&quot;, ts_recovered)
+
+    del y, sr
+except ImportError:
+    print(&quot;Librosa not installed.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--- Librosa Data ---
+Signal shape: (1000,), Sample rate: 99
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_57_1.png" src="../../_images/guide_tutorials_intro_interop_57_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Recovered from Librosa: TimeSeries([-0.7144668 ,  0.01550151, -0.65943426, ...,
+             0.11631675, -0.21327437, -0.40719473]
+           unit: dimensionless,
+           t0: 0.0 s,
+           dt: 0.010101010101010102 s,
+           name: None,
+           channel: None)
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="8.-医学・生体信号解析">
+<h2>8. 医学・生体信号解析<a class="headerlink" href="#8.-医学・生体信号解析" title="Link to this heading"></a></h2>
+<section id="8.1.-MNE-Python-[GWExPy-New]">
+<h3>8.1. MNE-Python [GWExPy New]<a class="headerlink" href="#8.1.-MNE-Python-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>MNE</strong>: MNE-Python は脳波 (EEG)・脳磁図 (MEG) データの解析ライブラリで、神経科学研究に広く使用されています。 📚 <a class="reference external" href="https://mne.tools/">MNE Documentation</a></p>
+</div></blockquote>
+<p>脳電図 (EEG/MEG) 解析パッケージ MNE との連携。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import mne
+    _ = mne
+    # TimeSeries -&gt; MNE Raw
+    raw = ts.to_mne()
+    print(&quot;--- MNE Raw ---&quot;)
+    print(raw)
+
+    # Display info
+    print(raw.info)
+
+    # Recover to TimeSeries
+    from gwexpy.timeseries import TimeSeries
+    ts_recovered = TimeSeries.from_mne(raw, channel=ts.name or &quot;ch0&quot;)
+    print(&quot;Recovered from MNE:&quot;, ts_recovered)
+
+    del raw, ts_recovered
+
+except ImportError:
+    print(&quot;MNE not installed.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Creating RawArray with float64 data, n_channels=1, n_times=1000
+    Range : 0 ... 999 =      0.000 ...    10.000 secs
+Ready.
+--- MNE Raw ---
+&lt;RawArray | 1 x 1000 (10.0 s), ~13 KiB, data loaded&gt;
+&lt;Info | 7 non-empty values
+ bads: []
+ ch_names: signal
+ chs: 1 misc
+ custom_ref_applied: False
+ highpass: 0.0 Hz
+ lowpass: 50.0 Hz
+ meas_date: unspecified
+ nchan: 1
+ projs: []
+ sfreq: 99.9 Hz
+&gt;
+Recovered from MNE: TimeSeries([-0.71446678,  0.01550151, -0.65943426, ...,
+             0.11631675, -0.21327438, -0.40719474]
+           unit: dimensionless,
+           t0: 0.0 s,
+           dt: 0.01001001001001001 s,
+           name: signal,
+           channel: None)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import mne
+    _ = mne
+    raw = ts.to_mne()
+    print(&quot;MNE Raw:&quot;, raw)
+
+    del raw
+except ImportError:
+    print(&quot;MNE not installed.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Creating RawArray with float64 data, n_channels=1, n_times=1000
+    Range : 0 ... 999 =      0.000 ...    10.000 secs
+Ready.
+MNE Raw: &lt;RawArray | 1 x 1000 (10.0 s), ~13 KiB, data loaded&gt;
+</pre></div></div>
+</div>
+</section>
+<section id="8.2.-Elephant-/-quantities-との連携-[GWExPy-New]">
+<h3>8.2. Elephant / quantities との連携 [GWExPy New]<a class="headerlink" href="#8.2.-Elephant-/-quantities-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> や <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> は、<code class="docutils literal notranslate"><span class="pre">quantities.Quantity</span></code> オブジェクトと相互変換可能です。 これは Elephant や Neo との連携に役立ちます。</p>
+<p>※ 事前に <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">quantities</span></code> が必要です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import numpy as np
+    import quantities as pq
+    _ = pq
+    from gwexpy.frequencyseries import FrequencySeries
+
+    # FrequencySeries の作成
+    freqs = np.linspace(0, 100, 101)
+    data_fs = np.random.random(101)
+    fs = FrequencySeries(data_fs, frequencies=freqs, unit=&quot;V&quot;)
+
+    # to_quantities
+    q_obj = fs.to_quantities(units=&quot;mV&quot;)
+    print(&quot;Quantities object:&quot;, q_obj)
+
+    # from_quantities
+    fs_new = FrequencySeries.from_quantities(q_obj, frequencies=freqs)
+    print(&quot;Restored FrequencySeries unit:&quot;, fs_new.unit)
+
+    del freqs, data_fs, fs, q_obj, fs_new
+
+except ImportError:
+    print(&quot;quantities library not found. Skipping example.&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Quantities object: [239.69530208 361.72580148 439.7445373  192.54139345
+ 521.33791358 571.14150625 447.63515626 203.91490693
+ 942.1610939  672.84859018 207.43235439 853.17968312
+ 520.12293892 606.93416933 891.28989347 437.50506001
+  76.22167082 785.18733074 714.2387838  679.70457191
+ 994.3106082  613.29924397 385.1868727  355.13466817
+ 536.71066818 763.76982648 989.37106689  44.87016592
+ 778.75149103 244.30919244 231.52462874 992.9552284
+ 410.69026471 613.2328485  790.60127954 663.13604225
+ 566.66602843 816.24241828 817.20769284 904.72496082
+ 868.87362281 638.4903775  748.34716321 404.19970736
+ 269.96521155 104.93654675 498.76456568 116.2178876
+ 404.91223752 267.10149269 829.01225337 470.4548261
+ 291.75601919 741.33968263  60.36965048  48.37617324
+ 786.29111375 837.52395334 998.51047778 700.81529257
+ 277.13946501 841.07216821 252.41440236 169.48360749
+ 760.64516339 488.70337282 606.64061106 577.81911901
+ 766.14579282 284.38064555 427.35120301 552.36685853
+ 195.67872662 794.01693656 871.90260548 745.96111065
+ 775.47935942 619.0389246  880.59411968 890.97138301
+ 974.0229149  383.35943474 671.46555061 848.51499181
+ 214.56810743 272.17252778 562.27509162 991.58452002
+ 426.39226754  43.43952725 620.90297628 574.57891463
+ 942.24828712 439.98734824 414.61111343 592.81982358
+ 872.4082627  464.43333833 310.25887747 355.52107008
+ 684.27380395] mV
+Restored FrequencySeries unit: mV
+</pre></div></div>
+</div>
+</section>
+<section id="8.3.-Neo-[GWExPy-New]">
+<h3>8.3. Neo [GWExPy New]<a class="headerlink" href="#8.3.-Neo-[GWExPy-New]" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p><strong>Neo</strong>: Neo は電気生理学データ（神経科学）のためのデータ構造ライブラリで、様々なフォーマットへの入出力をサポートします。 📚 <a class="reference external" href="https://neo.readthedocs.io/">Neo Documentation</a></p>
+</div></blockquote>
+<p>電気生理データの共通規格 Neo への変換をサポート。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import neo
+    _ = neo
+    # TimeSeries -&gt; Neo AnalogSignal
+    # to_neo is available in gwexpy.interop
+    # Note: TimeseriesMatrix is preferred for multi-channel Neo conversion,
+    # but we can convert single TimeSeries by wrapping it.
+    from gwexpy.interop import from_neo, to_neo
+    _ = from_neo
+    _ = to_neo
+    # For single TimeSeries, we might need a Matrix wrapper or direct helper.
+    # Assuming helper exists or using Matrix:
+    from gwexpy.timeseries import TimeSeriesMatrix
+    tm = TimeSeriesMatrix(ts.value[None, None, :], t0=ts.t0, dt=ts.dt, channel_names=[ts.name])
+    sig = tm.to_neo()
+
+    print(&quot;--- Neo AnalogSignal ---&quot;)
+    print(sig)
+
+    # Display/Plot
+    plt.figure()
+    plt.plot(sig.times, sig)
+    plt.title(&quot;Neo AnalogSignal Plot&quot;)
+    plt.show()
+
+    # Recover
+    tm_recovered = TimeSeriesMatrix.from_neo(sig)
+    ts_recovered = tm_recovered[0]
+    print(&quot;Recovered from Neo:&quot;, ts_recovered)
+
+    del tm, tm_recovered, sig, ts_recovered
+
+except ImportError:
+    print(&quot;neo not installed.&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--- Neo AnalogSignal ---
+[[-0.71446678]
+ [ 0.01550151]
+ [-0.65943426]
+ ...
+ [ 0.11631675]
+ [-0.21327438]
+ [-0.40719474]] dimensionless
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_interop_65_1.png" src="../../_images/guide_tutorials_intro_interop_65_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Recovered from Neo: SeriesMatrix(shape=(1, 1, 1000),  name=&#39;&#39;)
+  epoch   : 0.0
+  x0      : 0.0 s
+  dx      : 0.01001001001001001 s
+  xunit   : s
+  samples : 1000
+
+[ Row metadata ]
+     name channel unit
+key
+row0
+
+[ Column metadata ]
+     name channel unit
+key
+col0
+
+[ Elements metadata ]
+  unit    name channel  row  col
+0       signal    None    0    0
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="9.-まとめ">
+<h2>9. まとめ<a class="headerlink" href="#9.-まとめ" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は多種多様な bilimti 向けライブラリとの相互運用を提供し、既存のエコシステムとのシームレスな統合を可能にします。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intro_mapplotting.html" class="btn btn-neutral float-left" title="チュートリアル: 全天マップと地理マップのプロット" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="matrix_timeseries.html" class="btn btn-neutral float-right" title="TimeSeriesMatrix チュートリアル" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

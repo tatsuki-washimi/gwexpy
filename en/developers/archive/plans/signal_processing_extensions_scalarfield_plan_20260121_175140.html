@@ -1,0 +1,249 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScalarField 向け信号処理拡張 計画書 (2026-01-21 17:51:40) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ScalarField 向け信号処理拡張 計画書 (2026-01-21 17:51:40)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/plans/signal_processing_extensions_scalarfield_plan_20260121_175140.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scalarfield-2026-01-21-17-51-40">
+<h1>ScalarField 向け信号処理拡張 計画書 (2026-01-21 17:51:40)<a class="headerlink" href="#scalarfield-2026-01-21-17-51-40" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>元ファイル: <code class="docutils literal notranslate"><span class="pre">docs/developers/plans/Signal</span> <span class="pre">Processing</span> <span class="pre">Extensions</span> <span class="pre">for</span> <span class="pre">ScalarField:</span> <span class="pre">PSD,</span> <span class="pre">Correlation</span> <span class="pre">and</span> <span class="pre">Coherence</span> <span class="pre">Utilities.docx</span></code></p></li>
+<li><p>変換: <code class="docutils literal notranslate"><span class="pre">pandoc</span> <span class="pre">-f</span> <span class="pre">docx</span> <span class="pre">-t</span> <span class="pre">gfm</span></code></p></li>
+</ul>
+<section id="id1">
+<h2>使用モデルとリソース最適化<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>実装（API設計・コア計算・既存コードへの統合）: <code class="docutils literal notranslate"><span class="pre">Claude</span> <span class="pre">Opus</span> <span class="pre">4.5</span></code></p></li>
+<li><p>テスト以降（pytest/CI/回帰・最終調整）: <code class="docutils literal notranslate"><span class="pre">GPT-5.1-Codex-Max</span></code></p></li>
+<li><p>補助モデル: 要約/文章整形/単純置換などは軽量モデルへ切替</p></li>
+<li><p>リソース戦略: 変更対象ファイルと該当箇所を絞って提示、差分ベースで反復、長文ログ/全ファイル貼付は避ける</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="scalarfield-3">
+<h1>ScalarField フェーズ3：信号処理拡張 計画<a class="headerlink" href="#scalarfield-3" title="Link to this heading"></a></h1>
+<p>本計画は、<strong>ScalarField</strong> に信号処理ユーティリティを追加するために必要なタスクを整理したものです。目的は、4D データセットに対してスペクトル解析、相関、コヒーレンス、遅延推定を行うためのツールを研究者に提供しつつ、これまでのフェーズで確立した設計原則（軸メタデータ、4D 形状の保持、単位の整合性）を維持することです。実装は、コアとなる計算メソッドと薄い描画ラッパーを中心に、包括的なテストとドキュメントを伴って進めます。</p>
+<section id="id2">
+<h2>目的<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>PSD（パワースペクトル密度）推定と周波数–空間マッピングにより、ScalarField データの周波数領域解析を可能にする</p></li>
+<li><p>信号伝搬の解析に向けて、相関と遅延のツール（相互相関・時間遅延マップ）を提供する</p></li>
+<li><p>空間領域全体で信号の類似性を定量化するため、コヒーレンス（コヒーレンス・マップ）を実装する</p></li>
+<li><p>計算と可視化の分離を維持する（計算関数は再利用可能なオブジェクトを返し、描画は薄いラッパーで扱う）</p></li>
+<li><p>再現可能性のため、決定論的な例とテストを用意する</p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>タスク<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>1. 共通の下準備<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>デモデータ生成</strong></p></li>
+<li><p>固定シードと既知の波形（例：伝搬するガウシアン波、正弦波など）を用いて、決定論的な ScalarField を生成するヘルパー関数（例：<code class="docutils literal notranslate"><span class="pre">make_demo_scalar_field</span></code>）を実装する</p></li>
+<li><p>単位と軸メタデータ（時間軸・空間軸）が正しく付与されることを確認する</p></li>
+<li><p>ノートブック・Examples・テストでこの関数を使用し、再現性を保証する</p></li>
+<li><p><strong>座標ユーティリティ（Phase 2 の再利用）</strong></p></li>
+<li><p>最寄りインデックス変換とスライス・ヘルパーが、不規則な時間ベクトル／周波数でも動作できることを確認する（Welch PSD に必要）</p></li>
+<li><p>適切な箇所で <code class="docutils literal notranslate"><span class="pre">select_value</span></code> ヘルパーを拡張し、スペクトルパワー選択（例：<code class="docutils literal notranslate"><span class="pre">mode=&quot;power&quot;</span></code>）をサポートする</p></li>
+</ol>
+</section>
+<section id="psd">
+<h3>2. パワースペクトル密度（PSD）<a class="headerlink" href="#psd" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>計算</strong>: <code class="docutils literal notranslate"><span class="pre">compute_psd(point_or_region,</span> <span class="pre">*,</span> <span class="pre">nperseg,</span> <span class="pre">noverlap,</span> <span class="pre">window,</span> <span class="pre">detrend)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scipy.signal.welch</span></code> を用いて、単一点または空間領域から抽出した時系列の PSD を推定する</p></li>
+<li><p>返り値は、単一点なら <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>、複数点／領域なら <code class="docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code> とする</p></li>
+<li><p>時間軸が等間隔サンプリングであることを検証し、満たされない場合は説明的なエラーを送出する</p></li>
+<li><p>領域指定はスライスまたはマスクで受け付け、必要に応じて点間平均（任意）を可能にする</p></li>
+<li><p><strong>周波数–空間マップ</strong>: <code class="docutils literal notranslate"><span class="pre">freq_space_map(axis,</span> <span class="pre">at,</span> <span class="pre">*,</span> <span class="pre">method=&quot;welch&quot;,</span> <span class="pre">**kwargs)</span></code></p></li>
+<li><p>ある空間軸（例：x）に沿って、他の座標を固定しつつ各位置で PSD を計算する</p></li>
+<li><p>一方の軸が周波数、もう一方の軸が空間座標となる 2D 行列を生成する</p></li>
+<li><p>下流の描画へ渡しやすい形として、<code class="docutils literal notranslate"><span class="pre">Array2D</span></code> もしくは <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の view を返す</p></li>
+<li><p>明確化のため <code class="docutils literal notranslate"><span class="pre">compute_freq_space</span></code> などの別名も提供する</p></li>
+<li><p><strong>描画ラッパー</strong>: <code class="docutils literal notranslate"><span class="pre">plot_psd</span></code> / <code class="docutils literal notranslate"><span class="pre">plot_freq_space</span></code></p></li>
+<li><p>計算関数を呼び出して Matplotlib で描画する薄いラッパーを実装する</p></li>
+<li><p>ラベル表記（周波数[Hz]、PSD）を統一し、対数スケール等のオプションも提供する</p></li>
+<li><p><strong>テスト</strong></p></li>
+<li><p>合成正弦波で PSD をテストし、ピーク周波数とパワーレベルを検証する</p></li>
+<li><p>ホワイトノイズの PSD が概ねフラットになることを確認する</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freq_space_map</span></code> が期待する shape と軸メタデータを返すことを検証する</p></li>
+</ol>
+</section>
+<section id="id5">
+<h3>3. 相互相関と遅延推定<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>相互相関</strong>: <code class="docutils literal notranslate"><span class="pre">compute_xcorr(point_a,</span> <span class="pre">point_b,</span> <span class="pre">*,</span> <span class="pre">max_lag,</span> <span class="pre">mode)</span></code></p></li>
+<li><p>2 つの時系列間の正規化相互相関関数を計算する</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'full'</span></code> / <code class="docutils literal notranslate"><span class="pre">'same'</span></code> 等のモードを許可し、ラグ軸をもつ <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を返す</p></li>
+<li><p>相関前の detrend／window 適用をオプション化する</p></li>
+<li><p><strong>時間遅延マップ</strong>: <code class="docutils literal notranslate"><span class="pre">time_delay_map(ref_point,</span> <span class="pre">plane,</span> <span class="pre">*,</span> <span class="pre">max_lag,</span> <span class="pre">stride,</span> <span class="pre">roi)</span></code></p></li>
+<li><p>参照点と 2D スライス上の全点の相互相関を計算する</p></li>
+<li><p>相関が最大（または絶対値最大）となるラグを抽出し、スカラー値のマップとして格納する</p></li>
+<li><p>計算コスト管理のため、stride と ROI（region-of-interest）指定を受け付ける</p></li>
+<li><p>遅延値を保持する <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> スライスを返す</p></li>
+<li><p><strong>描画ラッパー</strong>: <code class="docutils literal notranslate"><span class="pre">plot_xcorr</span></code> / <code class="docutils literal notranslate"><span class="pre">plot_delay_map</span></code></p></li>
+<li><p>Matplotlib で相関関数と遅延マップを可視化する簡易ラッパーを提供する</p></li>
+<li><p>ピーク遅延の注釈や、有意領域の強調などのオプションを用意する</p></li>
+<li><p><strong>テスト</strong></p></li>
+<li><p>既知の時間シフトを持つ合成信号で推定ラグを検証する</p></li>
+<li><p>遅延マップが滑らかであること、stride/ROI が計算を軽くしつつピークラグ値を変えないことを確認する</p></li>
+</ol>
+</section>
+<section id="id6">
+<h3>4. コヒーレンス解析<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>コヒーレンス計算</strong>: <code class="docutils literal notranslate"><span class="pre">coherence_map(ref_point,</span> <span class="pre">*,</span> <span class="pre">band,</span> <span class="pre">nperseg,</span> <span class="pre">noverlap,</span> <span class="pre">window)</span></code></p></li>
+<li><p>参照信号と、全 3D 領域または 2D スライス上の各点の信号との間で、二乗コヒーレンス（magnitude-squared coherence）を計算する</p></li>
+<li><p>周波数帯 <code class="docutils literal notranslate"><span class="pre">[fmin,</span> <span class="pre">fmax]</span></code> 上で平均し、空間点ごとの単一スカラー値にするオプションを提供する</p></li>
+<li><p>バンドごとの計算か複数バンドかに応じて、<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> もしくは <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> を返す</p></li>
+<li><p><strong>描画ラッパー</strong>: <code class="docutils literal notranslate"><span class="pre">plot_coherence_map</span></code></p></li>
+<li><p>コヒーレンス・マップを 2D ヒートマップとして表示する</p></li>
+<li><p>カラーノーマライズ変更や高コヒーレンス領域の注釈などのオプションを提供する</p></li>
+<li><p><strong>テスト</strong></p></li>
+<li><p>位相関係が既知の合成信号でコヒーレンス計算を検証する</p></li>
+<li><p>バンド平均や正規化が想定通りに振る舞うことを確認する</p></li>
+</ol>
+</section>
+<section id="id7">
+<h3>5. ドキュメントと例<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>チュートリアル・ノートブック</strong></p></li>
+<li><p>デモデータセット上で PSD、周波数–空間マップ、相互相関、遅延マップ、コヒーレンス解析を実演する <code class="docutils literal notranslate"><span class="pre">ScalarField_signal_processing.ipynb</span></code> を新規作成する</p></li>
+<li><p>テストを再現できる説明文とコードセルを含め、正しい利用パターンを示す</p></li>
+<li><p>決定論的データを用いて再現性を担保する</p></li>
+<li><p><strong>リファレンス・ドキュメント</strong></p></li>
+<li><p>追加する各メソッドについて、目的・パラメータ・返り値・例・計算コスト上の注意点を含む API ドキュメントを書く</p></li>
+<li><p>英語／日本語の index に新機能を追加する</p></li>
+<li><p>ScalarField の 1D/2D プロットと、新しい信号処理プロットの差分を強調する</p></li>
+<li><p><strong>Examples ディレクトリ</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/</span></code> に、<code class="docutils literal notranslate"><span class="pre">matplotlib.backends.backend_agg</span></code> を用いて新しいプロットの静的画像を生成するスクリプトを追加する（テストとデモ用途）</p></li>
+<li><p>プロット種別の選択と保存先指定のための CLI オプションを提供する</p></li>
+</ol>
+</section>
+<section id="id8">
+<h3>6. テストと検証<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>自動テスト</strong></p></li>
+<li><p>pytest スイートを拡充し、新規関数をそれぞれカバーする</p></li>
+<li><p>エッジケース（例：非等間隔サンプリング、空領域、ゼロ信号）を含むテストを追加する</p></li>
+<li><p>前提条件（等間隔サンプリングなど）が満たされない場合に適切な例外が送出されることを確認する</p></li>
+<li><p><strong>性能面の考慮</strong></p></li>
+<li><p>計算負荷が高い関数（例：<code class="docutils literal notranslate"><span class="pre">time_delay_map</span></code>、<code class="docutils literal notranslate"><span class="pre">coherence_map</span></code>）をプロファイルし、stride/ROI オプションを実装する</p></li>
+<li><p>代表的なユースケースでベンチマークし、デフォルトパラメータが対話利用に適切であることを確認する</p></li>
+<li><p><strong>継続的インテグレーション</strong></p></li>
+<li><p>新しいテストを既存の CI ワークフローへ統合する</p></li>
+<li><p>CI 条件下でノートブックが end-to-end で実行できることを検証する</p></li>
+</ol>
+</section>
+</section>
+<section id="id9">
+<h2>英語タイトル案<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p><strong>“Signal Processing Extensions for ScalarField: PSD, Correlation and Coherence Utilities”</strong></p>
+<p>このタイトルは、ScalarField にスペクトル解析と相関解析ツールを拡張するフェーズ3の要点を簡潔に表現しています。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,173 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work Report: Field Visualization and Core Metadata Robustness &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Work Report: Field Visualization and Core Metadata Robustness</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/reports/report_FieldVisualization_20260123_202809.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="work-report-field-visualization-and-core-metadata-robustness">
+<h1>Work Report: Field Visualization and Core Metadata Robustness<a class="headerlink" href="#work-report-field-visualization-and-core-metadata-robustness" title="Link to this heading"></a></h1>
+<p><strong>Date</strong>: 2026-01-23
+<strong>LLM Model Used</strong>: Gemini 2.0 Flash</p>
+<section id="summary-of-implementation">
+<h2>Summary of Implementation<a class="headerlink" href="#summary-of-implementation" title="Link to this heading"></a></h2>
+<p>This work involved the implementation of a sophisticated visualization layer for 4D physical fields (<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">VectorField</span></code>, <code class="docutils literal notranslate"><span class="pre">TensorField</span></code>) and the resolution of underlying metadata propagation issues in the <code class="docutils literal notranslate"><span class="pre">Array4D</span></code> base class.</p>
+<section id="key-deliverables">
+<h3>Key Deliverables<a class="headerlink" href="#key-deliverables" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>FieldPlotting API</strong>: A dimension-aware system that allows users to plot 2D slices of 4D data by simply naming axes and specifying coordinates.</p></li>
+<li><p><strong>Vector/Tensor Specific Viz</strong>: Support for Quivers, Streamlines, and Component Grids.</p></li>
+<li><p><strong>Animation Support</strong>: Ability to generate <code class="docutils literal notranslate"><span class="pre">matplotlib.animation.FuncAnimation</span></code> objects directly from field instances.</p></li>
+<li><p><strong>Metadata Inheritance Fix</strong>: Corrected <code class="docutils literal notranslate"><span class="pre">Array4D</span></code> implementation to ensure physical units of axes are preserved through arithmetic operations.</p></li>
+</ol>
+</section>
+<section id="modified-added-files">
+<h3>Modified/Added Files<a class="headerlink" href="#modified-added-files" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/fields/base.py</span></code>: Added <code class="docutils literal notranslate"><span class="pre">plot</span></code>, <code class="docutils literal notranslate"><span class="pre">animate</span></code>, and <code class="docutils literal notranslate"><span class="pre">slices</span></code> handling.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/fields/vector.py</span></code>: Added <code class="docutils literal notranslate"><span class="pre">quiver</span></code>, <code class="docutils literal notranslate"><span class="pre">streamline</span></code>, <code class="docutils literal notranslate"><span class="pre">plot_magnitude</span></code>, and <code class="docutils literal notranslate"><span class="pre">plot</span></code> (overlay).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/fields/tensor.py</span></code>: Added <code class="docutils literal notranslate"><span class="pre">plot_components</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/plot/field.py</span></code>: <strong>[NEW]</strong> Core plotting implementation class <code class="docutils literal notranslate"><span class="pre">FieldPlot</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/types/array4d.py</span></code>: Refactored <code class="docutils literal notranslate"><span class="pre">__new__</span></code> and <code class="docutils literal notranslate"><span class="pre">__array_finalize__</span></code> for robust metadata inheritance.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/plot/test_field_plots.py</span></code>: <strong>[NEW]</strong> Test suite for plotting.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/guide/tutorials/tutorial_Field_Visualization.ipynb</span></code>: <strong>[NEW]</strong> User tutorial.</p></li>
+</ul>
+</section>
+<section id="executed-tests">
+<h3>Executed Tests<a class="headerlink" href="#executed-tests" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests/plot/test_field_plots.py</span></code>: 6 tests passed (Scalar, Vector, Tensor, Animation, Slicing).</p></li>
+<li><p>Manual verification of metadata preservation: <code class="docutils literal notranslate"><span class="pre">vy</span> <span class="pre">=</span> <span class="pre">f</span> <span class="pre">*</span> <span class="pre">0.5</span></code> now preserves <code class="docutils literal notranslate"><span class="pre">s</span></code> unit on axis 0.</p></li>
+</ul>
+</section>
+<section id="resolved-bugs">
+<h3>Resolved Bugs<a class="headerlink" href="#resolved-bugs" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Bug</strong>: <code class="docutils literal notranslate"><span class="pre">Array4D</span></code> lost axis units after multiplication.</p>
+<ul>
+<li><p><em>Fix</em>: Deferred default axis initialization in <code class="docutils literal notranslate"><span class="pre">Array4D</span></code> to prioritize parent metadata in <code class="docutils literal notranslate"><span class="pre">__array_finalize__</span></code>.</p></li>
+</ul>
+</li>
+<li><p><strong>Conflict</strong>: <code class="docutils literal notranslate"><span class="pre">FieldBase.plot(y=...)</span></code> conflicted with an axis named <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p>
+<ul>
+<li><p><em>Fix</em>: Introduced <code class="docutils literal notranslate"><span class="pre">slices</span></code> dictionary argument to explicitly provide slicing coordinates.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="performance-improvements">
+<h2>Performance Improvements<a class="headerlink" href="#performance-improvements" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Slicing logic optimizes 4D data extraction to 2D before passing to Matplotlib, reducing memory overhead for large fields.</p></li>
+<li><p>Animation frames are generated lazily through the <code class="docutils literal notranslate"><span class="pre">update</span></code> function.</p></li>
+</ul>
+</section>
+<section id="saved-path">
+<h2>Saved Path<a class="headerlink" href="#saved-path" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">docs/developers/reports/report_FieldVisualization_2020260123_202809.md</span></code></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

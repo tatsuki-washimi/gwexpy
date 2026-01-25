@@ -1,27 +1,27 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="ja" data-content_root="../">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation &mdash; gwexpy  ドキュメント</title>
+  <title>インストール &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../_static/translations.js?v=4755f45a"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../genindex.html" />
-    <link rel="search" title="検索" href="../search.html" />
-    <link rel="next" title="Quickstart" href="quickstart.html" />
-    <link rel="prev" title="GWExPy Documentation" href="../index.html" /> 
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="クイックスタート" href="quickstart.html" />
+    <link rel="prev" title="GWExPy ドキュメントへようこそ" href="../index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,25 +43,26 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#basic-install">Basic install</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#development-install">Development install</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#optional-extras">Optional extras</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">インストール</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">基本インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">開発用インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">オプション機能の追加</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/ja/index.html">詳細リファレンス</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">開発者ガイド (Developers Guide)</a></li>
 </ul>
 
         </div>
@@ -78,7 +79,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Installation</li>
+      <li class="breadcrumb-item active">インストール</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/installation.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -88,46 +89,55 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
-<p>GWExPy requires Python 3.9+ and depends on GWpy, NumPy, SciPy, and Astropy.</p>
-<section id="basic-install">
-<h2>Basic install<a class="headerlink" href="#basic-install" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># From a local checkout</span>
+  <section id="id1">
+<h1>インストール<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p>GWExPy は Python 3.9+ を必要とし、GWpy, NumPy, SciPy, および Astropy に依存します。</p>
+<section id="id2">
+<h2>基本インストール<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># ローカルチェックアウトから</span>
 pip<span class="w"> </span>install<span class="w"> </span>.
 
-<span class="c1"># From GitHub (no PyPI release)</span>
+<span class="c1"># GitHub から直接 (PyPIリリースが無い場合)</span>
 pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/tatsuki-washimi/gwexpy.git
 </pre></div>
 </div>
 </section>
-<section id="development-install">
-<h2>Development install<a class="headerlink" href="#development-install" title="Link to this heading"></a></h2>
+<section id="id3">
+<h2>開発用インストール<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
 </pre></div>
 </div>
 </section>
-<section id="optional-extras">
-<h2>Optional extras<a class="headerlink" href="#optional-extras" title="Link to this heading"></a></h2>
-<p>GWExPy exposes optional extras for domain-specific features:</p>
+<section id="id4">
+<h2>オプション機能の追加<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>GWExPy はドメイン固有の機能のためにオプションの依存関係を提供しています:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">.[gw]</span></code> for GW data analysis (nds2, frames, noise models)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[stats]</span></code> for stats &amp; signal analysis (polars, ARIMA, ICA/PCA)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[fitting]</span></code> for advanced fitting (iminuit, emcee, corner)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[astro]</span></code> for astroparticle physics tools (specutils, pyspeckit)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[geophysics]</span></code> for obspy, mth5, etc.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[audio]</span></code> for librosa/pydub helpers</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[bio]</span></code> for mne/neo/elephant integrations</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[interop]</span></code> for high-level interoperability (torch, jax, dask, etc.)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[control]</span></code> for python-control integration</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[plot]</span></code> for plotting &amp; mapping (pygmt)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[analysis]</span></code> for transforms and time-frequency tools</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[gui]</span></code> for the experimental Qt GUI</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[all]</span></code> to install all optional dependencies</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[gw]</span></code> : 重力波データ解析 (nds2, frames, noise models)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[stats]</span></code> : 統計解析 (polars, ARIMA, ICA/PCA)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[fitting]</span></code> : 高度なフィッティング (iminuit, emcee, corner)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[astro]</span></code> : 天体物理ツール (specutils, pyspeckit)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[geophysics]</span></code> : 地球物理 (obspy, mth5, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[audio]</span></code> : 音響解析 (librosa/pydub helpers)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[bio]</span></code> : 生体信号 (mne/neo/elephant integrations)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[interop]</span></code> : 高度な相互運用性 (torch, jax, dask, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[control]</span></code> : 制御工学 (python-control integration)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[plot]</span></code> : プロット・マッピング (pygmt)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[analysis]</span></code> : 変換および時間周波数ツール</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[gui]</span></code> : 実験的 Qt GUI</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.[all]</span></code> : 全ての依存関係をインストール</p></li>
 </ul>
-<p>Combine extras as needed, for example:</p>
+<p>必要に応じて組み合わせてください:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;.[gw,stats,plot]&quot;</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">[gw]</span></code> エクストラに含まれる <code class="docutils literal notranslate"><span class="pre">nds2-client</span></code> などの一部ライブラリは <strong>PyPI では提供されていません</strong>。
+これらの機能を使用するには、まず <strong>Conda</strong> を用いて依存関係をインストールする必要があります:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>python-nds2-client<span class="w"> </span>python-framel<span class="w"> </span>ldas-tools-framecpp
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;.[gw]&quot;</span>
+</pre></div>
+</div>
 </div>
 </section>
 </section>
@@ -136,8 +146,8 @@ pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="GWExPy Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="quickstart.html" class="btn btn-neutral float-right" title="Quickstart" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="GWExPy ドキュメントへようこそ" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="quickstart.html" class="btn btn-neutral float-right" title="クイックスタート" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,0 +1,173 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estimate Effort: Field Plotting Enhancement &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Estimate Effort: Field Plotting Enhancement</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/reports/report_FieldPlottingEffort_20260123_1723.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="estimate-effort-field-plotting-enhancement">
+<h1>Estimate Effort: Field Plotting Enhancement<a class="headerlink" href="#estimate-effort-field-plotting-enhancement" title="Link to this heading"></a></h1>
+<p>作業計画「Field Plotting Enhancement」の完遂に必要な工数とリソースの見積もりを報告します。</p>
+<section id="id1">
+<h2>見積もり概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>推定合計時間</strong>: 約 55 分 (Wall-clock)</p></li>
+<li><p><strong>推定クオータ消費量</strong>: <strong>High</strong></p>
+<ul>
+<li><p>理由: 複数の新規モジュール作成、大規模な既存クラスの拡張、およびアニメーション等の複雑なロジックの実装を伴うため。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id2">
+<h2>ステップ別内訳<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>フェーズ</p></th>
+<th class="head text-left"><p>難易度</p></th>
+<th class="head text-left"><p>推定時間</p></th>
+<th class="head text-left"><p>クオータ</p></th>
+<th class="head text-left"><p>内容</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><strong>Phase 1: Foundation</strong></p></td>
+<td class="text-left"><p>Medium</p></td>
+<td class="text-left"><p>15 min</p></td>
+<td class="text-left"><p>Medium</p></td>
+<td class="text-left"><p>断面抽出ロジック、<code class="docutils literal notranslate"><span class="pre">FieldPlot</span></code> 基盤、<code class="docutils literal notranslate"><span class="pre">ScalarField.plot</span></code> 実装</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>Phase 2: Vector Viz</strong></p></td>
+<td class="text-left"><p>Medium</p></td>
+<td class="text-left"><p>15 min</p></td>
+<td class="text-left"><p>Medium</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">quiver</span></code>, <code class="docutils literal notranslate"><span class="pre">streamline</span></code> 実装、<code class="docutils literal notranslate"><span class="pre">FieldPlot</span></code> への統合</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><strong>Phase 3: Advanced</strong></p></td>
+<td class="text-left"><p>High</p></td>
+<td class="text-left"><p>25 min</p></td>
+<td class="text-left"><p>High</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">TensorField</span></code> 全成分表示、<code class="docutils literal notranslate"><span class="pre">FuncAnimation</span></code> による動画生成</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id3">
+<h2>懸念事項<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>描画エンジンの安定性</strong>: 4Dから2Dへの動的なスライス抽出において、不正な引数入力に対する例外処理が複雑になる可能性があります。</p></li>
+<li><p><strong>依存関係</strong>: <code class="docutils literal notranslate"><span class="pre">matplotlib.animation</span></code> の動作は実行環境に依存するため、テスト環境での検証に時間を要する可能性があります。</p></li>
+<li><p><strong>パフォーマンス</strong>: 大規模な 4D データのスライス表示において、メモリ消費が想定を超えるリスクがあります。</p></li>
+</ul>
+</section>
+<section id="roi">
+<h2>効率性評価 (ROI)<a class="headerlink" href="#roi" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>投資対効果</strong>: 非常に高い。複雑な 4D データを直感的に理解できるようになるため、研究・解析効率が劇的に向上します。</p></li>
+<li><p><strong>代替案</strong>: インタラクティブ機能を重視する場合、<code class="docutils literal notranslate"><span class="pre">Plotly</span></code> の利用も検討の余地がありますが、まずは <code class="docutils literal notranslate"><span class="pre">gwpy</span></code> との親和性が高い <code class="docutils literal notranslate"><span class="pre">Matplotlib</span></code> ベーストでの実装を優先します。</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

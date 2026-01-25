@@ -1,0 +1,761 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# FrequencySeriesMatrix チュートリアル\n",
+    "\n",
+    "`FrequencySeriesMatrix` は `SeriesMatrix` を周波数領域（FrequencySeries）向けに拡張した 3 次元配列コンテナです（shape: Nrow × Ncol × Nfreq）。\n",
+    "\n",
+    "- `df / f0 / frequencies` など FrequencySeries 互換のエイリアス\n",
+    "- 要素アクセスで `FrequencySeries` を返す（`fsm[i, j]`）\n",
+    "- フィルタ適用（magnitude-only: `filter`）と、複素応答の適用（`apply_response`）\n",
+    "- `ifft()` による時間領域 `TimeSeriesMatrix` への変換\n",
+    "- 表示系 (`plot`, `step`, `repr`, `_repr_html_`) をそのまま使用\n",
+    "\n",
+    "このノートブックでは追加のユーティリティ関数は定義せず、クラスメソッドを直接呼び出して動作を確認します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:00.772203Z",
+     "iopub.status.busy": "2026-01-24T10:40:00.772078Z",
+     "iopub.status.idle": "2026-01-24T10:40:02.806347Z",
+     "shell.execute_reply": "2026-01-24T10:40:02.805235Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "from astropy import units as u\n",
+    "\n",
+    "from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesMatrix\n",
+    "from gwexpy.timeseries import TimeSeriesMatrix\n",
+    "\n",
+    "plt.rcParams.update({\"figure.figsize\": (5, 3), \"axes.grid\": True})\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 代表データを用意\n",
+    "`TimeSeriesMatrix` から `fft/asd` を計算して、`FrequencySeriesMatrix` を得ます。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:02.808842Z",
+     "iopub.status.busy": "2026-01-24T10:40:02.808371Z",
+     "iopub.status.idle": "2026-01-24T10:40:03.010319Z",
+     "shell.execute_reply": "2026-01-24T10:40:03.009658Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "tsm (2, 2, 1024) sample_rate 256.0 Hz\n",
+      "fft (2, 2, 513) df 0.25 Hz f0 0.0 Hz\n",
+      "asd (2, 2, 129) unit V / Hz(1/2)\n",
+      "frequencies[:5] [0. 1. 2. 3. 4.] Hz\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<h3>SeriesMatrix: shape=(2, 2, 129), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 Hz, <b>dx:</b> 1.0 Hz, <b>N_samples:</b> 129</li><li><b>xunit:</b> Hz</li></ul><h4>Row Metadata</h4><table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>name</th>\n",
+       "      <th>channel</th>\n",
+       "      <th>unit</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>key</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>r0</th>\n",
+       "      <td>row0</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>r1</th>\n",
+       "      <td>row1</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table><h4>Column Metadata</h4><table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>name</th>\n",
+       "      <th>channel</th>\n",
+       "      <th>unit</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>key</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>c0</th>\n",
+       "      <td>col0</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>c1</th>\n",
+       "      <td>col1</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table><h4>Element Metadata</h4><table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>unit</th>\n",
+       "      <th>name</th>\n",
+       "      <th>channel</th>\n",
+       "      <th>row</th>\n",
+       "      <th>col</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>V / Hz(1/2)</td>\n",
+       "      <td>ch00</td>\n",
+       "      <td>X:A</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>V / Hz(1/2)</td>\n",
+       "      <td>ch01</td>\n",
+       "      <td>X:B</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>V / Hz(1/2)</td>\n",
+       "      <td>ch10</td>\n",
+       "      <td>Y:A</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>V / Hz(1/2)</td>\n",
+       "      <td>ch11</td>\n",
+       "      <td>Y:B</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>"
+      ],
+      "text/plain": [
+       "<SeriesMatrix shape=(2, 2, 129) rows=('r0', 'r1') cols=('c0', 'c1')>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "rng = np.random.default_rng(0)\n",
+    "\n",
+    "n = 1024\n",
+    "dt = (1 / 256) * u.s\n",
+    "t0 = 0 * u.s\n",
+    "t = (np.arange(n) * dt).to_value(u.s)\n",
+    "\n",
+    "tone10 = np.sin(2 * np.pi * 10 * t)\n",
+    "tone20 = np.sin(2 * np.pi * 20 * t + 0.3)\n",
+    "\n",
+    "data = np.empty((2, 2, n), dtype=float)\n",
+    "data[0, 0] = 0.5 * tone10 + 0.05 * rng.normal(size=n)\n",
+    "data[0, 1] = 0.5 * tone20 + 0.05 * rng.normal(size=n)\n",
+    "data[1, 0] = 0.3 * tone10 + 0.3 * tone20 + 0.05 * rng.normal(size=n)\n",
+    "data[1, 1] = 0.2 * tone10 - 0.4 * tone20 + 0.05 * rng.normal(size=n)\n",
+    "\n",
+    "units = np.full((2, 2), u.V)\n",
+    "names = [[\"ch00\", \"ch01\"], [\"ch10\", \"ch11\"]]\n",
+    "channels = [[\"X:A\", \"X:B\"], [\"Y:A\", \"Y:B\"]]\n",
+    "\n",
+    "tsm = TimeSeriesMatrix(\n",
+    "    data,\n",
+    "    dt=dt,\n",
+    "    t0=t0,\n",
+    "    units=units,\n",
+    "    names=names,\n",
+    "    channels=channels,\n",
+    "    rows={\"r0\": {\"name\": \"row0\"}, \"r1\": {\"name\": \"row1\"}},\n",
+    "    cols={\"c0\": {\"name\": \"col0\"}, \"c1\": {\"name\": \"col1\"}},\n",
+    "    name=\"demo\",\n",
+    ")\n",
+    "\n",
+    "fft = tsm.fft()\n",
+    "asd = tsm.asd(fftlength=1, overlap=0.5)\n",
+    "\n",
+    "print(\"tsm\", tsm.shape, \"sample_rate\", tsm.sample_rate)\n",
+    "print(\"fft\", fft.shape, \"df\", fft.df, \"f0\", fft.f0)\n",
+    "print(\"asd\", asd.shape, \"unit\", asd[0, 0].unit)\n",
+    "print(\"frequencies[:5]\", asd.frequencies[:5])\n",
+    "\n",
+    "display(asd)\n",
+    "asd.plot(subplots=True)\n",
+    "plt.xscale(\"log\")\n",
+    "plt.yscale(\"log\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 多様な入力パターン（コンストラクタ例）\n",
+    "`df/f0`、`frequencies`、`FrequencySeries` の 2D リスト、`Quantity` 入力などを確認します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:03.015099Z",
+     "iopub.status.busy": "2026-01-24T10:40:03.014975Z",
+     "iopub.status.idle": "2026-01-24T10:40:03.035034Z",
+     "shell.execute_reply": "2026-01-24T10:40:03.033928Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "=== FrequencySeriesMatrix コンストラクタ例 ===\n",
+      "case1 frequencies (2, 2, 65) df 1.0 Hz f0 0.0 Hz\n",
+      "case2 df/f0 (2, 2, 65) df 1.0 Hz\n",
+      "case3 from FrequencySeries (2, 2, 65) cell type <class 'gwexpy.frequencyseries.frequencyseries.FrequencySeries'>\n",
+      "case4 Quantity meta unit mV / Hz(1/2)\n",
+      "case5 irregular frequencies [0. 1. 2. 4. 8.] Hz\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"=== FrequencySeriesMatrix コンストラクタ例 ===\")\n",
+    "\n",
+    "freqs = np.linspace(0, 64, 65) * u.Hz\n",
+    "f = freqs.to_value(u.Hz)\n",
+    "\n",
+    "peak10 = np.exp(-0.5 * ((f - 10) / 1.5) ** 2)\n",
+    "peak20 = np.exp(-0.5 * ((f - 20) / 2.0) ** 2)\n",
+    "\n",
+    "data_f = np.empty((2, 2, len(freqs)), dtype=float)\n",
+    "data_f[0, 0] = peak10\n",
+    "data_f[0, 1] = peak20\n",
+    "data_f[1, 0] = 0.6 * peak10 + 0.4 * peak20\n",
+    "data_f[1, 1] = 0.2 * peak10 - 0.5 * peak20\n",
+    "\n",
+    "units_f = np.full((2, 2), u.V / u.Hz ** 0.5)\n",
+    "names_f = [[\"p10\", \"p20\"], [\"mix\", \"diff\"]]\n",
+    "channels_f = [[\"X:A\", \"X:B\"], [\"Y:A\", \"Y:B\"]]\n",
+    "\n",
+    "# ケース 1: frequencies を明示\n",
+    "fsm = FrequencySeriesMatrix(\n",
+    "    data_f,\n",
+    "    frequencies=freqs,\n",
+    "    units=units_f,\n",
+    "    names=names_f,\n",
+    "    channels=channels_f,\n",
+    "    rows={\"r0\": {\"name\": \"row0\"}, \"r1\": {\"name\": \"row1\"}},\n",
+    "    cols={\"c0\": {\"name\": \"col0\"}, \"c1\": {\"name\": \"col1\"}},\n",
+    "    name=\"peaks\",\n",
+    ")\n",
+    "print(\"case1 frequencies\", fsm.shape, \"df\", fsm.df, \"f0\", fsm.f0)\n",
+    "\n",
+    "# ケース 2: df/f0 を指定（Index.define で軸を生成）\n",
+    "fsm_df = FrequencySeriesMatrix(data_f, df=1 * u.Hz, f0=0 * u.Hz, units=units_f, names=names_f)\n",
+    "print(\"case2 df/f0\", fsm_df.shape, \"df\", fsm_df.df)\n",
+    "\n",
+    "# ケース 3: FrequencySeries の 2D リストから構築\n",
+    "fs00 = FrequencySeries(data_f[0, 0], frequencies=freqs, unit=units_f[0, 0], name=\"p10\", channel=\"X:A\")\n",
+    "fs01 = FrequencySeries(data_f[0, 1], frequencies=freqs, unit=units_f[0, 1], name=\"p20\", channel=\"X:B\")\n",
+    "fs10 = FrequencySeries(data_f[1, 0], frequencies=freqs, unit=units_f[1, 0], name=\"mix\", channel=\"Y:A\")\n",
+    "fs11 = FrequencySeries(data_f[1, 1], frequencies=freqs, unit=units_f[1, 1], name=\"diff\", channel=\"Y:B\")\n",
+    "fsm_from_fs = FrequencySeriesMatrix([[fs00, fs01], [fs10, fs11]])\n",
+    "print(\"case3 from FrequencySeries\", fsm_from_fs.shape, \"cell type\", type(fsm_from_fs[0, 0]))\n",
+    "\n",
+    "# ケース 4: Quantity 入力（units を自動設定）\n",
+    "fsm_q = FrequencySeriesMatrix(data_f * (u.mV / u.Hz ** 0.5), frequencies=freqs)\n",
+    "print(\"case4 Quantity meta unit\", fsm_q.meta[0, 0].unit)\n",
+    "\n",
+    "# ケース 5: 不規則 frequencies\n",
+    "irreg = np.array([0, 1, 2, 4, 8]) * u.Hz\n",
+    "fsm_irreg = FrequencySeriesMatrix(np.ones((1, 1, len(irreg))), frequencies=irreg, units=[[u.V]], names=[[\"irreg\"]])\n",
+    "print(\"case5 irregular frequencies\", fsm_irreg.frequencies)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 参照・切り出し\n",
+    "- `fsm[i, j]` は `FrequencySeries` を返す\n",
+    "- スライスは `FrequencySeriesMatrix` を返す\n",
+    "- row/col ラベルでもアクセスできる"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:03.036613Z",
+     "iopub.status.busy": "2026-01-24T10:40:03.036486Z",
+     "iopub.status.idle": "2026-01-24T10:40:03.068456Z",
+     "shell.execute_reply": "2026-01-24T10:40:03.067686Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0,0] type <class 'gwexpy.frequencyseries.frequencyseries.FrequencySeries'> df 1.0 Hz f0 0.0 Hz unit V / Hz(1/2)\n",
+      "[0,0] name ch00 channel X:A\n",
+      "[r0,c1] name ch01 channel X:B\n",
+      "asd[:,0] -> <class 'gwexpy.frequencyseries.matrix.FrequencySeriesMatrix'> (2, 1, 129)\n"
+     ]
+    }
+   ],
+   "source": [
+    "s00 = asd[0, 0]\n",
+    "print(\"[0,0]\", \"type\", type(s00), \"df\", s00.df, \"f0\", s00.f0, \"unit\", s00.unit)\n",
+    "print(\"[0,0]\", \"name\", s00.name, \"channel\", s00.channel)\n",
+    "s00.plot()\n",
+    "\n",
+    "s01 = asd[\"r0\", \"c1\"]\n",
+    "print(\"[r0,c1]\", \"name\", s01.name, \"channel\", s01.channel)\n",
+    "\n",
+    "sub = asd[:, 0]\n",
+    "print(\"asd[:,0] ->\", type(sub), sub.shape)\n",
+    "sub.plot(subplots=True)\n",
+    "plt.xscale(\"log\")\n",
+    "plt.yscale(\"log\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## サンプル軸編集（frequency axis）\n",
+    "- `diff` / `pad` は `FrequencySeriesMatrix` を返す\n",
+    "- `crop` は現在 `SeriesMatrix` を返すので、`view(FrequencySeriesMatrix)` で戻します（中身は同じ）"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:03.070469Z",
+     "iopub.status.busy": "2026-01-24T10:40:03.070359Z",
+     "iopub.status.idle": "2026-01-24T10:40:03.102424Z",
+     "shell.execute_reply": "2026-01-24T10:40:03.101434Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "band <class 'gwexpy.frequencyseries.matrix.FrequencySeriesMatrix'> (2, 2, 35) span (<Quantity 5. Hz>, <Quantity 40. Hz>)\n",
+      "diffed <class 'gwexpy.frequencyseries.matrix.FrequencySeriesMatrix'> (2, 2, 34) df 1.0 Hz\n",
+      "padded <class 'gwexpy.frequencyseries.matrix.FrequencySeriesMatrix'> (2, 2, 45) f0 0.0 Hz\n"
+     ]
+    }
+   ],
+   "source": [
+    "band = asd.crop(start=5 * u.Hz, end=40 * u.Hz).view(FrequencySeriesMatrix)\n",
+    "print(\"band\", type(band), band.shape, \"span\", band.xspan)\n",
+    "band.plot(subplots=True)\n",
+    "plt.xscale(\"log\")\n",
+    "plt.yscale(\"log\")\n",
+    "\n",
+    "diffed = band.diff(n=1)\n",
+    "print(\"diffed\", type(diffed), diffed.shape, \"df\", diffed.df)\n",
+    "\n",
+    "padded = band.pad(5)\n",
+    "print(\"padded\", type(padded), padded.shape, \"f0\", padded.f0)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 演算（ufunc / apply_response）\n",
+    "- 係数倍などの ufunc では unit が保たれる\n",
+    "- `apply_response` は複素/実の周波数応答（dimensionless）を掛け合わせる拡張メソッド"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:03.104626Z",
+     "iopub.status.busy": "2026-01-24T10:40:03.104508Z",
+     "iopub.status.idle": "2026-01-24T10:40:03.142698Z",
+     "shell.execute_reply": "2026-01-24T10:40:03.141652Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "scaled unit V / Hz(1/2)\n",
+      "apply_response (2, 2, 35) dtype float64 unit V / Hz(1/2)\n"
+     ]
+    }
+   ],
+   "source": [
+    "scaled = 2 * band\n",
+    "print(\"scaled unit\", scaled[0, 0].unit)\n",
+    "\n",
+    "# 30 Hz あたりから抑える単純な実応答\n",
+    "resp_mag = 1 / (1 + (band.frequencies / (30 * u.Hz)) ** 4)\n",
+    "shaped = band.apply_response(resp_mag)\n",
+    "print(\"apply_response\", shaped.shape, \"dtype\", shaped.value.dtype, \"unit\", shaped[0, 0].unit)\n",
+    "\n",
+    "shaped.plot(subplots=True)\n",
+    "plt.xscale(\"log\")\n",
+    "plt.yscale(\"log\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## filter（magnitude-only）\n",
+    "`filter` は GWpy の `fdfilter` に委譲し、フィルタの「振幅応答（magnitude）」を適用します（位相は適用しません）。\n",
+    "\n",
+    "ここでは例として、`scipy.signal.butter` で作った IIR フィルタを `fft` に適用してから `ifft()` で時間領域に戻します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:03.144525Z",
+     "iopub.status.busy": "2026-01-24T10:40:03.144409Z",
+     "iopub.status.idle": "2026-01-24T10:40:03.184930Z",
+     "shell.execute_reply": "2026-01-24T10:40:03.184199Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "fft_filt (2, 2, 513) df 0.25 Hz\n",
+      "tsm_filt (2, 2, 1024) dt 0.00390625 s\n"
+     ]
+    }
+   ],
+   "source": [
+    "from scipy import signal\n",
+    "\n",
+    "sr = tsm.sample_rate.to_value(u.Hz)\n",
+    "b, a = signal.butter(4, [5, 40], btype=\"bandpass\", fs=sr)\n",
+    "\n",
+    "fft_filt = fft.filter(b, a, analog=False)\n",
+    "tsm_filt = fft_filt.ifft()\n",
+    "\n",
+    "print(\"fft_filt\", fft_filt.shape, \"df\", fft_filt.df)\n",
+    "print(\"tsm_filt\", tsm_filt.shape, \"dt\", tsm_filt.dt)\n",
+    "\n",
+    "tsm_filt[0, 0].plot(xscale=\"seconds\");\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## ifft（FFT から時間領域へ）\n",
+    "`TimeSeriesMatrix.fft()` の出力に対して `ifft()` を適用すると、元の `TimeSeriesMatrix` が再現されます（数値誤差の範囲）。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:03.186798Z",
+     "iopub.status.busy": "2026-01-24T10:40:03.186676Z",
+     "iopub.status.idle": "2026-01-24T10:40:03.262572Z",
+     "shell.execute_reply": "2026-01-24T10:40:03.261563Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ifft back (2, 2, 1024) dt 0.00390625 s t0 0.0 s\n",
+      "rms error (cell 0,0) 8.131556499372449e-17\n"
+     ]
+    }
+   ],
+   "source": [
+    "tsm_back = fft.ifft()\n",
+    "rms = np.sqrt(np.mean((tsm_back[0, 0].value - tsm[0, 0].value) ** 2))\n",
+    "print(\"ifft back\", tsm_back.shape, \"dt\", tsm_back.dt, \"t0\", tsm_back.t0)\n",
+    "print(\"rms error (cell 0,0)\", rms)\n",
+    "\n",
+    "tsm[0, 0].plot(xscale=\"seconds\")\n",
+    "tsm_back[0, 0].plot(xscale=\"seconds\");\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 表示系: repr / plot / step\n",
+    "- `repr`: テキスト表示\n",
+    "- `_repr_html_`: ノートブックでは `display(fsm)` で表形式\n",
+    "- `plot` / `step`: クラスメソッドで直接描画（保存はしない）"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:40:03.264304Z",
+     "iopub.status.busy": "2026-01-24T10:40:03.264068Z",
+     "iopub.status.idle": "2026-01-24T10:40:03.333394Z",
+     "shell.execute_reply": "2026-01-24T10:40:03.332730Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "repr:\n",
+      " SeriesMatrix(shape=(2, 2, 35),  name='demo')\n",
+      "  epoch   : 0.0 s\n",
+      "  x0      : 5.0 Hz\n",
+      "  dx      : 1.0 Hz\n",
+      "  xunit   : Hz\n",
+      "  samples : 35\n",
+      "\n",
+      "[ Row metadata ]\n",
+      "     name channel unit\n",
+      "key                   \n",
+      "r0   row0             \n",
+      "r1   row1             \n",
+      "\n",
+      "[ Column metadata ]\n",
+      "     name channel unit\n",
+      "key                   \n",
+      "c0   col0             \n",
+      "c1   col1             \n",
+      "\n",
+      "[ Elements metadata ]\n",
+      "          unit  name channel  row  col\n",
+      "0  V / Hz(1/2)  ch00     X:A    0    0\n",
+      "1  V / Hz(1/2)  ch01     X:B    0    1\n",
+      "2  V / Hz(1/2)  ch10     Y:A    1    0\n",
+      "3  V / Hz(1/2)  ch11     Y:B    1    1\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<h3>SeriesMatrix: shape=(2, 2, 35), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 5.0 Hz, <b>dx:</b> 1.0 Hz, <b>N_samples:</b> 35</li><li><b>xunit:</b> Hz</li></ul><h4>Row Metadata</h4><table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>name</th>\n",
+       "      <th>channel</th>\n",
+       "      <th>unit</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>key</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>r0</th>\n",
+       "      <td>row0</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>r1</th>\n",
+       "      <td>row1</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table><h4>Column Metadata</h4><table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>name</th>\n",
+       "      <th>channel</th>\n",
+       "      <th>unit</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>key</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>c0</th>\n",
+       "      <td>col0</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>c1</th>\n",
+       "      <td>col1</td>\n",
+       "      <td></td>\n",
+       "      <td></td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table><h4>Element Metadata</h4><table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>unit</th>\n",
+       "      <th>name</th>\n",
+       "      <th>channel</th>\n",
+       "      <th>row</th>\n",
+       "      <th>col</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>V / Hz(1/2)</td>\n",
+       "      <td>ch00</td>\n",
+       "      <td>X:A</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>V / Hz(1/2)</td>\n",
+       "      <td>ch01</td>\n",
+       "      <td>X:B</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>V / Hz(1/2)</td>\n",
+       "      <td>ch10</td>\n",
+       "      <td>Y:A</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>V / Hz(1/2)</td>\n",
+       "      <td>ch11</td>\n",
+       "      <td>Y:B</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>"
+      ],
+      "text/plain": [
+       "<SeriesMatrix shape=(2, 2, 35) rows=('r0', 'r1') cols=('c0', 'c1')>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "print(\"repr:\\n\", band)\n",
+    "display(band)\n",
+    "\n",
+    "band.plot(subplots=True)\n",
+    "plt.xscale(\"log\")\n",
+    "plt.yscale(\"log\")\n",
+    "\n",
+    "band.step(where=\"mid\")\n",
+    "plt.xscale(\"log\")\n",
+    "plt.yscale(\"log\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## まとめ\n",
+    "- `FrequencySeriesMatrix` は周波数軸（`df/f0/frequencies`）と要素メタデータを保ったまま、行列として一括処理できる。\n",
+    "- `filter` は magnitude-only のフィルタ適用、`apply_response` は複素応答を含む任意の周波数応答の適用に使える。\n",
+    "- `ifft()` により時間領域 `TimeSeriesMatrix` に戻せるので、周波数領域で処理してから波形として確認する流れが作れる。"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "base",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

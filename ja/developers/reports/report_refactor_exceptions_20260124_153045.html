@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作業報告書: 広範な例外処理のリファクタリング - 2026/01/24 &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Repository Review Report: gwexpy (Final)" href="repo_review_final_20260124.html" />
+    <link rel="prev" title="作業包括報告書: GWExPy コード品質改善 - 2026/01/24" href="report_comprehensive_quality_improvement_20260124.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">開発者ガイド (Developers Guide)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">設計方針とコントラクト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">開発ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">技術分析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">進行中の計画</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id5">最近のレポート</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="report_comprehensive_quality_improvement_20260124.html">作業包括報告書: GWExPy コード品質改善 - 2026/01/24</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">作業報告書: 広範な例外処理のリファクタリング - 2026/01/24</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">1. 実施内容の概要</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">2. 詳細な修正内容</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">3. 検証結果</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">4. 成果と影響</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">5. 今後の改善余地</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="repo_review_final_20260124.html">Repository Review Report: gwexpy (Final)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">開発者ガイド (Developers Guide)</a></li>
+      <li class="breadcrumb-item active">作業報告書: 広範な例外処理のリファクタリング - 2026/01/24</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_refactor_exceptions_20260124_153045.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>作業報告書: 広範な例外処理のリファクタリング - 2026/01/24<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p><strong>作成日時</strong>: 2026-01-24 15:30<br />
+<strong>使用モデル</strong>: Claude Sonnet 4.5 (with Thinking)<br />
+<strong>推定時間</strong>: 35分（実際: 約30分）<br />
+<strong>クォータ消費</strong>: Medium</p>
+<hr class="docutils" />
+<section id="id2">
+<h2>1. 実施内容の概要<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>リポジトリレビューで特定された <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code> の使用箇所（計8箇所）を、より具体的な例外型への置き換え、またはログ出力を伴う形にリファクタリングしました。</p>
+<section id="id3">
+<h3>修正対象ファイル<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/spectral/estimation.py</span></code> (4箇所)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/analysis/bruco.py</span></code> (3箇所)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/types/seriesmatrix_base.py</span></code> (1箇所)</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id4">
+<h2>2. 詳細な修正内容<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<section id="gwexpy-spectral-estimation-py">
+<h3>gwexpy/spectral/estimation.py<a class="headerlink" href="#gwexpy-spectral-estimation-py" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>行番号</p></th>
+<th class="head text-left"><p>修正前</p></th>
+<th class="head text-left"><p>修正後</p></th>
+<th class="head text-left"><p>理由</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>128</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">(AttributeError,</span> <span class="pre">TypeError,</span> <span class="pre">ValueError):</span></code></p></td>
+<td class="text-left"><p>単位変換の失敗は通常これらの例外に限定される</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>199</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">(ValueError,</span> <span class="pre">TypeError)</span> <span class="pre">as</span> <span class="pre">e:</span></code> + 警告にエラー詳細追加</p></td>
+<td class="text-left"><p>ウィンドウ生成の失敗は主に無効な引数によるもの</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>239</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">(AttributeError,</span> <span class="pre">ZeroDivisionError):</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">.value</span></code> 属性アクセスまたはゼロ除算が主な原因</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>407</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception</span> <span class="pre">as</span> <span class="pre">e:</span></code> + <code class="docutils literal notranslate"><span class="pre">warnings.warn()</span></code></p></td>
+<td class="text-left"><p>Numba JIT失敗は多様なエラーの可能性があるため、ログ付きで維持</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="gwexpy-analysis-bruco-py">
+<h3>gwexpy/analysis/bruco.py<a class="headerlink" href="#gwexpy-analysis-bruco-py" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>行番号</p></th>
+<th class="head text-left"><p>修正前</p></th>
+<th class="head text-left"><p>修正後</p></th>
+<th class="head text-left"><p>理由</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>837</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception</span> <span class="pre">as</span> <span class="pre">e:</span></code> + <code class="docutils literal notranslate"><span class="pre">logger.debug()</span></code></p></td>
+<td class="text-left"><p>データ推論失敗時の詳細ログ出力</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>1253</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception</span> <span class="pre">as</span> <span class="pre">e:</span></code> + <code class="docutils literal notranslate"><span class="pre">logger.debug()</span></code></p></td>
+<td class="text-left"><p>時系列coherence計算失敗時の詳細ログ</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>1365</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception</span> <span class="pre">as</span> <span class="pre">e:</span></code> + <code class="docutils literal notranslate"><span class="pre">logger.debug()</span></code></p></td>
+<td class="text-left"><p>Fast engine coherence計算失敗時の詳細ログ</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="gwexpy-types-seriesmatrix-base-py">
+<h3>gwexpy/types/seriesmatrix_base.py<a class="headerlink" href="#gwexpy-types-seriesmatrix-base-py" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>行番号</p></th>
+<th class="head text-left"><p>修正前</p></th>
+<th class="head text-left"><p>修正後</p></th>
+<th class="head text-left"><p>理由</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>406</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception</span> <span class="pre">as</span> <span class="pre">e:</span></code> + <code class="docutils literal notranslate"><span class="pre">warnings.warn()</span></code></p></td>
+<td class="text-left"><p>メタデータufunc最適化の失敗を警告として記録</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h2>3. 検証結果<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<section id="ruff">
+<h3>静的解析 (Ruff)<a class="headerlink" href="#ruff" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>結果</strong>: ✅ すべてパス</p></li>
+<li><p><strong>対象</strong>: 修正した3ファイル</p></li>
+</ul>
+</section>
+<section id="pytest">
+<h3>ユニットテスト (Pytest)<a class="headerlink" href="#pytest" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>結果</strong>: ✅ 11項目すべてパス</p></li>
+<li><p><strong>対象</strong>: <code class="docutils literal notranslate"><span class="pre">tests/spectral/test_estimation.py</span></code>, <code class="docutils literal notranslate"><span class="pre">tests/analysis/test_bruco_logic.py</span></code></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>4. 成果と影響<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="id7">
+<h3>ポジティブな変更<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>デバッグ性向上</strong>: 例外発生時にエラーの詳細がログまたは警告として記録されるようになりました。</p></li>
+<li><p><strong>意図の明確化</strong>: 各箇所で捕捉すべき例外型が明示され、コードの意図が分かりやすくなりました。</p></li>
+<li><p><strong>パフォーマンス警告の追加</strong>: Numbaやメタデータ最適化の失敗時に、フォールバックが発生したことをユーザーに通知できるようになりました。</p></li>
+</ol>
+</section>
+<section id="id8">
+<h3>維持された例外捕捉<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p>以下の箇所は、多様なエラーが想定されるため、ログ出力を追加した上で広範な捕捉 (<code class="docutils literal notranslate"><span class="pre">Exception</span></code>) を維持しました:</p>
+<ul class="simple">
+<li><p>Numba JIT 実行 (estimation.py:407)</p></li>
+<li><p>Brucoのcoherence計算ワーカー (bruco.py:837, 1253, 1365)</p></li>
+<li><p>SeriesMatrixのメタデータufunc最適化 (seriesmatrix_base.py:406)</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>5. 今後の改善余地<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/noise/wave.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/plot/defaults.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/interop/</span></code> 等、他にも広範な例外捕捉が残っています（本レビューでは計20箇所が確認されました）。</p></li>
+<li><p>これらも同様の手法でログ出力を追加することで、全体的なデバッグ性をさらに向上できます。</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="report_comprehensive_quality_improvement_20260124.html" class="btn btn-neutral float-left" title="作業包括報告書: GWExPy コード品質改善 - 2026/01/24" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="repo_review_final_20260124.html" class="btn btn-neutral float-right" title="Repository Review Report: gwexpy (Final)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

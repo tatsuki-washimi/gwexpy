@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScalarField Physics Review &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="DTT (Diagnostic Test Tools) Comprehensive Analysis Report" href="dtt/dtt_analysis_report.html" />
+    <link rel="prev" title="GUI Testing (Headless)" href="../guides/gui_testing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">開発者ガイド (Developers Guide)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">設計方針とコントラクト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">開発ガイド</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id3">技術分析</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ScalarField Physics Review</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scope">Scope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#summary">Summary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#verification-results">Verification Results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#original-findings-2026-01-20">Original Findings (2026-01-20)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#resolution-status">Resolution Status</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#test-coverage">Test Coverage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#verification-script">Verification Script</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notes">Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dtt/dtt_analysis_report.html">DTT (Diagnostic Test Tools) Comprehensive Analysis Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtt/dtt_analysis_report.html#part-1-documentation-ui-audit-phase-1">Part 1: Documentation &amp; UI Audit (Phase 1)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtt/dtt_analysis_report.html#part-2-core-code-analysis-phase-2">Part 2: Core Code Analysis (Phase 2)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtt/dtt_analysis_report.html#part-3-deep-dive-analysis">Part 3: Deep Dive Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtt/dtt_analysis_report.html#part-4-architecture-analysis">Part 4: Architecture Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtt/dtt_analysis_report.html#part-5-additional-modules-analysis">Part 5: Additional Modules Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtt/dtt_analysis_report.html#part-6-external-dependencies-python-integration">Part 6: External Dependencies &amp; Python Integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtt/dtt_analysis_report.html#part-7-gap-analysis-recommendations">Part 7: Gap Analysis &amp; Recommendations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtt/dtt_analysis_report.html#part-8-data-flow-class-interaction-diagrams">Part 8: Data Flow &amp; Class Interaction Diagrams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtt/dtt_analysis_report.html#part-9-file-analysis-summary">Part 9: File Analysis Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtt/dtt_analysis_report.html#part-10-conclusion">Part 10: Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">進行中の計画</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id5">最近のレポート</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">開発者ガイド (Developers Guide)</a></li>
+      <li class="breadcrumb-item active">ScalarField Physics Review</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/analysis/scalarfield_physics_review_20260120.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scalarfield-physics-review">
+<h1>ScalarField Physics Review<a class="headerlink" href="#scalarfield-physics-review" title="Link to this heading"></a></h1>
+<p><strong>Last Updated</strong>: 2026-01-22T21:08+09:00</p>
+<section id="scope">
+<h2>Scope<a class="headerlink" href="#scope" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Targets: <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">FieldList</span></code>, <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code></p></li>
+<li><p>Focus: FFT domain transitions, axis handling, physical unit consistency</p></li>
+<li><p>Files reviewed: <code class="docutils literal notranslate"><span class="pre">gwexpy/fields/scalar.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/fields/collections.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/fields/base.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/types/axis.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/types/array4d.py</span></code></p></li>
+</ul>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> class is <strong>mathematically and physically correct</strong>. All core FFT workflows align with GWpy conventions, including proper axis validation, origin offset preservation, Nyquist bin handling, and real-signal validation. Collection classes enforce consistent coordinate arrays across batched fields.</p>
+</section>
+<section id="verification-results">
+<h2>Verification Results<a class="headerlink" href="#verification-results" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>カテゴリ</p></th>
+<th class="head"><p>ステータス</p></th>
+<th class="head"><p>詳細</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>次元解析（単位処理)</strong></p></td>
+<td><p>✅ Pass</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">astropy.units</span></code> が正しく使用されており、ドメイン遷移時に軸の単位が適切に変換される</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>FFT正規化</strong></p></td>
+<td><p>✅ Pass</p></td>
+<td><p>GWpy互換の one-sided spectrum 正規化が正しく実装されている（DC bin非倍増、Nyquist bin非倍増）</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Parseval’s theorem</strong></p></td>
+<td><p>✅ Pass</p></td>
+<td><p>正規化係数補正後の検証でエネルギー比 1.0 (誤差 &lt; 1%)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>FFT可逆性</strong></p></td>
+<td><p>✅ Pass</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fft_time()</span></code> ↔ <code class="docutils literal notranslate"><span class="pre">ifft_time()</span></code> および <code class="docutils literal notranslate"><span class="pre">fft_space()</span></code> ↔ <code class="docutils literal notranslate"><span class="pre">ifft_space()</span></code> の往復誤差 &lt; 1e-10</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>軸検証</strong></p></td>
+<td><p>✅ Pass</p></td>
+<td><p>軸長 ≥ 2、等間隔性、単調性を検証済み</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>軸オフセット保持</strong></p></td>
+<td><p>✅ Pass</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fft_time</span></code> 時に時間軸オフセットが保存され、<code class="docutils literal notranslate"><span class="pre">ifft_time</span></code> 時に復元される</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>波数演算</strong></p></td>
+<td><p>✅ Pass</p></td>
+<td><p>角波数 <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">2π/λ</span></code> が正しく計算されている</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>コレクション検証</strong></p></td>
+<td><p>✅ Pass</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FieldList</span></code>/<code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> が座標配列の整合性を許容差内で検証する</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="original-findings-2026-01-20">
+<h2>Original Findings (2026-01-20)<a class="headerlink" href="#original-findings-2026-01-20" title="Link to this heading"></a></h2>
+<p>The following issues were identified in the initial review:</p>
+<ol class="arabic simple">
+<li><p><strong>High</strong>: <code class="docutils literal notranslate"><span class="pre">fft_time</span></code>/<code class="docutils literal notranslate"><span class="pre">ifft_time</span></code> computed <code class="docutils literal notranslate"><span class="pre">dt</span></code>/<code class="docutils literal notranslate"><span class="pre">df</span></code> from the first two samples without validating axis regularity or size &gt;= 2.</p></li>
+<li><p><strong>Medium</strong>: Time and space inverse transforms rebuilt axes with a zero origin, ignoring any original offset.</p></li>
+<li><p><strong>Medium</strong>: One-sided normalization doubled all non-DC bins; for even-length FFTs the Nyquist bin should not be doubled.</p></li>
+<li><p><strong>Medium</strong>: <code class="docutils literal notranslate"><span class="pre">rfft/irfft</span></code> implicitly assumed real-valued signals and Hermitian frequency data, but no validation enforced that constraint.</p></li>
+<li><p><strong>Low</strong>: Spatial axis monotonicity was not enforced, and <code class="docutils literal notranslate"><span class="pre">fft_space</span></code> used signed <code class="docutils literal notranslate"><span class="pre">dx</span></code> while <code class="docutils literal notranslate"><span class="pre">ifft_space</span></code> used <code class="docutils literal notranslate"><span class="pre">abs(dk)</span></code>.</p></li>
+<li><p><strong>Low</strong>: <code class="docutils literal notranslate"><span class="pre">FieldList</span></code>/<code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> validation checked only units/domains/names, not the coordinate arrays.</p></li>
+</ol>
+</section>
+<section id="resolution-status">
+<h2>Resolution Status<a class="headerlink" href="#resolution-status" title="Link to this heading"></a></h2>
+<p>All 6 issues have been <strong>resolved</strong>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Issue</p></th>
+<th class="head"><p>Fix Location</p></th>
+<th class="head"><p>Implementation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1. Axis validation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_validate_axis_for_fft()</span></code> L192-221</p></td>
+<td><p>Length &gt;= 2 and regularity check via <code class="docutils literal notranslate"><span class="pre">AxisDescriptor.regular</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>2. Origin preservation</p></td>
+<td><p>L273-274, L379-385</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_axis0_offset</span></code> metadata stored/restored</p></td>
+</tr>
+<tr class="row-even"><td><p>3. Nyquist bin</p></td>
+<td><p>L282-287</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dft[1:-1,</span> <span class="pre">...]</span></code> for even nfft, <code class="docutils literal notranslate"><span class="pre">dft[1:,</span> <span class="pre">...]</span></code> for odd</p></td>
+</tr>
+<tr class="row-odd"><td><p>4. Real-signal validation</p></td>
+<td><p>L264-268</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">np.iscomplexobj()</span></code> check raises <code class="docutils literal notranslate"><span class="pre">TypeError</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>5. Spatial monotonicity</p></td>
+<td><p>L479-485, L520-522, L640-643</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">np.diff</span></code> check and signed delta handling</p></td>
+</tr>
+<tr class="row-odd"><td><p>6. Collection validation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_AXIS_RTOL</span></code>, <code class="docutils literal notranslate"><span class="pre">_AXIS_ATOL</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">np.allclose()</span></code> comparison of axis coordinates</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="test-coverage">
+<h2>Test Coverage<a class="headerlink" href="#test-coverage" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>121 tests in <code class="docutils literal notranslate"><span class="pre">tests/fields/</span></code> → All passing</p></li>
+<li><p>Key test files:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_scalarfield_fft_time.py</span></code>: 20 tests (normalization, reversibility, errors)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_scalarfield_fft_space.py</span></code>: 25 tests (wavenumber, reversibility, errors)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_scalarfield_collections.py</span></code>: 24 tests (validation, batch FFT)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="verification-script">
+<h2>Verification Script<a class="headerlink" href="#verification-script" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">scripts/verify_scalarfield_physics.py</span></code> performs 5 physics checks:</p>
+<ol class="arabic simple">
+<li><p><strong>Parseval’s theorem</strong> (energy conservation with proper normalization undoing)</p></li>
+<li><p><strong>Time-FFT reversibility</strong> (round-trip error &lt; 1e-10)</p></li>
+<li><p><strong>Spatial wavenumber calculation</strong> (k = 2π/λ verified at peak)</p></li>
+<li><p><strong>Spatial-FFT reversibility</strong> (round-trip error &lt; 1e-10)</p></li>
+<li><p><strong>Unit consistency</strong> (data unit preserved, axis units correct)</p></li>
+</ol>
+<p>All checks pass.</p>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>2026-01-20</strong>: Initial review identified 6 physics/math issues</p></li>
+<li><p><strong>2026-01-20</strong>: All 6 code fixes implemented</p></li>
+<li><p><strong>2026-01-22</strong>: Re-verification performed; all issues confirmed resolved</p></li>
+<li><p><strong>2026-01-22</strong>: Fixed <code class="docutils literal notranslate"><span class="pre">verify_scalarfield_physics.py</span></code> to use correct Parseval verification (undo bin-doubling before energy comparison)</p></li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>GWpy <code class="docutils literal notranslate"><span class="pre">TimeSeries.fft()</span></code>: Reference for one-sided spectrum normalization</p></li>
+<li><p>GWpy <code class="docutils literal notranslate"><span class="pre">FrequencySeries.ifft()</span></code>: Reference for inverse normalization</p></li>
+<li><p>NumPy FFT documentation: <code class="docutils literal notranslate"><span class="pre">rfft</span></code>, <code class="docutils literal notranslate"><span class="pre">irfft</span></code>, <code class="docutils literal notranslate"><span class="pre">fftfreq</span></code> conventions</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../guides/gui_testing.html" class="btn btn-neutral float-left" title="GUI Testing (Headless)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dtt/dtt_analysis_report.html" class="btn btn-neutral float-right" title="DTT (Diagnostic Test Tools) Comprehensive Analysis Report" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

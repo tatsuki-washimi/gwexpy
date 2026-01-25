@@ -1,0 +1,204 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScalarField 信号処理拡張 計画書 (2026-01-23 09:05:00) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">開発者ガイド (Developers Guide)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ScalarField 信号処理拡張 計画書 (2026-01-23 09:05:00)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/plans/dsp_scalarfield_plan_20260123_090500.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scalarfield-2026-01-23-09-05-00">
+<h1>ScalarField 信号処理拡張 計画書 (2026-01-23 09:05:00)<a class="headerlink" href="#scalarfield-2026-01-23-09-05-00" title="Link to this heading"></a></h1>
+<section id="id1">
+<h2>目的・目標<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> に対し、一般的かつ汎用的な周波数・波数ドメイン変換（Spectral Density推定）と、参照点を用いた相関解析機能を実装します。
+内部実装ではメモリと速度を優先しつつ、ユーザーには <code class="docutils literal notranslate"><span class="pre">TimeSeries.psd()</span></code> のような直感的な API を提供します。</p>
+</section>
+<section id="phase">
+<h2>詳細なロードマップ（Phase単位）<a class="headerlink" href="#phase" title="Link to this heading"></a></h2>
+<section id="phase-1">
+<h3>Phase 1: ノイズ生成・デモデータ (完了)<a class="headerlink" href="#phase-1" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>状況: <code class="docutils literal notranslate"><span class="pre">gwexpy/noise/field.py</span></code> および <code class="docutils literal notranslate"><span class="pre">ScalarField.simulate()</span></code> 実装済み。スクリプト検証済み。</p></li>
+</ul>
+</section>
+<section id="phase-2-spectral-density-40">
+<h3>Phase 2: 汎用的 Spectral Density 推定 (40分)<a class="headerlink" href="#phase-2-spectral-density-40" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>汎用コア実装</strong>: <code class="docutils literal notranslate"><span class="pre">compute_spectral_density(field,</span> <span class="pre">axis,</span> <span class="pre">method='welch',</span> <span class="pre">...)</span></code></p>
+<ul>
+<li><p>指定した軸（時間 0 または空間 1-3）に対してスペクトル密度を計算。</p></li>
+</ul>
+</li>
+<li><p><strong>ユーザーAPI</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">psd()</span></code> (時間軸エイリアス)、<code class="docutils literal notranslate"><span class="pre">csd()</span></code> など。</p></li>
+</ul>
+</li>
+<li><p><strong>全点変換</strong>: 4D形状を維持しつつ、該当軸をドメイン変換した <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> を生成。</p></li>
+</ul>
+</section>
+<section id="phase-3-40">
+<h3>Phase 3: 相関解析と参照点マッピング (40分)<a class="headerlink" href="#phase-3-40" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>コヒーレンス/相関マップ</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">field.coherence(ref_point,</span> <span class="pre">...)</span></code> など、参照点と全空間点の統計的関係を 3D/2D マップ化。</p></li>
+</ul>
+</li>
+<li><p><strong>帯域平均</strong>: 特定帯域の積分値（スカラー）マッピング対応。</p></li>
+</ul>
+</section>
+<section id="phase-4-20">
+<h3>Phase 4: 検証とドキュメント (20分)<a class="headerlink" href="#phase-4-20" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>物理単位、Parsevalの定理、波数定義の整合チェック。</p></li>
+<li><p>ノートブック形式のチュートリアル作成。</p></li>
+</ul>
+</section>
+</section>
+<section id="id2">
+<h2>使用モデルとリソース最適化<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>推奨モデル</strong>:</p>
+<ul>
+<li><p><strong>Claude Opus 4.5 (Thinking)</strong>: コアロジックの実装、物理数学的整合性（FFT正規化、単位変換）の検証。</p></li>
+<li><p><strong>GPT-5.2-Codex</strong>: 大規模なテストケース生成、高速なリファクタリング。</p></li>
+<li><p><strong>Gemini 3 Flash</strong>: ドキュメント作成、ボイラープレートコード生成。</p></li>
+</ul>
+</li>
+<li><p><strong>リソース管理戦略</strong>:</p>
+<ul>
+<li><p>数学的検証には <code class="docutils literal notranslate"><span class="pre">check_physics</span></code> スキルを活用し、モデルの推論を補強する。</p></li>
+<li><p>メモリ効率を優先するため、大規模データの処理には <code class="docutils literal notranslate"><span class="pre">numpy</span></code> の軸指定演算を最大限活用し、ループ処理を避ける。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id3">
+<h2>テスト・検証計画<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>121件の既存テストを維持しつつ、<code class="docutils literal notranslate"><span class="pre">tests/fields/test_scalarfield_signal.py</span></code> を新設。</p></li>
+<li><p>時間軸/空間軸の両方でのスペクトル密度計算の正確性を、既知の解析解（正弦波、ホワイトノイズ）と比較。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h2>工数見積もり<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Estimated Total Time</strong>: 100 minutes</p></li>
+<li><p><strong>Estimated Quota Consumption</strong>: High</p></li>
+<li><p><strong>Breakdown</strong>:</p>
+<ul>
+<li><p>Phase 2: 40 mins (High Difficulty)</p></li>
+<li><p>Phase 3: 40 mins (High Difficulty)</p></li>
+<li><p>Phase 4: 20 mins (Medium Difficulty)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

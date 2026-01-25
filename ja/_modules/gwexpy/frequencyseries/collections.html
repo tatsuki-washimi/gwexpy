@@ -1,24 +1,24 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="ja" data-content_root="../../../">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwexpy.frequencyseries.collections &mdash; gwexpy  ドキュメント</title>
+  <title>gwexpy.frequencyseries.collections &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../../_static/translations.js?v=4755f45a"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,20 +40,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">開発者ガイド (Developers Guide)</a></li>
 </ul>
 
         </div>
@@ -70,7 +71,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html">モジュールコード</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
       <li class="breadcrumb-item active">gwexpy.frequencyseries.collections</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -80,7 +81,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>gwexpy.frequencyseries.collections のソースコード</h1><div class="highlight"><pre>
+  <h1>Source code for gwexpy.frequencyseries.collections</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
@@ -88,6 +89,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">as_series_dict_class</span>
 
@@ -95,7 +97,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseDict">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FrequencySeriesBaseDict</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_FS</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ordered mapping container for `FrequencySeries` objects.</span>
 
@@ -135,7 +137,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FrequencySeriesBaseDict.setdefault">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.setdefault">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.setdefault">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">setdefault</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">_FS</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_FS</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -152,7 +154,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseDict.copy">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.copy">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.copy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesBaseDict</span><span class="p">[</span><span class="n">_FS</span><span class="p">]:</span>
         <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -161,7 +163,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseDict.crop">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.crop">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.crop">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesBaseDict</span><span class="p">[</span><span class="n">_FS</span><span class="p">]:</span>
@@ -171,7 +173,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseDict.plot">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.plot">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span>
@@ -242,14 +244,14 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseDict.plot_all">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.plot_all">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.plot_all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias for plot(). Plots all series in the dict.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseDict.read">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.read">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.read">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">registry</span>
@@ -258,7 +260,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseDict.write">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.write">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.write">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">registry</span>
 
@@ -268,7 +270,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict">[docs]</a>
 <span class="nd">@as_series_dict_class</span><span class="p">(</span><span class="n">FrequencySeries</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FrequencySeriesDict</span><span class="p">(</span><span class="n">FrequencySeriesBaseDict</span><span class="p">[</span><span class="n">FrequencySeries</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ordered mapping of `FrequencySeries` objects keyed by label.&quot;&quot;&quot;</span>
@@ -280,7 +282,7 @@
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="FrequencySeriesDict.crop">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.crop">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.crop">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Crop each FrequencySeries in the dict.</span>
@@ -291,7 +293,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.pad">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.pad">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.pad">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pad each FrequencySeries in the dict.</span>
@@ -304,7 +306,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.interpolate">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.interpolate">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.interpolate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Interpolate each FrequencySeries in the dict.</span>
@@ -319,7 +321,7 @@
     <span class="c1"># --- In-place Element Operations ---</span>
 
 <div class="viewcode-block" id="FrequencySeriesDict.append">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.append">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.append">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Append to each FrequencySeries in the dict (in-place).</span>
@@ -331,7 +333,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.prepend">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.prepend">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.prepend">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepend to each FrequencySeries in the dict (in-place).</span>
@@ -347,7 +349,7 @@
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="FrequencySeriesDict.zpk">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.zpk">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.zpk">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">zpk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply ZPK filter to each FrequencySeries.</span>
@@ -360,7 +362,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.filter">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.filter">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.filter">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply filter to each FrequencySeries.</span>
@@ -373,7 +375,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.apply_response">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.apply_response">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.apply_response">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply response to each FrequencySeries.</span>
@@ -390,7 +392,7 @@
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="FrequencySeriesDict.phase">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.phase">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.phase">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute phase of each FrequencySeries.</span>
@@ -403,14 +405,14 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.angle">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.angle">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.angle">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias for phase(). Returns a new FrequencySeriesDict.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.degree">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.degree">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.degree">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute phase (in degrees) of each FrequencySeries.</span>
@@ -423,7 +425,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.to_db">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_db">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_db">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each FrequencySeries to dB.</span>
@@ -436,7 +438,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.differentiate_time">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.differentiate_time">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.differentiate_time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">differentiate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply time differentiation to each item.</span>
@@ -449,7 +451,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.integrate_time">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.integrate_time">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.integrate_time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">integrate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply time integration to each item.</span>
@@ -462,7 +464,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.group_delay">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.group_delay">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.group_delay">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">group_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute group delay of each item.</span>
@@ -475,7 +477,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.smooth">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.smooth">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.smooth">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">smooth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Smooth each FrequencySeries.</span>
@@ -487,12 +489,25 @@
         <span class="k">return</span> <span class="n">new_dict</span></div>
 
 
+<div class="viewcode-block" id="FrequencySeriesDict.rebin">
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.rebin">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rebin each FrequencySeries in the dict.</span>
+<span class="sd">        Returns a new FrequencySeriesDict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">rebin</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_dict</span></div>
+
+
     <span class="c1"># ===============================</span>
     <span class="c1"># 4. Time Domain Conversion</span>
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="FrequencySeriesDict.ifft">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.ifft">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.ifft">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">ifft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute IFFT of each FrequencySeries.</span>
@@ -511,7 +526,7 @@
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="FrequencySeriesDict.to_control_frd">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_control_frd">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_control_frd">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_control_frd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each item to control.FRD.</span>
@@ -521,7 +536,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.to_torch">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_torch">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_torch">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each item to torch.Tensor.</span>
@@ -531,7 +546,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.to_tensorflow">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_tensorflow">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_tensorflow">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tensorflow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each item to tensorflow.Tensor.</span>
@@ -541,7 +556,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.to_jax">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_jax">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_jax">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_jax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each item to jax.Array.</span>
@@ -551,7 +566,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.to_cupy">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_cupy">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_cupy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_cupy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each item to cupy.ndarray.</span>
@@ -565,7 +580,7 @@
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="FrequencySeriesDict.to_pandas">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_pandas">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_pandas">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to pandas.DataFrame.</span>
@@ -592,7 +607,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.to_xarray">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_xarray">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_xarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_xarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to xarray.Dataset.</span>
@@ -608,7 +623,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.to_matrix">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_matrix">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_matrix">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert this FrequencySeriesDict to a FrequencySeriesMatrix (Nx1).&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetaData</span><span class="p">,</span> <span class="n">MetaDataMatrix</span>
@@ -645,7 +660,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.to_tmultigraph">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_tmultigraph">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_tmultigraph">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tmultigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to ROOT TMultiGraph.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_tmultigraph</span>
@@ -654,7 +669,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.write">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.write">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.write">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write dict to file (HDF5, ROOT, etc.).&quot;&quot;&quot;</span>
         <span class="n">fmt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">)</span>
@@ -670,7 +685,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseList">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FrequencySeriesBaseList</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">_FS</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List container for `FrequencySeries` objects with type enforcement.&quot;&quot;&quot;</span>
 
@@ -699,7 +714,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="FrequencySeriesBaseList.append">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.append">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.append">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">_FS</span><span class="p">):</span>  <span class="c1"># type: ignore[override]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
@@ -707,14 +722,14 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseList.extend">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.extend">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.extend">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">_FS</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
         <span class="n">validated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="o">*</span><span class="n">items</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">validated</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseList.insert">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.insert">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.insert">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">_FS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s2">&quot;insert&quot;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span></div>
@@ -734,13 +749,13 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FrequencySeriesBaseList.copy">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.copy">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.copy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesBaseList</span><span class="p">[</span><span class="n">_FS</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseList.plot">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.plot">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot all series. Delegates to gwexpy.plot.Plot.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
@@ -749,14 +764,14 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseList.plot_all">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.plot_all">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.plot_all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias for plot(). Plots all series.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseList.read">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.read">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.read">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">registry</span>
@@ -765,7 +780,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesBaseList.write">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.write">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.write">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">registry</span>
 
@@ -775,7 +790,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FrequencySeriesList</span><span class="p">(</span><span class="n">FrequencySeriesBaseList</span><span class="p">[</span><span class="n">FrequencySeries</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List of `FrequencySeries` objects.&quot;&quot;&quot;</span>
 
@@ -786,7 +801,7 @@
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="FrequencySeriesList.crop">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.crop">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.crop">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Crop each FrequencySeries in the list.</span>
@@ -799,7 +814,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.pad">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.pad">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.pad">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pad each FrequencySeries in the list.</span>
@@ -812,7 +827,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.interpolate">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.interpolate">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.interpolate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Interpolate each FrequencySeries in the list.</span>
@@ -829,7 +844,7 @@
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="FrequencySeriesList.zpk">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.zpk">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.zpk">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">zpk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply ZPK filter to each FrequencySeries in the list.</span>
@@ -842,7 +857,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.filter">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.filter">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.filter">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply filter to each FrequencySeries in the list.</span>
@@ -855,7 +870,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.apply_response">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.apply_response">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.apply_response">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply response to each FrequencySeries in the list.</span>
@@ -872,7 +887,7 @@
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="FrequencySeriesList.phase">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.phase">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.phase">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute phase of each FrequencySeries.</span>
@@ -885,14 +900,14 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.angle">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.angle">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.angle">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias for phase(). Returns a new FrequencySeriesList.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FrequencySeriesList.degree">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.degree">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.degree">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute phase (in degrees) of each FrequencySeries.</span>
@@ -905,7 +920,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.to_db">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_db">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_db">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each FrequencySeries to dB.</span>
@@ -918,7 +933,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.differentiate_time">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.differentiate_time">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.differentiate_time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">differentiate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply time differentiation to each item.</span>
@@ -931,7 +946,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.integrate_time">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.integrate_time">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.integrate_time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">integrate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply time integration to each item.</span>
@@ -944,7 +959,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.group_delay">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.group_delay">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.group_delay">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">group_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute group delay of each item.</span>
@@ -957,7 +972,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.smooth">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.smooth">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.smooth">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">smooth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Smooth each FrequencySeries.</span>
@@ -969,12 +984,25 @@
         <span class="k">return</span> <span class="n">new_list</span></div>
 
 
+<div class="viewcode-block" id="FrequencySeriesList.rebin">
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.rebin">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rebin each FrequencySeries in the list.</span>
+<span class="sd">        Returns a new FrequencySeriesList.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">rebin</span><span class="p">(</span><span class="n">width</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">new_list</span></div>
+
+
     <span class="c1"># ===============================</span>
     <span class="c1"># 4. Time Domain Conversion</span>
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="FrequencySeriesList.ifft">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.ifft">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.ifft">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">ifft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute IFFT of each FrequencySeries.</span>
@@ -993,7 +1021,7 @@
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="FrequencySeriesList.to_control_frd">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_control_frd">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_control_frd">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_control_frd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each item to control.FRD.</span>
@@ -1003,7 +1031,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.to_torch">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_torch">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_torch">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each item to torch.Tensor.</span>
@@ -1013,7 +1041,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.to_tensorflow">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_tensorflow">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_tensorflow">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tensorflow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each item to tensorflow.Tensor.</span>
@@ -1023,7 +1051,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.to_jax">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_jax">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_jax">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_jax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each item to jax.Array.</span>
@@ -1033,7 +1061,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.to_cupy">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_cupy">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_cupy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_cupy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each item to cupy.ndarray.</span>
@@ -1047,7 +1075,7 @@
     <span class="c1"># ===============================</span>
 
 <div class="viewcode-block" id="FrequencySeriesList.to_pandas">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_pandas">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_pandas">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to pandas.DataFrame.</span>
@@ -1072,7 +1100,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.to_xarray">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_xarray">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_xarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_xarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert to xarray.DataArray.</span>
@@ -1095,7 +1123,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.to_tmultigraph">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_tmultigraph">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_tmultigraph">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tmultigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to ROOT TMultiGraph.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_tmultigraph</span>
@@ -1104,7 +1132,7 @@
 
 
 <div class="viewcode-block" id="FrequencySeriesList.write">
-<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.write">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.write">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write list to file (HDF5, ROOT, etc.).&quot;&quot;&quot;</span>
         <span class="n">fmt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">)</span>

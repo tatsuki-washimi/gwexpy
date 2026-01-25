@@ -1,0 +1,919 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.fitting: iminuit ベースのフィッティング機能 &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Peak Detection (ピーク検出)" href="advanced_peak_detection.html" />
+    <link rel="prev" title="ScalarField Signal Processing Tutorial" href="field_scalar_signal.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#i-core-data-structures">I. Core Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gwexpy.fitting: iminuit ベースのフィッティング機能</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#1.-データの準備">1. データの準備</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#2.-フィッティングの実行">2. フィッティングの実行</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#3.-結果の取得とプロット">3. 結果の取得とプロット</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#3.-文字列によるモデル指定">3. 文字列によるモデル指定</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#4.-複素数フィッティング-(伝達関数)">4. 複素数フィッティング (伝達関数)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#5.-MCMC-解析-(emcee)">5. MCMC 解析 (emcee)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#新しい共通モデルの使用例">新しい共通モデルの使用例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_peak_detection.html">Peak Detection (ピーク検出)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_hht.html">Hilbert-Huang Transform (HHT) 解析チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_arima.html">ARIMAモデルによる時系列予測</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_correlation.html">統計的相関機能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_correlation.html#高度な統計解析-(Advanced-Statistics)">高度な統計解析 (Advanced Statistics)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#vi-case-studies">VI. Case Studies</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">gwexpy.fitting: iminuit ベースのフィッティング機能</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/advanced_fitting.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gwexpy.fitting:-iminuit-ベースのフィッティング機能">
+<h1>gwexpy.fitting: iminuit ベースのフィッティング機能<a class="headerlink" href="#gwexpy.fitting:-iminuit-ベースのフィッティング機能" title="Link to this heading"></a></h1>
+<p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code> モジュールを使用して、<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> や <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> データに対して簡単にフィッティングを行う方法を紹介します。 バックエンドには <code class="docutils literal notranslate"><span class="pre">iminuit</span></code> を使用しており、誤差を考慮した最小二乗法フィッティングが可能です。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+import numpy as np
+
+from gwexpy.frequencyseries import FrequencySeries
+from gwexpy.plot import Plot
+from gwexpy.timeseries import TimeSeries
+
+plt.rcParams[&#39;figure.figsize&#39;] = (10, 6)
+</pre></div>
+</div>
+</div>
+<section id="1.-データの準備">
+<h2>1. データの準備<a class="headerlink" href="#1.-データの準備" title="Link to this heading"></a></h2>
+<p>ここでは、ガウス関数にノイズを加えたダミーデータを作成します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># モデル関数の定義 (ガウス関数)
+def gaussian(x, a, mu, sigma):
+    return a * np.exp(-(x - mu)**2 / (2 * sigma**2))
+
+# ダミーデータの生成
+np.random.seed(42)
+x = np.linspace(-5, 5, 100)
+true_params = {&#39;a&#39;: 10, &#39;mu&#39;: 0.5, &#39;sigma&#39;: 1.2}
+y_true = gaussian(x, **true_params)
+y_noise = y_true + np.random.normal(0, 1.0, size=len(x))
+
+# TimeSeries オブジェクトの作成
+ts = TimeSeries(y_noise, dt=0.1, name=&#39;Noisy Gaussian&#39;, unit=&#39;V&#39;)
+ts.plot(title=&#39;Noisy Data for Gaussian Fit&#39;);
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-フィッティングの実行">
+<h2>2. フィッティングの実行<a class="headerlink" href="#2.-フィッティングの実行" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ts.fit()</span></code> メソッドを使用してフィッティングを行います。 引数にはモデル関数と、パラメータの初期値 <code class="docutils literal notranslate"><span class="pre">p0</span></code> を指定します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># フィッティング
+# p0 で初期値を指定します
+result = ts.fit(gaussian, sigma=0.8, p0={&#39;a&#39;: 5, &#39;mu&#39;: 5, &#39;sigma&#39;: 1})
+
+# 結果の表示
+display(result)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<table>
+    <tr>
+        <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Minimum value of function"> FCN = 125.2 (χ²/ndof = 1.3) </td>
+        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 87 </td>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 4.03e-06 (Goal: 0.0002) </td>
+        <td style="text-align:center" title="Total run time of algorithms">  </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Valid Minimum </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> No parameters at limit </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Hesse ok </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Covariance accurate </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th title="Variable name"> Name </th>
+        <th title="Value of parameter"> Value </th>
+        <th title="Hesse error"> Hesse Error </th>
+        <th title="Minos lower error"> Minos Error- </th>
+        <th title="Minos upper error"> Minos Error+ </th>
+        <th title="Lower limit of the parameter"> Limit- </th>
+        <th title="Upper limit of the parameter"> Limit+ </th>
+        <th title="Is the parameter fixed in the fit"> Fixed </th>
+    </tr>
+    <tr>
+        <th> 0 </th>
+        <td> a </td>
+        <td> 10.05 </td>
+        <td> 0.21 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 1 </th>
+        <td> mu </td>
+        <td> 5.495 </td>
+        <td> 0.029 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 2 </th>
+        <td> sigma </td>
+        <td> 1.159 </td>
+        <td> 0.028 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th> a </th>
+        <th> mu </th>
+        <th> sigma </th>
+    </tr>
+    <tr>
+        <th> a </th>
+        <td> 0.0461 </td>
+        <td style="background-color:rgb(249,249,250);color:black"> -0 <strong>(-0.005)</strong> </td>
+        <td style="background-color:rgb(176,176,250);color:black"> -3.4e-3 <strong>(-0.569)</strong> </td>
+    </tr>
+    <tr>
+        <th> mu </th>
+        <td style="background-color:rgb(249,249,250);color:black"> -0 <strong>(-0.005)</strong> </td>
+        <td> 0.000828 </td>
+        <td style="background-color:rgb(250,249,249);color:black"> 0 <strong>(0.008)</strong> </td>
+    </tr>
+    <tr>
+        <th> sigma </th>
+        <td style="background-color:rgb(176,176,250);color:black"> -3.4e-3 <strong>(-0.569)</strong> </td>
+        <td style="background-color:rgb(250,249,249);color:black"> 0 <strong>(0.008)</strong> </td>
+        <td> 0.000794 </td>
+    </tr>
+</table></div>
+</div>
+</section>
+<section id="3.-結果の取得とプロット">
+<h2>3. 結果の取得とプロット<a class="headerlink" href="#3.-結果の取得とプロット" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">FitResult</span></code> オブジェクトから、ベストフィットパラメータや誤差、Chi2 値などを取得できます。 また、<code class="docutils literal notranslate"><span class="pre">.plot()</span></code> メソッドで簡単に結果を可視化できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;Best Fit Parameters:&quot;, result.params)
+print(&quot;Errors:&quot;, result.errors)
+print(&quot;Chi2:&quot;, result.chi2)
+print(&quot;NDOF:&quot;, result.ndof)
+
+# プロット
+fig, ax = plt.subplots(figsize=(10, 6))
+result.plot(ax=ax, color=&#39;red&#39;, linewidth=2)
+ax.set_title(&quot;Gaussian Fit Demo&quot;)
+# auto-gps を使う場合は、xlabel は GWpy に任せる（epoch を含むラベルになる）
+ax.set_ylabel(&quot;Amplitude&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Best Fit Parameters: {&#39;a&#39;: 10.052918089640286, &#39;mu&#39;: 5.4945648175959265, &#39;sigma&#39;: 1.1593703774715336}
+Errors: {&#39;a&#39;: 0.21465022616772478, &#39;mu&#39;: 0.028783389431543863, &#39;sigma&#39;: 0.028181477272667253}
+Chi2: 125.15392927134539
+NDOF: 97
+</pre></div></div>
+</div>
+</section>
+<section id="3.-文字列によるモデル指定">
+<h2>3. 文字列によるモデル指定<a class="headerlink" href="#3.-文字列によるモデル指定" title="Link to this heading"></a></h2>
+<p>モデル関数を定義する代わりに、定義済みのモデル名を文字列で指定することもできます。 現在サポートされているモデル: <code class="docutils literal notranslate"><span class="pre">'gaus'</span></code>, <code class="docutils literal notranslate"><span class="pre">'exp'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pol0'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pol1'</span></code>, … <code class="docutils literal notranslate"><span class="pre">'pol9'</span></code>, <code class="docutils literal notranslate"><span class="pre">'landau'</span></code> など。</p>
+<p>以下は <code class="docutils literal notranslate"><span class="pre">'gaus'</span></code> を指定してフィッティングを行う例です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 文字列 &#39;gaus&#39; を指定してフィッティング
+# 注意: 定義済みモデルのパラメータ名はモデルごとに決まっています (Gaussianの場合は A, mu, sigma)
+result_str = ts.fit(&#39;gaus&#39;,
+                    p0={&#39;A&#39;: 10, &#39;mu&#39;: 5, &#39;sigma&#39;: 1.0},
+                    x_range=(2, 8),
+                    sigma=0.8
+                   )
+
+# 結果の表示
+display(result_str)
+result_str.plot();
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<table>
+    <tr>
+        <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Minimum value of function"> FCN = 83.02 (χ²/ndof = 1.5) </td>
+        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 76 </td>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 1.49e-09 (Goal: 0.0002) </td>
+        <td style="text-align:center" title="Total run time of algorithms">  </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Valid Minimum </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> No parameters at limit </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Hesse ok </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Covariance accurate </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th title="Variable name"> Name </th>
+        <th title="Value of parameter"> Value </th>
+        <th title="Hesse error"> Hesse Error </th>
+        <th title="Minos lower error"> Minos Error- </th>
+        <th title="Minos upper error"> Minos Error+ </th>
+        <th title="Lower limit of the parameter"> Limit- </th>
+        <th title="Upper limit of the parameter"> Limit+ </th>
+        <th title="Is the parameter fixed in the fit"> Fixed </th>
+    </tr>
+    <tr>
+        <th> 0 </th>
+        <td> A </td>
+        <td> 10.05 </td>
+        <td> 0.22 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 1 </th>
+        <td> mu </td>
+        <td> 5.492 </td>
+        <td> 0.029 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 2 </th>
+        <td> sigma </td>
+        <td> 1.159 </td>
+        <td> 0.029 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th> A </th>
+        <th> mu </th>
+        <th> sigma </th>
+    </tr>
+    <tr>
+        <th> A </th>
+        <td> 0.047 </td>
+        <td style="background-color:rgb(248,248,250);color:black"> -0.1e-3 <strong>(-0.012)</strong> </td>
+        <td style="background-color:rgb(175,175,250);color:black"> -3.7e-3 <strong>(-0.580)</strong> </td>
+    </tr>
+    <tr>
+        <th> mu </th>
+        <td style="background-color:rgb(248,248,250);color:black"> -0.1e-3 <strong>(-0.012)</strong> </td>
+        <td> 0.000841 </td>
+        <td style="background-color:rgb(250,246,246);color:black"> 0 <strong>(0.027)</strong> </td>
+    </tr>
+    <tr>
+        <th> sigma </th>
+        <td style="background-color:rgb(175,175,250);color:black"> -3.7e-3 <strong>(-0.580)</strong> </td>
+        <td style="background-color:rgb(250,246,246);color:black"> 0 <strong>(0.027)</strong> </td>
+        <td> 0.000864 </td>
+    </tr>
+</table></div>
+</div>
+</section>
+<section id="4.-複素数フィッティング-(伝達関数)">
+<h2>4. 複素数フィッティング (伝達関数)<a class="headerlink" href="#4.-複素数フィッティング-(伝達関数)" title="Link to this heading"></a></h2>
+<p>伝達関数などの複素数データに対してもフィッティングを行えます。 コスト関数として <span class="math notranslate nohighlight">\(\chi^2 = \sum (Re_{diff})^2 + \sum (Im_{diff})^2\)</span> を最小化し、実部と虚部を同時にフィットします。 結果のプロットは自動的にボード線図（振幅・位相）になります。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 1. 複素数モデルの定義 (単純な極)
+def pole_model(f, A, f0, Q):
+    # H(f) = A / (1 + i * Q * (f/f0 - f0/f))
+    # Low-pass filter like but simplified. Let&#39;s use standard mechanical transfer function:
+    # H(f) = A / [ (f0^2 - f^2) + i * (f0 * f / Q) ]
+    omega = 2 * np.pi * f
+    omega0 = 2 * np.pi * f0
+    return A / ( (omega0**2 - omega**2) + 1j * (omega0 * omega / Q) )
+
+# 2. データ生成
+f = np.linspace(10, 1000, 1000)
+p_true = {&#39;A&#39;: 1e7, &#39;f0&#39;: 300, &#39;Q&#39;: 10}
+data_clean = pole_model(f, **p_true)
+
+# ノイズ付加 (実部・虚部独立)
+np.random.seed(0)
+noise_re = np.random.normal(0, 5, len(f))
+noise_im = np.random.normal(0, 5, len(f))
+data_noisy = data_clean + 0.2*noise_re + 0.2j * noise_im
+
+# FrequencySeries 作成
+fs = FrequencySeries(data_noisy, frequencies=f, name=&#39;Transfer Function&#39;)
+plot = Plot(fs.abs(), fs.real, fs.imag, xscale=&#39;log&#39;, yscale=&#39;symlog&#39;, alpha=0.8)
+plt.legend([&#39;|H(f)|&#39;,&#39;Re(H(f))&#39;,&#39;Im(H(f))&#39;])
+plt.title(&#39;Noisy Transfer Function Data&#39;)
+plt.tight_layout()
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 3. フィッティング
+print(&quot;Fit Start...&quot;)
+# 初期値はずらしておく
+result_complex = fs.fit(pole_model, sigma=1.0,
+                        p0={&#39;A&#39;: 0.8e7, &#39;f0&#39;: 320, &#39;Q&#39;: 8})
+
+# 結果表示
+display(result_complex)
+
+# 4. プロット (ボード線図)
+# 自動的に振幅と位相のプロットになります
+result_complex.bode_plot()
+plt.gcf().get_axes()[0].set_ylim(1e-1,1e2)
+plt.tight_layout()
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Fit Start...
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<table>
+    <tr>
+        <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Minimum value of function"> FCN = 1907 (χ²/ndof = 1.0) </td>
+        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 102 </td>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 1.21e-09 (Goal: 0.0002) </td>
+        <td style="text-align:center" title="Total run time of algorithms">  </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Valid Minimum </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> No parameters at limit </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Hesse ok </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Covariance accurate </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th title="Variable name"> Name </th>
+        <th title="Value of parameter"> Value </th>
+        <th title="Hesse error"> Hesse Error </th>
+        <th title="Minos lower error"> Minos Error- </th>
+        <th title="Minos upper error"> Minos Error+ </th>
+        <th title="Lower limit of the parameter"> Limit- </th>
+        <th title="Upper limit of the parameter"> Limit+ </th>
+        <th title="Is the parameter fixed in the fit"> Fixed </th>
+    </tr>
+    <tr>
+        <th> 0 </th>
+        <td> A </td>
+        <td> 10.09e6 </td>
+        <td> 0.07e6 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 1 </th>
+        <td> f0 </td>
+        <td> 300.24 </td>
+        <td> 0.11 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 2 </th>
+        <td> Q </td>
+        <td> 9.99 </td>
+        <td> 0.10 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th> A </th>
+        <th> f0 </th>
+        <th> Q </th>
+    </tr>
+    <tr>
+        <th> A </th>
+        <td> 5.4e+09 </td>
+        <td style="background-color:rgb(250,235,235);color:black"> 795.222 <strong>(0.099)</strong> </td>
+        <td style="background-color:rgb(158,158,250);color:black"> -5.296459e3 <strong>(-0.707)</strong> </td>
+    </tr>
+    <tr>
+        <th> f0 </th>
+        <td style="background-color:rgb(250,235,235);color:black"> 795.222 <strong>(0.099)</strong> </td>
+        <td> 0.0118 </td>
+        <td style="background-color:rgb(245,245,250);color:black"> -0.000 <strong>(-0.035)</strong> </td>
+    </tr>
+    <tr>
+        <th> Q </th>
+        <td style="background-color:rgb(158,158,250);color:black"> -5.296459e3 <strong>(-0.707)</strong> </td>
+        <td style="background-color:rgb(245,245,250);color:black"> -0.000 <strong>(-0.035)</strong> </td>
+        <td> 0.0104 </td>
+    </tr>
+</table></div>
+</div>
+</section>
+<section id="5.-MCMC-解析-(emcee)">
+<h2>5. MCMC 解析 (emcee)<a class="headerlink" href="#5.-MCMC-解析-(emcee)" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">iminuit</span></code> で得られた最尤推定値を初期値として、<code class="docutils literal notranslate"><span class="pre">emcee</span></code> を用いた MCMC (Markov Chain Monte Carlo) 解析を行うことができます。</p>
+<blockquote>
+<div><p><strong>Note:</strong> この機能を使用するには <code class="docutils literal notranslate"><span class="pre">emcee</span></code> と <code class="docutils literal notranslate"><span class="pre">corner</span></code> がインストールされている必要があります。</p>
+</div></blockquote>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># MCMCの実行
+# n_walkers: walkerの数, n_steps: ステップ数, burn_in: 捨て去る初期ステップ数
+try:
+    sampler = result_complex.run_mcmc(n_walkers=32, n_steps=1000, burn_in=200)
+
+    # コーナープロットの作成 (事後分布の可視化)
+    # 真値（または最尤推定値）を青線で表示します
+    result_complex.plot_corner()
+
+except ImportError as e:
+    print(e)
+except Exception as e:
+    print(f&quot;MCMC Error: {e}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/astropy/units/quantity.py:1329: ComplexWarning: Casting complex values to real discards the imaginary part
+  return float(self.to_value(dimensionless_unscaled))
+100%|██████████| 1000/1000 [00:02&lt;00:00, 436.73it/s]
+</pre></div></div>
+</div>
+</section>
+<section id="新しい共通モデルの使用例">
+<h2>新しい共通モデルの使用例<a class="headerlink" href="#新しい共通モデルの使用例" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy.fitting.models</span></code> に追加された <code class="docutils literal notranslate"><span class="pre">power_law</span></code> と <code class="docutils literal notranslate"><span class="pre">damped_oscillation</span></code> の使用例です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from gwexpy.fitting.models import damped_oscillation, power_law
+
+# Power law
+x = np.logspace(0, 2, 100)
+y = power_law(x, A=10, alpha=-1.5) * (1 + 0.1 * np.random.normal(size=len(x)))
+fs = FrequencySeries(y, frequencies=x)
+res_pl = fs.fit(&#39;power_law&#39;, p0={&#39;A&#39;: 5, &#39;alpha&#39;: -1},sigma=y*0.1)
+print(&quot;Power law alpha:&quot;, res_pl.params[&#39;alpha&#39;])
+display(res_pl)
+res_pl.plot()
+plt.xscale(&#39;log&#39;)
+plt.yscale(&#39;log&#39;)
+plt.show()
+plt.close()
+
+# Damped oscillation
+t = np.linspace(0, 1, 1000)
+y_osc = damped_oscillation(t, A=1, tau=0.3, f=10) + 0.05 * np.random.normal(size=len(t))
+ts_osc = TimeSeries(y_osc, times=t)
+res_osc = ts_osc.fit(&#39;damped_oscillation&#39;, p0={&#39;A&#39;: 0.5, &#39;tau&#39;: 0.5, &#39;f&#39;: 12},sigma=0.05)
+print(&quot;Damped oscillation frequency:&quot;, res_osc.params[&#39;f&#39;])
+display(res_osc)
+res_osc.plot();
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Power law alpha: -1.5073254489014472
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<table>
+    <tr>
+        <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Minimum value of function"> FCN = 102.8 (χ²/ndof = 1.0) </td>
+        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 90 </td>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 6.45e-06 (Goal: 0.0002) </td>
+        <td style="text-align:center" title="Total run time of algorithms">  </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Valid Minimum </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> No parameters at limit </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Hesse ok </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Covariance accurate </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th title="Variable name"> Name </th>
+        <th title="Value of parameter"> Value </th>
+        <th title="Hesse error"> Hesse Error </th>
+        <th title="Minos lower error"> Minos Error- </th>
+        <th title="Minos upper error"> Minos Error+ </th>
+        <th title="Lower limit of the parameter"> Limit- </th>
+        <th title="Upper limit of the parameter"> Limit+ </th>
+        <th title="Is the parameter fixed in the fit"> Fixed </th>
+    </tr>
+    <tr>
+        <th> 0 </th>
+        <td> A </td>
+        <td> 9.84 </td>
+        <td> 0.20 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 1 </th>
+        <td> alpha </td>
+        <td> -1.507 </td>
+        <td> 0.008 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th> A </th>
+        <th> alpha </th>
+    </tr>
+    <tr>
+        <th> A </th>
+        <td> 0.04 </td>
+        <td style="background-color:rgb(137,137,250);color:black"> -1.33e-3 <strong>(-0.869)</strong> </td>
+    </tr>
+    <tr>
+        <th> alpha </th>
+        <td style="background-color:rgb(137,137,250);color:black"> -1.33e-3 <strong>(-0.869)</strong> </td>
+        <td> 5.88e-05 </td>
+    </tr>
+</table></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Damped oscillation frequency: 9.993425925552769
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<table>
+    <tr>
+        <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Minimum value of function"> FCN = 917.9 (χ²/ndof = 0.9) </td>
+        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 192 </td>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 6.02e-07 (Goal: 0.0002) </td>
+        <td style="text-align:center" title="Total run time of algorithms">  </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Valid Minimum </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> No parameters at limit </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Hesse ok </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Covariance accurate </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th title="Variable name"> Name </th>
+        <th title="Value of parameter"> Value </th>
+        <th title="Hesse error"> Hesse Error </th>
+        <th title="Minos lower error"> Minos Error- </th>
+        <th title="Minos upper error"> Minos Error+ </th>
+        <th title="Lower limit of the parameter"> Limit- </th>
+        <th title="Upper limit of the parameter"> Limit+ </th>
+        <th title="Is the parameter fixed in the fit"> Fixed </th>
+    </tr>
+    <tr>
+        <th> 0 </th>
+        <td> A </td>
+        <td> 1.002 </td>
+        <td> 0.008 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 1 </th>
+        <td> tau </td>
+        <td> 0.301 </td>
+        <td> 0.004 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 2 </th>
+        <td> f </td>
+        <td> 9.993 </td>
+        <td> 0.006 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 3 </th>
+        <td> phi </td>
+        <td> 0.010 </td>
+        <td> 0.008 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th> A </th>
+        <th> tau </th>
+        <th> f </th>
+        <th> phi </th>
+    </tr>
+    <tr>
+        <th> A </th>
+        <td> 6.91e-05 </td>
+        <td style="background-color:rgb(157,157,250);color:black"> -0.021e-3 <strong>(-0.717)</strong> </td>
+        <td style="background-color:rgb(250,239,239);color:black"> 0 <strong>(0.072)</strong> </td>
+        <td style="background-color:rgb(236,236,250);color:black"> -0.01e-3 <strong>(-0.104)</strong> </td>
+    </tr>
+    <tr>
+        <th> tau </th>
+        <td style="background-color:rgb(157,157,250);color:black"> -0.021e-3 <strong>(-0.717)</strong> </td>
+        <td> 1.28e-05 </td>
+        <td style="background-color:rgb(244,244,250);color:black"> -0.001e-3 <strong>(-0.048)</strong> </td>
+        <td style="background-color:rgb(250,239,239);color:black"> 0.002e-3 <strong>(0.072)</strong> </td>
+    </tr>
+    <tr>
+        <th> f </th>
+        <td style="background-color:rgb(250,239,239);color:black"> 0 <strong>(0.072)</strong> </td>
+        <td style="background-color:rgb(244,244,250);color:black"> -0.001e-3 <strong>(-0.048)</strong> </td>
+        <td> 3.95e-05 </td>
+        <td style="background-color:rgb(157,157,250);color:black"> -0.04e-3 <strong>(-0.713)</strong> </td>
+    </tr>
+    <tr>
+        <th> phi </th>
+        <td style="background-color:rgb(236,236,250);color:black"> -0.01e-3 <strong>(-0.104)</strong> </td>
+        <td style="background-color:rgb(250,239,239);color:black"> 0.002e-3 <strong>(0.072)</strong> </td>
+        <td style="background-color:rgb(157,157,250);color:black"> -0.04e-3 <strong>(-0.713)</strong> </td>
+        <td> 6.74e-05 </td>
+    </tr>
+</table></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="field_scalar_signal.html" class="btn btn-neutral float-left" title="ScalarField Signal Processing Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_peak_detection.html" class="btn btn-neutral float-right" title="Peak Detection (ピーク検出)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,486 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DTT vs pyaggui 比較分析レポート &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">開発者ガイド (Developers Guide)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">DTT vs pyaggui 比較分析レポート</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/analysis/dtt/comparison_dtt_pyaggui.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dtt-vs-pyaggui">
+<h1>DTT vs pyaggui 比較分析レポート<a class="headerlink" href="#dtt-vs-pyaggui" title="Link to this heading"></a></h1>
+<p><strong>作成日:</strong> 2026-01-22
+<strong>Author:</strong> Antigravity Agent
+<strong>Referenced Documents:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/developers/reports/dtt_analysis_report.md</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/developers/reports/analyze_pyaggui_implementation.md</span></code></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id1">
+<h1>1. 概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p>本レポートでは、LIGO Diagnostic Test Tools (DTT) のC++ソースコード分析結果と、Python移植版である <code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> の実装状況を比較し、機能の網羅率と技術的な差異を明確にする。</p>
+<p><strong>結論要約:</strong>
+<code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> は <strong>DTT の「Fourier Tools (FFT解析)」モードの機能をほぼ100%再現</strong> しており、さらに現代的なUIと独自機能（PCオーディオ、シミュレーション）を追加している。
+一方で、<strong>「Swept Sine (周波数掃引)」測定モードについては、励起信号の生成機能はあるものの、解析ロジック（同期検波による高精度計測）は未実装</strong> であり、FFTベースの伝達関数推定で代用されている状態である。</p>
+</section>
+<hr class="docutils" />
+<section id="id2">
+<h1>2. アーキテクチャ比較<a class="headerlink" href="#id2" title="Link to this heading"></a></h1>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>項目</p></th>
+<th class="head"><p>DTT (Legacy)</p></th>
+<th class="head"><p>pyaggui (New)</p></th>
+<th class="head"><p>評価</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>言語</strong></p></td>
+<td><p>C++ (ROOT Framework)</p></td>
+<td><p>Python (PyQt5 + pyqtgraph)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> が圧倒的に現代的で保守性が高い</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>構成</strong></p></td>
+<td><p>クライアント(<code class="docutils literal notranslate"><span class="pre">diaggui</span></code>) - サーバー(<code class="docutils literal notranslate"><span class="pre">diagd</span></code>) 分離型</p></td>
+<td><p>モノリシック (GUI + Worker Threads)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> はローカル動作においてはシンプル。リモート制御にはNDSサーバーへの依存が必要。</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>データ取得</strong></p></td>
+<td><p>NDS1/2, Shared Memory, File</p></td>
+<td><p>NDS2, Local Audio, Simulation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> はローカルシミュレーション機能が強力</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>グラフライブラリ</strong></p></td>
+<td><p>ROOT (TGraph)</p></td>
+<td><p>pyqtgraph (OpenGL/Qt)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pyqtgraph</span></code> は高速でインタラクティブ性が高い</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h1>3. 機能実装状況詳細比較<a class="headerlink" href="#id3" title="Link to this heading"></a></h1>
+<section id="fourier-tools-fft">
+<h2>3.1 Fourier Tools (FFT解析)<a class="headerlink" href="#fourier-tools-fft" title="Link to this heading"></a></h2>
+<p>DTTの主要機能である <code class="docutils literal notranslate"><span class="pre">Fourier</span> <span class="pre">Tools</span></code> モードは、<code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> において非常に高いレベルで移植されている。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>機能</p></th>
+<th class="head"><p>DTT実装</p></th>
+<th class="head"><p>pyaggui実装</p></th>
+<th class="head"><p>状態</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>PSD/ASD</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ffttest::fftToPs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gwpy.TimeSeries.asd</span></code></p></td>
+<td><p>✅ 実装済み</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Coherence</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ffttest::coherenceCP</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gwpy.TimeSeries.coherence</span></code></p></td>
+<td><p>✅ 実装済み</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Cross Spectral Density</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ffttest::crossPower</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gwpy.TimeSeries.csd</span></code></p></td>
+<td><p>✅ 実装済み</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Spectrogram</strong></p></td>
+<td><p>あり</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gwpy.Spectrogram</span></code> + リングバッファ</p></td>
+<td><p>✅ 実装済み</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Time Series</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">timeseries</span></code> test</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SpectralAccumulator</span></code> raw output</p></td>
+<td><p>✅ 実装済み</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>平均化 (Averaging)</strong></p></td>
+<td><p>Linear, Exponential (Fixed/Infinite)</p></td>
+<td><p>Fixed, Infinite, Exponential (Custom Impl)</p></td>
+<td><p>✅ 完全再現</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Window関数</strong></p></td>
+<td><p>Hann, Flat-top, Uniform</p></td>
+<td><p>Hann, Boxcar (Uniform), etc.</p></td>
+<td><p>✅ 実装済み</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Zoom FFT</strong></p></td>
+<td><p><strong>あり</strong> (Heterodyne + Decimate)</p></td>
+<td><p><strong>なし</strong> (標準FFTのみ)</p></td>
+<td><p>⚠️ <strong>未実装</strong></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="swept-sine">
+<h2>3.2 Swept Sine (周波数掃引測定)<a class="headerlink" href="#swept-sine" title="Link to this heading"></a></h2>
+<p>制御系の伝達関数計測に不可欠なモード。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>機能</p></th>
+<th class="head"><p>DTT実装</p></th>
+<th class="head"><p>pyaggui実装</p></th>
+<th class="head"><p>状態</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>励起信号生成</strong></p></td>
+<td><p>Sine, Swept Sine (Linear/Log)</p></td>
+<td><p>Sine, Sweep (Linear/Log)</p></td>
+<td><p>✅ 実装済み (Generator)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>解析ロジック</strong></p></td>
+<td><p><strong>同期検波 (Lock-in Detection)</strong></p></td>
+<td><p><strong>FFTベース (<code class="docutils literal notranslate"><span class="pre">Transfer</span> <span class="pre">Function</span></code>)</strong></p></td>
+<td><p>⚠️ <strong>方式が異なる</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>計測フロー</strong></p></td>
+<td><p>周波数ごとに Wait &amp; Measure</p></td>
+<td><p>連続スイープ + FFT</p></td>
+<td><p>⚠️ <strong>DTTと同等のS/Nは出ない</strong></p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><strong>解説</strong>: DTTの <code class="docutils literal notranslate"><span class="pre">Swept</span> <span class="pre">Sine</span></code> は、特定周波数で正弦波を揺らし、定常状態になるまで待ってから計測を行うことで、ノイズに強い高精度な計測を行う。<code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> の現状の実装（<code class="docutils literal notranslate"><span class="pre">Engine.compute</span></code> 内での <code class="docutils literal notranslate"><span class="pre">transfer_function</span></code>）は、入出力のスペクトル比 (<code class="docutils literal notranslate"><span class="pre">Pxy/Pxx</span></code>) を取る Welch法 であり、これは広帯域なノイズ励起やチャープ信号を用いる場合には有効だが、厳密な「Swept Sine 測定」の代替にはならない。</p></li>
+</ul>
+</section>
+<section id="excitation">
+<h2>3.3 Excitation (加振・信号生成)<a class="headerlink" href="#excitation" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>機能</p></th>
+<th class="head"><p>DTT実装</p></th>
+<th class="head"><p>pyaggui実装</p></th>
+<th class="head"><p>状態</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>波形タイプ</strong></p></td>
+<td><p>Sine, Square, Ramp, Noise, Impulse, Const</p></td>
+<td><p>Sine, Square, Ramp, Noise, Impulse, Sweep</p></td>
+<td><p>✅ 実装済み</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>フィルタリング</strong></p></td>
+<td><p>IIR Filter (Foton連携)</p></td>
+<td><p>Butterworth SOS (Noiseのみ)</p></td>
+<td><p>⚠️ 汎用フィルタは未確認</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>加算・合成</strong></p></td>
+<td><p>複数波形の合成が可能</p></td>
+<td><p>4スロットでの合成が可能</p></td>
+<td><p>✅ 実装済み</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id4">
+<h2>3.4 その他機能<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>機能</p></th>
+<th class="head"><p>DTT</p></th>
+<th class="head"><p>pyaggui</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>チャンネル選択</strong></p></td>
+<td><p>ツリービュー, ワイルドカード</p></td>
+<td><p>ツリービュー, グロブ検索, Slow/Fastフィルタ</p></td>
+<td><p>✅ pyagguiの方が使いやすい</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>単位変換</strong></p></td>
+<td><p>Calibrationデータ適用</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gain</span></code> パラメータのみ</p></td>
+<td><p>⚠️ Calibration連携は簡易的</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>カーソル</strong></p></td>
+<td><p>クロスヘア, デルタ, ハーモニクス</p></td>
+<td><p>クロスヘア, デルタ, スナップ</p></td>
+<td><p>✅ 実装済み</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>エクスポート</strong></p></td>
+<td><p>XML, ASCII</p></td>
+<td><p>XML (Read), CSV/Image (Export)</p></td>
+<td><p>✅ 実装済み</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="gap-analysis">
+<h1>4. 今後の課題 (Gap Analysis)<a class="headerlink" href="#gap-analysis" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> を DTT の完全な代替とするために不足している要素は以下の通りである。</p>
+<ol class="arabic simple">
+<li><p><strong>Swept Sine Measurement (Point-by-Point) の実装</strong>:</p>
+<ul class="simple">
+<li><p>現状の <code class="docutils literal notranslate"><span class="pre">SignalGenerator</span></code> (Sweep) と <code class="docutils literal notranslate"><span class="pre">Engine</span></code> (FFT TF) の組み合わせでは、制御ループの精密な同定（特に低周波や高Q値の共振測定）において DTT に劣る可能性がある。</p></li>
+<li><p><strong>対策</strong>: <code class="docutils literal notranslate"><span class="pre">Engine</span></code> または <code class="docutils literal notranslate"><span class="pre">Analysis</span></code> クラスに、入力信号を参照信号とした同期検波ロジック（<code class="docutils literal notranslate"><span class="pre">sine_analyze</span></code>）を実装し、Generatorと連携してステップごとの計測を行うシーケンスを追加する必要がある。</p></li>
+</ul>
+</li>
+<li><p><strong>Zoom FFT</strong>:</p>
+<ul class="simple">
+<li><p>特定の共振ピークを細かく見たい場合に DTT で多用される機能。</p></li>
+<li><p><strong>対策</strong>: <code class="docutils literal notranslate"><span class="pre">scipy.signal</span></code> を用いたヘテロダインとデシメーション処理を追加する。</p></li>
+</ul>
+</li>
+<li><p><strong>Calibration / Units</strong>:</p>
+<ul class="simple">
+<li><p>現状は単純な <code class="docutils literal notranslate"><span class="pre">gain</span></code> 乗算のみ。DTT (Ezca/GDS) のようにシステムごとのキャリブレーション定数を自動適用する仕組みがあると望ましい。</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h1>5. 総評<a class="headerlink" href="#id5" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> は、日常的なスペクトル解析（Noise Hunting、振動解析など）においては、すでに DTT 以上の使い勝手と十分な機能を有している。
+ただし、<strong>「伝達関数測定（Swept Sine）」に関しては、まだ DTT のロジックを完全には模倣できていない</strong>。この点が実装されれば、DTT からの完全移行が現実的になる。</p>
+</section>
+<hr class="docutils" />
+<section id="ui">
+<h1>6. UI詳細比較<a class="headerlink" href="#ui" title="Link to this heading"></a></h1>
+<p>UIレイアウト、ボタン挙動、設定パネルの制御に関する詳細な比較。</p>
+<section id="start-stop-abort">
+<h2>6.1 コントロールバー (Start/Stop/Abort)<a class="headerlink" href="#start-stop-abort" title="Link to this heading"></a></h2>
+<p>DTTの基本的な測定制御フローを再現しつつ、Pause/Resumeの実装により利便性を向上させている。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>ボタン</p></th>
+<th class="head"><p>DTT (diaggui)</p></th>
+<th class="head"><p>pyaggui</p></th>
+<th class="head"><p>挙動の詳細</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Start</strong></p></td>
+<td><p>測定開始</p></td>
+<td><p>測定開始</p></td>
+<td><p>タイマー(<code class="docutils literal notranslate"><span class="pre">start_animation</span></code>)起動、データ取得開始。設定ロック。</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Pause</strong></p></td>
+<td><p>(Pauseボタンあり)</p></td>
+<td><p><strong>Pause</strong></p></td>
+<td><p>データ取得・描画の<strong>一時停止</strong>。バッファは保持される。</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Resume</strong></p></td>
+<td><p>-</p></td>
+<td><p><strong>Resume</strong></p></td>
+<td><p>一時停止した状態から測定・描画を再開。</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Abort</strong></p></td>
+<td><p>Abort</p></td>
+<td><p><strong>Abort</strong></p></td>
+<td><p><strong>完全停止</strong>。データバッファ消去、初期化(<code class="docutils literal notranslate"><span class="pre">stop_animation</span></code>)。</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id6">
+<h2>6.2 画面レイアウトと分割機能<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>機能</p></th>
+<th class="head"><p>DTT</p></th>
+<th class="head"><p>pyaggui</p></th>
+<th class="head"><p>評価</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>基本画面</strong></p></td>
+<td><p>1枚の大きなプロットエリア</p></td>
+<td><p><strong>上下2段分割</strong> (<code class="docutils literal notranslate"><span class="pre">QSplitter</span></code>)</p></td>
+<td><p>デフォルトで2つのグラフを同時に見られる構成。</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>分割の自由度</strong></p></td>
+<td><p><strong>高</strong> (上下左右、Grid配置可能)</p></td>
+<td><p><strong>中</strong> (上下2段固定)</p></td>
+<td><p>pyagguiは現状、3つ以上のグラフ追加や左右分割は不可。</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>設定パネル</strong></p></td>
+<td><p>別ダイアログ (<code class="docutils literal notranslate"><span class="pre">Graph</span> <span class="pre">Options</span></code>)</p></td>
+<td><p><strong>ドッキングパネル</strong> (<code class="docutils literal notranslate"><span class="pre">GraphPanel</span></code>)</p></td>
+<td><p>グラフの右側に常に表示され、即座に調整可能。モダンなUX。</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>パネル表示制御</strong></p></td>
+<td><p>ダイアログの開閉</p></td>
+<td><p>スプリッターによる調整</p></td>
+<td><p>スプリッターバーを動かしてパネルを隠すことが可能。</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="graphpanel">
+<h2>6.3 グラフ設定パネル (<code class="docutils literal notranslate"><span class="pre">GraphPanel</span></code>) の構成<a class="headerlink" href="#graphpanel" title="Link to this heading"></a></h2>
+<p>pyagguiでは、DTTの分散していた設定項目をタブ切り替え式のサイドパネルに集約している。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>タブ名</p></th>
+<th class="head"><p>設定項目</p></th>
+<th class="head"><p>DTT相当機能</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Traces</strong></p></td>
+<td><p>Trace 1-8 選択、色、線種、シンボル</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Trace</span> <span class="pre">Properies</span></code></p></td>
+<td><p>8本までオーバーレイ可能。色同期機能あり。</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Range</strong></p></td>
+<td><p>X/Y軸の Log/Lin, Auto/Manual 切替</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Axis</span> <span class="pre">Options</span></code></p></td>
+<td><p>DTT同様、軸ごとの独立設定が可能。</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Units</strong></p></td>
+<td><p>単位表示 (Hz, V等)、表示モード (Mag, Phase, dB)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Units</span></code> / <code class="docutils literal notranslate"><span class="pre">Display</span></code></p></td>
+<td><p>複素データの表示形式切替が可能。</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Cursor</strong></p></td>
+<td><p>カーソル1/2選択、Type(Vert/Horiz/Cross)、Delta表示</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Cursor</span></code> tool</p></td>
+<td><p><strong>スナップ機能</strong> (データ点吸着) が実装されており使いやすい。</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Style</strong></p></td>
+<td><p>タイトル、フォントサイズ、マージン</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Main</span> <span class="pre">Options</span></code></p></td>
+<td><p>タイトル位置やマージン調整が可能。</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="ui-pyaggui">
+<h2>6.4 特筆すべきUI機能 (pyaggui)<a class="headerlink" href="#ui-pyaggui" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>X-Link (軸同期) の自動化</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">update_x_link_logic</span></code>: グラフの種類（時間軸 vs 周波数軸）とオートレンジ設定に基づき、<strong>上下のグラフのX軸同期を自動的にON/OFF</strong>する高度なロジックを実装。ユーザーが手動でリンク設定をする手間を省いている。</p></li>
+</ul>
+</li>
+<li><p><strong>インライン編集</strong>:</p>
+<ul class="simple">
+<li><p>カーソル値の表示ラベル (<code class="docutils literal notranslate"><span class="pre">QLineEdit</span></code>) を直接編集することで、カーソル位置を数値指定で移動可能。</p></li>
+</ul>
+</li>
+<li><p><strong>Simulation Mode</strong>:</p>
+<ul class="simple">
+<li><p>NDSサーバーがない環境でも、内蔵シグナルジェネレータ (<code class="docutils literal notranslate"><span class="pre">SignalGenerator</span></code>) を用いて、実際のDTTのような測定フロー（励起→計測）を体験・テストできる。</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

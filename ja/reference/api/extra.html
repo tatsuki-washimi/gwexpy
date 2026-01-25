@@ -1,0 +1,1058 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>フィッティング (fitting) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="詳細リファレンス" href="../ja/index.html" />
+    <link rel="prev" title="基本型 (Types)" href="types.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API リファレンス</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="timeseries.html">時系列 (Time Series)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html">周波数系列 (Frequency Series)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectrogram.html">スペクトログラム (Spectrogram)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fields.html">フィールド (Fields)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral.html">スペクトル解析 (Spectral)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">解析ユーティリティ (Analysis)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noise.html">ノイズシミュレーション (Noise)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="types.html">基本型 (Types)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">フィッティング (fitting)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.fitting.enable_fitting_monkeypatch"><code class="docutils literal notranslate"><span class="pre">enable_fitting_monkeypatch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.fitting.enable_series_fit"><code class="docutils literal notranslate"><span class="pre">enable_series_fit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.fitting.fit_bootstrap_spectrum"><code class="docutils literal notranslate"><span class="pre">fit_bootstrap_spectrum()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gwexpy.interop">相互運用 (interop)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.TimeSeriesWindowDataset"><code class="docutils literal notranslate"><span class="pre">TimeSeriesWindowDataset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_astropy_timeseries"><code class="docutils literal notranslate"><span class="pre">from_astropy_timeseries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_control_frd"><code class="docutils literal notranslate"><span class="pre">from_control_frd()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_control_response"><code class="docutils literal notranslate"><span class="pre">from_control_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_cupy"><code class="docutils literal notranslate"><span class="pre">from_cupy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_dask"><code class="docutils literal notranslate"><span class="pre">from_dask()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_dict"><code class="docutils literal notranslate"><span class="pre">from_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_hdf5"><code class="docutils literal notranslate"><span class="pre">from_hdf5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_hdf5_frequencyseries"><code class="docutils literal notranslate"><span class="pre">from_hdf5_frequencyseries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_jax"><code class="docutils literal notranslate"><span class="pre">from_jax()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_json"><code class="docutils literal notranslate"><span class="pre">from_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_mne"><code class="docutils literal notranslate"><span class="pre">from_mne()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_mne_raw"><code class="docutils literal notranslate"><span class="pre">from_mne_raw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_neo"><code class="docutils literal notranslate"><span class="pre">from_neo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_netcdf4"><code class="docutils literal notranslate"><span class="pre">from_netcdf4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_obspy"><code class="docutils literal notranslate"><span class="pre">from_obspy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_obspy_trace"><code class="docutils literal notranslate"><span class="pre">from_obspy_trace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_pandas_dataframe"><code class="docutils literal notranslate"><span class="pre">from_pandas_dataframe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_pandas_frequencyseries"><code class="docutils literal notranslate"><span class="pre">from_pandas_frequencyseries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_pandas_series"><code class="docutils literal notranslate"><span class="pre">from_pandas_series()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_polars_dataframe"><code class="docutils literal notranslate"><span class="pre">from_polars_dataframe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_polars_dict"><code class="docutils literal notranslate"><span class="pre">from_polars_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_polars_series"><code class="docutils literal notranslate"><span class="pre">from_polars_series()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_pydub"><code class="docutils literal notranslate"><span class="pre">from_pydub()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_pyspeckit"><code class="docutils literal notranslate"><span class="pre">from_pyspeckit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_quantity"><code class="docutils literal notranslate"><span class="pre">from_quantity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_root"><code class="docutils literal notranslate"><span class="pre">from_root()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_simpeg"><code class="docutils literal notranslate"><span class="pre">from_simpeg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_specutils"><code class="docutils literal notranslate"><span class="pre">from_specutils()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_sqlite"><code class="docutils literal notranslate"><span class="pre">from_sqlite()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_tf"><code class="docutils literal notranslate"><span class="pre">from_tf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_torch"><code class="docutils literal notranslate"><span class="pre">from_torch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_xarray"><code class="docutils literal notranslate"><span class="pre">from_xarray()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_xarray_frequencyseries"><code class="docutils literal notranslate"><span class="pre">from_xarray_frequencyseries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.from_zarr"><code class="docutils literal notranslate"><span class="pre">from_zarr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.is_cupy_available"><code class="docutils literal notranslate"><span class="pre">is_cupy_available()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.require_optional"><code class="docutils literal notranslate"><span class="pre">require_optional()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_astropy_timeseries"><code class="docutils literal notranslate"><span class="pre">to_astropy_timeseries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_control_frd"><code class="docutils literal notranslate"><span class="pre">to_control_frd()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_cupy"><code class="docutils literal notranslate"><span class="pre">to_cupy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_dask"><code class="docutils literal notranslate"><span class="pre">to_dask()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_dict"><code class="docutils literal notranslate"><span class="pre">to_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_hdf5"><code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_hdf5_frequencyseries"><code class="docutils literal notranslate"><span class="pre">to_hdf5_frequencyseries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_jax"><code class="docutils literal notranslate"><span class="pre">to_jax()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_json"><code class="docutils literal notranslate"><span class="pre">to_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_librosa"><code class="docutils literal notranslate"><span class="pre">to_librosa()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_mne"><code class="docutils literal notranslate"><span class="pre">to_mne()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_mne_rawarray"><code class="docutils literal notranslate"><span class="pre">to_mne_rawarray()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_neo"><code class="docutils literal notranslate"><span class="pre">to_neo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_netcdf4"><code class="docutils literal notranslate"><span class="pre">to_netcdf4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_obspy"><code class="docutils literal notranslate"><span class="pre">to_obspy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_obspy_trace"><code class="docutils literal notranslate"><span class="pre">to_obspy_trace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_pandas_dataframe"><code class="docutils literal notranslate"><span class="pre">to_pandas_dataframe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_pandas_frequencyseries"><code class="docutils literal notranslate"><span class="pre">to_pandas_frequencyseries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_pandas_series"><code class="docutils literal notranslate"><span class="pre">to_pandas_series()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_polars_dataframe"><code class="docutils literal notranslate"><span class="pre">to_polars_dataframe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_polars_dict"><code class="docutils literal notranslate"><span class="pre">to_polars_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_polars_frequencyseries"><code class="docutils literal notranslate"><span class="pre">to_polars_frequencyseries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_polars_series"><code class="docutils literal notranslate"><span class="pre">to_polars_series()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_pydub"><code class="docutils literal notranslate"><span class="pre">to_pydub()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_pyspeckit"><code class="docutils literal notranslate"><span class="pre">to_pyspeckit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_quantity"><code class="docutils literal notranslate"><span class="pre">to_quantity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_simpeg"><code class="docutils literal notranslate"><span class="pre">to_simpeg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_specutils"><code class="docutils literal notranslate"><span class="pre">to_specutils()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_sqlite"><code class="docutils literal notranslate"><span class="pre">to_sqlite()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_tf"><code class="docutils literal notranslate"><span class="pre">to_tf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_tgraph"><code class="docutils literal notranslate"><span class="pre">to_tgraph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_th1d"><code class="docutils literal notranslate"><span class="pre">to_th1d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_th2d"><code class="docutils literal notranslate"><span class="pre">to_th2d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_tmultigraph"><code class="docutils literal notranslate"><span class="pre">to_tmultigraph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_torch"><code class="docutils literal notranslate"><span class="pre">to_torch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_torch_dataloader"><code class="docutils literal notranslate"><span class="pre">to_torch_dataloader()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_torch_dataset"><code class="docutils literal notranslate"><span class="pre">to_torch_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_xarray"><code class="docutils literal notranslate"><span class="pre">to_xarray()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_xarray_frequencyseries"><code class="docutils literal notranslate"><span class="pre">to_xarray_frequencyseries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.to_zarr"><code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.interop.write_root_file"><code class="docutils literal notranslate"><span class="pre">write_root_file()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">開発者ガイド (Developers Guide)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API リファレンス</a></li>
+      <li class="breadcrumb-item active">フィッティング (fitting)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/reference/api/extra.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gwexpy.fitting">
+<span id="fitting"></span><h1>フィッティング (fitting)<a class="headerlink" href="#module-gwexpy.fitting" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.fitting.enable_fitting_monkeypatch">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.fitting.</span></span><span class="sig-name descname"><span class="pre">enable_fitting_monkeypatch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#gwexpy.fitting.enable_fitting_monkeypatch" title="Link to this definition"></a></dt>
+<dd><p>Opt-in monkeypatch for gwpy.types.Series.fit.</p>
+<p>Note: standard gwexpy classes (TimeSeries, FrequencySeries) already have the .fit() method
+via inheritance. This function is generally not needed unless you are using base gwpy objects
+directly.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.fitting.enable_series_fit">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.fitting.</span></span><span class="sig-name descname"><span class="pre">enable_series_fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fitting.html#enable_series_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fitting.enable_series_fit" title="Link to this definition"></a></dt>
+<dd><p>Opt-in monkeypatch for gwpy.types.Series.fit.</p>
+<p>Note: standard gwexpy classes (TimeSeries, FrequencySeries) already have the .fit() method
+via inheritance. This function is generally not needed unless you are using base gwpy objects
+directly.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.fitting.fit_bootstrap_spectrum">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.fitting.</span></span><span class="sig-name descname"><span class="pre">fit_bootstrap_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_or_spectrogram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'median'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rebin_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ci</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.68</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hann'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nperseg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noverlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_boot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_mcmc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mcmc_walkers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mcmc_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mcmc_burn_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FitResult</span></span></span><a class="reference internal" href="../../_modules/gwexpy/fitting/highlevel.html#fit_bootstrap_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fitting.fit_bootstrap_spectrum" title="Link to this definition"></a></dt>
+<dd><p>Integrated spectral analysis pipeline with bootstrap, GLS fitting, and MCMC.</p>
+<p>This function provides a unified workflow for:
+1. Converting TimeSeries to Spectrogram (if needed)
+2. Bootstrap resampling to estimate PSD and covariance
+3. GLS fitting with proper frequency correlation
+4. Optional MCMC for Bayesian parameter inference
+5. Visualization of results</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_or_spectrogram</strong> (<a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em> or </em><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram"><em>Spectrogram</em></a>) – Input data. If TimeSeries, a spectrogram will be computed automatically.</p></li>
+<li><p><strong>model_fn</strong> (<em>callable</em>) – Model function with signature <cite>model(f, *params) -&gt; y</cite>.
+First argument must be frequency array.
+Example: <cite>lambda f, A, alpha: A * f**alpha</cite></p></li>
+<li><p><strong>freq_range</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>(</em><em>fmin</em><em>, </em><em>fmax</em><em>)</em><em>, </em><em>optional</em>) – Frequency range for fitting. If None, use all frequencies.</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Bootstrap averaging method: ‘median’ (default) or ‘mean’.</p></li>
+<li><p><strong>rebin_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Frequency rebinning width in Hz. If None, no rebinning.</p></li>
+<li><p><strong>block_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Block size for block bootstrap. If None, standard bootstrap.</p></li>
+<li><p><strong>ci</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Confidence interval for bootstrap errors. Default is 0.68 (1-sigma).</p></li>
+<li><p><strong>window</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Window function for spectrogram and correlation correction.
+Default is ‘hann’.</p></li>
+<li><p><strong>nperseg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Segment length for spectrogram generation. Default is 16.</p></li>
+<li><p><strong>noverlap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Overlap for spectrogram. If None, uses nperseg // 2.</p></li>
+<li><p><strong>n_boot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of bootstrap resamples. Default is 1000.</p></li>
+<li><p><strong>initial_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>, </em><em>optional</em>) – Initial parameter values for fitting, e.g., {“A”: 10, “alpha”: -1.5}.</p></li>
+<li><p><strong>bounds</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>, </em><em>optional</em>) – Parameter bounds, e.g., {“A”: (0, 100), “alpha”: (-5, 0)}.</p></li>
+<li><p><strong>fixed</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>, </em><em>optional</em>) – List of parameter names to fix during fitting.</p></li>
+<li><p><strong>run_mcmc</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to run MCMC after fitting. Default is False.</p></li>
+<li><p><strong>mcmc_walkers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of MCMC walkers. Default is 32.</p></li>
+<li><p><strong>mcmc_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of MCMC steps. Default is 5000.</p></li>
+<li><p><strong>mcmc_burn_in</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – MCMC burn-in steps to discard. Default is 500.</p></li>
+<li><p><strong>plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to display plots. Default is True.</p></li>
+<li><p><strong>progress</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to show progress bars for MCMC. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Fit result object containing:
+- Best-fit parameters and errors
+- Chi-square and reduced chi-square
+- Covariance matrix (in <cite>cov_inv</cite> and accessible <cite>cov</cite> attribute)
+- MCMC samples and intervals (if run_mcmc=True)
+- Plotting methods</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>FitResult</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting.highlevel</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_bootstrap_spectrum</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Define model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">power_law</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">A</span> <span class="o">*</span> <span class="n">f</span><span class="o">**</span><span class="n">alpha</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Run pipeline</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">fit_bootstrap_spectrum</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">data</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">model_fn</span><span class="o">=</span><span class="n">power_law</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">freq_range</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">rebin_width</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">block_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">initial_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="n">run_mcmc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Access results</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">parameter_intervals</span><span class="p">)</span>  <span class="c1"># If MCMC was run</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>The covariance matrix from bootstrap is stored and used for GLS fitting,
+properly accounting for frequency correlations in the spectral estimate.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="spectral.html#gwexpy.spectral.bootstrap_spectrogram" title="gwexpy.spectral.bootstrap_spectrogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwexpy.spectral.bootstrap_spectrogram</span></code></a></dt><dd><p>Bootstrap resampling function</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwexpy.fitting.fit_series</span></code></dt><dd><p>Lower-level fitting function</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwexpy.fitting.GeneralizedLeastSquares</span></code></dt><dd><p>GLS cost function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-gwexpy.interop">
+<span id="interop"></span><h1>相互運用 (interop)<a class="headerlink" href="#module-gwexpy.interop" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.interop.TimeSeriesWindowDataset">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">TimeSeriesWindowDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix" title="gwexpy.timeseries.TimeSeriesMatrix"><span class="pre">TimeSeriesMatrix</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multivariate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'intersection'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/torch_dataset.html#TimeSeriesWindowDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.TimeSeriesWindowDataset" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Simple windowed Dataset wrapper for torch training loops.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_astropy_timeseries">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_astropy_timeseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ap_ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/astropy_.html#from_astropy_timeseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_astropy_timeseries" title="Link to this definition"></a></dt>
+<dd><p>ap_ts: astropy.timeseries.TimeSeries</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_control_frd">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_control_frd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Hz'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/control_.html#from_control_frd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_control_frd" title="Link to this definition"></a></dt>
+<dd><p>Create FrequencySeries from control.FRD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The FrequencySeries class to instantiate.</p></li>
+<li><p><strong>frd</strong> (<em>control.FRD</em>) – Frequency response data from python-control.</p></li>
+<li><p><strong>frequency_unit</strong> (<em>{'Hz'</em><em>, </em><em>'rad/s'}</em><em>, </em><em>optional</em>) – Unit of the input FRD’s omega attribute.
+Default is ‘Hz’ (output will be in Hz).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The converted frequency response. Returns FrequencySeriesMatrix
+for MIMO systems.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a> or <a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix" title="gwexpy.frequencyseries.FrequencySeriesMatrix">FrequencySeriesMatrix</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.control_</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_control_frd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># frd = control.frd(data, omega)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># fs = from_control_frd(FrequencySeries, frd)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_control_response">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_control_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/control_.html#from_control_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_control_response" title="Link to this definition"></a></dt>
+<dd><p>Create TimeSeries or TimeSeriesDict from control.TimeResponseData.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The TimeSeries (or TimeSeriesDict) class.</p></li>
+<li><p><strong>response</strong> (<em>control.TimeResponseData</em>) – The simulation result from python-control (e.g., from forced_response).</p></li>
+<li><p><strong>**kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Additional arguments passed to the TimeSeries constructor (e.g., unit).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The converted time-domain data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a> or <a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesDict" title="gwexpy.timeseries.TimeSeriesDict">TimeSeriesDict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_cupy">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_cupy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/cupy_.html#from_cupy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_cupy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_dask">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_dask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/dask_.html#from_dask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_dask" title="Link to this definition"></a></dt>
+<dd><p>Create TimeSeries from dask array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compute</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If True, compute the array to numpy immediately.
+If False, TimeSeries will hold the dask array (if underlying class supports it,
+gwpy TimeSeries usually expects numpy, so caution).
+Default True for safety.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_dict">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/json_.html#from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_dict" title="Link to this definition"></a></dt>
+<dd><p>Create TimeSeries from a dictionary.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_hdf5">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/hdf5_.html#from_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_hdf5" title="Link to this definition"></a></dt>
+<dd><p>Read TimeSeries from HDF5 group.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_hdf5_frequencyseries">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_hdf5_frequencyseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/frequency.html#from_hdf5_frequencyseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_hdf5_frequencyseries" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_jax">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_jax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/jax_.html#from_jax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_jax" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_json">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/json_.html#from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_json" title="Link to this definition"></a></dt>
+<dd><p>Create TimeSeries from a JSON string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_mne">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_mne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/mne_.html#from_mne"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_mne" title="Link to this definition"></a></dt>
+<dd><p>Convert an MNE object to a gwexpy object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The target class (e.g. FrequencySeries, Spectrogram, TimeSeries).</p></li>
+<li><p><strong>data</strong> (<em>mne object</em>) – The MNE object to convert.</p></li>
+<li><p><strong>**kwargs</strong> – Additional arguments passed to from_mne_* helpers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>gwexpy object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_mne_raw">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_mne_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/mne_.html#from_mne_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_mne_raw" title="Link to this definition"></a></dt>
+<dd><p>raw: mne.io.Raw</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_neo">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_neo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/neo_.html#from_neo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_neo" title="Link to this definition"></a></dt>
+<dd><p>Create TimeSeriesMatrix from neo.AnalogSignal.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_netcdf4">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_netcdf4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/netcdf4_.html#from_netcdf4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_netcdf4" title="Link to this definition"></a></dt>
+<dd><p>Read from netCDF4 Dataset.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_obspy">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_obspy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/obspy_.html#from_obspy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_obspy" title="Link to this definition"></a></dt>
+<dd><p>Convert Obspy object to gwexpy object of type cls.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_obspy_trace">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_obspy_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_policy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'id'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/obspy_.html#from_obspy_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_obspy_trace" title="Link to this definition"></a></dt>
+<dd><p>Legacy alias.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_pandas_dataframe">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_pandas_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/pandas_.html#from_pandas_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_pandas_dataframe" title="Link to this definition"></a></dt>
+<dd><p>DataFrame -&gt; TimeSeriesDict</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_pandas_frequencyseries">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_pandas_frequencyseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/frequency.html#from_pandas_frequencyseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_pandas_frequencyseries" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_pandas_series">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_pandas_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/pandas_.html#from_pandas_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_pandas_series" title="Link to this definition"></a></dt>
+<dd><p>Create TimeSeries from pandas.Series.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_polars_dataframe">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_polars_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/polars_.html#from_polars_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_polars_dataframe" title="Link to this definition"></a></dt>
+<dd><p>Create TimeSeries from polars.DataFrame.
+Attempts to infer t0 and dt from the time_column.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_polars_dict">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_polars_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/polars_.html#from_polars_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_polars_dict" title="Link to this definition"></a></dt>
+<dd><p>polars.DataFrame -&gt; TimeSeriesDict</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_polars_series">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_polars_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/polars_.html#from_polars_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_polars_series" title="Link to this definition"></a></dt>
+<dd><p>Create TimeSeries or FrequencySeries from polars.Series.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_pydub">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_pydub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/pydub_.html#from_pydub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_pydub" title="Link to this definition"></a></dt>
+<dd><p>Create TimeSeries from AudioSegment.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_pyspeckit">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_pyspeckit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/pyspeckit_.html#from_pyspeckit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_pyspeckit" title="Link to this definition"></a></dt>
+<dd><p>Convert a pyspeckit Spectrum to a gwexpy object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<em>class</em>) – Target class (FrequencySeries).</p></li>
+<li><p><strong>spectrum</strong> (<em>pyspeckit.Spectrum</em>) – Input spectrum.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_quantity">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_quantity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/quantities_.html#from_quantity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_quantity" title="Link to this definition"></a></dt>
+<dd><p>Create a GWpy/GWexpy Series from a quantities.Quantity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The target class (TimeSeries, FrequencySeries, etc).</p></li>
+<li><p><strong>q</strong> (<em>quantities.Quantity</em>) – Input quantity.</p></li>
+<li><p><strong>**kwargs</strong> – Additional arguments required by the class constructor (e.g. t0, dt, frequencies).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>instance of cls</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_root">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_root</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/root_.html#from_root"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_root" title="Link to this definition"></a></dt>
+<dd><p>Create Series (TimeSeries or FrequencySeries) from ROOT TGraph or TH1.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_simpeg">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_simpeg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_obj</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/simpeg_.html#from_simpeg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_simpeg" title="Link to this definition"></a></dt>
+<dd><p>Convert SimPEG Data object to gwexpy object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<em>class</em>) – Target class (TimeSeries or FrequencySeries).</p></li>
+<li><p><strong>data_obj</strong> (<em>simpeg.data.Data</em>) – SimPEG Data object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Object of type cls.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_specutils">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_specutils</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/specutils_.html#from_specutils"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_specutils" title="Link to this definition"></a></dt>
+<dd><p>Convert a specutils object to a gwexpy object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<em>class</em>) – Target class (FrequencySeries).</p></li>
+<li><p><strong>spectrum</strong> (<em>specutils.Spectrum1D</em>) – Input spectrum.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_sqlite">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_sqlite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">series_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/sqlite_.html#from_sqlite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_sqlite" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_tf">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_tf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/tensorflow_.html#from_tf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_tf" title="Link to this definition"></a></dt>
+<dd><p>Create TimeSeries from tensorflow.Tensor.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_torch">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_torch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/torch_.html#from_torch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_torch" title="Link to this definition"></a></dt>
+<dd><p>Create a TimeSeries from a PyTorch tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – TimeSeries class to instantiate.</p></li>
+<li><p><strong>tensor</strong> (<em>torch.Tensor</em>) – Input tensor.</p></li>
+<li><p><strong>t0</strong> (<em>Quantity</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Start time.</p></li>
+<li><p><strong>dt</strong> (<em>Quantity</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sample interval.</p></li>
+<li><p><strong>unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><em>Unit</em><em>, </em><em>optional</em>) – Data unit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created time series.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_xarray">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_xarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">da</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/xarray_.html#from_xarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_xarray" title="Link to this definition"></a></dt>
+<dd><p>DataArray -&gt; TimeSeries</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_xarray_frequencyseries">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_xarray_frequencyseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">da</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_coord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'frequency'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/frequency.html#from_xarray_frequencyseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_xarray_frequencyseries" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.from_zarr">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_zarr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/zarr_.html#from_zarr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.from_zarr" title="Link to this definition"></a></dt>
+<dd><p>Read from Zarr array.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.is_cupy_available">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">is_cupy_available</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/cupy_.html#is_cupy_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.is_cupy_available" title="Link to this definition"></a></dt>
+<dd><p>Check if cupy is installed and functionally usable (CUDA environment is working).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.require_optional">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">require_optional</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/interop/_optional.html#require_optional"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.require_optional" title="Link to this definition"></a></dt>
+<dd><p>Import an optional dependency or raise an informative ImportError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Key name of the dependency (e.g., ‘pandas’).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The imported module.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>module</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If the package is not installed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_astropy_timeseries">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_astropy_timeseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gps'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/astropy_.html#to_astropy_timeseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_astropy_timeseries" title="Link to this definition"></a></dt>
+<dd><p>ts: TimeSeries</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_control_frd">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_control_frd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rad/s'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/control_.html#to_control_frd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_control_frd" title="Link to this definition"></a></dt>
+<dd><p>Convert FrequencySeries to control.FRD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fs</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – Input frequency response data. Frequencies are assumed to be in Hz.</p></li>
+<li><p><strong>frequency_unit</strong> (<em>{'rad/s'</em><em>, </em><em>'Hz'}</em><em>, </em><em>optional</em>) – Unit for the frequency axis in the output FRD object.
+Default is ‘rad/s’ (standard for control.FRD).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Frequency response data object compatible with python-control.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>control.FRD</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.control_</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_control_frd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">([</span><span class="mi">1</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">+</span><span class="mf">0.5</span><span class="n">j</span><span class="p">],</span> <span class="n">f0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frd</span> <span class="o">=</span> <span class="n">to_control_frd</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_cupy">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_cupy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/cupy_.html#to_cupy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_cupy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_dask">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_dask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/dask_.html#to_dask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_dask" title="Link to this definition"></a></dt>
+<dd><p>Convert TimeSeries to dask.array.Array.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_dict">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/json_.html#to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_dict" title="Link to this definition"></a></dt>
+<dd><p>Convert TimeSeries to a dictionary.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_hdf5">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression_opts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/hdf5_.html#to_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_hdf5" title="Link to this definition"></a></dt>
+<dd><p>Write TimeSeries to HDF5 group.
+wrapper for ts.write(…, format=’hdf5’) usually, but here we implement direct
+low-level if strict control is needed, OR delegate.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_hdf5_frequencyseries">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_hdf5_frequencyseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression_opts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/frequency.html#to_hdf5_frequencyseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_hdf5_frequencyseries" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_jax">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_jax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/jax_.html#to_jax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_jax" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_json">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/json_.html#to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_json" title="Link to this definition"></a></dt>
+<dd><p>Convert TimeSeries to a JSON string.
+Includes data and basic metadata.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_librosa">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_librosa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/pydub_.html#to_librosa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_librosa" title="Link to this definition"></a></dt>
+<dd><p>Export to librosa-compatible numpy array and sampling rate.
+Returns (y, sr).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_mne">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_mne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/mne_.html#to_mne"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_mne" title="Link to this definition"></a></dt>
+<dd><p>Convert a gwexpy object to an MNE object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a><em>, </em><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram"><em>Spectrogram</em></a><em>, or </em><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em> (or </em><em>dicts</em><em>)</em>) – The data object to convert.</p></li>
+<li><p><strong>info</strong> (<em>mne.Info</em><em>, </em><em>optional</em>) – Measurement info to use. If None, one is created.</p></li>
+<li><p><strong>**kwargs</strong> – Additional arguments passed to MNE constructors.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The converted MNE object (e.g. RawArray, SpectrumArray, EpochsTFRArray).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>mne_object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_mne_rawarray">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_mne_rawarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/mne_.html#to_mne_rawarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_mne_rawarray" title="Link to this definition"></a></dt>
+<dd><p>Convert a TimeSeries-like object to an <code class="docutils literal notranslate"><span class="pre">mne.io.RawArray</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tsd</strong> – <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>-like mapping (multi-channel) or a single <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.</p></li>
+<li><p><strong>info</strong> – Optional MNE <code class="docutils literal notranslate"><span class="pre">Info</span></code>. If omitted, a minimal <code class="docutils literal notranslate"><span class="pre">Info</span></code> is created.</p></li>
+<li><p><strong>picks</strong> – Optional channel selection (names or indices). Only supported for mapping inputs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_neo">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_neo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/neo_.html#to_neo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_neo" title="Link to this definition"></a></dt>
+<dd><p>Convert TimeSeries or TimeSeriesMatrix to neo.AnalogSignal.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_netcdf4">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_netcdf4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/netcdf4_.html#to_netcdf4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_netcdf4" title="Link to this definition"></a></dt>
+<dd><p>Write to netCDF4 Dataset.</p>
+<p>ds: netCDF4.Dataset (writable)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_obspy">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_obspy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/obspy_.html#to_obspy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_obspy" title="Link to this definition"></a></dt>
+<dd><p>Convert gwexpy object to Obspy object.</p>
+<p>FrequencySeries -&gt; Trace (Spectrum mode)
+Spectrogram     -&gt; Stream (Filter Bank mode)
+TimeSeries      -&gt; Trace</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_obspy_trace">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_obspy_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats_extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/obspy_.html#to_obspy_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_obspy_trace" title="Link to this definition"></a></dt>
+<dd><p>Legacy alias for internal use, prefers using new generic to_obspy.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_pandas_dataframe">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_pandas_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'datetime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/pandas_.html#to_pandas_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_pandas_dataframe" title="Link to this definition"></a></dt>
+<dd><p>TimeSeriesDict -&gt; DataFrame</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_pandas_frequencyseries">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_pandas_frequencyseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'frequency'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/frequency.html#to_pandas_frequencyseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_pandas_frequencyseries" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_pandas_series">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_pandas_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'datetime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/pandas_.html#to_pandas_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_pandas_series" title="Link to this definition"></a></dt>
+<dd><p>Convert TimeSeries to pandas.Series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>default &quot;datetime&quot;</em>) – “datetime” (UTC aware), “seconds” (unix), or “gps”.</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Whether to copy data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="(in pandas v3.0.0)">pandas.Series</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_polars_dataframe">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_polars_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'datetime'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/polars_.html#to_polars_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_polars_dataframe" title="Link to this definition"></a></dt>
+<dd><p>Convert TimeSeries to polars.DataFrame with a time column.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_polars_dict">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_polars_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'datetime'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/polars_.html#to_polars_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_polars_dict" title="Link to this definition"></a></dt>
+<dd><p>TimeSeriesDict -&gt; polars.DataFrame</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_polars_frequencyseries">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_polars_frequencyseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'frequency'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Hz'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/polars_.html#to_polars_frequencyseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_polars_frequencyseries" title="Link to this definition"></a></dt>
+<dd><p>Convert FrequencySeries to polars.DataFrame.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_polars_series">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_polars_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/polars_.html#to_polars_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_polars_series" title="Link to this definition"></a></dt>
+<dd><p>Convert TimeSeries or FrequencySeries to polars.Series.
+This only contains the data values, not the index.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_pydub">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_pydub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/pydub_.html#to_pydub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_pydub" title="Link to this definition"></a></dt>
+<dd><p>Export to pydub.AudioSegment.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_pyspeckit">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_pyspeckit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/pyspeckit_.html#to_pyspeckit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_pyspeckit" title="Link to this definition"></a></dt>
+<dd><p>Convert a gwexpy object to a pyspeckit Spectrum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – Input data.</p></li>
+<li><p><strong>**kwargs</strong> – Additional arguments for pyspeckit.Spectrum.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pyspeckit.Spectrum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_quantity">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_quantity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/quantities_.html#to_quantity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_quantity" title="Link to this definition"></a></dt>
+<dd><p>Convert a series (TimeSeries, FrequencySeries, etc) to a quantities.Quantity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series</strong> (<em>Series</em><em> or </em><em>array-like</em>) – The input series with a .value and .unit attribute (or similar).</p></li>
+<li><p><strong>units</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><em>quantities.UnitQuantity</em><em>, </em><em>optional</em>) – Target units for the output Quantity.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The data wrapped as a Quantity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>quantities.Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_simpeg">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_simpeg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rx_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PointElectricField'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/simpeg_.html#to_simpeg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_simpeg" title="Link to this definition"></a></dt>
+<dd><p>Convert gwexpy object to simpeg.data.Data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em> or </em><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – Input data.</p></li>
+<li><p><strong>location</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Rx location (x, y, z). Default is [0, 0, 0].</p></li>
+<li><p><strong>rx_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><em>class</em><em>, </em><em>optional</em>) – Receiver class name or class object. Default “PointElectricField”.</p></li>
+<li><p><strong>orientation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Receiver orientation (‘x’, ‘y’, ‘z’). Default ‘x’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>SimPEG Data object containing the survey and observed data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>simpeg.data.Data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_specutils">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_specutils</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/specutils_.html#to_specutils"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_specutils" title="Link to this definition"></a></dt>
+<dd><p>Convert a gwexpy object to a specutils object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – Input data.</p></li>
+<li><p><strong>**kwargs</strong> – Additional arguments for Spectrum1D constructor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>specutils.Spectrum1D</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_sqlite">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_sqlite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">series_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/sqlite_.html#to_sqlite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_sqlite" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_tf">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_tf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/tensorflow_.html#to_tf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_tf" title="Link to this definition"></a></dt>
+<dd><p>Convert TimeSeries to tensorflow.Tensor.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_tgraph">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_tgraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/root_.html#to_tgraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_tgraph" title="Link to this definition"></a></dt>
+<dd><p>Convert 1D Series to ROOT TGraph or TGraphErrors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_th1d">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_th1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/root_.html#to_th1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_th1d" title="Link to this definition"></a></dt>
+<dd><p>Convert 1D Series to ROOT TH1D.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_th2d">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_th2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/root_.html#to_th2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_th2d" title="Link to this definition"></a></dt>
+<dd><p>Convert Spectrogram to ROOT TH2D.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_tmultigraph">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_tmultigraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/interop/root_.html#to_tmultigraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_tmultigraph" title="Link to this definition"></a></dt>
+<dd><p>Convert a collection of Series to a ROOT TMultiGraph.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_torch">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_torch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires_grad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/torch_.html#to_torch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_torch" title="Link to this definition"></a></dt>
+<dd><p>Convert a series to a PyTorch tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series</strong> (<a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>array-like</em>) – Input data.</p></li>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><em>torch.device</em><em>, </em><em>optional</em>) – Target device.</p></li>
+<li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – Target dtype.</p></li>
+<li><p><strong>requires_grad</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to track gradients.</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, always copy data; otherwise share memory if possible.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The converted tensor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_torch_dataloader">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_torch_dataloader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/torch_dataset.html#to_torch_dataloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_torch_dataloader" title="Link to this definition"></a></dt>
+<dd><p>Create a torch DataLoader from the provided dataset.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_torch_dataset">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_torch_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix" title="gwexpy.timeseries.TimeSeriesMatrix"><span class="pre">TimeSeriesMatrix</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multivariate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'intersection'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/torch_dataset.html#to_torch_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_torch_dataset" title="Link to this definition"></a></dt>
+<dd><p>Convenience wrapper to build a TimeSeriesWindowDataset.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_xarray">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_xarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_coord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'datetime'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/xarray_.html#to_xarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_xarray" title="Link to this definition"></a></dt>
+<dd><p>TimeSeries -&gt; xarray.DataArray</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_xarray_frequencyseries">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_xarray_frequencyseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_coord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Hz'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/frequency.html#to_xarray_frequencyseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_xarray_frequencyseries" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.to_zarr">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">to_zarr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/interop/zarr_.html#to_zarr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.to_zarr" title="Link to this definition"></a></dt>
+<dd><p>Write to Zarr array.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.interop.write_root_file">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">write_root_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/interop/root_.html#write_root_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.interop.write_root_file" title="Link to this definition"></a></dt>
+<dd><p>Write a collection of Series to a ROOT TFile.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="types.html" class="btn btn-neutral float-left" title="基本型 (Types)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../ja/index.html" class="btn btn-neutral float-right" title="詳細リファレンス" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

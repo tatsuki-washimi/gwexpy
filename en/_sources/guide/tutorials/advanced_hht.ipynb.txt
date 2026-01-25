@@ -1,0 +1,306 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "6f36875a",
+   "metadata": {},
+   "source": [
+    "# Hilbert-Huang Transform (HHT) 解析チュートリアル\n",
+    "\n",
+    "このチュートリアルでは、**gwexpy** を使用した **Hilbert-Huang Transform (HHT)** 解析の手順を解説します。\n",
+    "HHT は、非線形・非定常な信号の解析に適しており、従来のフーリエ変換やウェーブレット変換では捉えきれない局所的な周波数変動（瞬時周波数）を抽出するのに強力な手法です。\n",
+    "\n",
+    "HHT は以下の2つの主要なステップから成ります：\n",
+    "1.  **Empirical Mode Decomposition (EMD)**: 信号を固有モード関数 (IMF: Intrinsic Mode Function) に分解します。\n",
+    "2.  **Hilbert Spectral Analysis**: 各 IMF に対してヒルベルト変換を行い、瞬時振幅と瞬時周波数を計算します。\n",
+    "\n",
+    "**注意**: この機能を使用するには `PyEMD` (EMD-signal) パッケージがインストールされている必要があります。\n",
+    "```bash\n",
+    "pip install EMD-signal\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "ae2fea2d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:38:24.590486Z",
+     "iopub.status.busy": "2026-01-24T10:38:24.590338Z",
+     "iopub.status.idle": "2026-01-24T10:38:26.604166Z",
+     "shell.execute_reply": "2026-01-24T10:38:26.603027Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "PyEMD is installed and ready.\n"
+     ]
+    }
+   ],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "\n",
+    "from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "# PyEMDの確認\n",
+    "try:\n",
+    "    import PyEMD\n",
+    "    print(f\"{PyEMD.__name__} is installed and ready.\")\n",
+    "except ImportError:\n",
+    "    raise ImportError(\"このチュートリアルには 'PyEMD' (EMD-signal) が必要です。 pip install EMD-signal を実行してください。\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9cc7cea7",
+   "metadata": {},
+   "source": [
+    "## 1. シミュレーションデータの作成\n",
+    "\n",
+    "EMD の効果を確認するために、以下の特徴を持つ非定常な合成信号を作成します。\n",
+    "1.  **低周波トレンド**: 5 Hz の正弦波\n",
+    "2.  **チャープ信号**: 時間とともに周波数が上昇する成分 (〜100 Hz)\n",
+    "3.  **線形トレンド**: 直線的なドリフト"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "c99ca305",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:38:26.606265Z",
+     "iopub.status.busy": "2026-01-24T10:38:26.605886Z",
+     "iopub.status.idle": "2026-01-24T10:38:26.656455Z",
+     "shell.execute_reply": "2026-01-24T10:38:26.655691Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# 時間軸 (1秒間、1000サンプル)\n",
+    "t = np.linspace(0, 1, 1000)\n",
+    "dt = t[1] - t[0]\n",
+    "\n",
+    "# 信号成分\n",
+    "s1 = 0.5 * np.sin(2 * np.pi * 5 * t)  # 低周波\n",
+    "s2 = 1.0 * np.sin(2 * np.pi * 80 * t * (1 + 0.5 * t))  # チャープ (80Hz -> 120Hz)\n",
+    "trend = 2.0 * t  # 線形トレンド\n",
+    "\n",
+    "# TimeSeriesオブジェクトの作成\n",
+    "data = TimeSeries(s1 + s2 + trend, dt=dt, unit='V', name='Simulation Data')\n",
+    "\n",
+    "# プロット\n",
+    "plot = data.plot(title=\"Original Simulation Signal\")\n",
+    "plot.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fa110940",
+   "metadata": {},
+   "source": [
+    "## 2. Empirical Mode Decomposition (EMD)\n",
+    "\n",
+    "`gwexpy` の `TimeSeries` オブジェクトは、`emd()` メソッドを通じて直接分解を行うことができます。\n",
+    "`emd()` メソッドは `PyEMD` ラッパーとして機能し、結果を `TimeSeriesDict` として返します。\n",
+    "\n",
+    "ここでは基本的な **EMD** を使用しますが、オプションで **EEMD (Ensemble EMD)** も選択可能です。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "dfc73f37",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:38:26.657931Z",
+     "iopub.status.busy": "2026-01-24T10:38:26.657823Z",
+     "iopub.status.idle": "2026-01-24T10:38:26.832858Z",
+     "shell.execute_reply": "2026-01-24T10:38:26.832070Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "抽出されたIMF: ['IMF1', 'IMF2', 'IMF3', 'residual']\n"
+     ]
+    }
+   ],
+   "source": [
+    "# EMDの実行\n",
+    "# method='eemd' とすると Ensemble EMD が実行されます (計算時間がかかります)\n",
+    "imfs = data.emd(method='emd')\n",
+    "\n",
+    "print(\"抽出されたIMF:\", list(imfs.keys()))\n",
+    "\n",
+    "# 全IMFをプロット\n",
+    "plot = imfs.plot(figsize=(10, 12), sharex=True, title=\"Intrinsic Mode Functions (IMFs)\")\n",
+    "plot.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "098013b2",
+   "metadata": {},
+   "source": [
+    "プロットを見ると、信号が異なる周波数帯域ごとのモード (IMF) に分解されていることがわかります。\n",
+    "*   **IMF 0**: 最も高周波な成分（チャープ信号の一部やノイズ）\n",
+    "*   **IMF 1, 2...**: より低周波な成分\n",
+    "*   **Residual**: 残差（トレンド成分）\n",
+    "\n",
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "829577f0",
+   "metadata": {},
+   "source": [
+    "## 3. ヒルベルトスペクトル解析\n",
+    "\n",
+    "各 IMF は「単一成分」に近い性質を持つため、ヒルベルト変換を適用することで物理的に意味のある**瞬時周波数 (Instantaneous Frequency)** と **瞬時振幅 (Instantaneous Amplitude)** を定義できます。\n",
+    "\n",
+    "`gwexpy` の `TimeSeries` は以下のメソッドを提供しています：\n",
+    "*   `.hilbert()`: 解析信号 (Analytic Signal) を計算\n",
+    "*   `.instantaneous_frequency()`: 瞬時周波数を計算 (位相の微分)\n",
+    "*   `.envelope()`: 包絡線（瞬時振幅）を計算"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "d78580d1",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:38:26.834842Z",
+     "iopub.status.busy": "2026-01-24T10:38:26.834716Z",
+     "iopub.status.idle": "2026-01-24T10:38:26.851706Z",
+     "shell.execute_reply": "2026-01-24T10:38:26.850994Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# 解析結果を格納する辞書\n",
+    "hht_results = {}\n",
+    "\n",
+    "plt.figure(figsize=(10, 6))\n",
+    "\n",
+    "# 最初の数個のIMFについて解析を行う\n",
+    "for key in list(imfs.keys())[:3]:  # Loop over first 3 IMFs\n",
+    "    imf = imfs[key]\n",
+    "\n",
+    "    # 瞬時周波数の計算\n",
+    "    # smoothパラメータで微分のノイズを平滑化できます\n",
+    "    inst_freq = imf.instantaneous_frequency(smooth=10)\n",
+    "\n",
+    "    # 瞬時振幅 (包絡線) の計算\n",
+    "    inst_amp = imf.envelope()\n",
+    "\n",
+    "    hht_results[key] = {\n",
+    "        'freq': inst_freq,\n",
+    "        'amp': inst_amp\n",
+    "    }\n",
+    "\n",
+    "    # 瞬時周波数の時間変化をプロット\n",
+    "    plt.plot(inst_freq.times.value, inst_freq.value, label=f'{key} Freq')\n",
+    "\n",
+    "plt.title(\"Instantaneous Frequency of IMFs\")\n",
+    "plt.xlabel(\"Time [s]\")\n",
+    "plt.ylabel(\"Frequency [Hz]\")\n",
+    "plt.ylim(0, 150)\n",
+    "plt.legend()\n",
+    "plt.grid(True, alpha=0.3)\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0cd0f8bd",
+   "metadata": {},
+   "source": [
+    "## 4. Hilbert Spectrum (ヒルベルトスペクトル)\n",
+    "\n",
+    "最後に、これらの瞬時周波数と振幅を組み合わせて **ヒルベルトスペクトル** を描画します。\n",
+    "これは時間-周波数平面上でのエネルギー分布を表し、フーリエ変換ベースのスペクトログラムに相当しますが、時間・周波数分解能の制限（不確定性原理）を受けにくいという特徴があります。\n",
+    "\n",
+    "ここでは、各サンプルの (時刻, 周波数) を点としてプロットし、色で振幅を表す散布図を使用します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "30f06c03",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:38:26.853987Z",
+     "iopub.status.busy": "2026-01-24T10:38:26.853873Z",
+     "iopub.status.idle": "2026-01-24T10:38:26.871503Z",
+     "shell.execute_reply": "2026-01-24T10:38:26.870738Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "plt.figure(figsize=(10, 6))\n",
+    "\n",
+    "for key, res in hht_results.items():\n",
+    "    t_vals = res['freq'].times.value\n",
+    "    f_vals = res['freq'].value\n",
+    "    a_vals = res['amp'].value\n",
+    "\n",
+    "    # 周波数が負や極端に大きい値になることがあるためフィルタリング\n",
+    "    mask = (f_vals > 0) & (f_vals < 200)\n",
+    "\n",
+    "    plt.scatter(t_vals[mask], f_vals[mask], c=a_vals[mask],\n",
+    "                cmap='viridis', s=5, alpha=0.7, vmin=0, vmax=1.0)\n",
+    "\n",
+    "plt.colorbar(label='Amplitude [V]')\n",
+    "plt.xlabel('Time [s]')\n",
+    "plt.ylabel('Frequency [Hz]')\n",
+    "plt.title('Hilbert Spectrum (Scatter Plot)')\n",
+    "plt.ylim(0, 150)\n",
+    "plt.grid(True, alpha=0.3, linestyle='--')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a94739c2",
+   "metadata": {},
+   "source": [
+    "### 結果の解釈\n",
+    "ヒルベルトスペクトルでは、チャープ信号の周波数が時間とともに直線的に上昇している様子 (80Hz -> 120Hz) が非常に鮮明に確認できます。\n",
+    "低周波のIMFは下部に線として現れます。\n",
+    "\n",
+    "このように、HHTは信号の非定常な振る舞いを詳細に分析するのに有効です。"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

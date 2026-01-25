@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Spectrogram &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -16,6 +16,7 @@
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -225,6 +226,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#step"><code class="docutils literal notranslate"><span class="pre">step</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-cupy"><code class="docutils literal notranslate"><span class="pre">to_cupy</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-dask"><code class="docutils literal notranslate"><span class="pre">to_dask</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#to-frequencyseries-list"><code class="docutils literal notranslate"><span class="pre">to_frequencyseries_list</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-jax"><code class="docutils literal notranslate"><span class="pre">to_jax</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-mne"><code class="docutils literal notranslate"><span class="pre">to_mne</span></code></a></li>
 </ul>
@@ -238,6 +240,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#to-quantities"><code class="docutils literal notranslate"><span class="pre">to_quantities</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-tensorflow"><code class="docutils literal notranslate"><span class="pre">to_tensorflow</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-th2d"><code class="docutils literal notranslate"><span class="pre">to_th2d</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#to-timeseries-list"><code class="docutils literal notranslate"><span class="pre">to_timeseries_list</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-torch"><code class="docutils literal notranslate"><span class="pre">to_torch</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-zarr"><code class="docutils literal notranslate"><span class="pre">to_zarr</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tostring"><code class="docutils literal notranslate"><span class="pre">tostring</span></code></a></li>
@@ -293,6 +296,12 @@
 <li class="toctree-l2"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Array2D.html">Array2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Array4D.html">Array4D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScalarField.html">ScalarField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorField.html">VectorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TensorField.html">TensorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldList.html">FieldList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldDict.html">FieldDict</a></li>
 <li class="toctree-l2"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Plot.html">Plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Noise.html">Noise</a></li>
@@ -308,10 +317,7 @@
 <li class="toctree-l2"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ja/index.html">詳細リファレンス</a></li>
 </ul>
 
         </div>
@@ -1385,6 +1391,19 @@ a.shift(‘-1 km’)
 </div>
 <p>Convert to Dask Array.</p>
 </section>
+<section id="to-frequencyseries-list">
+<h3><code class="docutils literal notranslate"><span class="pre">to_frequencyseries_list</span></code><a class="headerlink" href="#to-frequencyseries-list" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_frequencyseries_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FrequencySeriesList</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Convert this Spectrogram to a list of FrequencySeries, one per time bin.</p>
+<p>For a Spectrogram with shape <code class="docutils literal notranslate"><span class="pre">(ntimes,</span> <span class="pre">nfreqs)</span></code>, this extracts each row (time bin) as a FrequencySeries with the same frequency axis.</p>
+<p><strong>Returns</strong></p>
+<ul class="simple">
+<li><p><strong>fs_list</strong> : <code class="docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code> - A list of FrequencySeries, one for each time bin. Each FrequencySeries has length <code class="docutils literal notranslate"><span class="pre">nfreqs</span></code>.</p></li>
+<li><p><strong>times</strong> : <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> - The time axis of this Spectrogram (length <code class="docutils literal notranslate"><span class="pre">ntimes</span></code>).</p></li>
+</ul>
+</section>
 <section id="to-jax">
 <h3><code class="docutils literal notranslate"><span class="pre">to_jax</span></code><a class="headerlink" href="#to-jax" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_jax</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
@@ -1439,6 +1458,19 @@ MNE Info object.</p>
 </pre></div>
 </div>
 <p>Convert to ROOT TH2D.</p>
+</section>
+<section id="to-timeseries-list">
+<h3><code class="docutils literal notranslate"><span class="pre">to_timeseries_list</span></code><a class="headerlink" href="#to-timeseries-list" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_timeseries_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">TimeSeriesList</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Convert this Spectrogram to a list of TimeSeries, one per frequency bin.</p>
+<p>For a Spectrogram with shape <code class="docutils literal notranslate"><span class="pre">(ntimes,</span> <span class="pre">nfreqs)</span></code>, this extracts each column (frequency bin) as a TimeSeries with the same time axis.</p>
+<p><strong>Returns</strong></p>
+<ul class="simple">
+<li><p><strong>ts_list</strong> : <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> - A list of TimeSeries, one for each frequency bin. Each TimeSeries has length <code class="docutils literal notranslate"><span class="pre">ntimes</span></code>.</p></li>
+<li><p><strong>frequencies</strong> : <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> - The frequency axis of this Spectrogram (length <code class="docutils literal notranslate"><span class="pre">nfreqs</span></code>).</p></li>
+</ul>
 </section>
 <section id="to-torch">
 <h3><code class="docutils literal notranslate"><span class="pre">to_torch</span></code><a class="headerlink" href="#to-torch" title="Link to this heading"></a></h3>

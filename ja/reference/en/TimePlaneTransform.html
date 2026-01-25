@@ -1,27 +1,27 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="ja" data-content_root="../../">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TimePlaneTransform &mdash; gwexpy  ドキュメント</title>
+  <title>TimePlaneTransform &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../_static/translations.js?v=4755f45a"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../../genindex.html" />
-    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Plot" href="Plot.html" />
-    <link rel="prev" title="Plane2D" href="Plane2D.html" /> 
+    <link rel="prev" title="FieldDict" href="FieldDict.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,15 +43,16 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ja/index.html">詳細リファレンス</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Detailed Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
@@ -68,6 +69,12 @@
 <li class="toctree-l2"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Array2D.html">Array2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Array4D.html">Array4D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScalarField.html">ScalarField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorField.html">VectorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TensorField.html">TensorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldList.html">FieldList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldDict.html">FieldDict</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">TimePlaneTransform</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#methods">Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#init"><code class="docutils literal notranslate"><span class="pre">__init__</span></code></a></li>
@@ -115,9 +122,9 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">開発者ガイド (Developers Guide)</a></li>
 </ul>
 
         </div>
@@ -152,7 +159,7 @@
 commonly produced by time-frequency or similar transforms.</p>
 <p>This class wraps an Array3D to enforce semantic structure:</p>
 <ul class="simple">
-<li><p>Axis 0 is &quot;time&quot;</p></li>
+<li><p>Axis 0 is “time”</p></li>
 <li><p>Axis 1 and 2 are symmetric spatial/frequency dimensions.</p></li>
 </ul>
 <section id="methods">
@@ -172,7 +179,7 @@ The underlying 3D data.
 Preferred: an <code class="docutils literal notranslate"><span class="pre">Array3D</span></code> instance.
 Supported tuple format: (value, time_axis, axis1, axis2, unit/metadata).
 kind : str, optional
-A string describing the type of transform (e.g., &quot;stlt&quot;, &quot;bispectrum&quot;). Default is &quot;custom&quot;.
+A string describing the type of transform (e.g., “stlt”, “bispectrum”). Default is “custom”.
 meta : dict, optional
 Additional metadata dictionary. Default is None (stored as empty dict).</p>
 <section id="at-sigma">
@@ -197,7 +204,7 @@ or value.</p>
 <p>t : Quantity or float
 Time value. If float, assumed to be in the unit of the time axis.
 method : str, optional
-&quot;nearest&quot; (default). Future versions may support interpolation.</p>
+“nearest” (default). Future versions may support interpolation.</p>
 </section>
 <section id="returns">
 <h2>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
@@ -216,7 +223,7 @@ method : str, optional
 </section>
 <section id="kind">
 <h3><code class="docutils literal notranslate"><span class="pre">kind</span></code><a class="headerlink" href="#kind" title="Link to this heading"></a></h3>
-<p>String describing the type of transform (e.g., 'stlt', 'bispectrum').</p>
+<p>String describing the type of transform (e.g., ‘stlt’, ‘bispectrum’).</p>
 </section>
 <section id="meta">
 <h3><code class="docutils literal notranslate"><span class="pre">meta</span></code><a class="headerlink" href="#meta" title="Link to this heading"></a></h3>
@@ -278,7 +285,7 @@ The generic axis 2 for the resulting Plane2D.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Plane2D.html" class="btn btn-neutral float-left" title="Plane2D" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="FieldDict.html" class="btn btn-neutral float-left" title="FieldDict" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="Plot.html" class="btn btn-neutral float-right" title="Plot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

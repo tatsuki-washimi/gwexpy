@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyaggui 開発計画書 &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pyaggui 開発計画書</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/plans/pyaggui_development_plan.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyaggui">
+<h1>pyaggui 開発計画書<a class="headerlink" href="#pyaggui" title="Link to this heading"></a></h1>
+<p><strong>作成日:</strong> 2026-01-22
+<strong>対象:</strong> <code class="docutils literal notranslate"><span class="pre">gwexpy/gui/pyaggui.py</span></code> および <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> コアライブラリ
+<strong>参照:</strong> DTT Analysis Reports (dtt_subsystem_reports.md, dtt_analysis_report.md, analyze_pyaggui_implementation.md)</p>
+<hr class="docutils" />
+<section id="id1">
+<h2>1. ビジョンと目標<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> の目標は、LIGO/KAGRAの標準診断ツールである <strong>DTT (Diagnostic Test Tools)</strong> の機能を Python (<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>) 上で完全に再現し、さらに現代的なUIと拡張性（シミュレーション、PCオーディオなど）を付加することである。</p>
+<p>最終的には、C++版の DTT (<code class="docutils literal notranslate"><span class="pre">diaggui</span></code>) を置き換え可能なレベルの信頼性と機能性を持たせることを目指す。</p>
+<section id="id2">
+<h3>1.1 安全性の基本方針<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p><strong>重要:</strong> 本開発では、実験装置への予期せぬ影響を防ぐため、以下の安全原則を遵守する：</p>
+<ul class="simple">
+<li><p><strong>AWG（波形生成器）制御は当面シミュレーションのみ</strong>: 実ハードウェアへの波形出力機能は実装しない。</p></li>
+<li><p><strong>ハードウェアインターフェースの分離</strong>: 将来的なハードウェア連携に備え、インターフェースは別モジュールとして設計するが、デフォルトでは無効化する。</p></li>
+<li><p><strong>データ読み取り専用モード</strong>: NDS2 からのデータ取得は読み取り専用とし、実験システムへの書き込みは行わない。</p></li>
+</ul>
+</section>
+</section>
+<section id="id3">
+<h2>2. 現状とギャップ分析<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="strength">
+<h3>2.1 実装済みの機能 (Strength)<a class="headerlink" href="#strength" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>モダンなUI</strong>: Qt (PySide6) ベースのタブ切り替え型インターフェース。</p></li>
+<li><p><strong>基本解析</strong>: FFT, PSD, CSD, Coherence の計算と表示。</p></li>
+<li><p><strong>グラフ機能</strong>: <code class="docutils literal notranslate"><span class="pre">pyqtgraph</span></code> を用いた高速描画、X軸同期、カーソル、単位変換。</p></li>
+<li><p><strong>シミュレーション</strong>: 内部信号生成器によるリアルタイム波形表示。</p></li>
+<li><p><strong>設定UI</strong>: チャンネル選択、ウィンドウ関数、平均化設定などのパラメータ入力画面。</p></li>
+</ul>
+</section>
+<section id="weakness-gap">
+<h3>2.2 未実装・課題 (Weakness / Gap)<a class="headerlink" href="#weakness-gap" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Swept Sine (周波数掃引測定)</strong>: DTTの核心機能の一つだが、gwexpy/pyaggui ともに未実装。</p></li>
+<li><p><strong>Zoom FFT</strong>: ヘテロダイン変換による高分解能解析ロジックが欠如。</p></li>
+<li><p><strong>NDS2 リアルタイム接続</strong>: 基本的な接続はあるが、長時間の安定性やバッファ処理が DTT ほど堅牢ではない可能性。</p></li>
+<li><p><strong>AWG (励起信号) 制御</strong>: 外部ハードウェアへの信号注入ロジックが実装されていない（現在は内部シミュレーションのみ）。</p></li>
+<li><p><strong>データ検証</strong>: 計算結果（PSDの正規化係数など）が DTT とビット単位で一致するか検証されていない。</p></li>
+<li><p><strong>保存/復元</strong>: 測定設定やグラフ状態の保存フォーマット（JSON/XML）が未整備。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id4">
+<h2>3. 開発ロードマップ<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>開発を4つのフェーズに分割し、段階的に DTT の機能を統合していく。</p>
+<section id="phase-1-1-2">
+<h3>Phase 1: コアロジックの検証と基盤強化 (1-2週間)<a class="headerlink" href="#phase-1-1-2" title="Link to this heading"></a></h3>
+<p>既存のFFT解析機能が DTT と物理的に等価であることを保証する。</p>
+<ul class="simple">
+<li><p><strong>Task 1.1: PSD/CSD 正規化の検証</strong></p>
+<ul>
+<li><p>DTT の <code class="docutils literal notranslate"><span class="pre">ffttools.cc</span></code> における <code class="docutils literal notranslate"><span class="pre">windowBW</span></code> (ENBW) 補正と <code class="docutils literal notranslate"><span class="pre">scipy.signal.welch</span></code> の出力を比較テスト。</p></li>
+<li><p>必要に応じて <code class="docutils literal notranslate"><span class="pre">gwexpy.signal.spectral</span></code> モジュールを修正。</p></li>
+</ul>
+</li>
+<li><p><strong>Task 1.2: MeasurementState スキーマの定義</strong></p>
+<ul>
+<li><p>GUI の設定値（周波数範囲、平均回数、チャンネル等）を保持するデータクラス <code class="docutils literal notranslate"><span class="pre">MeasurementState</span></code> を作成。</p></li>
+<li><p>JSON へのシリアライズ/デシリアライズ機能を実装し、設定の保存を可能にする。</p></li>
+</ul>
+</li>
+<li><p><strong>Task 1.3: DTT XML 互換性</strong></p>
+<ul>
+<li><p>既存の <code class="docutils literal notranslate"><span class="pre">dttxml</span></code> パッケージを利用し、DTT で保存された測定データを <code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> で読み込んで表示できるようにする。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="phase-2-swept-sine-3-4">
+<h3>Phase 2: Swept Sine (伝達関数測定) の実装 (3-4週間)<a class="headerlink" href="#phase-2-swept-sine-3-4" title="Link to this heading"></a></h3>
+<p>制御系の同定に不可欠な Swept Sine 測定機能を実装する。</p>
+<ul class="simple">
+<li><p><strong>Task 2.1: Swept Sine シミュレーション</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> に <code class="docutils literal notranslate"><span class="pre">SweptSineMeasurement</span></code> クラスを実装。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scipy.signal.chirp</span></code> 等を用いた掃引信号生成と、同期検波（Lock-in Detection）による振幅・位相推定ロジックの実装。</p></li>
+</ul>
+</li>
+<li><p><strong>Task 2.2: GUI 統合</strong></p>
+<ul>
+<li><p>Measurement タブに “Swept Sine” モードを追加。</p></li>
+<li><p>開始/終了周波数、点数、セトリング時間の設定UIを追加。</p></li>
+<li><p>Bode Plot (振幅・位相) のリアルタイム更新表示。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="phase-3-2-3">
+<h3>Phase 3: 高度な解析機能とデータ処理 (2-3週間)<a class="headerlink" href="#phase-3-2-3" title="Link to this heading"></a></h3>
+<p>DTT の「痒い所に手が届く」機能を実装する。</p>
+<ul class="simple">
+<li><p><strong>Task 3.1: Zoom FFT</strong></p>
+<ul>
+<li><p>周波数シフト（ヘテロダイン）とデシメーションを行う <code class="docutils literal notranslate"><span class="pre">zoom_fft</span></code> 関数を <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> に実装。</p></li>
+<li><p>GUI から中心周波数と帯域幅を指定して実行できるようにする。</p></li>
+</ul>
+</li>
+<li><p><strong>Task 3.2: 単位変換の拡充</strong></p>
+<ul>
+<li><p>キャリブレーションデータ（伝達関数モデル）を適用し、[Ct] -&gt; [m] などの単位変換をリアルタイムで行う機能。</p></li>
+</ul>
+</li>
+<li><p><strong>Task 3.3: バーストノイズ測定</strong></p>
+<ul>
+<li><p>トリガー機能とゲーティング（励起信号の断続出力）ロジックの実装。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="phase-4-4">
+<h3>Phase 4: バックエンド統合と高度なシミュレーション (4週間〜)<a class="headerlink" href="#phase-4-4" title="Link to this heading"></a></h3>
+<p>実運用環境での安定稼働と、より高度なシミュレーション機能を実装する。</p>
+<ul class="simple">
+<li><p><strong>Task 4.1: NDS2 ライブストリーミングの堅牢化</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">nds2-client</span></code> python バインディングを用いた、途切れのないデータストリーミングクラスの再設計。</p></li>
+<li><p>バッファリングと遅延処理の最適化。</p></li>
+<li><p>長時間測定時のメモリ管理と自動再接続機能。</p></li>
+</ul>
+</li>
+<li><p><strong>Task 4.2: AWG シミュレーション機能の拡張</strong></p>
+<ul>
+<li><p><strong>注意: 安全性のため、実ハードウェアへの出力は行わない。シミュレーションのみ実装。</strong></p></li>
+<li><p>より複雑な波形生成アルゴリズム（任意波形の読み込み、合成など）。</p></li>
+<li><p>GUI の Excitation タブで設定した波形をリアルタイムで可視化。</p></li>
+<li><p>波形データのエクスポート機能（将来的な外部AWG制御への準備）。</p></li>
+<li><p><strong>ハードウェアインターフェースは別モジュールとして分離し、デフォルトでは無効化。</strong></p></li>
+</ul>
+</li>
+<li><p><strong>Task 4.3: Foton 連携</strong></p>
+<ul>
+<li><p>フィルタ設計ツール <code class="docutils literal notranslate"><span class="pre">foton</span></code> で作成したフィルタ係数ファイル (<code class="docutils literal notranslate"><span class="pre">.txt</span></code>) を読み込む機能。</p></li>
+<li><p>リアルタイムフィルタリング（IIR SOS形式）のシミュレーションと可視化。</p></li>
+<li><p>フィルタ適用前後の信号比較表示。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="technical-guidelines">
+<h2>4. 技術的指針 (Technical Guidelines)<a class="headerlink" href="#technical-guidelines" title="Link to this heading"></a></h2>
+<section id="id5">
+<h3>4.1 アーキテクチャ原則<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>分離 (Decoupling)</strong>: GUI (<code class="docutils literal notranslate"><span class="pre">pyaggui</span></code>) と計算ロジック (<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>) を明確に分離する。GUI はパラメータを渡し、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> が計算を行い、結果（<code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> 等）を返す。</p></li>
+<li><p><strong>状態管理</strong>: 全ての設定は <code class="docutils literal notranslate"><span class="pre">MeasurementState</span></code> (Pydantic モデル推奨) で管理し、UI の状態とデータの状態が乖離しないようにする。</p></li>
+<li><p><strong>非同期処理</strong>: データ取得や重い計算はメインスレッド（UIスレッド）をブロックしないよう、<code class="docutils literal notranslate"><span class="pre">QThread</span></code> または <code class="docutils literal notranslate"><span class="pre">concurrent.futures</span></code> で実行する。</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>4.2 テスト戦略<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>単体テスト</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> に追加する計算ロジック（Swept Sine, Zoom FFT）は必ず単体テストで数学的な正しさを検証する。</p></li>
+<li><p><strong>比較テスト</strong>: 可能であれば、DTT の出力データ（CSV/XML）をテストケースとして取り込み、Python 版の計算結果と比較する。</p></li>
+<li><p><strong>UIテスト</strong>: <code class="docutils literal notranslate"><span class="pre">pytest-qt</span></code> を使用して、ボタン操作やタブ切り替え時の挙動を自動テストする。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h2>5. 次のアクション<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p>まず <strong>Phase 1</strong> に着手する。具体的には以下のタスクから開始することを推奨する。</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/signal/test_spectral_agreement.py</span></code> を作成し、DTT と同一パラメータでの PSD 計算結果を検証する。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/measurements/</span></code> パッケージを作成し、測定ロジックを管理する基底クラスを設計する。</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

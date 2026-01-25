@@ -1,0 +1,372 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Field API Refactoring and Domain Specification Plan &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">開発者ガイド (Developers Guide)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Field API Refactoring and Domain Specification Plan</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/plans/Unified_Field_API_with_Explicit_Domain_Semantics.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="field-api-refactoring-and-domain-specification-plan">
+<h1>Field API Refactoring and Domain Specification Plan<a class="headerlink" href="#field-api-refactoring-and-domain-specification-plan" title="Link to this heading"></a></h1>
+<section id="title">
+<h2>Title<a class="headerlink" href="#title" title="Link to this heading"></a></h2>
+<p><strong>Unified Field API with Explicit Domain Semantics<br />
+(ScalarField / VectorField / TensorField)</strong></p>
+</section>
+<hr class="docutils" />
+<section id="background-and-motivation">
+<h2>1. Background and Motivation<a class="headerlink" href="#background-and-motivation" title="Link to this heading"></a></h2>
+<p>The legacy implementation used a <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> class under <code class="docutils literal notranslate"><span class="pre">gwexpy.types</span></code>; the current API lives under <code class="docutils literal notranslate"><span class="pre">gwexpy.fields</span></code>.<br />
+However:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">types/</span></code> is intended for low-level or abstract infrastructure.</p></li>
+<li><p>Field objects are primary, user-facing scientific objects.</p></li>
+<li><p>Future extensions may include vector and tensor fields.</p></li>
+<li><p>2D and 3D cases are already treated as degenerate 4D arrays (axis length = 1).</p></li>
+</ul>
+<p>Therefore, we will:</p>
+<ul class="simple">
+<li><p>Remove the explicit “4D” from user-facing class names.</p></li>
+<li><p>Introduce <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">VectorField</span></code>, and <code class="docutils literal notranslate"><span class="pre">TensorField</span></code>.</p></li>
+<li><p>Relocate field-related APIs into a dedicated <code class="docutils literal notranslate"><span class="pre">gwexpy.fields</span></code> namespace.</p></li>
+<li><p>Explicitly formalize <strong>domain semantics</strong> for time/frequency and space/real–Fourier axes.</p></li>
+</ul>
+<p>Backward compatibility is <strong>not required</strong>, as the package is not yet publicly used.</p>
+</section>
+<hr class="docutils" />
+<section id="high-level-design-decisions-fixed">
+<h2>2. High-Level Design Decisions (Fixed)<a class="headerlink" href="#high-level-design-decisions-fixed" title="Link to this heading"></a></h2>
+<section id="public-api-namespace">
+<h3>2.1 Public API Namespace<a class="headerlink" href="#public-api-namespace" title="Link to this heading"></a></h3>
+<ul>
+<li><p><strong>Canonical import path:</strong> <code class="docutils literal notranslate"><span class="pre">gwexpy.fields</span></code></p></li>
+<li><p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+### 2.2 Field Classes
+
+* `ScalarField`
+* `VectorField`
+* `TensorField`
+
+These are user-facing scientific objects.
+
+### 2.3 Shape Convention (Invariant)
+
+#### ScalarField
+
+```
+(axis0, x, y, z)
+```
+
+#### VectorField / TensorField
+
+```
+(axis0, x, y, z, c)
+```
+
+* `axis0`: time or frequency
+* `x, y, z`: spatial axes
+* `c`: component axis (always last)
+
+2D / 3D data are represented as **degenerate cases** with axis length = 1.
+The number of axes is always preserved.
+
+---
+
+## 3. Domain Specification (Core Concept)
+
+### 3.1 Axis Domains
+
+Each coordinate axis carries an explicit domain state.
+
+#### Axis 0 (temporal axis)
+
+```
+axis0_domain ∈ {&quot;time&quot;, &quot;frequency&quot;}
+```
+
+* `&quot;time&quot;` → unit: seconds
+* `&quot;frequency&quot;` → unit: Hz
+
+#### Spatial axes (x, y, z)
+
+```
+space_domain[axis] ∈ {&quot;position&quot;, &quot;wavenumber&quot;}
+```
+
+* `&quot;position&quot;` → unit: length (e.g. m)
+* `&quot;wavenumber&quot;` → unit: 1/length (rad/m preferred)
+
+This allows unambiguous representation of:
+
+* `(t, x, y, z)`
+* `(f, x, y, z)`
+* `(t, kx, ky, z)`
+* `(f, kx, ky, kz)`
+
+### 3.2 Partial Fourier Transforms
+
+* Fourier transforms may be applied to **any subset of axes**.
+* Only transformed axes change domain:
+
+  ```
+  position → wavenumber
+  time     → frequency
+  ```
+* Non-transformed axes remain unchanged.
+
+### 3.3 Wavenumber Convention
+
+* The canonical spatial Fourier variable is **k**.
+* Relationship:
+
+  ```
+  k = 2π / λ
+  ```
+* `λ` (wavelength) is provided only as a **derived view**, not a primary axis.
+* Spatial FFTs are **signed, two-sided**.
+
+### 3.4 Axis Length = 1 (Slicing Semantics)
+
+* Slicing does **not remove axes**.
+* Sliced axes retain:
+
+  * domain
+  * coordinate value (Quantity of length 1)
+* This preserves information such as:
+
+  * “z = 0 m slice”
+  * “kx = 0 mode”
+
+---
+
+## 4. Directory Structure (Target)
+
+```
+gwexpy/
+├─ fields/
+│  ├─ __init__.py
+│  ├─ base.py          # shared base class / mixin
+│  ├─ scalar.py        # ScalarField
+│  ├─ vector.py        # VectorField
+│  ├─ tensor.py        # TensorField
+│  ├─ collections.py  # FieldList, FieldDict
+│  ├─ signal.py        # PSD, xcorr, coherence (ScalarField only initially)
+│  └─ plot.py          # plotting helpers
+│
+├─ types/
+│  ├─ array4d.py       # low-level 4D array container
+│  └─ ...
+```
+
+---
+
+## 5. Implementation Phases
+
+### Phase 1: Structural Refactoring
+
+* Move Field-related code from `types/` to `fields/`.
+* Rename:
+
+  * `ScalarField` → `ScalarField`
+  * `ScalarFieldList/Dict` → `FieldList/FieldDict`
+* Update all internal imports.
+* No compatibility aliases required.
+
+### Phase 2: Base Class and Domain Metadata
+
+* Introduce a shared base class (e.g. `FieldBase`).
+* Add required metadata:
+
+  * `axis0_domain`
+  * `space_domain` (per axis)
+* Enforce consistency:
+
+  * domain ↔ coordinate unit checks
+  * domain updates during FFT operations
+
+### Phase 3: FFT and Domain Propagation
+
+* Time FFT:
+
+  * `time → frequency`
+* Spatial FFT:
+
+  * `position → wavenumber` per axis
+* Partial FFT support.
+* FFT ordering (e.g. `fftshift`) handled separately from domain.
+
+### Phase 4: Signal Processing (ScalarField only)
+
+* Implement / migrate:
+
+  * PSD (Welch)
+  * Cross-correlation
+  * Time-delay maps
+  * Coherence maps
+* Vector/Tensor fields must be reduced to ScalarField first:
+
+  * `component()`
+  * `magnitude()`
+  * other invariants (future)
+
+### Phase 5: Plotting and Documentation
+
+* Plotting functions operate on ScalarField.
+* Domain-aware axis labeling.
+* Documentation:
+
+  * Field invariants
+  * Domain examples
+  * Partial FFT examples
+
+---
+
+## 6. Acceptance Criteria (Definition of Done)
+
+* `from gwexpy.fields import ScalarField` works.
+* ScalarField always has exactly 4 coordinate axes.
+* Vector/Tensor fields have a final component axis.
+* Partial FFT updates only the transformed axes’ domains.
+* Domain and coordinate units are always consistent.
+* 2D/3D cases are handled via axis length = 1.
+* Tests exist for:
+
+  * domain propagation
+  * slicing behavior
+  * partial FFT
+  * unit consistency
+
+---
+
+## 7. Explicit Non-Goals (For Now)
+
+* No backward compatibility with old `ScalarField` imports.
+* No direct signal processing on Vector/Tensor fields.
+* No non-Cartesian coordinate systems.
+* No I/O or serialization changes.
+
+---
+
+## 8. Notes for AI Coding Tools
+
+* This refactor is intentionally **breaking**.
+* Favor clarity and explicit metadata over clever inference.
+* Domain handling must be deterministic and testable.
+* Keep component handling orthogonal to domain handling.
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

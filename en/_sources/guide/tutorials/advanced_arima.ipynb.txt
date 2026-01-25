@@ -1,0 +1,912 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# ARIMAモデルによる時系列予測\n",
+    "\n",
+    "このノートブックでは、`gwexpy` の `TimeSeries` クラスに追加された ARIMA 関連の機能（AR, MA, ARMA, ARIMA/SARIMAX）を使用して、時系列データのモデリングと未来予測を行う方法を解説します。\n",
+    "\n",
+    "## 準備\n",
+    "\n",
+    "必要なライブラリをインポートします。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:34:36.469092Z",
+     "iopub.status.busy": "2026-01-24T10:34:36.468984Z",
+     "iopub.status.idle": "2026-01-24T10:34:38.722578Z",
+     "shell.execute_reply": "2026-01-24T10:34:38.721326Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "\n",
+    "from gwexpy.timeseries import TimeSeries"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## サンプルデータの作成\n",
+    "\n",
+    "ARIMAモデルの効果を確認するために、トレンド、季節性（周期性）、ノイズを含んだ模擬データを作成します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:34:38.725356Z",
+     "iopub.status.busy": "2026-01-24T10:34:38.725008Z",
+     "iopub.status.idle": "2026-01-24T10:34:38.780993Z",
+     "shell.execute_reply": "2026-01-24T10:34:38.780189Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# Trend + Seasonality + Noise\n",
+    "t0 = 0\n",
+    "dt = 0.1\n",
+    "duration = 30\n",
+    "t = np.arange(0, duration, dt)\n",
+    "n_samples = len(t)\n",
+    "\n",
+    "# 1. Linear Trend\n",
+    "trend = 0.3 * t\n",
+    "\n",
+    "# 2. Periodic component (Sine)\n",
+    "seasonality = 2.0 * np.sin(2 * np.pi * 0.2 * t)\n",
+    "\n",
+    "# 3. Noise\n",
+    "np.random.seed(42)\n",
+    "noise = np.random.normal(0, 0.8, n_samples)\n",
+    "\n",
+    "data = trend + seasonality + noise\n",
+    "\n",
+    "# Create TimeSeries object\n",
+    "ts = TimeSeries(data, t0=t0, dt=dt, unit=\"V\", name=\"Sample Data\")\n",
+    "\n",
+    "ts.plot()\n",
+    "plt.title(\"Original Data (Trend + Seasonality + Noise)\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 1. AR (AutoRegressive) モデル\n",
+    "\n",
+    "ARモデルは、現在の値が過去の値に依存すると仮定するモデルです。\n",
+    "`ts.ar(p)` メソッドを使用します。`p` は次数です。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:34:38.782934Z",
+     "iopub.status.busy": "2026-01-24T10:34:38.782820Z",
+     "iopub.status.idle": "2026-01-24T10:34:38.996117Z",
+     "shell.execute_reply": "2026-01-24T10:34:38.995254Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# Fit with order p=3\n",
+    "model_ar = ts.ar(p=3)\n",
+    "\n",
+    "# Display model summary\n",
+    "# print(model_ar.summary())\n",
+    "\n",
+    "# Plot results\n",
+    "# forecast_steps specifies how many steps to forecast into the future\n",
+    "model_ar.plot(forecast_steps=50, alpha=0.5)\n",
+    "plt.title(\"AR(3) Model Forecast\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 2. MA (Moving Average) モデル\n",
+    "\n",
+    "MAモデルは、現在の値が過去の予測誤差（ホワイトノイズ）に依存すると仮定するモデルです。\n",
+    "`ts.ma(q)` メソッドを使用します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:34:38.998468Z",
+     "iopub.status.busy": "2026-01-24T10:34:38.998172Z",
+     "iopub.status.idle": "2026-01-24T10:34:39.051295Z",
+     "shell.execute_reply": "2026-01-24T10:34:39.050783Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# Fit with order q=3\n",
+    "model_ma = ts.ma(q=3)\n",
+    "\n",
+    "# Plot results\n",
+    "model_ma.plot(forecast_steps=50, alpha=0.5)\n",
+    "plt.title(\"MA(3) Model Forecast\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 3. ARMA (AutoRegressive Moving Average) モデル\n",
+    "\n",
+    "ARとMAを組み合わせたモデルです。\n",
+    "`ts.arma(p, q)` メソッドを使用します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:34:39.055379Z",
+     "iopub.status.busy": "2026-01-24T10:34:39.055260Z",
+     "iopub.status.idle": "2026-01-24T10:34:39.164513Z",
+     "shell.execute_reply": "2026-01-24T10:34:39.164128Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# Fit with p=2, q=2\n",
+    "model_arma = ts.arma(p=2, q=2)\n",
+    "\n",
+    "model_arma.plot(forecast_steps=50, alpha=0.5)\n",
+    "plt.title(\"ARMA(2, 2) Model Forecast\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 4. ARIMA / Auto-ARIMA\n",
+    "\n",
+    "ARIMAモデルは、差分を取ることで非定常性（トレンドなど）を除去し、ARMAモデルを適用します。\n",
+    "\n",
+    "`ts.arima()` メソッドを使用します。\n",
+    "`auto=True` オプションを指定すると、`pmdarima` ライブラリを使用して最適なパラメータ (p, d, q) を自動的に探索します。これが最も推奨される方法です。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:34:39.168077Z",
+     "iopub.status.busy": "2026-01-24T10:34:39.167949Z",
+     "iopub.status.idle": "2026-01-24T10:37:48.819073Z",
+     "shell.execute_reply": "2026-01-24T10:37:48.818056Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Searching for optimal ARIMA parameters... (this may take a few seconds)\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "                                      SARIMAX Results                                      \n",
+      "===========================================================================================\n",
+      "Dep. Variable:                                   y   No. Observations:                  300\n",
+      "Model:             SARIMAX(1, 1, 2)x(1, 0, [], 50)   Log Likelihood                -404.141\n",
+      "Date:                             Sat, 24 Jan 2026   AIC                            820.282\n",
+      "Time:                                     19:37:48   BIC                            842.485\n",
+      "Sample:                                          0   HQIC                           829.169\n",
+      "                                             - 300                                         \n",
+      "Covariance Type:                               opg                                         \n",
+      "==============================================================================\n",
+      "                 coef    std err          z      P>|z|      [0.025      0.975]\n",
+      "------------------------------------------------------------------------------\n",
+      "intercept      0.0044      0.006      0.695      0.487      -0.008       0.017\n",
+      "ar.L1          0.8693      0.053     16.310      0.000       0.765       0.974\n",
+      "ma.L1         -1.6277      0.052    -31.464      0.000      -1.729      -1.526\n",
+      "ma.L2          0.7409      0.043     17.235      0.000       0.657       0.825\n",
+      "ar.S.L50       0.1604      0.071      2.263      0.024       0.021       0.299\n",
+      "sigma2         0.8667      0.070     12.431      0.000       0.730       1.003\n",
+      "===================================================================================\n",
+      "Ljung-Box (L1) (Q):                   0.13   Jarque-Bera (JB):                 0.69\n",
+      "Prob(Q):                              0.71   Prob(JB):                         0.71\n",
+      "Heteroskedasticity (H):               1.37   Skew:                            -0.10\n",
+      "Prob(H) (two-sided):                  0.12   Kurtosis:                         3.14\n",
+      "===================================================================================\n",
+      "\n",
+      "Warnings:\n",
+      "[1] Covariance matrix calculated using the outer product of gradients (complex-step).\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"Searching for optimal ARIMA parameters... (this may take a few seconds)\")\n",
+    "\n",
+    "# Seasonality can also be considered\n",
+    "# m is the number of steps in a seasonal period\n",
+    "model_auto = ts.arima(auto=True, auto_kwargs={'seasonal': True, 'm': 50})\n",
+    "\n",
+    "# Show info of the optimal model found\n",
+    "print(model_auto.summary())\n",
+    "\n",
+    "# Plot results (Forecasting for a longer period)\n",
+    "ax = model_auto.plot(forecast_steps=100, alpha=0.5)\n",
+    "plt.title(\"Auto-ARIMA Model Forecast (Seasonal)\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 5. 予測データの取得\n",
+    "\n",
+    "プロットだけでなく、`.forecast()` メソッドを使用して予測値の `TimeSeries` オブジェクトを直接取得できます。\n",
+    "これには信頼区間（Confidence Interval）も含まれます。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:37:48.821388Z",
+     "iopub.status.busy": "2026-01-24T10:37:48.821270Z",
+     "iopub.status.idle": "2026-01-24T10:37:48.829456Z",
+     "shell.execute_reply": "2026-01-24T10:37:48.828496Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Forecast Data:\n",
+      "TimeSeries([ 9.02063128,  9.6094657 , 10.04247631, 10.15366767,\n",
+      "            10.05259752, 10.38953478, 10.79815151, 10.7102782 ,\n",
+      "            11.00660841, 11.18205246, 11.08230575, 11.29883086,\n",
+      "            10.98339909, 11.34917016, 11.51885752, 11.45196135,\n",
+      "            11.87327454, 11.52379202, 11.68683767, 11.78939489,\n",
+      "            11.98098488, 11.63016415, 11.97773587, 11.84043006,\n",
+      "            11.72116502, 11.91254974, 11.88390331, 11.78617651,\n",
+      "            11.87744683, 11.82552359, 11.8978438 , 11.97900621,\n",
+      "            12.11133271, 11.76628531, 12.22002418, 11.72134893,\n",
+      "            11.98240157, 12.11216243, 12.11237931, 12.04095457,\n",
+      "            12.14350252, 12.16098484, 12.20712226, 12.45443674,\n",
+      "            12.45772244, 12.3928846 , 12.67001456, 12.66918777,\n",
+      "            12.811045  , 12.86573742]\n",
+      "           unit: V,\n",
+      "           t0: 30.0 s,\n",
+      "           dt: 0.1 s,\n",
+      "           name: Sample Data_auto_forecast,\n",
+      "           channel: None)\n",
+      "\n",
+      "Confidence Interval (Upper):\n",
+      "TimeSeries([ 9.6485734 , 10.25546688, 10.71958794, 10.87456095,\n",
+      "            10.82818668, 11.22844439, 11.70675184, 11.69299274,\n",
+      "            12.06629509, 12.32036062, 12.29997447, 12.59592487,\n",
+      "            12.35949021, 12.803475  , 13.05034122, 13.05941559,\n",
+      "            13.55537603, 13.27914639, 13.51401227, 13.68694319,\n",
+      "            13.94746457, 13.66415042, 14.07783095, 14.00527003,\n",
+      "            13.94942439, 14.20294448, 14.23519256, 14.19716342,\n",
+      "            14.34697864, 14.35249117, 14.48118085, 14.61768817,\n",
+      "            14.80437543, 14.51274362, 15.01899042, 14.57195137,\n",
+      "            14.88380284, 15.06355799, 15.11299592, 15.09004877,\n",
+      "            15.24035926, 15.30491602, 15.39746543, 15.69055383,\n",
+      "            15.73899855, 15.71872684, 16.03985096, 16.08246623,\n",
+      "            16.26723232, 16.36431836]\n",
+      "           unit: V,\n",
+      "           t0: 30.0 s,\n",
+      "           dt: 0.1 s,\n",
+      "           name: upper_ci,\n",
+      "           channel: None)\n"
+     ]
+    }
+   ],
+   "source": [
+    "steps = 50\n",
+    "\n",
+    "# Get forecast values and confidence intervals\n",
+    "forecast_ts, intervals = model_auto.forecast(steps=steps, alpha=0.5) # 50% confidence interval\n",
+    "\n",
+    "print(\"Forecast Data:\")\n",
+    "print(forecast_ts)\n",
+    "\n",
+    "print(\"\\nConfidence Interval (Upper):\")\n",
+    "print(intervals['upper'])\n",
+    "\n",
+    "# Forecasting data can be saved or used for other analysis\n",
+    "# forecast_ts.write(\"forecast.h5\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 6. 重力波データ解析における応用: ARIMAによるノイズ除去 (Whitening)\n",
+    "\n",
+    "重力波データ解析では、定常的な「有色ノイズ」の中から突発的なバースト信号やリングダウン波形を抽出するために、**白色化 (Whitening)** という処理が行われます。\n",
+    "ARIMAモデルを背景ノイズの予測モデルとして学習させ、実測値からその予測値を引く（残差をとる）ことで、ノイズを除去し信号を強調することが可能です。"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 1: 有色ノイズの生成と信号の注入\n",
+    "まず、低周波成分が強い有色ノイズ（AR(1)プロセス）を作成し、そこにそのままでは判別しにくい微弱な信号（サインガウシアン）を埋め込みます。\n",
+    "※単位には Astropy で認識可能な \"strain\" を使用します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:37:48.832075Z",
+     "iopub.status.busy": "2026-01-24T10:37:48.831575Z",
+     "iopub.status.idle": "2026-01-24T10:37:48.843269Z",
+     "shell.execute_reply": "2026-01-24T10:37:48.842754Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "\n",
+    "from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "\n",
+    "def generate_mock_data(duration=10, fs=1024):\n",
+    "    t = np.linspace(0, duration, int(duration * fs))\n",
+    "\n",
+    "    # 1. Background Noise (AR(1) process with strong autocorrelation)\n",
+    "    np.random.seed(42)\n",
+    "    white_noise = np.random.normal(0, 1, len(t))\n",
+    "    colored_noise = np.zeros_like(white_noise)\n",
+    "    for i in range(1, len(t)):\n",
+    "        colored_noise[i] = 0.95 * colored_noise[i-1] + white_noise[i]\n",
+    "\n",
+    "    # 2. Injected Signal (Sine-Gaussian)\n",
+    "    center_time = 5.0\n",
+    "    sig_freq = 50.0\n",
+    "    width = 0.1\n",
+    "    signal = 2.0 * np.exp(-(t - center_time)**2 / (2 * width**2)) * np.sin(2 * np.pi * sig_freq * t)\n",
+    "\n",
+    "    data = colored_noise + signal\n",
+    "    # Use a standard unit string that astropy/gwpy can recognize\n",
+    "    return TimeSeries(data, t0=0, dt=1/fs, unit=\"strain\", name=\"MockData\")\n",
+    "\n",
+    "ts = generate_mock_data()\n",
+    "\n",
+    "plt.figure(figsize=(10, 4))\n",
+    "plt.plot(ts, color='gray')\n",
+    "plt.title(\"Original Noisy Data (Signal is hidden here)\")\n",
+    "plt.xlabel(\"Time [s]\")\n",
+    "plt.grid(True, linestyle=\":\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 2: ARIMAによるノイズモデリング\n",
+    "`auto=True` を使って、背景ノイズの自己相関構造を表現する最適なモデルを探索します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:37:48.844631Z",
+     "iopub.status.busy": "2026-01-24T10:37:48.844531Z",
+     "iopub.status.idle": "2026-01-24T10:37:53.947560Z",
+     "shell.execute_reply": "2026-01-24T10:37:53.947142Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Searching for optimal noise model parameters...\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n",
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/sklearn/utils/deprecation.py:132: FutureWarning: 'force_all_finite' was renamed to 'ensure_all_finite' in 1.6 and will be removed in 1.8.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Best model order: (5, 1, 0)\n",
+      "                               SARIMAX Results                                \n",
+      "==============================================================================\n",
+      "Dep. Variable:                      y   No. Observations:                10240\n",
+      "Model:               SARIMAX(5, 1, 0)   Log Likelihood              -14694.968\n",
+      "Date:                Sat, 24 Jan 2026   AIC                          29403.936\n",
+      "Time:                        19:37:53   BIC                          29454.574\n",
+      "Sample:                             0   HQIC                         29421.057\n",
+      "                              - 10240                                         \n",
+      "Covariance Type:                  opg                                         \n",
+      "==============================================================================\n",
+      "                 coef    std err          z      P>|z|      [0.025      0.975]\n",
+      "------------------------------------------------------------------------------\n",
+      "intercept     -0.0003      0.010     -0.033      0.973      -0.020       0.019\n",
+      "ar.L1         -0.0379      0.010     -3.794      0.000      -0.057      -0.018\n",
+      "ar.L2         -0.0413      0.010     -4.150      0.000      -0.061      -0.022\n",
+      "ar.L3         -0.0271      0.010     -2.692      0.007      -0.047      -0.007\n",
+      "ar.L4         -0.0303      0.010     -3.078      0.002      -0.050      -0.011\n",
+      "ar.L5         -0.0216      0.010     -2.195      0.028      -0.041      -0.002\n",
+      "sigma2         1.0330      0.014     72.089      0.000       1.005       1.061\n",
+      "===================================================================================\n",
+      "Ljung-Box (L1) (Q):                   0.01   Jarque-Bera (JB):                 0.54\n",
+      "Prob(Q):                              0.94   Prob(JB):                         0.76\n",
+      "Heteroskedasticity (H):               1.03   Skew:                             0.01\n",
+      "Prob(H) (two-sided):                  0.35   Kurtosis:                         3.03\n",
+      "===================================================================================\n",
+      "\n",
+      "Warnings:\n",
+      "[1] Covariance matrix calculated using the outer product of gradients (complex-step).\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"Searching for optimal noise model parameters...\")\n",
+    "# We prioritize AR model for whitening, so we set max_p=5 and max_q=0.\n",
+    "model = ts.arima(auto=True, max_p=5, max_q=0)\n",
+    "print(f\"Best model order: {model.res.model.order}\")\n",
+    "print(model.summary())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 3: 残差（Residuals）の抽出と可視化\n",
+    "モデルが予測した「定常ノイズ」を引くことで、残差 $x_r = x - \\hat{x}$ を求めます。これが白色化されたデータとなります。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:37:53.950130Z",
+     "iopub.status.busy": "2026-01-24T10:37:53.949989Z",
+     "iopub.status.idle": "2026-01-24T10:37:54.106949Z",
+     "shell.execute_reply": "2026-01-24T10:37:54.105915Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "ts_whitened = model.residuals()\n",
+    "ts_whitened.name = \"Whitened Data\"\n",
+    "\n",
+    "fig, ax = plt.subplots(2, 1, figsize=(10, 8), sharex=True)\n",
+    "\n",
+    "ax[0].plot(ts, color='gray', alpha=0.5, label=\"Original\")\n",
+    "ax[0].set_title(\"Original Noisy Data\")\n",
+    "ax[0].legend(loc=\"upper right\")\n",
+    "\n",
+    "ax[1].plot(ts_whitened, color='red', label=\"Residuals (Whitened)\")\n",
+    "ax[1].set_title(\"Whitened Data (Signal is now visible!)\")\n",
+    "ax[1].axvspan(4.8, 5.2, color='orange', alpha=0.3, label=\"Injected Signal Position\")\n",
+    "ax[1].legend(loc=\"upper right\")\n",
+    "\n",
+    "plt.tight_layout()\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 4: 周波数領域での評価\n",
+    "パワースペクトル密度 (PSD) を計算して比較します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-24T10:37:54.110388Z",
+     "iopub.status.busy": "2026-01-24T10:37:54.110271Z",
+     "iopub.status.idle": "2026-01-24T10:37:54.129272Z",
+     "shell.execute_reply": "2026-01-24T10:37:54.128438Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "fft_original = ts.psd()\n",
+    "fft_whitened = ts_whitened.psd()\n",
+    "\n",
+    "plt.figure(figsize=(10, 5))\n",
+    "plt.loglog(fft_original.frequencies.value, fft_original.value, label=\"Original Noisy PSD\", alpha=0.7)\n",
+    "plt.loglog(fft_whitened.frequencies.value, fft_whitened.value, label=\"Whitened PSD (Residuals)\", alpha=0.7)\n",
+    "plt.title(\"PSD Comparison: Effect of ARIMA Whitening\")\n",
+    "plt.xlabel(\"Frequency [Hz]\")\n",
+    "plt.ylabel(\"PSD [1/Hz]\")\n",
+    "plt.legend()\n",
+    "plt.grid(True, which=\"both\", linestyle=\":\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### まとめ\n",
+    "- `model.residuals()` を用いることで、複雑な数式を書かずに簡単に白色化処理が実行できます。\n",
+    "- この手法は、重力波解析におけるバースト信号の探索や、イベント直後のリングダウン波形（指数減衰する正弦波）の抽出に非常に強力です。"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "base",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

@@ -1,26 +1,27 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="ja" data-content_root="../../">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GUI Testing (Headless) &mdash; gwexpy  ドキュメント</title>
+  <title>GUI Testing (Headless) &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../_static/translations.js?v=4755f45a"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../../genindex.html" />
-    <link rel="search" title="検索" href="../../search.html" />
-    <link rel="prev" title="gwexpy Numerical Logic (A2) Contract" href="../contracts/numerical.html" /> 
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="ScalarField Physics Review" href="../analysis/scalarfield_physics_review_20260120.html" />
+    <link rel="prev" title="Full Test Environment" href="testing.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,28 +43,36 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developers Guide</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../contracts/numerical.html">gwexpy Numerical Logic (A2) Contract</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">GUI Testing (Headless)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#quick-run">Quick Run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#core-dumps">Core Dumps</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#gdb-single-test">gdb (Single Test)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#valgrind-single-test">valgrind (Single Test)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">開発者ガイド (Developers Guide)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">設計方針とコントラクト</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id2">開発ガイド</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="testing.html">Full Test Environment</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">GUI Testing (Headless)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#quick-run">Quick Run</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core-dumps">Core Dumps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gdb-single-test">gdb (Single Test)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#valgrind-single-test">valgrind (Single Test)</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">技術分析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">進行中の計画</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id5">最近のレポート</a></li>
 </ul>
 </li>
 </ul>
@@ -82,7 +91,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Developers Guide</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">開発者ガイド (Developers Guide)</a></li>
       <li class="breadcrumb-item active">GUI Testing (Headless)</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/guides/gui_testing.md" class="fa fa-github"> Edit on GitHub</a>
@@ -141,7 +150,8 @@ coredumpctl<span class="w"> </span>gdb<span class="w"> </span>&lt;PID&gt;
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../contracts/numerical.html" class="btn btn-neutral float-left" title="gwexpy Numerical Logic (A2) Contract" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="testing.html" class="btn btn-neutral float-left" title="Full Test Environment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../analysis/scalarfield_physics_review_20260120.html" class="btn btn-neutral float-right" title="ScalarField Physics Review" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

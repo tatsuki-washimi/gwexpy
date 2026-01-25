@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Spectral &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -16,11 +16,12 @@
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Analysis" href="analysis.html" />
-    <link rel="prev" title="Spectrogram" href="spectrogram.html" /> 
+    <link rel="prev" title="Fields" href="fields.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -54,6 +55,7 @@
 <li class="toctree-l2"><a class="reference internal" href="timeseries.html">Time Series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="frequencyseries.html">Frequency Series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fields.html">Fields</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Spectral</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#gwexpy.spectral.bootstrap_spectrogram"><code class="docutils literal notranslate"><span class="pre">bootstrap_spectrogram()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gwexpy.spectral.calculate_correlation_factor"><code class="docutils literal notranslate"><span class="pre">calculate_correlation_factor()</span></code></a></li>
@@ -63,13 +65,12 @@
 <li class="toctree-l2"><a class="reference internal" href="analysis.html">Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="noise.html">Noise</a></li>
 <li class="toctree-l2"><a class="reference internal" href="types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extra.html">fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extra.html#module-gwexpy.interop">interop</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ja/index.html">詳細リファレンス</a></li>
 </ul>
 
         </div>
@@ -111,18 +112,18 @@ if available, significantly accelerating the resampling process.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>spectrogram</strong> (<em>gwpy.spectrogram.Spectrogram</em>)</p></li>
-<li><p><strong>n_boot</strong> (<em>int</em>)</p></li>
-<li><p><strong>method</strong> (<em>str</em>) – ‘median’ (default) or ‘mean’.</p></li>
-<li><p><strong>average</strong> (<em>str</em><em>, </em><em>optional</em>) – Alias for method (‘median’ or ‘mean’) for compatibility.</p></li>
-<li><p><strong>ci</strong> (<em>float</em>)</p></li>
-<li><p><strong>window</strong> (<em>str</em><em> or </em><em>array</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>nperseg</strong> (<em>int</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>noverlap</strong> (<em>int</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>block_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Size of blocks for block bootstrap. If None, perform standard bootstrap.</p></li>
-<li><p><strong>rebin_width</strong> (<em>float</em><em>, </em><em>optional</em>) – Width to rebin frequencies (in Hz) before bootstrapping.</p></li>
-<li><p><strong>return_map</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, return a BifrequencyMap of the covariance.</p></li>
-<li><p><strong>ignore_nan</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, ignore NaNs during bootstrap averaging. Default is True.</p></li>
+<li><p><strong>spectrogram</strong> (<a class="reference external" href="https://gwpy.github.io/docs/stable/api/gwpy.spectrogram.Spectrogram/#gwpy.spectrogram.Spectrogram" title="(in GWpy v3.0.12)"><em>gwpy.spectrogram.Spectrogram</em></a>)</p></li>
+<li><p><strong>n_boot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – ‘median’ (default) or ‘mean’.</p></li>
+<li><p><strong>average</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Alias for method (‘median’ or ‘mean’) for compatibility.</p></li>
+<li><p><strong>ci</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>window</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><em>array</em><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>nperseg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>noverlap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>block_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Size of blocks for block bootstrap. If None, perform standard bootstrap.</p></li>
+<li><p><strong>rebin_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Width to rebin frequencies (in Hz) before bootstrapping.</p></li>
+<li><p><strong>return_map</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, return a BifrequencyMap of the covariance.</p></li>
+<li><p><strong>ignore_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, ignore NaNs during bootstrap averaging. Default is True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -150,17 +151,17 @@ reduced effective degrees of freedom due to correlated (overlapping) segments.</
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>window</strong> (<em>str</em><em>, </em><em>tuple</em><em>, or </em><em>array_like</em>) – Window function used for FFT.</p></li>
-<li><p><strong>nperseg</strong> (<em>int</em>) – Length of each segment (N_fft).</p></li>
-<li><p><strong>noverlap</strong> (<em>int</em>) – Number of overlapping samples.</p></li>
-<li><p><strong>n_blocks</strong> (<em>int</em>) – Number of segments available for averaging.</p></li>
+<li><p><strong>window</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, or </em><em>array_like</em>) – Window function used for FFT.</p></li>
+<li><p><strong>nperseg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Length of each segment (N_fft).</p></li>
+<li><p><strong>noverlap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of overlapping samples.</p></li>
+<li><p><strong>n_blocks</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of segments available for averaging.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Multiplicative correction factor for the standard error.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -176,10 +177,10 @@ data duration so that the frequency axis (df = 1 / fftlength) is well-defined.</
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>timeseries</strong> (<a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>gwexpy.timeseries.TimeSeries</em></a>) – Input series for PSD estimation.</p></li>
-<li><p><strong>fftlength</strong> (<em>float</em><em> or </em><em>Quantity</em><em>, </em><em>optional</em>) – FFT length in seconds. Defines df = 1 / fftlength.</p></li>
-<li><p><strong>overlap</strong> (<em>float</em><em> or </em><em>Quantity</em><em>, </em><em>optional</em>) – Overlap between segments in seconds.</p></li>
-<li><p><strong>window</strong> (<em>str</em><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – Window function name or samples.</p></li>
-<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – PSD estimation method name registered in GWpy.</p></li>
+<li><p><strong>fftlength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> or </em><em>Quantity</em><em>, </em><em>optional</em>) – FFT length in seconds. Defines df = 1 / fftlength.</p></li>
+<li><p><strong>overlap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> or </em><em>Quantity</em><em>, </em><em>optional</em>) – Overlap between segments in seconds.</p></li>
+<li><p><strong>window</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – Window function name or samples.</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – PSD estimation method name registered in GWpy.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -197,7 +198,7 @@ data duration so that the frequency axis (df = 1 / fftlength) is well-defined.</
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="spectrogram.html" class="btn btn-neutral float-left" title="Spectrogram" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fields.html" class="btn btn-neutral float-left" title="Fields" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="analysis.html" class="btn btn-neutral float-right" title="Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

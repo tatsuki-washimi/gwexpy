@@ -1,24 +1,24 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="ja" data-content_root="../../../">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwexpy.timeseries.matrix &mdash; gwexpy  ドキュメント</title>
+  <title>gwexpy.timeseries.matrix &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../../_static/translations.js?v=4755f45a"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,20 +40,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">開発者ガイド (Developers Guide)</a></li>
 </ul>
 
         </div>
@@ -70,7 +71,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html">モジュールコード</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
       <li class="breadcrumb-item active">gwexpy.timeseries.matrix</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -80,10 +81,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>gwexpy.timeseries.matrix のソースコード</h1><div class="highlight"><pre>
+  <h1>Source code for gwexpy.timeseries.matrix</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
@@ -91,6 +92,8 @@
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.signal</span>  <span class="c1"># noqa: F401 - availability check</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c1"># scipy.signal is checked here for availability but not strictly required</span>
+    <span class="c1"># for basic TimeSeriesMatrix initialization.</span>
     <span class="k">pass</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span> <span class="k">as</span> <span class="n">BaseTimeSeries</span>
@@ -108,21 +111,21 @@
 
 
 <div class="viewcode-block" id="TimeSeriesMatrix">
-<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix">[ドキュメント]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">TimeSeriesMatrix</span><span class="p">(</span>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeSeriesMatrix</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
     <span class="n">PhaseMethodsMixin</span><span class="p">,</span>
     <span class="n">TimeSeriesMatrixCoreMixin</span><span class="p">,</span>
-    <span class="n">TimeSeriesMatrixAnalysisMixin</span><span class="p">,</span>
+    <span class="n">TimeSeriesMatrixAnalysisMixin</span><span class="p">,</span>  <span class="c1"># type: ignore[misc]</span>
     <span class="n">TimeSeriesMatrixSpectralMixin</span><span class="p">,</span>
     <span class="n">TimeSeriesMatrixInteropMixin</span><span class="p">,</span>
-    <span class="n">SeriesMatrix</span><span class="p">,</span>
+    <span class="n">SeriesMatrix</span><span class="p">,</span>  <span class="c1"># type: ignore[misc]</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    2D Matrix container for multiple TimeSeries objects sharing a common time axis.</span>
-<span class="sd">    </span>
-<span class="sd">    This class represents a 2-dimensional array (rows x columns) where each element corresponds </span>
-<span class="sd">    to a TimeSeries data stream. Crucially, **all elements in the matrix share the same time array** </span>
-<span class="sd">    (same `t0`, `dt`, and number of samples). It behaves like a multivariate time series </span>
+
+<span class="sd">    This class represents a 2-dimensional array (rows x columns) where each element corresponds</span>
+<span class="sd">    to a TimeSeries data stream. Crucially, **all elements in the matrix share the same time array**</span>
+<span class="sd">    (same `t0`, `dt`, and number of samples). It behaves like a multivariate time series</span>
 <span class="sd">    organized in a grid structure.</span>
 
 <span class="sd">    Provides dt, t0, times aliases and constructs FrequencySeriesMatrix via FFT.</span>
@@ -133,7 +136,7 @@
     <span class="n">list_class</span> <span class="o">=</span> <span class="n">TimeSeriesList</span>
     <span class="n">series_type</span> <span class="o">=</span> <span class="n">SeriesType</span><span class="o">.</span><span class="n">TIME</span>
     <span class="n">default_xunit</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span>
-    <span class="n">default_yunit</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">default_yunit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_default_plot_method</span> <span class="o">=</span> <span class="s2">&quot;plot&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span>
@@ -146,6 +149,31 @@
         <span class="n">epoch</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesMatrix</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new TimeSeriesMatrix.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : array_like, optional</span>
+<span class="sd">            The data values for the matrix. Should be of shape (rows, cols, samples).</span>
+<span class="sd">        times : array_like, optional</span>
+<span class="sd">            The time values corresponding to each sample. If provided, `dt` and `t0` are ignored.</span>
+<span class="sd">        dt : float, astropy.units.Quantity, optional</span>
+<span class="sd">            The time step between samples.</span>
+<span class="sd">        t0 : float, astropy.units.Quantity, optional</span>
+<span class="sd">            The start time of the data.</span>
+<span class="sd">        sample_rate : float, astropy.units.Quantity, optional</span>
+<span class="sd">            The sample rate of the data (1/dt).</span>
+<span class="sd">        epoch : float, astropy.units.Quantity, optional</span>
+<span class="sd">            The epoch of the data.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Additional keyword arguments.</span>
+<span class="sd">            Supported: `channel_names`, `xunit`, `unit`, `name`, `meta`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        TimeSeriesMatrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_coerce_t0_gps</span>
@@ -260,7 +288,7 @@
                             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
-                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">cn</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
@@ -268,10 +296,10 @@
 
         <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">obj</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;TimeSeriesMatrix&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TimeSeriesMatrix.plot">
-<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.plot">[ドキュメント]</a>
+<a class="viewcode-back" href="../../../reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the matrix data.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
@@ -316,7 +344,12 @@
 
         <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;TimeSeriesMatrix.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Element-wise delegate to `TimeSeries.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">`.&quot;</span>
+        <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Apply `TimeSeries.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">` element-wise to all entries in the matrix.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;This method delegates the call to the underlying `TimeSeries` objects, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;preserving the matrix structure and per-element metadata while updating &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;the data values and time axis according to the operation.&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">_wrapper</span>
 
     <span class="nb">setattr</span><span class="p">(</span><span class="n">TimeSeriesMatrix</span><span class="p">,</span> <span class="n">_m</span><span class="p">,</span> <span class="n">_make_wrapper</span><span class="p">(</span><span class="n">_m</span><span class="p">))</span>
@@ -344,7 +377,9 @@
             <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span>
             <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;TimeSeriesMatrix.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Element-wise delegate to `TimeSeries.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">` with another TimeSeries.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Apply `TimeSeries.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">` element-wise with another `TimeSeries` object.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;This method delegates the bivariate call to each `TimeSeries` in &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;the matrix, using the provided `other` object as the second operand.&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">_wrapper</span>
 
@@ -359,7 +394,11 @@
 
             <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span>
             <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;TimeSeriesMatrix.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Element-wise delegate to `TimeSeries.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">`.&quot;</span>
+            <span class="n">_wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Apply univariate spectral method `TimeSeries.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">` element-wise.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Computes the </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for each entry in the matrix, returning a &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;FrequencySeriesMatrix containing the results.&quot;</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="n">_wrapper</span>
 
         <span class="nb">setattr</span><span class="p">(</span><span class="n">TimeSeriesMatrix</span><span class="p">,</span> <span class="n">_m</span><span class="p">,</span> <span class="n">_make_univ_wrapper</span><span class="p">(</span><span class="n">_m</span><span class="p">))</span>

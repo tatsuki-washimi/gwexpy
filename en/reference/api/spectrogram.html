@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Spectrogram &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -16,10 +16,11 @@
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Spectral" href="spectral.html" />
+    <link rel="next" title="Fields" href="fields.html" />
     <link rel="prev" title="Frequency Series" href="frequencyseries.html" /> 
 </head>
 
@@ -66,10 +67,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.pcolormesh"><code class="docutils literal notranslate"><span class="pre">Spectrogram.pcolormesh()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.plot"><code class="docutils literal notranslate"><span class="pre">Spectrogram.plot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.radian"><code class="docutils literal notranslate"><span class="pre">Spectrogram.radian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.rebin"><code class="docutils literal notranslate"><span class="pre">Spectrogram.rebin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.to_frequencyseries_list"><code class="docutils literal notranslate"><span class="pre">Spectrogram.to_frequencyseries_list()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.to_mne"><code class="docutils literal notranslate"><span class="pre">Spectrogram.to_mne()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.to_obspy"><code class="docutils literal notranslate"><span class="pre">Spectrogram.to_obspy()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.to_quantities"><code class="docutils literal notranslate"><span class="pre">Spectrogram.to_quantities()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.to_th2d"><code class="docutils literal notranslate"><span class="pre">Spectrogram.to_th2d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.to_timeseries_list"><code class="docutils literal notranslate"><span class="pre">Spectrogram.to_timeseries_list()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramDict"><code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code></a><ul>
@@ -135,17 +139,17 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="fields.html">Fields</a></li>
 <li class="toctree-l2"><a class="reference internal" href="spectral.html">Spectral</a></li>
 <li class="toctree-l2"><a class="reference internal" href="analysis.html">Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="noise.html">Noise</a></li>
 <li class="toctree-l2"><a class="reference internal" href="types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extra.html">fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extra.html#module-gwexpy.interop">interop</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ja/index.html">詳細リファレンス</a></li>
 </ul>
 
         </div>
@@ -179,7 +183,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.spectrogram.</span></span><span class="sig-name descname"><span class="pre">Spectrogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">InteropMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Spectrogram</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">InteropMixin</span></code>, <a class="reference external" href="https://gwpy.github.io/docs/stable/api/gwpy.spectrogram.Spectrogram/#gwpy.spectrogram.Spectrogram" title="(in GWpy v3.0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Spectrogram</span></code></a></p>
 <p>Extends gwpy.spectrogram.Spectrogram with additional interop methods.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.bootstrap">
@@ -196,7 +200,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.degree">
-<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.degree" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.degree" title="Link to this definition"></a></dt>
 <dd><p>Calculate the phase of this Spectrogram in degrees.
 :param unwrap: If True, unwrap the phase to remove discontinuities along the time axis.</p>
 <blockquote>
@@ -215,7 +219,7 @@ All other metadata (times, frequencies, channel, epoch, etc.) are preserved.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.from_mne">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_mne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tfr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.from_mne"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.from_mne" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_mne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tfr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.from_mne"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.from_mne" title="Link to this definition"></a></dt>
 <dd><p>Create Spectrogram from MNE-Python TFR object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -232,7 +236,7 @@ All other metadata (times, frequencies, channel, epoch, etc.) are preserved.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.from_obspy">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_obspy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.from_obspy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.from_obspy" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_obspy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.from_obspy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.from_obspy" title="Link to this definition"></a></dt>
 <dd><p>Create Spectrogram from Obspy Stream.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -282,17 +286,17 @@ All other metadata (times, frequencies, channel, epoch, etc.) are preserved.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.plot" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.plot" title="Link to this definition"></a></dt>
 <dd><p>Plot this Spectrogram. Delegates to gwexpy.plot.Plot.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.radian">
-<span class="sig-name descname"><span class="pre">radian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.radian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.radian" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">radian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.radian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.radian" title="Link to this definition"></a></dt>
 <dd><p>Calculate the phase of this Spectrogram in radians.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>unwrap</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, unwrap the phase to remove discontinuities along the time axis.
+<dd class="field-odd"><p><strong>unwrap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, unwrap the phase to remove discontinuities along the time axis.
 Default is False.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -306,8 +310,62 @@ All other metadata (times, frequencies, channel, epoch, etc.) are preserved.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.rebin">
+<span class="sig-name descname"><span class="pre">rebin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.units.Quantity.html#astropy.units.Quantity" title="(in Astropy v7.2)"><span class="pre">Quantity</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.units.Quantity.html#astropy.units.Quantity" title="(in Astropy v7.2)"><span class="pre">Quantity</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.rebin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.rebin" title="Link to this definition"></a></dt>
+<dd><p>Rebin the spectrogram in time and/or frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> or </em><em>Quantity</em><em>, </em><em>optional</em>) – New time bin width in seconds.</p></li>
+<li><p><strong>df</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> or </em><em>Quantity</em><em>, </em><em>optional</em>) – New frequency bin width in Hz.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The rebinned spectrogram.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram">Spectrogram</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.to_frequencyseries_list">
+<span class="sig-name descname"><span class="pre">to_frequencyseries_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList" title="gwexpy.frequencyseries.FrequencySeriesList"><span class="pre">FrequencySeriesList</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.to_frequencyseries_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.to_frequencyseries_list" title="Link to this definition"></a></dt>
+<dd><p>Convert this Spectrogram to a list of FrequencySeries, one per time bin.</p>
+<p>For a Spectrogram with shape <code class="docutils literal notranslate"><span class="pre">(ntimes,</span> <span class="pre">nfreqs)</span></code>, this extracts each
+row (time bin) as a FrequencySeries with the same frequency axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>fs_list</strong> (<em>FrequencySeriesList</em>) – A list of FrequencySeries, one for each time bin.
+Each FrequencySeries has length <code class="docutils literal notranslate"><span class="pre">nfreqs</span></code>.</p></li>
+<li><p><strong>times</strong> (<em>Quantity</em>) – The time axis of this Spectrogram (length <code class="docutils literal notranslate"><span class="pre">ntimes</span></code>).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Each FrequencySeries inherits <code class="docutils literal notranslate"><span class="pre">unit</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>, <code class="docutils literal notranslate"><span class="pre">channel</span></code> from
+this Spectrogram.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> is set to <code class="docutils literal notranslate"><span class="pre">&quot;{original_name}_t{time}&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;t{time}&quot;</span></code> if
+the Spectrogram has no name, where <code class="docutils literal notranslate"><span class="pre">time</span></code> is the time value.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spec</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs_list</span><span class="p">,</span> <span class="n">times</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_frequencyseries_list</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">fs_list</span><span class="p">)</span>  <span class="c1"># equals ntimes</span>
+<span class="go">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;test_t0.0s&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.to_mne">
-<span class="sig-name descname"><span class="pre">to_mne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.to_mne"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.to_mne" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_mne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.to_mne"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.to_mne" title="Link to this definition"></a></dt>
 <dd><p>Convert to MNE-Python object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -321,7 +379,7 @@ All other metadata (times, frequencies, channel, epoch, etc.) are preserved.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.to_obspy">
-<span class="sig-name descname"><span class="pre">to_obspy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.to_obspy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.to_obspy" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_obspy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.to_obspy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.to_obspy" title="Link to this definition"></a></dt>
 <dd><p>Convert to Obspy Stream.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -342,12 +400,46 @@ All other metadata (times, frequencies, channel, epoch, etc.) are preserved.</p>
 <dd><p>Convert to ROOT TH2D.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.to_timeseries_list">
+<span class="sig-name descname"><span class="pre">to_timeseries_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesList" title="gwexpy.timeseries.TimeSeriesList"><span class="pre">TimeSeriesList</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.to_timeseries_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.to_timeseries_list" title="Link to this definition"></a></dt>
+<dd><p>Convert this Spectrogram to a list of TimeSeries, one per frequency bin.</p>
+<p>For a Spectrogram with shape <code class="docutils literal notranslate"><span class="pre">(ntimes,</span> <span class="pre">nfreqs)</span></code>, this extracts each
+column (frequency bin) as a TimeSeries with the same time axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>ts_list</strong> (<em>TimeSeriesList</em>) – A list of TimeSeries, one for each frequency bin.
+Each TimeSeries has length <code class="docutils literal notranslate"><span class="pre">ntimes</span></code>.</p></li>
+<li><p><strong>frequencies</strong> (<em>Quantity</em>) – The frequency axis of this Spectrogram (length <code class="docutils literal notranslate"><span class="pre">nfreqs</span></code>).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Each TimeSeries inherits <code class="docutils literal notranslate"><span class="pre">unit</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>, <code class="docutils literal notranslate"><span class="pre">channel</span></code> from this
+Spectrogram.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> is set to <code class="docutils literal notranslate"><span class="pre">&quot;{original_name}_f{freq}&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;f{freq}&quot;</span></code> if
+the Spectrogram has no name, where <code class="docutils literal notranslate"><span class="pre">freq</span></code> is the frequency value.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spec</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts_list</span><span class="p">,</span> <span class="n">freqs</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_timeseries_list</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">ts_list</span><span class="p">)</span>  <span class="c1"># equals nfreqs</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;test_f10.0Hz&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramDict">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.spectrogram.</span></span><span class="sig-name descname"><span class="pre">SpectrogramDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UserDict</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.UserDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserDict</span></code></a></p>
 <p>Dictionary of Spectrogram objects.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -367,9 +459,9 @@ Use <cite>inplace=True</cite> where possible to update container in-place.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>t0</strong> (<em>float</em>) – Start and end times.</p></li>
-<li><p><strong>t1</strong> (<em>float</em>) – Start and end times.</p></li>
-<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, modify in place.</p></li>
+<li><p><strong>t0</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Start and end times.</p></li>
+<li><p><strong>t1</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Start and end times.</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, modify in place.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -385,9 +477,9 @@ Use <cite>inplace=True</cite> where possible to update container in-place.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>f0</strong> (<em>float</em><em> or </em><em>Quantity</em>) – Start and end frequencies.</p></li>
-<li><p><strong>f1</strong> (<em>float</em><em> or </em><em>Quantity</em>) – Start and end frequencies.</p></li>
-<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, modify in place.</p></li>
+<li><p><strong>f0</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> or </em><em>Quantity</em>) – Start and end frequencies.</p></li>
+<li><p><strong>f1</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> or </em><em>Quantity</em>) – Start and end frequencies.</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, modify in place.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -398,7 +490,7 @@ Use <cite>inplace=True</cite> where possible to update container in-place.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramDict.degree">
-<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramDict" title="gwexpy.spectrogram.collections.SpectrogramDict"><span class="pre">SpectrogramDict</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.degree" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramDict" title="gwexpy.spectrogram.collections.SpectrogramDict"><span class="pre">SpectrogramDict</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.degree" title="Link to this definition"></a></dt>
 <dd><p>Compute phase (in degrees) of each spectrogram.</p>
 </dd></dl>
 
@@ -409,9 +501,9 @@ Use <cite>inplace=True</cite> where possible to update container in-place.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dt</strong> (<em>float</em>) – New time resolution.</p></li>
-<li><p><strong>df</strong> (<em>float</em>) – New frequency resolution.</p></li>
-<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, modify in place.</p></li>
+<li><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – New time resolution.</p></li>
+<li><p><strong>df</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – New frequency resolution.</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, modify in place.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -434,7 +526,7 @@ Use <cite>inplace=True</cite> where possible to update container in-place.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramDict.radian">
-<span class="sig-name descname"><span class="pre">radian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramDict" title="gwexpy.spectrogram.collections.SpectrogramDict"><span class="pre">SpectrogramDict</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.radian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.radian" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">radian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramDict" title="gwexpy.spectrogram.collections.SpectrogramDict"><span class="pre">SpectrogramDict</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.radian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.radian" title="Link to this definition"></a></dt>
 <dd><p>Compute phase (in radians) of each spectrogram.</p>
 </dd></dl>
 
@@ -451,9 +543,9 @@ Use <cite>inplace=True</cite> where possible to update container in-place.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dt</strong> (<em>float</em>) – New time bin size.</p></li>
-<li><p><strong>df</strong> (<em>float</em>) – New frequency bin size.</p></li>
-<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, modify in place.</p></li>
+<li><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – New time bin size.</p></li>
+<li><p><strong>df</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – New frequency bin size.</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, modify in place.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -464,19 +556,19 @@ Use <cite>inplace=True</cite> where possible to update container in-place.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramDict.to_cupy">
-<span class="sig-name descname"><span class="pre">to_cupy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.to_cupy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.to_cupy" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_cupy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.to_cupy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.to_cupy" title="Link to this definition"></a></dt>
 <dd><p>Convert each item to cupy.ndarray. Returns a dict.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramDict.to_dask">
-<span class="sig-name descname"><span class="pre">to_dask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.to_dask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.to_dask" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_dask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.to_dask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.to_dask" title="Link to this definition"></a></dt>
 <dd><p>Convert each item to dask.array. Returns a dict.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramDict.to_jax">
-<span class="sig-name descname"><span class="pre">to_jax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.to_jax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.to_jax" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_jax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.to_jax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.to_jax" title="Link to this definition"></a></dt>
 <dd><p>Convert each item to jax.Array. Returns a dict.</p>
 </dd></dl>
 
@@ -503,20 +595,20 @@ in the matrix’s MetaDataMatrix.</p></li>
 <dd class="field-even"><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix" title="gwexpy.spectrogram.SpectrogramMatrix">SpectrogramMatrix</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – If shape or axes differ after unit conversion.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If shape or axes differ after unit conversion.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramDict.to_tensorflow">
-<span class="sig-name descname"><span class="pre">to_tensorflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.to_tensorflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.to_tensorflow" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_tensorflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.to_tensorflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.to_tensorflow" title="Link to this definition"></a></dt>
 <dd><p>Convert each item to tensorflow.Tensor. Returns a dict.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramDict.to_torch">
-<span class="sig-name descname"><span class="pre">to_torch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.to_torch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.to_torch" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_torch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.to_torch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.to_torch" title="Link to this definition"></a></dt>
 <dd><p>Convert each item to torch.Tensor. Returns a dict.</p>
 </dd></dl>
 
@@ -539,7 +631,7 @@ In either case, this is followed by: for k, v in F.items(): D[k] = v</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramList">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.spectrogram.</span></span><span class="sig-name descname"><span class="pre">SpectrogramList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initlist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UserList</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.UserList" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserList</span></code></a></p>
 <p>List of Spectrogram objects.
 Reference: similar to TimeSeriesList but for 2D Spectrograms.</p>
 <div class="admonition note">
@@ -573,7 +665,7 @@ Use <cite>inplace=True</cite> where possible to avoid deep copies.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramList.degree">
-<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramList" title="gwexpy.spectrogram.collections.SpectrogramList"><span class="pre">SpectrogramList</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.degree" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramList" title="gwexpy.spectrogram.collections.SpectrogramList"><span class="pre">SpectrogramList</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.degree" title="Link to this definition"></a></dt>
 <dd><p>Compute phase (in degrees) of each spectrogram.</p>
 </dd></dl>
 
@@ -603,7 +695,7 @@ Use <cite>inplace=True</cite> where possible to avoid deep copies.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramList.radian">
-<span class="sig-name descname"><span class="pre">radian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramList" title="gwexpy.spectrogram.collections.SpectrogramList"><span class="pre">SpectrogramList</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.radian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.radian" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">radian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramList" title="gwexpy.spectrogram.collections.SpectrogramList"><span class="pre">SpectrogramList</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.radian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.radian" title="Link to this definition"></a></dt>
 <dd><p>Compute phase (in radians) of each spectrogram.</p>
 </dd></dl>
 
@@ -621,19 +713,19 @@ Use <cite>inplace=True</cite> where possible to avoid deep copies.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramList.to_cupy">
-<span class="sig-name descname"><span class="pre">to_cupy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.to_cupy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.to_cupy" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_cupy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.to_cupy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.to_cupy" title="Link to this definition"></a></dt>
 <dd><p>Convert each item to cupy.ndarray. Returns a list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramList.to_dask">
-<span class="sig-name descname"><span class="pre">to_dask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.to_dask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.to_dask" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_dask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.to_dask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.to_dask" title="Link to this definition"></a></dt>
 <dd><p>Convert each item to dask.array. Returns a list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramList.to_jax">
-<span class="sig-name descname"><span class="pre">to_jax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.to_jax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.to_jax" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_jax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.to_jax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.to_jax" title="Link to this definition"></a></dt>
 <dd><p>Convert each item to jax.Array. Returns a list.</p>
 </dd></dl>
 
@@ -660,20 +752,20 @@ in the matrix’s MetaDataMatrix.</p></li>
 <dd class="field-even"><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix" title="gwexpy.spectrogram.SpectrogramMatrix">SpectrogramMatrix</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – If shape or axes differ after unit conversion.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If shape or axes differ after unit conversion.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramList.to_tensorflow">
-<span class="sig-name descname"><span class="pre">to_tensorflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.to_tensorflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.to_tensorflow" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_tensorflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.to_tensorflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.to_tensorflow" title="Link to this definition"></a></dt>
 <dd><p>Convert each item to tensorflow.Tensor. Returns a list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramList.to_torch">
-<span class="sig-name descname"><span class="pre">to_torch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.to_torch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.to_torch" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_torch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.to_torch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.to_torch" title="Link to this definition"></a></dt>
 <dd><p>Convert each item to torch.Tensor. Returns a list.</p>
 </dd></dl>
 
@@ -688,7 +780,7 @@ in the matrix’s MetaDataMatrix.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.spectrogram.</span></span><span class="sig-name descname"><span class="pre">SpectrogramMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/matrix.html#SpectrogramMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SpectrogramMatrixCoreMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SpectrogramMatrixAnalysisMixin</span></code>, <a class="reference internal" href="types.html#gwexpy.types.SeriesMatrix" title="gwexpy.types.seriesmatrix_base.SeriesMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeriesMatrix</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SpectrogramMatrixCoreMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SpectrogramMatrixAnalysisMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SeriesMatrix</span></code></p>
 <p>Evaluation Matrix for Spectrograms (Time-Frequency maps).</p>
 <p>This class represents a collection of Spectrograms, structured as either:</p>
 <ul class="simple">
@@ -697,15 +789,13 @@ in the matrix’s MetaDataMatrix.</p></li>
 </ul>
 <p>It inherits from SeriesMatrix, providing powerful indexing, metadata management,
 and analysis capabilities (slicing, interpolation, statistics).</p>
-<section id="serialization-known-limitation">
-<h2>Serialization (Known Limitation)<a class="headerlink" href="#serialization-known-limitation" title="Link to this heading"></a></h2>
-<p>Pickle round-trip (<cite>pickle.dumps</cite> / <cite>pickle.loads</cite>) preserves the array shape
-and values, but <strong>axis metadata (xindex/times, frequencies) may not be fully
-restored</strong> due to numpy ndarray subclass serialization constraints.</p>
-<p>This is a known limitation. If you require full metadata preservation, consider
-using HDF5 I/O methods (e.g., <cite>to_hdf5</cite> / <cite>from_hdf5</cite>) instead of pickle.</p>
-<p>TODO: Implement <cite>__reduce_ex__</cite> or <cite>__getstate__/__setstate__</cite> to enable
-complete metadata preservation in pickle round-trips.</p>
+<section id="serialization">
+<h2>Serialization<a class="headerlink" href="#serialization" title="Link to this heading"></a></h2>
+<p>Pickle round-trips are supported via a custom <code class="docutils literal notranslate"><span class="pre">__reduce__</span></code>/<code class="docutils literal notranslate"><span class="pre">__setstate__</span></code>
+that appends <code class="docutils literal notranslate"><span class="pre">__dict__</span></code> to the ndarray state. This preserves axis metadata
+such as <code class="docutils literal notranslate"><span class="pre">times</span></code>/<code class="docutils literal notranslate"><span class="pre">frequencies</span></code>, <code class="docutils literal notranslate"><span class="pre">rows</span></code>/<code class="docutils literal notranslate"><span class="pre">cols</span></code>, and <code class="docutils literal notranslate"><span class="pre">meta</span></code> as long as
+they live in <code class="docutils literal notranslate"><span class="pre">__dict__</span></code>. Attributes stored elsewhere or pointing to external
+resources still require higher-level I/O (e.g., HDF5) for full fidelity.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.col_index">
 <span class="sig-name descname"><span class="pre">col_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/matrix.html#SpectrogramMatrix.col_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.col_index" title="Link to this definition"></a></dt>
@@ -726,7 +816,7 @@ complete metadata preservation in pickle round-trips.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.is_compatible">
-<span class="sig-name descname"><span class="pre">is_compatible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/matrix.html#SpectrogramMatrix.is_compatible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.is_compatible" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">is_compatible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/matrix.html#SpectrogramMatrix.is_compatible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.is_compatible" title="Link to this definition"></a></dt>
 <dd><p>Check compatibility with another SpectrogramMatrix/object.
 Overrides SeriesMatrix.is_compatible to avoid loop range issues due to
 mismatch between data shape (Time axis) and metadata shape (Batch/Col).</p>
@@ -810,7 +900,7 @@ so n_samples is determined by _x_axis_index.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="frequencyseries.html" class="btn btn-neutral float-left" title="Frequency Series" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="spectral.html" class="btn btn-neutral float-right" title="Spectral" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="fields.html" class="btn btn-neutral float-right" title="Fields" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

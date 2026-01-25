@@ -1,25 +1,25 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="ja" data-content_root="../../">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TimeSeries &mdash; gwexpy  ドキュメント</title>
+  <title>TimeSeries &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c033477b"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../_static/translations.js?v=4755f45a"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../../genindex.html" />
-    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="TimeSeriesDict" href="TimeSeriesDict.html" />
     <link rel="prev" title="Detailed Reference" href="index.html" /> 
 </head>
@@ -43,15 +43,16 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ja/index.html">詳細リファレンス</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Detailed Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">TimeSeries</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#methods">Methods</a><ul>
@@ -768,6 +769,12 @@
 <li class="toctree-l2"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Array2D.html">Array2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Array4D.html">Array4D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScalarField.html">ScalarField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorField.html">VectorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TensorField.html">TensorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldList.html">FieldList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FieldDict.html">FieldDict</a></li>
 <li class="toctree-l2"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Plot.html">Plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Noise.html">Noise</a></li>
@@ -784,9 +791,9 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">開発者ガイド (Developers Guide)</a></li>
 </ul>
 
         </div>
@@ -834,7 +841,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>absolute(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True[, signature, extobj])</p>
+<p>absolute(x, /, out=None, *, where=True, casting=’same_kind’, order=’K’, dtype=None, subok=True[, signature, extobj])</p>
 <p>Calculate the absolute value element-wise.</p>
 <p><code class="docutils literal notranslate"><span class="pre">np.abs</span></code> is a shorthand for this function.</p>
 </section>
@@ -902,7 +909,7 @@ plt.show()</p>
 <div><blockquote>
 <div><blockquote>
 <div><p>xx = x + 1j * x[:, np.newaxis]
-plt.imshow(np.abs(xx), extent=[-10, 10, -10, 10], cmap='gray')
+plt.imshow(np.abs(xx), extent=[-10, 10, -10, 10], cmap=’gray’)
 plt.show()</p>
 </div></blockquote>
 </div></blockquote>
@@ -1026,17 +1033,17 @@ a data series containing the ASD</p>
 <section id="id5">
 <h2>Parameters<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
 <p>rule : str, float, or Quantity
-Target time interval (e.g., '1s', 0.1, 0.5*u.s).
+Target time interval (e.g., ‘1s’, 0.1, 0.5*u.s).
 method : str or None
-Fill method: None (exact), 'ffill', 'bfill', 'nearest'.
+Fill method: None (exact), ‘ffill’, ‘bfill’, ‘nearest’.
 fill_value : scalar
 Value for missing data points.
 origin : str
-Reference point for grid alignment: 't0' or 'gps0'.
+Reference point for grid alignment: ‘t0’ or ‘gps0’.
 offset : Quantity
 Time offset from origin.
 align : str
-Grid alignment: 'ceil' or 'floor'.
+Grid alignment: ‘ceil’ or ‘floor’.
 tolerance : float
 Tolerance for matching times.
 max_gap : float
@@ -1308,16 +1315,16 @@ these segments will be windowed before convolving.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>a.copy(order='C')</p>
+<p>a.copy(order=’C’)</p>
 <p>Return a copy of the array.</p>
 </section>
 </section>
 <section id="id27">
 <h2>Parameters<a class="headerlink" href="#id27" title="Link to this heading"></a></h2>
-<p>order : {'C', 'F', 'A', 'K'}, optional
-Controls the memory layout of the copy. 'C' means C-order,
-'F' means F-order, 'A' means 'F' if <code class="docutils literal notranslate"><span class="pre">a</span></code> is Fortran contiguous,
-'C' otherwise. 'K' means match the layout of <code class="docutils literal notranslate"><span class="pre">a</span></code> as closely
+<p>order : {‘C’, ‘F’, ‘A’, ‘K’}, optional
+Controls the memory layout of the copy. ‘C’ means C-order,
+‘F’ means F-order, ‘A’ means ‘F’ if <code class="docutils literal notranslate"><span class="pre">a</span></code> is Fortran contiguous,
+‘C’ otherwise. ‘K’ means match the layout of <code class="docutils literal notranslate"><span class="pre">a</span></code> as closely
 as possible. (Note that this function and :func:<code class="docutils literal notranslate"><span class="pre">numpy.copy</span></code> are very
 similar but have different default values for their order=
 arguments, and this function always passes sub-classes through.)</p>
@@ -1330,7 +1337,7 @@ numpy.copyto</p>
 <section id="id29">
 <h2>Notes<a class="headerlink" href="#id29" title="Link to this heading"></a></h2>
 <p>This function is the preferred method for creating an array copy.  The
-function :func:<code class="docutils literal notranslate"><span class="pre">numpy.copy</span></code> is similar, but it defaults to using order 'K',
+function :func:<code class="docutils literal notranslate"><span class="pre">numpy.copy</span></code> is similar, but it defaults to using order ‘K’,
 and will not pass sub-classes through by default.</p>
 </section>
 <section id="id30">
@@ -1338,7 +1345,7 @@ and will not pass sub-classes through by default.</p>
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>x = np.array([[1,2,3],[4,5,6]], order='F')</p>
+<div><p>x = np.array([[1,2,3],[4,5,6]], order=’F’)</p>
 </div></blockquote>
 </div></blockquote>
 </div></blockquote>
@@ -1377,7 +1384,7 @@ array([[1, 2, 3],
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>y.flags['C_CONTIGUOUS']
+<div><p>y.flags[‘C_CONTIGUOUS’]
 True</p>
 </div></blockquote>
 </div></blockquote>
@@ -1447,7 +1454,7 @@ the expected mean.</p>
 <p>Calculate correlation coefficient with another TimeSeries.</p>
 <p>Args:
 other (TimeSeries): The series to compare with.
-method (str): 'pearson', 'kendall', 'mic', or 'distance'.
+method (str): ‘pearson’, ‘kendall’, ‘mic’, or ‘distance’.
 **kwargs: Additional arguments passed to the underlying function.</p>
 <p>Returns:
 float: The correlation coefficient.</p>
@@ -1494,7 +1501,7 @@ a data series containing the CSD.</p>
 </pre></div>
 </div>
 <p>Calculate the cross spectral density spectrogram of this
-<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> with 'other'.</p>
+<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> with ‘other’.</p>
 </section>
 </section>
 <section id="id37">
@@ -1586,12 +1593,12 @@ phase trends represented as <code class="docutils literal notranslate"><span cla
 <p>Demodulation is useful when trying to examine steady sinusoidal
 signals we know to be contained within data. For instance,
 we can download some data from GWOSC to look at trends of the
-amplitude and phase of LIGO Livingston's calibration line at 331.3 Hz:</p>
+amplitude and phase of LIGO Livingston’s calibration line at 331.3 Hz:</p>
 <blockquote>
 <div><blockquote>
 <div><blockquote>
 <div><p>from gwpy.timeseries import TimeSeries
-data = TimeSeries.fetch_open_data('L1', 1131350417, 1131357617)</p>
+data = TimeSeries.fetch_open_data(‘L1’, 1131350417, 1131357617)</p>
 </div></blockquote>
 </div></blockquote>
 </div></blockquote>
@@ -1612,7 +1619,7 @@ amplitude of the calibration line:</p>
 <div><p>from gwpy.plot import Plot
 plot = Plot(amp)
 ax = plot.gca()
-ax.set_ylabel('Strain Amplitude at 331.3 Hz')
+ax.set_ylabel(‘Strain Amplitude at 331.3 Hz’)
 plot.show()</p>
 </div></blockquote>
 </div></blockquote>
@@ -1829,16 +1836,16 @@ method that parses the file that was downloaded</p>
 <div><blockquote>
 <div><blockquote>
 <div><p>from gwpy.timeseries import (TimeSeries, StateVector)
-print(TimeSeries.fetch_open_data('H1', 1126259446, 1126259478))
+print(TimeSeries.fetch_open_data(‘H1’, 1126259446, 1126259478))
 TimeSeries([  2.17704028e-19,  2.08763900e-19,  2.39681183e-19,
-...,   3.55365541e-20,  6.33533516e-20,
+…,   3.55365541e-20,  6.33533516e-20,
 7.58121195e-20]
 unit: Unit(dimensionless),
 t0: 1126259446.0 s,
 dt: 0.000244140625 s,
 name: Strain,
 channel: None)
-print(StateVector.fetch_open_data('H1', 1126259446, 1126259478))
+print(StateVector.fetch_open_data(‘H1’, 1126259446, 1126259478))
 StateVector([127,127,127,127,127,127,127,127,127,127,127,127,
 127,127,127,127,127,127,127,127,127,127,127,127,
 127,127,127,127,127,127,127,127]
@@ -1879,14 +1886,14 @@ in different formats.</p>
 <p>nfft : <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional
 Length of the FFT.
 mode : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-&quot;gwpy&quot;: standard GWpy FFT (normalized).
-&quot;transient&quot;: transient-restoration mode for round-trip IFFT.
+“gwpy”: standard GWpy FFT (normalized).
+“transient”: transient-restoration mode for round-trip IFFT.
 pad_mode : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-Padding mode (&quot;zero&quot;, &quot;reflect&quot;). Only for &quot;transient&quot; mode.
+Padding mode (“zero”, “reflect”). Only for “transient” mode.
 pad_left, pad_right : <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional
 Padding length (samples or seconds).
 nfft_mode : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-&quot;next_fast_len&quot; for optimal performance.
+“next_fast_len” for optimal performance.
 other_length : <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional
 For convolution-like transforms.</p>
 </section>
@@ -1998,7 +2005,7 @@ zpk = filter_design.concatenate_zpks(bp, *notches)</p>
 <div><blockquote>
 <div><blockquote>
 <div><p>from gwpy.timeseries import TimeSeries
-data = TimeSeries.fetch_open_data('H1', 1126259446, 1126259478)
+data = TimeSeries.fetch_open_data(‘H1’, 1126259446, 1126259478)
 filtered = data.filter(zpk, filtfilt=True)</p>
 </div></blockquote>
 </div></blockquote>
@@ -2100,7 +2107,7 @@ for a method that applies the identified gates</p>
 <p>threshold : <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional
 Vertical threshold for peak detection.
 method : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-Target for peak finding: 'amplitude', 'power', 'complex', 'db'.
+Target for peak finding: ‘amplitude’, ‘power’, ‘complex’, ‘db’.
 **kwargs
 Passed to <code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code> (e.g. distance, prominence).</p>
 </section>
@@ -2152,14 +2159,14 @@ and the result is returned as a <code class="docutils literal notranslate"><span
 </section>
 <section id="id73">
 <h2>Parameters<a class="headerlink" href="#id73" title="Link to this heading"></a></h2>
-<p>order : {'C', 'F', 'A', 'K'}, optional
-'C' means to flatten in row-major (C-style) order.
-'F' means to flatten in column-major (Fortran-
-style) order. 'A' means to flatten in column-major
+<p>order : {‘C’, ‘F’, ‘A’, ‘K’}, optional
+‘C’ means to flatten in row-major (C-style) order.
+‘F’ means to flatten in column-major (Fortran-
+style) order. ‘A’ means to flatten in column-major
 order if <code class="docutils literal notranslate"><span class="pre">a</span></code> is Fortran <em>contiguous</em> in memory,
-row-major order otherwise. 'K' means to flatten
+row-major order otherwise. ‘K’ means to flatten
 <code class="docutils literal notranslate"><span class="pre">a</span></code> in the order the elements occur in memory.
-The default is 'C'.</p>
+The default is ‘C’.</p>
 </section>
 <section id="id74">
 <h2>Returns<a class="headerlink" href="#id74" title="Link to this heading"></a></h2>
@@ -2176,7 +2183,7 @@ flat : A 1-D flat iterator over the array.</p>
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>a = Array([[1,2], [3,4]], unit='m', name='Test')
+<div><p>a = Array([[1,2], [3,4]], unit=’m’, name=’Test’)
 a.flatten()
 &lt;Quantity [1., 2., 3., 4.] m&gt;</p>
 </div></blockquote>
@@ -2420,7 +2427,7 @@ Input trace.
 unit : Unit, optional
 Physical unit.
 name_policy : str
-How to derive name: 'id', 'station', etc.</p>
+How to derive name: ‘id’, ‘station’, etc.</p>
 </section>
 <section id="id100">
 <h2>Returns<a class="headerlink" href="#id100" title="Link to this heading"></a></h2>
@@ -2678,7 +2685,7 @@ applied</p>
 <div><blockquote>
 <div><blockquote>
 <div><p>from gwpy.timeseries import TimeSeries
-data = TimeSeries.fetch_open_data('H1', 1135148571, 1135148771)</p>
+data = TimeSeries.fetch_open_data(‘H1’, 1135148571, 1135148771)</p>
 </div></blockquote>
 </div></blockquote>
 </div></blockquote>
@@ -2687,7 +2694,7 @@ data = TimeSeries.fetch_open_data('H1', 1135148571, 1135148771)</p>
 <div><blockquote>
 <div><blockquote>
 <div><p>gated = data.gate(tzero=1.0, tpad=1.0, threshold=10.0,
-fftlength=4, overlap=2, method='median')</p>
+fftlength=4, overlap=2, method=’median’)</p>
 </div></blockquote>
 </div></blockquote>
 </div></blockquote>
@@ -2696,12 +2703,12 @@ visualization purposes</p>
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>overlay = data.whiten(4,2,method='median').plot(dpi=150,
-label='Ungated', color='dodgerblue',
+<div><p>overlay = data.whiten(4,2,method=’median’).plot(dpi=150,
+label=’Ungated’, color=’dodgerblue’,
 zorder=2)
 ax = overlay.gca()
-ax.plot(gated.whiten(4,2,method='median'), label='Gated',
-color='orange', zorder=3)
+ax.plot(gated.whiten(4,2,method=’median’), label=’Gated’,
+color=’orange’, zorder=3)
 ax.set_xlim(1135148661, 1135148681)
 ax.legend()
 overlay.show()</p>
@@ -2749,8 +2756,8 @@ default.</p>
 <p>allow_tape : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code>
 allow the use of frames that are held on tape, default is <code class="docutils literal notranslate"><span class="pre">None</span></code>
 to attempt to allow the <code class="docutils literal notranslate"><span class="pre">TimeSeries.fetch</span></code> method to
-intelligently select a server that doesn't use tapes for
-data storage (doesn't always work), but to eventually allow
+intelligently select a server that doesn’t use tapes for
+data storage (doesn’t always work), but to eventually allow
 retrieving data from tape if required</p>
 <p>verbose : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
 print verbose output about data access progress, if <code class="docutils literal notranslate"><span class="pre">verbose</span></code>
@@ -2772,12 +2779,12 @@ for discovering and reading data from local GWF files</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">granger_causality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="s1">&#39;ssr_ftest&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Check if 'other' Granger-causes 'self'.</p>
-<p>Null Hypothesis: The past values of 'other' do NOT help in predicting 'self'.</p>
+<p>Check if ‘other’ Granger-causes ‘self’.</p>
+<p>Null Hypothesis: The past values of ‘other’ do NOT help in predicting ‘self’.</p>
 <p>Args:
 other (TimeSeries): The potential cause series.
 maxlag (int): Maximum lag to check.
-test (str): Statistical test to use ('ssr_ftest', 'ssr_chi2test', etc.).
+test (str): Statistical test to use (‘ssr_ftest’, ‘ssr_chi2test’, etc.).
 verbose (bool): Whether to print verbose output.</p>
 <p>Returns:
 float: The minimum p-value across all lags up to maxlag.
@@ -2863,11 +2870,11 @@ where H[x] is the Hilbert transform of x.</p>
 <p>pad : int or Quantity, optional
 Number of samples (or time duration) to pad on each side.
 pad_mode : str, optional
-Padding mode ('reflect', 'constant', etc.). Default is 'reflect'.
+Padding mode (‘reflect’, ‘constant’, etc.). Default is ‘reflect’.
 pad_value : float, optional
-Value for 'constant' padding mode.
+Value for ‘constant’ padding mode.
 nan_policy : str, optional
-How to handle NaNs: 'raise' (default) or 'propagate'.
+How to handle NaNs: ‘raise’ (default) or ‘propagate’.
 copy : bool, optional
 If input is complex, whether to return a copy.</p>
 </section>
@@ -2913,7 +2920,7 @@ Hurst exponent.</p>
 <section id="id138">
 <h2>Parameters<a class="headerlink" href="#id138" title="Link to this heading"></a></h2>
 <p>method : str
-Interpolation method: 'linear', 'nearest', 'ffill', 'bfill', etc.
+Interpolation method: ‘linear’, ‘nearest’, ‘ffill’, ‘bfill’, etc.
 limit : int, optional
 Maximum number of consecutive NaNs to fill.
 axis : str
@@ -2971,7 +2978,7 @@ passing it to this method. See :meth:<code class="docutils literal notranslate">
 </pre></div>
 </div>
 <p>Compute the instantaneous frequency of the TimeSeries.
-Returns unit 'Hz'.</p>
+Returns unit ‘Hz’.</p>
 </section>
 <section id="instantaneous-phase">
 <h3><code class="docutils literal notranslate"><span class="pre">instantaneous_phase</span></code><a class="headerlink" href="#instantaneous-phase" title="Link to this heading"></a></h3>
@@ -3028,7 +3035,7 @@ the contiguity check will always pass</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ktau</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Calculate Kendall's Rank Correlation Coefficient.</p>
+<p>Calculate Kendall’s Rank Correlation Coefficient.</p>
 </section>
 <section id="kurtosis">
 <h3><code class="docutils literal notranslate"><span class="pre">kurtosis</span></code><a class="headerlink" href="#kurtosis" title="Link to this heading"></a></h3>
@@ -3036,12 +3043,12 @@ the contiguity check will always pass</p>
 </pre></div>
 </div>
 <p>Compute the kurtosis (Fisher or Pearson) of the time series data.</p>
-<p>Kurtosis is a measure of the &quot;tailedness&quot; of the probability distribution
+<p>Kurtosis is a measure of the “tailedness” of the probability distribution
 of a real-valued random variable.</p>
 <p>Args:
-fisher (bool): If True, Fisher's definition is used (normal ==&gt; 0.0).
-If False, Pearson's definition is used (normal ==&gt; 3.0).
-nan_policy (str): 'propagate', 'raise', 'omit'.</p>
+fisher (bool): If True, Fisher’s definition is used (normal ==&gt; 0.0).
+If False, Pearson’s definition is used (normal ==&gt; 3.0).
+nan_policy (str): ‘propagate’, ‘raise’, ‘omit’.</p>
 <p>Returns:
 float: The kurtosis.</p>
 </section>
@@ -3065,7 +3072,7 @@ window : <code class="docutils literal notranslate"><span class="pre">str</span>
 Window function to apply.
 detrend : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
 If <code class="docutils literal notranslate"><span class="pre">True</span></code>, detrend the data before transforming.
-normalize : {&quot;integral&quot;, &quot;mean&quot;}, optional
+normalize : {“integral”, “mean”}, optional
 Normalization mode.
 dtype : <code class="docutils literal notranslate"><span class="pre">dtype</span></code>, optional
 Output data type.
@@ -3179,7 +3186,7 @@ mask segment boundaries, default: 0.5 seconds</p>
 additional keyword arguments to
 <code class="docutils literal notranslate"><span class="pre">~gwpy.segments.DataQualityFlag.query</span></code> or
 <code class="docutils literal notranslate"><span class="pre">~gwpy.segments.DataQualityFlag.fetch_open_data</span></code>,
-see &quot;Notes&quot; below</p>
+see “Notes” below</p>
 </section>
 <section id="id157">
 <h2>Returns<a class="headerlink" href="#id157" title="Link to this heading"></a></h2>
@@ -3198,7 +3205,7 @@ flag, this means the <code class="docutils literal notranslate"><span class="pre
 <code class="docutils literal notranslate"><span class="pre">~gwpy.segments.DataQualityFlag.query</span></code> will effectively be reset and
 therefore need not be given.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">flag</span></code> is interpreted positively, i.e. if <code class="docutils literal notranslate"><span class="pre">flag</span></code> being active
-corresponds to a &quot;good&quot; state, then its complement in <code class="docutils literal notranslate"><span class="pre">self.span</span></code>
+corresponds to a “good” state, then its complement in <code class="docutils literal notranslate"><span class="pre">self.span</span></code>
 will be used to define the deadtime for masking.</p>
 </section>
 <section id="id159">
@@ -3330,7 +3337,7 @@ assert not np.all(a==b)</p>
 <p>frequency : <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">~astropy.units.Quantity</span></code>
 frequency (default in Hertz) at which to apply the notch</p>
 <p>type : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-type of filter to apply, currently only 'iir' is supported</p>
+type of filter to apply, currently only ‘iir’ is supported</p>
 <p>**kwargs
 other keyword arguments to pass to <code class="docutils literal notranslate"><span class="pre">scipy.signal.iirdesign</span></code></p>
 </section>
@@ -3458,7 +3465,7 @@ otherwise copy data and return new series, default: <code class="docutils litera
 value with which to pad discontiguous series,
 by default gaps will result in a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
 <p>gap : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-action to perform if there's a gap between the other series
+action to perform if there’s a gap between the other series
 and this one. One of</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- ``&#39;raise&#39;`` - raise a `ValueError`
 - ``&#39;ignore&#39;`` - remove gap and join data
@@ -3651,7 +3658,7 @@ incompatible with <code class="docutils literal notranslate"><span class="pre">~
 when only a small window around a given GPS time is of interest. This
 will speed up this method a little, but can greatly speed up
 rendering the resulting <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> using <code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code>.</p>
-<p>If you aren't going to use <code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code> in the end, don't worry.</p>
+<p>If you aren’t going to use <code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code> in the end, don’t worry.</p>
 </section>
 <section id="id188">
 <h2>Examples<a class="headerlink" href="#id188" title="Link to this heading"></a></h2>
@@ -3665,7 +3672,7 @@ from gwpy.timeseries import TimeSeries</p>
 </div></blockquote>
 </div></blockquote>
 <p>Generate a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> containing Gaussian noise sampled at 4096 Hz,
-centred on GPS time 0, with a sine-Gaussian pulse ('glitch') at
+centred on GPS time 0, with a sine-Gaussian pulse (‘glitch’) at
 500 Hz:</p>
 <blockquote>
 <div><blockquote>
@@ -3846,7 +3853,7 @@ wvf  Yes    No            No
 </pre></div>
 </div>
 <p>Resample the TimeSeries.</p>
-<p>If 'rate' is a time-string (e.g. '1s') or time Quantity, performs time-bin aggregation.
+<p>If ‘rate’ is a time-string (e.g. ‘1s’) or time Quantity, performs time-bin aggregation.
 Otherwise, performs signal processing resampling (gwpy standard).</p>
 </section>
 <section id="rfft">
@@ -4038,13 +4045,13 @@ a negative value to shift backwards in time</p>
 <div><blockquote>
 <div><blockquote>
 <div><p>from gwpy.types import Series
-a = Series([1, 2, 3, 4, 5], x0=0, dx=1, xunit='m')
+a = Series([1, 2, 3, 4, 5], x0=0, dx=1, xunit=’m’)
 print(a.x0)
 0.0 m
 a.shift(5)
 print(a.x0)
 5.0 m
-a.shift('-1 km')
+a.shift(‘-1 km’)
 -995.0 m</p>
 </div></blockquote>
 </div></blockquote>
@@ -4058,7 +4065,7 @@ a.shift('-1 km')
 <p>Skewness is a measure of the asymmetry of the probability distribution
 of a real-valued random variable about its mean.</p>
 <p>Args:
-nan_policy (str): 'propagate', 'raise', 'omit'.</p>
+nan_policy (str): ‘propagate’, ‘raise’, ‘omit’.</p>
 <p>Returns:
 float: The skewness.</p>
 </section>
@@ -4075,7 +4082,7 @@ float: The skewness.</p>
 <p>width : <code class="docutils literal notranslate"><span class="pre">int</span></code>
 Number of samples for the smoothing winow.
 method : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-Smoothing target: 'amplitude', 'power', 'complex', 'db'.
+Smoothing target: ‘amplitude’, ‘power’, ‘complex’, ‘db’.
 ignore_nan : <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional
 If True, ignore NaNs.</p>
 </section>
@@ -4219,7 +4226,7 @@ Returns Spectrogram.</p>
 <section id="id221">
 <h2>Parameters<a class="headerlink" href="#id221" title="Link to this heading"></a></h2>
 <p>method : str
-Standardization method: 'zscore', 'minmax', etc.
+Standardization method: ‘zscore’, ‘minmax’, etc.
 ddof : int
 Delta degrees of freedom for std calculation.
 robust : bool
@@ -4256,9 +4263,9 @@ Step size in seconds between chunks.
 window : Quantity, str, or array-like, optional
 If Quantity/str with units: window duration (legacy style or alias for fftlength).
 If str (no units) or array: window function (passed to scipy.signal.get_window).
-Default 'hann'.
+Default ‘hann’.
 fftlength : Quantity or str, optional
-Window duration. Preferred over 'window' for specifying duration.
+Window duration. Preferred over ‘window’ for specifying duration.
 overlap : Quantity or str, optional
 Overlap duration.
 sigmas : float or array-like or Quantity, optional
@@ -4266,13 +4273,13 @@ Real part of Laplace frequency s = sigma + j*omega. Default 0.
 frequencies : array-like, optional
 Output frequencies. Currently ignored (always uses FFT grid).
 scaling : str, optional
-'dt' (multiply by dt, discrete integral), 'none' (raw FFT).
-Default 'dt'.
+‘dt’ (multiply by dt, discrete integral), ‘none’ (raw FFT).
+Default ‘dt’.
 time_ref : str, optional
 Time reference for the exponential term within each window.
-'start': t_rel in [0, T_win].
-'center': t_rel in [-T_win/2, T_win/2]. Recommended for large sigmas to avoid overflow.
-Default 'start'.
+‘start’: t_rel in [0, T_win].
+‘center’: t_rel in [-T_win/2, T_win/2]. Recommended for large sigmas to avoid overflow.
+Default ‘start’.
 onesided : bool, optional
 If True, return one-sided FFT (real input only).
 If False, return two-sided FFT.
@@ -4380,7 +4387,7 @@ window formats.</p>
 <p>column : str
 Column name for the data values.
 time_format : str
-Time format ('gps', 'unix', etc.).</p>
+Time format (‘gps’, ‘unix’, etc.).</p>
 </section>
 <section id="id232">
 <h2>Returns<a class="headerlink" href="#id232" title="Link to this heading"></a></h2>
@@ -4550,8 +4557,8 @@ Output data type.</p>
 </section>
 <section id="id245">
 <h2>Parameters<a class="headerlink" href="#id245" title="Link to this heading"></a></h2>
-<p>index : str, default &quot;datetime&quot;
-Index type: &quot;datetime&quot; (UTC aware), &quot;seconds&quot; (unix), or &quot;gps&quot;.
+<p>index : str, default “datetime”
+Index type: “datetime” (UTC aware), “seconds” (unix), or “gps”.
 name : str, optional
 Name for the pandas Series.
 copy : bool, default False
@@ -4575,10 +4582,10 @@ Name for the polars Series/Column.
 as_dataframe : bool, default True
 If True, returns a DataFrame with a time column.
 If False, returns a raw Series of values.
-times : str, default &quot;time&quot;
+times : str, default “time”
 Name of the time column (only if as_dataframe=True).
-time_unit : str, default &quot;datetime&quot;
-Format of the time column: &quot;datetime&quot;, &quot;gps&quot;, or &quot;unix&quot;.</p>
+time_unit : str, default “datetime”
+Format of the time column: “datetime”, “gps”, or “unix”.</p>
 </section>
 <section id="id248">
 <h2>Returns<a class="headerlink" href="#id248" title="Link to this heading"></a></h2>
@@ -4632,9 +4639,9 @@ Number of audio channels.</p>
 <p>location : array_like, optional
 Rx location (x, y, z). Default is [0, 0, 0].
 rx_type : str, optional
-Receiver class name. Default &quot;PointElectricField&quot;.
+Receiver class name. Default “PointElectricField”.
 orientation : str, optional
-Receiver orientation ('x', 'y', 'z'). Default 'x'.</p>
+Receiver orientation (‘x’, ‘y’, ‘z’). Default ‘x’.</p>
 </section>
 <section id="id254">
 <h2>Returns<a class="headerlink" href="#id254" title="Link to this heading"></a></h2>
@@ -4734,7 +4741,7 @@ Name of the time coordinate.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tostring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>a.tobytes(order='C')</p>
+<p>a.tobytes(order=’C’)</p>
 <p>Construct Python bytes containing the raw data bytes in the array.</p>
 <p>Constructs Python bytes showing a copy of the raw contents of
 data memory. The bytes object is produced in C-order by default.
@@ -4744,15 +4751,15 @@ This behavior is controlled by the <code class="docutils literal notranslate"><s
 </section>
 <section id="id263">
 <h2>Parameters<a class="headerlink" href="#id263" title="Link to this heading"></a></h2>
-<p>order : {'C', 'F', 'A'}, optional
-Controls the memory layout of the bytes object. 'C' means C-order,
-'F' means F-order, 'A' (short for <em>Any</em>) means 'F' if <code class="docutils literal notranslate"><span class="pre">a</span></code> is
-Fortran contiguous, 'C' otherwise. Default is 'C'.</p>
+<p>order : {‘C’, ‘F’, ‘A’}, optional
+Controls the memory layout of the bytes object. ‘C’ means C-order,
+‘F’ means F-order, ‘A’ (short for <em>Any</em>) means ‘F’ if <code class="docutils literal notranslate"><span class="pre">a</span></code> is
+Fortran contiguous, ‘C’ otherwise. Default is ‘C’.</p>
 </section>
 <section id="id264">
 <h2>Returns<a class="headerlink" href="#id264" title="Link to this heading"></a></h2>
 <p>s : bytes
-Python bytes exhibiting a copy of <code class="docutils literal notranslate"><span class="pre">a</span></code>'s raw data.</p>
+Python bytes exhibiting a copy of <code class="docutils literal notranslate"><span class="pre">a</span></code>’s raw data.</p>
 </section>
 <section id="id265">
 <h2>See also<a class="headerlink" href="#id265" title="Link to this heading"></a></h2>
@@ -4765,13 +4772,13 @@ bytes.</p>
 <blockquote>
 <div><blockquote>
 <div><blockquote>
-<div><p>x = np.array([[0, 1], [2, 3]], dtype='&lt;u2')
+<div><p>x = np.array([[0, 1], [2, 3]], dtype=’&lt;u2’)
 x.tobytes()
-b'\x00\x00\x01\x00\x02\x00\x03\x00'
-x.tobytes('C') == x.tobytes()
+b’\x00\x00\x01\x00\x02\x00\x03\x00’
+x.tobytes(‘C’) == x.tobytes()
 True
-x.tobytes('F')
-b'\x00\x00\x02\x00\x01\x00\x03\x00'</p>
+x.tobytes(‘F’)
+b’\x00\x00\x02\x00\x01\x00\x03\x00’</p>
 </div></blockquote>
 </div></blockquote>
 </div></blockquote>
@@ -4796,9 +4803,9 @@ Window function to apply.
 average : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
 Method to average viewing periods.
 method : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
-&quot;gwpy&quot; or &quot;csd_psd&quot;: Use GWpy CSD/PSD estimator.
-&quot;fft&quot;: Use direct FFT ratio (other.fft() / self.fft()).
-&quot;auto&quot;: Use &quot;fft&quot; if fftlength is None, else &quot;gwpy&quot;.</p>
+“gwpy” or “csd_psd”: Use GWpy CSD/PSD estimator.
+“fft”: Use direct FFT ratio (other.fft() / self.fft()).
+“auto”: Use “fft” if fftlength is None, else “gwpy”.</p>
 </section>
 <section id="id268">
 <h2>Returns<a class="headerlink" href="#id268" title="Link to this heading"></a></h2>

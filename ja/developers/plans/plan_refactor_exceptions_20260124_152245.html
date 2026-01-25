@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作業計画書: 広範な例外処理のリファクタリング &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="作業計画書: QA検証 (Lint &amp; Test) - 2026/01/24" href="plan_QA_Verification_20260124.html" />
+    <link rel="prev" title="DTT (Diagnostic Test Tools) Comprehensive Analysis Report" href="../analysis/dtt/dtt_analysis_report.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ガイド</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">開発者ガイド (Developers Guide)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">設計方針とコントラクト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">開発ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">技術分析</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id4">進行中の計画</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">作業計画書: 広範な例外処理のリファクタリング</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">1. 目的とゴール</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">2. 詳細ロードマップ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">3. テスト・検証計画</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">4. 推奨モデル、スキル、工数見積もり</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">5. 承認確認</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plan_QA_Verification_20260124.html">作業計画書: QA検証 (Lint &amp; Test) - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_coverage_expansion_plan_20260124.html">Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_mypy_expansion_phase1_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 1: FrequencySeries)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_mypy_expansion_phase2_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 2: Spectrogram)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id5">最近のレポート</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">開発者ガイド (Developers Guide)</a></li>
+      <li class="breadcrumb-item active">作業計画書: 広範な例外処理のリファクタリング</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/plans/plan_refactor_exceptions_20260124_152245.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>作業計画書: 広範な例外処理のリファクタリング<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p><strong>作成日時</strong>: 2026-01-24 15:22:45
+<strong>タスクファイル</strong>: <code class="docutils literal notranslate"><span class="pre">.agent/tasks/task_refactor_exceptions_20260124_152151.md</span></code></p>
+<hr class="docutils" />
+<section id="id2">
+<h2>1. 目的とゴール<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>リポジトリレビューで特定された <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code> の使用箇所を、より具体的な例外型またはログ出力を伴う形にリファクタリングし、コードの堅牢性とデバッグ性を向上させます。</p>
+<p><strong>対象ファイル</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/spectral/estimation.py</span></code> (4箇所)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/analysis/bruco.py</span></code> (3箇所)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/types/seriesmatrix_base.py</span></code> (1箇所)</p></li>
+</ul>
+<p><strong>ゴール</strong>:</p>
+<ul class="simple">
+<li><p>各 <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code> ブロックにおいて、本来捕捉すべき例外を特定する。</p></li>
+<li><p>可能な限り具体的な例外型 (<code class="docutils literal notranslate"><span class="pre">ValueError</span></code>, <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>, <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> など) に置き換える。</p></li>
+<li><p>広範な例外捕捉が必要な場合はログ出力 (<code class="docutils literal notranslate"><span class="pre">logging.exception()</span></code> または <code class="docutils literal notranslate"><span class="pre">warnings.warn()</span></code>) を追加する。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>2. 詳細ロードマップ<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>フェーズ 1: コンテキスト分析と例外特定 (10分)<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>各ファイルの該当箇所を調査し、例外が発生しうる条件を文脈から特定します。</p>
+<p><strong>gwexpy/spectral/estimation.py</strong>:</p>
+<ul class="simple">
+<li><p>Line 128: <code class="docutils literal notranslate"><span class="pre">value.to(&quot;s&quot;)</span></code> の単位変換失敗 → <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code>, <code class="docutils literal notranslate"><span class="pre">u.UnitConversionError</span></code></p></li>
+<li><p>Line 199: <code class="docutils literal notranslate"><span class="pre">get_window(window,</span> <span class="pre">nperseg)</span></code> の生成失敗 → <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (無効なウィンドウ名)</p></li>
+<li><p>Line 239: <code class="docutils literal notranslate"><span class="pre">stride.value</span></code> や <code class="docutils literal notranslate"><span class="pre">resolution.value</span></code> へのアクセス失敗 → <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code></p></li>
+<li><p>Line 407: Numba JIT 関数の実行失敗 → <code class="docutils literal notranslate"><span class="pre">numba.errors.*</span></code> (非常に広範なため、ログ付き <code class="docutils literal notranslate"><span class="pre">Exception</span></code> のまま維持する可能性あり)</p></li>
+</ul>
+<p><strong>gwexpy/analysis/bruco.py</strong>:</p>
+<ul class="simple">
+<li><p>Line 837, 1253, 1365: 外部プロセスやファイルI/O、複雑な計算における予期しない失敗箇所を特定。</p></li>
+</ul>
+<p><strong>gwexpy/types/seriesmatrix_base.py</strong>:</p>
+<ul class="simple">
+<li><p>Line 406: データ変換や属性アクセスの失敗時の安全なフォールバック。</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>フェーズ 2: リファクタリング実装 (15分)<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p>特定した例外型に基づき、各箇所を修正します。</p>
+<p><strong>実装方針</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>具体的な例外が明確な場合</strong>: <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">(ValueError,</span> <span class="pre">AttributeError):</span></code> のように指定する。</p></li>
+<li><p><strong>複数の予期しない例外が発生しうる場合</strong>: <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception</span> <span class="pre">as</span> <span class="pre">e:</span></code> とし、<code class="docutils literal notranslate"><span class="pre">logging.warning(f&quot;Unexpected</span> <span class="pre">error:</span> <span class="pre">{e}&quot;)</span></code> を追加。</p></li>
+<li><p><strong>Numba など外部ライブラリの失敗</strong>: ログ付きの広範な捕捉を維持し、フォールバック処理 (Pure Python版) を実行。</p></li>
+</ol>
+</section>
+<section id="id6">
+<h3>フェーズ 3: テストと検証 (5分)<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p>修正箇所に関連するテストを実行し、リグレッションがないことを確認します。</p>
+<p><strong>実行コマンド</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests/spectral/<span class="w"> </span>tests/analysis/<span class="w"> </span>tests/types/<span class="w"> </span>-v
+ruff<span class="w"> </span>check<span class="w"> </span>gwexpy/spectral/estimation.py<span class="w"> </span>gwexpy/analysis/bruco.py<span class="w"> </span>gwexpy/types/seriesmatrix_base.py
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h2>3. テスト・検証計画<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>ユニットテスト</strong>: 各対象ファイルに対応するテストディレクトリを実行</p></li>
+<li><p><strong>リント</strong>: <code class="docutils literal notranslate"><span class="pre">ruff</span> <span class="pre">check</span></code> で構文エラーがないことを確認</p></li>
+<li><p><strong>物理検証</strong>: 必要に応じて <code class="docutils literal notranslate"><span class="pre">check_physics</span></code> スキルを使用 (今回は例外処理の修正が主なため不要と判断)</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h2>4. 推奨モデル、スキル、工数見積もり<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<section id="id9">
+<h3>推奨モデル<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>第一候補: Claude Sonnet 4.5 (現在使用中)</strong></p>
+<ul>
+<li><p><strong>理由</strong>: コンテキストの推論とコード修正のバランスが優れている。</p></li>
+</ul>
+</li>
+<li><p><strong>代替案: Gemini 3 Pro (High)</strong></p>
+<ul>
+<li><p><strong>理由</strong>: 依存関係が深い場合の広範囲なコンテキスト検索が必要な際に有効。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id10">
+<h3>推奨スキル<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">view_file</span></code>: 対象ファイルの該当箇所を詳細に確認</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">multi_replace_file_content</span></code>: 複数箇所の例外処理を一括修正</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_code</span></code>: 関連テストの実行と検証</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lint</span></code>: 静的解析による品質確認</p></li>
+</ul>
+</section>
+<section id="id11">
+<h3>推定時間とクォータ<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>項目</p></th>
+<th class="head text-left"><p>時間</p></th>
+<th class="head text-left"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><strong>合計時間</strong></p></td>
+<td class="text-left"><p>25 〜 35分</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>フェーズ1: コンテキスト分析</p></td>
+<td class="text-left"><p>10分</p></td>
+<td class="text-left"><p>各例外ブロックの文脈読解</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>フェーズ2: 実装</p></td>
+<td class="text-left"><p>15分</p></td>
+<td class="text-left"><p>8箇所の修正</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>フェーズ3: テストと検証</p></td>
+<td class="text-left"><p>5分</p></td>
+<td class="text-left"><p>pytest + ruff</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><strong>推定クォータ消費</strong></p></td>
+<td class="text-left"><p>Medium</p></td>
+<td class="text-left"><p>複数ファイルの読込と解析</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>懸念点</strong>:</p>
+<ul class="simple">
+<li><p>Numba やその他外部ライブラリの例外が再現困難なエッジケース（特定のハードウェアや環境依存）である場合、安全側に倒してログ付き <code class="docutils literal notranslate"><span class="pre">Exception</span></code> を残す判断が必要になる可能性があります。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id12">
+<h2>5. 承認確認<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<p>この計画で作業を進めてよろしいでしょうか？承認いただければ、フェーズ1から順次実行します。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../analysis/dtt/dtt_analysis_report.html" class="btn btn-neutral float-left" title="DTT (Diagnostic Test Tools) Comprehensive Analysis Report" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plan_QA_Verification_20260124.html" class="btn btn-neutral float-right" title="作業計画書: QA検証 (Lint &amp; Test) - 2026/01/24" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
