@@ -178,6 +178,11 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         """Plot all spectrograms stacked vertically."""
         from gwexpy.plot import Plot
 
+        if "separate" not in kwargs:
+            kwargs["separate"] = True
+        if "sharex" not in kwargs:
+            kwargs["sharex"] = True
+
         # We pass self directly to Plot
         return Plot(self, **kwargs)
 
