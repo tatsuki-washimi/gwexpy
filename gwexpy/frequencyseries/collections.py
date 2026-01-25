@@ -501,7 +501,7 @@ class FrequencySeriesBaseList(list[_FS]):
                 self.append(item)
         else:
             for item in items:
-                self.append(item)
+                self.append(item)  # type: ignore[arg-type]
 
     @property
     def segments(self):
