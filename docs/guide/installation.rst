@@ -45,3 +45,12 @@ Combine extras as needed, for example:
 .. code-block:: bash
 
    pip install ".[gw,stats,plot]"
+
+.. note::
+   The ``[gw]`` extra includes dependencies like ``nds2-client`` which are **not available on PyPI**.
+   To use these features, you must install dependencies via **Conda** first:
+
+   .. code-block:: bash
+
+      conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
+      pip install ".[gw]"
