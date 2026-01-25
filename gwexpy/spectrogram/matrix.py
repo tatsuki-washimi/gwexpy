@@ -526,7 +526,11 @@ class SpectrogramMatrix(
             if len(new_key) > 0:
                 if isinstance(new_key[0], str):
                     new_key[0] = self.row_index(new_key[0])
-                elif isinstance(new_key[0], (list, np.ndarray)) and len(new_key[0]) > 0 and isinstance(new_key[0][0], str):
+                elif (
+                    isinstance(new_key[0], (list, np.ndarray))
+                    and len(new_key[0]) > 0
+                    and isinstance(new_key[0][0], str)
+                ):
                     new_key[0] = [self.row_index(k) for k in new_key[0]]
 
             # Col index (1) - only if we have at least 2 dims relevant to metadata (4D case or 3D with abuse?)
@@ -543,8 +547,12 @@ class SpectrogramMatrix(
                         if self.ndim == 4:
                             raise
                         pass
-                elif isinstance(new_key[1], (list, np.ndarray)) and len(new_key[1]) > 0 and isinstance(new_key[1][0], str):
-                     if self.ndim == 4:
+                elif (
+                    isinstance(new_key[1], (list, np.ndarray))
+                    and len(new_key[1]) > 0
+                    and isinstance(new_key[1][0], str)
+                ):
+                    if self.ndim == 4:
                         new_key[1] = [self.col_index(k) for k in new_key[1]]
 
             key = tuple(new_key)
