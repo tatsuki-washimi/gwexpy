@@ -1,18 +1,18 @@
-Tutorials
-=========
+チュートリアル
+==============
 
-Learn how to use **GWExPy** through interactive examples.
+**GWExPy** の使い方を、対話的な例題（Jupyter Notebook）を通して学びます。
 
 .. note::
-   These tutorials are generated from Jupyter Notebooks. You can click "View Code" or download them to run locally.
+   これらのチュートリアルは Jupyter Notebook から生成されています。ローカルで実行するには、各ページの右上からダウンロードできます。
 
-I. Core Data Structures
------------------------
-Fundamental data containers and basic operations.
+I. 基本データ構造
+-----------------
+基本的なデータコンテナと操作方法について説明します。
 
 .. toctree::
    :maxdepth: 1
-   :caption: Core Data Structures
+   :caption: 基本データ構造
 
    intro_timeseries
    intro_frequencyseries
@@ -21,36 +21,36 @@ Fundamental data containers and basic operations.
    intro_mapplotting
    intro_interop
 
-II. Multi-channel & Matrix Containers
--------------------------------------
-Handling multiple channels efficiently using Matrix classes.
+II. 多チャンネル & 行列コンテナ
+------------------------------
+Matrixクラスを使用して、複数のチャンネルを効率的に扱う方法を説明します。
 
 .. toctree::
    :maxdepth: 1
-   :caption: Matrix Containers
+   :caption: 行列コンテナ
 
    matrix_timeseries
    matrix_frequencyseries
    matrix_spectrogram
 
-III. High-dimensional Fields
-----------------------------
-Next-generation API for scalar, vector, and tensor fields.
+III. 高次元フィールド (Field API)
+---------------------------------
+スカラ場、ベクトル場、テンソル場を扱うための次世代 API について説明します。
 
 .. toctree::
    :maxdepth: 1
-   :caption: Fields API
+   :caption: フィールド API
 
    field_scalar_intro
    field_scalar_signal
 
-IV. Advanced Signal Processing
-------------------------------
-Statistical analysis and advanced transforms.
+IV. 高度な信号処理
+------------------
+統計的分析や、高度な信号変換手法について説明します。
 
 .. toctree::
    :maxdepth: 1
-   :caption: Advanced Analysis
+   :caption: 高度な解析
 
    advanced_fitting
    advanced_peak_detection
@@ -58,23 +58,23 @@ Statistical analysis and advanced transforms.
    advanced_arima
    advanced_correlation
 
-V. Specialized Tools
---------------------
-Tools for specific noise hunting and diagnostics tasks.
+V. 特殊ツール
+--------------
+ノイズ源特定や診断タスクのための専用ツールについて説明します。
 
 .. toctree::
    :maxdepth: 1
-   :caption: Specialized Tools
+   :caption: 特殊ツール
 
    advanced_bruco
 
-VI. Case Studies
-----------------
-Practical examples from real-world gravitational wave data analysis.
+VI. ケーススタディ (具体例)
+---------------------------
+重力波データ解析における実践的な応用例を紹介します。
 
 .. toctree::
    :maxdepth: 1
-   :caption: Case Studies
+   :caption: ケーススタディ
 
    case_noise_budget
    case_transfer_function

@@ -1,7 +1,8 @@
-Analysis
-========
+解析ユーティリティ (Analysis)
+=============================
 
-.. automodule:: gwexpy.analysis.coupling
+.. automodule:: gwexpy.analysis
    :members:
    :undoc-members:
    :show-inheritance:
+

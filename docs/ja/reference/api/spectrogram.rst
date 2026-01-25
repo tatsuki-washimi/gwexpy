@@ -1,5 +1,5 @@
-Spectrogram
-===========
+スペクトログラム (Spectrogram)
+==============================
 
 .. automodule:: gwexpy.spectrogram
    :members:
