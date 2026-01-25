@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+from typing import TYPE_CHECKING, Iterator, Union
 
 import numpy as np
 
@@ -16,6 +17,11 @@ from astropy.units import Unit, UnitConversionError
 from gwpy.detector import Channel
 from gwpy.types.array import Array
 from gwpy.types.series import Series
+
+if TYPE_CHECKING:
+    from typing import Any
+
+    import pandas as pd
 
 _UFUNC_ABS_REAL = {np.abs, np.negative, np.positive, np.real, np.imag}
 _UFUNC_CONJ = {np.conjugate, np.conj}
@@ -251,16 +257,23 @@ class MetaData(dict):
 # =============================
 
 
-class MetaDataDict(OrderedDict):
+class MetaDataDict(OrderedDict[str, MetaData]):
+    """Ordered dictionary mapping keys to MetaData instances.
+
+    This container enforces that all values are MetaData objects,
+    providing a type-safe collection for row/column metadata in
+    SeriesMatrix and related classes.
+    """
+
     def __init__(
         self,
-        entries: dict | list | pd.DataFrame | MetaDataDict | None = None,
+        entries: Union[dict, list, "pd.DataFrame", "MetaDataDict", None] = None,
         expected_size: int | None = None,
         key_prefix: str = "key",
-    ):
+    ) -> None:
         super().__init__()
-        final_entries = OrderedDict()
-        actual_size = None
+        final_entries: OrderedDict[str, MetaData] = OrderedDict()
+        actual_size: int | None = None
 
         if entries is None:
             if expected_size is None:
@@ -325,15 +338,18 @@ class MetaDataDict(OrderedDict):
         self.update(final_entries)
 
     @property
-    def names(self):
+    def names(self) -> list[str]:
+        """List of names from all MetaData entries."""
         return [entry.name for entry in self.values()]
 
     @property
-    def channels(self):
+    def channels(self) -> list[Channel]:
+        """List of channels from all MetaData entries."""
         return [entry.channel for entry in self.values()]
 
     @property
-    def units(self):
+    def units(self) -> list[u.UnitBase]:
+        """List of units from all MetaData entries."""
         return [entry.unit for entry in self.values()]
 
     def to_dataframe(self):
