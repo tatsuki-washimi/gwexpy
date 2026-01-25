@@ -25,8 +25,7 @@ analysis utilities for time and frequency series.
    :caption: Developers
 
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Language
+Language
+--------
 
-   ja/index
+* `日本語 (Japanese) <../ja/index.html>`_
