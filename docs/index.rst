@@ -24,4 +24,9 @@ analysis utilities for time and frequency series.
    :maxdepth: 2
    :caption: Developers
 
-   developers/index
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Language
+
+   ja/index

@@ -16,8 +16,8 @@ GWExPy は GWpy を拡張し、時系列および周波数系列のための追�
    :caption: リファレンス
 
    reference/api/index
-   reference/en/index
    reference/ja/index
+   reference/en/index
 
 .. toctree::
    :maxdepth: 2

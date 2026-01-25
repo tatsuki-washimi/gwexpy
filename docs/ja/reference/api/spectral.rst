@@ -1,5 +1,5 @@
-Spectral
-========
+スペクトル解析 (Spectral)
+========================
 
 .. automodule:: gwexpy.spectral
    :members:

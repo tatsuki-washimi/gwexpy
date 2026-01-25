@@ -1,6 +1,9 @@
-# case_transfer_function (Japanese)
+# 伝達関数の演算と解析
 
-This tutorial is not yet translated. Please see the [English version](../../../guide/tutorials/case_transfer_function.html).
+このチュートリアルは現在、日本語への翻訳作業中です。
+最新の詳細な内容は [英語版](../../../guide/tutorials/case_transfer_function.html) をご覧ください。
 
-このチュートリアルはまだ翻訳されていません。[英語版](../../../guide/tutorials/case_transfer_function.html) をご覧ください。
+---
 
+## case_transfer_function (English)
+Please refer to the [English version](../../../guide/tutorials/case_transfer_function.html) for full content.

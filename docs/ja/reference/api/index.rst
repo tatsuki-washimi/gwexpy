@@ -1,5 +1,5 @@
-API Reference
-=============
+API リファレンス
+================
 
 .. toctree::
    :maxdepth: 2

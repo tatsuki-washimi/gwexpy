@@ -1,6 +1,9 @@
-# matrix_timeseries (Japanese)
+# TimeSeriesMatrix による多チャンネル解析
 
-This tutorial is not yet translated. Please see the [English version](../../../guide/tutorials/matrix_timeseries.html).
+このチュートリアルは現在、日本語への翻訳作業中です。
+最新の詳細な内容は [英語版](../../../guide/tutorials/matrix_timeseries.html) をご覧ください。
 
-このチュートリアルはまだ翻訳されていません。[英語版](../../../guide/tutorials/matrix_timeseries.html) をご覧ください。
+---
 
+## matrix_timeseries (English)
+Please refer to the [English version](../../../guide/tutorials/matrix_timeseries.html) for full content.

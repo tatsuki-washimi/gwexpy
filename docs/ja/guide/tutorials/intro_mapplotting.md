@@ -1,6 +1,9 @@
-# intro_mapplotting (Japanese)
+# 地図・全天図へのデータプロット
 
-This tutorial is not yet translated. Please see the [English version](../../../guide/tutorials/intro_mapplotting.html).
+このチュートリアルは現在、日本語への翻訳作業中です。
+最新の詳細な内容は [英語版](../../../guide/tutorials/intro_mapplotting.html) をご覧ください。
 
-このチュートリアルはまだ翻訳されていません。[英語版](../../../guide/tutorials/intro_mapplotting.html) をご覧ください。
+---
 
+## intro_mapplotting (English)
+Please refer to the [English version](../../../guide/tutorials/intro_mapplotting.html) for full content.
