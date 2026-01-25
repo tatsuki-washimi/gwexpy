@@ -6,9 +6,10 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>地図・全天図へのデータプロット &mdash; gwexpy  documentation</title>
+  <title>チュートリアル: 全天マップと地理マップのプロット &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -17,11 +18,13 @@
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="外部ライブラリ (PyTorch, Dask, etc.) との連携" href="intro_interop.html" />
-    <link rel="prev" title="高度な描画機能" href="intro_plotting.html" /> 
+    <link rel="next" title="GWExPy TimeSeries 相互運用性 (Interop) チュートリアル" href="intro_interop.html" />
+    <link rel="prev" title="gwexpy Plotting Introduction" href="intro_plotting.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,15 +52,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#i">I. 基本データ構造</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="intro_timeseries.html">TimeSeries の基本</a></li>
-<li class="toctree-l3"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries の基本</a></li>
-<li class="toctree-l3"><a class="reference internal" href="intro_spectrogram.html">Spectrogram の基本</a></li>
-<li class="toctree-l3"><a class="reference internal" href="intro_plotting.html">高度な描画機能</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">地図・全天図へのデータプロット</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#intro-mapplotting-english">intro_mapplotting (English)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro_timeseries.html">gwexpy TimeSeries 新機能チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries の新機能と高度な操作</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro_spectrogram.html">SpectrogramList と SpectrogramDict のチュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro_plotting.html">gwexpy Plotting Introduction</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">チュートリアル: 全天マップと地理マップのプロット</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#1.-SkyMap:-全天確率マップ">1. SkyMap: 全天確率マップ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#2.-GeoMap:-Geographic-Maps-with-PyGMT">2. GeoMap: Geographic Maps with PyGMT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#3.-日本周辺のクローズアップ表示">3. 日本周辺のクローズアップ表示</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="intro_interop.html">外部ライブラリ (PyTorch, Dask, etc.) との連携</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro_interop.html">GWExPy TimeSeries 相互運用性 (Interop) チュートリアル</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
@@ -94,9 +99,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
-      <li class="breadcrumb-item active">地図・全天図へのデータプロット</li>
+      <li class="breadcrumb-item active">チュートリアル: 全天マップと地理マップのプロット</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/intro_mapplotting.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/intro_mapplotting.ipynb" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -104,14 +109,172 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
-<h1>地図・全天図へのデータプロット<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
-<p>このチュートリアルは現在、日本語への翻訳作業中です。
-最新の詳細な内容は <a class="reference internal" href="#../../../en/guide/tutorials/intro_mapplotting.html"><span class="xref myst">英語版</span></a> をご覧ください。</p>
-<hr class="docutils" />
-<section id="intro-mapplotting-english">
-<h2>intro_mapplotting (English)<a class="headerlink" href="#intro-mapplotting-english" title="Link to this heading"></a></h2>
-<p>Please refer to the <a class="reference internal" href="#../../../en/guide/tutorials/intro_mapplotting.html"><span class="xref myst">English version</span></a> for full content.</p>
+  <section id="チュートリアル:-全天マップと地理マップのプロット">
+<h1>チュートリアル: 全天マップと地理マップのプロット<a class="headerlink" href="#チュートリアル:-全天マップと地理マップのプロット" title="Link to this heading"></a></h1>
+<p>このノートブックでは、全天 HEALPix 確率マップに <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.SkyMap</span></code> を使用する方法と、検出器の位置の地理マップに <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.GeoMap</span></code> を使用する方法を説明します。</p>
+<section id="1.-SkyMap:-全天確率マップ">
+<h2>1. SkyMap: 全天確率マップ<a class="headerlink" href="#1.-SkyMap:-全天確率マップ" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SkyMap</span></code> は、天球上の分布を表示するための特殊なプロットクラスです。<code class="docutils literal notranslate"><span class="pre">ligo.skymap</span></code> と連携して、HEALPix データを簡単に処理できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+import numpy as np
+
+from gwexpy.plot import SkyMap
+
+# Create SkyMap with Mollweide projection (default)
+fig = SkyMap(figsize=(10, 5), projection=&#39;mollweide&#39;)
+
+# Add synthetic HEALPix data if ligo.skymap is available
+try:
+    import ligo.skymap
+    _ = ligo.skymap
+    nside = 16
+    npix = 12 * nside**2
+    # Generate a dummy central peak
+    map_data = np.exp(-0.5 * (np.arange(npix) - npix//2)**2 / (npix//10)**2)
+    fig.add_healpix(map_data, cmap=&#39;viridis&#39;)
+except ImportError:
+    print(&quot;ligo.skymap not installed.&quot;)
+
+# Mark some astronomical targets
+# Crab Nebula (RA: 83.63 deg, Dec: 22.01 deg)
+fig.mark_target(83.63, 22.01, label=&quot;Crab Nebula&quot;, color=&#39;red&#39;, marker=&#39;*&#39;)
+
+# Other targets
+fig.mark_target([150, 250], [-30, 45], label=&quot;Other Sources&quot;, color=&#39;white&#39;, marker=&#39;o&#39;)
+
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ligo.skymap not installed.
+</pre></div></div>
+</div>
+</section>
+<section id="2.-GeoMap:-Geographic-Maps-with-PyGMT">
+<h2>2. GeoMap: Geographic Maps with PyGMT<a class="headerlink" href="#2.-GeoMap:-Geographic-Maps-with-PyGMT" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GeoMap</span></code> provides a Cartopy-like interface to <code class="docutils literal notranslate"><span class="pre">PyGMT</span></code>, allowing for high-quality geographic maps and easy placement of gravitational wave detectors.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from gwexpy.plot import GeoMap
+
+# GeoMap を作成 with Robinson projection centered on 135E (Japan)
+try:
+    gmap = GeoMap(projection=&#39;Robinson&#39;, center_lon=135)
+
+    # Add map features
+    gmap.add_coastlines(resolution=&#39;low&#39;, color=&#39;black&#39;)
+    gmap.fill_continents(color=&#39;wheat&#39;)
+    gmap.fill_oceans(color=&#39;lightblue&#39;)
+
+    # Plot standard detectors (KAGRA, LIGO, Virgo, GEO)
+    for det in [&#39;K1&#39;, &#39;H1&#39;, &#39;L1&#39;, &#39;V1&#39;, &#39;G1&#39;]:
+        gmap.plot_detector(det, label=True)
+
+    # Plot an arbitrary point
+    gmap.plot(x=170.5, y=-23.6, marker=&#39;o&#39;, color=&#39;purple&#39;, markersize=12)
+
+    gmap.show()
+except ImportError as e:
+    print(e)
+except Exception as e:
+    print(f&quot;An error occurred: {e}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_mapplotting_4_0.png" class="no-scaled-link" src="../../_images/guide_tutorials_intro_mapplotting_4_0.png" style="width: 500px;" />
+</div>
+</div>
+</section>
+<section id="3.-日本周辺のクローズアップ表示">
+<h2>3. 日本周辺のクローズアップ表示<a class="headerlink" href="#3.-日本周辺のクローズアップ表示" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GeoMap</span></code> では、<code class="docutils literal notranslate"><span class="pre">region</span></code> 引数に ISO 3166-1 alpha-2 国コード（’JP’, ‘US’ など）を指定することで、その国周辺を自動的にクローズアップして表示できます。 また、<code class="docutils literal notranslate"><span class="pre">add_scale_bar()</span></code> を使うことで、地図上に縮尺バーを追加できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from gwexpy.plot import GeoMap
+
+# 日本周辺を表示 (region=&#39;JP&#39; を指定)
+# 拡大表示のため Mercator 投影法を使用し、枠線を詳しく表示 (frame=&#39;afg&#39;)
+geo_jp = GeoMap(projection=&#39;Mercator&#39;, region=&#39;JP&#39;, frame=&#39;afg&#39;)
+
+geo_jp.fill_oceans(color=&#39;azure&#39;)
+geo_jp.fill_continents(color=&#39;lightgray&#39;)
+geo_jp.add_coastlines(resolution=&#39;medium&#39;) # 解像度を上げて海岸線を描画
+
+# KAGRA 検出器をプロット
+geo_jp.plot_detector(&#39;K1&#39;)
+
+# 縮尺バーを追加 (500km 幅、左下に 0.5cm オフセット)
+geo_jp.add_scale_bar(width=&#39;500k&#39;, position=&#39;jBL&#39;, offset=&#39;0.5c/0.5c&#39;)
+
+geo_jp.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/guide_tutorials_intro_mapplotting_6_0.png" class="no-scaled-link" src="../../_images/guide_tutorials_intro_mapplotting_6_0.png" style="width: 500px;" />
+</div>
+</div>
+<section id="よく使われる-ISO-国コード-(alpha-2)">
+<h3>よく使われる ISO 国コード (alpha-2)<a class="headerlink" href="#よく使われる-ISO-国コード-(alpha-2)" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>国名</p></th>
+<th class="head"><p>ISO コード</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>日本</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">JP</span></code></p></td>
+<td><p>KAGRA が所在</p></td>
+</tr>
+<tr class="row-odd"><td><p>アメリカ合衆国</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">US</span></code></p></td>
+<td><p>LIGO (Hanford, Livingston) が所在</p></td>
+</tr>
+<tr class="row-even"><td><p>イタリア</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IT</span></code></p></td>
+<td><p>Virgo が所在</p></td>
+</tr>
+<tr class="row-odd"><td><p>ドイツ</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DE</span></code></p></td>
+<td><p>GEO600 が所在</p></td>
+</tr>
+<tr class="row-even"><td><p>インド</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IN</span></code></p></td>
+<td><p>LIGO-India 建設予定</p></td>
+</tr>
+<tr class="row-odd"><td><p>オーストラリア</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AU</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>イギリス</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GB</span></code></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 </section>
 
@@ -119,8 +282,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="intro_plotting.html" class="btn btn-neutral float-left" title="高度な描画機能" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="intro_interop.html" class="btn btn-neutral float-right" title="外部ライブラリ (PyTorch, Dask, etc.) との連携" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="intro_plotting.html" class="btn btn-neutral float-left" title="gwexpy Plotting Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="intro_interop.html" class="btn btn-neutral float-right" title="GWExPy TimeSeries 相互運用性 (Interop) チュートリアル" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

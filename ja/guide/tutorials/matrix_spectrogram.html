@@ -6,9 +6,10 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SpectrogramMatrix による多チャンネル解析 &mdash; gwexpy  documentation</title>
+  <title>SpectrogramMatrix Tutorial &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -17,11 +18,13 @@
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="ScalarField の基本と空間抽出" href="field_scalar_intro.html" />
-    <link rel="prev" title="FrequencySeriesMatrix による多チャンネル解析" href="matrix_frequencyseries.html" /> 
+    <link rel="next" title="ScalarField クラス入門" href="field_scalar_intro.html" />
+    <link rel="prev" title="FrequencySeriesMatrix チュートリアル" href="matrix_frequencyseries.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,10 +53,15 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="matrix_timeseries.html">TimeSeriesMatrix による多チャンネル解析</a></li>
-<li class="toctree-l3"><a class="reference internal" href="matrix_frequencyseries.html">FrequencySeriesMatrix による多チャンネル解析</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">SpectrogramMatrix による多チャンネル解析</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#matrix-spectrogram-english">matrix_spectrogram (English)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="matrix_timeseries.html">TimeSeriesMatrix チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="matrix_frequencyseries.html">FrequencySeriesMatrix チュートリアル</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">SpectrogramMatrix Tutorial</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#1.-データの準備">1. データの準備</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#2.-SpectrogramMatrix-の作成">2. SpectrogramMatrix の作成</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#3.-数値計算と統計">3. 数値計算と統計</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#4.-プロット">4. プロット</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#5.-外部ライブラリとの連携">5. 外部ライブラリとの連携</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#まとめ">まとめ</a></li>
 </ul>
 </li>
 </ul>
@@ -91,9 +99,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
-      <li class="breadcrumb-item active">SpectrogramMatrix による多チャンネル解析</li>
+      <li class="breadcrumb-item active">SpectrogramMatrix Tutorial</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/matrix_spectrogram.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/matrix_spectrogram.ipynb" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -101,14 +109,331 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="spectrogrammatrix">
-<h1>SpectrogramMatrix による多チャンネル解析<a class="headerlink" href="#spectrogrammatrix" title="Link to this heading"></a></h1>
-<p>このチュートリアルは現在、日本語への翻訳作業中です。
-最新の詳細な内容は <a class="reference internal" href="#../../../en/guide/tutorials/matrix_spectrogram.html"><span class="xref myst">英語版</span></a> をご覧ください。</p>
-<hr class="docutils" />
-<section id="matrix-spectrogram-english">
-<h2>matrix_spectrogram (English)<a class="headerlink" href="#matrix-spectrogram-english" title="Link to this heading"></a></h2>
-<p>Please refer to the <a class="reference internal" href="#../../../en/guide/tutorials/matrix_spectrogram.html"><span class="xref myst">English version</span></a> for full content.</p>
+  <section id="SpectrogramMatrix-Tutorial">
+<h1>SpectrogramMatrix Tutorial<a class="headerlink" href="#SpectrogramMatrix-Tutorial" title="Link to this heading"></a></h1>
+<p>このノートブックでは <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> クラスの基本的な使い方を紹介します。</p>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> は、複数の <code class="docutils literal notranslate"><span class="pre">gwpy.spectrogram.Spectrogram</span></code> オブジェクトを 3次元 (Batch, Time, Frequency) の行列として効率的に扱うためのクラスです。<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> を継承しており、高速な数値計算や PyTorch/CuPy との連携が可能です。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import astropy.units as u
+import matplotlib.pyplot as plt
+import numpy as np
+
+from gwexpy.timeseries import TimeSeriesMatrix
+
+# 乱数シードの固定
+np.random.seed(42)
+</pre></div>
+</div>
+</div>
+<section id="1.-データの準備">
+<h2>1. データの準備<a class="headerlink" href="#1.-データの準備" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>rng = np.random.default_rng(0)
+
+# サンプル設定
+n = 512
+dt = (1 / 128) * u.s
+t0 = 0 * u.s
+
+t = (np.arange(n) * dt).to_value(u.s)
+
+tone50 = np.sin(2 * np.pi * 50 * t)
+tone20 = np.sin(2 * np.pi * 20 * t + 0.3)
+
+data = np.empty((2, 2, n), dtype=float)
+data[0, 0] = 0.5 * tone50 + 0.05 * rng.normal(size=n)
+data[0, 1] = 0.5 * tone20 + 0.05 * rng.normal(size=n)
+data[1, 0] = 0.3 * tone50 + 0.3 * tone20 + 0.05 * rng.normal(size=n)
+data[1, 1] = 0.2 * tone50 - 0.4 * tone20 + 0.05 * rng.normal(size=n)
+
+units = np.full((2, 2), u.V)
+names = [[&quot;ch00&quot;, &quot;ch01&quot;], [&quot;ch10&quot;, &quot;ch11&quot;]]
+channels = [[&quot;X:A&quot;, &quot;X:B&quot;], [&quot;Y:A&quot;, &quot;Y:B&quot;]]
+
+tsm = TimeSeriesMatrix(
+    data,
+    dt=dt,
+    t0=t0,
+    units=units,
+    names=names,
+    channels=channels,
+    rows={&quot;r0&quot;: {&quot;name&quot;: &quot;row0&quot;}, &quot;r1&quot;: {&quot;name&quot;: &quot;row1&quot;}},
+    cols={&quot;c0&quot;: {&quot;name&quot;: &quot;col0&quot;}, &quot;c1&quot;: {&quot;name&quot;: &quot;col1&quot;}},
+    name=&quot;demo&quot;,
+)
+
+display(tsm)
+tsm.plot()
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<h3>SeriesMatrix: shape=(2, 2, 512), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 s, <b>dx:</b> 0.0078125 s, <b>N_samples:</b> 512</li><li><b>xunit:</b> s</li></ul><h4>Row Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>r0</th>
+      <td>row0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>r1</th>
+      <td>row1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Column Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>c0</th>
+      <td>col0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>c1</th>
+      <td>col1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Element Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>unit</th>
+      <th>name</th>
+      <th>channel</th>
+      <th>row</th>
+      <th>col</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>V</td>
+      <td>ch00</td>
+      <td>X:A</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>V</td>
+      <td>ch01</td>
+      <td>X:B</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>V</td>
+      <td>ch10</td>
+      <td>Y:A</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>V</td>
+      <td>ch11</td>
+      <td>Y:B</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table></div>
+</div>
+</section>
+<section id="2.-SpectrogramMatrix-の作成">
+<h2>2. SpectrogramMatrix の作成<a class="headerlink" href="#2.-SpectrogramMatrix-の作成" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> の <code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code> メソッドを使用すると、全てのスペクトログラムが一つの <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> にスタックされます。 これにより、形状が <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">Time,</span> <span class="pre">Frequency)</span></code> の3次元配列が得られます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spec_matrix = tsm.spectrogram(2, fftlength=0.5, overlap=0.25 )
+
+print(&quot;Type:&quot;, type(spec_matrix))
+print(&quot;Shape:&quot;, spec_matrix.shape)  # (Batch, Time, Freq)
+spec_matrix.plot();
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Type: &lt;class &#39;gwexpy.spectrogram.matrix.SpectrogramMatrix&#39;&gt;
+Shape: (2, 2, 2, 33)
+</pre></div></div>
+</div>
+<section id="属性へのアクセス">
+<h3>属性へのアクセス<a class="headerlink" href="#属性へのアクセス" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> は元のスペクトログラムの時間軸や周波数軸の情報を保持しています。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;Time axis (first 5):&quot;, spec_matrix.times[:5])
+print(&quot;Freq axis (first 5):&quot;, spec_matrix.frequencies[:5])
+print(&quot;Unit:&quot;, spec_matrix.unit)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Time axis (first 5): [0. 2.] s
+Freq axis (first 5): [0. 2. 4. 6. 8.] Hz
+Unit: V2 / Hz
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="3.-数値計算と統計">
+<h2>3. 数値計算と統計<a class="headerlink" href="#3.-数値計算と統計" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> は <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> のサブクラスであるため、Numpy の関数をそのまま適用できます。 また、<code class="docutils literal notranslate"><span class="pre">mean()</span></code> などのメソッドも利用可能です。</p>
+<p>例えば、全チャネル（バッチ方向）の平均スペクトログラムを計算してみましょう。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># axis=0 (Batch軸) で平均を取る
+mean_spectrogram_data = spec_matrix.mean(axis=0)
+
+print(&quot;Mean Data Shape:&quot;, mean_spectrogram_data.shape)
+# 結果は (Time, Freq) の2次元配列になります
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Mean Data Shape: (2, 2, 33)
+</pre></div></div>
+</div>
+</section>
+<section id="4.-プロット">
+<h2>4. プロット<a class="headerlink" href="#4.-プロット" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">plot()</span></code> メソッドを使用すると、データを可視化できます。 3次元データ（Batch, Time, Freq）に対して <code class="docutils literal notranslate"><span class="pre">plot()</span></code> を呼び出すと、デフォルトでは<strong>バッチ方向の平均</strong>がプロットされます。 これは複数のイベントの平均的な特徴を確認するのに便利です。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot = spec_matrix.plot(title=&quot;Mean Spectrogram (All Channels)&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>特定のチャネルだけをプロットしたい場合は、<code class="docutils literal notranslate"><span class="pre">monitor</span></code> 引数にインデックスを指定します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 最初のチャネル (Channel_0) をプロット
+plot0 = spec_matrix.plot(monitor=0, title=&quot;Channel 0 Spectrogram&quot;)
+plot0.show()
+
+# 5番目のチャネル (Channel_5) をプロット
+plot5 = spec_matrix.plot(monitor=3, title=&quot;Channel 5 Spectrogram&quot;)
+plot5.show()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="5.-外部ライブラリとの連携">
+<h2>5. 外部ライブラリとの連携<a class="headerlink" href="#5.-外部ライブラリとの連携" title="Link to this heading"></a></h2>
+<p>機械学習やGPU計算のために、PyTorch や CuPy のテンソルへ簡単に変換できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># PyTorch Tensor への変換
+try:
+    import torch
+    _ = torch
+    torch_tensor = spec_matrix.to_torch()
+    print(&quot;PyTorch Tensor:&quot;, type(torch_tensor))
+    print(&quot;Shape:&quot;, torch_tensor.shape)
+except ImportError:
+    print(&quot;PyTorch is not installed.&quot;)
+
+# CuPy Array への変換（CUDA環境がある場合）
+from gwexpy.interop import is_cupy_available
+
+if is_cupy_available():
+    cupy_array = spec_matrix.to_cupy()
+    print(&quot;CuPy Array:&quot;, type(cupy_array))
+    print(&quot;Shape:&quot;, cupy_array.shape)
+else:
+    print(&quot;CuPy is not installed or GPU driver is not working.&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PyTorch Tensor: &lt;class &#39;torch.Tensor&#39;&gt;
+Shape: torch.Size([2, 2, 2, 33])
+CuPy is not installed or GPU driver is not working.
+</pre></div></div>
+</div>
+</section>
+<section id="まとめ">
+<h2>まとめ<a class="headerlink" href="#まとめ" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>``SpectrogramMatrix``</strong> は <code class="docutils literal notranslate"><span class="pre">SpectrogramList.to_matrix()</span></code> で作成できます。</p></li>
+<li><p>3次元配列 <code class="docutils literal notranslate"><span class="pre">(Batch,</span> <span class="pre">Time,</span> <span class="pre">Freq)</span></code> としてデータを保持します。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mean()</span></code> や <code class="docutils literal notranslate"><span class="pre">plot()</span></code> メソッドで、データの集約や可視化が簡単に行えます。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">to_torch()</span></code> などでディープラーニングフレームワークへデータを渡す際の中間形式としても有用です。</p></li>
+</ul>
 </section>
 </section>
 
@@ -116,8 +441,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="matrix_frequencyseries.html" class="btn btn-neutral float-left" title="FrequencySeriesMatrix による多チャンネル解析" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="field_scalar_intro.html" class="btn btn-neutral float-right" title="ScalarField の基本と空間抽出" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="matrix_frequencyseries.html" class="btn btn-neutral float-left" title="FrequencySeriesMatrix チュートリアル" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="field_scalar_intro.html" class="btn btn-neutral float-right" title="ScalarField クラス入門" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

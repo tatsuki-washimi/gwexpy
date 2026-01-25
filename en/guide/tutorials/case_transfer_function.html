@@ -6,10 +6,9 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>チュートリアル: 伝達関数の測定 &mdash; gwexpy  documentation</title>
+  <title>Transfer Function Arithmetic &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -18,13 +17,11 @@
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)" href="case_active_damping.html" />
-    <link rel="prev" title="ノイズバジェッティングと多チャンネル相関解析" href="case_noise_budget.html" /> 
+    <link rel="next" title="Active Damping Performance Evaluation" href="case_active_damping.html" />
+    <link rel="prev" title="Gravitational Wave Detector Noise Budget" href="case_noise_budget.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,15 +54,9 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#vi-case-studies">VI. Case Studies</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="case_noise_budget.html">ノイズバジェッティングと多チャンネル相関解析</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">チュートリアル: 伝達関数の測定</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#1.-実験データの生成（シミュレーション）">1. 実験データの生成（シミュレーション）</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#2.-伝達関数の推定">2. 伝達関数の推定</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#3.-モデルフィッティング">3. モデルフィッティング</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#4.-結果の確認">4. 結果の確認</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="case_active_damping.html">6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="case_noise_budget.html">Gravitational Wave Detector Noise Budget</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Transfer Function Arithmetic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="case_active_damping.html">Active Damping Performance Evaluation</a></li>
 </ul>
 </li>
 </ul>
@@ -93,9 +84,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
-      <li class="breadcrumb-item active">チュートリアル: 伝達関数の測定</li>
+      <li class="breadcrumb-item active">Transfer Function Arithmetic</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/case_transfer_function.ipynb" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/case_transfer_function.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -103,258 +94,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="チュートリアル:-伝達関数の測定">
-<h1>チュートリアル: 伝達関数の測定<a class="headerlink" href="#チュートリアル:-伝達関数の測定" title="Link to this heading"></a></h1>
-<p>このチュートリアルでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> を使用して測定データからシステムの伝達関数（Transfer Function）を推定し、 物理モデルへのフィッティングを行ってパラメータを同定する流れを解説します。</p>
-<p><strong>シナリオ:</strong> ある機械振動系（または電気回路）に白色雑音を入力し、その応答を測定しました。 この入出力データから、システムの共振周波数 <span class="math notranslate nohighlight">\(f_0\)</span> と Q値 <span class="math notranslate nohighlight">\(Q\)</span> を求めます。</p>
-<p><strong>ワークフロー:</strong></p>
-<ol class="arabic simple">
-<li><p><strong>データ生成</strong>: 入力信号（白色雑音）と、それに対するシステムの出力（共振系応答 + 測定ノイズ）をシミュレーションします。</p></li>
-<li><p><strong>伝達関数の推定</strong>: 入出力の時系列データから伝達関数とコヒーレンスを計算し、ボード線図（Bode Plot）を描画します。</p></li>
-<li><p><strong>モデルフィッティング</strong>: 推定した伝達関数に理論モデル（ローレンツ関数など）を当てはめ、パラメータを推定します。</p></li>
-</ol>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-import numpy as np
-from scipy import signal
-
-from gwexpy import TimeSeries
-from gwexpy.plot import Plot
-</pre></div>
-</div>
-</div>
-<section id="1.-実験データの生成（シミュレーション）">
-<h2>1. 実験データの生成（シミュレーション）<a class="headerlink" href="#1.-実験データの生成（シミュレーション）" title="Link to this heading"></a></h2>
-<p>仮想的な実験を行います。</p>
-<ul class="simple">
-<li><p><strong>システム</strong>: 2次共振系（単振動）</p>
-<ul>
-<li><p>共振周波数 <span class="math notranslate nohighlight">\(f_0 = 300\)</span> Hz</p></li>
-<li><p>Q値 <span class="math notranslate nohighlight">\(Q = 50\)</span></p></li>
-</ul>
-</li>
-<li><p><strong>入力</strong>: 白色雑音（White Noise）</p></li>
-<li><p><strong>測定</strong>: サンプリング周波数 2048 Hz, 継続時間 60秒</p></li>
-</ul>
-<p>出力信号には、測定に伴うノイズも付加します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># --- パラメータ設定 ---
-fs = 2048.0       # サンプリング周波数 [Hz]
-duration = 60.0   # 継続時間 [s]
-f0_true = 300.0   # 真の共振周波数 [Hz]
-Q_true = 50.0     # 真のQ値
-
-# --- 時間軸と入力信号 ---
-t = np.linspace(0, duration, int(duration * fs), endpoint=False)
-input_data = np.random.normal(0, 1, size=len(t)) # 白色雑音入力
-
-# --- 物理システムのシミュレーション (scipy.signalを使用) ---
-# 伝達関数 H(s) = w0^2 / (s^2 + (w0/Q)s + w0^2)
-w0 = 2 * np.pi * f0_true
-num = [w0**2]
-den = [1, w0/Q_true, w0**2]
-system = signal.TransferFunction(num, den)
-
-# 時間応答の計算 (lsim)
-# Time steps for simulation
-_, output_clean, _ = signal.lsim(system, U=input_data, T=t)
-
-# --- 測定ノイズの付加 ---
-# 出力に少しノイズ（センサーノイズなど）が乗ると仮定
-measurement_noise = np.random.normal(0, 0.1, size=len(t))
-output_data = output_clean + measurement_noise
-
-# --- gwexpy TimeSeries オブジェクトの作成 ---
-ts_input = TimeSeries(input_data, t0=0, sample_rate=fs, name=&quot;Input&quot;, unit=&quot;V&quot;)
-ts_output = TimeSeries(output_data, t0=0, sample_rate=fs, name=&quot;Output&quot;, unit=&quot;V&quot;)
-
-print(&quot;Input data shape:&quot;, ts_input.shape)
-print(&quot;Output data shape:&quot;, ts_output.shape)
-Plot(ts_input,ts_output,separate=True);
-<br/></pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Input data shape: (122880,)
-Output data shape: (122880,)
-</pre></div></div>
-</div>
-</section>
-<section id="2.-伝達関数の推定">
-<h2>2. 伝達関数の推定<a class="headerlink" href="#2.-伝達関数の推定" title="Link to this heading"></a></h2>
-<p>入出力の時系列データ <code class="docutils literal notranslate"><span class="pre">ts_input</span></code> と <code class="docutils literal notranslate"><span class="pre">ts_output</span></code> から、周波数応答関数（伝達関数）を推定します。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">transfer_function</span></code> メソッドを使用します。</p>
-<p>また、測定の信頼性を確認するために<strong>コヒーレンス（Coherence）</strong>も計算します。 コヒーレンスが 1 に近い周波数帯域は、入出力の関係が線形であり、ノイズの影響が少ないことを示します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># FFT設定: 平均化のためにデータを区切る長さを指定
-fftlength = 2.0 # 2秒ごとにFFTして平均化
-
-# 伝達関数の計算 (Output / Input)
-tf = ts_input.transfer_function(ts_output, fftlength=fftlength)
-
-# コヒーレンスの計算
-coh = ts_input.coherence(ts_output, fftlength=fftlength)**0.5
-
-# --- プロット (ボード線図 &amp; コヒーレンス) ---
-fig, axes = plt.subplots(3, 1, figsize=(10, 10), sharex=True)
-
-# 振幅 (Magnitude)
-ax = axes[0]
-ax.loglog(tf.abs(), label=&quot;Measured TF&quot;)
-ax.set_ylabel(&quot;Gain [V/V]&quot;)
-ax.set_title(&quot;Bode Plot: Magnitude&quot;)
-ax.grid(True, which=&quot;both&quot;, alpha=0.5)
-
-# 位相 (Phase)
-ax = axes[1]
-ax.plot(tf.degree(), label=&quot;Measured Phase&quot;)
-ax.set_ylabel(&quot;Phase [deg]&quot;)
-ax.set_title(&quot;Bode Plot: Phase&quot;)
-ax.set_yticks(np.arange(-180, 181, 90))
-ax.grid(True, which=&quot;both&quot;, alpha=0.5)
-
-# コヒーレンス (Coherence)
-ax = axes[2]
-ax.plot(coh, color=&quot;green&quot;, label=&quot;Coherence&quot;)
-ax.set_ylabel(&quot;Coherence&quot;)
-ax.set_xlabel(&quot;Frequency [Hz]&quot;)
-ax.set_ylim(0, 1.1)
-ax.set_xlim(10, 1000)
-ax.grid(True, which=&quot;both&quot;, alpha=0.5)
-
-plt.tight_layout()
-plt.show()
-</pre></div>
-</div>
-</div>
-</section>
-<section id="3.-モデルフィッティング">
-<h2>3. モデルフィッティング<a class="headerlink" href="#3.-モデルフィッティング" title="Link to this heading"></a></h2>
-<p>得られた伝達関数（特に共振付近）に対して、理論モデルをフィッティングします。 ここでは、単振動の伝達関数モデルを定義し、最小二乗法でパラメータ（<span class="math notranslate nohighlight">\(A, f_0, Q\)</span>）を求めます。</p>
-<p>モデル式（ゲイン <span class="math notranslate nohighlight">\(A\)</span> を含む）:</p>
-<div class="math notranslate nohighlight">
-\[H(f) = A \cdot \frac{f_0^2}{f_0^2 - f^2 + i (f f_0 / Q)}\]</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># --- フィッティング用モデル関数の定義 ---
-def resonator_model(f, amp, f0, Q):
-    # f: 周波数配列
-    # パラメータ: amp(ゲイン), f0(共振周波数), Q(Q値)
-
-    # 計算式 (複素数)
-    numerator = amp * (f0**2)
-    denominator = (f0**2) - (f**2) + 1j * (f * f0 / Q)
-    return numerator / denominator
-
-# --- フィッティングの実行 ---
-# データ全体を使うと広帯域すぎてフィットが難しい場合があるため、
-# 共振付近 (100Hz ~ 500Hz) にデータを切り出します。
-tf_crop = tf.crop(100, 500)
-
-# 初期値の推定 (目視またはピーク探索で決める)
-# ここでは f0=300付近に見えるため、それを初期値にします
-p0 = {
-    &quot;amp&quot;: 1.0,
-    &quot;f0&quot;: 300.0,
-    &quot;Q&quot;: 10.0
-}
-
-# フィッティング実行
-# FrequencySeries の .fit() メソッドは複素数データのまま実部・虚部を同時にフィットします
-result = tf_crop.fit(resonator_model, p0=p0)
-
-print(result)
-<br/></pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-┌─────────────────────────────────────────────────────────────────────────┐
-│                                Migrad                                   │
-├──────────────────────────────────┬──────────────────────────────────────┤
-│ FCN = 6.983 (χ²/ndof = 0.0)      │              Nfcn = 118              │
-│ EDM = 4.22e-06 (Goal: 0.0002)    │                                      │
-├──────────────────────────────────┼──────────────────────────────────────┤
-│          Valid Minimum           │   Below EDM threshold (goal x 10)    │
-├──────────────────────────────────┼──────────────────────────────────────┤
-│      No parameters at limit      │           Below call limit           │
-├──────────────────────────────────┼──────────────────────────────────────┤
-│             Hesse ok             │         Covariance accurate          │
-└──────────────────────────────────┴──────────────────────────────────────┘
-┌───┬──────┬───────────┬───────────┬────────────┬────────────┬─────────┬─────────┬───────┐
-│   │ Name │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │
-├───┼──────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤
-│ 0 │ amp  │   0.935   │   0.007   │            │            │         │         │       │
-│ 1 │ f0   │  299.997  │   0.021   │            │            │         │         │       │
-│ 2 │ Q    │   49.5    │    0.5    │            │            │         │         │       │
-└───┴──────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘
-┌─────┬────────────────────────────┐
-│     │      amp       f0        Q │
-├─────┼────────────────────────────┤
-│ amp │ 4.33e-05       -0 -2.29e-3 │
-│  f0 │       -0 0.000451  -0.1e-3 │
-│   Q │ -2.29e-3  -0.1e-3    0.241 │
-└─────┴────────────────────────────┘
-</pre></div></div>
-</div>
-</section>
-<section id="4.-結果の確認">
-<h2>4. 結果の確認<a class="headerlink" href="#4.-結果の確認" title="Link to this heading"></a></h2>
-<p>フィッティング結果を数値で確認し、測定データに重ねてプロットします。 <code class="docutils literal notranslate"><span class="pre">FitResult.plot()</span></code> メソッドは、複素数データの場合、自動的にボード線図（振幅・位相）を描画します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># --- 結果の表示 ---
-print(&quot;--- Estimated Parameters ---&quot;)
-print(f&quot;Resonance Frequency (f0): {result.params[&#39;f0&#39;]:.4f} Hz (True: {f0_true})&quot;)
-print(f&quot;Quality Factor (Q):       {result.params[&#39;Q&#39;]:.4f}      (True: {Q_true})&quot;)
-print(f&quot;Gain (Amp):               {result.params[&#39;amp&#39;]:.4f}&quot;)
-
-# --- プロット ---
-# result.plot() は複素数の場合、振幅と位相の2つのAxesを返します
-axes = result.plot()
-plt.show()
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
---- Estimated Parameters ---
-Resonance Frequency (f0): 299.9966 Hz (True: 300.0)
-Quality Factor (Q):       49.5111      (True: 50.0)
-Gain (Amp):               0.9348
-</pre></div></div>
-</div>
-</section>
+  <section id="transfer-function-arithmetic">
+<h1>Transfer Function Arithmetic<a class="headerlink" href="#transfer-function-arithmetic" title="Link to this heading"></a></h1>
+<p>This tutorial is currently only available in Japanese.
+Please see the <a class="reference internal" href="#../../../ja/guide/tutorials/case_transfer_function.html"><span class="xref myst">Japanese version</span></a>.</p>
+<hr class="docutils" />
+<p>このチュートリアルの日本語版は <a class="reference internal" href="#../../../ja/guide/tutorials/case_transfer_function.html"><span class="xref myst">こちら</span></a> です。</p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="case_noise_budget.html" class="btn btn-neutral float-left" title="ノイズバジェッティングと多チャンネル相関解析" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="case_active_damping.html" class="btn btn-neutral float-right" title="6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="case_noise_budget.html" class="btn btn-neutral float-left" title="Gravitational Wave Detector Noise Budget" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="case_active_damping.html" class="btn btn-neutral float-right" title="Active Damping Performance Evaluation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

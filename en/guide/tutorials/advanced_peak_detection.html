@@ -6,10 +6,9 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Peak Detection (ピーク検出) &mdash; gwexpy  documentation</title>
+  <title>Unit-aware Peak Detection &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -18,13 +17,11 @@
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Hilbert-Huang Transform (HHT) 解析チュートリアル" href="advanced_hht.html" />
-    <link rel="prev" title="gwexpy.fitting: iminuit ベースのフィッティング機能" href="advanced_fitting.html" /> 
+    <link rel="next" title="Hilbert-Huang Transform (HHT) Analysis" href="advanced_hht.html" />
+    <link rel="prev" title="Data Fitting with iminuit" href="advanced_fitting.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,17 +52,11 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="advanced_fitting.html">gwexpy.fitting: iminuit ベースのフィッティング機能</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Peak Detection (ピーク検出)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#1.-FrequencySeries-でのピーク検出">1. FrequencySeries でのピーク検出</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#2.-物理単位による制約-(Distance-&amp;-Width)">2. 物理単位による制約 (Distance &amp; Width)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#3.-TimeSeries-でのピーク検出">3. TimeSeries でのピーク検出</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="advanced_hht.html">Hilbert-Huang Transform (HHT) 解析チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="advanced_arima.html">ARIMAモデルによる時系列予測</a></li>
-<li class="toctree-l3"><a class="reference internal" href="advanced_correlation.html">統計的相関機能</a></li>
-<li class="toctree-l3"><a class="reference internal" href="advanced_correlation.html#高度な統計解析-(Advanced-Statistics)">高度な統計解析 (Advanced Statistics)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_fitting.html">Data Fitting with iminuit</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Unit-aware Peak Detection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_hht.html">Hilbert-Huang Transform (HHT) Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_arima.html">TimeSeries Forecasting with ARIMA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_correlation.html">Nonlinear Correlation (dCor, MIC)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
@@ -95,9 +86,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
-      <li class="breadcrumb-item active">Peak Detection (ピーク検出)</li>
+      <li class="breadcrumb-item active">Unit-aware Peak Detection</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/advanced_peak_detection.ipynb" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/advanced_peak_detection.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -105,126 +96,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="Peak-Detection-(ピーク検出)">
-<h1>Peak Detection (ピーク検出)<a class="headerlink" href="#Peak-Detection-(ピーク検出)" title="Link to this heading"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> では、<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> や <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> に含まれる信号のピークを簡単に検出するための <code class="docutils literal notranslate"><span class="pre">find_peaks</span></code> メソッドを提供しています。これは内部的に <code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code> をラップしていますが、物理単位（Hz, 秒など）を用いた直感的なパラメータ指定が可能です。</p>
-<p><code class="docutils literal notranslate"><span class="pre">find_peaks</span></code> メソッドは、以下の2つを返します。</p>
-<ul class="simple">
-<li><p><strong>Peak Series</strong>: ピーク点のみを抽出した新しい Series オブジェクト</p></li>
-<li><p><strong>Properties</strong>: scipy が返すピーク特性（プロミネンスや幅など）の辞書</p></li>
-</ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-import numpy as np
-from astropy import units as u
-
-from gwexpy import FrequencySeries, TimeSeries
-</pre></div>
-</div>
-</div>
-<section id="1.-FrequencySeries-でのピーク検出">
-<h2>1. FrequencySeries でのピーク検出<a class="headerlink" href="#1.-FrequencySeries-でのピーク検出" title="Link to this heading"></a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 擬似データの作成
-df = 0.5 * u.Hz
-f_axis = np.arange(0, 500, df.value) * u.Hz
-data = np.exp(-f_axis.value / 100) + np.random.normal(0, 0.05, len(f_axis))
-
-# ピークを追加
-peak_freqs_true = [50, 60, 120, 125, 300] * u.Hz
-for f in peak_freqs_true:
-    idx = int(f.value / df.value)
-    data[idx] += 1.0
-
-spec = FrequencySeries(data, df=df, unit=&quot;V/Hz&quot;)
-
-# --- 基本的な検出 (しきい値のみ) ---
-# peaks は FrequencySeries オブジェクトとして返ってきます
-peaks, _ = spec.find_peaks(threshold=0.5)
-
-plt.figure(figsize=(10, 5))
-plt.plot(spec, label=&quot;Spectrum&quot;, alpha=0.7)
-plt.plot(peaks, &quot;x&quot;, color=&quot;red&quot;, label=&quot;Basic Peaks&quot;)
-plt.title(&quot;Basic Peak Detection&quot;)
-plt.xlabel(&quot;Frequency [Hz]&quot;); plt.ylabel(&quot;Amplitude [V/Hz]&quot;)
-plt.legend(); plt.show()
-<br/></pre></div>
-</div>
-</div>
-</section>
-<section id="2.-物理単位による制約-(Distance-&amp;-Width)">
-<h2>2. 物理単位による制約 (Distance &amp; Width)<a class="headerlink" href="#2.-物理単位による制約-(Distance-&-Width)" title="Link to this heading"></a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dist_constraint = 20 * u.Hz
-peaks_adv, props = spec.find_peaks(threshold=0.5, distance=dist_constraint)
-
-plt.figure(figsize=(10, 5))
-plt.plot(spec, label=&quot;Spectrum&quot;, alpha=0.7)
-plt.plot(peaks_adv, &quot;o&quot;, color=&quot;orange&quot;, label=&quot;Distance Constraint (20Hz)&quot;)
-plt.title(f&quot;Peak Detection with Distance Constraint ({dist_constraint})&quot;)
-plt.xlabel(&quot;Frequency [Hz]&quot;); plt.ylabel(&quot;Amplitude [V/Hz]&quot;)
-plt.legend(); plt.show()
-
-print(f&quot;Detected peaks: {peaks_adv.frequencies}&quot;)
-<br/></pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Detected peaks: [  6.   26.   50.   74.5 120.  300. ] Hz
-</pre></div></div>
-</div>
-</section>
-<section id="3.-TimeSeries-でのピーク検出">
-<h2>3. TimeSeries でのピーク検出<a class="headerlink" href="#3.-TimeSeries-でのピーク検出" title="Link to this heading"></a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fs = 1024.0
-t = np.arange(0, 2.0, 1/fs)
-ts_data = np.random.normal(0, 0.1, len(t))
-
-# パルスを追加
-ts_data[int(0.5*fs)] = 2.0
-ts_data[int(0.55*fs)] = 1.8
-ts_data[int(1.2*fs)] = 1.5
-
-ts = TimeSeries(ts_data, sample_rate=fs, unit=&quot;counts&quot;)
-
-# 0.1秒以内の連続したパルスは無視する設定
-peaks_t, _ = ts.find_peaks(height=0.5, distance=0.1 * u.s)
-
-plt.figure(figsize=(10, 5))
-plt.plot(ts)
-plt.plot(peaks_t, &quot;v&quot;, color=&quot;red&quot;, label=&quot;Detected pulses (&gt;100ms apart)&quot;)
-plt.title(&quot;Pulse Detection in TimeSeries&quot;)
-plt.xlabel(&quot;Time [s]&quot;); plt.ylabel(&quot;Raw Counts&quot;)
-plt.legend(); plt.show()
-<br/></pre></div>
-</div>
-</div>
-</section>
+  <section id="unit-aware-peak-detection">
+<h1>Unit-aware Peak Detection<a class="headerlink" href="#unit-aware-peak-detection" title="Link to this heading"></a></h1>
+<p>This tutorial is currently only available in Japanese.
+Please see the <a class="reference internal" href="#../../../ja/guide/tutorials/advanced_peak_detection.html"><span class="xref myst">Japanese version</span></a>.</p>
+<hr class="docutils" />
+<p>このチュートリアルの日本語版は <a class="reference internal" href="#../../../ja/guide/tutorials/advanced_peak_detection.html"><span class="xref myst">こちら</span></a> です。</p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="advanced_fitting.html" class="btn btn-neutral float-left" title="gwexpy.fitting: iminuit ベースのフィッティング機能" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="advanced_hht.html" class="btn btn-neutral float-right" title="Hilbert-Huang Transform (HHT) 解析チュートリアル" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="advanced_fitting.html" class="btn btn-neutral float-left" title="Data Fitting with iminuit" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_hht.html" class="btn btn-neutral float-right" title="Hilbert-Huang Transform (HHT) Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

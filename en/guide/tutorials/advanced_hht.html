@@ -6,10 +6,9 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hilbert-Huang Transform (HHT) 解析チュートリアル &mdash; gwexpy  documentation</title>
+  <title>Hilbert-Huang Transform (HHT) Analysis &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -18,13 +17,11 @@
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="ARIMAモデルによる時系列予測" href="advanced_arima.html" />
-    <link rel="prev" title="Peak Detection (ピーク検出)" href="advanced_peak_detection.html" /> 
+    <link rel="next" title="TimeSeries Forecasting with ARIMA" href="advanced_arima.html" />
+    <link rel="prev" title="Unit-aware Peak Detection" href="advanced_peak_detection.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,18 +52,11 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="advanced_fitting.html">gwexpy.fitting: iminuit ベースのフィッティング機能</a></li>
-<li class="toctree-l3"><a class="reference internal" href="advanced_peak_detection.html">Peak Detection (ピーク検出)</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Hilbert-Huang Transform (HHT) 解析チュートリアル</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#1.-シミュレーションデータの作成">1. シミュレーションデータの作成</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#2.-Empirical-Mode-Decomposition-(EMD)">2. Empirical Mode Decomposition (EMD)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#3.-ヒルベルトスペクトル解析">3. ヒルベルトスペクトル解析</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#4.-Hilbert-Spectrum-(ヒルベルトスペクトル)">4. Hilbert Spectrum (ヒルベルトスペクトル)</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="advanced_arima.html">ARIMAモデルによる時系列予測</a></li>
-<li class="toctree-l3"><a class="reference internal" href="advanced_correlation.html">統計的相関機能</a></li>
-<li class="toctree-l3"><a class="reference internal" href="advanced_correlation.html#高度な統計解析-(Advanced-Statistics)">高度な統計解析 (Advanced Statistics)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_fitting.html">Data Fitting with iminuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_peak_detection.html">Unit-aware Peak Detection</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Hilbert-Huang Transform (HHT) Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_arima.html">TimeSeries Forecasting with ARIMA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_correlation.html">Nonlinear Correlation (dCor, MIC)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
@@ -96,9 +86,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
-      <li class="breadcrumb-item active">Hilbert-Huang Transform (HHT) 解析チュートリアル</li>
+      <li class="breadcrumb-item active">Hilbert-Huang Transform (HHT) Analysis</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/advanced_hht.ipynb" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/guide/tutorials/advanced_hht.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -106,204 +96,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="Hilbert-Huang-Transform-(HHT)-解析チュートリアル">
-<h1>Hilbert-Huang Transform (HHT) 解析チュートリアル<a class="headerlink" href="#Hilbert-Huang-Transform-(HHT)-解析チュートリアル" title="Link to this heading"></a></h1>
-<p>このチュートリアルでは、<strong>gwexpy</strong> を使用した <strong>Hilbert-Huang Transform (HHT)</strong> 解析の手順を解説します。 HHT は、非線形・非定常な信号の解析に適しており、従来のフーリエ変換やウェーブレット変換では捉えきれない局所的な周波数変動（瞬時周波数）を抽出するのに強力な手法です。</p>
-<p>HHT は以下の2つの主要なステップから成ります：</p>
-<ol class="arabic simple">
-<li><p><strong>Empirical Mode Decomposition (EMD)</strong>: 信号を固有モード関数 (IMF: Intrinsic Mode Function) に分解します。</p></li>
-<li><p><strong>Hilbert Spectral Analysis</strong>: 各 IMF に対してヒルベルト変換を行い、瞬時振幅と瞬時周波数を計算します。</p></li>
-</ol>
-<p><strong>注意</strong>: この機能を使用するには <code class="docutils literal notranslate"><span class="pre">PyEMD</span></code> (EMD-signal) パッケージがインストールされている必要があります。</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>EMD-signal
-</pre></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-import numpy as np
-
-from gwexpy.timeseries import TimeSeries
-
-# PyEMDの確認
-try:
-    import PyEMD
-    print(f&quot;{PyEMD.__name__} is installed and ready.&quot;)
-except ImportError:
-    raise ImportError(&quot;このチュートリアルには &#39;PyEMD&#39; (EMD-signal) が必要です。 pip install EMD-signal を実行してください。&quot;)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-PyEMD is installed and ready.
-</pre></div></div>
-</div>
-<section id="1.-シミュレーションデータの作成">
-<h2>1. シミュレーションデータの作成<a class="headerlink" href="#1.-シミュレーションデータの作成" title="Link to this heading"></a></h2>
-<p>EMD の効果を確認するために、以下の特徴を持つ非定常な合成信号を作成します。</p>
-<ol class="arabic simple">
-<li><p><strong>低周波トレンド</strong>: 5 Hz の正弦波</p></li>
-<li><p><strong>チャープ信号</strong>: 時間とともに周波数が上昇する成分 (〜100 Hz)</p></li>
-<li><p><strong>線形トレンド</strong>: 直線的なドリフト</p></li>
-</ol>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 時間軸 (1秒間、1000サンプル)
-t = np.linspace(0, 1, 1000)
-dt = t[1] - t[0]
-
-# 信号成分
-s1 = 0.5 * np.sin(2 * np.pi * 5 * t)  # 低周波
-s2 = 1.0 * np.sin(2 * np.pi * 80 * t * (1 + 0.5 * t))  # チャープ (80Hz -&gt; 120Hz)
-trend = 2.0 * t  # 線形トレンド
-
-# TimeSeriesオブジェクトの作成
-data = TimeSeries(s1 + s2 + trend, dt=dt, unit=&#39;V&#39;, name=&#39;Simulation Data&#39;)
-
-# プロット
-plot = data.plot(title=&quot;Original Simulation Signal&quot;)
-plot.show()
-</pre></div>
-</div>
-</div>
-</section>
-<section id="2.-Empirical-Mode-Decomposition-(EMD)">
-<h2>2. Empirical Mode Decomposition (EMD)<a class="headerlink" href="#2.-Empirical-Mode-Decomposition-(EMD)" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> オブジェクトは、<code class="docutils literal notranslate"><span class="pre">emd()</span></code> メソッドを通じて直接分解を行うことができます。 <code class="docutils literal notranslate"><span class="pre">emd()</span></code> メソッドは <code class="docutils literal notranslate"><span class="pre">PyEMD</span></code> ラッパーとして機能し、結果を <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> として返します。</p>
-<p>ここでは基本的な <strong>EMD</strong> を使用しますが、オプションで <strong>EEMD (Ensemble EMD)</strong> も選択可能です。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># EMDの実行
-# method=&#39;eemd&#39; とすると Ensemble EMD が実行されます (計算時間がかかります)
-imfs = data.emd(method=&#39;emd&#39;)
-
-print(&quot;抽出されたIMF:&quot;, list(imfs.keys()))
-
-# 全IMFをプロット
-plot = imfs.plot(figsize=(10, 12), sharex=True, title=&quot;Intrinsic Mode Functions (IMFs)&quot;)
-plot.show()
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-抽出されたIMF: [&#39;IMF1&#39;, &#39;IMF2&#39;, &#39;IMF3&#39;, &#39;residual&#39;]
-</pre></div></div>
-</div>
-<p>プロットを見ると、信号が異なる周波数帯域ごとのモード (IMF) に分解されていることがわかります。</p>
-<ul class="simple">
-<li><p><strong>IMF 0</strong>: 最も高周波な成分（チャープ信号の一部やノイズ）</p></li>
-<li><p><strong>IMF 1, 2…</strong>: より低周波な成分</p></li>
-<li><p><strong>Residual</strong>: 残差（トレンド成分）</p></li>
-</ul>
+  <section id="hilbert-huang-transform-hht-analysis">
+<h1>Hilbert-Huang Transform (HHT) Analysis<a class="headerlink" href="#hilbert-huang-transform-hht-analysis" title="Link to this heading"></a></h1>
+<p>This tutorial is currently only available in Japanese.
+Please see the <a class="reference internal" href="#../../../ja/guide/tutorials/advanced_hht.html"><span class="xref myst">Japanese version</span></a>.</p>
 <hr class="docutils" />
-</section>
-<section id="3.-ヒルベルトスペクトル解析">
-<h2>3. ヒルベルトスペクトル解析<a class="headerlink" href="#3.-ヒルベルトスペクトル解析" title="Link to this heading"></a></h2>
-<p>各 IMF は「単一成分」に近い性質を持つため、ヒルベルト変換を適用することで物理的に意味のある<strong>瞬時周波数 (Instantaneous Frequency)</strong> と <strong>瞬時振幅 (Instantaneous Amplitude)</strong> を定義できます。</p>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> は以下のメソッドを提供しています：</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">.hilbert()</span></code>: 解析信号 (Analytic Signal) を計算</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.instantaneous_frequency()</span></code>: 瞬時周波数を計算 (位相の微分)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.envelope()</span></code>: 包絡線（瞬時振幅）を計算</p></li>
-</ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 解析結果を格納する辞書
-hht_results = {}
-
-plt.figure(figsize=(10, 6))
-
-# 最初の数個のIMFについて解析を行う
-for key in list(imfs.keys())[:3]:  # Loop over first 3 IMFs
-    imf = imfs[key]
-
-    # 瞬時周波数の計算
-    # smoothパラメータで微分のノイズを平滑化できます
-    inst_freq = imf.instantaneous_frequency(smooth=10)
-
-    # 瞬時振幅 (包絡線) の計算
-    inst_amp = imf.envelope()
-
-    hht_results[key] = {
-        &#39;freq&#39;: inst_freq,
-        &#39;amp&#39;: inst_amp
-    }
-
-    # 瞬時周波数の時間変化をプロット
-    plt.plot(inst_freq.times.value, inst_freq.value, label=f&#39;{key} Freq&#39;)
-
-plt.title(&quot;Instantaneous Frequency of IMFs&quot;)
-plt.xlabel(&quot;Time [s]&quot;)
-plt.ylabel(&quot;Frequency [Hz]&quot;)
-plt.ylim(0, 150)
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.show()
-</pre></div>
-</div>
-</div>
-</section>
-<section id="4.-Hilbert-Spectrum-(ヒルベルトスペクトル)">
-<h2>4. Hilbert Spectrum (ヒルベルトスペクトル)<a class="headerlink" href="#4.-Hilbert-Spectrum-(ヒルベルトスペクトル)" title="Link to this heading"></a></h2>
-<p>最後に、これらの瞬時周波数と振幅を組み合わせて <strong>ヒルベルトスペクトル</strong> を描画します。 これは時間-周波数平面上でのエネルギー分布を表し、フーリエ変換ベースのスペクトログラムに相当しますが、時間・周波数分解能の制限（不確定性原理）を受けにくいという特徴があります。</p>
-<p>ここでは、各サンプルの (時刻, 周波数) を点としてプロットし、色で振幅を表す散布図を使用します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(10, 6))
-
-for key, res in hht_results.items():
-    t_vals = res[&#39;freq&#39;].times.value
-    f_vals = res[&#39;freq&#39;].value
-    a_vals = res[&#39;amp&#39;].value
-
-    # 周波数が負や極端に大きい値になることがあるためフィルタリング
-    mask = (f_vals &gt; 0) &amp; (f_vals &lt; 200)
-
-    plt.scatter(t_vals[mask], f_vals[mask], c=a_vals[mask],
-                cmap=&#39;viridis&#39;, s=5, alpha=0.7, vmin=0, vmax=1.0)
-
-plt.colorbar(label=&#39;Amplitude [V]&#39;)
-plt.xlabel(&#39;Time [s]&#39;)
-plt.ylabel(&#39;Frequency [Hz]&#39;)
-plt.title(&#39;Hilbert Spectrum (Scatter Plot)&#39;)
-plt.ylim(0, 150)
-plt.grid(True, alpha=0.3, linestyle=&#39;--&#39;)
-plt.show()
-</pre></div>
-</div>
-</div>
-<section id="結果の解釈">
-<h3>結果の解釈<a class="headerlink" href="#結果の解釈" title="Link to this heading"></a></h3>
-<p>ヒルベルトスペクトルでは、チャープ信号の周波数が時間とともに直線的に上昇している様子 (80Hz -&gt; 120Hz) が非常に鮮明に確認できます。 低周波のIMFは下部に線として現れます。</p>
-<p>このように、HHTは信号の非定常な振る舞いを詳細に分析するのに有効です。</p>
-</section>
-</section>
+<p>このチュートリアルの日本語版は <a class="reference internal" href="#../../../ja/guide/tutorials/advanced_hht.html"><span class="xref myst">こちら</span></a> です。</p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="advanced_peak_detection.html" class="btn btn-neutral float-left" title="Peak Detection (ピーク検出)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="advanced_arima.html" class="btn btn-neutral float-right" title="ARIMAモデルによる時系列予測" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="advanced_peak_detection.html" class="btn btn-neutral float-left" title="Unit-aware Peak Detection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_arima.html" class="btn btn-neutral float-right" title="TimeSeries Forecasting with ARIMA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
