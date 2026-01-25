@@ -13,9 +13,12 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast
 
+import logging
 import numpy as np
 from astropy import units as u
 from numpy.typing import ArrayLike, NDArray
+
+logger = logging.getLogger(__name__)
 
 from ._typing import TimeSeriesAttrs
 
@@ -1376,6 +1379,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                 elif den_unit is not None:
                     unit = 1 / den_unit
             except Exception:
+                logger.debug("Failed to determine unit for transfer function.", exc_info=True)
                 unit = None
 
             return num.__class__(

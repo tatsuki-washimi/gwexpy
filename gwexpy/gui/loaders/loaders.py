@@ -1,4 +1,7 @@
+import logging
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
 from gwexpy.io.dttxml_common import load_dttxml_products
@@ -25,8 +28,8 @@ def load_products(filename: str) -> dict:
             if products:
                 return products
         except Exception:
+            logger.debug("DTT XML loader failed for %s, falling back to generic.", filename, exc_info=True)
             # Fallback to generic loaders if not a valid DTT XML
-            pass
 
     # Format Mapping for explicit fallback
     # Extension -> gwpy format string
@@ -64,6 +67,7 @@ def load_products(filename: str) -> dict:
         products["TS"] = {str(k): v for k, v in ts_dict.items()}
         return products
     except Exception:
+        logger.debug("Automatic TimeSeriesDict.read failed for %s.", filename, exc_info=True)
         # Retry with explicit format if available
         if fmt:
             try:
@@ -76,7 +80,7 @@ def load_products(filename: str) -> dict:
 
                         channels = get_channels(filename)
                     except Exception:
-                        pass  # proceed without channels or try other methods?
+                        logger.debug("Failed to discover channels from %s using lalframe.", filename, exc_info=True)
 
                     # 2. Try various GWF backends with discovered channels (or without if failed)
                     # Priority: generic 'gwf' -> 'gwf.lalframe' -> 'gwf.framecpp' -> 'gwf.framel'
@@ -96,6 +100,7 @@ def load_products(filename: str) -> dict:
                             products["TS"] = {str(k): v for k, v in ts_dict.items()}
                             return products
                         except Exception:
+                            logger.debug("GWF read attempt failed with backend %s for %s", gw_fmt, filename, exc_info=True)
                             continue  # Try next format
 
                     # If all failed, let outer loop handle or bubble up
@@ -113,6 +118,7 @@ def load_products(filename: str) -> dict:
         products["TS"] = {ts.name or "Channel0": ts}
         return products
     except Exception:
+        logger.debug("Automatic TimeSeries.read failed for %s.", filename, exc_info=True)
         # Retry with explicit format
         if fmt:
             try:

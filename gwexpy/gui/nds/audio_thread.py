@@ -2,7 +2,10 @@
 Thread for capturing PC Audio using sounddevice.
 """
 
+import logging
 import time
+
+logger = logging.getLogger(__name__)
 
 import numpy as np
 
@@ -31,7 +34,7 @@ class AudioThread(QtCore.QThread):
 
     def run(self):
         if sd is None:
-            print("AudioThread: sounddevice not found.")
+            logger.info("AudioThread: sounddevice not found.")
             self.finished.emit()
             return
 
@@ -52,7 +55,7 @@ class AudioThread(QtCore.QThread):
             )
             working_rate = self.sample_rate
         except Exception:
-            pass
+            logger.debug("Requested sample rate check failed.", exc_info=True)
 
         # 2. Try default rate from device info
         if working_rate is None:
@@ -66,7 +69,7 @@ class AudioThread(QtCore.QThread):
                         )
                         working_rate = default_sr
             except Exception:
-                pass
+                logger.debug("Failed to query device default samplerate.", exc_info=True)
 
         # 3. Try common rates
         if working_rate is None:
@@ -79,24 +82,27 @@ class AudioThread(QtCore.QThread):
                     pass
 
         if working_rate is not None and working_rate != self.sample_rate:
-            print(
-                f"AudioThread: {self.sample_rate}Hz NOT supported by {dev_str}. Switching to {working_rate}Hz."
+            logger.warning(
+                "AudioThread: %sHz NOT supported by %s. Switching to %sHz.",
+                self.sample_rate, dev_str, working_rate
             )
             self.sample_rate = working_rate
         elif working_rate is None:
-            print(
-                f"AudioThread WARNING: No supported sample rate found for {dev_str}. Proceeding with extreme caution..."
+            logger.warning(
+                "AudioThread WARNING: No supported sample rate found for %s. Proceeding with extreme caution...",
+                dev_str
             )
 
-        print(
-            f"DEBUG: Starting AudioThread for {self.channels} at {self.sample_rate}Hz (block_size={self.block_size}, {dev_str})"
+        logger.debug(
+            "Starting AudioThread for %s at %sHz (block_size=%s, %s)",
+            self.channels, self.sample_rate, self.block_size, dev_str
         )
 
         mic_channels = [c for c in self.channels if "PC:MIC" in c]
         spk_channels = [c for c in self.channels if "PC:SPEAKER" in c]
 
         if not mic_channels and not spk_channels:
-            print("AudioThread: No PC Audio channels requested.")
+            logger.info("AudioThread: No PC Audio channels requested.")
             self.finished.emit()
             return
 
@@ -118,7 +124,7 @@ class AudioThread(QtCore.QThread):
 
             def callback(indata, frames, time_info, status):
                 if status:
-                    print(f"AudioThread Status ({dev_str}): {status}")
+                    logger.warning("AudioThread Status (%s): %s", dev_str, status)
 
                 if self.skip_blocks > 0:
                     self.skip_blocks -= 1
@@ -149,13 +155,14 @@ class AudioThread(QtCore.QThread):
                                 "step": 1.0 / self.sample_rate,
                             }
                     except Exception:
-                        pass
+                        logger.error("AudioThread: Error processing channel %s.", c, exc_info=True)
 
                 if payload:
                     self.dataReceived.emit(payload, "raw", True)
 
-            print(
-                f"DEBUG: Attempting to open InputStream for {max_ch} channels on {dev_str}"
+            logger.debug(
+                "Attempting to open InputStream for %s channels on %s",
+                max_ch, dev_str
             )
             with sd.InputStream(
                 samplerate=self.sample_rate,
@@ -167,8 +174,8 @@ class AudioThread(QtCore.QThread):
                 while self.running:
                     sd.sleep(100)
 
-        except Exception as e:
-            print(f"AudioThread Error during capture: {e}")
+        except Exception:
+            logger.exception("AudioThread Error during capture.")
             # If failed (e.g. no devices), just wait and keep thread alive until stopped
             while self.running:
                 time.sleep(0.5)
