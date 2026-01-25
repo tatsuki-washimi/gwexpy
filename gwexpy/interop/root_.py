@@ -1,4 +1,6 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import Any, Optional
 
 import numpy as np
 
@@ -348,7 +350,7 @@ def from_root(cls, obj, return_error=False):
     return res
 
 
-def to_tmultigraph(collection, name: str | None = None) -> Any:
+def to_tmultigraph(collection, name: Optional[str] = None) -> Any:
     """
     Convert a collection of Series to a ROOT TMultiGraph.
     """
