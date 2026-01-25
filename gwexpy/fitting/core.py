@@ -626,10 +626,14 @@ class FitResult:
                 # Compute log probability based on error structure
                 if cov_inv is not None:
                     # GLS: use full covariance structure
-                    chi2 = float(r @ cov_inv @ r)
+                    # Handle complex residuals by taking real part of Hermitian form
+                    val = r.conj() @ cov_inv @ r
+                    # Ensure we aren't discarding meaningful imaginary parts (should be ~0 for Hermitian form)
+                    chi2 = float(np.real(val))
                 else:
                     # Standard: use diagonal errors
-                    chi2 = float(np.sum((r / dy) ** 2))
+                    # Use np.abs() to handle complex residuals (TransferFunction) correctly
+                    chi2 = float(np.sum(np.abs(r / dy) ** 2))
 
                 return -0.5 * chi2
 
