@@ -94,7 +94,11 @@ def from_control_frd(cls, frd, frequency_unit: str = "Hz"):
     >>> # fs = from_control_frd(FrequencySeries, frd)
     """
     omega = np.asarray(frd.omega)
-    data = np.asarray(frd.fresp)
+    try:
+        data = np.asarray(frd.frdata)
+    except AttributeError:
+        # Compatibility with older versions
+        data = np.asarray(frd.fresp)
 
     # Convert rad/s to Hz (standard for gwexpy)
     if frequency_unit == "rad/s" or frequency_unit == "Hz":

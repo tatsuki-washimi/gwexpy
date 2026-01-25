@@ -1,3 +1,10 @@
+import os
+
+os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
+os.environ.setdefault("LAL_DEBUG_LEVEL", "0")
+# Force JAX to CPU if GPU is not fully setup to avoid warnings
+if "JAX_PLATFORMS" not in os.environ:
+    os.environ["JAX_PLATFORMS"] = "cpu"
 from ._optional import require_optional
 from .astropy_ import from_astropy_timeseries, to_astropy_timeseries
 from .control_ import from_control_frd, from_control_response, to_control_frd

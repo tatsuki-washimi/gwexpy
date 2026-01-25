@@ -10,10 +10,10 @@ This module provides signal processing functionality as a mixin class:
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast
 
-import logging
 import numpy as np
 from astropy import units as u
 from numpy.typing import ArrayLike, NDArray
@@ -1222,7 +1222,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         window: str | ArrayLike | None = "hann",
         average: str = "mean",
         *,
-        method: str | None = None,  # Deprecated, for backward compatibility
+        method: Literal["gwpy", "csd_psd", "fft", "auto"] | None = None,  # Deprecated
         fft_kwargs: dict[str, Any] | None = None,
         downsample: NumberLike | None = None,
         align: Literal["intersection", "none"] = "intersection",

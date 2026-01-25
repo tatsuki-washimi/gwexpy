@@ -24,6 +24,27 @@ pytest_plugins = ["gwpy.testing.fixtures"]
 
 faulthandler.enable()
 
+_QT_QPA_PLATFORM = os.environ.get("QT_QPA_PLATFORM", "").lower()
+_HEADLESS = (
+    not os.environ.get("DISPLAY")
+    and not os.environ.get("WAYLAND_DISPLAY")
+) or _QT_QPA_PLATFORM in {"offscreen", "minimal"}
+
+if _HEADLESS:
+    collect_ignore_glob = [
+        "tests/gui/*",
+        "tests/gui/**",
+        "tests/nds/test_gui_nds_smoke.py",
+        "tests/e2e/test_gui_smoke.py",
+    ]
+
+    _skip_gui = pytest.mark.skip(reason="GUI tests skipped (headless)")
+
+    def pytest_collection_modifyitems(config, items):
+        for item in items:
+            if "gui" in item.keywords:
+                item.add_marker(_skip_gui)
+
 # =============================================================================
 # Helper functions
 # =============================================================================

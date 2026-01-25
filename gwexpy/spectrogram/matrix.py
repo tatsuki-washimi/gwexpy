@@ -513,12 +513,25 @@ class SpectrogramMatrix(
             new_key = list(key)
             if isinstance(new_key[0], str):
                 new_key[0] = self.row_index(new_key[0])
+            elif (
+                isinstance(new_key[0], (list, tuple, np.ndarray))
+                and len(new_key[0]) > 0
+                and isinstance(new_key[0][0], str)
+            ):
+                new_key[0] = [self.row_index(k) for k in new_key[0]]
             if len(new_key) > 1 and isinstance(new_key[1], str):
                 try:
                     new_key[1] = self.col_index(new_key[1])
                 except (KeyError, IndexError):
                     # Maybe it's not a column key but a slice or index for Time/Freq?
                     pass
+            elif (
+                len(new_key) > 1
+                and isinstance(new_key[1], (list, tuple, np.ndarray))
+                and len(new_key[1]) > 0
+                and isinstance(new_key[1][0], str)
+            ):
+                new_key[1] = [self.col_index(k) for k in new_key[1]]
             key = tuple(new_key)
 
         # Access raw data

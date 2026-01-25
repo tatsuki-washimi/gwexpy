@@ -1,3 +1,4 @@
+import warnings
 from dataclasses import dataclass
 
 import numpy as np
@@ -11,11 +12,16 @@ try:
         from statsmodels.tsa.statespace.sarimax import SARIMAX
     except ImportError:
         SARIMAX = None
+    try:
+        from statsmodels.tools.sm_exceptions import ConvergenceWarning
+    except ImportError:
+        ConvergenceWarning = None
     STATSMODELS_AVAILABLE = True
 except ImportError:
     STATSMODELS_AVAILABLE = False
     ARIMA = None
     SARIMAX = None
+    ConvergenceWarning = None
 
 try:
     import pmdarima as pm
@@ -288,6 +294,11 @@ def fit_arima(
         If True, use pmdarima (Auto-ARIMA) to find the best order.
     auto_kwargs : dict, optional
         Arguments passed to pmdarima.auto_arima (e.g., {'max_p': 5}).
+
+    Notes
+    -----
+    Common upstream warnings from pmdarima/statsmodels are suppressed to keep
+    notebook output clean (e.g., convergence and verbose/disp deprecations).
     """
     if not STATSMODELS_AVAILABLE:
         raise ImportError(
@@ -353,7 +364,13 @@ def fit_arima(
                 if akwargs[m_key] < current_start:
                     akwargs[s_key] = akwargs[m_key]
 
-        model_auto = pm.auto_arima(y, **akwargs)
+        with warnings.catch_warnings():
+            if ConvergenceWarning is not None:
+                warnings.filterwarnings("ignore", category=ConvergenceWarning)
+            warnings.filterwarnings(
+                "ignore", category=FutureWarning, module=r"sklearn.*"
+            )
+            model_auto = pm.auto_arima(y, **akwargs)
 
         # pmdarima wraps a statsmodels result. We extract it to wrap in our ArimaResult
         res = model_auto.arima_res_
@@ -387,7 +404,22 @@ def fit_arima(
             raise ImportError("SARIMAX not available in statsmodels")
         model = SARIMAX(y, order=order, seasonal_order=seasonal_order, trend=trend)
 
-    res = model.fit(**fit_kwargs)
+    with warnings.catch_warnings():
+        if ConvergenceWarning is not None:
+            warnings.filterwarnings("ignore", category=ConvergenceWarning)
+        warnings.filterwarnings(
+            "ignore",
+            category=FutureWarning,
+            message=r".*verbose.*",
+            module=r"statsmodels.*",
+        )
+        warnings.filterwarnings(
+            "ignore",
+            category=FutureWarning,
+            message=r".*disp.*",
+            module=r"statsmodels.*",
+        )
+        res = model.fit(**fit_kwargs)
 
     return ArimaResult(
         res,

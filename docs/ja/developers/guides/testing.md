@@ -47,5 +47,9 @@ The exact package names vary by platform. Typical options are:
 python -m pytest
 ```
 
-GUI tests are included by default. The test harness sets `QT_QPA_PLATFORM=offscreen`
-to allow headless execution, but you can override it if you need a real display.
+GUI tests run by default when a display is available. In headless environments
+(no `DISPLAY`/`WAYLAND_DISPLAY` or `QT_QPA_PLATFORM=offscreen/minimal`), the
+harness skips GUI tests and disables pytest plugin autoloading to avoid Qt
+crashes. To run GUI tests in headless CI, use xvfb (see
+`docs/developers/guides/gui_testing.md`) and ensure
+`PYTEST_DISABLE_PLUGIN_AUTOLOAD` is unset.
