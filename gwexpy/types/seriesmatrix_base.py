@@ -1,7 +1,7 @@
 import logging
 import warnings
 from collections import OrderedDict
-from typing import Any, Union
+from typing import TYPE_CHECKING, Any, Union
 
 import numpy as np
 from astropy import units as u
@@ -10,6 +10,9 @@ from gwexpy.types.mixin import InteropMixin, RegularityMixin
 
 from ._stats import StatisticalMethodsMixin
 from .metadata import MetaData, MetaDataDict, MetaDataMatrix
+
+if TYPE_CHECKING:
+    from gwexpy.types.typing import IndexLike, MetaDataCollectionType, UnitLike
 from .series_matrix_analysis import SeriesMatrixAnalysisMixin
 from .series_matrix_core import SeriesMatrixCoreMixin
 from .series_matrix_indexing import SeriesMatrixIndexingMixin
@@ -72,13 +75,13 @@ class SeriesMatrix(
         units: np.ndarray | None = None,
         names: np.ndarray | None = None,
         channels: np.ndarray | None = None,
-        rows: Any = None,
-        cols: Any = None,
-        shape: Any = None,
-        xindex: Any = None,
-        dx: Any = None,
-        x0: Any = None,
-        xunit: Any = None,
+        rows: "MetaDataCollectionType" = None,
+        cols: "MetaDataCollectionType" = None,
+        shape: tuple[int, ...] | None = None,
+        xindex: "IndexLike | None" = None,
+        dx: "u.Quantity | None" = None,
+        x0: "u.Quantity | None" = None,
+        xunit: "UnitLike" = None,
         name: str = "",
         epoch: float = 0.0,
         attrs: dict[str, Any] | None = None,

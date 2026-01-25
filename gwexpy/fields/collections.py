@@ -1,6 +1,7 @@
 """Collections for ScalarField objects in the `gwexpy.fields` namespace."""
 
 import numpy as np
+from astropy import units as u
 
 from .scalar import ScalarField
 
@@ -78,13 +79,17 @@ class FieldList(list):
                         f"Item {i}: Axis {ax_idx} shape mismatch. "
                         f"Expected {ref_ax.shape}, got {item_ax.shape}"
                     )
-                if ref_ax.unit != item_ax.unit:
+                ref_unit = getattr(ref_ax, "unit", u.dimensionless_unscaled)
+                item_unit = getattr(item_ax, "unit", u.dimensionless_unscaled)
+                if ref_unit != item_unit:
                     raise ValueError(
                         f"Item {i}: Axis {ax_idx} unit mismatch. "
-                        f"Expected {ref_ax.unit}, got {item_ax.unit}"
+                        f"Expected {ref_unit}, got {item_unit}"
                     )
+                ref_val = getattr(ref_ax, "value", ref_ax)
+                item_val = getattr(item_ax, "value", item_ax)
                 if not np.allclose(
-                    ref_ax.value, item_ax.value, rtol=_AXIS_RTOL, atol=_AXIS_ATOL
+                    np.asarray(ref_val), np.asarray(item_val), rtol=_AXIS_RTOL, atol=_AXIS_ATOL
                 ):
                     raise ValueError(
                         f"Item {i}: Axis {ax_idx} coordinate mismatch. "
@@ -224,13 +229,17 @@ class FieldDict(dict):
                         f"Key '{key}': Axis {ax_idx} shape mismatch. "
                         f"Expected {ref_ax.shape}, got {item_ax.shape}"
                     )
-                if ref_ax.unit != item_ax.unit:
+                ref_unit = getattr(ref_ax, "unit", u.dimensionless_unscaled)
+                item_unit = getattr(item_ax, "unit", u.dimensionless_unscaled)
+                if ref_unit != item_unit:
                     raise ValueError(
                         f"Key '{key}': Axis {ax_idx} unit mismatch. "
-                        f"Expected {ref_ax.unit}, got {item_ax.unit}"
+                        f"Expected {ref_unit}, got {item_unit}"
                     )
+                ref_val = getattr(ref_ax, "value", ref_ax)
+                item_val = getattr(item_ax, "value", item_ax)
                 if not np.allclose(
-                    ref_ax.value, item_ax.value, rtol=_AXIS_RTOL, atol=_AXIS_ATOL
+                    np.asarray(ref_val), np.asarray(item_val), rtol=_AXIS_RTOL, atol=_AXIS_ATOL
                 ):
                     raise ValueError(
                         f"Key '{key}': Axis {ax_idx} coordinate mismatch. "
