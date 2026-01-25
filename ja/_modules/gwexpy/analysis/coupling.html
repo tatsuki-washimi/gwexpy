@@ -504,7 +504,11 @@
                     <span class="n">p10_asd</span> <span class="o">=</span> <span class="n">p10</span><span class="o">**</span><span class="mf">0.5</span>
                     <span class="n">p90_asd</span> <span class="o">=</span> <span class="n">p90</span><span class="o">**</span><span class="mf">0.5</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not compute background percentiles for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ts_bkg</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">ts_bkg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;Target&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;Could not compute background percentiles for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">ts_bkg</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">ts_bkg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;Target&quot;</span><span class="p">,</span>
+                        <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
 
             <span class="k">return</span> <span class="n">asd_mean</span><span class="p">,</span> <span class="n">p10_asd</span><span class="p">,</span> <span class="n">p90_asd</span>
 
@@ -734,7 +738,10 @@
             <span class="ow">or</span> <span class="p">(</span><span class="n">ts_tgt_inj</span><span class="o">.</span><span class="n">unit</span> <span class="o">/</span> <span class="n">ts_wit_inj</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Automatic CF unit determination failed, falling back to dimensionless.&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Automatic CF unit determination failed, falling back to dimensionless.&quot;</span><span class="p">,</span>
+            <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">cf_unit</span> <span class="o">=</span> <span class="s2">&quot;dimensionless&quot;</span>
 
     <span class="n">cf</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>

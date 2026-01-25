@@ -153,7 +153,9 @@
 <span class="sd">            If the tensor rank is not 2.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;trace() is only defined for rank-2 tensors, got rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;trace() is only defined for rank-2 tensors, got rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># Find unique indices present in the diagonal</span>
         <span class="n">diag_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -197,7 +199,9 @@
 <span class="sd">        - TensorField @ TensorField -&gt; TensorField</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Matmul (@) is only defined for rank-2 tensors, got rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Matmul (@) is only defined for rank-2 tensors, got rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># Mapping for VectorField components</span>
         <span class="n">V_INV</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">}</span>
@@ -233,7 +237,7 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">TensorField</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">rank</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Matmul requires rank-2 TensorField&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Matmul requires rank-2 TensorField&quot;</span><span class="p">)</span>
 
             <span class="c1"># T_ij S_jk = R_ik</span>
             <span class="n">indices_i</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
@@ -283,7 +287,7 @@
 <span class="sd">            Shape (N0, N1, N2, N3, dim1, dim2) if order=&#39;last&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;to_array only implemented for rank-2 tensors&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;to_array only implemented for rank-2 tensors&quot;</span><span class="p">)</span>
 
         <span class="n">indices_i</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
         <span class="n">indices_j</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
@@ -318,7 +322,9 @@
 <span class="sd">            The determinant field.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;det() is only defined for rank-2 tensors, got rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;det() is only defined for rank-2 tensors, got rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_array</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">)</span>
         <span class="n">det_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
@@ -354,13 +360,15 @@
 <span class="sd">            If the tensor rank is not 2.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;symmetrize() is only defined for rank-2 tensors, got rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;symmetrize() is only defined for rank-2 tensors, got rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">new_components</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">ScalarField</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">all_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">processed_pairs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="n">all_keys</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">all_keys</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="n">processed_pairs</span><span class="p">:</span>
                 <span class="k">continue</span>
 
@@ -427,7 +435,7 @@
 <span class="sd">            Fixed coordinates and arguments passed to FieldPlot.add_scalar.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;plot_components only supports rank-2 tensors&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;plot_components only supports rank-2 tensors&quot;</span><span class="p">)</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">..plot.field</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldPlot</span>
 
@@ -441,7 +449,12 @@
         <span class="c1"># This is repeated logic, maybe move to FieldBase static helper if needed often?</span>
         <span class="c1"># But &#39;all_axes&#39; info is needed.</span>
         <span class="n">first</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
-        <span class="n">all_axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">first</span><span class="o">.</span><span class="n">_axis0_name</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">_axis1_name</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">_axis2_name</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">_axis3_name</span><span class="p">]</span>
+        <span class="n">all_axes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">first</span><span class="o">.</span><span class="n">_axis0_name</span><span class="p">,</span>
+            <span class="n">first</span><span class="o">.</span><span class="n">_axis1_name</span><span class="p">,</span>
+            <span class="n">first</span><span class="o">.</span><span class="n">_axis2_name</span><span class="p">,</span>
+            <span class="n">first</span><span class="o">.</span><span class="n">_axis3_name</span><span class="p">,</span>
+        <span class="p">]</span>
 
         <span class="n">slice_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">plot_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
@@ -466,6 +479,7 @@
                 <span class="c1"># Set current axes to this one</span>
                 <span class="c1"># Matplotlib&#39;s sca(ax) affects plt.gca()</span>
                 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
                 <span class="n">plt</span><span class="o">.</span><span class="n">sca</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
@@ -476,10 +490,17 @@
                     <span class="c1"># Pass label to kwargs? no add_scalar has logic.</span>
                     <span class="c1"># Add title?</span>
 
-                    <span class="n">fp</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">slice_kwargs</span><span class="o">=</span><span class="n">slice_kwargs</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span>
+                    <span class="n">fp</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span>
+                        <span class="n">comp</span><span class="p">,</span>
+                        <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                        <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+                        <span class="n">slice_kwargs</span><span class="o">=</span><span class="n">slice_kwargs</span><span class="p">,</span>
+                        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">,</span>
+                    <span class="p">)</span>
                     <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">fp</span></div>
 </div>

@@ -126,7 +126,6 @@
 <span class="sd">    resources still require higher-level I/O (e.g., HDF5) for full fidelity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-
     <span class="n">series_class</span> <span class="o">=</span> <span class="n">Spectrogram</span>
     <span class="n">dict_class</span> <span class="o">=</span> <span class="n">SpectrogramDict</span>
     <span class="n">list_class</span> <span class="o">=</span> <span class="n">SpectrogramList</span>
@@ -288,8 +287,12 @@
         <span class="c1"># Identify ufunc category for unit handling</span>
         <span class="n">_ADD_SUB_UFUNCS</span> <span class="o">=</span> <span class="p">{</span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">}</span>
         <span class="n">_COMPARISON_UFUNCS</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">less_equal</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">not_equal</span><span class="p">,</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">greater_equal</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">less_equal</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">not_equal</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">_MUL_DIV_UFUNCS</span> <span class="o">=</span> <span class="p">{</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">true_divide</span><span class="p">}</span>
 
@@ -345,15 +348,20 @@
 
                 <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndindex</span><span class="p">(</span><span class="n">meta_shape</span><span class="p">):</span>
                     <span class="n">old_meta</span> <span class="o">=</span> <span class="n">main</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-                    <span class="n">old_unit</span> <span class="o">=</span> <span class="n">old_meta</span><span class="o">.</span><span class="n">unit</span> <span class="k">if</span> <span class="n">old_meta</span><span class="o">.</span><span class="n">unit</span> <span class="k">else</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span>
+                    <span class="n">old_unit</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">old_meta</span><span class="o">.</span><span class="n">unit</span> <span class="k">if</span> <span class="n">old_meta</span><span class="o">.</span><span class="n">unit</span> <span class="k">else</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span>
+                    <span class="p">)</span>
 
                     <span class="k">try</span><span class="p">:</span>
                         <span class="c1"># Apply ufunc to units</span>
-                        <span class="n">q_result</span> <span class="o">=</span> <span class="n">ufunc</span><span class="p">(</span>
-                            <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">old_unit</span><span class="p">),</span>
-                            <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">scalar_unit</span><span class="p">)</span>
-                        <span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">ufunc</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">old_unit</span><span class="p">))</span>
-                        <span class="n">new_unit</span> <span class="o">=</span> <span class="n">q_result</span><span class="o">.</span><span class="n">unit</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">q_result</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">old_unit</span>
+                        <span class="n">q_result</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">ufunc</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">old_unit</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">scalar_unit</span><span class="p">))</span>
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+                            <span class="k">else</span> <span class="n">ufunc</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">old_unit</span><span class="p">))</span>
+                        <span class="p">)</span>
+                        <span class="n">new_unit</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">q_result</span><span class="o">.</span><span class="n">unit</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">q_result</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">old_unit</span>
+                        <span class="p">)</span>
                     <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">UnitConversionError</span><span class="p">):</span>
                         <span class="n">new_unit</span> <span class="o">=</span> <span class="n">old_unit</span>
 
@@ -400,7 +408,9 @@
                             <span class="c1"># Default: try to compute</span>
                             <span class="k">try</span><span class="p">:</span>
                                 <span class="n">q_result</span> <span class="o">=</span> <span class="n">ufunc</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">u1</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">u2</span><span class="p">))</span>
-                                <span class="n">new_unit</span> <span class="o">=</span> <span class="n">q_result</span><span class="o">.</span><span class="n">unit</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">q_result</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">u1</span>
+                                <span class="n">new_unit</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">q_result</span><span class="o">.</span><span class="n">unit</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">q_result</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">u1</span>
+                                <span class="p">)</span>
                             <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">UnitConversionError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">UnitConversionError</span><span class="p">):</span>
                                     <span class="k">raise</span>

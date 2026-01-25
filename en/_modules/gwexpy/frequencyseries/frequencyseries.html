@@ -151,7 +151,7 @@
 <span class="sd">        arguments for the parent FrequencySeries constructor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Remove noise-generation parameters that shouldn&#39;t be passed to parent</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;fmin&#39;</span><span class="p">,</span> <span class="s1">&#39;fmax&#39;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;fmin&quot;</span><span class="p">,</span> <span class="s2">&quot;fmax&quot;</span><span class="p">]:</span>
             <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>

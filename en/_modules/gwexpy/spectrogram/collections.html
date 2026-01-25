@@ -351,8 +351,7 @@
             <span class="c1"># Check times equality (reusing base validation logic)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">check_shape_xindex_compatibility</span><span class="p">(</span>
-                    <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">shape0</span><span class="p">,</span> <span class="n">times0</span><span class="p">),</span>
-                    <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">times</span><span class="p">)</span>
+                    <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">shape0</span><span class="p">,</span> <span class="n">times0</span><span class="p">),</span> <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">times</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Times mismatch at index </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -360,8 +359,7 @@
             <span class="c1"># Check frequencies equality (reusing base validation logic)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">check_shape_xindex_compatibility</span><span class="p">(</span>
-                    <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">shape0</span><span class="p">,</span> <span class="n">freqs0</span><span class="p">),</span>
-                    <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">frequencies</span><span class="p">)</span>
+                    <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">shape0</span><span class="p">,</span> <span class="n">freqs0</span><span class="p">),</span> <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">frequencies</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequencies mismatch at index </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -379,11 +377,7 @@
             <span class="p">)</span>
         <span class="n">meta_matrix</span> <span class="o">=</span> <span class="n">MetaDataMatrix</span><span class="p">(</span><span class="n">meta_arr</span><span class="p">)</span>
 
-        <span class="n">global_unit</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">s0</span><span class="o">.</span><span class="n">unit</span>
-            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="n">s0</span><span class="o">.</span><span class="n">unit</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
-            <span class="k">else</span> <span class="kc">None</span>
-        <span class="p">)</span>
+        <span class="n">global_unit</span> <span class="o">=</span> <span class="n">s0</span><span class="o">.</span><span class="n">unit</span> <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="n">s0</span><span class="o">.</span><span class="n">unit</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">SpectrogramMatrix</span><span class="p">(</span>
             <span class="n">arr</span><span class="p">,</span>
             <span class="n">times</span><span class="o">=</span><span class="n">times0</span><span class="p">,</span>
@@ -754,8 +748,7 @@
             <span class="c1"># Check times equality (reusing base validation logic)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">check_shape_xindex_compatibility</span><span class="p">(</span>
-                    <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">shape0</span><span class="p">,</span> <span class="n">times0</span><span class="p">),</span>
-                    <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">times</span><span class="p">)</span>
+                    <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">shape0</span><span class="p">,</span> <span class="n">times0</span><span class="p">),</span> <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">times</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Times mismatch at key </span><span class="si">{</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -763,8 +756,7 @@
             <span class="c1"># Check frequencies equality (reusing base validation logic)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">check_shape_xindex_compatibility</span><span class="p">(</span>
-                    <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">shape0</span><span class="p">,</span> <span class="n">freqs0</span><span class="p">),</span>
-                    <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">frequencies</span><span class="p">)</span>
+                    <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">shape0</span><span class="p">,</span> <span class="n">freqs0</span><span class="p">),</span> <span class="n">AxisWrapper</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">frequencies</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequencies mismatch at key </span><span class="si">{</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -782,11 +774,7 @@
             <span class="p">)</span>
         <span class="n">meta_matrix</span> <span class="o">=</span> <span class="n">MetaDataMatrix</span><span class="p">(</span><span class="n">meta_arr</span><span class="p">)</span>
 
-        <span class="n">global_unit</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">s0</span><span class="o">.</span><span class="n">unit</span>
-            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="n">s0</span><span class="o">.</span><span class="n">unit</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">)</span>
-            <span class="k">else</span> <span class="kc">None</span>
-        <span class="p">)</span>
+        <span class="n">global_unit</span> <span class="o">=</span> <span class="n">s0</span><span class="o">.</span><span class="n">unit</span> <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="n">s0</span><span class="o">.</span><span class="n">unit</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">SpectrogramMatrix</span><span class="p">(</span>
             <span class="n">arr</span><span class="p">,</span>
             <span class="n">times</span><span class="o">=</span><span class="n">times0</span><span class="p">,</span>
