@@ -7,12 +7,16 @@ by calculating averaged ASDs for each stable frequency step.
 """
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from ..spectrogram import Spectrogram
 from ..timeseries import TimeSeries
+
+if TYPE_CHECKING:
+    from matplotlib.axes import Axes
 
 
 @dataclass
@@ -35,7 +39,7 @@ class ResponseFunctionResult:
     witness_name: str
     target_name: str
 
-    def plot(self, ax=None, **kwargs):
+    def plot(self, ax: "Axes | None" = None, **kwargs: object) -> "Axes":
         """
         Plot the Coupling Factor vs Injected Frequency (The Transfer Function).
         """
@@ -60,7 +64,7 @@ class ResponseFunctionResult:
         ax.legend()
         return ax
 
-    def plot_map(self, ax=None, **kwargs):
+    def plot_map(self, ax: "Axes | None" = None, **kwargs: object) -> "Axes":
         """
         Plot the 2D Response Map (Injected Freq vs Target Spectrum).
         Useful to check for non-linear couplings.
@@ -99,8 +103,11 @@ class ResponseFunctionResult:
         return ax
 
     def plot_snapshot(
-        self, freq: float | None = None, step_index: int | None = None, ax=None
-    ):
+        self,
+        freq: float | None = None,
+        step_index: int | None = None,
+        ax: "Axes | None" = None,
+    ) -> "Axes":
         """
         Plot ASDs and Upper Limits for a SPECIFIC injection step.
         """
@@ -208,7 +215,7 @@ def detect_step_segments(
         median_level = 1e-30
     is_loud = peak_vals > (median_level * snr_threshold)
 
-    segments = []
+    segments: list[tuple[float, float, float]] = []
     if len(times) == 0:
         return segments
 
@@ -266,7 +273,7 @@ class ResponseFunctionAnalysis:
         target: TimeSeries,
         segments: list[tuple[float, float, float]] | None = None,
         fftlength: float = 4.0,
-        overlap: float = 0,
+        overlap: float = 0.0,
         # Auto-detect params
         auto_detect: bool = True,
         snr_threshold: float = 10.0,
@@ -275,7 +282,7 @@ class ResponseFunctionAnalysis:
         # Background
         witness_bkg: TimeSeries | None = None,
         target_bkg: TimeSeries | None = None,
-        **kwargs,
+        **kwargs: object,
     ) -> ResponseFunctionResult:
         """
         Perform the analysis.
@@ -448,7 +455,33 @@ class ResponseFunctionAnalysis:
         )
 
 
-def estimate_response_function(witness, target, **kwargs):
+def estimate_response_function(
+    witness: TimeSeries,
+    target: TimeSeries,
+    segments: list[tuple[float, float, float]] | None = None,
+    fftlength: float = 4.0,
+    overlap: float = 0.0,
+    auto_detect: bool = True,
+    snr_threshold: float = 10.0,
+    min_duration: float = 5.0,
+    trim_edge: float = 1.0,
+    witness_bkg: TimeSeries | None = None,
+    target_bkg: TimeSeries | None = None,
+    **kwargs: object,
+) -> ResponseFunctionResult:
     """Helper function."""
     analysis = ResponseFunctionAnalysis()
-    return analysis.compute(witness, target, **kwargs)
+    return analysis.compute(
+        witness,
+        target,
+        segments=segments,
+        fftlength=fftlength,
+        overlap=overlap,
+        auto_detect=auto_detect,
+        snr_threshold=snr_threshold,
+        min_duration=min_duration,
+        trim_edge=trim_edge,
+        witness_bkg=witness_bkg,
+        target_bkg=target_bkg,
+        **kwargs,
+    )

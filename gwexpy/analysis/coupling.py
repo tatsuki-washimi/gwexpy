@@ -7,9 +7,13 @@ Estimates the coupling function (CF) with flexible threshold strategies:
 - PercentileThreshold: Data-driven percentile (Robust to non-Gaussianity).
 """
 
+from __future__ import annotations
+
 import logging
 import warnings
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -17,6 +21,16 @@ logger = logging.getLogger(__name__)
 
 from ..frequencyseries import FrequencySeries
 from ..timeseries import TimeSeries, TimeSeriesDict
+
+if TYPE_CHECKING:
+    from gwexpy.plot import Plot
+    from gwexpy.types.typing import IndexLike
+
+
+def _index_values(index: object) -> np.ndarray:
+    values = getattr(index, "value", index)
+    return np.asarray(values, dtype=float)
+
 
 # --- Threshold Strategies ---
 
@@ -30,7 +44,7 @@ class ThresholdStrategy(ABC):
         psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
         raw_bkg: TimeSeries | None = None,
-        **kwargs,
+        **kwargs: object,
     ) -> np.ndarray:
         """
         Return a boolean mask where P_inj is considered 'excess'.
@@ -53,7 +67,7 @@ class ThresholdStrategy(ABC):
         psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
         raw_bkg: TimeSeries | None = None,
-        **kwargs,
+        **kwargs: object,
     ) -> np.ndarray:
         """Return the PSD threshold values used by this strategy."""
         pass
@@ -72,13 +86,25 @@ class RatioThreshold(ThresholdStrategy):
         - Extremely fast as it requires no variance estimation.
     """
 
-    def __init__(self, ratio: float = 2.0):
+    def __init__(self, ratio: float = 2.0) -> None:
         self.ratio = ratio
 
-    def check(self, psd_inj, psd_bkg, **kwargs):
+    def check(
+        self,
+        psd_inj: FrequencySeries,
+        psd_bkg: FrequencySeries,
+        raw_bkg: TimeSeries | None = None,
+        **kwargs: object,
+    ) -> np.ndarray:
         return psd_inj.value > (psd_bkg.value * self.ratio)
 
-    def threshold(self, psd_inj, psd_bkg, **kwargs):
+    def threshold(
+        self,
+        psd_inj: FrequencySeries,
+        psd_bkg: FrequencySeries,
+        raw_bkg: TimeSeries | None = None,
+        **kwargs: object,
+    ) -> np.ndarray:
         return psd_bkg.value * self.ratio
 
 
@@ -105,17 +131,35 @@ class SigmaThreshold(ThresholdStrategy):
     In such cases, `PercentileThreshold` is recommended as it uses the empirical distribution.
     """
 
-    def __init__(self, sigma: float = 3.0):
+    def __init__(self, sigma: float = 3.0) -> None:
         self.sigma = sigma
 
-    def check(self, psd_inj, psd_bkg, n_avg=1.0, **kwargs):
+    def check(
+        self,
+        psd_inj: FrequencySeries,
+        psd_bkg: FrequencySeries,
+        raw_bkg: TimeSeries | None = None,
+        **kwargs: object,
+    ) -> np.ndarray:
+        n_avg = kwargs.get("n_avg", 1.0)
+        if not isinstance(n_avg, (int, float)):
+            raise TypeError("SigmaThreshold expects numeric n_avg.")
         if n_avg <= 0:
             return np.ones_like(psd_inj.value, dtype=bool)
 
         factor = 1.0 + (self.sigma / np.sqrt(n_avg))
         return psd_inj.value > (psd_bkg.value * factor)
 
-    def threshold(self, psd_inj, psd_bkg, n_avg=1.0, **kwargs):
+    def threshold(
+        self,
+        psd_inj: FrequencySeries,
+        psd_bkg: FrequencySeries,
+        raw_bkg: TimeSeries | None = None,
+        **kwargs: object,
+    ) -> np.ndarray:
+        n_avg = kwargs.get("n_avg", 1.0)
+        if not isinstance(n_avg, (int, float)):
+            raise TypeError("SigmaThreshold expects numeric n_avg.")
         if n_avg <= 0:
             return psd_bkg.value
         factor = 1.0 + (self.sigma / np.sqrt(n_avg))
@@ -143,30 +187,43 @@ class PercentileThreshold(ThresholdStrategy):
         Threshold = factor * P_bkg_percentile
     """
 
-    def __init__(self, percentile: float = 95, factor: float = 1.0):
+    def __init__(self, percentile: float = 95, factor: float = 1.0) -> None:
         self.percentile = percentile
         self.factor = factor
 
     def check(
-        self, psd_inj, psd_bkg, raw_bkg=None, fftlength=None, overlap=None, **kwargs
-    ):
+        self,
+        psd_inj: FrequencySeries,
+        psd_bkg: FrequencySeries,
+        raw_bkg: TimeSeries | None = None,
+        **kwargs: object,
+    ) -> np.ndarray:
         threshold = self.threshold(
             psd_inj,
             psd_bkg,
             raw_bkg=raw_bkg,
-            fftlength=fftlength,
-            overlap=overlap,
             **kwargs,
         )
         return psd_inj.value > threshold
 
     def threshold(
-        self, psd_inj, psd_bkg, raw_bkg=None, fftlength=None, overlap=None, **kwargs
-    ):
+        self,
+        psd_inj: FrequencySeries,
+        psd_bkg: FrequencySeries,
+        raw_bkg: TimeSeries | None = None,
+        **kwargs: object,
+    ) -> np.ndarray:
+        fftlength = kwargs.get("fftlength")
+        overlap = kwargs.get("overlap")
         if raw_bkg is None or fftlength is None:
             raise ValueError(
                 "PercentileThreshold requires 'raw_bkg' time series and 'fftlength' to calculate distributions."
             )
+
+        if not isinstance(fftlength, (int, float)):
+            raise TypeError("PercentileThreshold expects numeric fftlength.")
+        if overlap is not None and not isinstance(overlap, (int, float)):
+            raise TypeError("PercentileThreshold expects numeric overlap.")
 
         # Calculate Spectrogram (Time-Frequency map) of background
         # We need the variation over time segments
@@ -211,7 +268,7 @@ class CouplingResult:
         ts_target_bkg: TimeSeries | None = None,
         fftlength: float | None = None,
         overlap: float | None = None,
-    ):
+    ) -> None:
         self.cf = cf
         self.cf_ul = cf_ul
         self.psd_witness_inj = psd_witness_inj
@@ -227,10 +284,15 @@ class CouplingResult:
         self.overlap = overlap
 
     @property
-    def frequencies(self):
+    def frequencies(self) -> IndexLike:
         return self.cf.xindex
 
-    def plot_cf(self, figsize=None, xlim=None, **kwargs):
+    def plot_cf(
+        self,
+        figsize: tuple[float, float] | None = None,
+        xlim: tuple[float, float] | None = None,
+        **kwargs: object,
+    ) -> Plot:
         """Plot the Coupling Function and its Upper Limit."""
 
         # Crop data if xlim provided
@@ -282,7 +344,11 @@ class CouplingResult:
 
         return plot
 
-    def plot(self, figsize=(10, 12), xlim=None):
+    def plot(
+        self,
+        figsize: tuple[float, float] = (10, 12),
+        xlim: tuple[float, float] | None = None,
+    ) -> Plot:
         """
         Create a diagnostic plot showing ASDs and the resulting CF.
         """
@@ -500,23 +566,23 @@ class CouplingResult:
 
 
 def _process_single_target(
-    tgt_key,
-    ts_tgt_inj,
-    ts_tgt_bkg,
-    psd_kwargs,
-    psd_wit_inj,
-    psd_wit_bkg,
-    mask_wit,
-    delta_wit,
-    witness_key,
-    ts_wit_inj,
-    ts_wit_bkg,
-    threshold_target,
-    check_kwargs,
-    fftlength,
-    overlap,
-    freq_mask,
-):
+    tgt_key: str,
+    ts_tgt_inj: TimeSeries,
+    ts_tgt_bkg: TimeSeries,
+    psd_kwargs: dict[str, object],
+    psd_wit_inj: FrequencySeries,
+    psd_wit_bkg: FrequencySeries,
+    mask_wit: np.ndarray,
+    delta_wit: np.ndarray,
+    witness_key: str,
+    ts_wit_inj: TimeSeries,
+    ts_wit_bkg: TimeSeries,
+    threshold_target: ThresholdStrategy,
+    check_kwargs: Mapping[str, object],
+    fftlength: float,
+    overlap: float,
+    freq_mask: np.ndarray | None,
+) -> tuple[str, CouplingResult] | None:
     """
     Process a single target channel.
     This function is defined at module level to ensuring picklability for multiprocessing.
@@ -526,7 +592,9 @@ def _process_single_target(
     psd_tgt_bkg = ts_tgt_bkg.psd(**psd_kwargs)
 
     # Frequency check
-    if not np.allclose(psd_wit_inj.xindex.value, psd_tgt_inj.xindex.value):
+    if not np.allclose(
+        _index_values(psd_wit_inj.xindex), _index_values(psd_tgt_inj.xindex)
+    ):
         warnings.warn(f"Frequency mismatch for {tgt_key}. Skipping.")
         return None
 
@@ -633,7 +701,7 @@ class CouplingFunctionAnalysis:
         threshold_witness: ThresholdStrategy = RatioThreshold(25.0),
         threshold_target: ThresholdStrategy = RatioThreshold(4.0),
         n_jobs: int | None = None,
-        **kwargs,
+        **kwargs: object,
     ) -> CouplingResult | dict[str, CouplingResult]:
         """
         Compute Coupling Function(s) from TimeSeriesDicts.
@@ -742,7 +810,7 @@ class CouplingFunctionAnalysis:
                 )
             if fmin_val > fmax_val:
                 raise ValueError("frange must satisfy fmin <= fmax")
-            freqs = psd_wit_inj.xindex.value
+            freqs = _index_values(psd_wit_inj.xindex)
             freq_mask = (freqs >= fmin_val) & (freqs <= fmax_val)
 
         # Check Witness Excess
@@ -854,7 +922,7 @@ def estimate_coupling(
     threshold_witness: ThresholdStrategy | float = 25.0,
     threshold_target: ThresholdStrategy | float = 4.0,
     n_jobs: int | None = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> CouplingResult | dict[str, CouplingResult]:
     """Helper function to estimate CF.
 
@@ -865,7 +933,9 @@ def estimate_coupling(
         Values outside the range are set to NaN.
     """
 
-    def _ensure_strategy(val):
+    def _ensure_strategy(
+        val: ThresholdStrategy | float,
+    ) -> ThresholdStrategy:
         if isinstance(val, (int, float)):
             return RatioThreshold(val)
         return val
