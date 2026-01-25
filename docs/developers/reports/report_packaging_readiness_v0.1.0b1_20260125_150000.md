@@ -1,7 +1,7 @@
 # 作業報告書: Packaging Readiness v0.1.0b1 (Phase 1-6)
 
 **日付**: 2026-01-25
-**作業者**: Antigravity (Gemini 3 Pro High + Claude 3.5 Sonnet)
+**作業者**: Antigravity (Gemini 3 Pro High + OpenAI GPT5.2-Codex)
 **対象バージョン**: v0.1.0b1
 
 ## 1. 実施内容の概要
@@ -56,5 +56,5 @@
 
 ## 5. 使用リソース
 
-- **モデル**: Gemini 3 Pro (High Context), Claude 3.5 Sonnet
+- **モデル**: Gemini 3 Pro (High Context), OpenAI GPT5.2-Codex
 - **推定工数**: 約 110 分
