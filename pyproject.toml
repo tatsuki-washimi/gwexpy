@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gwexpy"
-version = "0.4.0"
-description = "A Python package for gravitational-wave data analysis, extending GWpy with strict unit handling and advanced spectral methods."
+version = "0.1.0b1"
+description = "A comprehensive Python package for Gravitational Wave experimental data analysis, extending GWpy with strict unit handling and advanced spectral methods."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
@@ -169,7 +169,7 @@ ignore = [
 [tool.mypy]
 ignore_missing_imports = true
 check_untyped_defs = true
-exclude = "gwexpy/(gui/.*|frequencyseries/.*|spectrogram/.*)|tests/.*"
+exclude = "gwexpy/(gui/.*|spectrogram/.*)|tests/.*"
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"

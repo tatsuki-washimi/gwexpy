@@ -96,140 +96,151 @@ class SpectralAccumulator:
         Ingest new data.
         data_dict: { channel_name: { 'data': np.array, 'step': dt, 'gps_start': t0 } }
         """
-        if self.is_done and self.params.get("avg_type") == "Fixed":
-            return
+        try:
+            if self.is_done and self.params.get("avg_type") == "Fixed":
+                return
 
-        if not data_dict:
-            return
+            if not data_dict:
+                return
 
-        # Initialize common_t0 from the first packet we see
-        if self.common_t0 is None:
-            first_ch = list(data_dict.keys())[0]
-            self.common_t0 = data_dict[first_ch]["gps_start"]
-            logger.info(
-                f"SpectralAccumulator starting alignment at t0={self.common_t0}"
-            )
+            # Initialize common_t0 from the first packet we see
+            if self.common_t0 is None:
+                first_ch = list(data_dict.keys())[0]
+                self.common_t0 = data_dict[first_ch]["gps_start"]
+                logger.info(
+                    f"SpectralAccumulator starting alignment at t0={self.common_t0}"
+                )
 
-        for ch, packet in data_dict.items():
-            t0 = packet["gps_start"]
-            dt = packet["step"]
-            data = packet["data"]
+            for ch, packet in data_dict.items():
+                t0 = packet["gps_start"]
+                dt = packet["step"]
+                data = packet["data"]
 
-            # 1. Time Alignment
-            # If packet is ahead of common_t0, drop samples
-            if t0 < self.common_t0:
-                diff_sec = self.common_t0 - t0
-                drop_samples = int(round(diff_sec / dt))
-                if drop_samples >= len(data):
-                    continue
-                data = data[drop_samples:]
-                t0 = self.common_t0
-            # (If t0 > common_t0, the buffer just correctly reflects the delay)
+                # 1. Time Alignment
+                # If packet is ahead of common_t0, drop samples
+                if t0 < self.common_t0:
+                    diff_sec = self.common_t0 - t0
+                    drop_samples = int(round(diff_sec / dt))
+                    if drop_samples >= len(data):
+                        continue
+                    data = data[drop_samples:]
+                    t0 = self.common_t0
+                # (If t0 > common_t0, the buffer just correctly reflects the delay)
 
-            # 2. Update Processing Buffer
-            if ch not in self.buffers:
-                self.buffers[ch] = {"data": [], "dt": dt, "t0": t0, "current_len": 0}
+                # 2. Update Processing Buffer
+                if ch not in self.buffers:
+                    self.buffers[ch] = {"data": [], "dt": dt, "t0": t0, "current_len": 0}
 
-            buf = self.buffers[ch]
-            buf["data"].append(data)
-            buf["current_len"] += len(data)
+                buf = self.buffers[ch]
+                buf["data"].append(data)
+                buf["current_len"] += len(data)
 
-        self._process_buffers()
+            self._process_buffers()
+
+        except Exception:
+            logger.exception("Error in add_chunk")
 
     def _process_buffers(self):
         """
         Process buffers synchronously.
         Only proceed if ALL available channels have enough data for a segment.
         """
-        if not self.buffers:
-            return
-
-        # Which channels do we need?
-        # If available_channels is set, we wait for all of them.
-        # Otherwise, we wait for all channels currently in buffers.
-        # Channels that are mentioned in active_traces but not in available_channels
-        # should also be considered if we want strict safety.
-        targets = (
-            self.available_channels
-            if self.available_channels
-            else set(self.buffers.keys())
-        )
-
-        # If some target channel has not even appeared in buffers yet, we must wait.
-        # Note: Simulation mode might only feed a subset, so we should be careful.
-        # But if they are in available_channels, we assume they will come.
-        for ch in targets:
-            if ch not in self.buffers:
+        try:
+            if not self.buffers:
                 return
 
-        # Get dt from any available buffer
-        any_ch = list(targets)[0]
-        dt = self.buffers[any_ch]["dt"]
+            # Which channels do we need?
+            targets = (
+                self.available_channels
+                if self.available_channels
+                else set(self.buffers.keys())
+            )
 
-        required_samples = int(self.fftlength / dt)
-        stride_samples = int(self.stride / dt)
-
-        # Process each segment step by step for ALL channels
-        processed_any = True
-        while processed_any:
-            processed_any = False
-
-            # Check if ALL targets are ready for the next segment
-            all_ready = True
+            # If some target channel has not even appeared in buffers yet, we must wait.
             for ch in targets:
-                if self.buffers[ch]["current_len"] < required_samples:
-                    all_ready = False
+                if ch not in self.buffers:
+                    return
+
+            # Get dt from any available buffer
+            any_ch = list(targets)[0]
+            dt = self.buffers[any_ch]["dt"]
+
+            # Guard against invalid dt
+            if dt <= 0:
+                logger.error(f"Invalid dt={dt} detected in buffer for {any_ch}")
+                return
+
+            required_samples = int(self.fftlength / dt)
+            stride_samples = int(self.stride / dt)
+            
+            if required_samples <= 0 or stride_samples <= 0:
+                 logger.warning(f"Insufficient samples for FFT: req={required_samples}, stride={stride_samples}. Check bw/fftlength.")
+                 return
+
+            # Process each segment step by step for ALL channels
+            processed_any = True
+            while processed_any:
+                processed_any = False
+
+                # Check if ALL targets are ready for the next segment
+                all_ready = True
+                for ch in targets:
+                    if self.buffers[ch]["current_len"] < required_samples:
+                        all_ready = False
+                        break
+
+                if not all_ready:
                     break
 
-            if not all_ready:
-                break
+                segment_map = {}
 
-            segment_map = {}
+                # Extract segments for all targets
+                for ch in targets:
+                    b = self.buffers[ch]
 
-            # Extract segments for all targets
-            for ch in targets:
-                b = self.buffers[ch]
+                    # Concatenate buffer data if needed
+                    if len(b["data"]) > 1:
+                        full_arr = np.concatenate(b["data"])
+                        b["data"] = [full_arr]
+                    else:
+                        full_arr = b["data"][0]
 
-                # Concatenate buffer data if needed
-                if len(b["data"]) > 1:
-                    full_arr = np.concatenate(b["data"])
-                    b["data"] = [full_arr]
-                else:
-                    full_arr = b["data"][0]
+                    # Extract segment
+                    seg_data = full_arr[:required_samples]
 
-                # Extract segment
-                seg_data = full_arr[:required_samples]
+                    # Create TimeSeries
+                    ts = TimeSeries(seg_data, dt=b["dt"], t0=b["t0"])
+                    segment_map[ch] = ts
 
-                # Create TimeSeries
-                ts = TimeSeries(seg_data, dt=b["dt"], t0=b["t0"])
-                segment_map[ch] = ts
+                    # Update Display History (Deque) - Synchronized
+                    if ch not in self.display_history:
+                        # Default to 30s history if nds_win not in params
+                        win_sec = self.params.get("nds_win", 30.0)
+                        maxlen = int(win_sec / b["dt"])
+                        self.display_history[ch] = deque(maxlen=maxlen)
 
-                # Update Display History (Deque) - Synchronized
-                if ch not in self.display_history:
-                    # Default to 30s history if nds_win not in params
-                    win_sec = self.params.get("nds_win", 30.0)
-                    maxlen = int(win_sec / b["dt"])
-                    self.display_history[ch] = deque(maxlen=maxlen)
+                    self.display_history[ch].extend(seg_data)
 
-                self.display_history[ch].extend(seg_data)
+                    # Update buffer: shift by stride
+                    remaining = full_arr[stride_samples:]
+                    b["data"] = [remaining]
+                    b["current_len"] = len(remaining)
+                    b["t0"] += stride_samples * b["dt"]
 
-                # Update buffer: shift by stride
-                remaining = full_arr[stride_samples:]
-                b["data"] = [remaining]
-                b["current_len"] = len(remaining)
-                b["t0"] += stride_samples * b["dt"]
+                # If we extracted segments, update spectra
+                if segment_map:
+                    self._update_spectra(segment_map)
+                    self.state["count"] += 1
+                    processed_any = True
 
-            # If we extracted segments, update spectra
-            if segment_map:
-                self._update_spectra(segment_map)
-                self.state["count"] += 1
-                processed_any = True
+                    # Check stop condition for Fixed averaging
+                    if self.params.get("avg_type") == "Fixed":
+                        if self.state["count"] >= self.params.get("averages", 10):
+                            self.is_done = True
+                            return
 
-                # Check stop condition for Fixed averaging
-                if self.params.get("avg_type") == "Fixed":
-                    if self.state["count"] >= self.params.get("averages", 10):
-                        self.is_done = True
-                        return
+        except Exception:
+            logger.exception("Error in _process_buffers")
 
     def _update_spectra(self, segment_map):
         fft_kwargs = {

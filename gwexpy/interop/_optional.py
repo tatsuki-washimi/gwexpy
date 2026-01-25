@@ -91,6 +91,9 @@ def require_optional(name: str) -> Any:
         "dttxml": "gw",
         "gwinc": "gw",
         "joblib": "stats",
+        "corner": "fitting",
+        "emcee": "fitting",
+        "mtpy": "geophysics",
     }
 
     try:

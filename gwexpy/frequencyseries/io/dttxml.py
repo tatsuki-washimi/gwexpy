@@ -21,11 +21,9 @@ from gwexpy.io.utils import (
     set_provenance,
 )
 
-from ..frequencyseries import (
-    FrequencySeries,
-    FrequencySeriesDict,
-    FrequencySeriesMatrix,
-)
+from ..collections import FrequencySeriesDict
+from ..frequencyseries import FrequencySeries
+from ..matrix import FrequencySeriesMatrix
 
 
 def _build_epoch(value, timezone):
