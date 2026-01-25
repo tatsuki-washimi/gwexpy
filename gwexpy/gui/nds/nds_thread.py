@@ -1,7 +1,7 @@
-"""
-NDS Thread for asynchronous data fetching.
-Adapted from reference_ndscope.
-"""
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 try:
     import nds2
@@ -35,7 +35,7 @@ class NDSThread(QtCore.QThread):
 
     def run(self):
         if nds2 is None:
-            print(f"NDSThread Error: {_nds2_missing_message()}")
+            logger.error("NDSThread Error: %s", _nds2_missing_message())
             return
         try:
             self.conn = nds2.connection(self.server, self.port)
@@ -59,7 +59,7 @@ class NDSThread(QtCore.QThread):
 
         except Exception as e:
             if self.running:  # Only log if not intentional stop
-                print(f"NDSThread Error: {e}")
+                logger.error("NDSThread Error: %s", e, exc_info=True)
         finally:
             if self.conn:
                 try:
@@ -67,7 +67,7 @@ class NDSThread(QtCore.QThread):
                     self.conn = None  # Avoid double close
                     c.close()
                 except Exception:
-                    pass
+                    logger.debug("Error while closing NDS connection in finally block.", exc_info=True)
             self.finished.emit()
 
     def stop(self):
@@ -81,7 +81,7 @@ class NDSThread(QtCore.QThread):
                 if c:
                     c.close()
             except Exception:
-                pass
+                logger.debug("Error while closing NDS connection in stop().", exc_info=True)
 
 
 class ChannelListWorker(QtCore.QThread):
@@ -123,4 +123,5 @@ class ChannelListWorker(QtCore.QThread):
             self.finished.emit(results, "")
 
         except Exception as e:
+            logger.exception("Failed to fetch channel list.")
             self.finished.emit([], str(e))
