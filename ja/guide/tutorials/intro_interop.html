@@ -208,15 +208,15 @@ os.environ.setdefault(&quot;TF_CPP_MIN_LOG_LEVEL&quot;, &quot;3&quot;)
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
 
-warnings.filterwarnings(&quot;ignore&quot;, &quot;Wswiglal-redir-stdio&quot;)
-
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy import units as u
 from gwpy.time import LIGOTimeGPS
 
 from gwexpy.timeseries import TimeSeries
-warnings.filterwarnings(&#39;ignore&#39;, category=UserWarning)
+
+warnings.filterwarnings(&quot;ignore&quot;, &quot;Wswiglal-redir-stdio&quot;)
+warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning)
 </pre></div>
 </div>
 </div>
@@ -984,8 +984,10 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>os.environ.setdefault(&quot;TF_CPP_MIN_LOG_LEVEL&quot;, &quot;3&quot;)
-import os
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import os
+
+os.environ.setdefault(&quot;TF_CPP_MIN_LOG_LEVEL&quot;, &quot;3&quot;)
+
 try:
     import torch
 

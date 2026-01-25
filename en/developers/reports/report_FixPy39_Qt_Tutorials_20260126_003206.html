@@ -1,0 +1,188 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report: Fix Py3.9 Compatibility, Qt Tests, and Tutorial Updates &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Report: Fix Py3.9 Compatibility, Qt Tests, and Tutorial Updates</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_FixPy39_Qt_Tutorials_20260126_003206.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="report-fix-py3-9-compatibility-qt-tests-and-tutorial-updates">
+<h1>Report: Fix Py3.9 Compatibility, Qt Tests, and Tutorial Updates<a class="headerlink" href="#report-fix-py3-9-compatibility-qt-tests-and-tutorial-updates" title="Link to this heading"></a></h1>
+<p><strong>Date</strong>: 2026-01-26 00:32:06 JST
+<strong>Author</strong>: Antigravity (Google Deepmind)</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Resolved Python 3.9 compatibility issues regarding type hinting, fixed Qt/matplotlib integration tests that were hanging or failing, and merged/cleaned up scalar field tutorials.</p>
+</section>
+<section id="changes">
+<h2>Changes<a class="headerlink" href="#changes" title="Link to this heading"></a></h2>
+<section id="python-3-9-compatibility-fixes">
+<h3>1. Python 3.9 Compatibility Fixes<a class="headerlink" href="#python-3-9-compatibility-fixes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Target</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> core files</p></li>
+<li><p><strong>Issue</strong>: Python 3.9 (and Astropy versions compatible with it) strictly require <code class="docutils literal notranslate"><span class="pre">typing.List</span></code> instead of built-in <code class="docutils literal notranslate"><span class="pre">list</span></code> for generic type hints in certain contexts, and <code class="docutils literal notranslate"><span class="pre">astropy.units.Quantity</span></code> typing behavior differences.</p></li>
+<li><p><strong>Files Modified</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/utils/typing.py</span></code>: Replaced <code class="docutils literal notranslate"><span class="pre">list[...]</span></code> with <code class="docutils literal notranslate"><span class="pre">List[...]</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/matrix.py</span></code>: Adjusted <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> type hint usage.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="qt-matplotlib-test-fixes">
+<h3>2. Qt/Matplotlib Test Fixes<a class="headerlink" href="#qt-matplotlib-test-fixes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Target</strong>: <code class="docutils literal notranslate"><span class="pre">tests/test_plot_bode.py</span></code></p></li>
+<li><p><strong>Issue</strong>: Tests invoking <code class="docutils literal notranslate"><span class="pre">plt.show()</span></code> or Qt event loops were hanging or failing due to improper event loop handling in the test environment.</p></li>
+<li><p><strong>Fix</strong>: Implemented a <code class="docutils literal notranslate"><span class="pre">QTimer.singleShot</span></code> mechanism to automatically close windows after a short delay, ensuring the event loop runs but doesn’t block indefinitely.</p></li>
+<li><p><strong>Files Modified</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/test_plot_bode.py</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="complex-residuals-in-fitting">
+<h3>3. Complex Residuals in Fitting<a class="headerlink" href="#complex-residuals-in-fitting" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Target</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/fitting/core.py</span></code></p></li>
+<li><p><strong>Issue</strong>: Chi-squared calculation failed when residuals contained complex numbers (e.g., in frequency domain fitting).</p></li>
+<li><p><strong>Fix</strong>: Explicitly cast residuals to real if they are just float values wrapped in complex types, or handle magnitude appropriately.</p></li>
+<li><p><strong>Files Modified</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy/fitting/core.py</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="documentation-tutorials">
+<h3>4. Documentation &amp; Tutorials<a class="headerlink" href="#documentation-tutorials" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Target</strong>: <code class="docutils literal notranslate"><span class="pre">docs/ja/guide/tutorials/</span></code></p></li>
+<li><p><strong>Changes</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">case_active_damping.ipynb</span></code>: Added missing x-axis labels (<code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">[s]</span></code>, <code class="docutils literal notranslate"><span class="pre">Frequency</span> <span class="pre">[Hz]</span></code>) to plots for clarity.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">field_scalar_intro.ipynb</span></code>: Merged content from <code class="docutils literal notranslate"><span class="pre">field_scalar_signal.ipynb</span></code> (PSD, cross-correlation, coherence maps) into this introductory notebook to consolidate information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">field_scalar_signal.ipynb</span></code>: <strong>Deleted</strong> (merged into intro).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="verification-results">
+<h2>Verification Results<a class="headerlink" href="#verification-results" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Unit Tests</strong>: <code class="docutils literal notranslate"><span class="pre">pytest</span></code> passed successfully (including Qt tests with <code class="docutils literal notranslate"><span class="pre">QT_API=pyqt5</span></code>).</p></li>
+<li><p><strong>Tutorials</strong>: Verified notebook consistency and plot labeling logic.</p></li>
+</ul>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Review other tutorials for similar x-axis labeling issues.</p></li>
+<li><p>Consider adding checking for Python 3.9 compatibility in CI if not already present.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

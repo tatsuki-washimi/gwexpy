@@ -482,6 +482,7 @@ for i in range(3):
     ax.grid(True)
     if i == 0:
         ax.legend(loc=&quot;upper right&quot;)
+axes[2].set_xlabel(&quot;Time [s]&quot;)
 axes[0].set_title(&quot;Impulse Response Comparison (Impulse on ACT1)&quot;)
 plt.show()
 
@@ -517,6 +518,7 @@ for i in range(3):
     ax.loglog(asd_ol, label=&quot;Open Loop&quot;, alpha=0.8)
     ax.loglog(asd_cl, label=&quot;Closed Loop&quot;, linewidth=2)
     ax.set_title(f&quot;Sensor {i + 1} ASD&quot;)
+    ax.set_xlabel(&quot;Frequency [Hz]&quot;)
     ax.grid(True, which=&quot;both&quot;, alpha=0.5)
     if i == 0:
         ax.set_ylabel(r&quot;ASD [$\mathrm{m}/\sqrt{\mathrm{Hz}}$]&quot;)

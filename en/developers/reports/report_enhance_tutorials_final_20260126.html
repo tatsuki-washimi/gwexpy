@@ -1,0 +1,187 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作業報告：チュートリアルの可読性向上とビルドの安定化 &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">作業報告：チュートリアルの可読性向上とビルドの安定化</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_enhance_tutorials_final_20260126.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>作業報告：チュートリアルの可読性向上とビルドの安定化<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<section id="id2">
+<h2>概要<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>チュートリアル用ノートブックにおける警告メッセージの抑制、フォント表示問題の修正、および出力の省略（データの切り詰め）を行い、ドキュメントの可読性を向上させました。また、不足していた依存ライブラリのインストールと、ノートブック内の構文エラーの修正を行い、CIおよびドキュメントビルドの安定性を確保しました。</p>
+</section>
+<section id="id3">
+<h2>実施内容<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>1. チュートリアル・ノートブックの修正<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">scripts/fix_tutorials.py</span></code> を作成・実行し、以下の修正をプログラム的に適用しました。</p>
+<ul class="simple">
+<li><p><strong>警告の抑制</strong>: <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> の <code class="docutils literal notranslate"><span class="pre">FutureWarning</span></code> や <code class="docutils literal notranslate"><span class="pre">TensorFlow</span></code> の <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> を無視するように設定。</p></li>
+<li><p><strong>フォントの修正</strong>: <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> の日本語フォント警告を回避するため、プロット内の日本語ラベルを英語に置換。</p></li>
+<li><p><strong>出力の切り詰め</strong>: <code class="docutils literal notranslate"><span class="pre">print(tensor)</span></code> などの出力を <code class="docutils literal notranslate"><span class="pre">print(tensor.shape)</span></code> などに変換し、膨大なデータがログを埋め尽くすのを防止。</p></li>
+<li><p><strong>対象ファイル</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/advanced-methods/tutorial_ARIMA_Forecast.ipynb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/ja/guide/tutorials/intro_interop.ipynb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/basic-new-methods/intro_Interop.ipynb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/tutorials/intro_ScalarField.ipynb</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id5">
+<h3>2. 依存関係の解消<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p>チュートリアルの実行に必要な以下のライブラリを追加インストールしました。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pyspeckit</span></code>, <code class="docutils literal notranslate"><span class="pre">simpeg</span></code>, <code class="docutils literal notranslate"><span class="pre">zarr</span></code>, <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code></p></li>
+</ul>
+</section>
+<section id="lint">
+<h3>3. 構文エラー（Lintエラー）の修正<a class="headerlink" href="#lint" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/ja/guide/tutorials/advanced_bruco.ipynb</span></code> において、未定義の変数 <code class="docutils literal notranslate"><span class="pre">ts</span></code> が使用されていた問題を修正（正しい変数名 <code class="docutils literal notranslate"><span class="pre">target</span></code> に置換）。</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>4. 検証とビルド<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Ruff</strong>: <code class="docutils literal notranslate"><span class="pre">All</span> <span class="pre">checks</span> <span class="pre">passed!</span></code></p></li>
+<li><p><strong>Mypy</strong>: <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">issues</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">282</span> <span class="pre">source</span> <span class="pre">files</span></code></p></li>
+<li><p><strong>Sphinx</strong>: ドキュメントビルド（<code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code>）を実行し、エラーなく終了することを確認。</p></li>
+</ul>
+</section>
+</section>
+<section id="id7">
+<h2>使用モデル<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Claude 3.5 Sonnet -&gt; Gemini 1.5 Pro (Model Selection Changed)</p></li>
+</ul>
+</section>
+<section id="id8">
+<h2>次のステップ<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>今回導入した修正により、CIパイプラインの安定性が向上しているはずです。</p></li>
+<li><p>引き続き、他のチュートリアルノートブックについても同様のクリーンアップが必要か検討します。</p></li>
+</ul>
+<section id="wswiglal-redir-stdio">
+<h3>5. 追加修正: Wswiglal-redir-stdio 警告の抑制<a class="headerlink" href="#wswiglal-redir-stdio" title="Link to this heading"></a></h3>
+<p>IPython環境下で <code class="docutils literal notranslate"><span class="pre">gwpy</span></code> (経由で <code class="docutils literal notranslate"><span class="pre">lal</span></code>) をインポートした際に発生する <code class="docutils literal notranslate"><span class="pre">UserWarning:</span> <span class="pre">Wswiglal-redir-stdio</span></code> を抑制するため、以下の修正を行いました。</p>
+<ul class="simple">
+<li><p><strong>gwexpy/<strong>init</strong>.py</strong>: 警告フィルタ設定直後に <code class="docutils literal notranslate"><span class="pre">lal</span></code> を明示的にインポート (<code class="docutils literal notranslate"><span class="pre">try-except</span></code> ブロック内) することで、フィルタが有効な状態で確実に警告処理を実行・抑制するようにしました。</p></li>
+<li><p><strong>docs/ja/guide/tutorials/intro_interop.ipynb</strong>: ノートブック内での <code class="docutils literal notranslate"><span class="pre">gwpy</span></code> インポート順序の影響で警告が出ていたため、警告抑制コードを <code class="docutils literal notranslate"><span class="pre">run_command</span></code> 実行前に確実に適用されるようセル冒頭に移動しました。</p></li>
+</ul>
+</section>
+<section id="tensorflow-protobuf">
+<h3>6. 追加修正: TensorFlow / Protobuf 警告の抑制<a class="headerlink" href="#tensorflow-protobuf" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">docs/ja/guide/tutorials/intro_timeseries.ipynb</span></code> における <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code> インポート時に大量に表示されるログと <code class="docutils literal notranslate"><span class="pre">Protobuf</span> <span class="pre">gencode</span> <span class="pre">version</span></code> 警告を抑制しました。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TF_CPP_MIN_LOG_LEVEL=2</span></code> を環境変数に設定し、TensorFlowのINFO/WARNINGログを抑制。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">warnings.filterwarnings(&quot;ignore&quot;,</span> <span class="pre">category=UserWarning,</span> <span class="pre">module=&quot;google.protobuf&quot;)</span></code> を追加し、Protobufのバージョン不整合に関する <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> を無視するように設定。</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -128,15 +128,15 @@
    "source": [
     "import warnings\n",
     "\n",
-    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
-    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
     "from astropy import units as u\n",
     "from gwpy.time import LIGOTimeGPS\n",
     "\n",
     "from gwexpy.timeseries import TimeSeries\n",
-    "warnings.filterwarnings('ignore', category=UserWarning)"
+    "\n",
+    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)"
    ]
   },
   {
@@ -1085,8 +1085,10 @@
     }
    ],
    "source": [
-    "os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")\n",
     "import os\n",
+    "\n",
+    "os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")\n",
+    "\n",
     "try:\n",
     "    import torch\n",
     "\n",

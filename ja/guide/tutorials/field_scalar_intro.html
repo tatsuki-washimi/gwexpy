@@ -23,7 +23,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="ScalarField Signal Processing Tutorial" href="field_scalar_signal.html" />
+    <link rel="next" title="gwexpy.fitting: iminuit ベースのフィッティング機能" href="advanced_fitting.html" />
     <link rel="prev" title="SpectrogramMatrix Tutorial" href="matrix_spectrogram.html" /> 
 </head>
 
@@ -62,11 +62,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#3.-時間-周波数変換（軸0のFFT）">3. 時間-周波数変換（軸0のFFT）</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#4.-実空間-K空間変換（空間軸のFFT）">4. 実空間-K空間変換（空間軸のFFT）</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#5.-FieldList-と-FieldDict-によるバッチ操作">5. FieldList と FieldDict によるバッチ操作</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#6.-信号処理と解析">6. 信号処理と解析</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#6.-数値的不変量の検証">6. 数値的不変量の検証</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#7.-まとめ">7. まとめ</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="field_scalar_signal.html">ScalarField Signal Processing Tutorial</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a></li>
@@ -122,6 +121,7 @@
 <li><p><strong>軸1-3（空間軸）</strong>: 実空間 ↔ K空間（波数空間）の変換</p></li>
 <li><p><strong>4D構造の保持</strong>: スライシングしても常に4次元を維持</p></li>
 <li><p><strong>バッチ操作</strong>: <code class="docutils literal notranslate"><span class="pre">FieldList</span></code> と <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> による複数フィールドの一括処理</p></li>
+<li><p><strong>信号処理</strong>: PSD計算、周波数-空間マッピング、相互相関、コヒーレンスマップ</p></li>
 </ul>
 </section>
 <section id="セットアップ">
@@ -146,7 +146,7 @@ np.random.seed(42)
 <section id="1.-ScalarField-の初期化とメタデータ">
 <h2>1. ScalarField の初期化とメタデータ<a class="headerlink" href="#1.-ScalarField-の初期化とメタデータ" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> オブジェクトを作成し、そのメタデータを確認します。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -181,18 +181,6 @@ print(f&quot;Space domains: {field.space_domains}&quot;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Shape: (10, 8, 8, 8)
-Unit: V
-Axis names: (&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;)
-Axis0 domain: time
-Space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
-</pre></div></div>
-</div>
 <section id="メタデータの確認">
 <h3>メタデータの確認<a class="headerlink" href="#メタデータの確認" title="Link to this heading"></a></h3>
 <ul class="simple">
@@ -206,7 +194,7 @@ Space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z
 <section id="2.-4D構造を保持するスライシング">
 <h2>2. 4D構造を保持するスライシング<a class="headerlink" href="#2.-4D構造を保持するスライシング" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の重要な特徴は、<strong>スライシングしても常に4次元を維持する</strong>ことです。 整数インデックスを使っても、自動的に長さ1のスライスに変換されます。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
@@ -220,18 +208,7 @@ print(f&quot;Axis names preserved: {sliced.axis_names}&quot;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Original shape: (10, 8, 8, 8)
-Sliced shape: (1, 8, 8, 8)
-Type: &lt;class &#39;gwexpy.fields.scalar.ScalarField&#39;&gt;
-Axis names preserved: (&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;)
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -243,21 +220,12 @@ print(f&quot;Value: {sliced_multi.value}&quot;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Multi-sliced shape: (1, 1, 1, 1)
-Value: [[[[-0.51827022]]]]
-</pre></div></div>
-</div>
 <p>この挙動により、ScalarFieldオブジェクトの一貫性が保たれ、メタデータ（軸名やドメイン情報）が失われることがありません。</p>
 </section>
 <section id="3.-時間-周波数変換（軸0のFFT）">
 <h2>3. 時間-周波数変換（軸0のFFT）<a class="headerlink" href="#3.-時間-周波数変換（軸0のFFT）" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">fft_time()</span></code> と <code class="docutils literal notranslate"><span class="pre">ifft_time()</span></code> メソッドを使って、時間軸を周波数軸に変換できます。 GWpy の <code class="docutils literal notranslate"><span class="pre">TimeSeries.fft()</span></code> と同じ正規化を採用しています。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
@@ -291,17 +259,7 @@ print(f&quot;Axis0 domain changed: {field_time.axis0_domain} → {field_freq.axi
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Time domain shape: (128, 4, 4, 4)
-Frequency domain shape: (65, 4, 4, 4)
-Axis0 domain changed: time → frequency
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
@@ -313,7 +271,7 @@ freqs = field_freq._axis0_index.value
 plt.figure(figsize=(10, 4))
 plt.plot(freqs, spectrum, &quot;b-&quot;, linewidth=2)
 plt.axvline(
-    signal_freq, color=&quot;r&quot;, linestyle=&quot;--&quot;, label=f&quot;{signal_freq} Hz (入力信号)&quot;
+    signal_freq, color=&quot;r&quot;, linestyle=&quot;--&quot;, label=f&quot;{signal_freq} Hz (Input signal)&quot;
 )
 plt.xlabel(&quot;Frequency [Hz]&quot;)
 plt.ylabel(&quot;Amplitude [V]&quot;)
@@ -331,33 +289,10 @@ print(f&quot;Peak frequency: {peak_freq:.2f} Hz (expected: {signal_freq} Hz)&quo
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Peak frequency: 10.16 Hz (expected: 10.0 Hz)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/tmp/ipykernel_629205/2524541754.py:15: UserWarning: Glyph 20837 (\N{CJK UNIFIED IDEOGRAPH-5165}) missing from font(s) FreeSans.
-  plt.tight_layout()
-/tmp/ipykernel_629205/2524541754.py:15: UserWarning: Glyph 21147 (\N{CJK UNIFIED IDEOGRAPH-529B}) missing from font(s) FreeSans.
-  plt.tight_layout()
-/tmp/ipykernel_629205/2524541754.py:15: UserWarning: Glyph 20449 (\N{CJK UNIFIED IDEOGRAPH-4FE1}) missing from font(s) FreeSans.
-  plt.tight_layout()
-/tmp/ipykernel_629205/2524541754.py:15: UserWarning: Glyph 21495 (\N{CJK UNIFIED IDEOGRAPH-53F7}) missing from font(s) FreeSans.
-  plt.tight_layout()
-</pre></div></div>
-</div>
 <section id="逆FFT（周波数-→-時間）">
 <h3>逆FFT（周波数 → 時間）<a class="headerlink" href="#逆FFT（周波数-→-時間）" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">ifft_time()</span></code> で元の時間ドメインに戻すことができます。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
@@ -386,20 +321,12 @@ print(f&quot;Max reconstruction error: {np.max(error):.2e} V&quot;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Max reconstruction error: 4.44e-16 V
-</pre></div></div>
-</div>
 </section>
 </section>
 <section id="4.-実空間-K空間変換（空間軸のFFT）">
 <h2>4. 実空間-K空間変換（空間軸のFFT）<a class="headerlink" href="#4.-実空間-K空間変換（空間軸のFFT）" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">fft_space()</span></code> と <code class="docutils literal notranslate"><span class="pre">ifft_space()</span></code> を使って、空間軸を波数空間（K空間）に変換できます。 角波数 k = 2π / λ の符号付きFFTを使用します。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
@@ -437,17 +364,7 @@ print(f&quot;Axis names: {field_kx.axis_names}&quot;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Original space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
-After fft_space: {&#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;}
-Axis names: (&#39;t&#39;, &#39;kx&#39;, &#39;y&#39;, &#39;z&#39;)
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
@@ -475,18 +392,10 @@ print(f&quot;Peak wavenumber: {peak_k:.2f} rad/m (expected: ±{k_expected:.2f} r
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Peak wavenumber: 1.57 rad/m (expected: ±1.57 rad/m)
-</pre></div></div>
-</div>
 <section id="波長の計算">
 <h3>波長の計算<a class="headerlink" href="#波長の計算" title="Link to this heading"></a></h3>
 <p>K空間では、<code class="docutils literal notranslate"><span class="pre">wavelength()</span></code> メソッドで波長を計算できます。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
@@ -500,20 +409,11 @@ print(
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Wavelength at k=1.57: 4.00 m
-Calculated wavelengths range: 1.00 - 8.00 m
-</pre></div></div>
-</div>
 </section>
 <section id="全空間軸のFFT">
 <h3>全空間軸のFFT<a class="headerlink" href="#全空間軸のFFT" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">axes</span></code> パラメータを省略すると、全空間軸をまとめてFFTできます。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
@@ -531,16 +431,6 @@ print(f&quot;Max reconstruction error: {reconstruction_error:.2e}&quot;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-All spatial axes in K space: {&#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;, &#39;kz&#39;: &#39;k&#39;}
-Back to real space: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
-Max reconstruction error: 2.29e-16
-</pre></div></div>
-</div>
 </section>
 </section>
 <section id="5.-FieldList-と-FieldDict-によるバッチ操作">
@@ -549,7 +439,7 @@ Max reconstruction error: 2.29e-16
 <section id="FieldList">
 <h3>FieldList<a class="headerlink" href="#FieldList" title="Link to this heading"></a></h3>
 <p>リスト形式で複数のフィールドを管理し、一括でFFT操作を適用できます。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
@@ -578,15 +468,7 @@ print(f&quot;Number of fields: {len(field_list)}&quot;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Number of fields: 3
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
@@ -599,22 +481,11 @@ for i, field in enumerate(field_list_freq):
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-All fields transformed to frequency domain:
-  Field 0: axis0_domain = frequency
-  Field 1: axis0_domain = frequency
-  Field 2: axis0_domain = frequency
-</pre></div></div>
-</div>
 </section>
 <section id="FieldDict">
 <h3>FieldDict<a class="headerlink" href="#FieldDict" title="Link to this heading"></a></h3>
 <p>辞書形式で名前付きフィールドを管理します。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
@@ -628,15 +499,7 @@ print(f&quot;Field names: {list(field_dict.keys())}&quot;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Field names: [&#39;channel_A&#39;, &#39;channel_B&#39;, &#39;channel_C&#39;]
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
@@ -648,23 +511,145 @@ for name, field in field_dict_k.items():
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+</section>
+</section>
+<section id="6.-信号処理と解析">
+<h2>6. 信号処理と解析<a class="headerlink" href="#6.-信号処理と解析" title="Link to this heading"></a></h2>
+<p>物理場の解析において重要な信号処理手法として、以下を実演します：</p>
+<ol class="arabic simple">
+<li><p><strong>PSD計算</strong>: 時間・空間方向のパワースペクトル密度</p></li>
+<li><p><strong>周波数-空間マッピング</strong>: 空間的に周波数がどう変化するか可視化</p></li>
+<li><p><strong>相互相関</strong>: 信号の伝搬遅延の推定</p></li>
+<li><p><strong>コヒーレンスマップ</strong>: 空間的なコヒーレンスの可視化</p></li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-channel_A: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;}
-channel_B: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;}
-channel_C: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;}
-</pre></div></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># シミュレーションデータの生成
+# 信号: 30 Hz の正弦波が x=1m から伝搬
+# ノイズ: ガウスノイズ
+fs = 256 * u.Hz
+duration = 4 * u.s
+t = np.arange(int((fs * duration).to_value(u.dimensionless_unscaled))) / fs.value
+x = np.linspace(0, 5, 20)  # 5m, 20点
+y = np.linspace(0, 2, 5)   # 2m, 5点
+z = np.array([0])          # z=0
+
+shape = (len(t), len(x), len(y), len(z))
+data_sig = np.random.normal(0, 0.1, size=shape)
+
+source_freq = 30.0
+source_signal = np.sin(2 * np.pi * source_freq * t)
+v_prop = 10.0  # 10 m/s
+source_pos = 1.0
+
+for i, xi in enumerate(x):
+    dist = abs(xi - source_pos)
+    delay = dist / v_prop
+    shift = int(delay * fs.value)
+    sig_delayed = np.roll(source_signal, shift)
+    amp = 1.0 / (1.0 + dist)
+    data_sig[:, i, :, 0] += amp * sig_delayed[:, np.newaxis]
+
+field_sig = ScalarField(
+    data_sig,
+    unit=u.V,
+    axis0=t * u.s,
+    axis1=x * u.m,
+    axis2=y * u.m,
+    axis3=z * u.m,
+    name=&quot;Environmental Field&quot;,
+)
+print(field_sig)
+</pre></div>
+</div>
+</div>
+<section id="パワースペクトル密度-(PSD)">
+<h3>パワースペクトル密度 (PSD)<a class="headerlink" href="#パワースペクトル密度-(PSD)" title="Link to this heading"></a></h3>
+<p>特定の位置でのPSDを計算し、周波数成分を確認します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># ソース位置(x=1m)と遠方(x=4m)でのPSDを比較
+psd_source = field_sig.psd(point_or_region=(1.0 * u.m, 0.0 * u.m, 0.0 * u.m))
+psd_far = field_sig.psd(point_or_region=(4.0 * u.m, 0.0 * u.m, 0.0 * u.m))
+
+plt.figure(figsize=(10, 6))
+psd_source.plot(label=&quot;Source (x=1m)&quot;)
+psd_far.plot(label=&quot;Far (x=4m)&quot;)
+plt.xscale(&quot;log&quot;)
+plt.yscale(&quot;log&quot;)
+plt.title(&quot;PSD at Different Locations&quot;)
+plt.legend()
+plt.show()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="周波数-空間マッピング">
+<h3>周波数-空間マッピング<a class="headerlink" href="#周波数-空間マッピング" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">plot_freq_space</span></code> を使用して、空間軸に沿った周波数スペクトルの変化を可視化します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>field_sig.plot_freq_space(
+    space_axis=&quot;x&quot;,
+    fixed_coords={&quot;y&quot;: 0.0 * u.m, &quot;z&quot;: 0.0 * u.m},
+    freq_range=(10, 100),
+    log_scale=True,
+)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="相互相関と遅延推定">
+<h3>相互相関と遅延推定<a class="headerlink" href="#相互相関と遅延推定" title="Link to this heading"></a></h3>
+<p>基準点（ソース位置）と他の位置との相互相関を計算し、信号の伝搬遅延を可視化します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># x=1.0m (ソース) を基準点とする
+ref_point = (1.0 * u.m, 0.0 * u.m, 0.0 * u.m)
+
+# 相互相関の計算とプロット
+lags, corrs = field_sig.plot_cross_correlation(
+    ref_point=ref_point,
+    scan_axis=&quot;x&quot;,
+    fixed_coords={&quot;y&quot;: 0.0 * u.m, &quot;z&quot;: 0.0 * u.m},
+    max_lag=0.5,
+)
+</pre></div>
+</div>
+</div>
+<p>傾きがV字型になっていることから、信号が x=1.0m から両側に伝搬していることがわかります。</p>
+</section>
+<section id="コヒーレンスマップ">
+<h3>コヒーレンスマップ<a class="headerlink" href="#コヒーレンスマップ" title="Link to this heading"></a></h3>
+<p>特定周波数（ここでは30Hz）における空間的なコヒーレンスを表示します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>field_sig.plot_coherence_map(
+    target_freq=30.0,
+    ref_point=ref_point,
+    scan_axis=&quot;x&quot;,
+    fixed_coords={&quot;y&quot;: 0.0 * u.m, &quot;z&quot;: 0.0 * u.m},
+)
+</pre></div>
+</div>
 </div>
 </section>
 </section>
 <section id="6.-数値的不変量の検証">
 <h2>6. 数値的不変量の検証<a class="headerlink" href="#6.-数値的不変量の検証" title="Link to this heading"></a></h2>
 <p>FFT変換の正確性を検証するため、往復変換（round-trip）が元のデータを再構成できることを確認します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 時間FFTの不変量チェック: ifft_time(fft_time(f)) ≈ f
@@ -693,118 +678,6 @@ print(&quot;✅ 時間FFT不変量チェック: PASSED&quot;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-時間FFT Round-trip max error: 9.99e-16
-✅ 時間FFT不変量チェック: PASSED
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 空間FFTの不変量チェック: ifft_space(fft_space(f)) ≈ f
-field_space_roundtrip = field_test.fft_space().ifft_space()
-
-max_error_space = np.max(np.abs(field_test.value - field_space_roundtrip.value.real))
-print(f&quot;空間FFT Round-trip max error: {max_error_space:.2e}&quot;)
-assert max_error_space &lt; 1e-10, &quot;Space FFT round-trip failed!&quot;
-print(&quot;✅ 空間FFT不変量チェック: PASSED&quot;)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-空間FFT Round-trip max error: 6.66e-16
-✅ 空間FFT不変量チェック: PASSED
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># K軸の規約チェック: 両側（正負）の波数を持つこと
-field_k = field_test.fft_space(axes=[&quot;x&quot;])
-kx_values = field_k._axis1_index.value
-
-has_negative = np.any(kx_values &lt; 0)
-has_positive = np.any(kx_values &gt; 0)
-has_zero = np.any(kx_values == 0)
-
-print(f&quot;K軸に負の値: {has_negative}&quot;)
-print(f&quot;K軸に正の値: {has_positive}&quot;)
-print(f&quot;K軸にゼロ: {has_zero}&quot;)
-assert has_negative and has_positive and has_zero, (
-    &quot;K-axis should have positive, negative, and zero values!&quot;
-)
-print(&quot;✅ K軸両側規約チェック: PASSED&quot;)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-K軸に負の値: True
-K軸に正の値: True
-K軸にゼロ: True
-✅ K軸両側規約チェック: PASSED
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 波長計算の規約チェック: k=0 のとき wavelength = inf
-wavelengths = field_k.wavelength(&quot;kx&quot;)
-zero_k_idx = np.where(kx_values == 0)[0]
-
-if len(zero_k_idx) &gt; 0:
-    wavelength_at_zero = wavelengths.value.flat[zero_k_idx[0]]
-    print(f&quot;k=0 における波長: {wavelength_at_zero}&quot;)
-    assert np.isinf(wavelength_at_zero), &quot;Wavelength at k=0 should be inf!&quot;
-    print(&quot;✅ k=0 波長チェック: PASSED&quot;)
-else:
-    print(&quot;(k=0 が軸に含まれていないためスキップ)&quot;)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-k=0 における波長: inf
-✅ k=0 波長チェック: PASSED
-</pre></div></div>
-</div>
-</section>
-<section id="7.-まとめ">
-<h2>7. まとめ<a class="headerlink" href="#7.-まとめ" title="Link to this heading"></a></h2>
-<p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の主要な機能を学びました：</p>
-<ol class="arabic simple">
-<li><p><strong>初期化とメタデータ</strong>: 軸情報とドメイン情報の管理</p></li>
-<li><p><strong>4D保持スライシング</strong>: 整数インデックスでも4D構造を維持</p></li>
-<li><p><strong>時間-周波数変換</strong>: <code class="docutils literal notranslate"><span class="pre">fft_time()</span></code> / <code class="docutils literal notranslate"><span class="pre">ifft_time()</span></code> による軸0のFFT</p></li>
-<li><p><strong>実空間-K空間変換</strong>: <code class="docutils literal notranslate"><span class="pre">fft_space()</span></code> / <code class="docutils literal notranslate"><span class="pre">ifft_space()</span></code> による空間軸のFFT</p></li>
-<li><p><strong>バッチ操作</strong>: <code class="docutils literal notranslate"><span class="pre">FieldList</span></code> と <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> による複数フィールドの一括処理</p></li>
-</ol>
-<p>これらの機能を組み合わせることで、時空間データの高度な解析が可能になります。</p>
-<section id="次のステップ">
-<h3>次のステップ<a class="headerlink" href="#次のステップ" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p>より複雑な物理シミュレーションへの応用</p></li>
-<li><p>実データとの組み合わせ</p></li>
-<li><p>カスタム解析パイプラインの構築</p></li>
-</ul>
-</section>
 </section>
 </section>
 
@@ -813,7 +686,7 @@ k=0 における波長: inf
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="matrix_spectrogram.html" class="btn btn-neutral float-left" title="SpectrogramMatrix Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="field_scalar_signal.html" class="btn btn-neutral float-right" title="ScalarField Signal Processing Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="advanced_fitting.html" class="btn btn-neutral float-right" title="gwexpy.fitting: iminuit ベースのフィッティング機能" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

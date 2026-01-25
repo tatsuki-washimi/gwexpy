@@ -432,6 +432,10 @@ Axis 2: frequency
 # 注意: 実行には PyEMD (EMD-signal) が必要です: `pip install EMD-signal`
 
 try:
+    import os
+    import warnings
+    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
+    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
     # EMDの実行 (戻り値は辞書)
     # method=&quot;emd&quot; (標準EMD) または &quot;eemd&quot; (Ensemble EMD)
     # ここでは ts2 (Chirp信号を含む例) を使用します
@@ -591,6 +595,10 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    import os
+    import warnings
+    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
+    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
     # 3. fit_arima: ARIMA(1,0,0) フィッティングと予測
     model = ts1.fit_arima(order=(1, 0, 0))
     resid = model.residuals()
@@ -618,6 +626,10 @@ except Exception as e:
     print(f&quot;ARIMA skipping: {e}&quot;)
 
 try:
+    import os
+    import warnings
+    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
+    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
     # 4. hurst / local_hurst: ハースト指数 (長距離相関の指標)
     h_val = ts1.hurst()
     h_detail = ts1.hurst(return_details=True)  # 詳細情報付き
@@ -844,6 +856,10 @@ plt.show()
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Pandas &amp; Xarray
 try:
+    import os
+    import warnings
+    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
+    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
     df = ts1.to_pandas(index=&quot;datetime&quot;)
     ts_p = TimeSeries.from_pandas(df)
     print(&quot;Pandas interop OK&quot;)
@@ -852,6 +868,10 @@ except ImportError:
     pass
 
 try:
+    import os
+    import warnings
+    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
+    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
     xr = ts1.to_xarray()
     ts_xr = TimeSeries.from_xarray(xr)
     print(&quot;Xarray interop OK&quot;)
@@ -1432,6 +1452,10 @@ SQLite interop OK: my_sensor
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Deep Learning (Torch)
 try:
+    import os
+    import warnings
+    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
+    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
     import torch
 
     _ = torch
@@ -1566,6 +1590,10 @@ tensor([-6.3638e-01,  6.7641e-01,  1.1160e+00,  7.5920e-01,  7.8126e-01,
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Deep Learning (TensorFlow)
 try:
+    import os
+    import warnings
+    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
+    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
     import tensorflow as tf
 
     _ = tf
@@ -1662,6 +1690,10 @@ array([-0.63638168,  0.67641478,  1.11601357, ..., -0.94245798,
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># ObsPy (地震波形・時系列解析)
 try:
+    import os
+    import warnings
+    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
+    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
     import obspy
 
     _ = obspy

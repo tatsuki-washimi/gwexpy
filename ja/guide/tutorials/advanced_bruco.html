@@ -710,8 +710,8 @@ ax = fig.gca()
 
 # 元のデータと除去後のデータを重ねてプロット (最初の1秒間)
 plot_duration = 1.0
-ts.crop(end=ts.t0.value + plot_duration).plot(ax=ax, label=&quot;Original&quot;, alpha=0.7)  # noqa: F821
-cleaned_ts.crop(end=ts.t0.value + plot_duration).plot(
+target.crop(end=target.t0.value + plot_duration).plot(ax=ax, label=&quot;Original&quot;, alpha=0.7)  # noqa: F821
+cleaned_ts.crop(end=target.t0.value + plot_duration).plot(
     ax=ax, label=&quot;Cleaned (Bruco)&quot;, linestyle=&quot;--&quot;, alpha=0.8
 )  # noqa: F821
 
