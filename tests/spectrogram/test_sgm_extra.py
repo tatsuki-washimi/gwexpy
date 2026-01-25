@@ -100,7 +100,6 @@ class TestSpectrogramMatrixExtra:
         # For now, we only assert that the loaded object is valid.
         # Future: implement __reduce_ex__ or __getstate__/__setstate__ for full support.
 
-
     def test_meta_arithmetic(self, sgm_basic):
         """Test if metadata names/units propagate in arithmetic."""
         res = sgm_basic + sgm_basic

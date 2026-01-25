@@ -46,7 +46,9 @@ def test_frequencyseriesdict_copy_deepcopy_value_not_shared():
 
 
 def test_frequencyseriesdict_crop_maps_to_elements_and_returns_dict():
-    d = FrequencySeriesDict({"a": _make_frequencyseries(), "b": _make_frequencyseries(2.0)})
+    d = FrequencySeriesDict(
+        {"a": _make_frequencyseries(), "b": _make_frequencyseries(2.0)}
+    )
     cropped = d.crop(2, 5)
     assert cropped is d  # in-place like GWpy
     assert len(d["a"]) == len(_make_frequencyseries().crop(2, 5))
@@ -57,7 +59,9 @@ def test_frequencyseriesdict_crop_maps_to_elements_and_returns_dict():
 
 
 def test_frequencyseriesdict_plot_separate_axes_count_matches():
-    d = FrequencySeriesDict({"a": _make_frequencyseries(), "b": _make_frequencyseries(2.0)})
+    d = FrequencySeriesDict(
+        {"a": _make_frequencyseries(), "b": _make_frequencyseries(2.0)}
+    )
     plot = d.plot(separate=True)
     try:
         assert isinstance(plot, Plot)
@@ -96,7 +100,9 @@ def test_frequencyserieslist_plot_does_not_error():
 
 
 def test_frequencyseriesdict_span_uses_xspan():
-    d = FrequencySeriesDict({"a": _make_frequencyseries(), "b": _make_frequencyseries(2.0)})
+    d = FrequencySeriesDict(
+        {"a": _make_frequencyseries(), "b": _make_frequencyseries(2.0)}
+    )
     span = d.span
     # xspan is Segment; span should also be Segment covering the union
     assert span.start == d["a"].xspan.start

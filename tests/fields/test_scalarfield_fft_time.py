@@ -64,9 +64,7 @@ class TestScalarFieldFftTimeBasic:
         """Test that spatial axis indices are preserved."""
         result = time_domain_field.fft_time()
 
-        assert_allclose(
-            result._axis1_index.value, time_domain_field._axis1_index.value
-        )
+        assert_allclose(result._axis1_index.value, time_domain_field._axis1_index.value)
         assert result._axis1_index.unit == time_domain_field._axis1_index.unit
 
     def test_fft_time_unit_preserved(self, time_domain_field):
@@ -231,9 +229,7 @@ class TestScalarFieldFftTimeWithNfft:
     def test_fft_time_nfft_larger(self):
         """Test fft_time with nfft larger than data."""
         data = np.random.randn(32, 2, 2, 2)
-        field = ScalarField(
-            data, axis0=np.arange(32) * 0.01 * u.s, axis0_domain="time"
-        )
+        field = ScalarField(data, axis0=np.arange(32) * 0.01 * u.s, axis0_domain="time")
 
         result = field.fft_time(nfft=64)
 
@@ -243,9 +239,7 @@ class TestScalarFieldFftTimeWithNfft:
     def test_fft_time_nfft_smaller(self):
         """Test fft_time with nfft smaller than data (truncation)."""
         data = np.random.randn(64, 2, 2, 2)
-        field = ScalarField(
-            data, axis0=np.arange(64) * 0.01 * u.s, axis0_domain="time"
-        )
+        field = ScalarField(data, axis0=np.arange(64) * 0.01 * u.s, axis0_domain="time")
 
         result = field.fft_time(nfft=32)
 

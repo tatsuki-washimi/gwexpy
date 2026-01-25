@@ -1,4 +1,3 @@
-
 import os
 import sqlite3
 import tempfile
@@ -35,7 +34,7 @@ def test_sqlite_interop():
         # Test overwrite
         ts2 = TimeSeries(data * 2, t0=t0, dt=dt, name="sql_ts2", unit="m")
         with pytest.raises(ValueError):
-             ts2.to_sqlite(conn, series_id="my_series", overwrite=False)
+            ts2.to_sqlite(conn, series_id="my_series", overwrite=False)
 
         ts2.to_sqlite(conn, series_id="my_series", overwrite=True)
         ts_restored2 = TimeSeries.from_sqlite(conn, "my_series")
@@ -43,10 +42,12 @@ def test_sqlite_interop():
 
         conn.close()
 
+
 try:
     import h5py  # noqa: F401 - availability check
 except ImportError:
     h5py = None
+
 
 @pytest.mark.skipif(h5py is None, reason="h5py not installed")
 def test_hdf5_interop():
@@ -70,10 +71,12 @@ def test_hdf5_interop():
             assert np.isclose(ts_restored.t0.value, float(t0))
             np.testing.assert_array_equal(ts_restored.value, data)
 
+
 try:
     import obspy
 except ImportError:
     obspy = None
+
 
 @pytest.mark.skipif(obspy is None, reason="obspy not installed")
 def test_obspy_interop():

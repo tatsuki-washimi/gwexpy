@@ -505,7 +505,9 @@ class TestImputeFillValue:
         """fill_value should be used for edge NaNs when max_gap is specified."""
         values = np.array([np.nan, 1.0, 2.0, 3.0, np.nan])
         times = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
-        result = impute(values, times=times, method="interpolate", max_gap=1.0, fill_value=0.0)
+        result = impute(
+            values, times=times, method="interpolate", max_gap=1.0, fill_value=0.0
+        )
 
         # Edge NaNs should be filled with fill_value
         np.testing.assert_equal(result[0], 0.0)

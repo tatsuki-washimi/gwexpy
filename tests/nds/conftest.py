@@ -44,6 +44,7 @@ def resolve_nds_endpoint():
     # Fallback
     return "nds.ligo.caltech.edu", 31200
 
+
 @pytest.fixture(scope="session")
 def nds_available():
     """
@@ -73,6 +74,7 @@ def nds_available():
         socket.setdefaulttimeout(None)
 
     return True, ""
+
 
 @pytest.fixture
 def nds_backend(nds_available):

@@ -13,4 +13,3 @@ __all__ = [
     "test_bool_env",
     "test_bool_env_default",
 ]
-

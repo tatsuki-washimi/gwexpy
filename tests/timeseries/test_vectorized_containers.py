@@ -16,7 +16,7 @@ class TestVectorizedContainers:
         # 2 channels, 1000 samples
         data = np.random.randn(2, 1000)
         # Add some skewness to channel 0
-        data[0] = data[0]**2
+        data[0] = data[0] ** 2
         return data
 
     def test_matrix_skewness_kurtosis(self, sample_data):
@@ -25,7 +25,7 @@ class TestVectorizedContainers:
         # Test Skewness
         sk = tsm.skewness(axis="time")
         assert sk.shape == (2, 1)
-        assert sk[0, 0] > 0 # Should be positive skew
+        assert sk[0, 0] > 0  # Should be positive skew
 
         # Test Kurtosis
         kt = tsm.kurtosis(axis="time")
@@ -65,8 +65,8 @@ class TestVectorizedContainers:
 
         assert corr.shape == (3, 3)
         assert corr[0, 0] == pytest.approx(1.0)
-        assert corr[0, 1] > 0.8 # High correlation
-        assert abs(corr[0, 2]) < 0.3 # Low correlation
+        assert corr[0, 1] > 0.8  # High correlation
+        assert abs(corr[0, 2]) < 0.3  # Low correlation
 
     def test_correlation_with_target(self, sample_data):
         tsm = TimeSeriesMatrix(sample_data, sample_rate=100)
@@ -87,7 +87,7 @@ class TestVectorizedContainers:
 
         # Stats should ignore units or handle them gracefully
         sk = tsd.skewness()
-        assert not hasattr(sk, "unit") # Scipy stats usually strip units
+        assert not hasattr(sk, "unit")  # Scipy stats usually strip units
 
         # Correlation between different units should work
         corr = tsd.correlation()
@@ -128,7 +128,7 @@ class TestVectorizedContainers:
         # RMS
         rms = tsm.rms()
         assert rms.shape == (2, 1)
-        assert rms[1, 0] == pytest.approx(np.sqrt(np.mean(sample_data[1]**2)))
+        assert rms[1, 0] == pytest.approx(np.sqrt(np.mean(sample_data[1] ** 2)))
 
         # Min/Max
         assert tsm.min().shape == (2, 1)
@@ -136,8 +136,12 @@ class TestVectorizedContainers:
         assert tsm.max()[1, 0] == np.max(sample_data[1])
 
         # Dict versions
-        tsd = TimeSeriesDict({"ch1": TimeSeries(sample_data[0], sample_rate=100),
-                              "ch2": TimeSeries(sample_data[1], sample_rate=100)})
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(sample_data[0], sample_rate=100),
+                "ch2": TimeSeries(sample_data[1], sample_rate=100),
+            }
+        )
         assert tsd.mean().shape == (2, 1)
         assert tsd.std().shape == (2, 1)
         assert tsd.rms().shape == (2, 1)
@@ -153,7 +157,7 @@ class TestVectorizedContainers:
 
         tsm = TimeSeriesMatrix(sample_data, sample_rate=100)
         # MIC between ch1 and itself
-        m = tsm.mic(tsm[0,0])
+        m = tsm.mic(tsm[0, 0])
         assert len(m) == 2
         # score[0] should be 1.0 (self-MIC)
         assert m.iloc[0]["score"] == pytest.approx(1.0)
@@ -187,10 +191,12 @@ class TestVectorizedContainers:
         kt = tsm.kurtosis()
 
         # These should be plain numbers or dimensionless
-        assert not hasattr(sk, 'unit') or sk.unit == u.dimensionless_unscaled, \
+        assert not hasattr(sk, "unit") or sk.unit == u.dimensionless_unscaled, (
             "skewness() should be dimensionless"
-        assert not hasattr(kt, 'unit') or kt.unit == u.dimensionless_unscaled, \
+        )
+        assert not hasattr(kt, "unit") or kt.unit == u.dimensionless_unscaled, (
             "kurtosis() should be dimensionless"
+        )
 
     # =========================================
     # Edge Case: NaN Handling
@@ -240,8 +246,9 @@ class TestVectorizedContainers:
         res = tsd.correlation(target, method="pearson")
 
         # Check that result has correct channel names
-        assert "Signal_A" in res["channel"].values or res.index.isin(["Signal_A"]).any(), \
-            "Result should contain original channel names"
+        assert (
+            "Signal_A" in res["channel"].values or res.index.isin(["Signal_A"]).any()
+        ), "Result should contain original channel names"
         assert len(res) == 2
 
     def test_dict_key_order_preserved_in_matrix(self):
@@ -279,7 +286,9 @@ class TestVectorizedContainers:
         # Correlation with itself - returns a scalar (1x1 case collapses to scalar)
         corr = tsm.correlation()
         # np.corrcoef on a single row returns a scalar 1.0
-        assert corr == pytest.approx(1.0) or (hasattr(corr, 'shape') and corr.shape in [(1, 1), ()])
+        assert corr == pytest.approx(1.0) or (
+            hasattr(corr, "shape") and corr.shape in [(1, 1), ()]
+        )
 
     def test_single_channel_dict(self):
         """Single channel dict should work correctly."""
@@ -330,7 +339,7 @@ class TestVectorizedContainers:
         target = TimeSeries(sample_data[0], sample_rate=100)
 
         res_pcc = tsm.pcc(target)
-        res_pearson = tsm.correlation(target, method='pearson')
+        res_pearson = tsm.correlation(target, method="pearson")
 
         assert len(res_pcc) == len(res_pearson)
         # Scores should be identical
@@ -342,7 +351,7 @@ class TestVectorizedContainers:
         target = TimeSeries(sample_data[0], sample_rate=100)
 
         res_ktau = tsm.ktau(target)
-        res_kendall = tsm.correlation(target, method='kendall')
+        res_kendall = tsm.correlation(target, method="kendall")
 
         assert len(res_ktau) == len(res_kendall)
         assert res_ktau.iloc[0]["score"] == pytest.approx(res_kendall.iloc[0]["score"])

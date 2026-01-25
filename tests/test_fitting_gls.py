@@ -1,6 +1,7 @@
 """
 Tests for Generalized Least Squares (GLS) fitting functionality.
 """
+
 import numpy as np
 import pytest
 
@@ -18,6 +19,7 @@ from gwexpy.frequencyseries import FrequencySeries
 
 def test_gls_class_basic():
     """Test GeneralizedLeastSquares cost function directly."""
+
     # Simple linear model
     def linear(x, a, b):
         return a * x + b
@@ -98,6 +100,7 @@ def test_gls_with_correlated_covariance():
 
     # Fit with GLS
     from gwexpy.timeseries import TimeSeries
+
     ts = TimeSeries(y, times=x)
 
     result = fit_series(ts, linear, cov=cov, p0={"a": 1, "b": 0})
@@ -162,6 +165,7 @@ def test_gls_complex_not_supported():
 
 def test_gls_cost_shape_validation():
     """Test GeneralizedLeastSquares validates cov_inv shape."""
+
     def linear(x, a, b):
         return a * x + b
 
@@ -204,11 +208,13 @@ def test_custom_cost_function_callable():
 
         def __call__(self, a, b):
             ym = self.model(self.x, a, b)
-            return np.sum((self.y - ym)**2)
+            return np.sum((self.y - ym) ** 2)
 
     custom_cost = SimpleCost(x, y, linear_model)
 
-    result = fit_series(ts, linear_model, cost_function=custom_cost, p0={"a": 1, "b": 0})
+    result = fit_series(
+        ts, linear_model, cost_function=custom_cost, p0={"a": 1, "b": 0}
+    )
 
     assert result.minuit.valid
     assert np.isclose(result.params["a"], 2.5, atol=0.3)
@@ -261,7 +267,7 @@ def test_cost_function_priority_over_cov():
         def __call__(self, a, b):
             # Simple chi2
             ym = linear(x, a, b)
-            return np.sum((y - ym)**2)
+            return np.sum((y - ym) ** 2)
 
     custom_cost = FixedCost()
 
@@ -269,7 +275,9 @@ def test_cost_function_priority_over_cov():
     cov = np.eye(3) * 999  # This would create different behavior if used
 
     ts = TimeSeries(y, times=x)
-    result = fit_series(ts, linear, cov=cov, cost_function=custom_cost, p0={"a": 1, "b": 0})
+    result = fit_series(
+        ts, linear, cov=cov, cost_function=custom_cost, p0={"a": 1, "b": 0}
+    )
 
     # Should still work - cost_function takes priority
     assert result.minuit.valid
@@ -280,7 +288,9 @@ def test_backward_compatibility_no_cost_function():
     np.random.seed(202)
 
     frequencies = np.logspace(0, 2, 15)
-    y = power_law(frequencies, A=8.0, alpha=-1.2) * (1 + 0.02 * np.random.normal(size=len(frequencies)))
+    y = power_law(frequencies, A=8.0, alpha=-1.2) * (
+        1 + 0.02 * np.random.normal(size=len(frequencies))
+    )
 
     fs = FrequencySeries(y, frequencies=frequencies)
 

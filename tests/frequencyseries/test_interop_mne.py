@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 
@@ -26,13 +25,14 @@ def test_to_mne_spectrum():
     assert np.allclose(spec.freqs, freqs)
     assert spec.ch_names == ["test_ch"]
 
+
 def test_from_mne_spectrum():
     mne = pytest.importorskip("mne")
 
     if not hasattr(mne.time_frequency, "SpectrumArray"):
         pytest.skip("mne.time_frequency.SpectrumArray not available")
 
-    data = np.array([[1, 2, 3]]) # (1, 3) -> 1 ch, 3 freqs
+    data = np.array([[1, 2, 3]])  # (1, 3) -> 1 ch, 3 freqs
     info = mne.create_info(["ch1"], 100.0, ["mag"])
     freqs = np.array([10, 20, 30])
 

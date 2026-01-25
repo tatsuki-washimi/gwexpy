@@ -78,7 +78,5 @@ def test_failure_modes_do_not_crash(qtbot, stub_source, gui_deps, caplog):
     stub_source.emit_next()
     window.update_graphs()
 
-    qtbot.waitUntil(
-        lambda: "Injected backend exception" in window.status_label.text()
-    )
+    qtbot.waitUntil(lambda: "Injected backend exception" in window.status_label.text())
     assert any("StubDataSource" in rec.message for rec in caplog.records)

@@ -45,4 +45,3 @@ __all__ = [
     "test_read_sngl_format",
     "test_sngl_function",
 ]
-

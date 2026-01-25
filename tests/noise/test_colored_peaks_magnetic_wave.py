@@ -37,7 +37,9 @@ def test_colored_wrappers_match_power_law():
     pink = pink_noise(amp, frequencies=freqs)
     red = red_noise(amp, frequencies=freqs)
 
-    np.testing.assert_allclose(white.value, power_law(0.0, amp, frequencies=freqs).value)
+    np.testing.assert_allclose(
+        white.value, power_law(0.0, amp, frequencies=freqs).value
+    )
     np.testing.assert_allclose(pink.value, power_law(0.5, amp, frequencies=freqs).value)
     np.testing.assert_allclose(red.value, power_law(1.0, amp, frequencies=freqs).value)
 
@@ -96,7 +98,7 @@ def test_from_asd_returns_timeseries_metadata():
     asd = FrequencySeries(
         np.ones_like(freqs),
         frequencies=freqs,
-        unit=u.m / (u.Hz ** 0.5),
+        unit=u.m / (u.Hz**0.5),
         name="TEST_ASD",
     )
 
@@ -111,4 +113,4 @@ def test_from_asd_returns_timeseries_metadata():
     assert isinstance(ts, TimeSeries)
     assert len(ts) == 8
     assert ts.t0.value == pytest.approx(1.25)
-    assert ts.unit == asd.unit * (u.Hz ** 0.5)
+    assert ts.unit == asd.unit * (u.Hz**0.5)

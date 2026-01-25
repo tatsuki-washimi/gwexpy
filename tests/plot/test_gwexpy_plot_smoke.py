@@ -13,4 +13,3 @@ def test_plot_timeseries_no_matrix_does_not_error():
     import matplotlib.pyplot as plt
 
     plt.close(plot)
-

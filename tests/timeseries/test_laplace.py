@@ -75,7 +75,9 @@ class TestLaplace:
     def test_cropping(self, exp_decay):
         ts, _ = exp_decay
         # Crop 0 to 1 sec
-        fs = ts.laplace(t_start=0*u.s, t_stop=1*u.s, frequencies=[0], normalize="integral")
+        fs = ts.laplace(
+            t_start=0 * u.s, t_stop=1 * u.s, frequencies=[0], normalize="integral"
+        )
 
         # Integral exp(-2t) from 0 to 1 = 0.5 * (1 - exp(-2))
         expected = 0.5 * (1 - np.exp(-2))

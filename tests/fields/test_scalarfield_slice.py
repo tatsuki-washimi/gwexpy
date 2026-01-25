@@ -139,9 +139,7 @@ class TestScalarFieldSlicingAxisNames:
 
     def test_axis_names_preserved(self):
         """Test axis names are preserved after slicing."""
-        field = ScalarField(
-            np.zeros((10, 4, 4, 4)), axis_names=["t", "x", "y", "z"]
-        )
+        field = ScalarField(np.zeros((10, 4, 4, 4)), axis_names=["t", "x", "y", "z"])
         sliced = field[0, 1, 2, 3]
 
         assert sliced.axis_names == ("t", "x", "y", "z")

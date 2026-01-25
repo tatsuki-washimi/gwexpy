@@ -28,7 +28,7 @@ def test_simulation_acquisition_flow(qtbot, log_gui_action):
     logger.info("Selecting white_noise channel")
     new_channels = [{"name": "white_noise", "active": True}]
     window.meas_controls["set_all_channels"](new_channels)
-    window.meas_controls["bw"].setValue(1.0) # 1Hz BW = 1s FFT
+    window.meas_controls["bw"].setValue(1.0)  # 1Hz BW = 1s FFT
 
     # 3. Start Acquisition
     logger.info("Clicking Start")

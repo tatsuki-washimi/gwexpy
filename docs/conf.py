@@ -121,8 +121,14 @@ nitpick_ignore = [
     ("py:class", "gwexpy.types.series_matrix_math.SeriesMatrixMathMixin"),
     ("py:class", "gwexpy.types.series_matrix_analysis.SeriesMatrixAnalysisMixin"),
     ("py:class", "gwexpy.types.series_matrix_structure.SeriesMatrixStructureMixin"),
-    ("py:class", "gwexpy.types.series_matrix_visualization.SeriesMatrixVisualizationMixin"),
-    ("py:class", "gwexpy.types.series_matrix_validation_mixin.SeriesMatrixValidationMixin"),
+    (
+        "py:class",
+        "gwexpy.types.series_matrix_visualization.SeriesMatrixVisualizationMixin",
+    ),
+    (
+        "py:class",
+        "gwexpy.types.series_matrix_validation_mixin.SeriesMatrixValidationMixin",
+    ),
     ("py:class", "gwexpy.types._stats.StatisticalMethodsMixin"),
     # External not mapped
     ("py:class", "pandas.core.frame.DataFrame"),

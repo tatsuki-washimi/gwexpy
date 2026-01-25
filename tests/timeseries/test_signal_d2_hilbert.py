@@ -23,13 +23,14 @@ from gwexpy.timeseries import TimeSeries
 # hilbert: NaN/inf exception tests
 # =============================================================================
 
+
 class TestHilbertNaNInf:
     """Tests for hilbert() NaN/inf exception behavior."""
 
     def test_hilbert_raises_on_nan(self):
         """hilbert() should raise ValueError when input contains NaN."""
         data = np.array([1.0, 2.0, np.nan, 4.0, 5.0])
-        ts = TimeSeries(data, dt=0.01, unit='V')
+        ts = TimeSeries(data, dt=0.01, unit="V")
 
         with pytest.raises(ValueError, match="NaN|infinite"):
             ts.hilbert()
@@ -37,7 +38,7 @@ class TestHilbertNaNInf:
     def test_hilbert_raises_on_inf(self):
         """hilbert() should raise ValueError when input contains inf."""
         data = np.array([1.0, 2.0, np.inf, 4.0, 5.0])
-        ts = TimeSeries(data, dt=0.01, unit='V')
+        ts = TimeSeries(data, dt=0.01, unit="V")
 
         with pytest.raises(ValueError, match="NaN|infinite"):
             ts.hilbert()
@@ -45,7 +46,7 @@ class TestHilbertNaNInf:
     def test_hilbert_raises_on_negative_inf(self):
         """hilbert() should raise ValueError when input contains -inf."""
         data = np.array([1.0, 2.0, -np.inf, 4.0, 5.0])
-        ts = TimeSeries(data, dt=0.01, unit='V')
+        ts = TimeSeries(data, dt=0.01, unit="V")
 
         with pytest.raises(ValueError, match="NaN|infinite"):
             ts.hilbert()
@@ -53,7 +54,7 @@ class TestHilbertNaNInf:
     def test_hilbert_raises_on_multiple_nan(self):
         """hilbert() should raise ValueError when input contains multiple NaNs."""
         data = np.array([np.nan, 2.0, np.nan, 4.0, np.nan])
-        ts = TimeSeries(data, dt=0.01, unit='V')
+        ts = TimeSeries(data, dt=0.01, unit="V")
 
         with pytest.raises(ValueError, match="NaN|infinite"):
             ts.hilbert()
@@ -63,13 +64,14 @@ class TestHilbertNaNInf:
 # hilbert: basic functionality tests
 # =============================================================================
 
+
 class TestHilbertBasic:
     """Tests for hilbert() basic functionality."""
 
     def test_hilbert_returns_complex(self):
         """hilbert() should return complex analytic signal."""
         data = np.sin(2 * np.pi * 10 * np.linspace(0, 1, 1000))
-        ts = TimeSeries(data, dt=0.001, unit='V')
+        ts = TimeSeries(data, dt=0.001, unit="V")
 
         result = ts.hilbert()
 
@@ -78,7 +80,7 @@ class TestHilbertBasic:
     def test_hilbert_preserves_length(self):
         """hilbert() should preserve signal length."""
         data = np.sin(2 * np.pi * 10 * np.linspace(0, 1, 1000))
-        ts = TimeSeries(data, dt=0.001, unit='V')
+        ts = TimeSeries(data, dt=0.001, unit="V")
 
         result = ts.hilbert()
 
@@ -87,7 +89,7 @@ class TestHilbertBasic:
     def test_hilbert_default_pad_is_zero(self):
         """hilbert() default pad should be 0 (no padding)."""
         data = np.sin(2 * np.pi * 10 * np.linspace(0, 1, 100))
-        ts = TimeSeries(data, dt=0.01, unit='V')
+        ts = TimeSeries(data, dt=0.01, unit="V")
 
         # With pad=0 (default), endpoint artifacts may exist, but that's expected
         result = ts.hilbert()
@@ -101,7 +103,7 @@ class TestHilbertBasic:
         import scipy.signal as sig
 
         data = np.sin(2 * np.pi * 5 * np.linspace(0, 2, 500))
-        ts = TimeSeries(data, dt=0.004, unit='V')
+        ts = TimeSeries(data, dt=0.004, unit="V")
 
         result = ts.hilbert()
         expected = sig.hilbert(data)
@@ -112,6 +114,7 @@ class TestHilbertBasic:
 # =============================================================================
 # instantaneous_phase: reference implementation equivalence tests
 # =============================================================================
+
 
 class TestInstantaneousPhase:
     """Tests for instantaneous_phase() reference implementation equivalence."""
@@ -125,7 +128,7 @@ class TestInstantaneousPhase:
         dt = 1.0 / sample_rate
         t = np.arange(0, duration, dt)
         data = np.sin(2 * np.pi * f0 * t)
-        return TimeSeries(data, dt=dt, unit='V')
+        return TimeSeries(data, dt=dt, unit="V")
 
     def test_phase_matches_np_angle_radian(self, sine_timeseries):
         """instantaneous_phase(deg=False, unwrap=False) should match np.angle(hilbert())."""
@@ -137,7 +140,7 @@ class TestInstantaneousPhase:
         result = ts.instantaneous_phase(deg=False, unwrap=False)
 
         np.testing.assert_allclose(result.value, expected, rtol=1e-10)
-        assert result.unit == 'rad'
+        assert result.unit == "rad"
 
     def test_phase_matches_np_angle_degree(self, sine_timeseries):
         """instantaneous_phase(deg=True, unwrap=False) should match np.angle(hilbert(), deg=True)."""
@@ -149,7 +152,7 @@ class TestInstantaneousPhase:
         result = ts.instantaneous_phase(deg=True, unwrap=False)
 
         np.testing.assert_allclose(result.value, expected, rtol=1e-10)
-        assert result.unit == 'deg'
+        assert result.unit == "deg"
 
     def test_phase_unwrap_radian(self, sine_timeseries):
         """instantaneous_phase(unwrap=True, deg=False) should apply np.unwrap with period=2π."""
@@ -162,7 +165,7 @@ class TestInstantaneousPhase:
         result = ts.instantaneous_phase(deg=False, unwrap=True)
 
         np.testing.assert_allclose(result.value, expected, rtol=1e-10)
-        assert result.unit == 'rad'
+        assert result.unit == "rad"
 
     def test_phase_unwrap_degree(self, sine_timeseries):
         """instantaneous_phase(unwrap=True, deg=True) should apply np.unwrap with period=360."""
@@ -175,7 +178,7 @@ class TestInstantaneousPhase:
         result = ts.instantaneous_phase(deg=True, unwrap=True)
 
         np.testing.assert_allclose(result.value, expected, rtol=1e-10)
-        assert result.unit == 'deg'
+        assert result.unit == "deg"
 
     def test_phase_preserves_length(self, sine_timeseries):
         """instantaneous_phase() should preserve signal length (no endpoint trimming)."""
@@ -189,6 +192,7 @@ class TestInstantaneousPhase:
 # =============================================================================
 # instantaneous_frequency: single frequency recovery tests
 # =============================================================================
+
 
 class TestInstantaneousFrequency:
     """Tests for instantaneous_frequency() single frequency recovery."""
@@ -206,7 +210,7 @@ class TestInstantaneousFrequency:
 
         t = np.arange(0, duration, dt)
         data = np.cos(2 * np.pi * f0 * t)
-        ts = TimeSeries(data, dt=dt, unit='V')
+        ts = TimeSeries(data, dt=dt, unit="V")
 
         f_inst = ts.instantaneous_frequency()
 
@@ -221,7 +225,7 @@ class TestInstantaneousFrequency:
         np.testing.assert_allclose(median_freq, f0, rtol=0.01)
 
         # Unit should be Hz
-        assert f_inst.unit == 'Hz'
+        assert f_inst.unit == "Hz"
 
     def test_frequency_recovery_pure_sine(self):
         """instantaneous_frequency() should recover f0 for sin(2π f0 t)."""
@@ -232,7 +236,7 @@ class TestInstantaneousFrequency:
 
         t = np.arange(0, duration, dt)
         data = np.sin(2 * np.pi * f0 * t)
-        ts = TimeSeries(data, dt=dt, unit='V')
+        ts = TimeSeries(data, dt=dt, unit="V")
 
         f_inst = ts.instantaneous_frequency()
 
@@ -255,7 +259,7 @@ class TestInstantaneousFrequency:
 
         t = np.arange(0, duration, dt)
         data = np.cos(2 * np.pi * f0 * t + phi0)
-        ts = TimeSeries(data, dt=dt, unit='V')
+        ts = TimeSeries(data, dt=dt, unit="V")
 
         f_inst = ts.instantaneous_frequency()
 
@@ -277,7 +281,7 @@ class TestInstantaneousFrequency:
 
         t = np.arange(0, duration, dt)
         data = np.cos(2 * np.pi * f0 * t)
-        ts = TimeSeries(data, dt=dt, unit='V')
+        ts = TimeSeries(data, dt=dt, unit="V")
 
         f_inst = ts.instantaneous_frequency()
 
@@ -292,7 +296,7 @@ class TestInstantaneousFrequency:
 
         t = np.arange(0, duration, dt)
         data = np.cos(2 * np.pi * f0 * t)
-        ts = TimeSeries(data, dt=dt, unit='V')
+        ts = TimeSeries(data, dt=dt, unit="V")
 
         # Manual calculation following the definition
         phase_ts = ts.instantaneous_phase(deg=False, unwrap=True)
@@ -313,10 +317,12 @@ class TestInstantaneousFrequency:
 
         t = np.arange(0, duration, dt)
         data = np.cos(2 * np.pi * f0 * t)
-        ts = TimeSeries(data, dt=dt, unit='V')
+        ts = TimeSeries(data, dt=dt, unit="V")
 
         # Without smooth
         result_default = ts.instantaneous_frequency()
         result_no_smooth = ts.instantaneous_frequency(smooth=None)
 
-        np.testing.assert_allclose(result_default.value, result_no_smooth.value, rtol=1e-10)
+        np.testing.assert_allclose(
+            result_default.value, result_no_smooth.value, rtol=1e-10
+        )

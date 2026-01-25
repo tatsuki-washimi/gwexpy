@@ -18,9 +18,9 @@ class TestSpectrogramMatrixFeatures:
             data,
             times=times,
             frequencies=freqs,
-            rows=['ch1', 'ch2'],
+            rows=["ch1", "ch2"],
             name="TestSGM",
-            unit=u.V
+            unit=u.V,
         )
 
     @pytest.fixture
@@ -30,11 +30,7 @@ class TestSpectrogramMatrixFeatures:
         freqs = np.arange(5)
         data = np.random.rand(2, 2, 10, 5)
         return SpectrogramMatrix(
-            data,
-            times=times,
-            frequencies=freqs,
-            rows=['R1', 'R2'],
-            cols=['C1', 'C2']
+            data, times=times, frequencies=freqs, rows=["R1", "R2"], cols=["C1", "C2"]
         )
 
     def test_properties_3d(self, sgm_3d_basic):
@@ -42,11 +38,11 @@ class TestSpectrogramMatrixFeatures:
         assert sgm_3d_basic.ndim == 3
         assert sgm_3d_basic.shape == (2, 10, 5)
         assert np.array_equal(sgm_3d_basic.times.value, np.arange(10))
-        assert np.array_equal(sgm_3d_basic.frequencies.value, np.arange(5)*10)
+        assert np.array_equal(sgm_3d_basic.frequencies.value, np.arange(5) * 10)
         assert sgm_3d_basic.dt == 1.0 * u.s
         assert sgm_3d_basic.df == 10.0 * u.Hz
         assert sgm_3d_basic.unit == u.V
-        assert list(sgm_3d_basic.rows.keys()) == ['ch1', 'ch2']
+        assert list(sgm_3d_basic.rows.keys()) == ["ch1", "ch2"]
 
     def test_slicing_3d(self, sgm_3d_basic):
         """Test slicing on 3D matrix."""
@@ -57,20 +53,20 @@ class TestSpectrogramMatrixFeatures:
         # For SpectrogramMatrix (Batch, Time, Freq): [0] returns Spectrogram (Time, Freq).
         assert isinstance(sub, Spectrogram)
         assert sub.shape == (10, 5)
-        assert sub.name == "TestSGM" # Inherits name? Or access metadata?
+        assert sub.name == "TestSGM"  # Inherits name? Or access metadata?
         # Metadata logic in SeriesMatrix creates dummy names 's00' if not provided for elements.
         # But SpectrogramMatrix.__new__ populates rows/cols metadata.
 
         # 2. Slice batch by label
-        sub_label = sgm_3d_basic['ch2']
+        sub_label = sgm_3d_basic["ch2"]
         assert isinstance(sub_label, Spectrogram)
         assert np.all(sub_label.value == sgm_3d_basic[1].value)
 
         # 3. Slice range
-        sub_slice = sgm_3d_basic[0:1] # Returns SpectrogramMatrix (1, 10, 5)
+        sub_slice = sgm_3d_basic[0:1]  # Returns SpectrogramMatrix (1, 10, 5)
         assert isinstance(sub_slice, SpectrogramMatrix)
         assert sub_slice.shape == (1, 10, 5)
-        assert list(sub_slice.row_keys()) == ['ch1']
+        assert list(sub_slice.row_keys()) == ["ch1"]
 
     def test_slicing_4d(self, sgm_4d_basic):
         """Test slicing on 4D matrix."""
@@ -81,7 +77,7 @@ class TestSpectrogramMatrixFeatures:
         assert spec.shape == (10, 5)
 
         # 2. Label access
-        spec_lbl = sgm_4d_basic['R2', 'C1']
+        spec_lbl = sgm_4d_basic["R2", "C1"]
         assert isinstance(spec_lbl, Spectrogram)
 
         # 3. Partial Slice (Row only) -> Returns SpectrogramMatrix 4D (1, 2, 10, 5) or reduced 3D?
@@ -106,12 +102,12 @@ class TestSpectrogramMatrixFeatures:
     def test_crop_time(self, sgm_3d_basic):
         """Test cropping along time axis (-2)."""
         # Crop 2s to 8s
-        cropped = sgm_3d_basic.crop(start=2*u.s, end=8*u.s)
+        cropped = sgm_3d_basic.crop(start=2 * u.s, end=8 * u.s)
         # Indices: 2..8 (6 points)
         assert isinstance(cropped, SpectrogramMatrix)
         assert cropped.shape == (2, 6, 5)
-        assert cropped.times[0] == 2*u.s
-        assert cropped.frequencies.shape[0] == 5 # Freqs untouched
+        assert cropped.times[0] == 2 * u.s
+        assert cropped.frequencies.shape[0] == 5  # Freqs untouched
 
     def test_crop_time_4d(self, sgm_4d_basic):
         """Test cropping along time axis (-2) for 4D matrix."""
@@ -140,8 +136,8 @@ class TestSpectrogramMatrixFeatures:
     def test_append_time(self, sgm_3d_basic):
         """Test appending along time axis."""
         # Split into two
-        part1 = sgm_3d_basic.crop(end=5*u.s)
-        part2 = sgm_3d_basic.crop(start=5*u.s)
+        part1 = sgm_3d_basic.crop(end=5 * u.s)
+        part2 = sgm_3d_basic.crop(start=5 * u.s)
 
         # Append
         rejoined = part1.append(part2, inplace=False)
@@ -169,7 +165,7 @@ class TestSpectrogramMatrixFeatures:
 
         # Mean over freq (axis -1)
         mean_freq = sgm_3d_basic.mean(axis=-1)
-        assert mean_freq.shape == (2, 10) # (Batch, Time) -> TimeSeriesMatrix-like?
+        assert mean_freq.shape == (2, 10)  # (Batch, Time) -> TimeSeriesMatrix-like?
 
     def test_arithmetic(self, sgm_3d_basic):
         """Test arithmetic operations."""
@@ -187,7 +183,7 @@ class TestSpectrogramMatrixFeatures:
         assert volts_sq.meta[1, 0].unit.is_equivalent(u.V**2)
 
         # Add constant
-        offset = sgm_3d_basic + 10*u.V
+        offset = sgm_3d_basic + 10 * u.V
         assert np.allclose(offset.value, sgm_3d_basic.value + 10)
 
 
@@ -240,7 +236,7 @@ class TestSpectrogramMatrixPerElementUnits:
             np.random.rand(10, 5),
             times=times,
             frequencies=freqs,
-            unit=u.m/u.s,  # Different unit
+            unit=u.m / u.s,  # Different unit
         )
 
         matrix = SpectrogramList([sg1, sg2]).to_matrix()
@@ -392,7 +388,9 @@ class TestSpectrogramMatrixPerElementUnits:
         with pytest.raises(UnitConversionError):
             _ = matrix_a + matrix_b
 
-    def test_binary_matrix_op_compatible_units_raises_strict_equality(self, times, freqs):
+    def test_binary_matrix_op_compatible_units_raises_strict_equality(
+        self, times, freqs
+    ):
         """Binary add/sub requires strict unit equality - compatible but different units fail.
 
         Following SeriesMatrix check_add_sub_compatibility: V != mV and m != cm

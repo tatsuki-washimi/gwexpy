@@ -1,4 +1,3 @@
-
 import gwpy.frequencyseries._fdcommon as fd
 import numpy as np
 import pytest
@@ -10,7 +9,7 @@ def test_parse_filter_zpk():
     parsed = fd.parse_filter(filt)
     assert parsed is not None
     # Verify it returns a proper filter representation
-    if hasattr(parsed, 'freqresp'):
+    if hasattr(parsed, "freqresp"):
         freqs = np.array([1.0, 10.0, 100.0])
         resp = parsed.freqresp(2 * np.pi * freqs)
         assert resp is not None

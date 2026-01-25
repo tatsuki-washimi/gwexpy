@@ -1,6 +1,7 @@
 """
 Tests for fit_bootstrap_spectrum high-level pipeline.
 """
+
 import numpy as np
 import pytest
 
@@ -33,8 +34,12 @@ def test_fit_bootstrap_spectrum_basic():
     psd_true = A_true * frequencies**alpha_true
 
     # Add noise to each time slice
-    data = np.array([psd_true * (1 + 0.1 * np.random.normal(size=len(frequencies)))
-                     for _ in range(n_time)])
+    data = np.array(
+        [
+            psd_true * (1 + 0.1 * np.random.normal(size=len(frequencies)))
+            for _ in range(n_time)
+        ]
+    )
 
     # Create spectrogram
     spectrogram = Spectrogram(
@@ -62,8 +67,8 @@ def test_fit_bootstrap_spectrum_basic():
     )
 
     assert result.minuit.valid
-    assert hasattr(result, 'psd')
-    assert hasattr(result, 'cov')
+    assert hasattr(result, "psd")
+    assert hasattr(result, "cov")
     assert result.cov is not None
 
     # Check recovered parameters are reasonable
@@ -90,8 +95,12 @@ def test_fit_bootstrap_spectrum_with_mcmc():
     A_true, alpha_true = 5.0, -1.0
     psd_true = A_true * frequencies**alpha_true
 
-    data = np.array([psd_true * (1 + 0.05 * np.random.normal(size=len(frequencies)))
-                     for _ in range(n_time)])
+    data = np.array(
+        [
+            psd_true * (1 + 0.05 * np.random.normal(size=len(frequencies)))
+            for _ in range(n_time)
+        ]
+    )
 
     spectrogram = Spectrogram(
         data,
@@ -141,8 +150,12 @@ def test_fit_bootstrap_spectrum_with_rebin():
     A_true, alpha_true = 8.0, -1.2
     psd_true = A_true * frequencies**alpha_true
 
-    data = np.array([psd_true * (1 + 0.08 * np.random.normal(size=len(frequencies)))
-                     for _ in range(n_time)])
+    data = np.array(
+        [
+            psd_true * (1 + 0.08 * np.random.normal(size=len(frequencies)))
+            for _ in range(n_time)
+        ]
+    )
 
     spectrogram = Spectrogram(
         data,
@@ -206,13 +219,13 @@ def test_fit_bootstrap_spectrum_stores_metadata():
     )
 
     # Check metadata is stored
-    assert hasattr(result, 'psd')
-    assert hasattr(result, 'cov')
-    assert hasattr(result, 'bootstrap_method')
+    assert hasattr(result, "psd")
+    assert hasattr(result, "cov")
+    assert hasattr(result, "bootstrap_method")
     assert result.bootstrap_method == "mean"
 
     # Check cov is BifrequencyMap
-    assert hasattr(result.cov, 'inverse')
+    assert hasattr(result.cov, "inverse")
 
 
 def test_fit_bootstrap_spectrum_bounds():
@@ -230,8 +243,12 @@ def test_fit_bootstrap_spectrum_bounds():
     A_true, alpha_true = 10.0, -1.5
     psd_true = A_true * frequencies**alpha_true
 
-    data = np.array([psd_true * (1 + 0.05 * np.random.normal(size=len(frequencies)))
-                     for _ in range(n_time)])
+    data = np.array(
+        [
+            psd_true * (1 + 0.05 * np.random.normal(size=len(frequencies)))
+            for _ in range(n_time)
+        ]
+    )
 
     spectrogram = Spectrogram(
         data,

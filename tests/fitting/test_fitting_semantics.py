@@ -21,9 +21,10 @@ except ImportError:
     models = None
 
 
-@pytest.mark.skipif(Fitter is None, reason="gwexpy.fitting requires optional dependencies (e.g. iminuit)")
-
-
+@pytest.mark.skipif(
+    Fitter is None,
+    reason="gwexpy.fitting requires optional dependencies (e.g. iminuit)",
+)
 class TestFittingSemantics:
     """Test A2 semantics of fitting module."""
 
@@ -37,7 +38,7 @@ class TestFittingSemantics:
         np.random.seed(42)
         y_val += np.random.normal(0, 0.01, size=x.size)
 
-        return FrequencySeries(y_val, frequencies=x, unit='m')
+        return FrequencySeries(y_val, frequencies=x, unit="m")
 
     def test_fit_parameter_recovery(self, linear_data):
         """Test that fit recovers slope=2 and intercept=1."""
@@ -46,12 +47,12 @@ class TestFittingSemantics:
         fitter = Fitter(model)
 
         # Initial guess
-        result = fitter.fit(linear_data, p0={'p0': 0, 'p1': 5})
+        result = fitter.fit(linear_data, p0={"p0": 0, "p1": 5})
 
         # Check coefficients (p1 ~ 2, p0 ~ 1)
         # Use .value syntax requested by the task
-        p1 = result.params['p1'].value
-        p0 = result.params['p0'].value
+        p1 = result.params["p1"].value
+        p0 = result.params["p0"].value
 
         np.testing.assert_allclose(p1, 2.0, rtol=0.1)
         np.testing.assert_allclose(p0, 1.0, rtol=0.1)
@@ -77,7 +78,7 @@ class TestFittingSemantics:
         # X = [1, x]
         x_vals = np.array([1, 2, 3])
         X = np.column_stack([np.ones(3), x_vals])
-        y = np.array([3, 5, 7]) # Perfect line
+        y = np.array([3, 5, 7])  # Perfect line
 
         # Solve via direct GLS class
         solver = GLS(X, y)
@@ -97,7 +98,7 @@ class TestFittingSemantics:
         params = solver.solve()
 
         # Weighted mean: (10/1 + 20/100) / (1/1 + 1/100) = (10+0.2)/1.01 = 10.2/1.01 ~ 10.099
-        expected = (10/1 + 20/100) / (1/1 + 1/100)
+        expected = (10 / 1 + 20 / 100) / (1 / 1 + 1 / 100)
         np.testing.assert_allclose(params[0], expected, atol=1e-10)
 
     def test_parameter_value_float_behavior(self, linear_data):
@@ -106,7 +107,7 @@ class TestFittingSemantics:
         fitter = Fitter(model)
         result = fitter.fit(linear_data)
 
-        p0 = result.params['p0']
+        p0 = result.params["p0"]
         # Should support float addition
         sum_val = p0 + 10.0
         assert isinstance(sum_val, float)

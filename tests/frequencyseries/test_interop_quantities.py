@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 from astropy import units as u
@@ -22,6 +21,7 @@ def test_to_quantities():
     q_mv = fs.to_quantities(units="mV")
     assert q_mv.units == pq.mV
     assert np.allclose(q_mv.magnitude, data * 1000)
+
 
 def test_from_quantities():
     pq = pytest.importorskip("quantities")

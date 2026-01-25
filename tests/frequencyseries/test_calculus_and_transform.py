@@ -13,7 +13,7 @@ class TestFrequencySeriesCalculus:
         """Test that time integration handles DC component (f=0) by setting it to 0."""
         data = np.array([1.0, 2.0, 3.0])
         freqs = np.array([0.0, 1.0, 2.0])
-        fs = FrequencySeries(data, frequencies=freqs, unit='m')
+        fs = FrequencySeries(data, frequencies=freqs, unit="m")
 
         # Integrate time: should divide by (i * 2pi * f)
         # f=0 would be division by zero, expectation is 0j (DC blocking/stability)
@@ -26,7 +26,7 @@ class TestFrequencySeriesCalculus:
 
     def test_differentiate_time_unit(self):
         """Test time differentiation unit propagation."""
-        fs = FrequencySeries([1, 2, 3], df=1, f0=0, unit='m')
+        fs = FrequencySeries([1, 2, 3], df=1, f0=0, unit="m")
         diff = fs.differentiate_time()
         # d/dt -> * (i * 2pi * f) -> unit should be * Hz
         assert diff.unit == u.m * u.Hz
@@ -39,13 +39,14 @@ class TestFrequencySeriesCalculus:
         delay = 0.05  # 50ms delay -> phase changes smoothly
         phase = -2.0 * np.pi * delay * freqs
         data = np.exp(1j * phase)
-        fs = FrequencySeries(data, frequencies=freqs, unit='V')
+        fs = FrequencySeries(data, frequencies=freqs, unit="V")
 
         gd = fs.group_delay()
 
         assert gd.unit == u.s
         # Check value ignoring boundaries (gradient is sensitive at edges)
         np.testing.assert_allclose(gd.value[5:-5], delay, atol=1e-5)
+
 
 class TestMatrixTransform:
     """Test A2-c transformation methods (IFFT)."""
@@ -55,7 +56,7 @@ class TestMatrixTransform:
         GWpy's fft() scales amplitudes by 2 (one-sided).
         FrequencySeriesMatrix.ifft() must reverse this scaling (x0.5).
         """
-        ts = TimeSeries([1, 0, -1, 0, 2, 0, -2, 0], sample_rate=8, unit='V')
+        ts = TimeSeries([1, 0, -1, 0, 2, 0, -2, 0], sample_rate=8, unit="V")
         fs = ts.fft()
 
         matrix = FrequencySeriesMatrix([fs])
@@ -67,4 +68,6 @@ class TestMatrixTransform:
         recon_unit = reconstructed.meta[0, 0].unit
 
         assert recon_unit == ts.unit
-        np.testing.assert_allclose(recon_data, ts.value, atol=1e-7, err_msg="IFFT amplitude mismatch")
+        np.testing.assert_allclose(
+            recon_data, ts.value, atol=1e-7, err_msg="IFFT amplitude mismatch"
+        )

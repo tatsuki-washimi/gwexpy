@@ -17,4 +17,3 @@ __all__ = [
     "test_shell_call_shell",
     "test_which",
 ]
-

@@ -15,4 +15,3 @@ __all__ = [
     "test_round_to_power_error",
     "test_unique",
 ]
-

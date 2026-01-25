@@ -33,9 +33,9 @@ def _expected_limit_mask(nans, limit, direction):
         run_len = run_end - run_start
         if run_len > limit:
             if direction == "forward":
-                mask[run_start + limit:run_end] = True
+                mask[run_start + limit : run_end] = True
             elif direction == "backward":
-                mask[run_start:run_end - limit] = True
+                mask[run_start : run_end - limit] = True
             else:
                 raise ValueError("direction must be forward or backward")
     return mask
@@ -61,8 +61,12 @@ def test_ffill_bfill_numpy_expected_without_pandas():
         ffill_expected = np.array([np.nan, 1.0, 1.0, 1.0, 4.0, 4.0])
         bfill_expected = np.array([1.0, 1.0, 4.0, 4.0, 4.0, np.nan])
 
-        np.testing.assert_allclose(_ffill_numpy(arr, limit=None), ffill_expected, equal_nan=True)
-        np.testing.assert_allclose(_bfill_numpy(arr, limit=None), bfill_expected, equal_nan=True)
+        np.testing.assert_allclose(
+            _ffill_numpy(arr, limit=None), ffill_expected, equal_nan=True
+        )
+        np.testing.assert_allclose(
+            _bfill_numpy(arr, limit=None), bfill_expected, equal_nan=True
+        )
     else:
         pytest.skip("pandas available; covered by pandas parity tests")
 
@@ -94,7 +98,9 @@ def test_impute_1d_matches_interp1d_real():
     result = _impute_1d(y.copy(), x, "linear", False, None, limit=None)
 
     valid = ~np.isnan(y)
-    f = interp1d(x[valid], y[valid], kind="linear", bounds_error=False, fill_value="extrapolate")
+    f = interp1d(
+        x[valid], y[valid], kind="linear", bounds_error=False, fill_value="extrapolate"
+    )
     expected = y.copy()
     expected[~valid] = f(x[~valid])
 
@@ -110,8 +116,20 @@ def test_impute_1d_matches_interp1d_complex():
     result = _impute_1d(y.copy(), x, "linear", False, None, limit=None)
 
     valid = ~np.isnan(y)
-    f_real = interp1d(x[valid], y[valid].real, kind="linear", bounds_error=False, fill_value="extrapolate")
-    f_imag = interp1d(x[valid], y[valid].imag, kind="linear", bounds_error=False, fill_value="extrapolate")
+    f_real = interp1d(
+        x[valid],
+        y[valid].real,
+        kind="linear",
+        bounds_error=False,
+        fill_value="extrapolate",
+    )
+    f_imag = interp1d(
+        x[valid],
+        y[valid].imag,
+        kind="linear",
+        bounds_error=False,
+        fill_value="extrapolate",
+    )
     expected = y.copy()
     expected[~valid] = f_real(x[~valid]) + 1j * f_imag(x[~valid])
 
@@ -165,7 +183,6 @@ def test_impute_timeseries_preserves_metadata():
     assert result.name == ts.name
     assert result.unit == ts.unit
     assert result.channel == ts.channel
-
 
 
 def test_impute_timeseries_preserves_metadata_rebuild():

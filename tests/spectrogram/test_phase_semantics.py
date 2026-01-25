@@ -206,7 +206,9 @@ class TestSpectrogramMatrixPhaseSemantics:
         # Create matrix with phase jumps along time axis
         n_batch, n_time, n_freq = 2, 10, 5
         phase = np.linspace(0, 4 * np.pi, n_time)
-        data = np.exp(1j * phase[np.newaxis, :, np.newaxis] * np.ones((n_batch, 1, n_freq)))
+        data = np.exp(
+            1j * phase[np.newaxis, :, np.newaxis] * np.ones((n_batch, 1, n_freq))
+        )
 
         times = np.arange(n_time) * u.s
         freqs = np.arange(n_freq) * u.Hz

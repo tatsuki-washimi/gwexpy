@@ -33,13 +33,13 @@ class TestTimeSeriesExtensions:
 
         # Frequencies
         # nfft=12. df = 1 / (12 * 1) = 1/12 Hz.
-        assert fs.df.value == pytest.approx(1.0/12.0)
-        assert len(fs) == 12 // 2 + 1 # 7
+        assert fs.df.value == pytest.approx(1.0 / 12.0)
+        assert len(fs) == 12 // 2 + 1  # 7
 
         # Check value (DC component sum matches)
         # padded sum = 10
         # dft[0] = sum / nfft = 10 / 12
-        assert fs.value[0].real == pytest.approx(10.0/12.0)
+        assert fs.value[0].real == pytest.approx(10.0 / 12.0)
 
     def test_fft_next_fast_len(self):
         # Prime number length to force larger next fast len
@@ -51,11 +51,11 @@ class TestTimeSeriesExtensions:
         # next fast len for 101 is usually 108 or similar
         # Just check it's >= 101
         nfft = (len(fs) - 1) * 2
-        if fs.frequencies[-1].value * 2 < (1.0/ts.dt.value) * (nfft-1)/nfft:
-             # odd length case nfft = len(fs)*2 - 1 ? rfftfreq logic
-             # actually we can just check fs.df
-             nfft_calc = 1.0 / (fs.df.value * ts.dt.value)
-             nfft = round(nfft_calc)
+        if fs.frequencies[-1].value * 2 < (1.0 / ts.dt.value) * (nfft - 1) / nfft:
+            # odd length case nfft = len(fs)*2 - 1 ? rfftfreq logic
+            # actually we can just check fs.df
+            nfft_calc = 1.0 / (fs.df.value * ts.dt.value)
+            nfft = round(nfft_calc)
 
         assert nfft >= 101
 
@@ -73,10 +73,14 @@ class TestTimeSeriesExtensions:
         gwpy_ts1 = GwpyTimeSeries(data1, sample_rate=64.0)
         gwpy_ts2 = GwpyTimeSeries(data2, sample_rate=64.0)
 
-        tf_gwex = gwex_ts1.transfer_function(gwex_ts2, mode="steady", fftlength=1.0, overlap=0)
+        tf_gwex = gwex_ts1.transfer_function(
+            gwex_ts2, mode="steady", fftlength=1.0, overlap=0
+        )
         tf_gwpy = gwpy_ts1.transfer_function(gwpy_ts2, fftlength=1.0, overlap=0)
 
-        np.testing.assert_allclose(tf_gwex.frequencies.value, tf_gwpy.frequencies.value, rtol=1e-12)
+        np.testing.assert_allclose(
+            tf_gwex.frequencies.value, tf_gwpy.frequencies.value, rtol=1e-12
+        )
         np.testing.assert_allclose(tf_gwex.value, tf_gwpy.value, rtol=1e-10)
 
     def test_transfer_function_steady_zero_series_nan(self):
@@ -179,8 +183,10 @@ class TestTimeSeriesExtensions:
         # method="auto" with fftlength should use steady mode
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
-            tf_welch = ts1.transfer_function(ts2, method="auto", fftlength=50, overlap=0, window='boxcar')
-            assert len(tf_welch) == 50//2 + 1
+            tf_welch = ts1.transfer_function(
+                ts2, method="auto", fftlength=50, overlap=0, window="boxcar"
+            )
+            assert len(tf_welch) == 50 // 2 + 1
 
     def test_transfer_function_mismatch(self):
         # Create TS with different rates
@@ -215,10 +221,10 @@ class TestTimeSeriesExtensions:
             ts1.transfer_function(ts2, mode="transient", align="invalid")
 
     def test_fft_other_length(self):
-         ts = TimeSeries(np.ones(10), dt=1.0)
-         # other_length=10 -> target= 10 + 10 - 1 = 19
-         fs = ts.fft(mode="transient", other_length=10)
-         # nfft=19.
-         # rfftfreq(19) -> 10 points
-         assert len(fs) == 10
-         assert fs.df.value == pytest.approx(1.0/19.0)
+        ts = TimeSeries(np.ones(10), dt=1.0)
+        # other_length=10 -> target= 10 + 10 - 1 = 19
+        fs = ts.fft(mode="transient", other_length=10)
+        # nfft=19.
+        # rfftfreq(19) -> 10 points
+        assert len(fs) == 10
+        assert fs.df.value == pytest.approx(1.0 / 19.0)

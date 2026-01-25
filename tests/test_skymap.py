@@ -21,6 +21,7 @@ def test_skymap_init():
     # but we just check if it's created).
     fig.close()
 
+
 def test_mark_target():
     """Test mark_target method."""
     fig = SkyMap()
@@ -31,6 +32,7 @@ def test_mark_target():
     decs = [0, 10, 20]
     fig.mark_target(ras, decs)
     fig.close()
+
 
 def test_add_healpix():
     """Test add_healpix if ligo.skymap is available."""
@@ -44,6 +46,7 @@ def test_add_healpix():
     fig = SkyMap()
     fig.add_healpix(map_data)
     fig.close()
+
 
 def test_add_heatmap():
     """Test add_heatmap method."""

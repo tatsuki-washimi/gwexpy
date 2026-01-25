@@ -391,5 +391,6 @@ class TestSpectrogramMatrixCoreMixinSemantics:
         """f0 returns the first frequency value."""
         f0 = basic_matrix.f0
         assert f0 is not None
-        assert f0.to_value(u.Hz) == pytest.approx(0.0)  # First element of [0, 10, 20, 30, 40]
-
+        assert f0.to_value(u.Hz) == pytest.approx(
+            0.0
+        )  # First element of [0, 10, 20, 30, 40]

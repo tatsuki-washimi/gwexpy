@@ -19,6 +19,7 @@ def test_tsm_impute_vectorized():
     # Check that it's still a TimeSeriesMatrix
     assert isinstance(tsm_imp, TimeSeriesMatrix)
 
+
 def test_tsm_impute_mixed_nans():
     # Create matrix with different NaNs across channels
     data = np.random.randn(2, 1, 100)
@@ -31,6 +32,7 @@ def test_tsm_impute_mixed_nans():
 
     assert not np.any(np.isnan(tsm_imp.value))
 
+
 def test_laplace_chunking():
     # Large number of frequencies to trigger chunking
     ts = TimeSeries(np.random.randn(1000), dt=1.0)
@@ -40,6 +42,7 @@ def test_laplace_chunking():
     # Should work without memory error
     fs = ts.laplace(sigma=0.1, frequencies=freqs)
     assert len(fs) == 20000
+
 
 def test_series_matrix_ufunc_vectorized():
     data1 = np.ones((2, 2, 10))
@@ -52,24 +55,27 @@ def test_series_matrix_ufunc_vectorized():
     assert np.all(tsm3.value == 3.0)
     assert isinstance(tsm3, TimeSeriesMatrix)
 
+
 def test_tsm_resample():
     data = np.random.randn(2, 1, 1000)
-    tsm = TimeSeriesMatrix(data, dt=0.01) # 100 Hz
+    tsm = TimeSeriesMatrix(data, dt=0.01)  # 100 Hz
     # Resample to 50 Hz
     tsm_res = tsm.resample(50 * u.Hz)
     assert tsm_res.shape[-1] == 500
     assert tsm_res.dt == 0.02 * u.s
 
+
 def test_fsm_smooth():
     data = np.ones((2, 2, 100)) + 1j * np.ones((2, 2, 100))
     fsm = FrequencySeriesMatrix(data, df=1.0)
-    fsm_s = fsm.smooth(10, method='complex')
+    fsm_s = fsm.smooth(10, method="complex")
     assert fsm_s.shape == fsm.shape
-    assert np.allclose(fsm_s.value, data) # Smoothing ones gives ones
+    assert np.allclose(fsm_s.value, data)  # Smoothing ones gives ones
 
     # Smooth amplitude
-    fsm_a = fsm.smooth(10, method='amplitude')
+    fsm_a = fsm.smooth(10, method="amplitude")
     assert np.all(fsm_a.units == fsm.units)
+
 
 def test_is_regular():
     ts = TimeSeries([1, 2, 3], dt=1.0)

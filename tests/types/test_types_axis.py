@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 from astropy import units as u
@@ -18,6 +17,7 @@ def test_axis_descriptor_irregular():
     assert not desc.regular
     assert desc.delta is None
 
+
 def test_axis_descriptor_regular():
     idx = Index(np.linspace(0, 10, 101), unit="s")
     # depending on Index implementation, it might have .regular=True or we calculate it
@@ -26,6 +26,7 @@ def test_axis_descriptor_regular():
     assert desc.regular
     assert np.isclose(desc.delta.value, 0.1)
     assert desc.delta.unit == u.s
+
 
 def test_iloc_nearest():
     idx = Quantity([0, 1, 2, 5, 10], "m")
@@ -38,6 +39,7 @@ def test_iloc_nearest():
     # 8 -> 4 (10) (diff 2 vs 5 is 3) or 3 (5)? 8-5=3, 10-8=2. So 10 is nearer.
     assert desc.iloc_nearest(8 * u.m) == 4
 
+
 def test_iloc_slice():
     idx = Quantity([0, 10, 20, 30, 40], "s")
     desc = AxisDescriptor("time", idx)
@@ -47,15 +49,16 @@ def test_iloc_slice():
     # 35 -> idx 4 (40).
     # slice(2, 4) -> indices 2, 3. Values 20, 30. Correct.
 
-    s = slice(15*u.s, 35*u.s)
+    s = slice(15 * u.s, 35 * u.s)
     res = desc.iloc_slice(s)
     assert res.start == 2
     assert res.stop == 4
     assert res.step is None
+
 
 def test_iloc_slice_irregular_step_error():
     idx = Quantity([0, 1, 4, 9], "m")
     desc = AxisDescriptor("pos", idx)
 
     with pytest.raises(ValueError):
-        desc.iloc_slice(slice(0, 4, 1*u.m))
+        desc.iloc_slice(slice(0, 4, 1 * u.m))

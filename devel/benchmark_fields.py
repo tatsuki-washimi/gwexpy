@@ -26,6 +26,7 @@ def profile_block(name, func, *args, **kwargs):
     print(f"  Peak Memory: {peak_mb:.2f} MB")
     return result
 
+
 def benchmark_scalar_field():
     print("=== Benchmarking ScalarField ===")
 
@@ -47,12 +48,7 @@ def benchmark_scalar_field():
 
     def create_field():
         return ScalarField(
-            data,
-            axis0=t_index,
-            axis1=x_index,
-            axis2=y_index,
-            axis3=z_index,
-            unit=u.V
+            data, axis0=t_index, axis1=x_index, axis2=y_index, axis3=z_index, unit=u.V
         )
 
     field = profile_block("Initialization", create_field)
@@ -73,7 +69,7 @@ def benchmark_scalar_field():
     # 4. Space FFT
     # axis 1, 2, 3
     def op_fft_space():
-        return field.fft_space() # transforms all spatial axes
+        return field.fft_space()  # transforms all spatial axes
 
     _ = profile_block("FFT (Space axes=1,2,3)", op_fft_space)
 
@@ -108,14 +104,17 @@ def benchmark_scalar_field():
         # points must be list of tuples of Quantities
         pts = []
         for _ in range(10):
-            pts.append((
-                np.random.uniform(0, 20)*u.m,
-                np.random.uniform(0, 20)*u.m,
-                np.random.uniform(0, 15)*u.m
-            ))
+            pts.append(
+                (
+                    np.random.uniform(0, 20) * u.m,
+                    np.random.uniform(0, 20) * u.m,
+                    np.random.uniform(0, 15) * u.m,
+                )
+            )
         return field.extract_points(pts, interp="nearest")
 
     _ = profile_block("Extract Points (Linear Interp)", op_extract)
+
 
 if __name__ == "__main__":
     benchmark_scalar_field()

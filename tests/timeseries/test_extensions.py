@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 from astropy import units as u
@@ -9,26 +8,30 @@ from gwexpy.timeseries.preprocess import align_timeseries_collection
 # Optional deps
 try:
     import sklearn  # noqa: F401 - availability check
+
     HAS_SKLEARN = True
 except ImportError:
     HAS_SKLEARN = False
 
 try:
     import statsmodels  # noqa: F401
+
     HAS_STATSMODELS = True
 except ImportError:
     HAS_STATSMODELS = False
 
 try:
     import hurst  # noqa: F401 - availability check
+
     HAS_HURST = True
 except ImportError:
     HAS_HURST = False
 
+
 # --- Preprocess Tests ---
 def test_align_intersection():
-    ts1 = TimeSeries([1, 2, 3, 4], t0=0, dt=1, name="ts1") # 0..3
-    ts2 = TimeSeries([10, 20, 30], t0=1, dt=1, name="ts2") # 1..3
+    ts1 = TimeSeries([1, 2, 3, 4], t0=0, dt=1, name="ts1")  # 0..3
+    ts2 = TimeSeries([10, 20, 30], t0=1, dt=1, name="ts2")  # 1..3
 
     # Intersection: [1, 4) overlap -> times [1, 2, 3] -> 3 samples
     mat, times, meta = align_timeseries_collection([ts1, ts2], how="intersection")
@@ -40,11 +43,14 @@ def test_align_intersection():
     np.testing.assert_array_equal(mat[:, 0], [2, 3, 4])
     np.testing.assert_array_equal(mat[:, 1], [10, 20, 30])
 
-def test_align_union():
-    ts1 = TimeSeries([1, 2], t0=0, dt=1) # 0, 1
-    ts2 = TimeSeries([3, 4], t0=2, dt=1) # 2, 3
 
-    mat, times, meta = align_timeseries_collection([ts1, ts2], how="union", fill_value=-1)
+def test_align_union():
+    ts1 = TimeSeries([1, 2], t0=0, dt=1)  # 0, 1
+    ts2 = TimeSeries([3, 4], t0=2, dt=1)  # 2, 3
+
+    mat, times, meta = align_timeseries_collection(
+        [ts1, ts2], how="union", fill_value=-1
+    )
 
     assert mat.shape == (4, 2)
     np.testing.assert_array_equal(times.value, [0, 1, 2, 3])
@@ -54,12 +60,17 @@ def test_align_union():
     # ts2: 3, 4 at 2, 3. Rest filled
     np.testing.assert_array_equal(mat[:, 1], [-1, -1, 3, 4])
 
+
 def test_align_time_based_with_dimensionless_dt():
     t = np.arange(4) * u.s
     ts_time = TimeSeries([1, 2, 3, 4], times=t, name="ts_time")
-    ts_dim = TimeSeries([10, 20, 30, 40], t0=0, dt=1, xunit=u.dimensionless_unscaled, name="ts_dim")
+    ts_dim = TimeSeries(
+        [10, 20, 30, 40], t0=0, dt=1, xunit=u.dimensionless_unscaled, name="ts_dim"
+    )
 
-    mat, times, meta = align_timeseries_collection([ts_time, ts_dim], how="intersection")
+    mat, times, meta = align_timeseries_collection(
+        [ts_time, ts_dim], how="intersection"
+    )
 
     assert times.unit == u.s
     assert meta["dt"].unit.physical_type == "time"
@@ -75,6 +86,7 @@ def test_align_time_based_rejects_non_time_dt():
     with pytest.raises(ValueError, match="time-like dt"):
         align_timeseries_collection([ts_time, ts_bad], how="intersection")
 
+
 def test_impute():
     data = [1.0, np.nan, 3.0, np.nan, 5.0]
     ts = TimeSeries(data, dt=1, t0=0)
@@ -85,8 +97,9 @@ def test_impute():
     # res_bfill = ts.impute(method="bfill")
     # np.testing.assert_array_equal(res_bfill.value, [1, 3, 3, 5, 5])
 
+
 def test_standardize():
-    data = [1., 2., 3., 4., 5.] # explicit float
+    data = [1.0, 2.0, 3.0, 4.0, 5.0]  # explicit float
     ts = TimeSeries(data, dt=1, t0=0)
     ret = ts.standardize(method="zscore")
     if isinstance(ret, tuple):
@@ -103,7 +116,7 @@ def test_matrix_whiten():
     # (samples, channels)
     np.random.seed(42)
     t = np.linspace(0, 1, 100) * u.s
-    s1 = np.sin(2*np.pi*5*t.value)
+    s1 = np.sin(2 * np.pi * 5 * t.value)
     # Full rank for whitening check (otherwise eps dominates)
     s2 = 0.5 * s1 + 0.1 * np.random.randn(len(t))
 
@@ -116,15 +129,19 @@ def test_matrix_whiten():
     val = w_mat.value.reshape(-1, 100)
 
     cov = np.cov(val, rowvar=True)
-    np.testing.assert_allclose(cov, np.eye(2), atol=2e-1) # Looser tolerance due to noise/size
+    np.testing.assert_allclose(
+        cov, np.eye(2), atol=2e-1
+    )  # Looser tolerance due to noise/size
+
 
 # --- PCA/ICA Tests ---
+
 
 @pytest.mark.skipif(not HAS_SKLEARN, reason="sklearn required")
 def test_pca():
     t = np.linspace(0, 1, 100) * u.s
-    s1 = np.sin(2*np.pi*5*t.value)
-    s2 = np.cos(2*np.pi*5*t.value)
+    s1 = np.sin(2 * np.pi * 5 * t.value)
+    s2 = np.cos(2 * np.pi * 5 * t.value)
     # Mix
     m1 = s1 + s2
     m2 = s1 - s2
@@ -146,6 +163,7 @@ def test_pca():
     # rec should match mat (2, 1, 100)
     np.testing.assert_allclose(rec.value, mat.value, atol=1e-5)
 
+
 @pytest.mark.skipif(not HAS_SKLEARN, reason="sklearn required")
 def test_ica():
     # Synthetic sources
@@ -159,7 +177,7 @@ def test_ica():
     S /= np.std(S, axis=1, keepdims=True)
 
     A = np.array([[1, 1], [0.5, 2]])
-    X = A @ S # (2, 200)
+    X = A @ S  # (2, 200)
 
     # (2, 1, 200)
     X_3d = X[:, None, :]
@@ -173,7 +191,9 @@ def test_ica():
     # Check correlation with original sources (order/sign undefined)
     # ...
 
+
 # --- ARIMA Tests ---
+
 
 @pytest.mark.skipif(not HAS_STATSMODELS, reason="statsmodels required")
 def test_arima():
@@ -181,16 +201,17 @@ def test_arima():
     np.random.seed(42)
     y = np.zeros(100)
     for i in range(1, 100):
-        y[i] = 0.9 * y[i-1] + np.random.normal()
+        y[i] = 0.9 * y[i - 1] + np.random.normal()
 
     ts = TimeSeries(y, dt=1, t0=0)
 
     res = ts.fit_arima(order=(1, 0, 0))
-    assert isinstance(res.params_dict()['params'], (list, np.ndarray))
+    assert isinstance(res.params_dict()["params"], (list, np.ndarray))
 
     forecast, conf = res.forecast(steps=5)
     assert len(forecast) == 5
     assert forecast.t0.value == 100.0
+
 
 # --- Hurst Tests ---
 # Mock hurst if not installed?
@@ -202,7 +223,7 @@ def test_hurst():
     ts = TimeSeries(rw, dt=1)
 
     H = ts.hurst(method="rs", simplified=True)
-    assert 0.3 < H < 0.7 # Broad check
+    assert 0.3 < H < 0.7  # Broad check
 
     # local hurst
     lhs = ts.local_hurst(window=100, step=50)

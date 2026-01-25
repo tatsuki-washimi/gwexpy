@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 from astropy import units as u
@@ -9,11 +8,13 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 PYEMD_AVAILABLE = False
 try:
     import PyEMD
+
     # Basic check for EMD existence
     _ = PyEMD.EMD()
     PYEMD_AVAILABLE = True
 except (ImportError, AttributeError):
     pass
+
 
 class TestHHTExtended:
     @pytest.fixture
@@ -57,9 +58,15 @@ class TestHHTExtended:
         res_pad = chirp_signal.hilbert_analysis(pad=100)
 
         # Padding should change values near edges
-        assert not np.allclose(res_no_pad["frequency"].value[:10], res_pad["frequency"].value[:10])
+        assert not np.allclose(
+            res_no_pad["frequency"].value[:10], res_pad["frequency"].value[:10]
+        )
         # Use more relaxed tolerance for middle check as padding can have small global effects
-        assert np.allclose(res_no_pad["frequency"].value[400:600], res_pad["frequency"].value[400:600], atol=0.5)
+        assert np.allclose(
+            res_no_pad["frequency"].value[400:600],
+            res_pad["frequency"].value[400:600],
+            atol=0.5,
+        )
 
         # Test if_smooth
         res_smooth = chirp_signal.hilbert_analysis(if_smooth=11)
@@ -77,20 +84,23 @@ class TestHHTExtended:
         assert spec50.shape[1] == 50
 
         # Test fmin/fmax
-        spec_range = chirp_signal.hht(output="spectrogram", fmin=20, fmax=40, n_bins=10, emd_method="emd")
+        spec_range = chirp_signal.hht(
+            output="spectrogram", fmin=20, fmax=40, n_bins=10, emd_method="emd"
+        )
         # Check that frequencies are within range plus/minus half bin width
         df = spec_range.frequencies[1].value - spec_range.frequencies[0].value
         assert spec_range.frequencies[0].value >= 20 - df
         assert spec_range.frequencies[-1].value <= 40 + df
 
         # Test weight='ia'
-        spec_ia2 = chirp_signal.hht(output="spectrogram", weight="ia2", emd_method="emd")
+        spec_ia2 = chirp_signal.hht(
+            output="spectrogram", weight="ia2", emd_method="emd"
+        )
         spec_ia = chirp_signal.hht(output="spectrogram", weight="ia", emd_method="emd")
-        assert spec_ia2.unit == chirp_signal.unit ** 2
+        assert spec_ia2.unit == chirp_signal.unit**2
         assert spec_ia.unit == chirp_signal.unit
         # For a single chirp, ia2 should be approx ia^2. Use loose tolerance due to possible binning/residue effects.
-        assert np.allclose(spec_ia2.value, spec_ia.value ** 2, atol=1e-1)
-
+        assert np.allclose(spec_ia2.value, spec_ia.value**2, atol=1e-1)
 
     @pytest.mark.skipif(not PYEMD_AVAILABLE, reason="PyEMD not installed")
     def test_hht_finite_only(self, chirp_signal):
@@ -103,7 +113,9 @@ class TestHHTExtended:
         from unittest.mock import patch
 
         # First do a normal HHT to get the shape
-        spec_normal = chirp_signal.hht(output="spectrogram", emd_method="emd", finite_only=True)
+        spec_normal = chirp_signal.hht(
+            output="spectrogram", emd_method="emd", finite_only=True
+        )
 
         # Now test with patched hilbert_analysis that injects NaN
         original_hilbert_analysis = type(chirp_signal).hilbert_analysis
@@ -117,8 +129,12 @@ class TestHHTExtended:
             result["amplitude"].value[500] = np.nan
             return result
 
-        with patch.object(type(chirp_signal), "hilbert_analysis", patched_hilbert_analysis):
-            spec_with_nan = chirp_signal.hht(output="spectrogram", finite_only=True, emd_method="emd")
+        with patch.object(
+            type(chirp_signal), "hilbert_analysis", patched_hilbert_analysis
+        ):
+            spec_with_nan = chirp_signal.hht(
+                output="spectrogram", finite_only=True, emd_method="emd"
+            )
 
         # The spectrogram should have no NaN (finite_only excludes them)
         assert not np.any(np.isnan(spec_with_nan.value))
@@ -130,13 +146,19 @@ class TestHHTExtended:
     @pytest.mark.skipif(not PYEMD_AVAILABLE, reason="PyEMD not installed")
     def test_hht_if_policy_clip_vs_drop(self, chirp_signal):
         # Test if_policy='clip' includes more energy than 'drop' for restricted range
-        spec_clip = chirp_signal.hht(output="spectrogram", fmin=20, fmax=30, if_policy="clip", emd_method="emd")
-        spec_drop = chirp_signal.hht(output="spectrogram", fmin=20, fmax=30, if_policy="drop", emd_method="emd")
+        spec_clip = chirp_signal.hht(
+            output="spectrogram", fmin=20, fmax=30, if_policy="clip", emd_method="emd"
+        )
+        spec_drop = chirp_signal.hht(
+            output="spectrogram", fmin=20, fmax=30, if_policy="drop", emd_method="emd"
+        )
         assert spec_clip.value.sum() > spec_drop.value.sum()
 
     def test_hht_invalid_if_policy(self, chirp_signal):
         with pytest.raises(ValueError, match="Unknown if_policy"):
-            chirp_signal.hht(output="spectrogram", if_policy="invalid", emd_method="emd")
+            chirp_signal.hht(
+                output="spectrogram", if_policy="invalid", emd_method="emd"
+            )
 
     @pytest.mark.skipif(not PYEMD_AVAILABLE, reason="PyEMD not installed")
     def test_hht_invalid_freq_bins(self, chirp_signal):
@@ -150,4 +172,4 @@ class TestHHTExtended:
         # Zero signal might result in no IMFs or just residual
         ts = TimeSeries(np.zeros(100), dt=0.01)
         with pytest.raises(ValueError, match="no IMFs"):
-             ts.hht(output="spectrogram", emd_kwargs={"max_imf": 0})
+            ts.hht(output="spectrogram", emd_kwargs={"max_imf": 0})

@@ -26,7 +26,9 @@ def test_fft_matches_gwpy_default():
     fs_gwex_n = gwex_ts.fft(nfft=nfft)
 
     np.testing.assert_array_equal(fs_gwex_n.value, fs_gwpy_n.value)
-    np.testing.assert_array_equal(fs_gwex_n.frequencies.value, fs_gwpy_n.frequencies.value)
+    np.testing.assert_array_equal(
+        fs_gwex_n.frequencies.value, fs_gwpy_n.frequencies.value
+    )
     assert fs_gwex_n.df == fs_gwpy_n.df
 
 
@@ -50,7 +52,6 @@ def test_fft_linear_nfft_selection():
 
     expected_df = ts.sample_rate.value / nfft
     assert np.isclose(fs.df.value, expected_df)
-
 
 
 # def test_fft_linear_too_short_raises():
@@ -142,4 +143,3 @@ def test_fft_transient_sine_even():
     # After doubling for one-sided spectrum, we should see amplitude A.
     measured_amp = np.abs(spectrum.value[freq_bin])
     assert measured_amp == pytest.approx(amplitude, rel=0.05)  # Within 5%
-

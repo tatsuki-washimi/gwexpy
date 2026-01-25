@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 
@@ -8,14 +7,16 @@ from gwexpy.spectrogram import Spectrogram
 def test_to_mne_tfr():
     mne = pytest.importorskip("mne")
     if not hasattr(mne.time_frequency, "EpochsTFRArray"):
-        pytest.skip("mne.time_frequency.EpochsTFRArray not available (requires MNE >= 1.3)")
+        pytest.skip(
+            "mne.time_frequency.EpochsTFRArray not available (requires MNE >= 1.3)"
+        )
 
     # Create Spectrogram (Frequency, Time) usually in gwexpy?
     # Let's verify shape. Standard Spectrogram is (Time, Frequency).
     # wait.. base gwpy Spectrogram is (Times, Frequencies).
     # Let's assume standard behavior. (n_times, n_freqs)
 
-    data = np.array([[1, 2], [3, 4], [5, 6]]) # 3 times, 2 freqs
+    data = np.array([[1, 2], [3, 4], [5, 6]])  # 3 times, 2 freqs
     times = np.array([0, 1, 2])
     freqs = np.array([10, 20])
 

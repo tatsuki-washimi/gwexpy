@@ -44,7 +44,7 @@ def test_excitation_tab_controls(qtbot, log_gui_action):
 
     # Note: _small_spin_dbl uses decimals=1 by default
     freq_spin.setValue(10.5)
-    amp_spin.setValue(0.5) # Use 1 decimal
+    amp_spin.setValue(0.5)  # Use 1 decimal
 
     assert freq_spin.value() == 10.5
     assert amp_spin.value() == 0.5

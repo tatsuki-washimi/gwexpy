@@ -30,7 +30,9 @@ def test_calculate_correlation_factor_no_overlap_is_one():
 
 
 def test_calculate_correlation_factor_overlap_inflates():
-    factor = calculate_correlation_factor("hann", nperseg=256, noverlap=128, n_blocks=50)
+    factor = calculate_correlation_factor(
+        "hann", nperseg=256, noverlap=128, n_blocks=50
+    )
     assert factor > 1.0
 
 
@@ -74,7 +76,9 @@ def test_bootstrap_spectrogram_overlap_scales_errors():
         noverlap=128,
     )
 
-    factor = calculate_correlation_factor("hann", nperseg=256, noverlap=128, n_blocks=n_time)
+    factor = calculate_correlation_factor(
+        "hann", nperseg=256, noverlap=128, n_blocks=n_time
+    )
 
     base = fs_no.error_low.value
     scaled = fs_ov.error_low.value

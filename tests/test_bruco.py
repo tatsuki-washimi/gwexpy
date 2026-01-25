@@ -10,13 +10,16 @@ from gwexpy.analysis.bruco import Bruco, BrucoResult
 
 
 # モックデータの生成ヘルパー
-def create_mock_timeseries(name, duration, sample_rate, signal_freq=None, noise_amp=0.1):
+def create_mock_timeseries(
+    name, duration, sample_rate, signal_freq=None, noise_amp=0.1
+):
     t = np.linspace(0, duration, int(duration * sample_rate))
     data = np.random.normal(0, noise_amp, size=len(t))
     if signal_freq:
         data += np.sin(2 * np.pi * signal_freq * t)
 
     return TimeSeries(data, t0=0, sample_rate=sample_rate * u.Hz, name=name)
+
 
 class TestBruco:
     def test_init(self):
@@ -33,8 +36,8 @@ class TestBruco:
         assert "AUX2" not in bruco.channels_to_scan
         assert target not in bruco.channels_to_scan
 
-    @patch('gwexpy.analysis.bruco.TimeSeries.get')
-    @patch('gwexpy.analysis.bruco.TimeSeriesDict.get')
+    @patch("gwexpy.analysis.bruco.TimeSeries.get")
+    @patch("gwexpy.analysis.bruco.TimeSeriesDict.get")
     def test_compute(self, mock_tsd_get, mock_ts_get):
         # 1. セットアップ
         target_channel = "H1:TARGET"
@@ -43,20 +46,25 @@ class TestBruco:
         sample_rate = 256
 
         # ターゲット: 10Hzの信号を持つ
-        mock_target_data = create_mock_timeseries(target_channel, duration, sample_rate, signal_freq=10)
+        mock_target_data = create_mock_timeseries(
+            target_channel, duration, sample_rate, signal_freq=10
+        )
         mock_ts_get.return_value = mock_target_data
 
         # AUX1: 10Hzの信号を持つ (高いコヒーレンスが期待される)
-        mock_aux1_data = create_mock_timeseries("H1:AUX1", duration, sample_rate, signal_freq=10)
+        mock_aux1_data = create_mock_timeseries(
+            "H1:AUX1", duration, sample_rate, signal_freq=10
+        )
 
         # AUX2: ノイズのみ (低いコヒーレンスが期待される)
-        mock_aux2_data = create_mock_timeseries("H1:AUX2", duration, sample_rate, signal_freq=None)
+        mock_aux2_data = create_mock_timeseries(
+            "H1:AUX2", duration, sample_rate, signal_freq=None
+        )
 
         # TimeSeriesDict.get は辞書っぽいものを返す
-        mock_tsd_get.return_value = TimeSeriesDict({
-            "H1:AUX1": mock_aux1_data,
-            "H1:AUX2": mock_aux2_data
-        })
+        mock_tsd_get.return_value = TimeSeriesDict(
+            {"H1:AUX1": mock_aux1_data, "H1:AUX2": mock_aux2_data}
+        )
 
         bruco = Bruco(target_channel, aux_channels)
 
@@ -80,7 +88,9 @@ class TestBruco:
         # AUX1 が上位に来るはず (最大コヒーレンスの周波数ビン)
         max_idx = int(np.argmax(result.top_coherence[:, 0]))
         assert result.top_channels[max_idx, 0] == "H1:AUX1"
-        assert result.top_coherence[max_idx, 0] > 0.5  # 信号があるのでコヒーレンスは高いはず
+        assert (
+            result.top_coherence[max_idx, 0] > 0.5
+        )  # 信号があるのでコヒーレンスは高いはず
 
         # 周波数もチェック (10Hz付近)
         assert np.isclose(result.frequencies[max_idx], 10.0, atol=1.0)
@@ -90,10 +100,10 @@ class TestBruco:
 
     def test_process_batch_error_handling(self):
         # バッチ処理中にエラーが発生しても全体が止まらないかテスト
-        pass # 時間があれば実装
+        pass  # 時間があれば実装
 
     def test_resampling_logic(self):
-         # サンプリングレートが異なる場合のロジックテスト
+        # サンプリングレートが異なる場合のロジックテスト
         target_ts = create_mock_timeseries("T", 10, 512, signal_freq=10)
         aux_ts = create_mock_timeseries("A", 10, 256, signal_freq=10)
 
@@ -123,7 +133,9 @@ class TestBruco:
         rng = np.random.default_rng(0)
         coherences = rng.random((n_channels, n_bins))
         channel_names = [f"CH{i}" for i in range(n_channels)]
-        res = BrucoResult(np.arange(n_bins), "Target", np.ones(n_bins), top_n=top_n, block_size="auto")
+        res = BrucoResult(
+            np.arange(n_bins), "Target", np.ones(n_bins), top_n=top_n, block_size="auto"
+        )
 
         max_seconds = float(os.getenv("GWEXPY_BRUCO_BENCH_MAX_S", "2.0"))
         start = time.perf_counter()

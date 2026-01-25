@@ -19,4 +19,3 @@ __all__ = [
     "test_to_lal_unit",
     "test_to_lal_unit_error",
 ]
-

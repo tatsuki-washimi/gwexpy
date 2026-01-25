@@ -1,4 +1,3 @@
-
 import os
 import sys
 from pathlib import Path
@@ -12,11 +11,12 @@ except ImportError as e:
     print(f"Import Error: {e}")
     sys.exit(1)
 
+
 def test_load_all_xmls():
     xml_files = [
         "gwexpy/gui/SPEC_INJ_82Hz_OMCPZT.xml",
         "gwexpy/gui/TS_ETMX_23-6kHz_ringdown_No2_20251202.xml",
-        "gwexpy/gui/test.xml"
+        "gwexpy/gui/test.xml",
     ]
 
     for f in xml_files:
@@ -37,8 +37,8 @@ def test_load_all_xmls():
                     count = 0
                     for key, val in content.items():
                         count += 1
-                        data = val.get('data', [])
-                        shape = data.shape if hasattr(data, 'shape') else len(data)
+                        data = val.get("data", [])
+                        shape = data.shape if hasattr(data, "shape") else len(data)
                         print(f"    Item: {key}, Data Shape: {shape}")
                         if count >= 3:
                             print("    ... (more items)")
@@ -46,7 +46,9 @@ def test_load_all_xmls():
         except Exception as e:
             print(f"  [FAIL] Error loading: {e}")
             import traceback
+
             traceback.print_exc()
+
 
 if __name__ == "__main__":
     test_load_all_xmls()

@@ -16,17 +16,17 @@ def test_spectral_accumulator_channel_delay():
 
     # Configure
     params = {
-        "bw": 1.0, # 1s FFT
+        "bw": 1.0,  # 1s FFT
         "overlap": 0.0,
         "window": "boxcar",
-        "avg_type": "Infinite"
+        "avg_type": "Infinite",
     }
 
     # Trace 1: CH_A (Fast)
     # Trace 2: CH_B (Slow/Missing)
     active_traces = [
         {"active": True, "ch_a": "CH_A", "ch_b": None, "graph_type": "Time Series"},
-        {"active": True, "ch_a": "CH_B", "ch_b": None, "graph_type": "Time Series"}
+        {"active": True, "ch_a": "CH_B", "ch_b": None, "graph_type": "Time Series"},
     ]
 
     # Available channels: Both A and B are expected
@@ -39,17 +39,11 @@ def test_spectral_accumulator_channel_delay():
     fs = 16
     n_samples = 16
     t0 = 1000.0
-    dt = 1.0/fs
+    dt = 1.0 / fs
 
     data_a = np.random.normal(0, 1, n_samples)
 
-    packet_a = {
-        "CH_A": {
-            "data": data_a,
-            "step": dt,
-            "gps_start": t0
-        }
-    }
+    packet_a = {"CH_A": {"data": data_a, "step": dt, "gps_start": t0}}
 
     # 1. Feed CH_A ONLY
     acc.add_chunk(packet_a)
@@ -73,20 +67,15 @@ def test_spectral_accumulator_channel_delay():
 
     # 2. Feed CH_B
     data_b = np.random.normal(0, 1, n_samples)
-    packet_b = {
-        "CH_B": {
-            "data": data_b,
-            "step": dt,
-            "gps_start": t0
-        }
-    }
+    packet_b = {"CH_B": {"data": data_b, "step": dt, "gps_start": t0}}
     acc.add_chunk(packet_b)
 
     results_after = acc.get_results()
     if results_after[0] is not None:
-         print("Confirmed: Results updated after CH_B arrived.")
+        print("Confirmed: Results updated after CH_B arrived.")
     else:
-         pytest.fail("Failed: Results still not updated even after CH_B arrived.")
+        pytest.fail("Failed: Results still not updated even after CH_B arrived.")
+
 
 if __name__ == "__main__":
     test_spectral_accumulator_channel_delay()

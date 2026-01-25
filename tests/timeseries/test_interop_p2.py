@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 
@@ -19,6 +18,7 @@ try:
 except ImportError:
     neo = None
 
+
 @pytest.mark.skipif(astropy is None, reason="astropy not installed")
 def test_astropy_interop():
     ts = TimeSeries([1, 2, 3], dt=1.0, t0=0, unit="m")
@@ -27,26 +27,28 @@ def test_astropy_interop():
     ap_ts = ts.to_astropy_timeseries()
     assert len(ap_ts) == 3
     # Astropy TimeSeries access
-    assert np.all(ap_ts['value'].value == [1, 2, 3])
+    assert np.all(ap_ts["value"].value == [1, 2, 3])
 
     # 2. from_astropy
     ts2 = TimeSeries.from_astropy_timeseries(ap_ts)
     assert np.allclose(ts2.value, [1, 2, 3])
     assert np.isclose(ts2.dt.value, 1.0)
 
+
 @pytest.mark.skipif(mne is None, reason="mne not installed")
 def test_mne_interop():
     # Construct a dict for testing
     from gwexpy.timeseries import TimeSeriesDict
+
     tsd = TimeSeriesDict()
-    tsd['ch1'] = TimeSeries(np.arange(100), dt=0.01)
-    tsd['ch2'] = TimeSeries(np.arange(100)*2, dt=0.01)
+    tsd["ch1"] = TimeSeries(np.arange(100), dt=0.01)
+    tsd["ch2"] = TimeSeries(np.arange(100) * 2, dt=0.01)
 
     # 1. to_mne (multi-channel)
     raw = tsd.to_mne()
     assert isinstance(raw, mne.io.RawArray)
-    assert raw.info['nchan'] == 2
-    assert raw.info['sfreq'] == 100.0
+    assert raw.info["nchan"] == 2
+    assert raw.info["sfreq"] == 100.0
 
     raw_picked = tsd.to_mne(picks=["ch2"])
     assert isinstance(raw_picked, mne.io.RawArray)
@@ -55,9 +57,9 @@ def test_mne_interop():
 
     # 2. from_mne
     tsd2 = TimeSeriesDict.from_mne(raw)
-    assert 'ch1' in tsd2
-    assert 'ch2' in tsd2
-    assert np.allclose(tsd2['ch1'].value, tsd['ch1'].value)
+    assert "ch1" in tsd2
+    assert "ch2" in tsd2
+    assert np.allclose(tsd2["ch1"].value, tsd["ch1"].value)
 
     # 3. single-channel convenience
     ts = TimeSeries(np.arange(100), dt=0.01, name="ch1")
@@ -68,17 +70,18 @@ def test_mne_interop():
 
     # 4. TimeSeries from_mne (explicit channel)
     ts_restored = TimeSeries.from_mne(raw, channel="ch1")
-    assert np.allclose(ts_restored.value, tsd['ch1'].value)
-    assert ts_restored.dt == tsd['ch1'].dt
+    assert np.allclose(ts_restored.value, tsd["ch1"].value)
+    assert ts_restored.dt == tsd["ch1"].dt
+
 
 @pytest.mark.skipif(neo is None, reason="neo not installed")
 def test_neo_interop():
     # Neo usually deals with multiple channels in 2D
     from gwexpy.timeseries import TimeSeriesMatrix
 
-    data = np.random.randn(2, 1, 100) # 2 channels, 100 samples
+    data = np.random.randn(2, 1, 100)  # 2 channels, 100 samples
     tsm = TimeSeriesMatrix(data, dt=0.01, t0=0)
-    tsm.channel_names = ['C1', 'C2']
+    tsm.channel_names = ["C1", "C2"]
 
     # 1. to_neo
     sig = tsm.to_neo()
@@ -91,4 +94,4 @@ def test_neo_interop():
     # Check shape restoration (channels, 1, time)
     assert tsm2.shape == (2, 1, 100)
     assert np.allclose(tsm2.value, data)
-    assert tsm2.channel_names == ['C1', 'C2']
+    assert tsm2.channel_names == ["C1", "C2"]
