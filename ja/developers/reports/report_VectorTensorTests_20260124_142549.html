@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Summary &mdash; gwexpy  documentation</title>
+  <title>Vector/Tensor Field Tests Expansion &mdash; gwexpy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
@@ -19,7 +19,9 @@
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Vector/Tensor Field Tests Expansion and GUI Fixture Fix" href="report_VectorTensorTests_20260124_143800.html" />
+    <link rel="prev" title="作業報告書: QA検証 (Lint &amp; Test) - 2026/01/24 15:20" href="report_QA_Verification_20260124_152000.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -54,8 +57,58 @@
 <li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">開発者ガイド (Developers Guide)</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">開発者ガイド (Developers Guide)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">設計方針とコントラクト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">開発ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">技術分析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#plans">計画 (Plans)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#reports">レポート (Reports)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="repo_review_20260124.html">Repository Review Report: gwexpy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="repo_review_final_20260124.html">Repository Review Report: gwexpy (Final)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_PrecisionTyping_Phase1_2_20260124_233000.html">作業報告書: gwexpy 型安全性向上 (Phase 1 &amp; Phase 2 Step 1)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_QA_Verification_20260124_152000.html">作業報告書: QA検証 (Lint &amp; Test) - 2026/01/24 15:20</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Vector/Tensor Field Tests Expansion</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#summary">Summary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tests">Tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#outstanding-work">Outstanding Work</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#knowledge-skill-notes">Knowledge/Skill Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="report_VectorTensorTests_20260124_143800.html">Vector/Tensor Field Tests Expansion and GUI Fixture Fix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_analysis_typing_20260125_130038.html">Work Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_analysis_typing_20260125_130038.html#verification">Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_analysis_typing_20260125_130038.html#notes-and-next-steps">Notes and Next Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_ci_alignment_20260125.html">作業報告書: CI Alignment &amp; Docs Update</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_cleanup_test_warnings_20260124_175000.html">作業報告書: テスト警告のクリーンアップ - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_comprehensive_quality_improvement_20260124.html">作業包括報告書: GWExPy コード品質改善 - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_docs_tutorials_20260125.html">作業報告書: Documentation &amp; Tutorial Refinement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_io_typing_20260125_131603.html">Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_io_typing_20260125_131603.html#modified-files">Modified Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_io_typing_20260125_131603.html#verification">Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_io_typing_20260125_131603.html#notes">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_localization_ja_20260125.html">作業報告書: Localization (ja) &amp; CI Cleanup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_mypy_expansion_phase1_20260124.html">作業報告書: MyPyカバレッジ拡大 (Phase 1: FrequencySeries) - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_mypy_expansion_phase2_20260124.html">作業報告書: MyPyカバレッジ拡大 (Phase 2: Spectrogram) - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_packaging_readiness_plan_update_0.1.0b1_20260125.html">作業レポート: Packaging Readiness 計画書の詳細化</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_packaging_readiness_v0.1.0b1_20260125_150000.html">作業報告書: Packaging Readiness v0.1.0b1 (Phase 1-6)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_phase2_step3_io_interop_mypy_20260125_132617.html">Scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_phase2_step3_io_interop_mypy_20260125_132617.html#changes">Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_phase2_step3_io_interop_mypy_20260125_132617.html#verification">Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_phase2_step3_io_interop_mypy_20260125_132617.html#notes">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_project_completion_20260125.html">作業報告書: gwexpy コード品質改善プロジェクト完了報告</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_quality_improvement_20260124_210502.html">作業報告（中間）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_quality_improvement_20260124_223500.html">作業報告書：SeriesMatrix 型定義の健全化と例外監査 (2026/01/24)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_refactor_exceptions_20260124_153045.html">作業報告書: 広範な例外処理のリファクタリング - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_static_analysis_cleanup_20260125.html">作業報告書: Static Analysis &amp; Test Cleanup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_tutorial_enhancement_20260124_1942.html">Tutorial Enhancement and Docs Reorganization Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="work_report_20260124_1356.html">作業報告書: MainWindowリファクタリングとコアコードの堅牢化</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">アーカイブ (非表示)</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -72,7 +125,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Summary</li>
+          <li class="breadcrumb-item"><a href="../index.html">開発者ガイド (Developers Guide)</a></li>
+      <li class="breadcrumb-item active">Vector/Tensor Field Tests Expansion</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_VectorTensorTests_20260124_142549.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -82,8 +136,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="summary">
-<h1>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h1>
+  <section id="vector-tensor-field-tests-expansion">
+<h1>Vector/Tensor Field Tests Expansion<a class="headerlink" href="#vector-tensor-field-tests-expansion" title="Link to this heading"></a></h1>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Reviewed <code class="docutils literal notranslate"><span class="pre">gwexpy/fields/vector.py</span></code> and <code class="docutils literal notranslate"><span class="pre">gwexpy/fields/tensor.py</span></code> to identify uncovered behaviors around complex norms, metadata preservation, and matrix helpers.</p></li>
 <li><p>Extended <code class="docutils literal notranslate"><span class="pre">tests/fields/test_vectorfield.py</span></code> to cover unit propagation in <code class="docutils literal notranslate"><span class="pre">dot()</span></code>, ensure the cross-product inputs align with the basis components, verify <code class="docutils literal notranslate"><span class="pre">norm()</span></code> maintains axis metadata for complex-valued components, and raise on mismatched axis grids.</p></li>
@@ -92,7 +148,7 @@
 </ul>
 </section>
 <section id="tests">
-<h1>Tests<a class="headerlink" href="#tests" title="Link to this heading"></a></h1>
+<h2>Tests<a class="headerlink" href="#tests" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--cov=gwexpy</span> <span class="pre">tests/fields/test_vectorfield.py</span> <span class="pre">tests/fields/test_tensorfield.py</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ruff</span> <span class="pre">check</span> <span class="pre">tests/fields/test_vectorfield.py</span> <span class="pre">tests/fields/test_tensorfield.py</span></code></p></li>
@@ -100,30 +156,34 @@
 </ul>
 </section>
 <section id="outstanding-work">
-<h1>Outstanding Work<a class="headerlink" href="#outstanding-work" title="Link to this heading"></a></h1>
+<h2>Outstanding Work<a class="headerlink" href="#outstanding-work" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--cov=gwexpy</span></code> (full suite) still fails because <code class="docutils literal notranslate"><span class="pre">tests/gui/test_gui_data_backend.py</span></code> expects a <code class="docutils literal notranslate"><span class="pre">main_window</span></code> fixture and <code class="docutils literal notranslate"><span class="pre">tests/gui/test_accumulator_delay.py::test_spectral_accumulator_channel_delay</span></code> also fails locally.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ruff</span> <span class="pre">check</span> <span class="pre">.</span></code> reports pre-existing warnings (unused <code class="docutils literal notranslate"><span class="pre">matplotlib_inline.backend_inline</span></code> import in <code class="docutils literal notranslate"><span class="pre">docs/guide/tutorials/tutorial_Field_Visualization.ipynb</span></code>, trailing whitespace in <code class="docutils literal notranslate"><span class="pre">gwexpy/signal/normalization.py</span></code>, unused local <code class="docutils literal notranslate"><span class="pre">n</span></code> in <code class="docutils literal notranslate"><span class="pre">tests/signal/test_normalization.py</span></code>).</p></li>
 </ul>
 </section>
 <section id="knowledge-skill-notes">
-<h1>Knowledge/Skill Notes<a class="headerlink" href="#knowledge-skill-notes" title="Link to this heading"></a></h1>
+<h2>Knowledge/Skill Notes<a class="headerlink" href="#knowledge-skill-notes" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>No reusable pattern surfaced that required adding or updating an agent skill during this work.</p></li>
 </ul>
 </section>
 <section id="next-steps">
-<h1>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h1>
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p>Fix the GUI fixtures/tests so the full <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--cov=gwexpy</span></code> command can succeed and broader coverage metrics are reliable.</p></li>
 <li><p>Address the outstanding Ruff warnings noted above before running a repo-wide lint pass.</p></li>
 </ol>
 </section>
+</section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="report_QA_Verification_20260124_152000.html" class="btn btn-neutral float-left" title="作業報告書: QA検証 (Lint &amp; Test) - 2026/01/24 15:20" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="report_VectorTensorTests_20260124_143800.html" class="btn btn-neutral float-right" title="Vector/Tensor Field Tests Expansion and GUI Fixture Fix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

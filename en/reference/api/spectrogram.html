@@ -48,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
@@ -151,6 +152,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ja/index.html">詳細リファレンス</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
+</ul>
 
         </div>
       </div>
@@ -201,18 +206,18 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.degree">
 <span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/spectrogram.html#Spectrogram.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.degree" title="Link to this definition"></a></dt>
-<dd><p>Calculate the phase of this Spectrogram in degrees.
-:param unwrap: If True, unwrap the phase to remove discontinuities along the time axis.</p>
-<blockquote>
-<div><p>Default is False.</p>
-</div></blockquote>
+<dd><p>Calculate the phase of this Spectrogram in degrees.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new Spectrogram containing the phase in degrees.
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unwrap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, unwrap the phase to remove discontinuities along the time axis.
+Default is False.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Spectrogram containing the phase in degrees.
 All other metadata (times, frequencies, channel, epoch, etc.) are preserved.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram">Spectrogram</a></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram">Spectrogram</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -576,14 +581,12 @@ Use <cite>inplace=True</cite> where possible to update container in-place.</p>
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramDict.to_matrix">
 <span class="sig-name descname"><span class="pre">to_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramDict.to_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramDict.to_matrix" title="Link to this definition"></a></dt>
 <dd><p>Convert to SpectrogramMatrix.</p>
-<p>Validation follows SeriesMatrix base rules:
-- Shape must be identical across elements.
-- Times/frequencies are compared by converting to reference (first element)</p>
-<blockquote>
-<div><p>unit using .to_value(), then requiring np.array_equal (no tolerance).
-(Reuses gwexpy.types.seriesmatrix_validation logic).</p>
-</div></blockquote>
+<p>Validation follows SeriesMatrix base rules:</p>
 <ul class="simple">
+<li><p>Shape must be identical across elements.</p></li>
+<li><p>Times/frequencies are compared by converting to reference (first element)
+unit using .to_value(), then requiring np.array_equal (no tolerance).
+(Reuses gwexpy.types.seriesmatrix_validation logic).</p></li>
 <li><p>Units, names, and channels may differ and are preserved per-element
 in the matrix’s MetaDataMatrix.</p></li>
 </ul>
@@ -733,14 +736,12 @@ Use <cite>inplace=True</cite> where possible to avoid deep copies.</p>
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramList.to_matrix">
 <span class="sig-name descname"><span class="pre">to_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/spectrogram/collections.html#SpectrogramList.to_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramList.to_matrix" title="Link to this definition"></a></dt>
 <dd><p>Convert to SpectrogramMatrix (N, Time, Freq).</p>
-<p>Validation follows SeriesMatrix base rules:
-- Shape must be identical across elements.
-- Times/frequencies are compared by converting to reference (first element)</p>
-<blockquote>
-<div><p>unit using .to_value(), then requiring np.array_equal (no tolerance).
-(Reuses gwexpy.types.seriesmatrix_validation logic).</p>
-</div></blockquote>
+<p>Validation follows SeriesMatrix base rules:</p>
 <ul class="simple">
+<li><p>Shape must be identical across elements.</p></li>
+<li><p>Times/frequencies are compared by converting to reference (first element)
+unit using .to_value(), then requiring np.array_equal (no tolerance).
+(Reuses gwexpy.types.seriesmatrix_validation logic).</p></li>
 <li><p>Units, names, and channels may differ and are preserved per-element
 in the matrix’s MetaDataMatrix.</p></li>
 </ul>

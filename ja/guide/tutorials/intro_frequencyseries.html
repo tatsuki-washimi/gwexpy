@@ -78,6 +78,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -122,14 +123,14 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-import numpy as np
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-from gwexpy.frequencyseries import FrequencySeries
-from gwexpy.plot import Plot
-from gwexpy.timeseries import TimeSeries
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-plt.rcParams[&quot;figure.figsize&quot;] = (10, 6)
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -140,24 +141,24 @@ plt.rcParams[&quot;figure.figsize&quot;] = (10, 6)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fs = 1024
-t = np.arange(0, 4, 1 / fs)
-exp = np.exp(-t / 1.5)
-exp[: int(exp.size / 4)] = 0
-data = (
-    np.sin(2 * np.pi * 10.1 * t)
-    + 5 * exp * np.sin(2 * np.pi * 100.1 * t)
-    + np.random.normal(scale=0.3, size=len(t))
-)
-ts = TimeSeries(data, dt=1 / fs, unit=&quot;um&quot;, name=&quot;Test Signal&quot;)
-print(ts)
-ts.plot(title=ts.name)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fs</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span> <span class="o">/</span> <span class="mf">1.5</span><span class="p">)</span>
+<span class="n">exp</span><span class="p">[:</span> <span class="nb">int</span><span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">10.1</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+    <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">exp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">100.1</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+    <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+<span class="p">)</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;um&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test Signal&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-# FFT を実行して FrequencySeries を取得 (transient モードを使用してパディングを適用)
-spec = ts.fft(mode=&quot;transient&quot;, pad_left=1.0, pad_right=1.0, nfft_mode=&quot;next_fast_len&quot;)
-print(f&quot;Type: {type(spec)}&quot;)
-print(f&quot;Length: {len(spec)}&quot;)
-print(f&quot;df: {spec.df}&quot;)
+<span class="c1"># FFT を実行して FrequencySeries を取得 (transient モードを使用してパディングを適用)</span>
+<span class="n">spec</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;transient&quot;</span><span class="p">,</span> <span class="n">pad_left</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">pad_right</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">nfft_mode</span><span class="o">=</span><span class="s2">&quot;next_fast_len&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;df: </span><span class="si">{</span><span class="n">spec</span><span class="o">.</span><span class="n">df</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -195,22 +196,22 @@ df: 0.16666666666666666 Hz
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 振幅を dB に変換 (ref=1.0, 20*log10)
-spec_db = spec.to_db()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 振幅を dB に変換 (ref=1.0, 20*log10)</span>
+<span class="n">spec_db</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_db</span><span class="p">()</span>
 
-# 位相を取得 (度数表記、unwrap=True で連続化)
-spec_phase = spec.degree(unwrap=True)
+<span class="c1"># 位相を取得 (度数表記、unwrap=True で連続化)</span>
+<span class="n">spec_phase</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-plot = Plot(spec_db, spec_phase, separate=True, sharex=True, xscale=&quot;log&quot;)
-ax = plot.axes
-ax[0].set_ylabel(&quot;Magnitude [dB (m)]&quot;)
-ax[0].grid(True, which=&quot;both&quot;)
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">spec_db</span><span class="p">,</span> <span class="n">spec_phase</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Magnitude [dB (m)]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
 
-ax[1].set_ylabel(&quot;Phase [deg]&quot;)
-ax[1].set_xlabel(&quot;Frequency [Hz]&quot;)
-ax[1].grid(True, which=&quot;both&quot;)
-plot.figure.suptitle(&quot;Complex Spectrum Analysis&quot;)
-plot.show()
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Phase [deg]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Complex Spectrum Analysis&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -230,27 +231,27 @@ plot.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 変位 (m) -&gt; 速度 (m/s) に微分 (order=1)
-vel_spec = spec.differentiate()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 変位 (m) -&gt; 速度 (m/s) に微分 (order=1)</span>
+<span class="n">vel_spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">differentiate</span><span class="p">()</span>
 
-# 変位 (m) -&gt; 加速度 (m/s^2) に 2回微分 (order=2)
-accel_spec = spec.differentiate(order=2)
+<span class="c1"># 変位 (m) -&gt; 加速度 (m/s^2) に 2回微分 (order=2)</span>
+<span class="n">accel_spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
-# 積分も可能: 加速度 -&gt; 速度
-vel_from_accel = accel_spec.integrate()
+<span class="c1"># 積分も可能: 加速度 -&gt; 速度</span>
+<span class="n">vel_from_accel</span> <span class="o">=</span> <span class="n">accel_spec</span><span class="o">.</span><span class="n">integrate</span><span class="p">()</span>
 
-plot = Plot(
-    spec.abs(), vel_spec.abs(), accel_spec.abs(), xscale=&quot;log&quot;, yscale=&quot;log&quot;, alpha=0.8
-)
-ax = plot.gca()
-ax.get_lines()[0].set_label(&quot;Displacement [m]&quot;)
-ax.get_lines()[1].set_label(&quot;Velocity [m/s]&quot;)
-ax.get_lines()[2].set_label(&quot;Acceleration [m/s^2]&quot;)
-ax.legend()
-ax.grid(True, which=&quot;both&quot;)
-ax.set_title(&quot;Calculus in Frequency Domain&quot;)
-ax.set_ylabel(&quot;Magnitude&quot;)
-plot.show()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">vel_spec</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">accel_spec</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span>
+<span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Displacement [m]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Velocity [m/s]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Acceleration [m/s^2]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Calculus in Frequency Domain&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Magnitude&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -271,19 +272,19 @@ plot.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 振幅ドメインで 11 サンプルのスムージング
-spec_smooth = spec.smooth(width=11)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 振幅ドメインで 11 サンプルのスムージング</span>
+<span class="n">spec_smooth</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
 
-plot = Plot(spec.abs(), spec_smooth.abs(), xscale=&quot;log&quot;, yscale=&quot;log&quot;)
-ax = plot.gca()
-ax.get_lines()[0].set_label(&quot;Original&quot;)
-ax.get_lines()[0].set_alpha(0.6)
-ax.get_lines()[1].set_label(&quot;Smoothed (width=11)&quot;)
-ax.get_lines()[1].set_color(&quot;red&quot;)
-ax.legend()
-ax.grid(True, which=&quot;both&quot;)
-ax.set_title(&quot;Spectrum Smoothing&quot;)
-plot.show()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">spec_smooth</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Original&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Smoothed (width=11)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Spectrum Smoothing&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -302,20 +303,20 @@ plot.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 振幅 0.2 以上のピークを探す
-peaks, props = spec.find_peaks(threshold=0.2)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 振幅 0.2 以上のピークを探す</span>
+<span class="n">peaks</span><span class="p">,</span> <span class="n">props</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 
-plot = Plot(spec.abs())
-ax = plot.gca()
-ax.plot(
-    peaks.abs(), color=&quot;red&quot;, marker=&quot;.&quot;, ms=15, lw=0, zorder=3, label=&quot;Detected Peaks&quot;
-)
-ax.set_xlim(1, 150)
-ax.set_xscale(&quot;log&quot;)
-ax.set_yscale(&quot;log&quot;)
-ax.set_title(&quot;Peak Detection&quot;)
-ax.legend()
-plot.show()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">abs</span><span class="p">())</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">peaks</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detected Peaks&quot;</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Peak Detection&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -337,15 +338,15 @@ plot.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>gd = spec.group_delay()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gd</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">group_delay</span><span class="p">()</span>
 
-plot = Plot(gd)
-ax = plot.gca()
-ax.set_ylabel(&quot;Group Delay [s]&quot;)
-ax.set_xlabel(&quot;Frequency [Hz]&quot;)
-ax.set_xlim(0, 200)
-ax.set_title(&quot;Group Delay Calculation&quot;)
-plot.show()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">gd</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Group Delay [s]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Group Delay Calculation&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -364,24 +365,24 @@ plot.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 逆 FFT で TimeSeries に戻す
-# mode=&quot;auto&quot; は、入力 FrequencySeries が持つ transient 情報を読み取って適切に処理します
-inv_ts = spec.ifft(mode=&quot;auto&quot;)
-red_ts = inv_ts - ts
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 逆 FFT で TimeSeries に戻す</span>
+<span class="c1"># mode=&quot;auto&quot; は、入力 FrequencySeries が持つ transient 情報を読み取って適切に処理します</span>
+<span class="n">inv_ts</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+<span class="n">red_ts</span> <span class="o">=</span> <span class="n">inv_ts</span> <span class="o">-</span> <span class="n">ts</span>
 
-plot = Plot(ts, inv_ts, red_ts)
-ax = plot.gca()
-ax.get_lines()[0].set_label(&quot;Original&quot;)
-ax.get_lines()[1].set_label(&quot;IFFT Result&quot;)
-ax.get_lines()[2].set_label(&quot;Residual&quot;)
-ax.get_lines()[1].set_linestyle(&quot;--&quot;)
-ax.get_lines()[1].set_alpha(0.8)
-ax.get_lines()[2].set_color(&quot;black&quot;)
-ax.legend()
-ax.set_title(&quot;Time Domain Round-trip (FFT -&gt; IFFT)&quot;)
-plot.show()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">inv_ts</span><span class="p">,</span> <span class="n">red_ts</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Original&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;IFFT Result&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Residual&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_linestyle</span><span class="p">(</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Time Domain Round-trip (FFT -&gt; IFFT)&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-red_ts.plot(title=&quot;Residual Time Series after IFFT&quot;);
+<span class="n">red_ts</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Residual Time Series after IFFT&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -408,26 +409,26 @@ red_ts.plot(title=&quot;Residual Time Series after IFFT&quot;);
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Pandas Series へ変換
-pd_series = spec.to_pandas()
-print(&quot;Pandas index sample:&quot;, pd_series.index[:5])
-display(pd_series)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pandas Series へ変換</span>
+<span class="n">pd_series</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pandas index sample:&quot;</span><span class="p">,</span> <span class="n">pd_series</span><span class="o">.</span><span class="n">index</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pd_series</span><span class="p">)</span>
 
-# xarray DataArray へ変換
-da = spec.to_xarray()
-print(&quot;xarray coord name:&quot;, list(da.coords))
-display(da)
+<span class="c1"># xarray DataArray へ変換</span>
+<span class="n">da</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;xarray coord name:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">coords</span><span class="p">))</span>
+<span class="n">display</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
 
-# control.FRD へ変換 (制御系の解析に使用可能)
-try:
-    from control import FRD
+<span class="c1"># control.FRD へ変換 (制御系の解析に使用可能)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">control</span><span class="w"> </span><span class="kn">import</span> <span class="n">FRD</span>
 
-    _ = FRD
-    frd_obj = spec.to_control_frd()
-    print(&quot;Successfully converted to control.FRD&quot;)
-    display(frd_obj)
-except ImportError:
-    print(&quot;python-control library not installed&quot;)
+    <span class="n">_</span> <span class="o">=</span> <span class="n">FRD</span>
+    <span class="n">frd_obj</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_control_frd</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successfully converted to control.FRD&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">frd_obj</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;python-control library not installed&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -997,21 +998,21 @@ outputs=1, inputs=1)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 単一チャンネルを取り出す
-fs = spec
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 単一チャンネルを取り出す</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">spec</span>
 
-# 位相の計算 (ラジアン)
-phi = fs.phase(unwrap=True)
-print(&quot;\nUnwrapped Phase (rad) at 10Hz:&quot;, phi.value[10])
+<span class="c1"># 位相の計算 (ラジアン)</span>
+<span class="n">phi</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Unwrapped Phase (rad) at 10Hz:&quot;</span><span class="p">,</span> <span class="n">phi</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span>
 
-# 位相の計算 (度)
-deg = fs.degree(unwrap=True)
-print(&quot;Unwrapped Phase (deg) at 10Hz:&quot;, deg.value[10])
+<span class="c1"># 位相の計算 (度)</span>
+<span class="n">deg</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unwrapped Phase (deg) at 10Hz:&quot;</span><span class="p">,</span> <span class="n">deg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span>
 
-# 群遅延 (Group Delay) の計算
-# Group Delay = -d(phi)/d(omega)
-gd = fs.group_delay()
-print(&quot;\nGroup Delay (s) at 10Hz:&quot;, gd.value[10])
+<span class="c1"># 群遅延 (Group Delay) の計算</span>
+<span class="c1"># Group Delay = -d(phi)/d(omega)</span>
+<span class="n">gd</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">group_delay</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Group Delay (s) at 10Hz:&quot;</span><span class="p">,</span> <span class="n">gd</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1035,27 +1036,27 @@ Group Delay (s) at 10Hz: -1.9070915083932811
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import control
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">control</span>
 
-    # FrequencySeries -&gt; control.FRD 変換
-    # frequency_unit=&quot;Hz&quot; を指定すると、内部で rad/s に適切に変換して渡します
-    frd_sys = fs.to_control_frd(frequency_unit=&quot;Hz&quot;)
+    <span class="c1"># FrequencySeries -&gt; control.FRD 変換</span>
+    <span class="c1"># frequency_unit=&quot;Hz&quot; を指定すると、内部で rad/s に適切に変換して渡します</span>
+    <span class="n">frd_sys</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_control_frd</span><span class="p">(</span><span class="n">frequency_unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
 
-    print(&quot;\n--- Converted to Control FRD ---&quot;)
-    print(frd_sys)
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Control FRD ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">frd_sys</span><span class="p">)</span>
 
-    # ボード線図のプロット (controlライブラリの機能)
-    control.bode(frd_sys)  # (プロット環境があれば実行可能)
+    <span class="c1"># ボード線図のプロット (controlライブラリの機能)</span>
+    <span class="n">control</span><span class="o">.</span><span class="n">bode</span><span class="p">(</span><span class="n">frd_sys</span><span class="p">)</span>  <span class="c1"># (プロット環境があれば実行可能)</span>
 
-    # control.FRD -&gt; FrequencySeries 復元
-    fs_restored = FrequencySeries.from_control_frd(frd_sys, frequency_unit=&quot;Hz&quot;)
+    <span class="c1"># control.FRD -&gt; FrequencySeries 復元</span>
+    <span class="n">fs_restored</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_control_frd</span><span class="p">(</span><span class="n">frd_sys</span><span class="p">,</span> <span class="n">frequency_unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
 
-    print(&quot;\n--- Restored FrequencySeries ---&quot;)
-    print(fs_restored)
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored FrequencySeries ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fs_restored</span><span class="p">)</span>
 
-except ImportError:
-    print(&quot;Python Control Systems Library is not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Python Control Systems Library is not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4185,44 +4186,44 @@ FrequencySeries([ 0.00487259+0.j        ,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Generate noisy data
-np.random.seed(42)
-f = spec.frequencies.value
-noise = np.abs(np.random.randn(f.size))
-peak = 10.0 * np.exp(-((f - 200) ** 2) / 50.0)
-data = noise + peak
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate noisy data</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+<span class="n">peak</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">f</span> <span class="o">-</span> <span class="mi">200</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">50.0</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">noise</span> <span class="o">+</span> <span class="n">peak</span>
 
-raw = FrequencySeries(data, frequencies=f, unit=&quot;V&quot;, name=&quot;Raw Data&quot;)
+<span class="n">raw</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Raw Data&quot;</span><span class="p">)</span>
 
-# Smooth
-smoothed = raw.smooth(width=10, method=&quot;amplitude&quot;)
-smoothed.name = &quot;Smoothed&quot;
+<span class="c1"># Smooth</span>
+<span class="n">smoothed</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;amplitude&quot;</span><span class="p">)</span>
+<span class="n">smoothed</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Smoothed&quot;</span>
 
-# Convert to dB
-raw_db = raw.to_db()
-smoothed_db = smoothed.to_db()
-raw_db.name = &quot;Raw (dB)&quot;
-smoothed_db.name = &quot;Smoothed (dB)&quot;
+<span class="c1"># Convert to dB</span>
+<span class="n">raw_db</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">to_db</span><span class="p">()</span>
+<span class="n">smoothed_db</span> <span class="o">=</span> <span class="n">smoothed</span><span class="o">.</span><span class="n">to_db</span><span class="p">()</span>
+<span class="n">raw_db</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Raw (dB)&quot;</span>
+<span class="n">smoothed_db</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Smoothed (dB)&quot;</span>
 
-plot = raw_db.plot(label=&quot;Raw&quot;, title=&quot;Smoothing &amp; dB&quot;)
-ax = plot.gca()
-ax.plot(smoothed_db, label=&quot;Smoothed&quot;, linewidth=2)
-ax.legend()
-plot.show()
-plt.close()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">raw_db</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Raw&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Smoothing &amp; dB&quot;</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">smoothed_db</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Smoothed&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-# Quadrature Sum (Noise Budget example)
-noise_a = FrequencySeries(np.ones_like(f), frequencies=f, unit=&quot;V&quot;, name=&quot;Noise A&quot;)
-noise_b = FrequencySeries(np.ones_like(f) * 2, frequencies=f, unit=&quot;V&quot;, name=&quot;Noise B&quot;)
+<span class="c1"># Quadrature Sum (Noise Budget example)</span>
+<span class="n">noise_a</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Noise A&quot;</span><span class="p">)</span>
+<span class="n">noise_b</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Noise B&quot;</span><span class="p">)</span>
 
-total = noise_a.quadrature_sum(noise_b)
-print(f&quot;Noise A: {noise_a.value[0]}, Noise B: {noise_b.value[0]}&quot;)
-print(f&quot;Total (Sqrt Sum): {total.value[0]}&quot;)
-Plot(total, noise_a, noise_b, alpha=0.8)
-plt.legend([&quot;Total&quot;, &quot;Noise A&quot;, &quot;Noise B&quot;])
-plt.xscale(&quot;log&quot;)
-plt.yscale(&quot;log&quot;)
-plt.show()
+<span class="n">total</span> <span class="o">=</span> <span class="n">noise_a</span><span class="o">.</span><span class="n">quadrature_sum</span><span class="p">(</span><span class="n">noise_b</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Noise A: </span><span class="si">{</span><span class="n">noise_a</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, Noise B: </span><span class="si">{</span><span class="n">noise_b</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total (Sqrt Sum): </span><span class="si">{</span><span class="n">total</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">Plot</span><span class="p">(</span><span class="n">total</span><span class="p">,</span> <span class="n">noise_a</span><span class="p">,</span> <span class="n">noise_b</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;Total&quot;</span><span class="p">,</span> <span class="s2">&quot;Noise A&quot;</span><span class="p">,</span> <span class="s2">&quot;Noise B&quot;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

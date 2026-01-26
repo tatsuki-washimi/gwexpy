@@ -79,6 +79,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -121,9 +122,11 @@
 <p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスに追加された新しい相互運用機能 (Interoperability Features) を紹介します。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、Pandas, Xarray, PyTorch, Astropy などの一般的なデータサイエンス・ライブラリとの間で、シームレスにデータを変換することができます。</p>
 <section id="目次">
 <h2>目次<a class="headerlink" href="#目次" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>1. 汎用データ形式・データ基盤</p>
 <ul>
+<li><ol class="arabic simple">
+<li><p>汎用データ形式・データ基盤</p></li>
+</ol>
+<ul class="simple">
 <li><p>1.1. NumPy [Original GWpy]</p></li>
 <li><p>1.2. Pandas との連携 [Original GWpy]</p></li>
 <li><p>1.3. Polars [GWExPy New]</p></li>
@@ -132,64 +135,81 @@
 <li><p>1.6. JSON / Python Dict (to_json) (to_json) [GWExPy New]</p></li>
 </ul>
 </li>
-<li><p>2. データベース・ストレージ層</p>
-<ul>
+<li><ol class="arabic simple" start="2">
+<li><p>データベース・ストレージ層</p></li>
+</ol>
+<ul class="simple">
 <li><p>2.1. HDF5 [Original GWpy]</p></li>
 <li><p>2.2. SQLite [GWExPy New]</p></li>
 <li><p>2.3. Zarr [GWExPy New]</p></li>
 <li><p>2.4. netCDF4 [GWExPy New]</p></li>
 </ul>
 </li>
-<li><p>3. 情報科学・機械学習・加速計算</p>
-<ul>
+<li><ol class="arabic simple" start="3">
+<li><p>情報科学・機械学習・加速計算</p></li>
+</ol>
+<ul class="simple">
 <li><p>3.1. PyTorch との連携 [GWExPy New]</p></li>
 <li><p>3.2. CuPy (CUDA 加速) [GWExPy New]</p></li>
 <li><p>3.3. TensorFlow との連携 [GWExPy New]</p></li>
 <li><p>3.4. JAX との連携 [GWExPy New]</p></li>
 </ul>
 </li>
-<li><p>4. 天文学・重力波物理学</p>
-<ul>
+<li><ol class="arabic simple" start="4">
+<li><p>天文学・重力波物理学</p></li>
+</ol>
+<ul class="simple">
 <li><p>4.1. PyCBC / LAL [Original GWpy]</p></li>
 <li><p>4.2. Astropy との連携 [Original GWpy]</p></li>
 <li><p>4.3. Specutils との連携 [GWExPy New]</p></li>
 <li><p>4.4. Pyspeckit との連携 [GWExPy New]</p></li>
 </ul>
 </li>
-<li><p>5. 素粒子物理学・高エネルギー物理</p>
-<ul>
+<li><ol class="arabic simple" start="5">
+<li><p>素粒子物理学・高エネルギー物理</p></li>
+</ol>
+<ul class="simple">
 <li><p>5.1. CERN ROOT との連携 [GWExPy New]</p></li>
-<li><p><cite>5.2. ROOT オブジェクトからの復元 (``from_root`</cite>) &lt;#52-root-オブジェクトからの復元-%60from_root%60&gt;`__</p></li>
+<li><p>5.2. ROOT オブジェクトからの復元 (<code class="docutils literal notranslate"><span class="pre">from_root</span></code>)</p></li>
 </ul>
 </li>
-<li><p>6. 地球物理学・地震学・電磁気学</p>
-<ul>
+<li><ol class="arabic simple" start="6">
+<li><p>地球物理学・地震学・電磁気学</p></li>
+</ol>
+<ul class="simple">
 <li><p>6.1. ObsPy [Original GWpy]</p></li>
 <li><p>6.2. SimPEG との連携 [GWExPy New]</p></li>
 <li><p>6.3. MTH5 / MTpy [GWExPy New]</p></li>
 </ul>
 </li>
-<li><p>7. 音響・音声解析</p>
-<ul>
+<li><ol class="arabic simple" start="7">
+<li><p>音響・音声解析</p></li>
+</ol>
+<ul class="simple">
 <li><p>7.1. Librosa / Pydub [GWExPy New]</p></li>
 </ul>
 </li>
-<li><p>8. 医学・生体信号解析</p>
-<ul>
+<li><ol class="arabic simple" start="8">
+<li><p>医学・生体信号解析</p></li>
+</ol>
+<ul class="simple">
 <li><p>8.1. MNE-Python [GWExPy New]</p></li>
 <li><p>8.2. Elephant / quantities との連携 [GWExPy New]</p></li>
 <li><p>8.3. Neo [GWExPy New]</p></li>
 </ul>
 </li>
-<li><p>9. まとめ</p></li>
+<li><ol class="arabic simple" start="9">
+<li><p>まとめ</p></li>
+</ol>
+</li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import os
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-os.environ.setdefault(&quot;TF_CPP_MIN_LOG_LEVEL&quot;, &quot;3&quot;)
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -206,17 +226,17 @@ os.environ.setdefault(&quot;TF_CPP_MIN_LOG_LEVEL&quot;, &quot;3&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-import matplotlib.pyplot as plt
-import numpy as np
-from astropy import units as u
-from gwpy.time import LIGOTimeGPS
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">LIGOTimeGPS</span>
 
-from gwexpy.timeseries import TimeSeries
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-warnings.filterwarnings(&quot;ignore&quot;, &quot;Wswiglal-redir-stdio&quot;)
-warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning)
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;Wswiglal-redir-stdio&quot;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -254,20 +274,20 @@ import lal
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># サンプルデータの作成
-# 10秒間、100Hzの正弦波データを生成します
-rate = 100 * u.Hz
-dt = 1 / rate
-t0 = LIGOTimeGPS(1234567890, 0)
-duration = 10 * u.s
-size = int(rate * duration)
-times = np.arange(size) * dt.value
-data = np.sin(2 * np.pi * 1.0 * times)  # 1Hz sine wave
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># サンプルデータの作成</span>
+<span class="c1"># 10秒間、100Hzの正弦波データを生成します</span>
+<span class="n">rate</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">rate</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="mi">1234567890</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rate</span> <span class="o">*</span> <span class="n">duration</span><span class="p">)</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span><span class="o">.</span><span class="n">value</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">times</span><span class="p">)</span>  <span class="c1"># 1Hz sine wave</span>
 
-ts = TimeSeries(data, t0=t0, dt=dt, unit=&quot;V&quot;, name=&quot;demo_signal&quot;)
-print(&quot;Original TimeSeries:&quot;)
-print(ts)
-ts.plot(title=&quot;Original TimeSeries&quot;);
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo_signal&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original TimeSeries:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Original TimeSeries&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -313,24 +333,24 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    # Pandas Series への変換 (デフォルトは datetime index)
-    s_pd = ts.to_pandas(index=&quot;datetime&quot;)
-    print(&quot;\n--- Converted to Pandas Series ---&quot;)
-    display(s_pd)
-    s_pd.plot(title=&quot;Pandas Series&quot;)
-    plt.show()
-    plt.close()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Pandas Series への変換 (デフォルトは datetime index)</span>
+    <span class="n">s_pd</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Pandas Series ---&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">s_pd</span><span class="p">)</span>
+    <span class="n">s_pd</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Pandas Series&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    # Pandas Series から TimeSeries への復元
-    ts_restored = TimeSeries.from_pandas(s_pd, unit=&quot;V&quot;)
-    print(&quot;\n--- Restored TimeSeries from Pandas ---&quot;)
-    print(ts_restored)
+    <span class="c1"># Pandas Series から TimeSeries への復元</span>
+    <span class="n">ts_restored</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">s_pd</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored TimeSeries from Pandas ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ts_restored</span><span class="p">)</span>
 
-    del s_pd, ts_restored
+    <span class="k">del</span> <span class="n">s_pd</span><span class="p">,</span> <span class="n">ts_restored</span>
 
-except ImportError:
-    print(&quot;Pandas is not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pandas is not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -397,32 +417,32 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import polars as pl
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">polars</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
 
-    _ = pl
-    # TimeSeries -&gt; Polars DataFrame
-    df_pl = ts.to_polars()
-    print(&quot;--- Polars DataFrame ---&quot;)
-    print(df_pl.head())
+    <span class="n">_</span> <span class="o">=</span> <span class="n">pl</span>
+    <span class="c1"># TimeSeries -&gt; Polars DataFrame</span>
+    <span class="n">df_pl</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_polars</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Polars DataFrame ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">df_pl</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 
-    # Plot using Polars/Matplotlib
-    plt.figure()
-    data_col = [c for c in df_pl.columns if c != &quot;time&quot;][0]
-    plt.plot(df_pl[&quot;time&quot;], df_pl[data_col])
-    plt.title(&quot;Polars Data Plot&quot;)
-    plt.show()
+    <span class="c1"># Plot using Polars/Matplotlib</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">data_col</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df_pl</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="s2">&quot;time&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_pl</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span> <span class="n">df_pl</span><span class="p">[</span><span class="n">data_col</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Polars Data Plot&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-    # Recover to TimeSeries
-    from gwexpy.timeseries import TimeSeries
+    <span class="c1"># Recover to TimeSeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-    ts_recovered = TimeSeries.from_polars(df_pl)
-    print(&quot;Recovered from Polars:&quot;, ts_recovered)
+    <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_polars</span><span class="p">(</span><span class="n">df_pl</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Polars:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
-    del df_pl, ts_recovered
+    <span class="k">del</span> <span class="n">df_pl</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
-except ImportError:
-    print(&quot;Polars not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Polars not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -478,28 +498,28 @@ Recovered from Polars: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    # Xarray DataArray への変換
-    da = ts.to_xarray()
-    print(&quot;\n--- Converted to Xarray DataArray ---&quot;)
-    print(da)
-    # メタデータ (attrs) が保持されているか確認
-    print(&quot;Attributes:&quot;, da.attrs)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Xarray DataArray への変換</span>
+    <span class="n">da</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Xarray DataArray ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+    <span class="c1"># メタデータ (attrs) が保持されているか確認</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Attributes:&quot;</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="p">)</span>
 
-    da.plot()
-    plt.title(&quot;Xarray DataArray&quot;)
-    plt.show()
-    plt.close()
+    <span class="n">da</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Xarray DataArray&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    # 復元
-    ts_x = TimeSeries.from_xarray(da)
-    print(&quot;\n--- Restored TimeSeries from Xarray ---&quot;)
-    print(ts_x)
+    <span class="c1"># 復元</span>
+    <span class="n">ts_x</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_xarray</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored TimeSeries from Xarray ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ts_x</span><span class="p">)</span>
 
-    del da, ts_x
+    <span class="k">del</span> <span class="n">da</span><span class="p">,</span> <span class="n">ts_x</span>
 
-except ImportError:
-    print(&quot;Xarray is not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Xarray is not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -557,23 +577,23 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import dask.array as da
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">dask.array</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">da</span>
 
-    _ = da
-    # Dask Array への変換
-    dask_arr = ts.to_dask(chunks=&quot;auto&quot;)
-    print(&quot;\n--- Converted to Dask Array ---&quot;)
-    print(dask_arr)
+    <span class="n">_</span> <span class="o">=</span> <span class="n">da</span>
+    <span class="c1"># Dask Array への変換</span>
+    <span class="n">dask_arr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_dask</span><span class="p">(</span><span class="n">chunks</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Dask Array ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dask_arr</span><span class="p">)</span>
 
-    # 戻す (compute=True で即座にロード)
-    ts_from_dask = TimeSeries.from_dask(dask_arr, t0=ts.t0, dt=ts.dt, unit=ts.unit)
-    print(&quot;Recovered from Dask:&quot;, ts_from_dask)
+    <span class="c1"># 戻す (compute=True で即座にロード)</span>
+    <span class="n">ts_from_dask</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_dask</span><span class="p">(</span><span class="n">dask_arr</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Dask:&quot;</span><span class="p">,</span> <span class="n">ts_from_dask</span><span class="p">)</span>
 
-    del dask_arr, ts_from_dask
+    <span class="k">del</span> <span class="n">dask_arr</span><span class="p">,</span> <span class="n">ts_from_dask</span>
 
-except ImportError:
-    print(&quot;Dask not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dask not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -605,27 +625,27 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import json
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
-# TimeSeries -&gt; JSON string
-ts_json = ts.to_json()
-print(&quot;--- JSON Representation (Partial) ---&quot;)
-print(ts_json[:500] + &quot;...&quot;)
+<span class="c1"># TimeSeries -&gt; JSON string</span>
+<span class="n">ts_json</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- JSON Representation (Partial) ---&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ts_json</span><span class="p">[:</span><span class="mi">500</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
 
-# Plot data by loading back from JSON
-ts_dict_temp = json.loads(ts_json)
-plt.figure()
-plt.plot(ts_dict_temp[&quot;data&quot;])
-plt.title(&quot;Plot from JSON Data&quot;)
-plt.show()
+<span class="c1"># Plot data by loading back from JSON</span>
+<span class="n">ts_dict_temp</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">ts_json</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts_dict_temp</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Plot from JSON Data&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-# Recover from JSON
-from gwexpy.timeseries import TimeSeries
+<span class="c1"># Recover from JSON</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-ts_recovered = TimeSeries.from_json(ts_json)
-print(&quot;Recovered from JSON:&quot;, ts_recovered)
+<span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">ts_json</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from JSON:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
-del ts_json, ts_dict_temp, ts_recovered
+<span class="k">del</span> <span class="n">ts_json</span><span class="p">,</span> <span class="n">ts_dict_temp</span><span class="p">,</span> <span class="n">ts_recovered</span>
 </pre></div>
 </div>
 </div>
@@ -696,37 +716,37 @@ Recovered from JSON: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import tempfile
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 
-    import h5py
+    <span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
 
-    with tempfile.NamedTemporaryFile(suffix=&quot;.h5&quot;) as tmp:
-        # TimeSeries -&gt; HDF5
-        with h5py.File(tmp.name, &quot;w&quot;) as f:
-            ts.to_hdf5_dataset(f, &quot;dataset_01&quot;)
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.h5&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+        <span class="c1"># TimeSeries -&gt; HDF5</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">to_hdf5_dataset</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;dataset_01&quot;</span><span class="p">)</span>
 
-        # Read back and display
-        with h5py.File(tmp.name, &quot;r&quot;) as f:
-            ds = f[&quot;dataset_01&quot;]
-            print(&quot;--- HDF5 Dataset Info ---&quot;)
-            print(f&quot;Shape: {ds.shape}, Dtype: {ds.dtype}&quot;)
-            print(&quot;Attributes:&quot;, dict(ds.attrs))
+        <span class="c1"># Read back and display</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;dataset_01&quot;</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- HDF5 Dataset Info ---&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, Dtype: </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Attributes:&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">))</span>
 
-            # Recover
-            from gwexpy.timeseries import TimeSeries
+            <span class="c1"># Recover</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-            ts_recovered = TimeSeries.from_hdf5_dataset(f, &quot;dataset_01&quot;)
-            print(&quot;Recovered from HDF5:&quot;, ts_recovered)
+            <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_hdf5_dataset</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;dataset_01&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from HDF5:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
-            ts_recovered.plot()
-            plt.title(&quot;Recovered from HDF5&quot;)
-            plt.show()
+            <span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from HDF5&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-            del ds, ts_recovered
+            <span class="k">del</span> <span class="n">ds</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
-except ImportError:
-    print(&quot;h5py not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;h5py not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -765,30 +785,30 @@ Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sqlite3
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
 
-conn = sqlite3.connect(&quot;:memory:&quot;)
+<span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;:memory:&quot;</span><span class="p">)</span>
 
-# TimeSeries -&gt; SQLite
-series_id = ts.to_sqlite(conn, series_id=&quot;test_series&quot;)
-print(f&quot;Saved to SQLite with ID: {series_id}&quot;)
+<span class="c1"># TimeSeries -&gt; SQLite</span>
+<span class="n">series_id</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_sqlite</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">series_id</span><span class="o">=</span><span class="s2">&quot;test_series&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved to SQLite with ID: </span><span class="si">{</span><span class="n">series_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-# Verify data in SQL
-cursor = conn.cursor()
-row = cursor.execute(&quot;SELECT * FROM series WHERE series_id=?&quot;, (series_id,)).fetchone()
-print(&quot;Metadata from SQL:&quot;, row)
+<span class="c1"># Verify data in SQL</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+<span class="n">row</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM series WHERE series_id=?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">series_id</span><span class="p">,))</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Metadata from SQL:&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
 
-# Recover
-from gwexpy.timeseries import TimeSeries
+<span class="c1"># Recover</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-ts_recovered = TimeSeries.from_sqlite(conn, series_id)
-print(&quot;Recovered from SQLite:&quot;, ts_recovered)
+<span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">series_id</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from SQLite:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
-ts_recovered.plot()
-plt.title(&quot;Recovered from SQLite&quot;)
-plt.show()
+<span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from SQLite&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-del series_id, conn, cursor, ts_recovered
+<span class="k">del</span> <span class="n">series_id</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">cursor</span><span class="p">,</span> <span class="n">ts_recovered</span>
 </pre></div>
 </div>
 </div>
@@ -826,37 +846,37 @@ Recovered from SQLite: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import os
-    import tempfile
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 
-    import zarr
+    <span class="kn">import</span><span class="w"> </span><span class="nn">zarr</span>
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        store_path = os.path.join(tmpdir, &quot;test.zarr&quot;)
-        # TimeSeries -&gt; Zarr
-        ts.to_zarr(store_path, path=&quot;timeseries&quot;)
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+        <span class="n">store_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="s2">&quot;test.zarr&quot;</span><span class="p">)</span>
+        <span class="c1"># TimeSeries -&gt; Zarr</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;timeseries&quot;</span><span class="p">)</span>
 
-        # Read back
-        z = zarr.open(store_path, mode=&quot;r&quot;)
-        ds = z[&quot;timeseries&quot;]
-        print(&quot;--- Zarr Array Info ---&quot;)
-        print(ds.info)
+        <span class="c1"># Read back</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="s2">&quot;timeseries&quot;</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Zarr Array Info ---&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
 
-        # Recover
-        from gwexpy.timeseries import TimeSeries
+        <span class="c1"># Recover</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-        ts_recovered = TimeSeries.from_zarr(store_path, &quot;timeseries&quot;)
-        print(&quot;Recovered from Zarr:&quot;, ts_recovered)
+        <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Zarr:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
-        ts_recovered.plot()
-        plt.title(&quot;Recovered from Zarr&quot;)
-        plt.show()
+        <span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from Zarr&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-        del z, ds, ts_recovered
+        <span class="k">del</span> <span class="n">z</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
-except ImportError:
-    print(&quot;zarr not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;zarr not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -906,36 +926,36 @@ Recovered from Zarr: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import tempfile
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 
-    import netCDF4
+    <span class="kn">import</span><span class="w"> </span><span class="nn">netCDF4</span>
 
-    with tempfile.NamedTemporaryFile(suffix=&quot;.nc&quot;) as tmp:
-        # TimeSeries -&gt; netCDF4
-        with netCDF4.Dataset(tmp.name, &quot;w&quot;) as ds:
-            ts.to_netcdf4(ds, &quot;my_signal&quot;)
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.nc&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+        <span class="c1"># TimeSeries -&gt; netCDF4</span>
+        <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">to_netcdf4</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;my_signal&quot;</span><span class="p">)</span>
 
-        # Read back
-        with netCDF4.Dataset(tmp.name, &quot;r&quot;) as ds:
-            v = ds.variables[&quot;my_signal&quot;]
-            print(&quot;--- netCDF4 Variable Info ---&quot;)
-            print(v)
+        <span class="c1"># Read back</span>
+        <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;my_signal&quot;</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- netCDF4 Variable Info ---&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
-            # Recover
-            from gwexpy.timeseries import TimeSeries
+            <span class="c1"># Recover</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-            ts_recovered = TimeSeries.from_netcdf4(ds, &quot;my_signal&quot;)
-            print(&quot;Recovered from netCDF4:&quot;, ts_recovered)
+            <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_netcdf4</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;my_signal&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from netCDF4:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
-            ts_recovered.plot()
-            plt.title(&quot;Recovered from netCDF4&quot;)
-            plt.show()
+            <span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from netCDF4&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-            del v, ts_recovered
+            <span class="k">del</span> <span class="n">v</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
-except ImportError:
-    print(&quot;netCDF4 not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;netCDF4 not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -984,27 +1004,27 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import os
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-os.environ.setdefault(&quot;TF_CPP_MIN_LOG_LEVEL&quot;, &quot;3&quot;)
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">)</span>
 
-try:
-    import torch
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-    # PyTorch Tensor への変換
-    tensor = ts.to_torch(dtype=torch.float32)
-    print(&quot;\n--- Converted to PyTorch Tensor ---&quot;)
-    print(f&quot;Tensor shape: {tensor.shape}, dtype: {tensor.dtype}&quot;)
+    <span class="c1"># PyTorch Tensor への変換</span>
+    <span class="n">tensor</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_torch</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to PyTorch Tensor ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor shape: </span><span class="si">{</span><span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, dtype: </span><span class="si">{</span><span class="n">tensor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    # Tensor からの復元 (t0, dt は別途指定が必要)
-    ts_torch = TimeSeries.from_torch(tensor, t0=ts.t0, dt=ts.dt, unit=&quot;V&quot;)
-    print(&quot;\n--- Restored from Torch ---&quot;)
-    print(ts_torch)
+    <span class="c1"># Tensor からの復元 (t0, dt は別途指定が必要)</span>
+    <span class="n">ts_torch</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_torch</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored from Torch ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ts_torch</span><span class="p">)</span>
 
-    del tensor, ts_torch
+    <span class="k">del</span> <span class="n">tensor</span><span class="p">,</span> <span class="n">ts_torch</span>
 
-except ImportError:
-    print(&quot;PyTorch is not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch is not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1038,35 +1058,35 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from gwexpy.interop import is_cupy_available
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_cupy_available</span>
 
-if is_cupy_available():
-    import cupy as cp
+<span class="k">if</span> <span class="n">is_cupy_available</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">cupy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cp</span>
 
-    # TimeSeries -&gt; CuPy
-    y_gpu = ts.to_cupy()
-    print(&quot;--- CuPy Array (on GPU) ---&quot;)
-    print(y_gpu)
+    <span class="c1"># TimeSeries -&gt; CuPy</span>
+    <span class="n">y_gpu</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_cupy</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- CuPy Array (on GPU) ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">y_gpu</span><span class="p">)</span>
 
-    # Simple processing on GPU
-    y_gpu_filt = y_gpu * 2.0
+    <span class="c1"># Simple processing on GPU</span>
+    <span class="n">y_gpu_filt</span> <span class="o">=</span> <span class="n">y_gpu</span> <span class="o">*</span> <span class="mf">2.0</span>
 
-    # Plot (must move to CPU for plotting)
-    plt.figure()
-    plt.plot(cp.asnumpy(y_gpu_filt))
-    plt.title(&quot;CuPy Data (Moved to CPU for plot)&quot;)
-    plt.show()
+    <span class="c1"># Plot (must move to CPU for plotting)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">y_gpu_filt</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;CuPy Data (Moved to CPU for plot)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-    # Recover
-    from gwexpy.timeseries import TimeSeries
+    <span class="c1"># Recover</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-    ts_recovered = TimeSeries.from_cupy(y_gpu_filt, t0=ts.t0, dt=ts.dt)
-    print(&quot;Recovered from CuPy:&quot;, ts_recovered)
+    <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_cupy</span><span class="p">(</span><span class="n">y_gpu_filt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from CuPy:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
-    del y_gpu, y_gpu_filt, ts_recovered
+    <span class="k">del</span> <span class="n">y_gpu</span><span class="p">,</span> <span class="n">y_gpu_filt</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
-else:
-    print(&quot;CuPy or CUDA driver not available.&quot;)
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CuPy or CUDA driver not available.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1111,26 +1131,26 @@ Recovered from CuPy: TimeSeries([ 0.        ,  0.12558104,  0.25066647, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import tensorflow as tf
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
 
-    _ = tf
-    # TensorFlow Tensor への変換
-    tf_tensor = ts.to_tensorflow()
-    print(&quot;\n--- Converted to TensorFlow Tensor ---&quot;)
-    print(f&quot;Tensor shape: {tf_tensor.shape}&quot;)
-    print(f&quot;Tensor dtype: {tf_tensor.dtype}&quot;)
+    <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span>
+    <span class="c1"># TensorFlow Tensor への変換</span>
+    <span class="n">tf_tensor</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_tensorflow</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to TensorFlow Tensor ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor shape: </span><span class="si">{</span><span class="n">tf_tensor</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor dtype: </span><span class="si">{</span><span class="n">tf_tensor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    # 戻す
-    ts_from_tensorflow = TimeSeries.from_tensorflow(
-        tf_tensor, t0=ts.t0, dt=ts.dt, unit=ts.unit
-    )
-    print(&quot;Recovered from TF:&quot;, ts_from_tensorflow)
+    <span class="c1"># 戻す</span>
+    <span class="n">ts_from_tensorflow</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_tensorflow</span><span class="p">(</span>
+        <span class="n">tf_tensor</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from TF:&quot;</span><span class="p">,</span> <span class="n">ts_from_tensorflow</span><span class="p">)</span>
 
-    del tf_tensor, ts_from_tensorflow
+    <span class="k">del</span> <span class="n">tf_tensor</span><span class="p">,</span> <span class="n">ts_from_tensorflow</span>
 
-except ImportError:
-    print(&quot;TensorFlow not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TensorFlow not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1219,28 +1239,28 @@ I0000 00:00:1769342196.568982  876747 gpu_device.cc:2020] Created device /job:lo
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import os
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-    os.environ[&quot;XLA_PYTHON_CLIENT_PREALLOCATE&quot;] = &quot;false&quot;
-    import jax
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;XLA_PYTHON_CLIENT_PREALLOCATE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
 
-    _ = jax
-    import jax.numpy as jnp
+    <span class="n">_</span> <span class="o">=</span> <span class="n">jax</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 
-    _ = jnp
-    # JAX Array への変換
-    jax_arr = ts.to_jax()
-    print(&quot;\n--- Converted to JAX Array ---&quot;)
-    print(f&quot;Array shape: {jax_arr.shape}&quot;)
+    <span class="n">_</span> <span class="o">=</span> <span class="n">jnp</span>
+    <span class="c1"># JAX Array への変換</span>
+    <span class="n">jax_arr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_jax</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to JAX Array ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Array shape: </span><span class="si">{</span><span class="n">jax_arr</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    # 戻す
-    ts_from_jax = TimeSeries.from_jax(jax_arr, t0=ts.t0, dt=ts.dt, unit=ts.unit)
-    print(&quot;Recovered from JAX:&quot;, ts_from_jax)
+    <span class="c1"># 戻す</span>
+    <span class="n">ts_from_jax</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_jax</span><span class="p">(</span><span class="n">jax_arr</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from JAX:&quot;</span><span class="p">,</span> <span class="n">ts_from_jax</span><span class="p">)</span>
 
-    del jax_arr, ts_from_jax
-except ImportError:
-    print(&quot;JAX not installed.&quot;)
+    <span class="k">del</span> <span class="n">jax_arr</span><span class="p">,</span> <span class="n">ts_from_jax</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;JAX not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1293,26 +1313,26 @@ Recovered from JAX: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    # Astropy TimeSeries への変換
-    ap_ts = ts.to_astropy_timeseries()
-    print(&quot;\n--- Converted to Astropy TimeSeries ---&quot;)
-    print(ap_ts[:5])
-    fig, ax = plt.subplots()
-    ax.plot(ap_ts.time.jd, ap_ts[&quot;value&quot;])
-    plt.title(&quot;Astropy TimeSeries&quot;)
-    plt.show()
-    plt.close()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Astropy TimeSeries への変換</span>
+    <span class="n">ap_ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_astropy_timeseries</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Astropy TimeSeries ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ap_ts</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ap_ts</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">jd</span><span class="p">,</span> <span class="n">ap_ts</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Astropy TimeSeries&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    # 復元
-    ts_astro = TimeSeries.from_astropy_timeseries(ap_ts)
-    print(&quot;\n--- Restored from Astropy ---&quot;)
-    print(ts_astro)
+    <span class="c1"># 復元</span>
+    <span class="n">ts_astro</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_astropy_timeseries</span><span class="p">(</span><span class="n">ap_ts</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored from Astropy ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ts_astro</span><span class="p">)</span>
 
-    del ap_ts, ts_astro
+    <span class="k">del</span> <span class="n">ap_ts</span><span class="p">,</span> <span class="n">ts_astro</span>
 
-except ImportError:
-    print(&quot;Astropy is not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Astropy is not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1366,29 +1386,29 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import specutils
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">specutils</span>
 
-    _ = specutils
+    <span class="n">_</span> <span class="o">=</span> <span class="n">specutils</span>
 
-    from gwexpy.frequencyseries import FrequencySeries
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 
-    # FrequencySeries -&gt; specutils.Spectrum1D
-    fs = FrequencySeries(
-        np.random.random(100), frequencies=np.linspace(10, 100, 100), unit=&quot;Jy&quot;
-    )
-    spec = fs.to_specutils()
-    print(&quot;specutils Spectrum1D:&quot;, spec)
-    print(&quot;Spectral axis unit:&quot;, spec.spectral_axis.unit)
+    <span class="c1"># FrequencySeries -&gt; specutils.Spectrum1D</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;Jy&quot;</span>
+    <span class="p">)</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_specutils</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;specutils Spectrum1D:&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Spectral axis unit:&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">spectral_axis</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
 
-    # specutils.Spectrum1D -&gt; FrequencySeries
-    fs_rec = FrequencySeries.from_specutils(spec)
-    print(&quot;Restored FrequencySeries unit:&quot;, fs_rec.unit)
+    <span class="c1"># specutils.Spectrum1D -&gt; FrequencySeries</span>
+    <span class="n">fs_rec</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_specutils</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restored FrequencySeries unit:&quot;</span><span class="p">,</span> <span class="n">fs_rec</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
 
-    del fs, spec, fs_rec
+    <span class="k">del</span> <span class="n">fs</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">fs_rec</span>
 
-except ImportError:
-    print(&quot;specutils library not found. Skipping example.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;specutils library not found. Skipping example.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1417,25 +1437,25 @@ Restored FrequencySeries unit: Jy
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import pyspeckit
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pyspeckit</span>
 
-    _ = pyspeckit
-    from gwexpy.frequencyseries import FrequencySeries
+    <span class="n">_</span> <span class="o">=</span> <span class="n">pyspeckit</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 
-    # FrequencySeries -&gt; pyspeckit.Spectrum
-    fs = FrequencySeries(np.random.random(100), frequencies=np.linspace(10, 100, 100))
-    spec = fs.to_pyspeckit()
-    print(&quot;pyspeckit Spectrum length:&quot;, len(spec.data))
+    <span class="c1"># FrequencySeries -&gt; pyspeckit.Spectrum</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_pyspeckit</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pyspeckit Spectrum length:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
 
-    # pyspeckit.Spectrum -&gt; FrequencySeries
-    fs_rec = FrequencySeries.from_pyspeckit(spec)
-    print(&quot;Restored FrequencySeries length:&quot;, len(fs_rec))
+    <span class="c1"># pyspeckit.Spectrum -&gt; FrequencySeries</span>
+    <span class="n">fs_rec</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_pyspeckit</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restored FrequencySeries length:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fs_rec</span><span class="p">))</span>
 
-    del fs, spec, fs_rec
+    <span class="k">del</span> <span class="n">fs</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">fs_rec</span>
 
-except ImportError:
-    print(&quot;pyspeckit library not found. Skipping example.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pyspeckit library not found. Skipping example.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1462,48 +1482,48 @@ pyspeckit library not found. Skipping example.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import numpy as np
-    import ROOT
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ROOT</span>
 
-    from gwexpy.timeseries import TimeSeries
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-    # データの準備
-    t = np.linspace(0, 10, 1000)
-    data = np.sin(2 * np.pi * 1.0 * t) + np.random.normal(0, 0.5, size=len(t))
-    ts = TimeSeries(data, dt=t[1] - t[0], name=&quot;signal&quot;)
+    <span class="c1"># データの準備</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;signal&quot;</span><span class="p">)</span>
 
-    # --- 1. TGraph への変換 ---
-    # ベクトル化された高速な変換
-    graph = ts.to_tgraph()
+    <span class="c1"># --- 1. TGraph への変換 ---</span>
+    <span class="c1"># ベクトル化された高速な変換</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_tgraph</span><span class="p">()</span>
 
-    # ROOT キャンバスでのプロット
-    c1 = ROOT.TCanvas(&quot;c1&quot;, &quot;TGraph Example&quot;, 800, 600)
-    graph.SetTitle(&quot;ROOT TGraph;GPS Time [s];Amplitude&quot;)
-    graph.Draw(&quot;AL&quot;)
-    c1.Draw()
-    # c1.SaveAs(&quot;signal_graph.png&quot;) # 画像として保存する場合
+    <span class="c1"># ROOT キャンバスでのプロット</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TCanvas</span><span class="p">(</span><span class="s2">&quot;c1&quot;</span><span class="p">,</span> <span class="s2">&quot;TGraph Example&quot;</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="s2">&quot;ROOT TGraph;GPS Time [s];Amplitude&quot;</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="s2">&quot;AL&quot;</span><span class="p">)</span>
+    <span class="n">c1</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
+    <span class="c1"># c1.SaveAs(&quot;signal_graph.png&quot;) # 画像として保存する場合</span>
 
-    print(f&quot;Created TGraph: {graph.GetName()} with {graph.GetN()} points&quot;)
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created TGraph: </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">GetN</span><span class="p">()</span><span class="si">}</span><span class="s2"> points&quot;</span><span class="p">)</span>
 
-    # --- 2. TH1D (ヒストグラム) への変換 ---
-    # ヒストグラムとして変換 (ビン詰めは自動または指定可能)
-    hist = ts.to_th1d()
+    <span class="c1"># --- 2. TH1D (ヒストグラム) への変換 ---</span>
+    <span class="c1"># ヒストグラムとして変換 (ビン詰めは自動または指定可能)</span>
+    <span class="n">hist</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_th1d</span><span class="p">()</span>
 
-    c2 = ROOT.TCanvas(&quot;c2&quot;, &quot;TH1D Example&quot;, 800, 600)
-    hist.SetTitle(&quot;ROOT TH1D;GPS Time [s];Amplitude&quot;)
-    hist.SetLineColor(ROOT.kRed)
-    hist.Draw()
-    c2.Draw()
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TCanvas</span><span class="p">(</span><span class="s2">&quot;c2&quot;</span><span class="p">,</span> <span class="s2">&quot;TH1D Example&quot;</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="s2">&quot;ROOT TH1D;GPS Time [s];Amplitude&quot;</span><span class="p">)</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">SetLineColor</span><span class="p">(</span><span class="n">ROOT</span><span class="o">.</span><span class="n">kRed</span><span class="p">)</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
+    <span class="n">c2</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
 
-    print(f&quot;Created TH1D: {hist.GetName()} with {hist.GetNbinsX()} bins&quot;)
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created TH1D: </span><span class="si">{</span><span class="n">hist</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">hist</span><span class="o">.</span><span class="n">GetNbinsX</span><span class="p">()</span><span class="si">}</span><span class="s2"> bins&quot;</span><span class="p">)</span>
 
-    del t, data, graph, hist, c1, c2
+    <span class="k">del</span> <span class="n">t</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">hist</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span>
 
-except ImportError:
-    print(&quot;ROOT is not installed. Skipping ROOT examples.&quot;)
-except Exception as e:
-    print(f&quot;An error occurred: {e}&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ROOT is not installed. Skipping ROOT examples.&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1527,25 +1547,25 @@ Created TH1D: signal with 1000 bins
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    if &quot;hist&quot; in locals() and hist:
-        # ROOT TH1D -&gt; TimeSeries
-        # ヒストグラムのビン内容を時系列データとして読み込みます
-        ts_restored = from_root(TimeSeries, hist)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;hist&quot;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span> <span class="ow">and</span> <span class="n">hist</span><span class="p">:</span>
+        <span class="c1"># ROOT TH1D -&gt; TimeSeries</span>
+        <span class="c1"># ヒストグラムのビン内容を時系列データとして読み込みます</span>
+        <span class="n">ts_restored</span> <span class="o">=</span> <span class="n">from_root</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">hist</span><span class="p">)</span>
 
-        print(f&quot;Restored TimeSeries: {ts_restored.name}&quot;)
-        print(ts_restored)
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Restored TimeSeries: </span><span class="si">{</span><span class="n">ts_restored</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ts_restored</span><span class="p">)</span>
 
-        # TGraph からの復元も同様
-        ts_from_graph = from_root(TimeSeries, graph)
-        print(f&quot;Restored from TGraph: {len(ts_from_graph)} samples&quot;)
+        <span class="c1"># TGraph からの復元も同様</span>
+        <span class="n">ts_from_graph</span> <span class="o">=</span> <span class="n">from_root</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Restored from TGraph: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_from_graph</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples&quot;</span><span class="p">)</span>
 
-        del ts_restored, ts_from_graph
+        <span class="k">del</span> <span class="n">ts_restored</span><span class="p">,</span> <span class="n">ts_from_graph</span>
 
-except NameError:
-    pass  # hist や graph が作成されなかった場合
-except ImportError:
-    pass
+<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+    <span class="k">pass</span>  <span class="c1"># hist や graph が作成されなかった場合</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
 </pre></div>
 </div>
 </div>
@@ -1563,28 +1583,28 @@ except ImportError:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import obspy
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
 
-    _ = obspy
-    # TimeSeries -&gt; ObsPy Trace
-    tr = ts.to_obspy()
-    print(&quot;--- ObsPy Trace ---&quot;)
-    print(tr)
+    <span class="n">_</span> <span class="o">=</span> <span class="n">obspy</span>
+    <span class="c1"># TimeSeries -&gt; ObsPy Trace</span>
+    <span class="n">tr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_obspy</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- ObsPy Trace ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
 
-    # Plot using ObsPy
-    tr.plot()
+    <span class="c1"># Plot using ObsPy</span>
+    <span class="n">tr</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
-    # Recover to TimeSeries
-    from gwexpy.timeseries import TimeSeries
+    <span class="c1"># Recover to TimeSeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-    ts_recovered = TimeSeries.from_obspy(tr)
-    print(&quot;Recovered from ObsPy:&quot;, ts_recovered)
+    <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_obspy</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from ObsPy:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
-    del tr, ts_recovered
+    <span class="k">del</span> <span class="n">tr</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
-except ImportError:
-    print(&quot;ObsPy not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ObsPy not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1622,17 +1642,17 @@ Recovered from ObsPy: TimeSeries([ 0.65027877, -0.06123054, -0.46661033, ...,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import obspy
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
 
-    _ = obspy
-    tr = ts.to_obspy()
-    print(&quot;ObsPy Trace:&quot;, tr)
+    <span class="n">_</span> <span class="o">=</span> <span class="n">obspy</span>
+    <span class="n">tr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_obspy</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ObsPy Trace:&quot;</span><span class="p">,</span> <span class="n">tr</span><span class="p">)</span>
 
-    del tr
+    <span class="k">del</span> <span class="n">tr</span>
 
-except ImportError:
-    print(&quot;ObsPy not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ObsPy not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1655,34 +1675,34 @@ ObsPy Trace: .signal.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:10.00000
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import numpy as np
-    import simpeg
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">simpeg</span>
 
-    _ = simpeg
-    from simpeg import maps
+    <span class="n">_</span> <span class="o">=</span> <span class="n">simpeg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">simpeg</span><span class="w"> </span><span class="kn">import</span> <span class="n">maps</span>
 
-    _ = maps
+    <span class="n">_</span> <span class="o">=</span> <span class="n">maps</span>
 
-    from gwexpy.frequencyseries import FrequencySeries
-    from gwexpy.timeseries import TimeSeries
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-    # --- TimeSeries -&gt; SimPEG (TDEM想定) ---
-    ts = TimeSeries(np.random.normal(size=100), dt=0.01, unit=&quot;A/m^2&quot;)
-    simpeg_data_td = ts.to_simpeg(location=np.array([0, 0, 0]))
-    print(&quot;SimPEG TDEM data shape:&quot;, simpeg_data_td.dobs.shape)
+    <span class="c1"># --- TimeSeries -&gt; SimPEG (TDEM想定) ---</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;A/m^2&quot;</span><span class="p">)</span>
+    <span class="n">simpeg_data_td</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_simpeg</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SimPEG TDEM data shape:&quot;</span><span class="p">,</span> <span class="n">simpeg_data_td</span><span class="o">.</span><span class="n">dobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
-    # --- FrequencySeries -&gt; SimPEG (FDEM想定) ---
-    fs = FrequencySeries(
-        np.random.normal(size=10) + 1j * 0.1, frequencies=np.logspace(0, 3, 10)
-    )
-    simpeg_data_fd = fs.to_simpeg(location=np.array([0, 0, 0]), orientation=&quot;z&quot;)
-    print(&quot;SimPEG FDEM data shape:&quot;, simpeg_data_fd.dobs.shape)
+    <span class="c1"># --- FrequencySeries -&gt; SimPEG (FDEM想定) ---</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">simpeg_data_fd</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_simpeg</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SimPEG FDEM data shape:&quot;</span><span class="p">,</span> <span class="n">simpeg_data_fd</span><span class="o">.</span><span class="n">dobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
-    del simpeg_data_td, simpeg_data_fd, fs
+    <span class="k">del</span> <span class="n">simpeg_data_td</span><span class="p">,</span> <span class="n">simpeg_data_fd</span><span class="p">,</span> <span class="n">fs</span>
 
-except ImportError:
-    print(&quot;SimPEG library not found. Skipping example.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SimPEG library not found. Skipping example.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1706,33 +1726,33 @@ SimPEG FDEM data shape: (10,)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import tempfile
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 
-    import mth5
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mth5</span>
 
-    _ = mth5
-    with tempfile.NamedTemporaryFile(suffix=&quot;.h5&quot;) as tmp:
-        from gwexpy.interop.mt_ import from_mth5, to_mth5
+    <span class="n">_</span> <span class="o">=</span> <span class="n">mth5</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.h5&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.mt_</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_mth5</span><span class="p">,</span> <span class="n">to_mth5</span>
 
-        # TimeSeries -&gt; MTH5
-        # We need to provide station and run names for MTH5 structure
-        to_mth5(ts, tmp.name, station=&quot;SITE01&quot;, run=&quot;RUN01&quot;)
-        print(f&quot;Saved to MTH5 file: {tmp.name}&quot;)
+        <span class="c1"># TimeSeries -&gt; MTH5</span>
+        <span class="c1"># We need to provide station and run names for MTH5 structure</span>
+        <span class="n">to_mth5</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">station</span><span class="o">=</span><span class="s2">&quot;SITE01&quot;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="s2">&quot;RUN01&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved to MTH5 file: </span><span class="si">{</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        # Display structure info if needed, or just recover
-        # Recover
-        ts_recovered = from_mth5(tmp.name, &quot;SITE01&quot;, &quot;RUN01&quot;, ts.name or &quot;Ex&quot;)
-        print(&quot;Recovered from MTH5:&quot;, ts_recovered)
+        <span class="c1"># Display structure info if needed, or just recover</span>
+        <span class="c1"># Recover</span>
+        <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">from_mth5</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;SITE01&quot;</span><span class="p">,</span> <span class="s2">&quot;RUN01&quot;</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;Ex&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from MTH5:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
-        ts_recovered.plot()
-        plt.title(&quot;Recovered from MTH5&quot;)
-        plt.show()
+        <span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from MTH5&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-        del ts_recovered
+        <span class="k">del</span> <span class="n">ts_recovered</span>
 
-except ImportError:
-    print(&quot;mth5 not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mth5 not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1813,31 +1833,31 @@ Recovered from MTH5: TimeSeries([ 1.37697923,  2.74600371,  0.57303984, -0.48362
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import librosa
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">librosa</span>
 
-    _ = librosa
-    import matplotlib.pyplot as plt
+    <span class="n">_</span> <span class="o">=</span> <span class="n">librosa</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-    # TimeSeries -&gt; Librosa (y, sr)
-    y, sr = ts.to_librosa()
-    print(f&quot;--- Librosa Data ---\nSignal shape: {y.shape}, Sample rate: {sr}&quot;)
+    <span class="c1"># TimeSeries -&gt; Librosa (y, sr)</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_librosa</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--- Librosa Data ---</span><span class="se">\n</span><span class="s2">Signal shape: </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, Sample rate: </span><span class="si">{</span><span class="n">sr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    # Plot using librosa style (matplotlib)
-    plt.figure()
-    plt.plot(y[:1000])  # Plot first 1000 samples
-    plt.title(&quot;Librosa Audio Signal (Zoom)&quot;)
-    plt.show()
+    <span class="c1"># Plot using librosa style (matplotlib)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span>  <span class="c1"># Plot first 1000 samples</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Librosa Audio Signal (Zoom)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-    # Recover to TimeSeries
-    from gwexpy.timeseries import TimeSeries
+    <span class="c1"># Recover to TimeSeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-    ts_recovered = TimeSeries(y, dt=1.0 / sr)
-    print(&quot;Recovered from Librosa:&quot;, ts_recovered)
+    <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">sr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Librosa:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
-    del y, sr
-except ImportError:
-    print(&quot;Librosa not installed.&quot;)
+    <span class="k">del</span> <span class="n">y</span><span class="p">,</span> <span class="n">sr</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Librosa not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1908,28 +1928,28 @@ Recovered from Librosa: TimeSeries([ 1.3769792 ,  2.7460036 ,  0.5730398 , -0.48
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import mne
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
 
-    _ = mne
-    # TimeSeries -&gt; MNE Raw
-    raw = ts.to_mne()
-    print(&quot;--- MNE Raw ---&quot;)
-    print(raw)
+    <span class="n">_</span> <span class="o">=</span> <span class="n">mne</span>
+    <span class="c1"># TimeSeries -&gt; MNE Raw</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_mne</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- MNE Raw ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
-    # Display info
-    print(raw.info)
+    <span class="c1"># Display info</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
 
-    # Recover to TimeSeries
-    from gwexpy.timeseries import TimeSeries
+    <span class="c1"># Recover to TimeSeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-    ts_recovered = TimeSeries.from_mne(raw, channel=ts.name or &quot;ch0&quot;)
-    print(&quot;Recovered from MNE:&quot;, ts_recovered)
+    <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_mne</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;ch0&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from MNE:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
-    del raw, ts_recovered
+    <span class="k">del</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
-except ImportError:
-    print(&quot;MNE not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MNE not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1991,16 +2011,16 @@ Recovered from MNE: TimeSeries([ 1.37697923,  2.74600371,  0.57303984, -0.483627
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import mne
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
 
-    _ = mne
-    raw = ts.to_mne()
-    print(&quot;MNE Raw:&quot;, raw)
+    <span class="n">_</span> <span class="o">=</span> <span class="n">mne</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_mne</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MNE Raw:&quot;</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
 
-    del raw
-except ImportError:
-    print(&quot;MNE not installed.&quot;)
+    <span class="k">del</span> <span class="n">raw</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MNE not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2024,30 +2044,30 @@ MNE Raw: &lt;RawArray | 1 x 100 (1.0 s), ~6 KiB, data loaded&gt;
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import numpy as np
-    import quantities as pq
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">quantities</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pq</span>
 
-    _ = pq
-    from gwexpy.frequencyseries import FrequencySeries
+    <span class="n">_</span> <span class="o">=</span> <span class="n">pq</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 
-    # FrequencySeries の作成
-    freqs = np.linspace(0, 100, 101)
-    data_fs = np.random.random(101)
-    fs = FrequencySeries(data_fs, frequencies=freqs, unit=&quot;V&quot;)
+    <span class="c1"># FrequencySeries の作成</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">101</span><span class="p">)</span>
+    <span class="n">data_fs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">101</span><span class="p">)</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data_fs</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
 
-    # to_quantities
-    q_obj = fs.to_quantities(units=&quot;mV&quot;)
-    print(&quot;Quantities object:&quot;, q_obj)
+    <span class="c1"># to_quantities</span>
+    <span class="n">q_obj</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_quantities</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s2">&quot;mV&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Quantities object:&quot;</span><span class="p">,</span> <span class="n">q_obj</span><span class="p">)</span>
 
-    # from_quantities
-    fs_new = FrequencySeries.from_quantities(q_obj, frequencies=freqs)
-    print(&quot;Restored FrequencySeries unit:&quot;, fs_new.unit)
+    <span class="c1"># from_quantities</span>
+    <span class="n">fs_new</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_quantities</span><span class="p">(</span><span class="n">q_obj</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restored FrequencySeries unit:&quot;</span><span class="p">,</span> <span class="n">fs_new</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
 
-    del freqs, data_fs, fs, q_obj, fs_new
+    <span class="k">del</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">data_fs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">q_obj</span><span class="p">,</span> <span class="n">fs_new</span>
 
-except ImportError:
-    print(&quot;quantities library not found. Skipping example.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;quantities library not found. Skipping example.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2096,45 +2116,45 @@ Restored FrequencySeries unit: mV
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import neo
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">neo</span>
 
-    _ = neo
-    # TimeSeries -&gt; Neo AnalogSignal
-    # to_neo is available in gwexpy.interop
-    # Note: TimeseriesMatrix is preferred for multi-channel Neo conversion,
-    # but we can convert single TimeSeries by wrapping it.
-    from gwexpy.interop import from_neo, to_neo
+    <span class="n">_</span> <span class="o">=</span> <span class="n">neo</span>
+    <span class="c1"># TimeSeries -&gt; Neo AnalogSignal</span>
+    <span class="c1"># to_neo is available in gwexpy.interop</span>
+    <span class="c1"># Note: TimeseriesMatrix is preferred for multi-channel Neo conversion,</span>
+    <span class="c1"># but we can convert single TimeSeries by wrapping it.</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_neo</span><span class="p">,</span> <span class="n">to_neo</span>
 
-    _ = from_neo
-    _ = to_neo
-    # For single TimeSeries, we might need a Matrix wrapper or direct helper.
-    # Assuming helper exists or using Matrix:
-    from gwexpy.timeseries import TimeSeriesMatrix
+    <span class="n">_</span> <span class="o">=</span> <span class="n">from_neo</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">to_neo</span>
+    <span class="c1"># For single TimeSeries, we might need a Matrix wrapper or direct helper.</span>
+    <span class="c1"># Assuming helper exists or using Matrix:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
 
-    tm = TimeSeriesMatrix(
-        ts.value[None, None, :], t0=ts.t0, dt=ts.dt, channel_names=[ts.name]
-    )
-    sig = tm.to_neo()
+    <span class="n">tm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:],</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">channel_names</span><span class="o">=</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">to_neo</span><span class="p">()</span>
 
-    print(&quot;--- Neo AnalogSignal ---&quot;)
-    print(sig)
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Neo AnalogSignal ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
 
-    # Display/Plot
-    plt.figure()
-    plt.plot(sig.times, sig)
-    plt.title(&quot;Neo AnalogSignal Plot&quot;)
-    plt.show()
+    <span class="c1"># Display/Plot</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Neo AnalogSignal Plot&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-    # Recover
-    tm_recovered = TimeSeriesMatrix.from_neo(sig)
-    ts_recovered = tm_recovered[0]
-    print(&quot;Recovered from Neo:&quot;, ts_recovered)
+    <span class="c1"># Recover</span>
+    <span class="n">tm_recovered</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="o">.</span><span class="n">from_neo</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+    <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">tm_recovered</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Neo:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
-    del tm, tm_recovered, sig, ts_recovered
+    <span class="k">del</span> <span class="n">tm</span><span class="p">,</span> <span class="n">tm_recovered</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
-except ImportError:
-    print(&quot;neo not installed.&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;neo not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

@@ -70,6 +70,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -121,12 +122,12 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-import numpy as np
-from scipy import signal
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
 
-from gwexpy import TimeSeries
-from gwexpy.plot import Plot
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
 </pre></div>
 </div>
 </div>
@@ -148,39 +149,39 @@ from gwexpy.plot import Plot
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># --- パラメータ設定 ---
-fs = 2048.0  # サンプリング周波数 [Hz]
-duration = 60.0  # 継続時間 [s]
-f0_true = 300.0  # 真の共振周波数 [Hz]
-Q_true = 50.0  # 真のQ値
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- パラメータ設定 ---</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mf">2048.0</span>  <span class="c1"># サンプリング周波数 [Hz]</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mf">60.0</span>  <span class="c1"># 継続時間 [s]</span>
+<span class="n">f0_true</span> <span class="o">=</span> <span class="mf">300.0</span>  <span class="c1"># 真の共振周波数 [Hz]</span>
+<span class="n">Q_true</span> <span class="o">=</span> <span class="mf">50.0</span>  <span class="c1"># 真のQ値</span>
 
-# --- 時間軸と入力信号 ---
-t = np.linspace(0, duration, int(duration * fs), endpoint=False)
-input_data = np.random.normal(0, 1, size=len(t))  # 白色雑音入力
+<span class="c1"># --- 時間軸と入力信号 ---</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>  <span class="c1"># 白色雑音入力</span>
 
-# --- 物理システムのシミュレーション (scipy.signalを使用) ---
-# 伝達関数 H(s) = w0^2 / (s^2 + (w0/Q)s + w0^2)
-w0 = 2 * np.pi * f0_true
-num = [w0**2]
-den = [1, w0 / Q_true, w0**2]
-system = signal.TransferFunction(num, den)
+<span class="c1"># --- 物理システムのシミュレーション (scipy.signalを使用) ---</span>
+<span class="c1"># 伝達関数 H(s) = w0^2 / (s^2 + (w0/Q)s + w0^2)</span>
+<span class="n">w0</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f0_true</span>
+<span class="n">num</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">den</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">w0</span> <span class="o">/</span> <span class="n">Q_true</span><span class="p">,</span> <span class="n">w0</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">system</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">TransferFunction</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">den</span><span class="p">)</span>
 
-# 時間応答の計算 (lsim)
-# Time steps for simulation
-_, output_clean, _ = signal.lsim(system, U=input_data, T=t)
+<span class="c1"># 時間応答の計算 (lsim)</span>
+<span class="c1"># Time steps for simulation</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">output_clean</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lsim</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">input_data</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
 
-# --- 測定ノイズの付加 ---
-# 出力に少しノイズ（センサーノイズなど）が乗ると仮定
-measurement_noise = np.random.normal(0, 0.1, size=len(t))
-output_data = output_clean + measurement_noise
+<span class="c1"># --- 測定ノイズの付加 ---</span>
+<span class="c1"># 出力に少しノイズ（センサーノイズなど）が乗ると仮定</span>
+<span class="n">measurement_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">output_clean</span> <span class="o">+</span> <span class="n">measurement_noise</span>
 
-# --- gwexpy TimeSeries オブジェクトの作成 ---
-ts_input = TimeSeries(input_data, t0=0, sample_rate=fs, name=&quot;Input&quot;, unit=&quot;V&quot;)
-ts_output = TimeSeries(output_data, t0=0, sample_rate=fs, name=&quot;Output&quot;, unit=&quot;V&quot;)
+<span class="c1"># --- gwexpy TimeSeries オブジェクトの作成 ---</span>
+<span class="n">ts_input</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Input&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+<span class="n">ts_output</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">output_data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Output&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
 
-print(&quot;Input data shape:&quot;, ts_input.shape)
-print(&quot;Output data shape:&quot;, ts_output.shape)
-Plot(ts_input, ts_output, separate=True);
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Input data shape:&quot;</span><span class="p">,</span> <span class="n">ts_input</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Output data shape:&quot;</span><span class="p">,</span> <span class="n">ts_output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">Plot</span><span class="p">(</span><span class="n">ts_input</span><span class="p">,</span> <span class="n">ts_output</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -209,44 +210,44 @@ Output data shape: (122880,)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># FFT設定: 平均化のためにデータを区切る長さを指定
-fftlength = 2.0  # 2秒ごとにFFTして平均化
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FFT設定: 平均化のためにデータを区切る長さを指定</span>
+<span class="n">fftlength</span> <span class="o">=</span> <span class="mf">2.0</span>  <span class="c1"># 2秒ごとにFFTして平均化</span>
 
-# 伝達関数の計算 (Output / Input)
-tf = ts_input.transfer_function(ts_output, fftlength=fftlength)
+<span class="c1"># 伝達関数の計算 (Output / Input)</span>
+<span class="n">tf</span> <span class="o">=</span> <span class="n">ts_input</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span><span class="n">ts_output</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">)</span>
 
-# コヒーレンスの計算
-coh = ts_input.coherence(ts_output, fftlength=fftlength) ** 0.5
+<span class="c1"># コヒーレンスの計算</span>
+<span class="n">coh</span> <span class="o">=</span> <span class="n">ts_input</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span><span class="n">ts_output</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
 
-# --- プロット (ボード線図 &amp; コヒーレンス) ---
-fig, axes = plt.subplots(3, 1, figsize=(10, 10), sharex=True)
+<span class="c1"># --- プロット (ボード線図 &amp; コヒーレンス) ---</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-# 振幅 (Magnitude)
-ax = axes[0]
-ax.loglog(tf.abs(), label=&quot;Measured TF&quot;)
-ax.set_ylabel(&quot;Gain [V/V]&quot;)
-ax.set_title(&quot;Bode Plot: Magnitude&quot;)
-ax.grid(True, which=&quot;both&quot;, alpha=0.5)
+<span class="c1"># 振幅 (Magnitude)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Measured TF&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Gain [V/V]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Bode Plot: Magnitude&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
-# 位相 (Phase)
-ax = axes[1]
-ax.plot(tf.degree(), label=&quot;Measured Phase&quot;)
-ax.set_ylabel(&quot;Phase [deg]&quot;)
-ax.set_title(&quot;Bode Plot: Phase&quot;)
-ax.set_yticks(np.arange(-180, 181, 90))
-ax.grid(True, which=&quot;both&quot;, alpha=0.5)
+<span class="c1"># 位相 (Phase)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">degree</span><span class="p">(),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Measured Phase&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Phase [deg]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Bode Plot: Phase&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="mi">181</span><span class="p">,</span> <span class="mi">90</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
-# コヒーレンス (Coherence)
-ax = axes[2]
-ax.plot(coh, color=&quot;green&quot;, label=&quot;Coherence&quot;)
-ax.set_ylabel(&quot;Coherence&quot;)
-ax.set_xlabel(&quot;Frequency [Hz]&quot;)
-ax.set_ylim(0, 1.1)
-ax.set_xlim(10, 1000)
-ax.grid(True, which=&quot;both&quot;, alpha=0.5)
+<span class="c1"># コヒーレンス (Coherence)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">coh</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Coherence&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Coherence&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
-plt.tight_layout()
-plt.show()
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -268,31 +269,31 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># --- フィッティング用モデル関数の定義 ---
-def resonator_model(f, amp, f0, Q):
-    # f: 周波数配列
-    # パラメータ: amp(ゲイン), f0(共振周波数), Q(Q値)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- フィッティング用モデル関数の定義 ---</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">resonator_model</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">amp</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
+    <span class="c1"># f: 周波数配列</span>
+    <span class="c1"># パラメータ: amp(ゲイン), f0(共振周波数), Q(Q値)</span>
 
-    # 計算式 (複素数)
-    numerator = amp * (f0**2)
-    denominator = (f0**2) - (f**2) + 1j * (f * f0 / Q)
-    return numerator / denominator
+    <span class="c1"># 計算式 (複素数)</span>
+    <span class="n">numerator</span> <span class="o">=</span> <span class="n">amp</span> <span class="o">*</span> <span class="p">(</span><span class="n">f0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="p">(</span><span class="n">f0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">f</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">f</span> <span class="o">*</span> <span class="n">f0</span> <span class="o">/</span> <span class="n">Q</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
 
 
-# --- フィッティングの実行 ---
-# データ全体を使うと広帯域すぎてフィットが難しい場合があるため、
-# 共振付近 (100Hz ~ 500Hz) にデータを切り出します。
-tf_crop = tf.crop(100, 500)
+<span class="c1"># --- フィッティングの実行 ---</span>
+<span class="c1"># データ全体を使うと広帯域すぎてフィットが難しい場合があるため、</span>
+<span class="c1"># 共振付近 (100Hz ~ 500Hz) にデータを切り出します。</span>
+<span class="n">tf_crop</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
 
-# 初期値の推定 (目視またはピーク探索で決める)
-# ここでは f0=300付近に見えるため、それを初期値にします
-p0 = {&quot;amp&quot;: 1.0, &quot;f0&quot;: 300.0, &quot;Q&quot;: 10.0}
+<span class="c1"># 初期値の推定 (目視またはピーク探索で決める)</span>
+<span class="c1"># ここでは f0=300付近に見えるため、それを初期値にします</span>
+<span class="n">p0</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">}</span>
 
-# フィッティング実行
-# FrequencySeries の .fit() メソッドは複素数データのまま実部・虚部を同時にフィットします
-result = tf_crop.fit(resonator_model, p0=p0)
+<span class="c1"># フィッティング実行</span>
+<span class="c1"># FrequencySeries の .fit() メソッドは複素数データのまま実部・虚部を同時にフィットします</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">tf_crop</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">resonator_model</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
 
-print(result)
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -337,16 +338,16 @@ print(result)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># --- 結果の表示 ---
-print(&quot;--- Estimated Parameters ---&quot;)
-print(f&quot;Resonance Frequency (f0): {result.params[&#39;f0&#39;]:.4f} Hz (True: {f0_true})&quot;)
-print(f&quot;Quality Factor (Q):       {result.params[&#39;Q&#39;]:.4f}      (True: {Q_true})&quot;)
-print(f&quot;Gain (Amp):               {result.params[&#39;amp&#39;]:.4f}&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- 結果の表示 ---</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Estimated Parameters ---&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resonance Frequency (f0): </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;f0&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> Hz (True: </span><span class="si">{</span><span class="n">f0_true</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quality Factor (Q):       </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;Q&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">      (True: </span><span class="si">{</span><span class="n">Q_true</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gain (Amp):               </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-# --- プロット ---
-# result.plot() は複素数の場合、振幅と位相の2つのAxesを返します
-axes = result.plot()
-plt.show()
+<span class="c1"># --- プロット ---</span>
+<span class="c1"># result.plot() は複素数の場合、振幅と位相の2つのAxesを返します</span>
+<span class="n">axes</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

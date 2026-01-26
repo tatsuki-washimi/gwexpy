@@ -73,6 +73,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -126,20 +127,20 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-import numpy as np
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-from gwexpy.timeseries import TimeSeries
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-# PyEMDの確認
-try:
-    import PyEMD
+<span class="c1"># PyEMDの確認</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">PyEMD</span>
 
-    print(f&quot;{PyEMD.__name__} is installed and ready.&quot;)
-except ImportError:
-    raise ImportError(
-        &quot;このチュートリアルには &#39;PyEMD&#39; (EMD-signal) が必要です。 pip install EMD-signal を実行してください。&quot;
-    )
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PyEMD</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is installed and ready.&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+        <span class="s2">&quot;このチュートリアルには &#39;PyEMD&#39; (EMD-signal) が必要です。 pip install EMD-signal を実行してください。&quot;</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -163,21 +164,21 @@ PyEMD is installed and ready.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 時間軸 (1秒間、1000サンプル)
-t = np.linspace(0, 1, 1000)
-dt = t[1] - t[0]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 時間軸 (1秒間、1000サンプル)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-# 信号成分
-s1 = 0.5 * np.sin(2 * np.pi * 5 * t)  # 低周波
-s2 = 1.0 * np.sin(2 * np.pi * 80 * t * (1 + 0.5 * t))  # チャープ (80Hz -&gt; 120Hz)
-trend = 2.0 * t  # 線形トレンド
+<span class="c1"># 信号成分</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># 低周波</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">*</span> <span class="n">t</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">t</span><span class="p">))</span>  <span class="c1"># チャープ (80Hz -&gt; 120Hz)</span>
+<span class="n">trend</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">t</span>  <span class="c1"># 線形トレンド</span>
 
-# TimeSeriesオブジェクトの作成
-data = TimeSeries(s1 + s2 + trend, dt=dt, unit=&quot;V&quot;, name=&quot;Simulation Data&quot;)
+<span class="c1"># TimeSeriesオブジェクトの作成</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">s1</span> <span class="o">+</span> <span class="n">s2</span> <span class="o">+</span> <span class="n">trend</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Simulation Data&quot;</span><span class="p">)</span>
 
-# プロット
-plot = data.plot(title=&quot;Original Simulation Signal&quot;)
-plot.show()
+<span class="c1"># プロット</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Original Simulation Signal&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -197,15 +198,15 @@ plot.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># EMDの実行
-# method=&#39;eemd&#39; とすると Ensemble EMD が実行されます (計算時間がかかります)
-imfs = data.emd(method=&quot;emd&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># EMDの実行</span>
+<span class="c1"># method=&#39;eemd&#39; とすると Ensemble EMD が実行されます (計算時間がかかります)</span>
+<span class="n">imfs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">emd</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;emd&quot;</span><span class="p">)</span>
 
-print(&quot;抽出されたIMF:&quot;, list(imfs.keys()))
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;抽出されたIMF:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">imfs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 
-# 全IMFをプロット
-plot = imfs.plot(figsize=(10, 12), sharex=True, title=&quot;Intrinsic Mode Functions (IMFs)&quot;)
-plot.show()
+<span class="c1"># 全IMFをプロット</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">imfs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Intrinsic Mode Functions (IMFs)&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -245,34 +246,34 @@ plot.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 解析結果を格納する辞書
-hht_results = {}
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 解析結果を格納する辞書</span>
+<span class="n">hht_results</span> <span class="o">=</span> <span class="p">{}</span>
 
-plt.figure(figsize=(10, 6))
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 
-# 最初の数個のIMFについて解析を行う
-for key in list(imfs.keys())[:3]:  # Loop over first 3 IMFs
-    imf = imfs[key]
+<span class="c1"># 最初の数個のIMFについて解析を行う</span>
+<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">imfs</span><span class="o">.</span><span class="n">keys</span><span class="p">())[:</span><span class="mi">3</span><span class="p">]:</span>  <span class="c1"># Loop over first 3 IMFs</span>
+    <span class="n">imf</span> <span class="o">=</span> <span class="n">imfs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
-    # 瞬時周波数の計算
-    # smoothパラメータで微分のノイズを平滑化できます
-    inst_freq = imf.instantaneous_frequency(smooth=10)
+    <span class="c1"># 瞬時周波数の計算</span>
+    <span class="c1"># smoothパラメータで微分のノイズを平滑化できます</span>
+    <span class="n">inst_freq</span> <span class="o">=</span> <span class="n">imf</span><span class="o">.</span><span class="n">instantaneous_frequency</span><span class="p">(</span><span class="n">smooth</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
-    # 瞬時振幅 (包絡線) の計算
-    inst_amp = imf.envelope()
+    <span class="c1"># 瞬時振幅 (包絡線) の計算</span>
+    <span class="n">inst_amp</span> <span class="o">=</span> <span class="n">imf</span><span class="o">.</span><span class="n">envelope</span><span class="p">()</span>
 
-    hht_results[key] = {&quot;freq&quot;: inst_freq, &quot;amp&quot;: inst_amp}
+    <span class="n">hht_results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;freq&quot;</span><span class="p">:</span> <span class="n">inst_freq</span><span class="p">,</span> <span class="s2">&quot;amp&quot;</span><span class="p">:</span> <span class="n">inst_amp</span><span class="p">}</span>
 
-    # 瞬時周波数の時間変化をプロット
-    plt.plot(inst_freq.times.value, inst_freq.value, label=f&quot;{key} Freq&quot;)
+    <span class="c1"># 瞬時周波数の時間変化をプロット</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">inst_freq</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">inst_freq</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> Freq&quot;</span><span class="p">)</span>
 
-plt.title(&quot;Instantaneous Frequency of IMFs&quot;)
-plt.xlabel(&quot;Time [s]&quot;)
-plt.ylabel(&quot;Frequency [Hz]&quot;)
-plt.ylim(0, 150)
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.show()
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Instantaneous Frequency of IMFs&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -292,34 +293,34 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(10, 6))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 
-for key, res in hht_results.items():
-    t_vals = res[&quot;freq&quot;].times.value
-    f_vals = res[&quot;freq&quot;].value
-    a_vals = res[&quot;amp&quot;].value
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">hht_results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">t_vals</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;freq&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">f_vals</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;freq&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">a_vals</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;amp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
 
-    # 周波数が負や極端に大きい値になることがあるためフィルタリング
-    mask = (f_vals &gt; 0) &amp; (f_vals &lt; 200)
+    <span class="c1"># 周波数が負や極端に大きい値になることがあるためフィルタリング</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_vals</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">f_vals</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">)</span>
 
-    plt.scatter(
-        t_vals[mask],
-        f_vals[mask],
-        c=a_vals[mask],
-        cmap=&quot;viridis&quot;,
-        s=5,
-        alpha=0.7,
-        vmin=0,
-        vmax=1.0,
-    )
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="n">t_vals</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+        <span class="n">f_vals</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+        <span class="n">c</span><span class="o">=</span><span class="n">a_vals</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span>
+        <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">vmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span>
 
-plt.colorbar(label=&quot;Amplitude [V]&quot;)
-plt.xlabel(&quot;Time [s]&quot;)
-plt.ylabel(&quot;Frequency [Hz]&quot;)
-plt.title(&quot;Hilbert Spectrum (Scatter Plot)&quot;)
-plt.ylim(0, 150)
-plt.grid(True, alpha=0.3, linestyle=&quot;--&quot;)
-plt.show()
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Amplitude [V]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Hilbert Spectrum (Scatter Plot)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

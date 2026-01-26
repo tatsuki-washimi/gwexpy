@@ -48,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../guide/installation.html">インストール</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/quickstart.html">クイックスタート</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -60,9 +61,6 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">開発者ガイド (Developers Guide)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#id1">設計方針とコントラクト</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="contracts/numerical.html">gwexpy Numerical Logic (A2) Contract</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plans/REFACTORING_PLAN.html">TimeSeries Refactoring Plan</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plans/repo_improvement_plan.html">タスク: リポジトリ品質改善</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plans/stlt_implementation_plan.html">STLT (Short-Time Laplace Transform) 実装計画</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gui/implementation_map.html">Source Code Status Report: gwexpy/gui</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gui/reference_analysis.html">DTT (diaggui) リファレンス解析レポート</a></li>
 </ul>
@@ -74,6 +72,26 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#id3">技術分析</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="analysis/scalarfield_physics_review_20260120.html">ScalarField Physics Review</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/20260121_analyze_dtt.html">Implementation Plan: Analyzing Reference DTT (Diagnostic Test Tool)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html">pyaggui Implementation Analysis Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#overview">1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#application-structure">2. Application Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#ui-component-details">3. UI Component Details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#id1">3. バックエンドロジック詳細</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#ui">4. UIコンポーネント詳細</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#simulation-logic-gwexpy-gui-excitation-generator-py">4. Simulation Logic (<code class="docutils literal notranslate"><span class="pre">gwexpy/gui/excitation/generator.py</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#gwexpy-gui-excitation-generator-py">6. シミュレーションロジック (<code class="docutils literal notranslate"><span class="pre">gwexpy/gui/excitation/generator.py</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#analysis-summary">5. Analysis Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#conclusion-pyaggui-has-gone-beyond-a-mere-prototype-and-is-in-a-state-where-it-can-function-as-the-foundation-for-a-practical-diagnostic-tool-future-challenges-will-be-complete-integration-with-the-actual-dtt-kernel-logic-advanced-analysis-calculations-in-the-result-tab-etc-and-edge-case-bug-fixes"><strong>Conclusion</strong>: <code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> has gone beyond a mere prototype and is in a state where it can function as the foundation for a practical diagnostic tool. Future challenges will be complete integration with the actual DTT kernel logic (advanced analysis calculations in the <code class="docutils literal notranslate"><span class="pre">Result</span></code> tab, etc.) and edge case bug fixes.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#id2">7. 分析まとめ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html">DTT vs pyaggui 比較分析レポート</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html#id1">1. 概要</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html#id2">2. アーキテクチャ比較</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html#id3">3. 機能実装状況詳細比較</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html#gap-analysis">4. 今後の課題 (Gap Analysis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html#id5">5. 総評</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html#ui">6. UI詳細比較</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_analysis_plan_20260121_234500.html">DTT解析・gwexpyへの統合要件定義 計画書 (2026-01-21 23:45:00)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html">DTT (Diagnostic Test Tools) Comprehensive Analysis Report</a></li>
 <li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-1-documentation-ui-audit-phase-1">Part 1: Documentation &amp; UI Audit (Phase 1)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-2-core-code-analysis-phase-2">Part 2: Core Code Analysis (Phase 2)</a></li>
@@ -85,20 +103,126 @@
 <li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-8-data-flow-class-interaction-diagrams">Part 8: Data Flow &amp; Class Interaction Diagrams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-9-file-analysis-summary">Part 9: File Analysis Summary</a></li>
 <li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-10-conclusion">Part 10: Conclusion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_normalization_analysis.html">DTT FFT 正規化ロジック深掘り分析</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_subsystem_reports.html">DTT Subsystem Detailed Analysis Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_subsystem_reports.html#section-1-gui-logic-detailed-analysis">Section 1: GUI Logic Detailed Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_subsystem_reports.html#section-2-kernel-logic-analysis">Section 2: Kernel Logic Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_subsystem_reports.html#section-3-data-acquisition-logic-analysis">Section 3: Data Acquisition Logic Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_subsystem_reports.html#section-4-foton-filter-online-tool-logic-analysis">Section 4: Foton (Filter Online Tool) Logic Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/dtt/dtt_subsystem_reports.html#section-5-awg-gui-logic-analysis">Section 5: AWG GUI Logic Analysis</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">進行中の計画</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="plans/plan_refactor_exceptions_20260124_152245.html">作業計画書: 広範な例外処理のリファクタリング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plans">計画 (Plans)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plans/REFACTORING_PLAN.html">TimeSeries Refactoring Plan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/core_health_improvement_plan_20260123.html">Core Code Health and Robustness Improvement Plan (2026-01-23 21:23:45)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/core_health_improvement_plan_ja_20260123_2123.html">コアコードの品質および堅牢性向上計画書 (2026-01-23 21:23:55)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/effort_quality_improvement.html">Estimate Effort: Core Quality Improvement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/fft_documentation_plan_20260124_1350.html">Task Plan: FFT Specifications &amp; Conventions Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/mainwindow_refactoring_plan_20260123.html">Implementation Plan: MainWindow logic refactoring and modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/mainwindow_refactoring_plan_ja_20260123_2108.html">MainWindowロジックのリファクタリングとモジュール化計画書 (2026-01-23 21:08:50)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/multi_theme_refactors_20260124_200431.html">作業計画書: Multi-theme 安定化ロードマップ</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plans/plan_QA_Verification_20260124.html">作業計画書: QA検証 (Lint &amp; Test) - 2026/01/24</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plans/test_coverage_expansion_plan_20260124.html">Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/plan_docs_tutorials_v1.html">Documentation &amp; Tutorial Refinement Plan</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plans/plan_mypy_expansion_phase1_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 1: FrequencySeries)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plans/plan_mypy_expansion_phase2_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 2: Spectrogram)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/plan_packaging_readiness_v0.1.0b1_20260125.html">Packaging Readiness (PyPI Metadata &amp; Structure) 実行計画書</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/plan_quality_improvement_20260124.html">Plan: Core Quality Improvement 2026-01-24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/plan_quality_improvement_phase2_20260124.html">実装計画：コード品質の更なる向上（MyPy拡充・精密型定義・例外監査）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/plan_refactor_exceptions_20260124_152245.html">作業計画書: 広範な例外処理のリファクタリング</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/plan_static_analysis_cleanup_v1.html">Static Analysis &amp; Test Cleanup Plan (v1)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/repo_improvement_plan.html">タスク: リポジトリ品質改善</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/stlt_implementation_plan.html">STLT (Short-Time Laplace Transform) 実装計画</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plans/test_coverage_expansion_plan_20260124.html">Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">最近のレポート</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="reports/report_comprehensive_quality_improvement_20260124.html">作業包括報告書: GWExPy コード品質改善 - 2026/01/24</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reports/report_refactor_exceptions_20260124_153045.html">作業報告書: 広範な例外処理のリファクタリング - 2026/01/24</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reports">レポート (Reports)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reports/repo_review_20260124.html">Repository Review Report: gwexpy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reports/repo_review_final_20260124.html">Repository Review Report: gwexpy (Final)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_PrecisionTyping_Phase1_2_20260124_233000.html">作業報告書: gwexpy 型安全性向上 (Phase 1 &amp; Phase 2 Step 1)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_QA_Verification_20260124_152000.html">作業報告書: QA検証 (Lint &amp; Test) - 2026/01/24 15:20</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_VectorTensorTests_20260124_142549.html">Vector/Tensor Field Tests Expansion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_VectorTensorTests_20260124_143800.html">Vector/Tensor Field Tests Expansion and GUI Fixture Fix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_analysis_typing_20260125_130038.html">Work Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_analysis_typing_20260125_130038.html#verification">Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_analysis_typing_20260125_130038.html#notes-and-next-steps">Notes and Next Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_ci_alignment_20260125.html">作業報告書: CI Alignment &amp; Docs Update</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_cleanup_test_warnings_20260124_175000.html">作業報告書: テスト警告のクリーンアップ - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_comprehensive_quality_improvement_20260124.html">作業包括報告書: GWExPy コード品質改善 - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_docs_tutorials_20260125.html">作業報告書: Documentation &amp; Tutorial Refinement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_io_typing_20260125_131603.html">Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_io_typing_20260125_131603.html#modified-files">Modified Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_io_typing_20260125_131603.html#verification">Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_io_typing_20260125_131603.html#notes">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_localization_ja_20260125.html">作業報告書: Localization (ja) &amp; CI Cleanup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_mypy_expansion_phase1_20260124.html">作業報告書: MyPyカバレッジ拡大 (Phase 1: FrequencySeries) - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_mypy_expansion_phase2_20260124.html">作業報告書: MyPyカバレッジ拡大 (Phase 2: Spectrogram) - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_packaging_readiness_plan_update_0.1.0b1_20260125.html">作業レポート: Packaging Readiness 計画書の詳細化</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_packaging_readiness_v0.1.0b1_20260125_150000.html">作業報告書: Packaging Readiness v0.1.0b1 (Phase 1-6)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_phase2_step3_io_interop_mypy_20260125_132617.html">Scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_phase2_step3_io_interop_mypy_20260125_132617.html#changes">Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_phase2_step3_io_interop_mypy_20260125_132617.html#verification">Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_phase2_step3_io_interop_mypy_20260125_132617.html#notes">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_project_completion_20260125.html">作業報告書: gwexpy コード品質改善プロジェクト完了報告</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_quality_improvement_20260124_210502.html">作業報告（中間）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_quality_improvement_20260124_223500.html">作業報告書：SeriesMatrix 型定義の健全化と例外監査 (2026/01/24)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_refactor_exceptions_20260124_153045.html">作業報告書: 広範な例外処理のリファクタリング - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_static_analysis_cleanup_20260125.html">作業報告書: Static Analysis &amp; Test Cleanup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/report_tutorial_enhancement_20260124_1942.html">Tutorial Enhancement and Docs Reorganization Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reports/work_report_20260124_1356.html">作業報告書: MainWindowリファクタリングとコアコードの堅牢化</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">アーカイブ (非表示)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/Purge-legacy-field-and-fully-migrate-to-ScalarField.html">Purge legacy 4D field API and fully migrate to ScalarField</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/Unified_Field_API_with_Explicit_Domain_Semantics.html">Field API Refactoring and Domain Specification Plan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/dsp_scalarfield_plan_20260123.html">ScalarField 信号処理拡張 (Refined Phase 2 &amp; 3) 実装計画</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/dsp_scalarfield_plan_20260123_090500.html">ScalarField 信号処理拡張 計画書 (2026-01-23 09:05:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/field_plotting_enhancement_plan_20260123.html">Implementation Plan: Enhanced Plotting for Field Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/field_plotting_enhancement_plan_20260123_1723.html">[Field Plotting] 描画機能拡充計画書 (2026-01-23 17:23:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/finishing_plan_20260121_152300.html">作業仕上げ・クリーンアップ計画 (2026-01-21 15:23:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/fix_mypy_errors_plan_20260121_151500.html">静的解析エラー（MyPy）およびMarkdown警告の解消 計画書 (2026-01-21 15:15:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/fix_plan_20260107.html">修正計画書</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/implementation_plan_scalar_vector_tensor_field_20260122.html">タイムスタンプ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/implementation_plan_scalar_vector_tensor_field_20260122.html#id2">目的・目標</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/implementation_plan_scalar_vector_tensor_field_20260122.html#phase">詳細なロードマップ（Phase単位）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/implementation_plan_scalar_vector_tensor_field_20260122.html#id3">テスト・検証計画</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/implementation_plan_scalar_vector_tensor_field_20260122.html#id4">使用モデル・推奨スキル・工数見積もり</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/implementation_plan_scalar_vector_tensor_field_20260122.html#id5">承認待ち</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/phase1_normalization_plan_ja_20260123.html">フェーズ1：信号正規化ロジック（DTT互換モード）の実装計画 (2026-01-23 21:16:30)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/pyaggui_development_plan.html">pyaggui 開発計画書</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/pyaggui_model_effort_estimate.html">pyaggui 開発計画: LLMモデル推奨と工数見積もり</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/scalarfield_test_coverage_plan_20260122_215341.html"><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> テストカバレッジの強化 計画書 (2026-01-22 21:53:41)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/scalarfield_tutorial_plan_20260121_093243.html">ScalarField チュートリアルノートブック作成計画 (2026-01-21 09:32:43)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/signal_processing_extensions_scalarfield_plan_20260121_175140.html">ScalarField 向け信号処理拡張 計画書 (2026-01-21 17:51:40)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/signal_processing_extensions_scalarfield_plan_20260121_175140.html#scalarfield-3">ScalarField フェーズ3：信号処理拡張 計画</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/vector_tensor_field_plan_20260123.html">VectorField / TensorField 実装計画 (2026-01-23 15:40:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/visualize-ScalarField-docs.html">実装計画：ScalarField 描画機能の実践とドキュメント拡充</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/plans/visualize-methods_ScalarField.html">ScalarField 可視化（1D/2D）強化ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/repo_improvement_report_20260123.html">Repository Review Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_FieldPhysicsCheck_20260123_1628.html">Work Report: Physics Verification for ScalarField/VectorField/TensorField</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_FieldPlottingEffort_20260123_1723.html">Estimate Effort: Field Plotting Enhancement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_FieldVisualization_20260123_202809.html">Work Report: Field Visualization and Core Metadata Robustness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_Fix_MyPy_Errors_20260121_151600.html">作業報告書: 静的解析エラー（MyPy）の解消 (2026-01-21 15:16:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_Fix_MyPy_Errors_Final_20260121_155500.html">作業報告書: 静的解析エラー（MyPy）の完全解消 (2026-01-21 15:55:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_JupyterNotebookFixes_20260121_182149.html">Jupyter Notebook エラー修正 実施報告書 (Walkthrough)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_ScalarField_Stats_Skills_20260123.html">Report: ScalarField Signal Processing Implementation and Agent Skills Enhancement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_ScalarField_Test_Coverage_20260122_224425.html">作業レポート: ScalarField 信号処理テスト拡張 (Phase 4 検証)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_VectorTensorField_Phase23_20260123_1622.html">Work Report: VectorField/TensorField Phase 2 &amp; 3 Implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_dsp_scalarfield_20260123.html">作業報告：ScalarField 信号処理拡張 (Phase 1-3) 実装</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_purge_field4d_20260122_204010.html">作業報告: Field4D 完全削除 &amp; ScalarField 公開 API 化 (2026-01-22 20:40 JST)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_scalarfield_physics_verification_20260122_222000.html">作業報告書: ScalarField 物理検証とノートブック実行試験</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_scalarfield_refactor_20260122.html">作業報告: ScalarField への統一リファクタ (2026-01-22)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/report_visualize-methods_ScalarField_20260121.html">作業報告：ScalarField 可視化（1D/2D）強化の実装</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reports/scalarfield_phase3_signal_processing_20260121.html">ScalarField Phase 3 Signal Processing Extensions - 実装完了レポート</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reviews/conversation_work_report_20260121_091043.html">作業レポート（この会話全体）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reviews/conversation_work_report_20260121_152500.html">作業レポート（この会話全体） (2026-01-21 15:25:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reviews/conversation_work_report_20260121_182838.html">作業レポート（この会話全体）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reviews/conversation_work_report_20260122_204116.html">作業レポート（この会話全体）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reviews/conversation_work_report_20260123_141050.html">Conversation Work Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reviews/conversation_work_report_20260123_202809.html">Conversation Work Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reviews/conversation_work_report_20260124_142533.html">Conversation Work Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reviews/conversation_work_report_20260124_191000.html">Conversation Work Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reviews/improvement_report_20260120.html">リポジトリ品質改善報告書 (2026-01-20)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="archive/reviews/repo_review_20260120.html">リポジトリレビューレポート</a></li>
 </ul>
 </li>
 </ul>
@@ -136,9 +260,6 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="contracts/numerical.html">gwexpy Numerical Logic (A2) Contract</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plans/REFACTORING_PLAN.html">TimeSeries Refactoring Plan</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plans/repo_improvement_plan.html">タスク: リポジトリ品質改善</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plans/stlt_implementation_plan.html">STLT (Short-Time Laplace Transform) 実装計画</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gui/implementation_map.html">Source Code Status Report: gwexpy/gui</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gui/reference_analysis.html">DTT (diaggui) リファレンス解析レポート</a></li>
 </ul>
@@ -158,6 +279,26 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="analysis/scalarfield_physics_review_20260120.html">ScalarField Physics Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/20260121_analyze_dtt.html">Implementation Plan: Analyzing Reference DTT (Diagnostic Test Tool)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html">pyaggui Implementation Analysis Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#overview">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#application-structure">2. Application Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#ui-component-details">3. UI Component Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#id1">3. バックエンドロジック詳細</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#ui">4. UIコンポーネント詳細</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#simulation-logic-gwexpy-gui-excitation-generator-py">4. Simulation Logic (<code class="docutils literal notranslate"><span class="pre">gwexpy/gui/excitation/generator.py</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#gwexpy-gui-excitation-generator-py">6. シミュレーションロジック (<code class="docutils literal notranslate"><span class="pre">gwexpy/gui/excitation/generator.py</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#analysis-summary">5. Analysis Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#conclusion-pyaggui-has-gone-beyond-a-mere-prototype-and-is-in-a-state-where-it-can-function-as-the-foundation-for-a-practical-diagnostic-tool-future-challenges-will-be-complete-integration-with-the-actual-dtt-kernel-logic-advanced-analysis-calculations-in-the-result-tab-etc-and-edge-case-bug-fixes"><strong>Conclusion</strong>: <code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> has gone beyond a mere prototype and is in a state where it can function as the foundation for a practical diagnostic tool. Future challenges will be complete integration with the actual DTT kernel logic (advanced analysis calculations in the <code class="docutils literal notranslate"><span class="pre">Result</span></code> tab, etc.) and edge case bug fixes.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/analyze_pyaggui_implementation.html#id2">7. 分析まとめ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html">DTT vs pyaggui 比較分析レポート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html#id1">1. 概要</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html#id2">2. アーキテクチャ比較</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html#id3">3. 機能実装状況詳細比較</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html#gap-analysis">4. 今後の課題 (Gap Analysis)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html#id5">5. 総評</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/comparison_dtt_pyaggui.html#ui">6. UI詳細比較</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_plan_20260121_234500.html">DTT解析・gwexpyへの統合要件定義 計画書 (2026-01-21 23:45:00)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html">DTT (Diagnostic Test Tools) Comprehensive Analysis Report</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-1-documentation-ui-audit-phase-1">Part 1: Documentation &amp; UI Audit (Phase 1)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-2-core-code-analysis-phase-2">Part 2: Core Code Analysis (Phase 2)</a></li>
@@ -169,29 +310,86 @@
 <li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-8-data-flow-class-interaction-diagrams">Part 8: Data Flow &amp; Class Interaction Diagrams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-9-file-analysis-summary">Part 9: File Analysis Summary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_analysis_report.html#part-10-conclusion">Part 10: Conclusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_normalization_analysis.html">DTT FFT 正規化ロジック深掘り分析</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_subsystem_reports.html">DTT Subsystem Detailed Analysis Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_subsystem_reports.html#section-1-gui-logic-detailed-analysis">Section 1: GUI Logic Detailed Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_subsystem_reports.html#section-2-kernel-logic-analysis">Section 2: Kernel Logic Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_subsystem_reports.html#section-3-data-acquisition-logic-analysis">Section 3: Data Acquisition Logic Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_subsystem_reports.html#section-4-foton-filter-online-tool-logic-analysis">Section 4: Foton (Filter Online Tool) Logic Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis/dtt/dtt_subsystem_reports.html#section-5-awg-gui-logic-analysis">Section 5: AWG GUI Logic Analysis</a></li>
+</ul>
+</div>
+</section>
+<section id="plans">
+<h2>計画 (Plans)<a class="headerlink" href="#plans" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plans/REFACTORING_PLAN.html">TimeSeries Refactoring Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/core_health_improvement_plan_20260123.html">Core Code Health and Robustness Improvement Plan (2026-01-23 21:23:45)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/core_health_improvement_plan_ja_20260123_2123.html">コアコードの品質および堅牢性向上計画書 (2026-01-23 21:23:55)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/effort_quality_improvement.html">Estimate Effort: Core Quality Improvement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/fft_documentation_plan_20260124_1350.html">Task Plan: FFT Specifications &amp; Conventions Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/mainwindow_refactoring_plan_20260123.html">Implementation Plan: MainWindow logic refactoring and modularization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/mainwindow_refactoring_plan_ja_20260123_2108.html">MainWindowロジックのリファクタリングとモジュール化計画書 (2026-01-23 21:08:50)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/multi_theme_refactors_20260124_200431.html">作業計画書: Multi-theme 安定化ロードマップ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_QA_Verification_20260124.html">作業計画書: QA検証 (Lint &amp; Test) - 2026/01/24</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_docs_tutorials_v1.html">Documentation &amp; Tutorial Refinement Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_mypy_expansion_phase1_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 1: FrequencySeries)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_mypy_expansion_phase2_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 2: Spectrogram)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_packaging_readiness_v0.1.0b1_20260125.html">Packaging Readiness (PyPI Metadata &amp; Structure) 実行計画書</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_quality_improvement_20260124.html">Plan: Core Quality Improvement 2026-01-24</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_quality_improvement_phase2_20260124.html">実装計画：コード品質の更なる向上（MyPy拡充・精密型定義・例外監査）</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_refactor_exceptions_20260124_152245.html">作業計画書: 広範な例外処理のリファクタリング</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/plan_static_analysis_cleanup_v1.html">Static Analysis &amp; Test Cleanup Plan (v1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/repo_improvement_plan.html">タスク: リポジトリ品質改善</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/stlt_implementation_plan.html">STLT (Short-Time Laplace Transform) 実装計画</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/test_coverage_expansion_plan_20260124.html">Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)</a></li>
+</ul>
+</div>
+</section>
+<section id="reports">
+<h2>レポート (Reports)<a class="headerlink" href="#reports" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reports/repo_review_20260124.html">Repository Review Report: gwexpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/repo_review_final_20260124.html">Repository Review Report: gwexpy (Final)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_PrecisionTyping_Phase1_2_20260124_233000.html">作業報告書: gwexpy 型安全性向上 (Phase 1 &amp; Phase 2 Step 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_QA_Verification_20260124_152000.html">作業報告書: QA検証 (Lint &amp; Test) - 2026/01/24 15:20</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_VectorTensorTests_20260124_142549.html">Vector/Tensor Field Tests Expansion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_VectorTensorTests_20260124_143800.html">Vector/Tensor Field Tests Expansion and GUI Fixture Fix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_analysis_typing_20260125_130038.html">Work Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_analysis_typing_20260125_130038.html#verification">Verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_analysis_typing_20260125_130038.html#notes-and-next-steps">Notes and Next Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_ci_alignment_20260125.html">作業報告書: CI Alignment &amp; Docs Update</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_cleanup_test_warnings_20260124_175000.html">作業報告書: テスト警告のクリーンアップ - 2026/01/24</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_comprehensive_quality_improvement_20260124.html">作業包括報告書: GWExPy コード品質改善 - 2026/01/24</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_docs_tutorials_20260125.html">作業報告書: Documentation &amp; Tutorial Refinement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_io_typing_20260125_131603.html">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_io_typing_20260125_131603.html#modified-files">Modified Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_io_typing_20260125_131603.html#verification">Verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_io_typing_20260125_131603.html#notes">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_localization_ja_20260125.html">作業報告書: Localization (ja) &amp; CI Cleanup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_mypy_expansion_phase1_20260124.html">作業報告書: MyPyカバレッジ拡大 (Phase 1: FrequencySeries) - 2026/01/24</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_mypy_expansion_phase2_20260124.html">作業報告書: MyPyカバレッジ拡大 (Phase 2: Spectrogram) - 2026/01/24</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_packaging_readiness_plan_update_0.1.0b1_20260125.html">作業レポート: Packaging Readiness 計画書の詳細化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_packaging_readiness_v0.1.0b1_20260125_150000.html">作業報告書: Packaging Readiness v0.1.0b1 (Phase 1-6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_phase2_step3_io_interop_mypy_20260125_132617.html">Scope</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_phase2_step3_io_interop_mypy_20260125_132617.html#changes">Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_phase2_step3_io_interop_mypy_20260125_132617.html#verification">Verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_phase2_step3_io_interop_mypy_20260125_132617.html#notes">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_project_completion_20260125.html">作業報告書: gwexpy コード品質改善プロジェクト完了報告</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_quality_improvement_20260124_210502.html">作業報告（中間）</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_quality_improvement_20260124_223500.html">作業報告書：SeriesMatrix 型定義の健全化と例外監査 (2026/01/24)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_refactor_exceptions_20260124_153045.html">作業報告書: 広範な例外処理のリファクタリング - 2026/01/24</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_static_analysis_cleanup_20260125.html">作業報告書: Static Analysis &amp; Test Cleanup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/report_tutorial_enhancement_20260124_1942.html">Tutorial Enhancement and Docs Reorganization Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports/work_report_20260124_1356.html">作業報告書: MainWindowリファクタリングとコアコードの堅牢化</a></li>
 </ul>
 </div>
 </section>
 <section id="id4">
-<h2>進行中の計画<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<h2>アーカイブ (非表示)<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="plans/plan_refactor_exceptions_20260124_152245.html">作業計画書: 広範な例外処理のリファクタリング</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plans/plan_QA_Verification_20260124.html">作業計画書: QA検証 (Lint &amp; Test) - 2026/01/24</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plans/test_coverage_expansion_plan_20260124.html">Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plans/plan_mypy_expansion_phase1_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 1: FrequencySeries)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plans/plan_mypy_expansion_phase2_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 2: Spectrogram)</a></li>
-</ul>
-</div>
-</section>
-<section id="id5">
-<h2>最近のレポート<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="reports/report_comprehensive_quality_improvement_20260124.html">作業包括報告書: GWExPy コード品質改善 - 2026/01/24</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports/report_refactor_exceptions_20260124_153045.html">作業報告書: 広範な例外処理のリファクタリング - 2026/01/24</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports/repo_review_final_20260124.html">Repository Review Report: gwexpy (Final)</a></li>
-</ul>
 </div>
 </section>
 </section>

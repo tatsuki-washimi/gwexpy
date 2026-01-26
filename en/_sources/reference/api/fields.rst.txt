@@ -5,6 +5,7 @@ Fields
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members: FieldList, FieldDict, VectorField, TensorField
 
 .. autoclass:: gwexpy.fields.FieldList
    :members:

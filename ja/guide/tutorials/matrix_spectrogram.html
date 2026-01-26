@@ -72,6 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -117,14 +118,14 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import astropy.units as u
-import matplotlib.pyplot as plt
-import numpy as np
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-from gwexpy.timeseries import TimeSeriesMatrix
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
 
-# 乱数シードの固定
-np.random.seed(42)
+<span class="c1"># 乱数シードの固定</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -134,43 +135,43 @@ np.random.seed(42)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>rng = np.random.default_rng(0)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-# サンプル設定
-n = 512
-dt = (1 / 128) * u.s
-t0 = 0 * u.s
+<span class="c1"># サンプル設定</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">128</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 
-t = (np.arange(n) * dt).to_value(u.s)
+<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
 
-tone50 = np.sin(2 * np.pi * 50 * t)
-tone20 = np.sin(2 * np.pi * 20 * t + 0.3)
+<span class="n">tone50</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">tone20</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="mf">0.3</span><span class="p">)</span>
 
-data = np.empty((2, 2, n), dtype=float)
-data[0, 0] = 0.5 * tone50 + 0.05 * rng.normal(size=n)
-data[0, 1] = 0.5 * tone20 + 0.05 * rng.normal(size=n)
-data[1, 0] = 0.3 * tone50 + 0.3 * tone20 + 0.05 * rng.normal(size=n)
-data[1, 1] = 0.2 * tone50 - 0.4 * tone20 + 0.05 * rng.normal(size=n)
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">tone50</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">tone20</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">tone50</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">tone20</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">tone50</span> <span class="o">-</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">tone20</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
 
-units = np.full((2, 2), u.V)
-names = [[&quot;ch00&quot;, &quot;ch01&quot;], [&quot;ch10&quot;, &quot;ch11&quot;]]
-channels = [[&quot;X:A&quot;, &quot;X:B&quot;], [&quot;Y:A&quot;, &quot;Y:B&quot;]]
+<span class="n">units</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">)</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;ch00&quot;</span><span class="p">,</span> <span class="s2">&quot;ch01&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;ch10&quot;</span><span class="p">,</span> <span class="s2">&quot;ch11&quot;</span><span class="p">]]</span>
+<span class="n">channels</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;X:A&quot;</span><span class="p">,</span> <span class="s2">&quot;X:B&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Y:A&quot;</span><span class="p">,</span> <span class="s2">&quot;Y:B&quot;</span><span class="p">]]</span>
 
-tsm = TimeSeriesMatrix(
-    data,
-    dt=dt,
-    t0=t0,
-    units=units,
-    names=names,
-    channels=channels,
-    rows={&quot;r0&quot;: {&quot;name&quot;: &quot;row0&quot;}, &quot;r1&quot;: {&quot;name&quot;: &quot;row1&quot;}},
-    cols={&quot;c0&quot;: {&quot;name&quot;: &quot;col0&quot;}, &quot;c1&quot;: {&quot;name&quot;: &quot;col1&quot;}},
-    name=&quot;demo&quot;,
-)
+<span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row0&quot;</span><span class="p">},</span> <span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row1&quot;</span><span class="p">}},</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col0&quot;</span><span class="p">},</span> <span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col1&quot;</span><span class="p">}},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
-display(tsm)
-tsm.plot()
-plt.show()
+<span class="n">display</span><span class="p">(</span><span class="n">tsm</span><span class="p">)</span>
+<span class="n">tsm</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -298,11 +299,11 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spec_matrix = tsm.spectrogram(2, fftlength=0.5, overlap=0.25)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spec_matrix</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
 
-print(&quot;Type:&quot;, type(spec_matrix))
-print(&quot;Shape:&quot;, spec_matrix.shape)  # (Batch, Time, Freq)
-spec_matrix.plot();
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Type:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">spec_matrix</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (Batch, Time, Freq)</span>
+<span class="n">spec_matrix</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
@@ -329,9 +330,9 @@ Shape: (2, 2, 2, 33)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;Time axis (first 5):&quot;, spec_matrix.times[:5])
-print(&quot;Freq axis (first 5):&quot;, spec_matrix.frequencies[:5])
-print(&quot;Unit:&quot;, spec_matrix.unit)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time axis (first 5):&quot;</span><span class="p">,</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">times</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Freq axis (first 5):&quot;</span><span class="p">,</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unit:&quot;</span><span class="p">,</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -355,11 +356,11 @@ Unit: V2 / Hz
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># axis=0 (Batch軸) で平均を取る
-mean_spectrogram_data = spec_matrix.mean(axis=0)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># axis=0 (Batch軸) で平均を取る</span>
+<span class="n">mean_spectrogram_data</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-print(&quot;Mean Data Shape:&quot;, mean_spectrogram_data.shape)
-# 結果は (Time, Freq) の2次元配列になります
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mean Data Shape:&quot;</span><span class="p">,</span> <span class="n">mean_spectrogram_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="c1"># 結果は (Time, Freq) の2次元配列になります</span>
 </pre></div>
 </div>
 </div>
@@ -379,8 +380,8 @@ Mean Data Shape: (2, 2, 33)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot = spec_matrix.plot(title=&quot;Mean Spectrogram (All Channels)&quot;)
-plt.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Mean Spectrogram (All Channels)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -396,13 +397,13 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 最初のチャネル (Channel_0) をプロット
-plot0 = spec_matrix.plot(monitor=0, title=&quot;Channel 0 Spectrogram&quot;)
-plot0.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 最初のチャネル (Channel_0) をプロット</span>
+<span class="n">plot0</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Channel 0 Spectrogram&quot;</span><span class="p">)</span>
+<span class="n">plot0</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-# 5番目のチャネル (Channel_5) をプロット
-plot5 = spec_matrix.plot(monitor=3, title=&quot;Channel 5 Spectrogram&quot;)
-plot5.show()
+<span class="c1"># 5番目のチャネル (Channel_5) をプロット</span>
+<span class="n">plot5</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Channel 5 Spectrogram&quot;</span><span class="p">)</span>
+<span class="n">plot5</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -428,26 +429,26 @@ plot5.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># PyTorch Tensor への変換
-try:
-    import torch
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># PyTorch Tensor への変換</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-    _ = torch
-    torch_tensor = spec_matrix.to_torch()
-    print(&quot;PyTorch Tensor:&quot;, type(torch_tensor))
-    print(&quot;Shape:&quot;, torch_tensor.shape)
-except ImportError:
-    print(&quot;PyTorch is not installed.&quot;)
+    <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span>
+    <span class="n">torch_tensor</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">to_torch</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch Tensor:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">torch_tensor</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">torch_tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch is not installed.&quot;</span><span class="p">)</span>
 
-# CuPy Array への変換（CUDA環境がある場合）
-from gwexpy.interop import is_cupy_available
+<span class="c1"># CuPy Array への変換（CUDA環境がある場合）</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_cupy_available</span>
 
-if is_cupy_available():
-    cupy_array = spec_matrix.to_cupy()
-    print(&quot;CuPy Array:&quot;, type(cupy_array))
-    print(&quot;Shape:&quot;, cupy_array.shape)
-else:
-    print(&quot;CuPy is not installed or GPU driver is not working.&quot;)
+<span class="k">if</span> <span class="n">is_cupy_available</span><span class="p">():</span>
+    <span class="n">cupy_array</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">to_cupy</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CuPy Array:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">cupy_array</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">cupy_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CuPy is not installed or GPU driver is not working.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

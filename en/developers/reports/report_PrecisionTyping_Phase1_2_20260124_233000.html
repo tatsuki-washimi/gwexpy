@@ -19,7 +19,9 @@
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="作業報告書: QA検証 (Lint &amp; Test) - 2026/01/24 15:20" href="report_QA_Verification_20260124_152000.html" />
+    <link rel="prev" title="Report: Fix Py3.9 Compatibility, Qt Tests, and Tutorial Updates" href="report_FixPy39_Qt_Tutorials_20260126_003206.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,12 +48,78 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developers Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#core-design-contracts">Core Design &amp; Contracts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#development-guides">Development Guides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#technical-analysis">Technical Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#plans">Plans</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#reports">Reports</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="repo_review_20260124.html">Repository Review Report: gwexpy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="repo_review_final_20260124.html">Repository Review Report: gwexpy (Final)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_CI_fixes_20260126_001250.html">Work Report: CI Ruff/Test Fixes (20260126_001250)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_FixPy39_Qt_Tutorials_20260126_003206.html">Report: Fix Py3.9 Compatibility, Qt Tests, and Tutorial Updates</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">作業報告書: gwexpy 型安全性向上 (Phase 1 &amp; Phase 2 Step 1)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">概要</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">実施内容</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">成果</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">検証</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">次のステップ</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="report_QA_Verification_20260124_152000.html">作業報告書: QA検証 (Lint &amp; Test) - 2026/01/24 15:20</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_VectorTensorTests_20260124_142549.html">Vector/Tensor Field Tests Expansion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_VectorTensorTests_20260124_143800.html">Vector/Tensor Field Tests Expansion and GUI Fixture Fix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_analysis_typing_20260125_130038.html">Work Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_analysis_typing_20260125_130038.html#verification">Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_analysis_typing_20260125_130038.html#notes-and-next-steps">Notes and Next Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_ci_alignment_20260125.html">作業報告書: CI Alignment &amp; Docs Update</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_cleanup_test_warnings_20260124_175000.html">作業報告書: テスト警告のクリーンアップ - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_comprehensive_quality_improvement_20260124.html">作業包括報告書: GWExPy コード品質改善 - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_docs_tutorials_20260125.html">作業報告書: Documentation &amp; Tutorial Refinement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_enhance_tutorials_20260125.html">Work Report: Enhance Tutorial Readability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_enhance_tutorials_final_20260126.html">作業報告：チュートリアルの可読性向上とビルドの安定化</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_fix_deps_and_types_20260125_215500.html">作業レポート: 依存関係エラーおよび型ヒント互換性の修正</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_fix_py39_and_qt_tests_20260125.html">Work Report: Fix Python 3.9 Compatibility and Test Reliability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_fixes_20260126.html">作業報告：チュートリアルと統計機能の修正 (2026-01-26)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_import_cleanup_20260126_003149.html">Work Report: Import Cleanup and Ruff Alignment (20260126_003149)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_io_typing_20260125_131603.html">Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_io_typing_20260125_131603.html#modified-files">Modified Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_io_typing_20260125_131603.html#verification">Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_io_typing_20260125_131603.html#notes">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_localization_ja_20260125.html">作業報告書: Localization (ja) &amp; CI Cleanup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_mypy_expansion_phase1_20260124.html">作業報告書: MyPyカバレッジ拡大 (Phase 1: FrequencySeries) - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_mypy_expansion_phase2_20260124.html">作業報告書: MyPyカバレッジ拡大 (Phase 2: Spectrogram) - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_packaging_readiness_plan_update_0.1.0b1_20260125.html">作業レポート: Packaging Readiness 計画書の詳細化</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_packaging_readiness_v0.1.0b1_20260125_150000.html">作業報告書: Packaging Readiness v0.1.0b1 (Phase 1-6)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_phase2_step3_io_interop_mypy_20260125_132617.html">Scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_phase2_step3_io_interop_mypy_20260125_132617.html#changes">Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_phase2_step3_io_interop_mypy_20260125_132617.html#verification">Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_phase2_step3_io_interop_mypy_20260125_132617.html#notes">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_project_completion_20260125.html">作業報告書: gwexpy コード品質改善プロジェクト完了報告</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_quality_improvement_20260124_210502.html">作業報告（中間）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_quality_improvement_20260124_223500.html">作業報告書：SeriesMatrix 型定義の健全化と例外監査 (2026/01/24)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_refactor_exceptions_20260124_153045.html">作業報告書: 広範な例外処理のリファクタリング - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_static_analysis_cleanup_20260125.html">作業報告書: Static Analysis &amp; Test Cleanup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_task_d_code_modernization_20260125_204451.html">Task D 作業報告書（コードモダナイズ）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_tutorial_cleanup_20260125_191010.html">作業報告書: チュートリアル警告/ログ抑制 (ARIMA/TensorFlow)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_tutorial_enhancement_20260124_1942.html">Tutorial Enhancement and Docs Reorganization Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="system_issue_quota_bug_20260125.html">System Issue Report: Claude Model Quota Corruption (Critical)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="work_report_20260124_1356.html">作業報告書: MainWindowリファクタリングとコアコードの堅牢化</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#archive-hidden">Archive (Hidden)</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -68,6 +136,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developers Guide</a></li>
       <li class="breadcrumb-item active">作業報告書: gwexpy 型安全性向上 (Phase 1 &amp; Phase 2 Step 1)</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_PrecisionTyping_Phase1_2_20260124_233000.md" class="fa fa-github"> Edit on GitHub</a>
@@ -156,7 +225,10 @@
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="report_FixPy39_Qt_Tutorials_20260126_003206.html" class="btn btn-neutral float-left" title="Report: Fix Py3.9 Compatibility, Qt Tests, and Tutorial Updates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="report_QA_Verification_20260124_152000.html" class="btn btn-neutral float-right" title="作業報告書: QA検証 (Lint &amp; Test) - 2026/01/24 15:20" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

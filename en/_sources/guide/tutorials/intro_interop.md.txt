@@ -1,8 +1,8 @@
 # Interoperability with External Libraries
 
 This tutorial is currently only available in Japanese.
-Please see the [Japanese version](../../../ja/guide/tutorials/intro_interop.html).
+See `docs/ja/guide/tutorials/intro_interop.ipynb`.
 
 ---
 
-このチュートリアルの日本語版は [こちら](../../../ja/guide/tutorials/intro_interop.html) です。
+このチュートリアルの日本語版は `docs/ja/guide/tutorials/intro_interop.ipynb` を参照してください。

@@ -2,6 +2,7 @@
 =====================
 
 .. automodule:: gwexpy.timeseries
+   :no-index:
    :members:
    :undoc-members:
    :show-inheritance:

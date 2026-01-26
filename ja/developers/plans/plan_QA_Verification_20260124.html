@@ -20,8 +20,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)" href="test_coverage_expansion_plan_20260124.html" />
-    <link rel="prev" title="作業計画書: 広範な例外処理のリファクタリング" href="plan_refactor_exceptions_20260124_152245.html" /> 
+    <link rel="next" title="Documentation &amp; Tutorial Refinement Plan" href="plan_docs_tutorials_v1.html" />
+    <link rel="prev" title="作業計画書: Multi-theme 安定化ロードマップ" href="multi_theme_refactors_20260124_200431.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -61,8 +62,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#id1">設計方針とコントラクト</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#id2">開発ガイド</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#id3">技術分析</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id4">進行中の計画</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="plan_refactor_exceptions_20260124_152245.html">作業計画書: 広範な例外処理のリファクタリング</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#plans">計画 (Plans)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="REFACTORING_PLAN.html">TimeSeries Refactoring Plan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_health_improvement_plan_20260123.html">Core Code Health and Robustness Improvement Plan (2026-01-23 21:23:45)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_health_improvement_plan_ja_20260123_2123.html">コアコードの品質および堅牢性向上計画書 (2026-01-23 21:23:55)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="effort_quality_improvement.html">Estimate Effort: Core Quality Improvement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fft_documentation_plan_20260124_1350.html">Task Plan: FFT Specifications &amp; Conventions Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mainwindow_refactoring_plan_20260123.html">Implementation Plan: MainWindow logic refactoring and modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mainwindow_refactoring_plan_ja_20260123_2108.html">MainWindowロジックのリファクタリングとモジュール化計画書 (2026-01-23 21:08:50)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="multi_theme_refactors_20260124_200431.html">作業計画書: Multi-theme 安定化ロードマップ</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">作業計画書: QA検証 (Lint &amp; Test) - 2026/01/24</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id1">1. 目的とゴール</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id2">2. 詳細ロードマップ</a></li>
@@ -70,12 +78,21 @@
 <li class="toctree-l4"><a class="reference internal" href="#id5">4. 推奨モデル、スキル、工数見積もり</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="test_coverage_expansion_plan_20260124.html">Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_docs_tutorials_v1.html">Documentation &amp; Tutorial Refinement Plan</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plan_mypy_expansion_phase1_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 1: FrequencySeries)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plan_mypy_expansion_phase2_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 2: Spectrogram)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_packaging_readiness_v0.1.0b1_20260125.html">Packaging Readiness (PyPI Metadata &amp; Structure) 実行計画書</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_quality_improvement_20260124.html">Plan: Core Quality Improvement 2026-01-24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_quality_improvement_phase2_20260124.html">実装計画：コード品質の更なる向上（MyPy拡充・精密型定義・例外監査）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_refactor_exceptions_20260124_152245.html">作業計画書: 広範な例外処理のリファクタリング</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_static_analysis_cleanup_v1.html">Static Analysis &amp; Test Cleanup Plan (v1)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="repo_improvement_plan.html">タスク: リポジトリ品質改善</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stlt_implementation_plan.html">STLT (Short-Time Laplace Transform) 実装計画</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_coverage_expansion_plan_20260124.html">Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id5">最近のレポート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#reports">レポート (Reports)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">アーカイブ (非表示)</a></li>
 </ul>
 </li>
 </ul>
@@ -172,8 +189,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="plan_refactor_exceptions_20260124_152245.html" class="btn btn-neutral float-left" title="作業計画書: 広範な例外処理のリファクタリング" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="test_coverage_expansion_plan_20260124.html" class="btn btn-neutral float-right" title="Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="multi_theme_refactors_20260124_200431.html" class="btn btn-neutral float-left" title="作業計画書: Multi-theme 安定化ロードマップ" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plan_docs_tutorials_v1.html" class="btn btn-neutral float-right" title="Documentation &amp; Tutorial Refinement Plan" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -75,6 +75,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -120,10 +121,10 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-from gwexpy.noise.wave import gaussian, sine
-from gwexpy.spectrogram import SpectrogramDict, SpectrogramList
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">sine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramDict</span><span class="p">,</span> <span class="n">SpectrogramList</span>
 </pre></div>
 </div>
 </div>
@@ -134,36 +135,36 @@ from gwexpy.spectrogram import SpectrogramDict, SpectrogramList
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># サンプルデータの作成
-duration = 20  # 秒
-sample_rate = 128  # Hz
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># サンプルデータの作成</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># 秒</span>
+<span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">128</span>  <span class="c1"># Hz</span>
 
-# 10Hz, 30Hz, 50Hz のサイン波 (+ノイズ) を作成
-noise_amp = 0.1
-
-
-def make_signal(freq, name):
-    s = sine(duration=duration, sample_rate=sample_rate, frequency=freq, amplitude=1.0)
-    n = gaussian(duration=duration, sample_rate=sample_rate, std=noise_amp)
-    ts = s + n
-    ts.name = name
-    ts.override_unit(&quot;strain&quot;)
-    return ts
+<span class="c1"># 10Hz, 30Hz, 50Hz のサイン波 (+ノイズ) を作成</span>
+<span class="n">noise_amp</span> <span class="o">=</span> <span class="mf">0.1</span>
 
 
-ts1 = make_signal(10, &quot;Signal 10Hz&quot;)
-ts2 = make_signal(30, &quot;Signal 30Hz&quot;)
-ts3 = make_signal(50, &quot;Signal 50Hz&quot;)
+<span class="k">def</span><span class="w"> </span><span class="nf">make_signal</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="n">freq</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">noise_amp</span><span class="p">)</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">n</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ts</span>
 
-# スペクトログラムの計算 (stride=2s, fftlength=1s)
-# nproc=1 を指定してシリアル実行による安定化を図ります
-spec1 = ts1.spectrogram(2, fftlength=1, overlap=0.5, nproc=1)
-spec2 = ts2.spectrogram(2, fftlength=1, overlap=0.5, nproc=1)
-spec3 = ts3.spectrogram(2, fftlength=1, overlap=0.5, nproc=1)
 
-print(&quot;Spectrogram shape:&quot;, spec1.shape)
-print(&quot;Time range:&quot;, spec1.xspan)
-print(&quot;Freq range:&quot;, spec1.yspan)
+<span class="n">ts1</span> <span class="o">=</span> <span class="n">make_signal</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;Signal 10Hz&quot;</span><span class="p">)</span>
+<span class="n">ts2</span> <span class="o">=</span> <span class="n">make_signal</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;Signal 30Hz&quot;</span><span class="p">)</span>
+<span class="n">ts3</span> <span class="o">=</span> <span class="n">make_signal</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;Signal 50Hz&quot;</span><span class="p">)</span>
+
+<span class="c1"># スペクトログラムの計算 (stride=2s, fftlength=1s)</span>
+<span class="c1"># nproc=1 を指定してシリアル実行による安定化を図ります</span>
+<span class="n">spec1</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">spec2</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">spec3</span> <span class="o">=</span> <span class="n">ts3</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Spectrogram shape:&quot;</span><span class="p">,</span> <span class="n">spec1</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time range:&quot;</span><span class="p">,</span> <span class="n">spec1</span><span class="o">.</span><span class="n">xspan</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Freq range:&quot;</span><span class="p">,</span> <span class="n">spec1</span><span class="o">.</span><span class="n">yspan</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -185,14 +186,14 @@ Freq range: [0.0 ... 65.0)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># リストの作成
-spec_list = SpectrogramList([spec1, spec2])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># リストの作成</span>
+<span class="n">spec_list</span> <span class="o">=</span> <span class="n">SpectrogramList</span><span class="p">([</span><span class="n">spec1</span><span class="p">,</span> <span class="n">spec2</span><span class="p">])</span>
 
-# 追加
-spec_list.append(spec3)
+<span class="c1"># 追加</span>
+<span class="n">spec_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spec3</span><span class="p">)</span>
 
-print(f&quot;List length: {len(spec_list)}&quot;)
-print(f&quot;Items: {[s.name for s in spec_list]}&quot;)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;List length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">spec_list</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Items: </span><span class="si">{</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">spec_list</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -212,11 +213,11 @@ Items: [&#39;Signal 10Hz&#39;, &#39;Signal 30Hz&#39;, &#39;Signal 50Hz&#39;]
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 5秒〜15秒の範囲を切り出し
-cropped_list = spec_list.crop(5, 15)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 5秒〜15秒の範囲を切り出し</span>
+<span class="n">cropped_list</span> <span class="o">=</span> <span class="n">spec_list</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
 
-print(&quot;Original range:&quot;, spec_list[0].xspan)
-print(&quot;Cropped range:&quot;, cropped_list[0].xspan)
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original range:&quot;</span><span class="p">,</span> <span class="n">spec_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xspan</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cropped range:&quot;</span><span class="p">,</span> <span class="n">cropped_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xspan</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -237,12 +238,12 @@ Cropped range: [4.0 ... 14.0)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 0Hz 〜 40Hz の範囲を切り出し
-freq_cropped = spec_list.crop_frequencies(0, 40)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 0Hz 〜 40Hz の範囲を切り出し</span>
+<span class="n">freq_cropped</span> <span class="o">=</span> <span class="n">spec_list</span><span class="o">.</span><span class="n">crop_frequencies</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
 
-print(&quot;Original yspan:&quot;, spec_list[0].yspan)
-print(&quot;Cropped yspan:&quot;, freq_cropped[0].yspan)
-# 50Hzの信号を含んでいた3つ目の要素も範囲外の部分はカットされます
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original yspan:&quot;</span><span class="p">,</span> <span class="n">spec_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">yspan</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cropped yspan:&quot;</span><span class="p">,</span> <span class="n">freq_cropped</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">yspan</span><span class="p">)</span>
+<span class="c1"># 50Hzの信号を含んでいた3つ目の要素も範囲外の部分はカットされます</span>
 </pre></div>
 </div>
 </div>
@@ -264,9 +265,9 @@ Cropped yspan: [0.0 ... 40.0)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spec_dict = SpectrogramDict({&quot;low_freq&quot;: spec1, &quot;mid_freq&quot;: spec2, &quot;high_freq&quot;: spec3})
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spec_dict</span> <span class="o">=</span> <span class="n">SpectrogramDict</span><span class="p">({</span><span class="s2">&quot;low_freq&quot;</span><span class="p">:</span> <span class="n">spec1</span><span class="p">,</span> <span class="s2">&quot;mid_freq&quot;</span><span class="p">:</span> <span class="n">spec2</span><span class="p">,</span> <span class="s2">&quot;high_freq&quot;</span><span class="p">:</span> <span class="n">spec3</span><span class="p">})</span>
 
-print(&quot;Keys:&quot;, list(spec_dict.keys()))
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Keys:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">spec_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 </pre></div>
 </div>
 </div>
@@ -286,10 +287,10 @@ Keys: [&#39;low_freq&#39;, &#39;mid_freq&#39;, &#39;high_freq&#39;]
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 一括プロット
-# sharex=True, sharey=True にすると軸を共有して比較しやすくなります
-plot = spec_dict.plot(figsize=(12, 8), sharex=True, sharey=True)
-plt.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 一括プロット</span>
+<span class="c1"># sharex=True, sharey=True にすると軸を共有して比較しやすくなります</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">spec_dict</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -309,15 +310,15 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>matrix = spec_list.to_matrix()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">matrix</span> <span class="o">=</span> <span class="n">spec_list</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
 
-print(&quot;Matrix Type:&quot;, type(matrix))
-print(&quot;Matrix Shape:&quot;, matrix.shape)
-print(&quot;  (N_channels, N_time_steps, N_freq_bins)&quot;)
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Matrix Type:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">matrix</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Matrix Shape:&quot;</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  (N_channels, N_time_steps, N_freq_bins)&quot;</span><span class="p">)</span>
 
-# 属性へのアクセス
-print(&quot;Time axis shape:&quot;, matrix.times.shape)
-print(&quot;Freq axis shape:&quot;, matrix.frequencies.shape)
+<span class="c1"># 属性へのアクセス</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time axis shape:&quot;</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Freq axis shape:&quot;</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

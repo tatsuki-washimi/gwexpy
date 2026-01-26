@@ -23,7 +23,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="gwexpy.fitting: iminuit ベースのフィッティング機能" href="advanced_fitting.html" />
+    <link rel="next" title="スカラーフィールド信号処理" href="field_scalar_signal.html" />
     <link rel="prev" title="SpectrogramMatrix Tutorial" href="matrix_spectrogram.html" /> 
 </head>
 
@@ -66,6 +66,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#6.-数値的不変量の検証">6. 数値的不変量の検証</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="field_scalar_signal.html">スカラーフィールド信号処理</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a></li>
@@ -73,6 +74,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -131,14 +133,14 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-import numpy as np
-from astropy import units as u
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
-from gwexpy.fields import FieldDict, FieldList, ScalarField
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldDict</span><span class="p">,</span> <span class="n">FieldList</span><span class="p">,</span> <span class="n">ScalarField</span>
 
-# 再現性のためのシード設定
-np.random.seed(42)
+<span class="c1"># 再現性のためのシード設定</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -150,34 +152,34 @@ np.random.seed(42)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 4Dデータの作成（10時点 × 8×8×8 の空間グリッド）
-nt, nx, ny, nz = 10, 8, 8, 8
-data = np.random.randn(nt, nx, ny, nz)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 4Dデータの作成（10時点 × 8×8×8 の空間グリッド）</span>
+<span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">)</span>
 
-# 軸座標の定義
-t = np.arange(nt) * 0.1 * u.s
-x = np.arange(nx) * 0.5 * u.m
-y = np.arange(ny) * 0.5 * u.m
-z = np.arange(nz) * 0.5 * u.m
+<span class="c1"># 軸座標の定義</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nt</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
 
-# ScalarField オブジェクトの作成
-field = ScalarField(
-    data,
-    unit=u.V,
-    axis0=t,
-    axis1=x,
-    axis2=y,
-    axis3=z,
-    axis_names=[&quot;t&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;],
-    axis0_domain=&quot;time&quot;,
-    space_domain=&quot;real&quot;,
-)
+<span class="c1"># ScalarField オブジェクトの作成</span>
+<span class="n">field</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
+    <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+    <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
-print(f&quot;Shape: {field.shape}&quot;)
-print(f&quot;Unit: {field.unit}&quot;)
-print(f&quot;Axis names: {field.axis_names}&quot;)
-print(f&quot;Axis0 domain: {field.axis0_domain}&quot;)
-print(f&quot;Space domains: {field.space_domains}&quot;)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unit: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis names: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">axis_names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis0 domain: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">axis0_domain</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Space domains: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -198,13 +200,13 @@ print(f&quot;Space domains: {field.space_domains}&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 整数インデックスでスライス（通常のndarrayなら3Dになる）
-sliced = field[0, :, :, :]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 整数インデックスでスライス（通常のndarrayなら3Dになる）</span>
+<span class="n">sliced</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
 
-print(f&quot;Original shape: {field.shape}&quot;)
-print(f&quot;Sliced shape: {sliced.shape}&quot;)  # (1, 8, 8, 8) - 4Dを維持！
-print(f&quot;Type: {type(sliced)}&quot;)  # ScalarField のまま
-print(f&quot;Axis names preserved: {sliced.axis_names}&quot;)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original shape: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sliced shape: </span><span class="si">{</span><span class="n">sliced</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># (1, 8, 8, 8) - 4Dを維持！</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">sliced</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># ScalarField のまま</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis names preserved: </span><span class="si">{</span><span class="n">sliced</span><span class="o">.</span><span class="n">axis_names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -212,11 +214,11 @@ print(f&quot;Axis names preserved: {sliced.axis_names}&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 複数の軸で整数インデックスを使用
-sliced_multi = field[0, 1, 2, 3]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 複数の軸で整数インデックスを使用</span>
+<span class="n">sliced_multi</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
 
-print(f&quot;Multi-sliced shape: {sliced_multi.shape}&quot;)  # (1, 1, 1, 1) - やはり4D
-print(f&quot;Value: {sliced_multi.value}&quot;)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Multi-sliced shape: </span><span class="si">{</span><span class="n">sliced_multi</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># (1, 1, 1, 1) - やはり4D</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value: </span><span class="si">{</span><span class="n">sliced_multi</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -229,33 +231,33 @@ print(f&quot;Value: {sliced_multi.value}&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 時間ドメインのScalarFieldを作成（正弦波）
-t_dense = np.arange(128) * 0.01 * u.s
-x_small = np.arange(4) * 1.0 * u.m
-signal_freq = 10.0  # Hz
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 時間ドメインのScalarFieldを作成（正弦波）</span>
+<span class="n">t_dense</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">x_small</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">signal_freq</span> <span class="o">=</span> <span class="mf">10.0</span>  <span class="c1"># Hz</span>
 
-# 10 Hz の正弦波を空間的に均一に配置
-data_signal = np.sin(2 * np.pi * signal_freq * t_dense.value)[:, None, None, None]
-data_signal = np.tile(data_signal, (1, 4, 4, 4))
+<span class="c1"># 10 Hz の正弦波を空間的に均一に配置</span>
+<span class="n">data_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">signal_freq</span> <span class="o">*</span> <span class="n">t_dense</span><span class="o">.</span><span class="n">value</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">data_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">data_signal</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 
-field_time = ScalarField(
-    data_signal,
-    unit=u.V,
-    axis0=t_dense,
-    axis1=x_small,
-    axis2=x_small.copy(),
-    axis3=x_small.copy(),
-    axis_names=[&quot;t&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;],
-    axis0_domain=&quot;time&quot;,
-    space_domain=&quot;real&quot;,
-)
+<span class="n">field_time</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_signal</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t_dense</span><span class="p">,</span>
+    <span class="n">axis1</span><span class="o">=</span><span class="n">x_small</span><span class="p">,</span>
+    <span class="n">axis2</span><span class="o">=</span><span class="n">x_small</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+    <span class="n">axis3</span><span class="o">=</span><span class="n">x_small</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
-# FFT実行
-field_freq = field_time.fft_time()
+<span class="c1"># FFT実行</span>
+<span class="n">field_freq</span> <span class="o">=</span> <span class="n">field_time</span><span class="o">.</span><span class="n">fft_time</span><span class="p">()</span>
 
-print(f&quot;Time domain shape: {field_time.shape}&quot;)
-print(f&quot;Frequency domain shape: {field_freq.shape}&quot;)
-print(f&quot;Axis0 domain changed: {field_time.axis0_domain} → {field_freq.axis0_domain}&quot;)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time domain shape: </span><span class="si">{</span><span class="n">field_time</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequency domain shape: </span><span class="si">{</span><span class="n">field_freq</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis0 domain changed: </span><span class="si">{</span><span class="n">field_time</span><span class="o">.</span><span class="n">axis0_domain</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="n">field_freq</span><span class="o">.</span><span class="n">axis0_domain</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -263,29 +265,29 @@ print(f&quot;Axis0 domain changed: {field_time.axis0_domain} → {field_freq.axi
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 周波数スペクトルをプロット（1点のx,y,zを選択）
-# Note: スライスしても4D構造が維持されるため、squeeze()で次元を削減
-spectrum = np.abs(field_freq[:, 0, 0, 0].value).squeeze()
-freqs = field_freq._axis0_index.value
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 周波数スペクトルをプロット（1点のx,y,zを選択）</span>
+<span class="c1"># Note: スライスしても4D構造が維持されるため、squeeze()で次元を削減</span>
+<span class="n">spectrum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">field_freq</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<span class="n">freqs</span> <span class="o">=</span> <span class="n">field_freq</span><span class="o">.</span><span class="n">_axis0_index</span><span class="o">.</span><span class="n">value</span>
 
-plt.figure(figsize=(10, 4))
-plt.plot(freqs, spectrum, &quot;b-&quot;, linewidth=2)
-plt.axvline(
-    signal_freq, color=&quot;r&quot;, linestyle=&quot;--&quot;, label=f&quot;{signal_freq} Hz (Input signal)&quot;
-)
-plt.xlabel(&quot;Frequency [Hz]&quot;)
-plt.ylabel(&quot;Amplitude [V]&quot;)
-plt.title(&quot;FFT Spectrum (ScalarField)&quot;)
-plt.xlim(0, 50)
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.show()
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">,</span> <span class="s2">&quot;b-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span>
+    <span class="n">signal_freq</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">signal_freq</span><span class="si">}</span><span class="s2"> Hz (Input signal)&quot;</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude [V]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;FFT Spectrum (ScalarField)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-# ピーク周波数を確認
-peak_idx = np.argmax(spectrum)
-peak_freq = freqs[peak_idx]
-print(f&quot;Peak frequency: {peak_freq:.2f} Hz (expected: {signal_freq} Hz)&quot;)
+<span class="c1"># ピーク周波数を確認</span>
+<span class="n">peak_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
+<span class="n">peak_freq</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">peak_idx</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peak frequency: </span><span class="si">{</span><span class="n">peak_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz (expected: </span><span class="si">{</span><span class="n">signal_freq</span><span class="si">}</span><span class="s2"> Hz)&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -296,28 +298,28 @@ print(f&quot;Peak frequency: {peak_freq:.2f} Hz (expected: {signal_freq} Hz)&quo
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 逆FFT
-field_reconstructed = field_freq.ifft_time()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 逆FFT</span>
+<span class="n">field_reconstructed</span> <span class="o">=</span> <span class="n">field_freq</span><span class="o">.</span><span class="n">ifft_time</span><span class="p">()</span>
 
-# 元の信号と比較
-# Note: 4D構造を維持するため、squeeze()で1次元に
-original = field_time[:, 0, 0, 0].value.squeeze()
-reconstructed = field_reconstructed[:, 0, 0, 0].value.squeeze()
+<span class="c1"># 元の信号と比較</span>
+<span class="c1"># Note: 4D構造を維持するため、squeeze()で1次元に</span>
+<span class="n">original</span> <span class="o">=</span> <span class="n">field_time</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<span class="n">reconstructed</span> <span class="o">=</span> <span class="n">field_reconstructed</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 
-plt.figure(figsize=(10, 4))
-plt.plot(t_dense.value, original, &quot;b-&quot;, label=&quot;Original&quot;, alpha=0.7)
-plt.plot(t_dense.value, reconstructed.real, &quot;r--&quot;, label=&quot;Reconstructed&quot;, alpha=0.7)
-plt.xlabel(&quot;Time [s]&quot;)
-plt.ylabel(&quot;Amplitude [V]&quot;)
-plt.title(&quot;IFFT: Frequency → Time&quot;)
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.show()
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_dense</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">original</span><span class="p">,</span> <span class="s2">&quot;b-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_dense</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">reconstructed</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="s2">&quot;r--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Reconstructed&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude [V]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;IFFT: Frequency → Time&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-# 誤差を確認
-error = np.abs(original - reconstructed.real)
-print(f&quot;Max reconstruction error: {np.max(error):.2e} V&quot;)
+<span class="c1"># 誤差を確認</span>
+<span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">original</span> <span class="o">-</span> <span class="n">reconstructed</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max reconstruction error: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> V&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -330,37 +332,37 @@ print(f&quot;Max reconstruction error: {np.max(error):.2e} V&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 空間的に周期構造を持つデータを作成
-nx, ny, nz = 16, 16, 16
-x_grid = np.arange(nx) * 0.5 * u.m
-y_grid = np.arange(ny) * 0.5 * u.m
-z_grid = np.arange(nz) * 0.5 * u.m
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 空間的に周期構造を持つデータを作成</span>
+<span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span>
+<span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">y_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">z_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
 
-# X方向に波長 4m の正弦波
-wavelength = 4.0  # m
-k_expected = 2 * np.pi / wavelength  # rad/m
+<span class="c1"># X方向に波長 4m の正弦波</span>
+<span class="n">wavelength</span> <span class="o">=</span> <span class="mf">4.0</span>  <span class="c1"># m</span>
+<span class="n">k_expected</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">wavelength</span>  <span class="c1"># rad/m</span>
 
-data_spatial = np.sin(2 * np.pi * x_grid.value / wavelength)[None, :, None, None]
-data_spatial = np.tile(data_spatial, (4, 1, ny, nz))
+<span class="n">data_spatial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_grid</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">wavelength</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">data_spatial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">data_spatial</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">))</span>
 
-field_real = ScalarField(
-    data_spatial,
-    unit=u.V,
-    axis0=np.arange(4) * 0.1 * u.s,
-    axis1=x_grid,
-    axis2=y_grid,
-    axis3=z_grid,
-    axis_names=[&quot;t&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;],
-    axis0_domain=&quot;time&quot;,
-    space_domain=&quot;real&quot;,
-)
+<span class="n">field_real</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_spatial</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+    <span class="n">axis1</span><span class="o">=</span><span class="n">x_grid</span><span class="p">,</span>
+    <span class="n">axis2</span><span class="o">=</span><span class="n">y_grid</span><span class="p">,</span>
+    <span class="n">axis3</span><span class="o">=</span><span class="n">z_grid</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
-# X軸のみFFT
-field_kx = field_real.fft_space(axes=[&quot;x&quot;])
+<span class="c1"># X軸のみFFT</span>
+<span class="n">field_kx</span> <span class="o">=</span> <span class="n">field_real</span><span class="o">.</span><span class="n">fft_space</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">])</span>
 
-print(f&quot;Original space domains: {field_real.space_domains}&quot;)
-print(f&quot;After fft_space: {field_kx.space_domains}&quot;)
-print(f&quot;Axis names: {field_kx.axis_names}&quot;)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original space domains: </span><span class="si">{</span><span class="n">field_real</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;After fft_space: </span><span class="si">{</span><span class="n">field_kx</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis names: </span><span class="si">{</span><span class="n">field_kx</span><span class="o">.</span><span class="n">axis_names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -368,27 +370,27 @@ print(f&quot;Axis names: {field_kx.axis_names}&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># K空間スペクトルをプロット
-# Note: squeeze()で次元削減
-kx_spectrum = np.abs(field_kx[0, :, 0, 0].value).squeeze()
-kx_values = field_kx._axis1_index.value
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># K空間スペクトルをプロット</span>
+<span class="c1"># Note: squeeze()で次元削減</span>
+<span class="n">kx_spectrum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">field_kx</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<span class="n">kx_values</span> <span class="o">=</span> <span class="n">field_kx</span><span class="o">.</span><span class="n">_axis1_index</span><span class="o">.</span><span class="n">value</span>
 
-plt.figure(figsize=(10, 4))
-plt.plot(kx_values, kx_spectrum, &quot;b-&quot;, linewidth=2)
-plt.axvline(k_expected, color=&quot;r&quot;, linestyle=&quot;--&quot;, label=f&quot;k = {k_expected:.2f} rad/m&quot;)
-plt.axvline(-k_expected, color=&quot;r&quot;, linestyle=&quot;--&quot;)
-plt.xlabel(&quot;Wavenumber kx [rad/m]&quot;)
-plt.ylabel(&quot;Amplitude&quot;)
-plt.title(&quot;Spatial FFT: Real → K space&quot;)
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.show()
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kx_values</span><span class="p">,</span> <span class="n">kx_spectrum</span><span class="p">,</span> <span class="s2">&quot;b-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">k_expected</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;k = </span><span class="si">{</span><span class="n">k_expected</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> rad/m&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="o">-</span><span class="n">k_expected</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Wavenumber kx [rad/m]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Spatial FFT: Real → K space&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-# ピーク波数を確認
-peak_idx = np.argmax(kx_spectrum)
-peak_k = kx_values[peak_idx]
-print(f&quot;Peak wavenumber: {peak_k:.2f} rad/m (expected: ±{k_expected:.2f} rad/m)&quot;)
+<span class="c1"># ピーク波数を確認</span>
+<span class="n">peak_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">kx_spectrum</span><span class="p">)</span>
+<span class="n">peak_k</span> <span class="o">=</span> <span class="n">kx_values</span><span class="p">[</span><span class="n">peak_idx</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peak wavenumber: </span><span class="si">{</span><span class="n">peak_k</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> rad/m (expected: ±</span><span class="si">{</span><span class="n">k_expected</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> rad/m)&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -399,13 +401,13 @@ print(f&quot;Peak wavenumber: {peak_k:.2f} rad/m (expected: ±{k_expected:.2f} r
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 波長を計算
-wavelengths = field_kx.wavelength(&quot;kx&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 波長を計算</span>
+<span class="n">wavelengths</span> <span class="o">=</span> <span class="n">field_kx</span><span class="o">.</span><span class="n">wavelength</span><span class="p">(</span><span class="s2">&quot;kx&quot;</span><span class="p">)</span>
 
-print(f&quot;Wavelength at k={k_expected:.2f}: {2 * np.pi / k_expected:.2f} m&quot;)
-print(
-    f&quot;Calculated wavelengths range: {wavelengths.value[wavelengths.value &gt; 0].min():.2f} - {wavelengths.value[wavelengths.value &lt; np.inf].max():.2f} m&quot;
-)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wavelength at k=</span><span class="si">{</span><span class="n">k_expected</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">k_expected</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;Calculated wavelengths range: </span><span class="si">{</span><span class="n">wavelengths</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">wavelengths</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">wavelengths</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">wavelengths</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -417,17 +419,17 @@ print(
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 全空間軸をFFT
-field_k_all = field_real.fft_space()
-print(f&quot;All spatial axes in K space: {field_k_all.space_domains}&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 全空間軸をFFT</span>
+<span class="n">field_k_all</span> <span class="o">=</span> <span class="n">field_real</span><span class="o">.</span><span class="n">fft_space</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All spatial axes in K space: </span><span class="si">{</span><span class="n">field_k_all</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-# 逆FFTで元に戻す
-field_real_back = field_k_all.ifft_space()
-print(f&quot;Back to real space: {field_real_back.space_domains}&quot;)
+<span class="c1"># 逆FFTで元に戻す</span>
+<span class="n">field_real_back</span> <span class="o">=</span> <span class="n">field_k_all</span><span class="o">.</span><span class="n">ifft_space</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Back to real space: </span><span class="si">{</span><span class="n">field_real_back</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-# 再構成誤差
-reconstruction_error = np.max(np.abs(field_real.value - field_real_back.value))
-print(f&quot;Max reconstruction error: {reconstruction_error:.2e}&quot;)
+<span class="c1"># 再構成誤差</span>
+<span class="n">reconstruction_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">field_real</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">field_real_back</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max reconstruction error: </span><span class="si">{</span><span class="n">reconstruction_error</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -443,28 +445,28 @@ print(f&quot;Max reconstruction error: {reconstruction_error:.2e}&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 3つの異なる振幅を持つScalarFieldを作成
-amplitudes = [1.0, 2.0, 3.0]
-fields = []
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3つの異なる振幅を持つScalarFieldを作成</span>
+<span class="n">amplitudes</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]</span>
+<span class="n">fields</span> <span class="o">=</span> <span class="p">[]</span>
 
-for amp in amplitudes:
-    data_temp = amp * np.random.randn(8, 4, 4, 4)
-    field_temp = ScalarField(
-        data_temp,
-        unit=u.V,
-        axis0=np.arange(8) * 0.1 * u.s,
-        axis1=np.arange(4) * 0.5 * u.m,
-        axis2=np.arange(4) * 0.5 * u.m,
-        axis3=np.arange(4) * 0.5 * u.m,
-        axis_names=[&quot;t&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;],
-        axis0_domain=&quot;time&quot;,
-        space_domain=&quot;real&quot;,
-    )
-    fields.append(field_temp)
+<span class="k">for</span> <span class="n">amp</span> <span class="ow">in</span> <span class="n">amplitudes</span><span class="p">:</span>
+    <span class="n">data_temp</span> <span class="o">=</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">field_temp</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+        <span class="n">data_temp</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+        <span class="n">axis0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+        <span class="n">axis1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+        <span class="n">axis2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+        <span class="n">axis3</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+        <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
+        <span class="n">axis0_domain</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+        <span class="n">space_domain</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field_temp</span><span class="p">)</span>
 
-# FieldList を作成
-field_list = FieldList(fields, validate=True)
-print(f&quot;Number of fields: {len(field_list)}&quot;)
+<span class="c1"># FieldList を作成</span>
+<span class="n">field_list</span> <span class="o">=</span> <span class="n">FieldList</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of fields: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">field_list</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -472,12 +474,12 @@ print(f&quot;Number of fields: {len(field_list)}&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 一括で時間FFTを実行
-field_list_freq = field_list.fft_time_all()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 一括で時間FFTを実行</span>
+<span class="n">field_list_freq</span> <span class="o">=</span> <span class="n">field_list</span><span class="o">.</span><span class="n">fft_time_all</span><span class="p">()</span>
 
-print(&quot;All fields transformed to frequency domain:&quot;)
-for i, field in enumerate(field_list_freq):
-    print(f&quot;  Field {i}: axis0_domain = {field.axis0_domain}&quot;)
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All fields transformed to frequency domain:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">field_list_freq</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Field </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: axis0_domain = </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">axis0_domain</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -489,13 +491,13 @@ for i, field in enumerate(field_list_freq):
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 名前付きフィールドの辞書を作成
-field_dict = FieldDict(
-    {&quot;channel_A&quot;: fields[0], &quot;channel_B&quot;: fields[1], &quot;channel_C&quot;: fields[2]},
-    validate=True,
-)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 名前付きフィールドの辞書を作成</span>
+<span class="n">field_dict</span> <span class="o">=</span> <span class="n">FieldDict</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;channel_A&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;channel_B&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;channel_C&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">[</span><span class="mi">2</span><span class="p">]},</span>
+    <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
 
-print(f&quot;Field names: {list(field_dict.keys())}&quot;)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Field names: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">field_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -503,11 +505,11 @@ print(f&quot;Field names: {list(field_dict.keys())}&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 一括で空間FFTを実行
-field_dict_k = field_dict.fft_space_all(axes=[&quot;x&quot;, &quot;y&quot;])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 一括で空間FFTを実行</span>
+<span class="n">field_dict_k</span> <span class="o">=</span> <span class="n">field_dict</span><span class="o">.</span><span class="n">fft_space_all</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span>
 
-for name, field in field_dict_k.items():
-    print(f&quot;{name}: {field.space_domains}&quot;)
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">field_dict_k</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -526,42 +528,42 @@ for name, field in field_dict_k.items():
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># シミュレーションデータの生成
-# 信号: 30 Hz の正弦波が x=1m から伝搬
-# ノイズ: ガウスノイズ
-fs = 256 * u.Hz
-duration = 4 * u.s
-t = np.arange(int((fs * duration).to_value(u.dimensionless_unscaled))) / fs.value
-x = np.linspace(0, 5, 20)  # 5m, 20点
-y = np.linspace(0, 2, 5)   # 2m, 5点
-z = np.array([0])          # z=0
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># シミュレーションデータの生成</span>
+<span class="c1"># 信号: 30 Hz の正弦波が x=1m から伝搬</span>
+<span class="c1"># ノイズ: ガウスノイズ</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mi">256</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">fs</span> <span class="o">*</span> <span class="n">duration</span><span class="p">)</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">)))</span> <span class="o">/</span> <span class="n">fs</span><span class="o">.</span><span class="n">value</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>  <span class="c1"># 5m, 20点</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>   <span class="c1"># 2m, 5点</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>          <span class="c1"># z=0</span>
 
-shape = (len(t), len(x), len(y), len(z))
-data_sig = np.random.normal(0, 0.1, size=shape)
+<span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+<span class="n">data_sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
 
-source_freq = 30.0
-source_signal = np.sin(2 * np.pi * source_freq * t)
-v_prop = 10.0  # 10 m/s
-source_pos = 1.0
+<span class="n">source_freq</span> <span class="o">=</span> <span class="mf">30.0</span>
+<span class="n">source_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">source_freq</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">v_prop</span> <span class="o">=</span> <span class="mf">10.0</span>  <span class="c1"># 10 m/s</span>
+<span class="n">source_pos</span> <span class="o">=</span> <span class="mf">1.0</span>
 
-for i, xi in enumerate(x):
-    dist = abs(xi - source_pos)
-    delay = dist / v_prop
-    shift = int(delay * fs.value)
-    sig_delayed = np.roll(source_signal, shift)
-    amp = 1.0 / (1.0 + dist)
-    data_sig[:, i, :, 0] += amp * sig_delayed[:, np.newaxis]
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xi</span> <span class="o">-</span> <span class="n">source_pos</span><span class="p">)</span>
+    <span class="n">delay</span> <span class="o">=</span> <span class="n">dist</span> <span class="o">/</span> <span class="n">v_prop</span>
+    <span class="n">shift</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">delay</span> <span class="o">*</span> <span class="n">fs</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">sig_delayed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">source_signal</span><span class="p">,</span> <span class="n">shift</span><span class="p">)</span>
+    <span class="n">amp</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">dist</span><span class="p">)</span>
+    <span class="n">data_sig</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">sig_delayed</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
 
-field_sig = ScalarField(
-    data_sig,
-    unit=u.V,
-    axis0=t * u.s,
-    axis1=x * u.m,
-    axis2=y * u.m,
-    axis3=z * u.m,
-    name=&quot;Environmental Field&quot;,
-)
-print(field_sig)
+<span class="n">field_sig</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_sig</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+    <span class="n">axis1</span><span class="o">=</span><span class="n">x</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">axis2</span><span class="o">=</span><span class="n">y</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">axis3</span><span class="o">=</span><span class="n">z</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Environmental Field&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">field_sig</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -572,18 +574,18 @@ print(field_sig)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># ソース位置(x=1m)と遠方(x=4m)でのPSDを比較
-psd_source = field_sig.psd(point_or_region=(1.0 * u.m, 0.0 * u.m, 0.0 * u.m))
-psd_far = field_sig.psd(point_or_region=(4.0 * u.m, 0.0 * u.m, 0.0 * u.m))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ソース位置(x=1m)と遠方(x=4m)でのPSDを比較</span>
+<span class="n">psd_source</span> <span class="o">=</span> <span class="n">field_sig</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">point_or_region</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">))</span>
+<span class="n">psd_far</span> <span class="o">=</span> <span class="n">field_sig</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">point_or_region</span><span class="o">=</span><span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">))</span>
 
-plt.figure(figsize=(10, 6))
-psd_source.plot(label=&quot;Source (x=1m)&quot;)
-psd_far.plot(label=&quot;Far (x=4m)&quot;)
-plt.xscale(&quot;log&quot;)
-plt.yscale(&quot;log&quot;)
-plt.title(&quot;PSD at Different Locations&quot;)
-plt.legend()
-plt.show()
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">psd_source</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Source (x=1m)&quot;</span><span class="p">)</span>
+<span class="n">psd_far</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Far (x=4m)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;PSD at Different Locations&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -595,12 +597,12 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>field_sig.plot_freq_space(
-    space_axis=&quot;x&quot;,
-    fixed_coords={&quot;y&quot;: 0.0 * u.m, &quot;z&quot;: 0.0 * u.m},
-    freq_range=(10, 100),
-    log_scale=True,
-)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">field_sig</span><span class="o">.</span><span class="n">plot_freq_space</span><span class="p">(</span>
+    <span class="n">space_axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+    <span class="n">fixed_coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">},</span>
+    <span class="n">freq_range</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="n">log_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -612,16 +614,16 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># x=1.0m (ソース) を基準点とする
-ref_point = (1.0 * u.m, 0.0 * u.m, 0.0 * u.m)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># x=1.0m (ソース) を基準点とする</span>
+<span class="n">ref_point</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
 
-# 相互相関の計算とプロット
-lags, corrs = field_sig.plot_cross_correlation(
-    ref_point=ref_point,
-    scan_axis=&quot;x&quot;,
-    fixed_coords={&quot;y&quot;: 0.0 * u.m, &quot;z&quot;: 0.0 * u.m},
-    max_lag=0.5,
-)
+<span class="c1"># 相互相関の計算とプロット</span>
+<span class="n">lags</span><span class="p">,</span> <span class="n">corrs</span> <span class="o">=</span> <span class="n">field_sig</span><span class="o">.</span><span class="n">plot_cross_correlation</span><span class="p">(</span>
+    <span class="n">ref_point</span><span class="o">=</span><span class="n">ref_point</span><span class="p">,</span>
+    <span class="n">scan_axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+    <span class="n">fixed_coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">},</span>
+    <span class="n">max_lag</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -634,12 +636,12 @@ lags, corrs = field_sig.plot_cross_correlation(
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>field_sig.plot_coherence_map(
-    target_freq=30.0,
-    ref_point=ref_point,
-    scan_axis=&quot;x&quot;,
-    fixed_coords={&quot;y&quot;: 0.0 * u.m, &quot;z&quot;: 0.0 * u.m},
-)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">field_sig</span><span class="o">.</span><span class="n">plot_coherence_map</span><span class="p">(</span>
+    <span class="n">target_freq</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
+    <span class="n">ref_point</span><span class="o">=</span><span class="n">ref_point</span><span class="p">,</span>
+    <span class="n">scan_axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+    <span class="n">fixed_coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">},</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -652,29 +654,29 @@ lags, corrs = field_sig.plot_cross_correlation(
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 時間FFTの不変量チェック: ifft_time(fft_time(f)) ≈ f
-np.random.seed(42)
-data_test = np.random.randn(64, 4, 4, 4)
-field_test = ScalarField(
-    data_test,
-    unit=u.V,
-    axis0=np.arange(64) * 0.01 * u.s,
-    axis1=np.arange(4) * u.m,
-    axis2=np.arange(4) * u.m,
-    axis3=np.arange(4) * u.m,
-    axis_names=[&quot;t&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;],
-    axis0_domain=&quot;time&quot;,
-    space_domain=&quot;real&quot;,
-)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 時間FFTの不変量チェック: ifft_time(fft_time(f)) ≈ f</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">data_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">field_test</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_test</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+    <span class="n">axis1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">axis2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">axis3</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
-# Round-trip
-field_roundtrip = field_test.fft_time().ifft_time()
+<span class="c1"># Round-trip</span>
+<span class="n">field_roundtrip</span> <span class="o">=</span> <span class="n">field_test</span><span class="o">.</span><span class="n">fft_time</span><span class="p">()</span><span class="o">.</span><span class="n">ifft_time</span><span class="p">()</span>
 
-# Check
-max_error_time = np.max(np.abs(field_test.value - field_roundtrip.value.real))
-print(f&quot;時間FFT Round-trip max error: {max_error_time:.2e}&quot;)
-assert max_error_time &lt; 1e-10, &quot;Time FFT round-trip failed!&quot;
-print(&quot;✅ 時間FFT不変量チェック: PASSED&quot;)
+<span class="c1"># Check</span>
+<span class="n">max_error_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">field_test</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">field_roundtrip</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">real</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;時間FFT Round-trip max error: </span><span class="si">{</span><span class="n">max_error_time</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">max_error_time</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="s2">&quot;Time FFT round-trip failed!&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ 時間FFT不変量チェック: PASSED&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -686,7 +688,7 @@ print(&quot;✅ 時間FFT不変量チェック: PASSED&quot;)
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="matrix_spectrogram.html" class="btn btn-neutral float-left" title="SpectrogramMatrix Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="advanced_fitting.html" class="btn btn-neutral float-right" title="gwexpy.fitting: iminuit ベースのフィッティング機能" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="field_scalar_signal.html" class="btn btn-neutral float-right" title="スカラーフィールド信号処理" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -45,12 +45,17 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/en/index.html">Detailed Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -305,9 +310,9 @@
       <li><a href="reference/api/fields.html#gwexpy.fields.FieldDict.copy">copy() (gwexpy.fields.FieldDict method)</a>
 
       <ul>
-        <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.copy">(gwexpy.fields.TensorField method)</a>, <a href="reference/api/fields.html#id12">[1]</a>
+        <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.copy">(gwexpy.fields.TensorField method)</a>
 </li>
-        <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.copy">(gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id1">[1]</a>
+        <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.copy">(gwexpy.fields.VectorField method)</a>
 </li>
         <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.copy">(gwexpy.frequencyseries.FrequencySeriesBaseDict method)</a>
 </li>
@@ -348,7 +353,7 @@
         <li><a href="reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.crop_frequencies">(gwexpy.spectrogram.SpectrogramList method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.cross">cross() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id2">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.cross">cross() (gwexpy.fields.VectorField method)</a>
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.csd">csd() (gwexpy.timeseries.TimeSeriesDict method)</a>
 
@@ -410,7 +415,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.det">det() (gwexpy.fields.TensorField method)</a>, <a href="reference/api/fields.html#id13">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.det">det() (gwexpy.fields.TensorField method)</a>
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.detrend">detrend() (gwexpy.timeseries.TimeSeriesDict method)</a>
 
@@ -446,7 +451,7 @@
       </ul></li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.distance_correlation">distance_correlation() (gwexpy.timeseries.TimeSeriesDict method)</a>
 </li>
-      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.dot">dot() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id3">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.dot">dot() (gwexpy.fields.VectorField method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1207,7 +1212,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.norm">norm() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id4">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.norm">norm() (gwexpy.fields.VectorField method)</a>
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.notch">notch() (gwexpy.timeseries.TimeSeriesDict method)</a>
 
@@ -1270,7 +1275,7 @@
       <li><a href="reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot">plot() (gwexpy.analysis.coupling.CouplingResult method)</a>
 
       <ul>
-        <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.plot">(gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id5">[1]</a>
+        <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.plot">(gwexpy.fields.VectorField method)</a>
 </li>
         <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.plot">(gwexpy.frequencyseries.BifrequencyMap method)</a>
 </li>
@@ -1313,11 +1318,11 @@
       </ul></li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot_cf">plot_cf() (gwexpy.analysis.coupling.CouplingResult method)</a>
 </li>
-      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.plot_components">plot_components() (gwexpy.fields.TensorField method)</a>, <a href="reference/api/fields.html#id14">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.plot_components">plot_components() (gwexpy.fields.TensorField method)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.plot_lines">plot_lines() (gwexpy.frequencyseries.BifrequencyMap method)</a>
 </li>
-      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.plot_magnitude">plot_magnitude() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id6">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.plot_magnitude">plot_magnitude() (gwexpy.fields.VectorField method)</a>
 </li>
       <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.plot_map2d">plot_map2d() (gwexpy.fields.ScalarField method)</a>
 </li>
@@ -1343,7 +1348,7 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.prepend">(gwexpy.timeseries.TimeSeriesDict method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.project">project() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id7">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.project">project() (gwexpy.fields.VectorField method)</a>
 </li>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.propagate">propagate() (gwexpy.frequencyseries.BifrequencyMap method)</a>
 </li>
@@ -1371,7 +1376,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.quadrature_sum">quadrature_sum() (gwexpy.frequencyseries.FrequencySeries method)</a>
 </li>
-      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.quiver">quiver() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id8">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.quiver">quiver() (gwexpy.fields.VectorField method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1605,7 +1610,7 @@
       </ul></li>
       <li><a href="reference/api/noise.html#gwexpy.noise.wave.step">step() (in module gwexpy.noise.wave)</a>
 </li>
-      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.streamline">streamline() (gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id9">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.streamline">streamline() (gwexpy.fields.VectorField method)</a>
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.ICATransform.supports_inverse">supports_inverse (gwexpy.timeseries.ICATransform attribute)</a>
 
@@ -1621,7 +1626,7 @@
       </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisApiMixin.swapaxes">swapaxes() (gwexpy.types.AxisApiMixin method)</a>
 </li>
-      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.symmetrize">symmetrize() (gwexpy.fields.TensorField method)</a>, <a href="reference/api/fields.html#id15">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.symmetrize">symmetrize() (gwexpy.fields.TensorField method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1641,7 +1646,7 @@
         <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.taper">(gwexpy.timeseries.TimeSeriesMatrix method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField">TensorField (class in gwexpy.fields)</a>, <a href="reference/api/fields.html#id11">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField">TensorField (class in gwexpy.fields)</a>
 </li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.coupling.PercentileThreshold.threshold">threshold() (gwexpy.analysis.coupling.PercentileThreshold method)</a>
 
@@ -1677,10 +1682,10 @@
 </li>
       <li><a href="reference/api/extra.html#gwexpy.interop.TimeSeriesWindowDataset">TimeSeriesWindowDataset (class in gwexpy.interop)</a>
 </li>
-      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.to_array">to_array() (gwexpy.fields.TensorField method)</a>, <a href="reference/api/fields.html#id16">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.to_array">to_array() (gwexpy.fields.TensorField method)</a>
 
       <ul>
-        <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.to_array">(gwexpy.fields.VectorField method)</a>, <a href="reference/api/fields.html#id10">[1]</a>
+        <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.to_array">(gwexpy.fields.VectorField method)</a>
 </li>
       </ul></li>
       <li><a href="reference/api/extra.html#gwexpy.interop.to_astropy_timeseries">to_astropy_timeseries() (in module gwexpy.interop)</a>
@@ -1953,7 +1958,7 @@
 </li>
       <li><a href="reference/api/extra.html#gwexpy.interop.to_zarr">to_zarr() (in module gwexpy.interop)</a>
 </li>
-      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.trace">trace() (gwexpy.fields.TensorField method)</a>, <a href="reference/api/fields.html#id17">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.TensorField.trace">trace() (gwexpy.fields.TensorField method)</a>
 </li>
       <li><a href="reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.transfer_function">transfer_function() (gwexpy.timeseries.TimeSeriesMatrix method)</a>
 </li>
@@ -2027,7 +2032,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/types.html#gwexpy.types.MetaDataDictLike.values">values() (gwexpy.types.MetaDataDictLike method)</a>
 </li>
-      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField">VectorField (class in gwexpy.fields)</a>, <a href="reference/api/fields.html#id0">[1]</a>
+      <li><a href="reference/api/fields.html#gwexpy.fields.VectorField">VectorField (class in gwexpy.fields)</a>
 </li>
       <li><a href="reference/api/noise.html#gwexpy.noise.asd.voigt_line">voigt_line() (in module gwexpy.noise.asd)</a>
 </li>

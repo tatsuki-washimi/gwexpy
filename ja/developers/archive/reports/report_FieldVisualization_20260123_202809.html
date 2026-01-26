@@ -19,7 +19,9 @@
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="作業報告書: 静的解析エラー（MyPy）の解消 (2026-01-21 15:16:00)" href="report_Fix_MyPy_Errors_20260121_151600.html" />
+    <link rel="prev" title="Estimate Effort: Field Plotting Enhancement" href="report_FieldPlottingEffort_20260123_1723.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">インストール</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">クイックスタート</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -54,8 +57,74 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">開発者向け</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../index.html">開発者ガイド (Developers Guide)</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">開発者ガイド (Developers Guide)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id1">設計方針とコントラクト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">開発ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id3">技術分析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#plans">計画 (Plans)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#reports">レポート (Reports)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id4">アーカイブ (非表示)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../plans/Purge-legacy-field-and-fully-migrate-to-ScalarField.html">Purge legacy 4D field API and fully migrate to ScalarField</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/Unified_Field_API_with_Explicit_Domain_Semantics.html">Field API Refactoring and Domain Specification Plan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/dsp_scalarfield_plan_20260123.html">ScalarField 信号処理拡張 (Refined Phase 2 &amp; 3) 実装計画</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/dsp_scalarfield_plan_20260123_090500.html">ScalarField 信号処理拡張 計画書 (2026-01-23 09:05:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/field_plotting_enhancement_plan_20260123.html">Implementation Plan: Enhanced Plotting for Field Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/field_plotting_enhancement_plan_20260123_1723.html">[Field Plotting] 描画機能拡充計画書 (2026-01-23 17:23:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/finishing_plan_20260121_152300.html">作業仕上げ・クリーンアップ計画 (2026-01-21 15:23:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/fix_mypy_errors_plan_20260121_151500.html">静的解析エラー（MyPy）およびMarkdown警告の解消 計画書 (2026-01-21 15:15:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/fix_plan_20260107.html">修正計画書</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/implementation_plan_scalar_vector_tensor_field_20260122.html">タイムスタンプ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/implementation_plan_scalar_vector_tensor_field_20260122.html#id2">目的・目標</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/implementation_plan_scalar_vector_tensor_field_20260122.html#phase">詳細なロードマップ（Phase単位）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/implementation_plan_scalar_vector_tensor_field_20260122.html#id3">テスト・検証計画</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/implementation_plan_scalar_vector_tensor_field_20260122.html#id4">使用モデル・推奨スキル・工数見積もり</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/implementation_plan_scalar_vector_tensor_field_20260122.html#id5">承認待ち</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/phase1_normalization_plan_ja_20260123.html">フェーズ1：信号正規化ロジック（DTT互換モード）の実装計画 (2026-01-23 21:16:30)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/pyaggui_development_plan.html">pyaggui 開発計画書</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/pyaggui_model_effort_estimate.html">pyaggui 開発計画: LLMモデル推奨と工数見積もり</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/scalarfield_test_coverage_plan_20260122_215341.html"><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> テストカバレッジの強化 計画書 (2026-01-22 21:53:41)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/scalarfield_tutorial_plan_20260121_093243.html">ScalarField チュートリアルノートブック作成計画 (2026-01-21 09:32:43)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/signal_processing_extensions_scalarfield_plan_20260121_175140.html">ScalarField 向け信号処理拡張 計画書 (2026-01-21 17:51:40)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/signal_processing_extensions_scalarfield_plan_20260121_175140.html#scalarfield-3">ScalarField フェーズ3：信号処理拡張 計画</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/vector_tensor_field_plan_20260123.html">VectorField / TensorField 実装計画 (2026-01-23 15:40:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/visualize-ScalarField-docs.html">実装計画：ScalarField 描画機能の実践とドキュメント拡充</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plans/visualize-methods_ScalarField.html">ScalarField 可視化（1D/2D）強化ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="repo_improvement_report_20260123.html">Repository Review Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_FieldPhysicsCheck_20260123_1628.html">Work Report: Physics Verification for ScalarField/VectorField/TensorField</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_FieldPlottingEffort_20260123_1723.html">Estimate Effort: Field Plotting Enhancement</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Work Report: Field Visualization and Core Metadata Robustness</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#summary-of-implementation">Summary of Implementation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#performance-improvements">Performance Improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#saved-path">Saved Path</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="report_Fix_MyPy_Errors_20260121_151600.html">作業報告書: 静的解析エラー（MyPy）の解消 (2026-01-21 15:16:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_Fix_MyPy_Errors_Final_20260121_155500.html">作業報告書: 静的解析エラー（MyPy）の完全解消 (2026-01-21 15:55:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_JupyterNotebookFixes_20260121_182149.html">Jupyter Notebook エラー修正 実施報告書 (Walkthrough)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_ScalarField_Stats_Skills_20260123.html">Report: ScalarField Signal Processing Implementation and Agent Skills Enhancement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_ScalarField_Test_Coverage_20260122_224425.html">作業レポート: ScalarField 信号処理テスト拡張 (Phase 4 検証)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_VectorTensorField_Phase23_20260123_1622.html">Work Report: VectorField/TensorField Phase 2 &amp; 3 Implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_dsp_scalarfield_20260123.html">作業報告：ScalarField 信号処理拡張 (Phase 1-3) 実装</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_purge_field4d_20260122_204010.html">作業報告: Field4D 完全削除 &amp; ScalarField 公開 API 化 (2026-01-22 20:40 JST)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_scalarfield_physics_verification_20260122_222000.html">作業報告書: ScalarField 物理検証とノートブック実行試験</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_scalarfield_refactor_20260122.html">作業報告: ScalarField への統一リファクタ (2026-01-22)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report_visualize-methods_ScalarField_20260121.html">作業報告：ScalarField 可視化（1D/2D）強化の実装</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_phase3_signal_processing_20260121.html">ScalarField Phase 3 Signal Processing Extensions - 実装完了レポート</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reviews/conversation_work_report_20260121_091043.html">作業レポート（この会話全体）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reviews/conversation_work_report_20260121_152500.html">作業レポート（この会話全体） (2026-01-21 15:25:00)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reviews/conversation_work_report_20260121_182838.html">作業レポート（この会話全体）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reviews/conversation_work_report_20260122_204116.html">作業レポート（この会話全体）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reviews/conversation_work_report_20260123_141050.html">Conversation Work Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reviews/conversation_work_report_20260123_202809.html">Conversation Work Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reviews/conversation_work_report_20260124_142533.html">Conversation Work Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reviews/conversation_work_report_20260124_191000.html">Conversation Work Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reviews/improvement_report_20260120.html">リポジトリ品質改善報告書 (2026-01-20)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reviews/repo_review_20260120.html">リポジトリレビューレポート</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -72,6 +141,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">開発者ガイド (Developers Guide)</a></li>
       <li class="breadcrumb-item active">Work Report: Field Visualization and Core Metadata Robustness</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/archive/reports/report_FieldVisualization_20260123_202809.md" class="fa fa-github"> Edit on GitHub</a>
@@ -149,7 +219,10 @@
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="report_FieldPlottingEffort_20260123_1723.html" class="btn btn-neutral float-left" title="Estimate Effort: Field Plotting Enhancement" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="report_Fix_MyPy_Errors_20260121_151600.html" class="btn btn-neutral float-right" title="作業報告書: 静的解析エラー（MyPy）の解消 (2026-01-21 15:16:00)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

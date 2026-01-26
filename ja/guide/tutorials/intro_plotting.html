@@ -76,6 +76,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -120,20 +121,20 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-import numpy as np
-from astropy import units as u
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
-from gwexpy.frequencyseries import (
-    FrequencySeries,
-    FrequencySeriesList,
-    FrequencySeriesMatrix,
-)
-from gwexpy.spectrogram import Spectrogram, SpectrogramList
-from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">FrequencySeriesList</span><span class="p">,</span>
+    <span class="n">FrequencySeriesMatrix</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spectrogram</span><span class="p">,</span> <span class="n">SpectrogramList</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
 
-# ランダムシードの固定
-np.random.seed(42)
+<span class="c1"># ランダムシードの固定</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -149,24 +150,24 @@ np.random.seed(42)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 2x2 の TimeSeriesMatrix を作成
-# GPS時刻 (例: 1356998418 = 2023-01-01 00:00:00 UTC) からの10秒間
-t0 = 1356998418.0
-times = t0 + np.linspace(0, 10, 1000)
-data = np.random.randn(2, 2, 1000)
-# 行: Sensor A, B / 列: Axis X, Y
-tsm = TimeSeriesMatrix(
-    data,
-    times=times,
-    unit=&quot;m&quot;,
-    name=&quot;Velocity&quot;,
-    rows=[&quot;Sensor A&quot;, &quot;Sensor B&quot;],
-    cols=[&quot;X-axis&quot;, &quot;Y-axis&quot;],
-)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 2x2 の TimeSeriesMatrix を作成</span>
+<span class="c1"># GPS時刻 (例: 1356998418 = 2023-01-01 00:00:00 UTC) からの10秒間</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mf">1356998418.0</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="c1"># 行: Sensor A, B / 列: Axis X, Y</span>
+<span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Velocity&quot;</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Sensor A&quot;</span><span class="p">,</span> <span class="s2">&quot;Sensor B&quot;</span><span class="p">],</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;X-axis&quot;</span><span class="p">,</span> <span class="s2">&quot;Y-axis&quot;</span><span class="p">],</span>
+<span class="p">)</span>
 
-# プロット
-plot = tsm.plot()
-plot.show()
+<span class="c1"># プロット</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -189,29 +190,29 @@ plot.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># FrequencySeriesMatrix の作成
-# 10Hz から 1kHz
-f = np.logspace(1, 3, 500)
-# 1/f ノイズのようなデータを生成
-data = np.zeros((2, 2, 500))
-for i in range(2):
-    for j in range(2):
-        data[i, j, :] = 10 / f * (1 + 0.1 * np.random.randn(500)) + (i + j)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FrequencySeriesMatrix の作成</span>
+<span class="c1"># 10Hz から 1kHz</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="c1"># 1/f ノイズのようなデータを生成</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">/</span> <span class="n">f</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">500</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">)</span>
 
-# unit=&#39;m&#39; (Amplitude Spectral Density と仮定すると m/sqrt(Hz) ですが、ここでは単純化)
-fsm = FrequencySeriesMatrix(
-    data,
-    frequencies=f,
-    unit=&quot;m&quot;,
-    name=&quot;Displacement&quot;,
-    rows=[&quot;Sensor A&quot;, &quot;Sensor B&quot;],
-    cols=[&quot;X-axis&quot;, &quot;Y-axis&quot;],
-)
+<span class="c1"># unit=&#39;m&#39; (Amplitude Spectral Density と仮定すると m/sqrt(Hz) ですが、ここでは単純化)</span>
+<span class="n">fsm</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Displacement&quot;</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Sensor A&quot;</span><span class="p">,</span> <span class="s2">&quot;Sensor B&quot;</span><span class="p">],</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;X-axis&quot;</span><span class="p">,</span> <span class="s2">&quot;Y-axis&quot;</span><span class="p">],</span>
+<span class="p">)</span>
 
-# プロット
-# 自動的に log-log プロットになることを確認してください
-plot = fsm.plot()
-plot.show()
+<span class="c1"># プロット</span>
+<span class="c1"># 自動的に log-log プロットになることを確認してください</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">fsm</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -230,13 +231,13 @@ plot.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># FrequencySeriesList の作成
-fs1 = FrequencySeries(1 / f, frequencies=f, unit=u.m, name=&quot;Series 1&quot;)
-fs2 = FrequencySeries(2 / f, frequencies=f, unit=u.m, name=&quot;Series 2&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FrequencySeriesList の作成</span>
+<span class="n">fs1</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">f</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Series 1&quot;</span><span class="p">)</span>
+<span class="n">fs2</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="n">f</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Series 2&quot;</span><span class="p">)</span>
 
-fs_list = FrequencySeriesList([fs1, fs2])
+<span class="n">fs_list</span> <span class="o">=</span> <span class="n">FrequencySeriesList</span><span class="p">([</span><span class="n">fs1</span><span class="p">,</span> <span class="n">fs2</span><span class="p">])</span>
 
-fs_list.plot();
+<span class="n">fs_list</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
@@ -251,11 +252,11 @@ fs_list.plot();
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>del times, data, tsm, fsm, fs1, fs2, fs_list
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">del</span> <span class="n">times</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">tsm</span><span class="p">,</span> <span class="n">fsm</span><span class="p">,</span> <span class="n">fs1</span><span class="p">,</span> <span class="n">fs2</span><span class="p">,</span> <span class="n">fs_list</span>
 
-import gc
+<span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
 
-gc.collect()
+<span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -276,27 +277,27 @@ gc.collect()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Spectrogram の作成
-# TimeSeriesMatrix と同じ GPS 時刻を使用
-t = t0 + np.linspace(0, 10, 100)
-# 10Hz - 1000Hz
-f = np.logspace(1, 3, 50)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Spectrogram の作成</span>
+<span class="c1"># TimeSeriesMatrix と同じ GPS 時刻を使用</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="c1"># 10Hz - 1000Hz</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
 
-spec_list = SpectrogramList(
-    [
-        Spectrogram(
-            np.random.rand(100, 50), times=t, frequencies=f, unit=u.count, name=&quot;Spec 1&quot;
-        ),
-        Spectrogram(
-            np.random.rand(100, 50) * 10,
-            times=t,
-            frequencies=f,
-            unit=u.count,
-            name=&quot;Spec 2&quot;,
-        ),
-    ]
-)
-spec_list.plot();
+<span class="n">spec_list</span> <span class="o">=</span> <span class="n">SpectrogramList</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">Spectrogram</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">times</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Spec 1&quot;</span>
+        <span class="p">),</span>
+        <span class="n">Spectrogram</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">times</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Spec 2&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="n">spec_list</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
@@ -320,19 +321,19 @@ spec_list.plot();
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 100,000,000 サンプルのデータを生成
-ts_large = TimeSeries(np.random.randn(100000000), sample_rate=1024, name=&quot;Large TS&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 100,000,000 サンプルのデータを生成</span>
+<span class="n">ts_large</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100000000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Large TS&quot;</span><span class="p">)</span>
 
-print(f&quot;Original samples: {len(ts_large)}&quot;)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original samples: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_large</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-# プロット実行 (自動的に間引きが行われる)
-plot_opt = ts_large.plot()
+<span class="c1"># プロット実行 (自動的に間引きが行われる)</span>
+<span class="n">plot_opt</span> <span class="o">=</span> <span class="n">ts_large</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
-# 描画された点数を確認
-ax = plot_opt.gca()
-line = ax.get_lines()[0]
-print(f&quot;Plotted points: {len(line.get_xdata())}&quot;)
-plot_opt.show();
+<span class="c1"># 描画された点数を確認</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_opt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">line</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plotted points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">get_xdata</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plot_opt</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
@@ -359,14 +360,14 @@ Plotted points: 10000
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 閾値を 10,000 に下げて、プロット点数を 2,000 に指定する例
-ts_med = TimeSeries(np.random.randn(20000), sample_rate=16384, name=&quot;Medium TS&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 閾値を 10,000 に下げて、プロット点数を 2,000 に指定する例</span>
+<span class="n">ts_med</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">16384</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Medium TS&quot;</span><span class="p">)</span>
 
-plot_custom = ts_med.plot(decimate_threshold=10000, decimate_points=2000)
+<span class="n">plot_custom</span> <span class="o">=</span> <span class="n">ts_med</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">decimate_threshold</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">decimate_points</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
 
-ax = plot_custom.gca()
-print(f&quot;Original: {len(ts_med)}, Plotted: {len(ax.get_lines()[0].get_xdata())}&quot;)
-plot_custom.show();
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_custom</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_med</span><span class="p">)</span><span class="si">}</span><span class="s2">, Plotted: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_xdata</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plot_custom</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
@@ -398,21 +399,21 @@ Original: 20000, Plotted: 2000
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from gwexpy.spectrogram import SpectrogramDict
-from gwexpy.timeseries import TimeSeries
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
 
-# テストデータの生成
-def make_sg(name):
-    ts = TimeSeries(np.random.randn(2048 * 10), sample_rate=2048, name=name, unit=&quot;m&quot;)
-    return ts.spectrogram(stride=1, fftlength=1, overlap=0.5)
+<span class="c1"># テストデータの生成</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_sg</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2048</span> <span class="o">*</span> <span class="mi">10</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
 
-sg_dict = SpectrogramDict({&quot;Channel A&quot;: make_sg(&quot;A&quot;), &quot;Channel B&quot;: make_sg(&quot;B&quot;)})
+<span class="n">sg_dict</span> <span class="o">=</span> <span class="n">SpectrogramDict</span><span class="p">({</span><span class="s2">&quot;Channel A&quot;</span><span class="p">:</span> <span class="n">make_sg</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">),</span> <span class="s2">&quot;Channel B&quot;</span><span class="p">:</span> <span class="n">make_sg</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">)})</span>
 
-# ASDgram プロットの実行
-fig, axes = sg_dict.plot_summary(fmin=10, fmax=500, title=&quot;ASDgram Demonstration&quot;)
-plt.show();
+<span class="c1"># ASDgram プロットの実行</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">sg_dict</span><span class="o">.</span><span class="n">plot_summary</span><span class="p">(</span><span class="n">fmin</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;ASDgram Demonstration&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
@@ -446,20 +447,20 @@ plt.show();
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-from gwexpy.plot import PairPlot
-from gwexpy.timeseries import TimeSeries
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">PairPlot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-# 2 つの異なるサンプリングレートの TimeSeries を作成
-ts1 = TimeSeries(np.random.randn(5000), sample_rate=1024, name=&quot;TS1&quot;)
-ts2 = TimeSeries(np.random.randn(4000), sample_rate=2048, name=&quot;TS2&quot;)
+<span class="c1"># 2 つの異なるサンプリングレートの TimeSeries を作成</span>
+<span class="n">ts1</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TS1&quot;</span><span class="p">)</span>
+<span class="n">ts2</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TS2&quot;</span><span class="p">)</span>
 
-# PairPlot を作成（corner=True がデフォルト）
-pair = PairPlot([ts1, ts2], corner=True)
+<span class="c1"># PairPlot を作成（corner=True がデフォルト）</span>
+<span class="n">pair</span> <span class="o">=</span> <span class="n">PairPlot</span><span class="p">([</span><span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span><span class="p">],</span> <span class="n">corner</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-# 描画
-pair.show()
+<span class="c1"># 描画</span>
+<span class="n">pair</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

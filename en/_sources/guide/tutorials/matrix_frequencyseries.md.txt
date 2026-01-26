@@ -1,8 +1,8 @@
 # Multi-channel Analysis with FrequencySeriesMatrix
 
 This tutorial is currently only available in Japanese.
-Please see the [Japanese version](../../../ja/guide/tutorials/matrix_frequencyseries.html).
+See `docs/ja/guide/tutorials/matrix_frequencyseries.ipynb`.
 
 ---
 
-このチュートリアルの日本語版は [こちら](../../../ja/guide/tutorials/matrix_frequencyseries.html) です。
+このチュートリアルの日本語版は `docs/ja/guide/tutorials/matrix_frequencyseries.ipynb` を参照してください。

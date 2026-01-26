@@ -45,12 +45,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -478,10 +483,12 @@
 <span class="sd">        Input 4D field with axis0_domain=&#39;time&#39;.</span>
 <span class="sd">    point_or_region : tuple, list of tuples, or dict</span>
 <span class="sd">        Spatial location(s) to extract:</span>
+
 <span class="sd">        - Single point: ``(x, y, z)`` tuple of Quantities</span>
 <span class="sd">        - Multiple points: list of ``(x, y, z)`` tuples</span>
 <span class="sd">        - Region dict: ``{&#39;x&#39;: slice or value, &#39;y&#39;: ..., &#39;z&#39;: ...}``</span>
 <span class="sd">          If region, averages over all points in the region.</span>
+
 <span class="sd">    nperseg : int, optional</span>
 <span class="sd">        Length of each segment. Default is min(256, len(time_axis)).</span>
 <span class="sd">    noverlap : int, optional</span>

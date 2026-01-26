@@ -72,6 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -129,35 +130,35 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-import numpy as np
-from astropy import units as u
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
-from gwexpy.noise.wave import chirp, exponential, gaussian, sine
-from gwexpy.plot import Plot
-from gwexpy.timeseries import TimeSeries
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">chirp</span><span class="p">,</span> <span class="n">exponential</span><span class="p">,</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">sine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-# サンプルデータの生成 (100Hzでサンプリングされた5秒間のデータ)
-fs = 100
-duration = 5.0
-# Restore &#39;t&#39; for compatibility with downstream cells if they use it
-t = np.arange(0, duration, 1 / fs)
+<span class="c1"># サンプルデータの生成 (100Hzでサンプリングされた5秒間のデータ)</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="c1"># Restore &#39;t&#39; for compatibility with downstream cells if they use it</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
 
-# Sensor 1: 10Hzの正弦波 + ノイズ
-s1 = sine(duration=duration, sample_rate=fs, frequency=10, amplitude=1.0)
-n1 = gaussian(duration=duration, sample_rate=fs, std=0.2)
-ts1 = s1 + n1
-ts1.name = &quot;Sensor 1&quot;
-ts1.override_unit(&quot;V&quot;)
+<span class="c1"># Sensor 1: 10Hzの正弦波 + ノイズ</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">n1</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">ts1</span> <span class="o">=</span> <span class="n">s1</span> <span class="o">+</span> <span class="n">n1</span>
+<span class="n">ts1</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Sensor 1&quot;</span>
+<span class="n">ts1</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
 
-# Sensor 2: チャープ信号 (周波数が時間とともに変化: 5Hz -&gt; 25Hz) + 指数関数的な増幅
-s2 = chirp(duration=duration, sample_rate=fs, f0=5, f1=25, t1=duration)
-env = exponential(
-    duration=duration, sample_rate=fs, tau=2.0, decay=False, amplitude=0.2
-)
-ts2 = s2 * env
-ts2.name = &quot;Chirp Signal&quot;
-ts2.override_unit(&quot;V&quot;)
+<span class="c1"># Sensor 2: チャープ信号 (周波数が時間とともに変化: 5Hz -&gt; 25Hz) + 指数関数的な増幅</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">chirp</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">exponential</span><span class="p">(</span>
+    <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">0.2</span>
+<span class="p">)</span>
+<span class="n">ts2</span> <span class="o">=</span> <span class="n">s2</span> <span class="o">*</span> <span class="n">env</span>
+<span class="n">ts2</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Chirp Signal&quot;</span>
+<span class="n">ts2</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -170,21 +171,21 @@ ts2.override_unit(&quot;V&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 分析信号 (Analytic Signal) の計算
-ts_analytic = ts2.hilbert()
-# 包絡線 (Envelope) の計算
-ts_env = ts2.envelope()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 分析信号 (Analytic Signal) の計算</span>
+<span class="n">ts_analytic</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">hilbert</span><span class="p">()</span>
+<span class="c1"># 包絡線 (Envelope) の計算</span>
+<span class="n">ts_env</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">envelope</span><span class="p">()</span>
 
-plot = Plot(ts2, ts_env, figsize=(10, 4))
-ax = plot.gca()
-ax.get_lines()[0].set_label(&quot;Original (Chirp)&quot;)
-ax.get_lines()[0].set_alpha(0.5)
-ax.get_lines()[1].set_label(&quot;Envelope&quot;)
-ax.get_lines()[1].set_color(&quot;red&quot;)
-ax.get_lines()[1].set_linewidth(2)
-ax.legend()
-ax.set_title(&quot;Hilbert Transform and Envelope&quot;)
-plt.show()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">ts2</span><span class="p">,</span> <span class="n">ts_env</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Original (Chirp)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Envelope&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Hilbert Transform and Envelope&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -203,20 +204,20 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 瞬時位相 (unwrap=True で位相跳びを解消)
-phase_rad = ts2.instantaneous_phase(unwrap=True)
-phase_deg = ts2.instantaneous_phase(deg=True, unwrap=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 瞬時位相 (unwrap=True で位相跳びを解消)</span>
+<span class="n">phase_rad</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">instantaneous_phase</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">phase_deg</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">instantaneous_phase</span><span class="p">(</span><span class="n">deg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-# 瞬時周波数
-freq = ts2.instantaneous_frequency()
+<span class="c1"># 瞬時周波数</span>
+<span class="n">freq</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">instantaneous_frequency</span><span class="p">()</span>
 
-plot = Plot(phase_rad, freq, separate=True, sharex=True, figsize=(10, 6))
-ax = plot.axes
-ax[0].set_ylabel(&quot;Phase [rad]&quot;)
-ax[0].set_title(&quot;Instantaneous Phase (Unwrapped)&quot;)
-ax[1].set_ylabel(&quot;Frequency [Hz]&quot;)
-ax[1].set_title(&quot;Instantaneous Frequency&quot;)
-plt.show()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">phase_rad</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Phase [rad]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Instantaneous Phase (Unwrapped)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Instantaneous Frequency&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -235,29 +236,29 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 1. mix_down: 特定の周波数 f0 で複調 (複素信号になる)
-ts_mixed = ts1.mix_down(f0=10)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. mix_down: 特定の周波数 f0 で複調 (複素信号になる)</span>
+<span class="n">ts_mixed</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">mix_down</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
-# 2. baseband: demodulation + lowpass + resampling を一括実行
-ts_base = ts1.baseband(f0=10, lowpass=5, output_rate=20)
+<span class="c1"># 2. baseband: demodulation + lowpass + resampling を一括実行</span>
+<span class="n">ts_base</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">baseband</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">lowpass</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">output_rate</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 
-# 3. lock_in: ロックイン検波 (振幅と位相を抽出)
-amp, ph = ts1.lock_in(f0=10, stride=0.1)  # 0.1秒ごとの平均を出力
-res_complex = ts1.lock_in(f0=10, stride=0.1, output=&quot;complex&quot;)  # 複素数での出力
+<span class="c1"># 3. lock_in: ロックイン検波 (振幅と位相を抽出)</span>
+<span class="n">amp</span><span class="p">,</span> <span class="n">ph</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">lock_in</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># 0.1秒ごとの平均を出力</span>
+<span class="n">res_complex</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">lock_in</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;complex&quot;</span><span class="p">)</span>  <span class="c1"># 複素数での出力</span>
 
-print(amp)
+<span class="nb">print</span><span class="p">(</span><span class="n">amp</span><span class="p">)</span>
 
-plot = Plot(amp, ph, separate=True, sharex=True, figsize=(10, 6))
-ax = plot.axes
-ax[0].get_lines()[0].set_label(&quot;Amplitude&quot;)
-ax[0].axhline(1.0, color=&quot;gray&quot;, linestyle=&quot;--&quot;, label=&quot;Theoretical (Sine amp=1)&quot;)
-ax[0].set_ylabel(&quot;Amplitude&quot;)
-ax[0].legend()
-ax[1].get_lines()[0].set_color(&quot;orange&quot;)
-ax[1].get_lines()[0].set_label(&quot;Phase [deg]&quot;)
-ax[1].set_ylabel(&quot;Phase [deg]&quot;)
-plot.figure.suptitle(&quot;Lock-in Amplification Result at 10Hz&quot;)
-plt.show()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">amp</span><span class="p">,</span> <span class="n">ph</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Theoretical (Sine amp=1)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Phase [deg]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Phase [deg]&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Lock-in Amplification Result at 10Hz&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -303,23 +304,23 @@ TimeSeries([1.03481507, 0.96203914, 1.26042756, 1.07545387,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 通常の FFT (GWpy互換)
-fs_gwpy = ts1.fft()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 通常の FFT (GWpy互換)</span>
+<span class="n">fs_gwpy</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">fft</span><span class="p">()</span>
 
-# Transient モード:
-# pad_left/right でパディング量を指定。nfft_mode=&quot;next_fast_len&quot; で計算効率の良い長さに調整。
-fs_trans = ts1.fft(
-    mode=&quot;transient&quot;, pad_left=0.5, pad_right=0.5, nfft_mode=&quot;next_fast_len&quot;
-)
+<span class="c1"># Transient モード:</span>
+<span class="c1"># pad_left/right でパディング量を指定。nfft_mode=&quot;next_fast_len&quot; で計算効率の良い長さに調整。</span>
+<span class="n">fs_trans</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;transient&quot;</span><span class="p">,</span> <span class="n">pad_left</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pad_right</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nfft_mode</span><span class="o">=</span><span class="s2">&quot;next_fast_len&quot;</span>
+<span class="p">)</span>
 
-plot = Plot(fs_gwpy.abs(), fs_trans.abs(), yscale=&quot;log&quot;, xlim=(0, 50), figsize=(10, 4))
-ax = plot.gca()
-ax.get_lines()[0].set_label(&quot;Standard FFT&quot;)
-ax.get_lines()[1].set_label(&quot;Transient FFT (Padded)&quot;)
-ax.get_lines()[1].set_alpha(0.7)
-ax.legend()
-ax.set_title(&quot;Comparison of FFT modes&quot;)
-plt.show()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">fs_gwpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">fs_trans</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Standard FFT&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Transient FFT (Padded)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Comparison of FFT modes&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -338,28 +339,28 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 伝達関数の計算 (Sensor 1 に対する Chirp Signal の伝達関数)
-tf_welch = ts2.transfer_function(ts1, fftlength=1)
-tf_fft = ts2.transfer_function(
-    ts1, mode=&quot;transient&quot;
-)  # 全区間FFT比 (過渡応答解析などに有用)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 伝達関数の計算 (Sensor 1 に対する Chirp Signal の伝達関数)</span>
+<span class="n">tf_welch</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">tf_fft</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span>
+    <span class="n">ts1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;transient&quot;</span>
+<span class="p">)</span>  <span class="c1"># 全区間FFT比 (過渡応答解析などに有用)</span>
 
-# 相互相関 (xcorr)
-corr = ts1.xcorr(ts2, maxlag=0.5, normalize=&quot;coeff&quot;)
+<span class="c1"># 相互相関 (xcorr)</span>
+<span class="n">corr</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">xcorr</span><span class="p">(</span><span class="n">ts2</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="s2">&quot;coeff&quot;</span><span class="p">)</span>
 
-plot = Plot(figsize=(10, 6))
-ax1 = plot.add_subplot(2, 1, 1)
-ax1.semilogy(tf_welch.frequencies, np.abs(tf_welch), label=&quot;Welch method&quot;)
-ax1.semilogy(tf_fft.frequencies, np.abs(tf_fft), label=&quot;Direct FFT ratio&quot;, alpha=0.5)
-ax1.set_title(&quot;Transfer Function Magnitude&quot;)
-ax1.legend()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax1</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">tf_welch</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">tf_welch</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Welch method&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">tf_fft</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">tf_fft</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Direct FFT ratio&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Transfer Function Magnitude&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
-ax2 = plot.add_subplot(2, 1, 2)
-lag = corr.times.value - corr.t0.value
-ax2.plot(lag, corr)
-ax2.set_title(&quot;Cross-Correlation (normalized)&quot;)
-ax2.set_xlabel(&quot;Lag [s]&quot;)
-plt.show()
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">lag</span> <span class="o">=</span> <span class="n">corr</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">corr</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lag</span><span class="p">,</span> <span class="n">corr</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Cross-Correlation (normalized)&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Lag [s]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -379,29 +380,29 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># データの準備 (デモ用)
-import numpy as np
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># データの準備 (デモ用)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-from gwexpy.plot import Plot
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
 
-t = np.linspace(0, 10, 1000)
-data = TimeSeries(np.sin(2 * np.pi * 1 * t), times=t * u.s, unit=&quot;V&quot;, name=&quot;Demo Data&quot;)
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">t</span><span class="p">),</span> <span class="n">times</span><span class="o">=</span><span class="n">t</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Demo Data&quot;</span><span class="p">)</span>
 
-# STLT の実行
-# stride: 時間ステップ, window: 解析ウィンドウ長
-stlt_result = data.stlt(stride=&quot;0.5s&quot;, window=&quot;2s&quot;)
+<span class="c1"># STLT の実行</span>
+<span class="c1"># stride: 時間ステップ, window: 解析ウィンドウ長</span>
+<span class="n">stlt_result</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">stlt</span><span class="p">(</span><span class="n">stride</span><span class="o">=</span><span class="s2">&quot;0.5s&quot;</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;2s&quot;</span><span class="p">)</span>
 
-print(f&quot;Kind: {stlt_result.kind}&quot;)
-print(f&quot;Shape: {stlt_result.shape} (Time x Axis1 x Axis2)&quot;)
-print(f&quot;Time Axis: {len(stlt_result.times)} steps&quot;)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Kind: </span><span class="si">{</span><span class="n">stlt_result</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">stlt_result</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> (Time x Axis1 x Axis2)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time Axis: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">stlt_result</span><span class="o">.</span><span class="n">times</span><span class="p">)</span><span class="si">}</span><span class="s2"> steps&quot;</span><span class="p">)</span>
 
-# 特定時刻 (t=5.0s) の平面を抽出
-plane_at_5s = stlt_result.at_time(5.0 * u.s)
-print(f&quot;Plane at 5.0s shape: {plane_at_5s.shape}&quot;)
+<span class="c1"># 特定時刻 (t=5.0s) の平面を抽出</span>
+<span class="n">plane_at_5s</span> <span class="o">=</span> <span class="n">stlt_result</span><span class="o">.</span><span class="n">at_time</span><span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plane at 5.0s shape: </span><span class="si">{</span><span class="n">plane_at_5s</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-# Plane2D としての振る舞いを確認
-print(f&quot;Axis 1: {plane_at_5s.axis1.name}&quot;)
-print(f&quot;Axis 2: {plane_at_5s.axis2.name}&quot;)
+<span class="c1"># Plane2D としての振る舞いを確認</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis 1: </span><span class="si">{</span><span class="n">plane_at_5s</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis 2: </span><span class="si">{</span><span class="n">plane_at_5s</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -427,52 +428,52 @@ Axis 2: frequency
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># HHT (Hilbert-Huang Transform)
-# Empirical Mode Decomposition (EMD) を実行し、IMFs (Intrinsic Mode Functions) を抽出
-# 注意: 実行には PyEMD (EMD-signal) が必要です: `pip install EMD-signal`
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># HHT (Hilbert-Huang Transform)</span>
+<span class="c1"># Empirical Mode Decomposition (EMD) を実行し、IMFs (Intrinsic Mode Functions) を抽出</span>
+<span class="c1"># 注意: 実行には PyEMD (EMD-signal) が必要です: `pip install EMD-signal`</span>
 
-try:
-    import os
-    import warnings
-    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
-    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
-    # EMDの実行 (戻り値は辞書)
-    # method=&quot;emd&quot; (標準EMD) または &quot;eemd&quot; (Ensemble EMD)
-    # ここでは ts2 (Chirp信号を含む例) を使用します
-    imfs = ts2.emd(method=&quot;emd&quot;, max_imf=3)
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="c1"># EMDの実行 (戻り値は辞書)</span>
+    <span class="c1"># method=&quot;emd&quot; (標準EMD) または &quot;eemd&quot; (Ensemble EMD)</span>
+    <span class="c1"># ここでは ts2 (Chirp信号を含む例) を使用します</span>
+    <span class="n">imfs</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">emd</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;emd&quot;</span><span class="p">,</span> <span class="n">max_imf</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
-    print(f&quot;Extracted IMFs: {list(imfs.keys())}&quot;)
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extracted IMFs: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">imfs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    # IMFのプロット
-    sorted_keys = sorted(
-        [k for k in imfs.keys() if k.startswith(&quot;IMF&quot;)], key=lambda x: int(x[3:])
-    )
-    if &quot;residual&quot; in imfs:
-        sorted_keys.append(&quot;residual&quot;)
+    <span class="c1"># IMFのプロット</span>
+    <span class="n">sorted_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">imfs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;IMF&quot;</span><span class="p">)],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">:])</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;residual&quot;</span> <span class="ow">in</span> <span class="n">imfs</span><span class="p">:</span>
+        <span class="n">sorted_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;residual&quot;</span><span class="p">)</span>
 
-    # gwexpy.plot.Plot を使用して一括プロット
-    plot_data = [ts2] + [imfs[k] for k in sorted_keys]
-    plot = Plot(*plot_data, separate=True, sharex=True, figsize=(10, 8))
+    <span class="c1"># gwexpy.plot.Plot を使用して一括プロット</span>
+    <span class="n">plot_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">ts2</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">imfs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">sorted_keys</span><span class="p">]</span>
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="o">*</span><span class="n">plot_data</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 
-    # Originalの設定
-    ax0 = plot.axes[0]
-    ax0.get_lines()[0].set_label(&quot;Original&quot;)
-    ax0.get_lines()[0].set_color(&quot;black&quot;)
-    ax0.legend(loc=&quot;upper right&quot;)
-    ax0.set_title(&quot;Empirical Mode Decomposition&quot;)
+    <span class="c1"># Originalの設定</span>
+    <span class="n">ax0</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Original&quot;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Empirical Mode Decomposition&quot;</span><span class="p">)</span>
 
-    # IMFsの設定
-    for i, key in enumerate(sorted_keys):
-        ax = plot.axes[i + 1]
-        ax.get_lines()[0].set_label(key)
-        ax.legend(loc=&quot;upper right&quot;)
+    <span class="c1"># IMFsの設定</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sorted_keys</span><span class="p">):</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
 
-    plt.show()
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-except ImportError:
-    print(&quot;EMD-signal not installed. Skipping HHT demo.&quot;)
-except Exception as e:
-    print(f&quot;HHT Error: {e}&quot;)
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EMD-signal not installed. Skipping HHT demo.&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HHT Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -497,27 +498,27 @@ Extracted IMFs: [&#39;IMF1&#39;, &#39;IMF2&#39;, &#39;IMF3&#39;, &#39;residual&#
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 欠損値を含むデータのテスト
-ts_nan = ts1.copy()
-ts_nan.value[100:150] = np.nan
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 欠損値を含むデータのテスト</span>
+<span class="n">ts_nan</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">ts_nan</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">150</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
-# 1. impute: 欠損値補完 (interpolation など)
-ts_imputed = ts_nan.impute(method=&quot;interpolate&quot;)
+<span class="c1"># 1. impute: 欠損値補完 (interpolation など)</span>
+<span class="n">ts_imputed</span> <span class="o">=</span> <span class="n">ts_nan</span><span class="o">.</span><span class="n">impute</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;interpolate&quot;</span><span class="p">)</span>
 
-# 2. standardize: 標準化 (z-score, robust など)
-ts_z = ts1.standardize(method=&quot;zscore&quot;)
-ts_robust = ts1.standardize(method=&quot;zscore&quot;, robust=True)  # Median/IQRを使用
+<span class="c1"># 2. standardize: 標準化 (z-score, robust など)</span>
+<span class="n">ts_z</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;zscore&quot;</span><span class="p">)</span>
+<span class="n">ts_robust</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;zscore&quot;</span><span class="p">,</span> <span class="n">robust</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Median/IQRを使用</span>
 
-plot = Plot(ts_nan, ts_imputed, figsize=(10, 4))
-ax = plot.gca()
-ax.get_lines()[0].set_label(&quot;with NaNs&quot;)
-ax.get_lines()[0].set_color(&quot;red&quot;)
-ax.get_lines()[0].set_alpha(0.3)
-ax.get_lines()[1].set_label(&quot;Imputed&quot;)
-ax.get_lines()[1].set_linestyle(&quot;--&quot;)
-ax.legend()
-ax.set_title(&quot;Missing Value Imputation&quot;)
-plt.show()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">ts_nan</span><span class="p">,</span> <span class="n">ts_imputed</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;with NaNs&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Imputed&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_linestyle</span><span class="p">(</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Missing Value Imputation&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -535,32 +536,32 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># ピーク検出 (Find Peaks)
-# height, threshold, distance, prominence, width などのパラメータを指定可能
-# 単位付きの閾値指定も可能です
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ピーク検出 (Find Peaks)</span>
+<span class="c1"># height, threshold, distance, prominence, width などのパラメータを指定可能</span>
+<span class="c1"># 単位付きの閾値指定も可能です</span>
 
-# ts2 (Chirp + Sine) からピークを探す
-peaks, props = ts2.find_peaks(height=0.0, distance=50)
+<span class="c1"># ts2 (Chirp + Sine) からピークを探す</span>
+<span class="n">peaks</span><span class="p">,</span> <span class="n">props</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
-print(f&quot;Found {len(peaks)} peaks&quot;)
-if len(peaks) &gt; 0:
-    print(&quot;First 5 peaks:&quot;, peaks[:5])
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span><span class="si">}</span><span class="s2"> peaks&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;First 5 peaks:&quot;</span><span class="p">,</span> <span class="n">peaks</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
 
-# プロット
-plot = ts2.plot(figsize=(12, 4))
-ax = plot.gca()
-ax.scatter(
-    peaks.times.value,
-    peaks.value,
-    marker=&quot;x&quot;,
-    color=&quot;red&quot;,
-    s=100,
-    label=&quot;Peaks&quot;,
-    zorder=10,
-)
-ax.legend(loc=&quot;upper right&quot;)
-ax.set_title(&quot;Peak Detection Result&quot;)
-plt.show()
+<span class="c1"># プロット</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+    <span class="n">peaks</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">peaks</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+    <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Peaks&quot;</span><span class="p">,</span>
+    <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Peak Detection Result&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -594,57 +595,57 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    import os
-    import warnings
-    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
-    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
-    # 3. fit_arima: ARIMA(1,0,0) フィッティングと予測
-    model = ts1.fit_arima(order=(1, 0, 0))
-    resid = model.residuals()
-    forecast, conf = model.forecast(steps=30)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="c1"># 3. fit_arima: ARIMA(1,0,0) フィッティングと予測</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">fit_arima</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">resid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">residuals</span><span class="p">()</span>
+    <span class="n">forecast</span><span class="p">,</span> <span class="n">conf</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 
-    plot = Plot(ts1.tail(100), forecast, figsize=(10, 4))
-    ax = plot.gca()
-    ax.get_lines()[0].set_label(&quot;Measured&quot;)
-    ax.get_lines()[1].set_label(&quot;Forecast&quot;)
-    ax.get_lines()[1].set_color(&quot;orange&quot;)
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">ts1</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">forecast</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Measured&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Forecast&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
 
-    # Fill between
-    ax.fill_between(
-        conf[&quot;lower&quot;].times.value,
-        conf[&quot;lower&quot;].value,
-        conf[&quot;upper&quot;].value,
-        alpha=0.2,
-        color=&quot;orange&quot;,
-    )
+    <span class="c1"># Fill between</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+        <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;lower&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;lower&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    ax.set_title(&quot;ARIMA(1,0,0) Fit &amp; Forecast&quot;)
-    ax.legend()
-    plt.show()
-except Exception as e:
-    print(f&quot;ARIMA skipping: {e}&quot;)
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;ARIMA(1,0,0) Fit &amp; Forecast&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ARIMA skipping: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-try:
-    import os
-    import warnings
-    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
-    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
-    # 4. hurst / local_hurst: ハースト指数 (長距離相関の指標)
-    h_val = ts1.hurst()
-    h_detail = ts1.hurst(return_details=True)  # 詳細情報付き
-    h_local = ts1.local_hurst(window=1.0)  # 1秒窓での推移
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="c1"># 4. hurst / local_hurst: ハースト指数 (長距離相関の指標)</span>
+    <span class="n">h_val</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">hurst</span><span class="p">()</span>
+    <span class="n">h_detail</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">hurst</span><span class="p">(</span><span class="n">return_details</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># 詳細情報付き</span>
+    <span class="n">h_local</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">local_hurst</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>  <span class="c1"># 1秒窓での推移</span>
 
-    plot = Plot(h_local, figsize=(10, 4))
-    ax = plot.gca()
-    ax.get_lines()[0].set_label(&quot;Local Hurst&quot;)
-    ax.axhline(h_val, color=&quot;red&quot;, linestyle=&quot;--&quot;, label=f&quot;Global H={h_val:.2f}&quot;)
-    ax.set_ylim(0, 0.2)
-    ax.set_title(&quot;Hurst Exponent Analysis&quot;)
-    ax.legend()
-    plt.show()
-except Exception as e:
-    print(f&quot;Hurst skipping: {e}&quot;)
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">h_local</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Local Hurst&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">h_val</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Global H=</span><span class="si">{</span><span class="n">h_val</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Hurst Exponent Analysis&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hurst skipping: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -671,32 +672,32 @@ Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hu
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>rw = 0.5 * u.s  # 0.5秒窓
-rmean = ts1.rolling_mean(rw)
-rstd = ts1.rolling_std(rw)
-rmed = ts1.rolling_median(rw)
-rmin = ts1.rolling_min(rw)
-rmax = ts1.rolling_max(rw)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rw</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>  <span class="c1"># 0.5秒窓</span>
+<span class="n">rmean</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">rolling_mean</span><span class="p">(</span><span class="n">rw</span><span class="p">)</span>
+<span class="n">rstd</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">rolling_std</span><span class="p">(</span><span class="n">rw</span><span class="p">)</span>
+<span class="n">rmed</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">rolling_median</span><span class="p">(</span><span class="n">rw</span><span class="p">)</span>
+<span class="n">rmin</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">rolling_min</span><span class="p">(</span><span class="n">rw</span><span class="p">)</span>
+<span class="n">rmax</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">rolling_max</span><span class="p">(</span><span class="n">rw</span><span class="p">)</span>
 
-plot = Plot(ts1, rmean, rmed, figsize=(10, 4))
-ax = plot.gca()
-ax.get_lines()[0].set_label(&quot;Original&quot;)
-ax.get_lines()[0].set_alpha(0.3)
-ax.get_lines()[1].set_label(&quot;Rolling Mean&quot;)
-ax.get_lines()[1].set_color(&quot;blue&quot;)
-ax.get_lines()[2].set_label(&quot;Rolling Median&quot;)
-ax.get_lines()[2].set_color(&quot;green&quot;)
-ax.get_lines()[2].set_linestyle(&quot;--&quot;)
-ax.fill_between(
-    rmean.times.value,
-    rmean.value - rstd.value,
-    rmean.value + rstd.value,
-    alpha=0.1,
-    color=&quot;blue&quot;,
-)
-ax.legend()
-ax.set_title(&quot;Rolling Statistics (Window=0.5s)&quot;)
-plt.show()
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">rmean</span><span class="p">,</span> <span class="n">rmed</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Original&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Rolling Mean&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Rolling Median&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_linestyle</span><span class="p">(</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+    <span class="n">rmean</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">rmean</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">rstd</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">rmean</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">rstd</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Rolling Statistics (Window=0.5s)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -713,10 +714,10 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 1. asfreq: Pandasライクな名付け規則 (&#39;50ms&#39; など) で再インデックス
-ts_reindexed = ts1.asfreq(&quot;50ms&quot;, method=&quot;pad&quot;)
-Plot(ts1, ts_reindexed)
-plt.legend([&quot;Original&quot;, &quot;.asfreq(&#39;50ms&#39;, method=&#39;pad&#39;)&quot;])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. asfreq: Pandasライクな名付け規則 (&#39;50ms&#39; など) で再インデックス</span>
+<span class="n">ts_reindexed</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">asfreq</span><span class="p">(</span><span class="s2">&quot;50ms&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;pad&quot;</span><span class="p">)</span>
+<span class="n">Plot</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">ts_reindexed</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;Original&quot;</span><span class="p">,</span> <span class="s2">&quot;.asfreq(&#39;50ms&#39;, method=&#39;pad&#39;)&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -740,29 +741,29 @@ plt.legend([&quot;Original&quot;, &quot;.asfreq(&#39;50ms&#39;, method=&#39;pad&
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 2. resample:
-# 数値 (10Hz) を指定すると信号処理的なリサンプリング (GWpy標準)
-ts_sig = ts1.resample(10)
-# 文字列 (&#39;200ms&#39;) を指定すると、その時間幅のビンごとの統計量をとる (新機能)
-ts_binned = ts1.resample(&quot;200ms&quot;)  # デフォルトは mean
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 2. resample:</span>
+<span class="c1"># 数値 (10Hz) を指定すると信号処理的なリサンプリング (GWpy標準)</span>
+<span class="n">ts_sig</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="c1"># 文字列 (&#39;200ms&#39;) を指定すると、その時間幅のビンごとの統計量をとる (新機能)</span>
+<span class="n">ts_binned</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s2">&quot;200ms&quot;</span><span class="p">)</span>  <span class="c1"># デフォルトは mean</span>
 
-# Plot doesn&#39;t have a direct &#39;step&#39; method equivalent in args, so we use ax.step or pass to plot
-# However, kwarg &#39;drawstyle&#39;=&#39;steps-post&#39; works in plot()? gwpy Plot wraps matplotlib.
-# Let&#39;s assume we can modify axes after creation or use standard plot for simplicity if appropriate, but step is specific.
-# Better strategy: Create Plot instance, then use ax.step
-plot = Plot(figsize=(10, 4))
-ax = plot.gca()
-ax.plot(ts1, alpha=0.6, label=&quot;Original (100Hz)&quot;)
-ax.step(
-    ts_binned.times,
-    ts_binned.value,
-    where=&quot;post&quot;,
-    label=&quot;Binned Mean (200ms)&quot;,
-    linewidth=2,
-)
-ax.legend()
-ax.set_title(&quot;Resampling: Signal Resampling vs Time Binning&quot;)
-plt.show()
+<span class="c1"># Plot doesn&#39;t have a direct &#39;step&#39; method equivalent in args, so we use ax.step or pass to plot</span>
+<span class="c1"># However, kwarg &#39;drawstyle&#39;=&#39;steps-post&#39; works in plot()? gwpy Plot wraps matplotlib.</span>
+<span class="c1"># Let&#39;s assume we can modify axes after creation or use standard plot for simplicity if appropriate, but step is specific.</span>
+<span class="c1"># Better strategy: Create Plot instance, then use ax.step</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original (100Hz)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">step</span><span class="p">(</span>
+    <span class="n">ts_binned</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
+    <span class="n">ts_binned</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Binned Mean (200ms)&quot;</span><span class="p">,</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Resampling: Signal Resampling vs Time Binning&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -782,27 +783,27 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from gwexpy.fitting.models import damped_oscillation
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">damped_oscillation</span>
 
-# 減衰振動モデルでフィット (関数を直接渡す)
-# 初期値: A=0.5, tau=0.5, f=15, phi=0
-result = data.fit(damped_oscillation, A=0.5, tau=0.5, f=15, phi=0)
+<span class="c1"># 減衰振動モデルでフィット (関数を直接渡す)</span>
+<span class="c1"># 初期値: A=0.5, tau=0.5, f=15, phi=0</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">damped_oscillation</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-# 結果の表示 (iminuit形式)
-print(result)
+<span class="c1"># 結果の表示 (iminuit形式)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
-# ベストフィット曲線の取得
-# 注: x_data はデータ点に対応する時間の配列です
-x_data = data.times.value
-best_fit = result.model(x_data)
+<span class="c1"># ベストフィット曲線の取得</span>
+<span class="c1"># 注: x_data はデータ点に対応する時間の配列です</span>
+<span class="n">x_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+<span class="n">best_fit</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x_data</span><span class="p">)</span>
 
-# プロット
-plot = data.plot(label=&quot;Noisy Signal&quot;)
-ax = plot.gca()
-ax.plot(data.times, best_fit, label=&quot;Best Fit&quot;, color=&quot;red&quot;, linestyle=&quot;--&quot;)
-ax.legend()
-ax.set_title(&quot;Damped Oscillation Fit&quot;)
-plt.show()
+<span class="c1"># プロット</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Noisy Signal&quot;</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">best_fit</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Best Fit&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Damped Oscillation Fit&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -854,30 +855,30 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Pandas &amp; Xarray
-try:
-    import os
-    import warnings
-    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
-    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
-    df = ts1.to_pandas(index=&quot;datetime&quot;)
-    ts_p = TimeSeries.from_pandas(df)
-    print(&quot;Pandas interop OK&quot;)
-    display(df)
-except ImportError:
-    pass
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pandas &amp; Xarray</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">)</span>
+    <span class="n">ts_p</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pandas interop OK&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
 
-try:
-    import os
-    import warnings
-    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
-    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
-    xr = ts1.to_xarray()
-    ts_xr = TimeSeries.from_xarray(xr)
-    print(&quot;Xarray interop OK&quot;)
-    display(xr)
-except ImportError:
-    pass
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">xr</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
+    <span class="n">ts_xr</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_xarray</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Xarray interop OK&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
 </pre></div>
 </div>
 </div>
@@ -1419,14 +1420,14 @@ Attributes:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># SQLite (シリアライズ保存)
-import sqlite3
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># SQLite (シリアライズ保存)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
 
-with sqlite3.connect(&quot;:memory:&quot;) as conn:
-    ts1.to_sqlite(conn, series_id=&quot;my_sensor&quot;)
-    ts_sql = TimeSeries.from_sqlite(conn, series_id=&quot;my_sensor&quot;)
-    print(f&quot;SQLite interop OK: {ts_sql.name}&quot;)
-    display(conn)
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;:memory:&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">ts1</span><span class="o">.</span><span class="n">to_sqlite</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">series_id</span><span class="o">=</span><span class="s2">&quot;my_sensor&quot;</span><span class="p">)</span>
+    <span class="n">ts_sql</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">series_id</span><span class="o">=</span><span class="s2">&quot;my_sensor&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SQLite interop OK: </span><span class="si">{</span><span class="n">ts_sql</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1450,21 +1451,21 @@ SQLite interop OK: my_sensor
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Deep Learning (Torch)
-try:
-    import os
-    import warnings
-    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
-    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
-    import torch
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Deep Learning (Torch)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-    _ = torch
-    t_torch = ts1.to_torch()
-    ts_f_torch = TimeSeries.from_torch(t_torch, t0=ts1.t0, dt=ts1.dt)
-    print(f&quot;Torch interop OK (Shape: {t_torch.shape})&quot;)
-    display(t_torch)
-except ImportError:
-    pass
+    <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span>
+    <span class="n">t_torch</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_torch</span><span class="p">()</span>
+    <span class="n">ts_f_torch</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_torch</span><span class="p">(</span><span class="n">t_torch</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts1</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts1</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Torch interop OK (Shape: </span><span class="si">{</span><span class="n">t_torch</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">t_torch</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
 </pre></div>
 </div>
 </div>
@@ -1588,21 +1589,21 @@ tensor([-6.3638e-01,  6.7641e-01,  1.1160e+00,  7.5920e-01,  7.8126e-01,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Deep Learning (TensorFlow)
-try:
-    import os
-    import warnings
-    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
-    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
-    import tensorflow as tf
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Deep Learning (TensorFlow)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
 
-    _ = tf
-    t_tf = ts1.to_tensorflow()
-    ts_f_tf = TimeSeries.from_tensorflow(t_tf, t0=ts1.t0, dt=ts1.dt)
-    print(&quot;TensorFlow interop OK&quot;)
-    display(t_tf)
-except ImportError:
-    pass
+    <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span>
+    <span class="n">t_tf</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_tensorflow</span><span class="p">()</span>
+    <span class="n">ts_f_tf</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_tensorflow</span><span class="p">(</span><span class="n">t_tf</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts1</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts1</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TensorFlow interop OK&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">t_tf</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
 </pre></div>
 </div>
 </div>
@@ -1688,21 +1689,21 @@ array([-0.63638168,  0.67641478,  1.11601357, ..., -0.94245798,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># ObsPy (地震波形・時系列解析)
-try:
-    import os
-    import warnings
-    os.environ[&quot;TF_CPP_MIN_LOG_LEVEL&quot;] = &quot;2&quot;
-    warnings.filterwarnings(&quot;ignore&quot;, category=UserWarning, module=&quot;google.protobuf&quot;)
-    import obspy
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ObsPy (地震波形・時系列解析)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
 
-    _ = obspy
-    tr = ts1.to_obspy()
-    ts_f_obspy = TimeSeries.from_obspy(tr)
-    print(f&quot;ObsPy interop OK: {tr.id}&quot;)
-    display(tr)
-except ImportError:
-    pass
+    <span class="n">_</span> <span class="o">=</span> <span class="n">obspy</span>
+    <span class="n">tr</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_obspy</span><span class="p">()</span>
+    <span class="n">ts_f_obspy</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_obspy</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ObsPy interop OK: </span><span class="si">{</span><span class="n">tr</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
 </pre></div>
 </div>
 </div>

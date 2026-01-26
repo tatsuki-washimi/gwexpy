@@ -72,6 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -119,35 +120,35 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-import numpy as np
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-from gwexpy.plot import SkyMap
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">SkyMap</span>
 
-# Create SkyMap with Mollweide projection (default)
-fig = SkyMap(figsize=(10, 5), projection=&quot;mollweide&quot;)
+<span class="c1"># Create SkyMap with Mollweide projection (default)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">SkyMap</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">projection</span><span class="o">=</span><span class="s2">&quot;mollweide&quot;</span><span class="p">)</span>
 
-# Add synthetic HEALPix data if ligo.skymap is available
-try:
-    import ligo.skymap
+<span class="c1"># Add synthetic HEALPix data if ligo.skymap is available</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ligo.skymap</span>
 
-    _ = ligo.skymap
-    nside = 16
-    npix = 12 * nside**2
-    # Generate a dummy central peak
-    map_data = np.exp(-0.5 * (np.arange(npix) - npix // 2) ** 2 / (npix // 10) ** 2)
-    fig.add_healpix(map_data, cmap=&quot;viridis&quot;)
-except ImportError:
-    print(&quot;ligo.skymap not installed.&quot;)
+    <span class="n">_</span> <span class="o">=</span> <span class="n">ligo</span><span class="o">.</span><span class="n">skymap</span>
+    <span class="n">nside</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">npix</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">nside</span><span class="o">**</span><span class="mi">2</span>
+    <span class="c1"># Generate a dummy central peak</span>
+    <span class="n">map_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">npix</span><span class="p">)</span> <span class="o">-</span> <span class="n">npix</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">npix</span> <span class="o">//</span> <span class="mi">10</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_healpix</span><span class="p">(</span><span class="n">map_data</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ligo.skymap not installed.&quot;</span><span class="p">)</span>
 
-# Mark some astronomical targets
-# Crab Nebula (RA: 83.63 deg, Dec: 22.01 deg)
-fig.mark_target(83.63, 22.01, label=&quot;Crab Nebula&quot;, color=&quot;red&quot;, marker=&quot;*&quot;)
+<span class="c1"># Mark some astronomical targets</span>
+<span class="c1"># Crab Nebula (RA: 83.63 deg, Dec: 22.01 deg)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">mark_target</span><span class="p">(</span><span class="mf">83.63</span><span class="p">,</span> <span class="mf">22.01</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Crab Nebula&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
 
-# Other targets
-fig.mark_target([150, 250], [-30, 45], label=&quot;Other Sources&quot;, color=&quot;white&quot;, marker=&quot;o&quot;)
+<span class="c1"># Other targets</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">mark_target</span><span class="p">([</span><span class="mi">150</span><span class="p">,</span> <span class="mi">250</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Other Sources&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
 
-plt.show()
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -167,29 +168,29 @@ ligo.skymap not installed.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from gwexpy.plot import GeoMap
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeoMap</span>
 
-# GeoMap を作成 with Robinson projection centered on 135E (Japan)
-try:
-    gmap = GeoMap(projection=&quot;Robinson&quot;, center_lon=135)
+<span class="c1"># GeoMap を作成 with Robinson projection centered on 135E (Japan)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">gmap</span> <span class="o">=</span> <span class="n">GeoMap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;Robinson&quot;</span><span class="p">,</span> <span class="n">center_lon</span><span class="o">=</span><span class="mi">135</span><span class="p">)</span>
 
-    # Add map features
-    gmap.add_coastlines(resolution=&quot;low&quot;, color=&quot;black&quot;)
-    gmap.fill_continents(color=&quot;wheat&quot;)
-    gmap.fill_oceans(color=&quot;lightblue&quot;)
+    <span class="c1"># Add map features</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">add_coastlines</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">fill_continents</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;wheat&quot;</span><span class="p">)</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">fill_oceans</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightblue&quot;</span><span class="p">)</span>
 
-    # Plot standard detectors (KAGRA, LIGO, Virgo, GEO)
-    for det in [&quot;K1&quot;, &quot;H1&quot;, &quot;L1&quot;, &quot;V1&quot;, &quot;G1&quot;]:
-        gmap.plot_detector(det, label=True)
+    <span class="c1"># Plot standard detectors (KAGRA, LIGO, Virgo, GEO)</span>
+    <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;K1&quot;</span><span class="p">,</span> <span class="s2">&quot;H1&quot;</span><span class="p">,</span> <span class="s2">&quot;L1&quot;</span><span class="p">,</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span> <span class="s2">&quot;G1&quot;</span><span class="p">]:</span>
+        <span class="n">gmap</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    # Plot an arbitrary point
-    gmap.plot(x=170.5, y=-23.6, marker=&quot;o&quot;, color=&quot;purple&quot;, markersize=12)
+    <span class="c1"># Plot an arbitrary point</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">170.5</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="mf">23.6</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
 
-    gmap.show()
-except ImportError as e:
-    print(e)
-except Exception as e:
-    print(f&quot;An error occurred: {e}&quot;)
+    <span class="n">gmap</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -208,23 +209,23 @@ except Exception as e:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from gwexpy.plot import GeoMap
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeoMap</span>
 
-# 日本周辺を表示 (region=&#39;JP&#39; を指定)
-# 拡大表示のため Mercator 投影法を使用し、枠線を詳しく表示 (frame=&#39;afg&#39;)
-geo_jp = GeoMap(projection=&quot;Mercator&quot;, region=&quot;JP&quot;, frame=&quot;afg&quot;)
+<span class="c1"># 日本周辺を表示 (region=&#39;JP&#39; を指定)</span>
+<span class="c1"># 拡大表示のため Mercator 投影法を使用し、枠線を詳しく表示 (frame=&#39;afg&#39;)</span>
+<span class="n">geo_jp</span> <span class="o">=</span> <span class="n">GeoMap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;Mercator&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;JP&quot;</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;afg&quot;</span><span class="p">)</span>
 
-geo_jp.fill_oceans(color=&quot;azure&quot;)
-geo_jp.fill_continents(color=&quot;lightgray&quot;)
-geo_jp.add_coastlines(resolution=&quot;medium&quot;)  # 解像度を上げて海岸線を描画
+<span class="n">geo_jp</span><span class="o">.</span><span class="n">fill_oceans</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span><span class="p">)</span>
+<span class="n">geo_jp</span><span class="o">.</span><span class="n">fill_continents</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgray&quot;</span><span class="p">)</span>
+<span class="n">geo_jp</span><span class="o">.</span><span class="n">add_coastlines</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>  <span class="c1"># 解像度を上げて海岸線を描画</span>
 
-# KAGRA 検出器をプロット
-geo_jp.plot_detector(&quot;K1&quot;)
+<span class="c1"># KAGRA 検出器をプロット</span>
+<span class="n">geo_jp</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="s2">&quot;K1&quot;</span><span class="p">)</span>
 
-# 縮尺バーを追加 (500km 幅、左下に 0.5cm オフセット)
-geo_jp.add_scale_bar(width=&quot;500k&quot;, position=&quot;jBL&quot;, offset=&quot;0.5c/0.5c&quot;)
+<span class="c1"># 縮尺バーを追加 (500km 幅、左下に 0.5cm オフセット)</span>
+<span class="n">geo_jp</span><span class="o">.</span><span class="n">add_scale_bar</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="s2">&quot;500k&quot;</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s2">&quot;jBL&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="s2">&quot;0.5c/0.5c&quot;</span><span class="p">)</span>
 
-geo_jp.show()
+<span class="n">geo_jp</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

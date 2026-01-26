@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
@@ -89,28 +90,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.ScalarField.zscore"><code class="docutils literal notranslate"><span class="pre">ScalarField.zscore()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#gwexpy.fields.TensorField"><code class="docutils literal notranslate"><span class="pre">TensorField</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.TensorField.copy"><code class="docutils literal notranslate"><span class="pre">TensorField.copy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.TensorField.det"><code class="docutils literal notranslate"><span class="pre">TensorField.det()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.TensorField.plot_components"><code class="docutils literal notranslate"><span class="pre">TensorField.plot_components()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.TensorField.symmetrize"><code class="docutils literal notranslate"><span class="pre">TensorField.symmetrize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.TensorField.to_array"><code class="docutils literal notranslate"><span class="pre">TensorField.to_array()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.TensorField.trace"><code class="docutils literal notranslate"><span class="pre">TensorField.trace()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#gwexpy.fields.VectorField"><code class="docutils literal notranslate"><span class="pre">VectorField</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.copy"><code class="docutils literal notranslate"><span class="pre">VectorField.copy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.cross"><code class="docutils literal notranslate"><span class="pre">VectorField.cross()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.dot"><code class="docutils literal notranslate"><span class="pre">VectorField.dot()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.norm"><code class="docutils literal notranslate"><span class="pre">VectorField.norm()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.plot"><code class="docutils literal notranslate"><span class="pre">VectorField.plot()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.plot_magnitude"><code class="docutils literal notranslate"><span class="pre">VectorField.plot_magnitude()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.project"><code class="docutils literal notranslate"><span class="pre">VectorField.project()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.quiver"><code class="docutils literal notranslate"><span class="pre">VectorField.quiver()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.streamline"><code class="docutils literal notranslate"><span class="pre">VectorField.streamline()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.to_array"><code class="docutils literal notranslate"><span class="pre">VectorField.to_array()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#gwexpy.fields.coherence_map"><code class="docutils literal notranslate"><span class="pre">coherence_map()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gwexpy.fields.compute_freq_space"><code class="docutils literal notranslate"><span class="pre">compute_freq_space()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gwexpy.fields.compute_psd"><code class="docutils literal notranslate"><span class="pre">compute_psd()</span></code></a></li>
@@ -144,26 +123,26 @@
 <li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.FieldDict.sel_all"><code class="docutils literal notranslate"><span class="pre">FieldDict.sel_all()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">VectorField</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">VectorField.copy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">VectorField.cross()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">VectorField.dot()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">VectorField.norm()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">VectorField.plot()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">VectorField.plot_magnitude()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">VectorField.project()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">VectorField.quiver()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">VectorField.streamline()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id10"><code class="docutils literal notranslate"><span class="pre">VectorField.to_array()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.fields.VectorField"><code class="docutils literal notranslate"><span class="pre">VectorField</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.copy"><code class="docutils literal notranslate"><span class="pre">VectorField.copy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.cross"><code class="docutils literal notranslate"><span class="pre">VectorField.cross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.dot"><code class="docutils literal notranslate"><span class="pre">VectorField.dot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.norm"><code class="docutils literal notranslate"><span class="pre">VectorField.norm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.plot"><code class="docutils literal notranslate"><span class="pre">VectorField.plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.plot_magnitude"><code class="docutils literal notranslate"><span class="pre">VectorField.plot_magnitude()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.project"><code class="docutils literal notranslate"><span class="pre">VectorField.project()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.quiver"><code class="docutils literal notranslate"><span class="pre">VectorField.quiver()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.streamline"><code class="docutils literal notranslate"><span class="pre">VectorField.streamline()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.VectorField.to_array"><code class="docutils literal notranslate"><span class="pre">VectorField.to_array()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id11"><code class="docutils literal notranslate"><span class="pre">TensorField</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">TensorField.copy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id13"><code class="docutils literal notranslate"><span class="pre">TensorField.det()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id14"><code class="docutils literal notranslate"><span class="pre">TensorField.plot_components()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id15"><code class="docutils literal notranslate"><span class="pre">TensorField.symmetrize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id16"><code class="docutils literal notranslate"><span class="pre">TensorField.to_array()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id17"><code class="docutils literal notranslate"><span class="pre">TensorField.trace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy.fields.TensorField"><code class="docutils literal notranslate"><span class="pre">TensorField</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.TensorField.copy"><code class="docutils literal notranslate"><span class="pre">TensorField.copy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.TensorField.det"><code class="docutils literal notranslate"><span class="pre">TensorField.det()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.TensorField.plot_components"><code class="docutils literal notranslate"><span class="pre">TensorField.plot_components()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.TensorField.symmetrize"><code class="docutils literal notranslate"><span class="pre">TensorField.symmetrize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.TensorField.to_array"><code class="docutils literal notranslate"><span class="pre">TensorField.to_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fields.TensorField.trace"><code class="docutils literal notranslate"><span class="pre">TensorField.trace()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -178,6 +157,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../en/index.html">Detailed Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ja/index.html">詳細リファレンス</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -792,13 +775,14 @@ Uses Welch’s method by default for robust PSD estimation.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>**kwargs</strong> – <p>Keyword arguments passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_density()</span></code>
 or <code class="xref py py-func docutils literal notranslate"><span class="pre">compute_psd()</span></code> (if point_or_region is used).
-Common options:
-- point_or_region : tuple or list, optional</p>
-<blockquote>
-<div><p>If provided, computes PSD at specific spatial point(s) or region
-average instead of full field. Returns FrequencySeries(List).</p>
-</div></blockquote>
+Common options:</p>
 <ul class="simple">
+<li><dl class="simple">
+<dt>point_or_region<span class="classifier">tuple or list, optional</span></dt><dd><p>If provided, computes PSD at specific spatial point(s) or region
+average instead of full field. Returns FrequencySeries(List).</p>
+</dd>
+</dl>
+</li>
 <li><p>method : {‘welch’, ‘fft’}, default ‘welch’</p></li>
 <li><p>nperseg : int, segment length</p></li>
 <li><p>window : str, window function</p></li>
@@ -1063,7 +1047,7 @@ Default is ‘xy’.</p></li>
 <dd class="field-odd"><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – The k-domain axis name or index.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Wavelength values (λ = 2π / <a href="#id18"><span class="problematic" id="id19">|k|</span></a>). k=0 returns inf.</p>
+<dd class="field-even"><p>Wavelength values (<span class="math notranslate nohighlight">\(\lambda = 2\pi / |k|\)</span>). k=0 returns inf.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><cite>~astropy.units.Quantity</cite></p>
@@ -1103,283 +1087,6 @@ If None, uses the entire time axis.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">zscore_field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">zscore</span><span class="p">(</span><span class="n">baseline_t</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">))</span>
 </pre></div>
 </div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="gwexpy.fields.TensorField">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.fields.</span></span><span class="sig-name descname"><span class="pre">TensorField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#gwexpy.fields.FieldDict" title="gwexpy.fields.collections.FieldDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDict</span></code></a></p>
-<p>Tensor-valued field as a collection of ScalarField components.</p>
-<p>Keys are typically tuples of indices representing the tensor components,
-e.g., <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0)</span></code> for the <span class="math notranslate nohighlight">\(T_{00}\)</span> component.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>components</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.ScalarField"><em>ScalarField</em></a><em>]</em><em>, </em><em>optional</em>) – Dictionary mapping component index tuples to <a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.ScalarField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarField</span></code></a>
-objects.</p></li>
-<li><p><strong>rank</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – The rank (order) of the tensor. If not provided, it is inferred
-from the keys.</p></li>
-<li><p><strong>validate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to validate component consistency. Default is True.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.TensorField.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#id11" title="gwexpy.fields.tensor.TensorField"><span class="pre">TensorField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField.copy" title="Link to this definition"></a></dt>
-<dd><p>Return a copy of this TensorField.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.TensorField.det">
-<span class="sig-name descname"><span class="pre">det</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.det"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField.det" title="Link to this definition"></a></dt>
-<dd><p>Compute the determinant of a rank-2 tensor.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The determinant field.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.ScalarField">ScalarField</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.TensorField.plot_components">
-<span class="sig-name descname"><span class="pre">plot_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.plot_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField.plot_components" title="Link to this definition"></a></dt>
-<dd><p>Plot the tensor components in a grid layout.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – X-axis name.</p></li>
-<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Y-axis name.</p></li>
-<li><p><strong>**kwargs</strong> – Fixed coordinates and arguments passed to FieldPlot.add_scalar.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.TensorField.symmetrize">
-<span class="sig-name descname"><span class="pre">symmetrize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#id11" title="gwexpy.fields.tensor.TensorField"><span class="pre">TensorField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.symmetrize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField.symmetrize" title="Link to this definition"></a></dt>
-<dd><p>Symmetrize a rank-2 tensor: <span class="math notranslate nohighlight">\(S_{ij} = (T_{ij} + T_{ji}) / 2\)</span>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The symmetrized tensor.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#id11" title="gwexpy.fields.TensorField">TensorField</a></p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the tensor rank is not 2.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.TensorField.to_array">
-<span class="sig-name descname"><span class="pre">to_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'first'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'last'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'last'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.to_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField.to_array" title="Link to this definition"></a></dt>
-<dd><p>Convert components into a single NumPy array.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>order</strong> (<em>{'first'</em><em>, </em><em>'last'}</em><em>, </em><em>optional</em>) – If ‘first’ (default for VectorField), the tensor dimensions are at the beginning.
-If ‘last’ (preferred for linalg), they are at the end.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Shape (dim1, dim2, N0, N1, N2, N3) if order=’first’.
-Shape (N0, N1, N2, N3, dim1, dim2) if order=’last’.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.TensorField.trace">
-<span class="sig-name descname"><span class="pre">trace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField.trace" title="Link to this definition"></a></dt>
-<dd><p>Compute the trace of a rank-2 tensor.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The sum of diagonal components <span class="math notranslate nohighlight">\(\sum T_{ii}\)</span>.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.ScalarField">ScalarField</a></p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the tensor rank is not 2.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="gwexpy.fields.VectorField">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.fields.</span></span><span class="sig-name descname"><span class="pre">VectorField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'cartesian'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'custom'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cartesian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#gwexpy.fields.FieldDict" title="gwexpy.fields.collections.FieldDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDict</span></code></a></p>
-<p>Vector-valued field as a collection of ScalarField components.</p>
-<p>This class maintains a collection of <a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.ScalarField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarField</span></code></a> objects,
-constrained to have identical axis metadata. This structure allows
-performing physical operations (FFT, filtering) on each component
-independently while ensuring geometrical consistency.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>components</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.ScalarField"><em>ScalarField</em></a><em>]</em><em>, </em><em>optional</em>) – Dictionary mapping component names (e.g., ‘x’, ‘y’) to
-<a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.ScalarField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarField</span></code></a> objects.</p></li>
-<li><p><strong>basis</strong> (<em>{'cartesian'</em><em>, </em><em>'custom'}</em><em>, </em><em>optional</em>) – The coordinate basis of the vector. Default is ‘cartesian’.</p></li>
-<li><p><strong>validate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to validate that all components have consistent axes
-and units. Default is True.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span><span class="p">,</span> <span class="n">VectorField</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fx</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fy</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">vf</span> <span class="o">=</span> <span class="n">VectorField</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">fx</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">fy</span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">vnorm</span> <span class="o">=</span> <span class="n">vf</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span>
-</pre></div>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.VectorField.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#id0" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.copy" title="Link to this definition"></a></dt>
-<dd><p>Return a copy of this VectorField.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.VectorField.cross">
-<span class="sig-name descname"><span class="pre">cross</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id0" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#id0" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.cross"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.cross" title="Link to this definition"></a></dt>
-<dd><p>Compute the cross product with another VectorField (3-components).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#id0" title="gwexpy.fields.VectorField"><em>VectorField</em></a>) – The other vector field. Both must have exactly ‘x’, ‘y’, ‘z’ components.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The resulting vector field.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#id0" title="gwexpy.fields.VectorField">VectorField</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.VectorField.dot">
-<span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id0" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.dot" title="Link to this definition"></a></dt>
-<dd><p>Compute the scalar (dot) product with another VectorField.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#id0" title="gwexpy.fields.VectorField"><em>VectorField</em></a>) – The other vector field to dot with. Must have identical components.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The resulting dot product field.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.ScalarField">ScalarField</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.VectorField.norm">
-<span class="sig-name descname"><span class="pre">norm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.norm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.norm" title="Link to this definition"></a></dt>
-<dd><p>Compute the L2 norm of the vector field.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A scalar field representing the magnitude <span class="math notranslate nohighlight">\(\sqrt{\sum |E_i|^2}\)</span>.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.ScalarField">ScalarField</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.VectorField.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.plot" title="Link to this definition"></a></dt>
-<dd><p>Plot magnitude and overlay quiver.</p>
-<p>This is a convenience method combining plot_magnitude and quiver.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.VectorField.plot_magnitude">
-<span class="sig-name descname"><span class="pre">plot_magnitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.plot_magnitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.plot_magnitude" title="Link to this definition"></a></dt>
-<dd><p>Plot the magnitude (norm) of the vector field.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – X-axis name.</p></li>
-<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Y-axis name.</p></li>
-<li><p><strong>**kwargs</strong> – Fixed coordinates and arguments passed to ScalarField.plot.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.VectorField.project">
-<span class="sig-name descname"><span class="pre">project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id0" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.project" title="Link to this definition"></a></dt>
-<dd><p>Project the vector field onto a given direction.</p>
-<p>Result is (self . direction) / <a href="#id20"><span class="problematic" id="id21">|direction|</span></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>direction</strong> (<a class="reference internal" href="#id0" title="gwexpy.fields.VectorField"><em>VectorField</em></a>) – The direction to project onto.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The projected scalar field.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.ScalarField">ScalarField</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.VectorField.quiver">
-<span class="sig-name descname"><span class="pre">quiver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.quiver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.quiver" title="Link to this definition"></a></dt>
-<dd><p>Plot the vector field using arrows (quiver).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – X-axis name.</p></li>
-<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Y-axis name.</p></li>
-<li><p><strong>**kwargs</strong> – Fixed coordinates and arguments passed to FieldPlot.add_vector.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.VectorField.streamline">
-<span class="sig-name descname"><span class="pre">streamline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.streamline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.streamline" title="Link to this definition"></a></dt>
-<dd><p>Plot the vector field using streamlines.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – X-axis name.</p></li>
-<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Y-axis name.</p></li>
-<li><p><strong>**kwargs</strong> – Fixed coordinates and arguments passed to FieldPlot.add_vector.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.fields.VectorField.to_array">
-<span class="sig-name descname"><span class="pre">to_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.to_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.to_array" title="Link to this definition"></a></dt>
-<dd><p>Convert components to a single 5D ndarray.</p>
-<p>The last axis (axis 4) corresponds to the vector components.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A 5D array of shape <code class="docutils literal notranslate"><span class="pre">(axis0,</span> <span class="pre">axis1,</span> <span class="pre">axis2,</span> <span class="pre">axis3,</span> <span class="pre">n_components)</span></code>.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)">numpy.ndarray</a></p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1490,13 +1197,13 @@ estimates their PSD using scipy.signal.welch.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>field</strong> (<a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.ScalarField"><em>ScalarField</em></a>) – Input 4D field with axis0_domain=’time’.</p></li>
-<li><p><strong>point_or_region</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>tuples</em><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – <p>Spatial location(s) to extract:
-- Single point: <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code> tuple of Quantities
-- Multiple points: list of <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code> tuples
-- Region dict: <code class="docutils literal notranslate"><span class="pre">{'x':</span> <span class="pre">slice</span> <span class="pre">or</span> <span class="pre">value,</span> <span class="pre">'y':</span> <span class="pre">...,</span> <span class="pre">'z':</span> <span class="pre">...}</span></code></p>
-<blockquote>
-<div><p>If region, averages over all points in the region.</p>
-</div></blockquote>
+<li><p><strong>point_or_region</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>tuples</em><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – <p>Spatial location(s) to extract:</p>
+<ul>
+<li><p>Single point: <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code> tuple of Quantities</p></li>
+<li><p>Multiple points: list of <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code> tuples</p></li>
+<li><p>Region dict: <code class="docutils literal notranslate"><span class="pre">{'x':</span> <span class="pre">slice</span> <span class="pre">or</span> <span class="pre">value,</span> <span class="pre">'y':</span> <span class="pre">...,</span> <span class="pre">'z':</span> <span class="pre">...}</span></code>
+If region, averages over all points in the region.</p></li>
+</ul>
 </p></li>
 <li><p><strong>nperseg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Length of each segment. Default is min(256, len(time_axis)).</p></li>
 <li><p><strong>noverlap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of overlapping points. Default is nperseg // 2.</p></li>
@@ -1856,8 +1563,8 @@ Shape matches the input plane dimensions (with stride applied).</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="id0">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.fields.</span></span><span class="sig-name descname"><span class="pre">VectorField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'cartesian'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'custom'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cartesian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.VectorField">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.fields.</span></span><span class="sig-name descname"><span class="pre">VectorField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'cartesian'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'custom'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cartesian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gwexpy.fields.FieldDict" title="gwexpy.fields.collections.FieldDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDict</span></code></a></p>
 <p>Vector-valued field as a collection of ScalarField components.</p>
 <p>This class maintains a collection of <a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.ScalarField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarField</span></code></a> objects,
@@ -1884,35 +1591,35 @@ and units. Default is True.</p></li>
 </pre></div>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#id0" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.VectorField.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.VectorField" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.copy" title="Link to this definition"></a></dt>
 <dd><p>Return a copy of this VectorField.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">cross</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id0" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#id0" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.cross"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.VectorField.cross">
+<span class="sig-name descname"><span class="pre">cross</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gwexpy.fields.VectorField" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.VectorField" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.cross"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.cross" title="Link to this definition"></a></dt>
 <dd><p>Compute the cross product with another VectorField (3-components).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#id0" title="gwexpy.fields.VectorField"><em>VectorField</em></a>) – The other vector field. Both must have exactly ‘x’, ‘y’, ‘z’ components.</p>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#gwexpy.fields.VectorField" title="gwexpy.fields.VectorField"><em>VectorField</em></a>) – The other vector field. Both must have exactly ‘x’, ‘y’, ‘z’ components.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The resulting vector field.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#id0" title="gwexpy.fields.VectorField">VectorField</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#gwexpy.fields.VectorField" title="gwexpy.fields.VectorField">VectorField</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id0" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.VectorField.dot">
+<span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gwexpy.fields.VectorField" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.dot" title="Link to this definition"></a></dt>
 <dd><p>Compute the scalar (dot) product with another VectorField.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#id0" title="gwexpy.fields.VectorField"><em>VectorField</em></a>) – The other vector field to dot with. Must have identical components.</p>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#gwexpy.fields.VectorField" title="gwexpy.fields.VectorField"><em>VectorField</em></a>) – The other vector field to dot with. Must have identical components.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The resulting dot product field.</p>
@@ -1924,8 +1631,8 @@ and units. Default is True.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">norm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.norm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.VectorField.norm">
+<span class="sig-name descname"><span class="pre">norm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.norm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.norm" title="Link to this definition"></a></dt>
 <dd><p>Compute the L2 norm of the vector field.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1938,15 +1645,15 @@ and units. Default is True.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.VectorField.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.plot" title="Link to this definition"></a></dt>
 <dd><p>Plot magnitude and overlay quiver.</p>
 <p>This is a convenience method combining plot_magnitude and quiver.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">plot_magnitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.plot_magnitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.VectorField.plot_magnitude">
+<span class="sig-name descname"><span class="pre">plot_magnitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.plot_magnitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.plot_magnitude" title="Link to this definition"></a></dt>
 <dd><p>Plot the magnitude (norm) of the vector field.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1960,13 +1667,13 @@ and units. Default is True.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id0" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.VectorField.project">
+<span class="sig-name descname"><span class="pre">project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gwexpy.fields.VectorField" title="gwexpy.fields.vector.VectorField"><span class="pre">VectorField</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.project" title="Link to this definition"></a></dt>
 <dd><p>Project the vector field onto a given direction.</p>
-<p>Result is (self . direction) / <a href="#id22"><span class="problematic" id="id23">|direction|</span></a>.</p>
+<p>Result is (self . direction) / norm(direction).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>direction</strong> (<a class="reference internal" href="#id0" title="gwexpy.fields.VectorField"><em>VectorField</em></a>) – The direction to project onto.</p>
+<dd class="field-odd"><p><strong>direction</strong> (<a class="reference internal" href="#gwexpy.fields.VectorField" title="gwexpy.fields.VectorField"><em>VectorField</em></a>) – The direction to project onto.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The projected scalar field.</p>
@@ -1978,8 +1685,8 @@ and units. Default is True.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id8">
-<span class="sig-name descname"><span class="pre">quiver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.quiver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.VectorField.quiver">
+<span class="sig-name descname"><span class="pre">quiver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.quiver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.quiver" title="Link to this definition"></a></dt>
 <dd><p>Plot the vector field using arrows (quiver).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1993,8 +1700,8 @@ and units. Default is True.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id9">
-<span class="sig-name descname"><span class="pre">streamline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.streamline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.VectorField.streamline">
+<span class="sig-name descname"><span class="pre">streamline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.streamline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.streamline" title="Link to this definition"></a></dt>
 <dd><p>Plot the vector field using streamlines.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2008,8 +1715,8 @@ and units. Default is True.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id10">
-<span class="sig-name descname"><span class="pre">to_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.to_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.VectorField.to_array">
+<span class="sig-name descname"><span class="pre">to_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/vector.html#VectorField.to_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.VectorField.to_array" title="Link to this definition"></a></dt>
 <dd><p>Convert components to a single 5D ndarray.</p>
 <p>The last axis (axis 4) corresponds to the vector components.</p>
 <dl class="field-list simple">
@@ -2025,8 +1732,8 @@ and units. Default is True.</p></li>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="id11">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.fields.</span></span><span class="sig-name descname"><span class="pre">TensorField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.TensorField">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.fields.</span></span><span class="sig-name descname"><span class="pre">TensorField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gwexpy.fields.FieldDict" title="gwexpy.fields.collections.FieldDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDict</span></code></a></p>
 <p>Tensor-valued field as a collection of ScalarField components.</p>
 <p>Keys are typically tuples of indices representing the tensor components,
@@ -2043,14 +1750,14 @@ from the keys.</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="id12">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#id11" title="gwexpy.fields.tensor.TensorField"><span class="pre">TensorField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.TensorField.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.TensorField" title="gwexpy.fields.tensor.TensorField"><span class="pre">TensorField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField.copy" title="Link to this definition"></a></dt>
 <dd><p>Return a copy of this TensorField.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id13">
-<span class="sig-name descname"><span class="pre">det</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.det"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.TensorField.det">
+<span class="sig-name descname"><span class="pre">det</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.det"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField.det" title="Link to this definition"></a></dt>
 <dd><p>Compute the determinant of a rank-2 tensor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2063,8 +1770,8 @@ from the keys.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id14">
-<span class="sig-name descname"><span class="pre">plot_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.plot_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.TensorField.plot_components">
+<span class="sig-name descname"><span class="pre">plot_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.plot_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField.plot_components" title="Link to this definition"></a></dt>
 <dd><p>Plot the tensor components in a grid layout.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2078,15 +1785,15 @@ from the keys.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id15">
-<span class="sig-name descname"><span class="pre">symmetrize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#id11" title="gwexpy.fields.tensor.TensorField"><span class="pre">TensorField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.symmetrize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id15" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.TensorField.symmetrize">
+<span class="sig-name descname"><span class="pre">symmetrize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.TensorField" title="gwexpy.fields.tensor.TensorField"><span class="pre">TensorField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.symmetrize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField.symmetrize" title="Link to this definition"></a></dt>
 <dd><p>Symmetrize a rank-2 tensor: <span class="math notranslate nohighlight">\(S_{ij} = (T_{ij} + T_{ji}) / 2\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The symmetrized tensor.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#id11" title="gwexpy.fields.TensorField">TensorField</a></p>
+<dd class="field-even"><p><a class="reference internal" href="#gwexpy.fields.TensorField" title="gwexpy.fields.TensorField">TensorField</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the tensor rank is not 2.</p>
@@ -2095,8 +1802,8 @@ from the keys.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id16">
-<span class="sig-name descname"><span class="pre">to_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'first'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'last'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'last'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.to_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id16" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.TensorField.to_array">
+<span class="sig-name descname"><span class="pre">to_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'first'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'last'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'last'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.to_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField.to_array" title="Link to this definition"></a></dt>
 <dd><p>Convert components into a single NumPy array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2114,8 +1821,8 @@ Shape (N0, N1, N2, N3, dim1, dim2) if order=’last’.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id17">
-<span class="sig-name descname"><span class="pre">trace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwexpy.fields.TensorField.trace">
+<span class="sig-name descname"><span class="pre">trace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.fields.ScalarField" title="gwexpy.fields.scalar.ScalarField"><span class="pre">ScalarField</span></a></span></span><a class="reference internal" href="../../_modules/gwexpy/fields/tensor.html#TensorField.trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.fields.TensorField.trace" title="Link to this definition"></a></dt>
 <dd><p>Compute the trace of a rank-2 tensor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>

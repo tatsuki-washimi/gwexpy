@@ -11,6 +11,7 @@ analysis utilities for time and frequency series.
    guide/installation
    guide/quickstart
    guide/tutorials/index
+   guide/gwexpy_for_gwpy_users_ja
 
 .. toctree::
    :maxdepth: 2
@@ -23,6 +24,8 @@ analysis utilities for time and frequency series.
 .. toctree::
    :maxdepth: 2
    :caption: Developers
+
+   developers/index
 
 
 Language

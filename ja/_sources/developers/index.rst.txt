@@ -8,9 +8,6 @@
    :maxdepth: 1
 
    contracts/numerical
-   plans/REFACTORING_PLAN
-   plans/repo_improvement_plan
-   plans/stlt_implementation_plan
    gui/implementation_map
    gui/reference_analysis
 
@@ -28,28 +25,37 @@
 
 .. toctree::
    :maxdepth: 1
+   :glob:
 
    analysis/scalarfield_physics_review_20260120
-   analysis/dtt/dtt_analysis_report
+   analysis/dtt/*
 
-進行中の計画
-------------
-
-.. toctree::
-   :maxdepth: 1
-
-   plans/plan_refactor_exceptions_20260124_152245
-   plans/plan_QA_Verification_20260124
-   plans/test_coverage_expansion_plan_20260124
-   plans/plan_mypy_expansion_phase1_20260124
-   plans/plan_mypy_expansion_phase2_20260124
-
-最近のレポート
---------------
+計画 (Plans)
+----------------
 
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   reports/report_comprehensive_quality_improvement_20260124
-   reports/report_refactor_exceptions_20260124_153045
-   reports/repo_review_final_20260124
+   plans/*
+
+レポート (Reports)
+--------------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   reports/*
+
+アーカイブ (非表示)
+--------------------
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :glob:
+
+   archive/plans/*
+   archive/reports/*
+   archive/reviews/*

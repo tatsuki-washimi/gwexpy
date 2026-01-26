@@ -75,6 +75,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -127,14 +128,14 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-import numpy as np
-from astropy import units as u
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
-from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesMatrix
-from gwexpy.timeseries import TimeSeriesMatrix
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">FrequencySeriesMatrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
 
-plt.rcParams.update({&quot;figure.figsize&quot;: (5, 3), &quot;axes.grid&quot;: True})
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -145,50 +146,50 @@ plt.rcParams.update({&quot;figure.figsize&quot;: (5, 3), &quot;axes.grid&quot;: 
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>rng = np.random.default_rng(0)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-n = 1024
-dt = (1 / 256) * u.s
-t0 = 0 * u.s
-t = (np.arange(n) * dt).to_value(u.s)
+<span class="n">n</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">256</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
 
-tone10 = np.sin(2 * np.pi * 10 * t)
-tone20 = np.sin(2 * np.pi * 20 * t + 0.3)
+<span class="n">tone10</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">tone20</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="mf">0.3</span><span class="p">)</span>
 
-data = np.empty((2, 2, n), dtype=float)
-data[0, 0] = 0.5 * tone10 + 0.05 * rng.normal(size=n)
-data[0, 1] = 0.5 * tone20 + 0.05 * rng.normal(size=n)
-data[1, 0] = 0.3 * tone10 + 0.3 * tone20 + 0.05 * rng.normal(size=n)
-data[1, 1] = 0.2 * tone10 - 0.4 * tone20 + 0.05 * rng.normal(size=n)
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">tone10</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">tone20</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">tone10</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">tone20</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">tone10</span> <span class="o">-</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">tone20</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
 
-units = np.full((2, 2), u.V)
-names = [[&quot;ch00&quot;, &quot;ch01&quot;], [&quot;ch10&quot;, &quot;ch11&quot;]]
-channels = [[&quot;X:A&quot;, &quot;X:B&quot;], [&quot;Y:A&quot;, &quot;Y:B&quot;]]
+<span class="n">units</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">)</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;ch00&quot;</span><span class="p">,</span> <span class="s2">&quot;ch01&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;ch10&quot;</span><span class="p">,</span> <span class="s2">&quot;ch11&quot;</span><span class="p">]]</span>
+<span class="n">channels</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;X:A&quot;</span><span class="p">,</span> <span class="s2">&quot;X:B&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Y:A&quot;</span><span class="p">,</span> <span class="s2">&quot;Y:B&quot;</span><span class="p">]]</span>
 
-tsm = TimeSeriesMatrix(
-    data,
-    dt=dt,
-    t0=t0,
-    units=units,
-    names=names,
-    channels=channels,
-    rows={&quot;r0&quot;: {&quot;name&quot;: &quot;row0&quot;}, &quot;r1&quot;: {&quot;name&quot;: &quot;row1&quot;}},
-    cols={&quot;c0&quot;: {&quot;name&quot;: &quot;col0&quot;}, &quot;c1&quot;: {&quot;name&quot;: &quot;col1&quot;}},
-    name=&quot;demo&quot;,
-)
+<span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row0&quot;</span><span class="p">},</span> <span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row1&quot;</span><span class="p">}},</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col0&quot;</span><span class="p">},</span> <span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col1&quot;</span><span class="p">}},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
-fft = tsm.fft()
-asd = tsm.asd(fftlength=1, overlap=0.5)
+<span class="n">fft</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">fft</span><span class="p">()</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
-print(&quot;tsm&quot;, tsm.shape, &quot;sample_rate&quot;, tsm.sample_rate)
-print(&quot;fft&quot;, fft.shape, &quot;df&quot;, fft.df, &quot;f0&quot;, fft.f0)
-print(&quot;asd&quot;, asd.shape, &quot;unit&quot;, asd[0, 0].unit)
-print(&quot;frequencies[:5]&quot;, asd.frequencies[:5])
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;tsm&quot;</span><span class="p">,</span> <span class="n">tsm</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;sample_rate&quot;</span><span class="p">,</span> <span class="n">tsm</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fft&quot;</span><span class="p">,</span> <span class="n">fft</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="n">fft</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="n">fft</span><span class="o">.</span><span class="n">f0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;asd&quot;</span><span class="p">,</span> <span class="n">asd</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="n">asd</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;frequencies[:5]&quot;</span><span class="p">,</span> <span class="n">asd</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
 
-display(asd)
-asd.plot(subplots=True)
-plt.xscale(&quot;log&quot;)
-plt.yscale(&quot;log&quot;)
+<span class="n">display</span><span class="p">(</span><span class="n">asd</span><span class="p">)</span>
+<span class="n">asd</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -327,74 +328,74 @@ frequencies[:5] [0. 1. 2. 3. 4.] Hz
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;=== FrequencySeriesMatrix コンストラクタ例 ===&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== FrequencySeriesMatrix コンストラクタ例 ===&quot;</span><span class="p">)</span>
 
-freqs = np.linspace(0, 64, 65) * u.Hz
-f = freqs.to_value(u.Hz)
+<span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">65</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">freqs</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span>
 
-peak10 = np.exp(-0.5 * ((f - 10) / 1.5) ** 2)
-peak20 = np.exp(-0.5 * ((f - 20) / 2.0) ** 2)
+<span class="n">peak10</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">f</span> <span class="o">-</span> <span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1.5</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">peak20</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">f</span> <span class="o">-</span> <span class="mi">20</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 
-data_f = np.empty((2, 2, len(freqs)), dtype=float)
-data_f[0, 0] = peak10
-data_f[0, 1] = peak20
-data_f[1, 0] = 0.6 * peak10 + 0.4 * peak20
-data_f[1, 1] = 0.2 * peak10 - 0.5 * peak20
+<span class="n">data_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">data_f</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">peak10</span>
+<span class="n">data_f</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">peak20</span>
+<span class="n">data_f</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">peak10</span> <span class="o">+</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">peak20</span>
+<span class="n">data_f</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">peak10</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">peak20</span>
 
-units_f = np.full((2, 2), u.V / u.Hz**0.5)
-names_f = [[&quot;p10&quot;, &quot;p20&quot;], [&quot;mix&quot;, &quot;diff&quot;]]
-channels_f = [[&quot;X:A&quot;, &quot;X:B&quot;], [&quot;Y:A&quot;, &quot;Y:B&quot;]]
+<span class="n">units_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">V</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">names_f</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;p10&quot;</span><span class="p">,</span> <span class="s2">&quot;p20&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;mix&quot;</span><span class="p">,</span> <span class="s2">&quot;diff&quot;</span><span class="p">]]</span>
+<span class="n">channels_f</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;X:A&quot;</span><span class="p">,</span> <span class="s2">&quot;X:B&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Y:A&quot;</span><span class="p">,</span> <span class="s2">&quot;Y:B&quot;</span><span class="p">]]</span>
 
-# ケース 1: frequencies を明示
-fsm = FrequencySeriesMatrix(
-    data_f,
-    frequencies=freqs,
-    units=units_f,
-    names=names_f,
-    channels=channels_f,
-    rows={&quot;r0&quot;: {&quot;name&quot;: &quot;row0&quot;}, &quot;r1&quot;: {&quot;name&quot;: &quot;row1&quot;}},
-    cols={&quot;c0&quot;: {&quot;name&quot;: &quot;col0&quot;}, &quot;c1&quot;: {&quot;name&quot;: &quot;col1&quot;}},
-    name=&quot;peaks&quot;,
-)
-print(&quot;case1 frequencies&quot;, fsm.shape, &quot;df&quot;, fsm.df, &quot;f0&quot;, fsm.f0)
+<span class="c1"># ケース 1: frequencies を明示</span>
+<span class="n">fsm</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span>
+    <span class="n">data_f</span><span class="p">,</span>
+    <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="n">units_f</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">names_f</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="n">channels_f</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row0&quot;</span><span class="p">},</span> <span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row1&quot;</span><span class="p">}},</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col0&quot;</span><span class="p">},</span> <span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col1&quot;</span><span class="p">}},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;peaks&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;case1 frequencies&quot;</span><span class="p">,</span> <span class="n">fsm</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="n">fsm</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="n">fsm</span><span class="o">.</span><span class="n">f0</span><span class="p">)</span>
 
-# ケース 2: df/f0 を指定（Index.define で軸を生成）
-fsm_df = FrequencySeriesMatrix(
-    data_f, df=1 * u.Hz, f0=0 * u.Hz, units=units_f, names=names_f
-)
-print(&quot;case2 df/f0&quot;, fsm_df.shape, &quot;df&quot;, fsm_df.df)
+<span class="c1"># ケース 2: df/f0 を指定（Index.define で軸を生成）</span>
+<span class="n">fsm_df</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span>
+    <span class="n">data_f</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units_f</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names_f</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;case2 df/f0&quot;</span><span class="p">,</span> <span class="n">fsm_df</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="n">fsm_df</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
 
-# ケース 3: FrequencySeries の 2D リストから構築
-fs00 = FrequencySeries(
-    data_f[0, 0], frequencies=freqs, unit=units_f[0, 0], name=&quot;p10&quot;, channel=&quot;X:A&quot;
-)
-fs01 = FrequencySeries(
-    data_f[0, 1], frequencies=freqs, unit=units_f[0, 1], name=&quot;p20&quot;, channel=&quot;X:B&quot;
-)
-fs10 = FrequencySeries(
-    data_f[1, 0], frequencies=freqs, unit=units_f[1, 0], name=&quot;mix&quot;, channel=&quot;Y:A&quot;
-)
-fs11 = FrequencySeries(
-    data_f[1, 1], frequencies=freqs, unit=units_f[1, 1], name=&quot;diff&quot;, channel=&quot;Y:B&quot;
-)
-fsm_from_fs = FrequencySeriesMatrix([[fs00, fs01], [fs10, fs11]])
-print(
-    &quot;case3 from FrequencySeries&quot;,
-    fsm_from_fs.shape,
-    &quot;cell type&quot;,
-    type(fsm_from_fs[0, 0]),
-)
+<span class="c1"># ケース 3: FrequencySeries の 2D リストから構築</span>
+<span class="n">fs00</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+    <span class="n">data_f</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">units_f</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;p10&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;X:A&quot;</span>
+<span class="p">)</span>
+<span class="n">fs01</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+    <span class="n">data_f</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">units_f</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;p20&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;X:B&quot;</span>
+<span class="p">)</span>
+<span class="n">fs10</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+    <span class="n">data_f</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">units_f</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mix&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;Y:A&quot;</span>
+<span class="p">)</span>
+<span class="n">fs11</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+    <span class="n">data_f</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">units_f</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;diff&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;Y:B&quot;</span>
+<span class="p">)</span>
+<span class="n">fsm_from_fs</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">([[</span><span class="n">fs00</span><span class="p">,</span> <span class="n">fs01</span><span class="p">],</span> <span class="p">[</span><span class="n">fs10</span><span class="p">,</span> <span class="n">fs11</span><span class="p">]])</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;case3 from FrequencySeries&quot;</span><span class="p">,</span>
+    <span class="n">fsm_from_fs</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+    <span class="s2">&quot;cell type&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">(</span><span class="n">fsm_from_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+<span class="p">)</span>
 
-# ケース 4: Quantity 入力（units を自動設定）
-fsm_q = FrequencySeriesMatrix(data_f * (u.mV / u.Hz**0.5), frequencies=freqs)
-print(&quot;case4 Quantity meta unit&quot;, fsm_q.meta[0, 0].unit)
+<span class="c1"># ケース 4: Quantity 入力（units を自動設定）</span>
+<span class="n">fsm_q</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span><span class="n">data_f</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">mV</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="o">**</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;case4 Quantity meta unit&quot;</span><span class="p">,</span> <span class="n">fsm_q</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
 
-# ケース 5: 不規則 frequencies
-irreg = np.array([0, 1, 2, 4, 8]) * u.Hz
-fsm_irreg = FrequencySeriesMatrix(
-    np.ones((1, 1, len(irreg))), frequencies=irreg, units=[[u.V]], names=[[&quot;irreg&quot;]]
-)
-print(&quot;case5 irregular frequencies&quot;, fsm_irreg.frequencies)
+<span class="c1"># ケース 5: 不規則 frequencies</span>
+<span class="n">irreg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
+<span class="n">fsm_irreg</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">irreg</span><span class="p">))),</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">irreg</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="p">[[</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">]],</span> <span class="n">names</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;irreg&quot;</span><span class="p">]]</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;case5 irregular frequencies&quot;</span><span class="p">,</span> <span class="n">fsm_irreg</span><span class="o">.</span><span class="n">frequencies</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -423,19 +424,19 @@ case5 irregular frequencies [0. 1. 2. 4. 8.] Hz
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>s00 = asd[0, 0]
-print(&quot;[0,0]&quot;, &quot;type&quot;, type(s00), &quot;df&quot;, s00.df, &quot;f0&quot;, s00.f0, &quot;unit&quot;, s00.unit)
-print(&quot;[0,0]&quot;, &quot;name&quot;, s00.name, &quot;channel&quot;, s00.channel)
-s00.plot()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s00</span> <span class="o">=</span> <span class="n">asd</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[0,0]&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">s00</span><span class="p">),</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="n">s00</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="n">s00</span><span class="o">.</span><span class="n">f0</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="n">s00</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[0,0]&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">s00</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">s00</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+<span class="n">s00</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
-s01 = asd[&quot;r0&quot;, &quot;c1&quot;]
-print(&quot;[r0,c1]&quot;, &quot;name&quot;, s01.name, &quot;channel&quot;, s01.channel)
+<span class="n">s01</span> <span class="o">=</span> <span class="n">asd</span><span class="p">[</span><span class="s2">&quot;r0&quot;</span><span class="p">,</span> <span class="s2">&quot;c1&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[r0,c1]&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">s01</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">s01</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
 
-sub = asd[:, 0]
-print(&quot;asd[:,0] -&gt;&quot;, type(sub), sub.shape)
-sub.plot(subplots=True)
-plt.xscale(&quot;log&quot;)
-plt.yscale(&quot;log&quot;)
+<span class="n">sub</span> <span class="o">=</span> <span class="n">asd</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;asd[:,0] -&gt;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">sub</span><span class="p">),</span> <span class="n">sub</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">sub</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -474,17 +475,17 @@ asd[:,0] -&gt; &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatri
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>band = asd.crop(start=5 * u.Hz, end=40 * u.Hz)
-print(&quot;band&quot;, type(band), band.shape, &quot;span&quot;, band.xspan)
-band.plot(subplots=True)
-plt.xscale(&quot;log&quot;)
-plt.yscale(&quot;log&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">band</span> <span class="o">=</span> <span class="n">asd</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">40</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;band&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">band</span><span class="p">),</span> <span class="n">band</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="n">band</span><span class="o">.</span><span class="n">xspan</span><span class="p">)</span>
+<span class="n">band</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
 
-diffed = band.diff(n=1)
-print(&quot;diffed&quot;, type(diffed), diffed.shape, &quot;df&quot;, diffed.df)
+<span class="n">diffed</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;diffed&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">diffed</span><span class="p">),</span> <span class="n">diffed</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="n">diffed</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
 
-padded = band.pad(5)
-print(&quot;padded&quot;, type(padded), padded.shape, &quot;f0&quot;, padded.f0)
+<span class="n">padded</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;padded&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">padded</span><span class="p">),</span> <span class="n">padded</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="n">padded</span><span class="o">.</span><span class="n">f0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -516,24 +517,24 @@ padded &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&g
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>scaled = 2 * band
-print(&quot;scaled unit&quot;, scaled[0, 0].unit)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scaled</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">band</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;scaled unit&quot;</span><span class="p">,</span> <span class="n">scaled</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
 
-# 30 Hz あたりから抑える単純な実応答
-resp_mag = 1 / (1 + (band.frequencies / (30 * u.Hz)) ** 4)
-shaped = band.apply_response(resp_mag)
-print(
-    &quot;apply_response&quot;,
-    shaped.shape,
-    &quot;dtype&quot;,
-    shaped.value.dtype,
-    &quot;unit&quot;,
-    shaped[0, 0].unit,
-)
+<span class="c1"># 30 Hz あたりから抑える単純な実応答</span>
+<span class="n">resp_mag</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">/</span> <span class="p">(</span><span class="mi">30</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">))</span> <span class="o">**</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">shaped</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">apply_response</span><span class="p">(</span><span class="n">resp_mag</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;apply_response&quot;</span><span class="p">,</span>
+    <span class="n">shaped</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+    <span class="s2">&quot;dtype&quot;</span><span class="p">,</span>
+    <span class="n">shaped</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+    <span class="s2">&quot;unit&quot;</span><span class="p">,</span>
+    <span class="n">shaped</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+<span class="p">)</span>
 
-shaped.plot(subplots=True)
-plt.xscale(&quot;log&quot;)
-plt.yscale(&quot;log&quot;)
+<span class="n">shaped</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -562,18 +563,18 @@ apply_response (2, 2, 35) dtype float64 unit V / Hz(1/2)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from scipy import signal
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
 
-sr = tsm.sample_rate.to_value(u.Hz)
-b, a = signal.butter(4, [5, 40], btype=&quot;bandpass&quot;, fs=sr)
+<span class="n">sr</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span>
+<span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sr</span><span class="p">)</span>
 
-fft_filt = fft.filter(b, a, analog=False)
-tsm_filt = fft_filt.ifft()
+<span class="n">fft_filt</span> <span class="o">=</span> <span class="n">fft</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">analog</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">tsm_filt</span> <span class="o">=</span> <span class="n">fft_filt</span><span class="o">.</span><span class="n">ifft</span><span class="p">()</span>
 
-print(&quot;fft_filt&quot;, fft_filt.shape, &quot;df&quot;, fft_filt.df)
-print(&quot;tsm_filt&quot;, tsm_filt.shape, &quot;dt&quot;, tsm_filt.dt)
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fft_filt&quot;</span><span class="p">,</span> <span class="n">fft_filt</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="n">fft_filt</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;tsm_filt&quot;</span><span class="p">,</span> <span class="n">tsm_filt</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="n">tsm_filt</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
 
-tsm_filt[0, 0].plot(xscale=&quot;seconds&quot;);
+<span class="n">tsm_filt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;seconds&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -601,13 +602,13 @@ tsm_filt (2, 2, 1024) dt 0.00390625 s
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tsm_back = fft.ifft()
-rms = np.sqrt(np.mean((tsm_back[0, 0].value - tsm[0, 0].value) ** 2))
-print(&quot;ifft back&quot;, tsm_back.shape, &quot;dt&quot;, tsm_back.dt, &quot;t0&quot;, tsm_back.t0)
-print(&quot;rms error (cell 0,0)&quot;, rms)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsm_back</span> <span class="o">=</span> <span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">()</span>
+<span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">tsm_back</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">tsm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ifft back&quot;</span><span class="p">,</span> <span class="n">tsm_back</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="n">tsm_back</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s2">&quot;t0&quot;</span><span class="p">,</span> <span class="n">tsm_back</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rms error (cell 0,0)&quot;</span><span class="p">,</span> <span class="n">rms</span><span class="p">)</span>
 
-tsm[0, 0].plot(xscale=&quot;seconds&quot;)
-tsm_back[0, 0].plot(xscale=&quot;seconds&quot;);
+<span class="n">tsm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
+<span class="n">tsm_back</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;seconds&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -646,16 +647,16 @@ rms error (cell 0,0) 8.131556499372449e-17
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;repr:\n&quot;, band)
-display(band)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;repr:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">band</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
 
-band.plot(subplots=True)
-plt.xscale(&quot;log&quot;)
-plt.yscale(&quot;log&quot;)
+<span class="n">band</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
 
-band.step(where=&quot;mid&quot;)
-plt.xscale(&quot;log&quot;)
-plt.yscale(&quot;log&quot;)
+<span class="n">band</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="s2">&quot;mid&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

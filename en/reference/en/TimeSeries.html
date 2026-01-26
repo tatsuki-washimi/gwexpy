@@ -48,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
@@ -786,10 +787,15 @@
 <li class="toctree-l2"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fitting.html">gwexpy.fitting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Spectral.html">Spectral Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FFT_Conventions.html">FFT Specifications and Conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../ja/index.html">詳細リファレンス</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -4462,7 +4468,7 @@ Compression level.</p>
 </section>
 <section id="to-librosa">
 <h3><code class="docutils literal notranslate"><span class="pre">to_librosa</span></code><a class="headerlink" href="#to-librosa" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_librosa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_dtype</span><span class="p">:</span> <span class="s1">&#39;Any&#39;</span> <span class="o">=</span> <span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="err">&#39;</span><span class="nc">numpy</span><span class="o">.</span><span class="n">float32</span><span class="s1">&#39;&gt;) -&gt; &#39;</span><span class="n">Any</span><span class="s1">&#39;</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>to_librosa(self, y_dtype: &#39;Any&#39; = &lt;class &#39;numpy.float32&#39;&gt;) -&gt; &#39;Any&#39;
 </pre></div>
 </div>
 <p>Export to librosa-compatible numpy array.</p>

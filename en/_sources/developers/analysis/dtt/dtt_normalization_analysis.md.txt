@@ -260,8 +260,6 @@ for win in ['hann', 'hamming', 'blackman', 'flattop']:
 
 ---
 
----
-
 ## 6. DTT ソースコード分析の結論
 
 ### 6.1 実装の確認事項
@@ -299,7 +297,7 @@ GDS ライブラリの `fftToPs` と `psGen` の実装は確認できないが�
 ```python
 # scipy方式（標準的）
 scale = 1.0 / (fs * (window**2).sum())
-PSD = |FFT|² * scale
+PSD = abs(FFT) ** 2 * scale
 ```
 
 この場合、`windowBW` は **メタデータとしての記録のみ** で、実際のPSD計算には直接使用されない。
@@ -310,7 +308,7 @@ PSD = |FFT|² * scale
 # DTT方式（推定）
 windowBW = BW / ((window.mean())**2)
 scale = 1.0 / windowBW
-PSD = |FFT|² * scale
+PSD = abs(FFT) ** 2 * scale
 ```
 
 この場合、scipy と異なる結果になる。
@@ -402,6 +400,4 @@ def welch_dtt_compatible(timeseries, **kwargs):
 
 - DTT と scipy の正規化の違いを明記
 - ユーザーがどちらを使うべきか判断できるガイドを作成
-
-
 

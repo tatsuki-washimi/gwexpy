@@ -19,7 +19,9 @@
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="../reference/api/index.html" />
+    <link rel="prev" title="Active Damping Performance Evaluation" href="tutorials/case_active_damping.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,16 +44,56 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Guide</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GWexPy 機能一覧 (GWpyユーザー向け)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gwpy">1. GWpy既存クラスの機能拡張 (軽微なもの)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#timeseries-frequencyseries-spectrogram">基本メソッドの拡張 (TimeSeries / FrequencySeries / Spectrogram)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gps-time">GPS Time 関連</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plotting">描画関連 (Plotting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timeserieslist-timeseriesdict">コレクションクラスの拡張 (TimeSeriesList / TimeSeriesDict)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">2. 新規クラスの導入</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#new-collections">新規コレクション (New Collections)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seriesmatrix">マトリックス (SeriesMatrix)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fields">物理フィールド (Fields)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">その他</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">3. 高度な解析メソッド (単チャンネル)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy-noise">ノイズシミュレーション (<code class="docutils literal notranslate"><span class="pre">gwexpy.noise</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timeseries">時系列解析 (TimeSeries)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#frequencyseries">周波数スペクトル解析 (FrequencySeries)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spectrogram-special-transforms">時間周波数解析 (Spectrogram / Special Transforms)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">統計的推定・フィッティング</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">4. 高度な解析メソッド (多チャンネル)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gwexpy-timeseries-decomposition">成分分析 (<code class="docutils literal notranslate"><span class="pre">gwexpy.timeseries.decomposition</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">相関・統計解析</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">システム解析・制御</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#interop">5. 外部ツール連携 (Interop)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#i-o">データフォーマットI/O拡張</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#gui">6. GUI アプリケーション</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference/en/index.html">Detailed Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -372,7 +414,10 @@
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorials/case_active_damping.html" class="btn btn-neutral float-left" title="Active Damping Performance Evaluation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../reference/api/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

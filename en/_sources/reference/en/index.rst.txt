@@ -37,4 +37,5 @@ Detailed Reference
    ICATransform
    fitting
    Spectral
+   FFT_Conventions
    SeriesMatrix

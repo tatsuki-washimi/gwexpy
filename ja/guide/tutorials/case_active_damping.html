@@ -23,7 +23,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="API リファレンス" href="../../reference/api/index.html" />
+    <link rel="next" title="GWexPy 機能一覧 (GWpyユーザー向け)" href="../gwexpy_for_gwpy_users_ja.html" />
     <link rel="prev" title="チュートリアル: 伝達関数の測定" href="case_transfer_function.html" /> 
 </head>
 
@@ -70,6 +70,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -128,13 +129,13 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import control
-import matplotlib.pyplot as plt
-import numpy as np
-from scipy import signal
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">control</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
 
-from gwexpy import TimeSeries, TimeSeriesDict
-from gwexpy.frequencyseries import FrequencySeriesMatrix
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesMatrix</span>
 </pre></div>
 </div>
 </div>
@@ -151,84 +152,84 @@ from gwexpy.frequencyseries import FrequencySeriesMatrix
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 物理パラメータ
-m = 100.0  # 質量 [kg]
-I_x = 20.0  # 慣性モーメント [kg m^2]
-I_y = 20.0
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 物理パラメータ</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mf">100.0</span>  <span class="c1"># 質量 [kg]</span>
+<span class="n">I_x</span> <span class="o">=</span> <span class="mf">20.0</span>  <span class="c1"># 慣性モーメント [kg m^2]</span>
+<span class="n">I_y</span> <span class="o">=</span> <span class="mf">20.0</span>
 
-# 支持バネ・ダンパ (アクチュエータ位置 = 足の位置)
-k_leg = 2000.0  # バネ定数 [N/m]
-c_leg = 0.20  # 減衰係数 [N s/m]
+<span class="c1"># 支持バネ・ダンパ (アクチュエータ位置 = 足の位置)</span>
+<span class="n">k_leg</span> <span class="o">=</span> <span class="mf">2000.0</span>  <span class="c1"># バネ定数 [N/m]</span>
+<span class="n">c_leg</span> <span class="o">=</span> <span class="mf">0.20</span>  <span class="c1"># 減衰係数 [N s/m]</span>
 
-# ジオメトリ: 半径R
-R = 0.5  # [m]
+<span class="c1"># ジオメトリ: 半径R</span>
+<span class="n">R</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># [m]</span>
 
-# 角度設定 (deg -&gt; rad)
-deg2rad = np.pi / 180.0
-# アクチュエータ: 足の位置
-angles_act = np.array([0, 120, 240]) * deg2rad
-# センサー: 足の間
-angles_sen = np.array([60, 180, 300]) * deg2rad
-
-
-# 座標変換行列の作成関数
-# p = T * q  =&gt;  [z_i] = [1, R*sin(th), -R*cos(th)] @ [z, tx, ty]
-def make_transform_matrix(angles, radius):
-    T = np.zeros((3, 3))
-    for i, ang in enumerate(angles):
-        T[i, 0] = 1.0
-        T[i, 1] = radius * np.sin(ang)
-        T[i, 2] = -radius * np.cos(ang)
-    return T
+<span class="c1"># 角度設定 (deg -&gt; rad)</span>
+<span class="n">deg2rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span>
+<span class="c1"># アクチュエータ: 足の位置</span>
+<span class="n">angles_act</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">240</span><span class="p">])</span> <span class="o">*</span> <span class="n">deg2rad</span>
+<span class="c1"># センサー: 足の間</span>
+<span class="n">angles_sen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">60</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span> <span class="o">*</span> <span class="n">deg2rad</span>
 
 
-T_act = make_transform_matrix(angles_act, R)
-T_sen = make_transform_matrix(angles_sen, R)
+<span class="c1"># 座標変換行列の作成関数</span>
+<span class="c1"># p = T * q  =&gt;  [z_i] = [1, R*sin(th), -R*cos(th)] @ [z, tx, ty]</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_transform_matrix</span><span class="p">(</span><span class="n">angles</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ang</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">angles</span><span class="p">):</span>
+        <span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ang</span><span class="p">)</span>
+        <span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ang</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">T</span>
 
-print(&quot;Actuator Transform Matrix T_act:&quot;)
-print(np.round(T_act, 2))
-print(&quot;Sensor Transform Matrix T_sen:&quot;)
-print(np.round(T_sen, 2))
 
-# モーダル空間での M, K, C 行列
-M_modal = np.diag([m, I_x, I_y])
+<span class="n">T_act</span> <span class="o">=</span> <span class="n">make_transform_matrix</span><span class="p">(</span><span class="n">angles_act</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
+<span class="n">T_sen</span> <span class="o">=</span> <span class="n">make_transform_matrix</span><span class="p">(</span><span class="n">angles_sen</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
 
-# 物理空間(足位置)での K, C
-K_phys = np.diag([k_leg, k_leg, k_leg])
-C_phys = np.diag([c_leg, c_leg, c_leg])
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Actuator Transform Matrix T_act:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">T_act</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sensor Transform Matrix T_sen:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">T_sen</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 
-# モーダル空間へ投影: K_modal = T_act.T * K_phys * T_act
-# (バネ・ダンパは足の位置にあるため T_act を使用)
-K_modal = T_act.T @ K_phys @ T_act
-C_modal = T_act.T @ C_phys @ T_act
+<span class="c1"># モーダル空間での M, K, C 行列</span>
+<span class="n">M_modal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="n">m</span><span class="p">,</span> <span class="n">I_x</span><span class="p">,</span> <span class="n">I_y</span><span class="p">])</span>
 
-# 状態空間モデルの作成
-# x = [q, q_dot]^T
-A_sys = np.block(
-    [
-        [np.zeros((3, 3)), np.eye(3)],
-        [-np.linalg.inv(M_modal) @ K_modal, -np.linalg.inv(M_modal) @ C_modal],
-    ]
-)
-B_sys_modal = np.block([[np.zeros((3, 3))], [np.linalg.inv(M_modal)]])
-C_sys_modal = np.block([np.eye(3), np.zeros((3, 3))])
-D_sys = np.zeros((3, 3))
+<span class="c1"># 物理空間(足位置)での K, C</span>
+<span class="n">K_phys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="n">k_leg</span><span class="p">,</span> <span class="n">k_leg</span><span class="p">,</span> <span class="n">k_leg</span><span class="p">])</span>
+<span class="n">C_phys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="n">c_leg</span><span class="p">,</span> <span class="n">c_leg</span><span class="p">,</span> <span class="n">c_leg</span><span class="p">])</span>
 
-# 入出力を物理座標に変換
-# Input: Actuator Forces u (at angles_act) -&gt; Generalized Force Q = T_act.T * u
-# Output: Sensor Displacements y (at angles_sen) -&gt; y = T_sen * q
-B_sys = B_sys_modal @ T_act.T
-C_sys = T_sen @ C_sys_modal
+<span class="c1"># モーダル空間へ投影: K_modal = T_act.T * K_phys * T_act</span>
+<span class="c1"># (バネ・ダンパは足の位置にあるため T_act を使用)</span>
+<span class="n">K_modal</span> <span class="o">=</span> <span class="n">T_act</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">K_phys</span> <span class="o">@</span> <span class="n">T_act</span>
+<span class="n">C_modal</span> <span class="o">=</span> <span class="n">T_act</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">C_phys</span> <span class="o">@</span> <span class="n">T_act</span>
 
-sys = control.StateSpace(
-    A_sys,
-    B_sys,
-    C_sys,
-    D_sys,
-    inputs=[&quot;ACT1&quot;, &quot;ACT2&quot;, &quot;ACT3&quot;],
-    outputs=[&quot;SEN1&quot;, &quot;SEN2&quot;, &quot;SEN3&quot;],
-)
-print(sys)
+<span class="c1"># 状態空間モデルの作成</span>
+<span class="c1"># x = [q, q_dot]^T</span>
+<span class="n">A_sys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span>
+        <span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">M_modal</span><span class="p">)</span> <span class="o">@</span> <span class="n">K_modal</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">M_modal</span><span class="p">)</span> <span class="o">@</span> <span class="n">C_modal</span><span class="p">],</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="n">B_sys_modal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))],</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">M_modal</span><span class="p">)]])</span>
+<span class="n">C_sys_modal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))])</span>
+<span class="n">D_sys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="c1"># 入出力を物理座標に変換</span>
+<span class="c1"># Input: Actuator Forces u (at angles_act) -&gt; Generalized Force Q = T_act.T * u</span>
+<span class="c1"># Output: Sensor Displacements y (at angles_sen) -&gt; y = T_sen * q</span>
+<span class="n">B_sys</span> <span class="o">=</span> <span class="n">B_sys_modal</span> <span class="o">@</span> <span class="n">T_act</span><span class="o">.</span><span class="n">T</span>
+<span class="n">C_sys</span> <span class="o">=</span> <span class="n">T_sen</span> <span class="o">@</span> <span class="n">C_sys_modal</span>
+
+<span class="n">sys</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">StateSpace</span><span class="p">(</span>
+    <span class="n">A_sys</span><span class="p">,</span>
+    <span class="n">B_sys</span><span class="p">,</span>
+    <span class="n">C_sys</span><span class="p">,</span>
+    <span class="n">D_sys</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ACT1&quot;</span><span class="p">,</span> <span class="s2">&quot;ACT2&quot;</span><span class="p">,</span> <span class="s2">&quot;ACT3&quot;</span><span class="p">],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SEN1&quot;</span><span class="p">,</span> <span class="s2">&quot;SEN2&quot;</span><span class="p">,</span> <span class="s2">&quot;SEN3&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -290,56 +291,56 @@ D = [[0. 0. 0.]
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fs = 64
-duration = 1024.0
-t = np.arange(0, duration, 1 / fs)
-n_samples = len(t)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fs</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mf">1024.0</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 
-# 入力信号: 3ch ホワイトノイズ
-np.random.seed(0)
-u_data = np.random.normal(0, 1.0, (3, n_samples))
+<span class="c1"># 入力信号: 3ch ホワイトノイズ</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">u_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">))</span>
 
-# 時間応答
-time_response = control.forced_response(sys, T=t, U=u_data)
+<span class="c1"># 時間応答</span>
+<span class="n">time_response</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">forced_response</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">u_data</span><span class="p">)</span>
 
-# gwexpy TimeSeriesDict
-tsd_input = TimeSeriesDict(
-    {
-        f&quot;ACT{i + 1}&quot;: TimeSeries(
-            u_data[i], t0=0, sample_rate=fs, name=f&quot;Actuator {i + 1}&quot;, unit=&quot;N&quot;
-        )
-        for i in range(3)
-    }
-)
+<span class="c1"># gwexpy TimeSeriesDict</span>
+<span class="n">tsd_input</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="sa">f</span><span class="s2">&quot;ACT</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">(</span>
+            <span class="n">u_data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Actuator </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;N&quot;</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">)</span>
 
-tsd_output = TimeSeriesDict.from_control(time_response, unit=&quot;m&quot;)
-for i in range(3):
-    tsd_output[f&quot;SEN{i + 1}&quot;].name = f&quot;Sensor {i + 1}&quot;
+<span class="n">tsd_output</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">from_control</span><span class="p">(</span><span class="n">time_response</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">tsd_output</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;SEN</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Sensor </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
 
-# MIMO TF 計算
-tfs = [
-    [
-        tsd_input[f&quot;ACT{j + 1}&quot;].transfer_function(
-            tsd_output[f&quot;SEN{i + 1}&quot;], fftlength=5
-        )
-        for j in range(3)
-    ]
-    for i in range(3)
-]
+<span class="c1"># MIMO TF 計算</span>
+<span class="n">tfs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span>
+        <span class="n">tsd_input</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ACT</span><span class="si">{</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span>
+            <span class="n">tsd_output</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;SEN</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">5</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="p">]</span>
 
-tf_matrix = FrequencySeriesMatrix(
-    [[tf.value for tf in row] for row in tfs], frequencies=tfs[0][0].frequencies
-)
+<span class="n">tf_matrix</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span>
+    <span class="p">[[</span><span class="n">tf</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">tf</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">tfs</span><span class="p">],</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">tfs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">frequencies</span>
+<span class="p">)</span>
 
-tf_data = tf_matrix.value
-freqs = tf_matrix.frequencies
+<span class="n">tf_data</span> <span class="o">=</span> <span class="n">tf_matrix</span><span class="o">.</span><span class="n">value</span>
+<span class="n">freqs</span> <span class="o">=</span> <span class="n">tf_matrix</span><span class="o">.</span><span class="n">frequencies</span>
 
-# plot
-tf_matrix.abs().plot(figsize=(12, 10), xscale=&quot;log&quot;, yscale=&quot;log&quot;).suptitle(
-    &quot;MIMO Transfer Function Matrix (Non-collocated)\n\n&quot;
-)
-plt.tight_layout()
-plt.show()
+<span class="c1"># plot</span>
+<span class="n">tf_matrix</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span>
+    <span class="s2">&quot;MIMO Transfer Function Matrix (Non-collocated)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -376,66 +377,66 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># --- 1. Sensing &amp; Actuation Matrix の準備 ---
-# 推定モデルに基づいて変換行列を用意します（ここでは真値を使用）
-# Sensing Matrix: y -&gt; q
-S_sensing = np.linalg.inv(T_sen)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- 1. Sensing &amp; Actuation Matrix の準備 ---</span>
+<span class="c1"># 推定モデルに基づいて変換行列を用意します（ここでは真値を使用）</span>
+<span class="c1"># Sensing Matrix: y -&gt; q</span>
+<span class="n">S_sensing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">T_sen</span><span class="p">)</span>
 
-# Actuation Matrix: F_modal -&gt; u
-# F_modal = T_act.T * u  =&gt;  u = inv(T_act.T) * F_modal
-D_actuation = np.linalg.inv(T_act.T)
+<span class="c1"># Actuation Matrix: F_modal -&gt; u</span>
+<span class="c1"># F_modal = T_act.T * u  =&gt;  u = inv(T_act.T) * F_modal</span>
+<span class="n">D_actuation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">T_act</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
-print(&quot;Sensing Matrix (Sensor -&gt; Mode):&quot;)
-print(np.round(S_sensing, 2))
-print(&quot;Actuation Matrix (Mode Force -&gt; Actuator):&quot;)
-print(np.round(D_actuation, 2))
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sensing Matrix (Sensor -&gt; Mode):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">S_sensing</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Actuation Matrix (Mode Force -&gt; Actuator):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">D_actuation</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 
-# --- 2. Modal Damping Filter Design ---
-# 各モードに対してダンピングゲインを設定
-# 並進モード(z)と回転モード(tx, ty)でゲインを変えることも可能ですが、
-# ここでは簡単のためすべて同じゲイン・フィルタとします。
-gain = 1000.0  # Modal Damping Gain
-fc_l = 0.1
-fc_h = 20.0
-w_l = 2 * np.pi * fc_l
-w_h = 2 * np.pi * fc_h
+<span class="c1"># --- 2. Modal Damping Filter Design ---</span>
+<span class="c1"># 各モードに対してダンピングゲインを設定</span>
+<span class="c1"># 並進モード(z)と回転モード(tx, ty)でゲインを変えることも可能ですが、</span>
+<span class="c1"># ここでは簡単のためすべて同じゲイン・フィルタとします。</span>
+<span class="n">gain</span> <span class="o">=</span> <span class="mf">1000.0</span>  <span class="c1"># Modal Damping Gain</span>
+<span class="n">fc_l</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">fc_h</span> <span class="o">=</span> <span class="mf">20.0</span>
+<span class="n">w_l</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">fc_l</span>
+<span class="n">w_h</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">fc_h</span>
 
-s = control.tf(&quot;s&quot;)
-K_filter = gain * s / ((1 + s / w_l) * (1 + s / w_h))
+<span class="n">s</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">tf</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+<span class="n">K_filter</span> <span class="o">=</span> <span class="n">gain</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">s</span> <span class="o">/</span> <span class="n">w_l</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">s</span> <span class="o">/</span> <span class="n">w_h</span><span class="p">))</span>
 
-# 対角行列化 (3モード分)
-K_modal_diag = []
-for _ in range(3):
-    K_modal_diag.append(control.ss(K_filter))
+<span class="c1"># 対角行列化 (3モード分)</span>
+<span class="n">K_modal_diag</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">K_modal_diag</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">control</span><span class="o">.</span><span class="n">ss</span><span class="p">(</span><span class="n">K_filter</span><span class="p">))</span>
 
-# control.append は対角ブロック結合をするが、入出力数が変わるため注意が必要。
-# ここでは手動で状態空間モデルを結合するより、
-# python-control の演算機能を使って K_MIMO を構築します。
+<span class="c1"># control.append は対角ブロック結合をするが、入出力数が変わるため注意が必要。</span>
+<span class="c1"># ここでは手動で状態空間モデルを結合するより、</span>
+<span class="c1"># python-control の演算機能を使って K_MIMO を構築します。</span>
 
-# K_modal_block: 3-input 3-output Diagonal System
-#  [ K_f  0    0   ]
-#  [ 0    K_f  0   ]
-#  [ 0    0    K_f ]
-K_modal_block = control.append(K_modal_diag[0], K_modal_diag[1], K_modal_diag[2])
+<span class="c1"># K_modal_block: 3-input 3-output Diagonal System</span>
+<span class="c1">#  [ K_f  0    0   ]</span>
+<span class="c1">#  [ 0    K_f  0   ]</span>
+<span class="c1">#  [ 0    0    K_f ]</span>
+<span class="n">K_modal_block</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">K_modal_diag</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">K_modal_diag</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">K_modal_diag</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
 
-# --- 3. MIMO Controller Construction ---
-# K_MIMO = D_actuation * K_modal_block * S_sensing
-# python-control では定数行列とSSの積はそのまま書けます
+<span class="c1"># --- 3. MIMO Controller Construction ---</span>
+<span class="c1"># K_MIMO = D_actuation * K_modal_block * S_sensing</span>
+<span class="c1"># python-control では定数行列とSSの積はそのまま書けます</span>
 
-# S_sensing (Static Gain) * y
-# K_modal_block * (S_sensing * y)
-# D_actuation * (K_modal_block * S_sensing * y)
+<span class="c1"># S_sensing (Static Gain) * y</span>
+<span class="c1"># K_modal_block * (S_sensing * y)</span>
+<span class="c1"># D_actuation * (K_modal_block * S_sensing * y)</span>
 
-# Note: 行列積の順序に注意。Control object の乗算は直列結合。
-# Sys2 * Sys1 は Out &lt;--- Sys2 &lt;--- Sys1 &lt;--- In
-# 数式: u = D * K * S * y
-# Code: K_mimo = D * K * S
-# しかし D, S は numpy array。control.ss(D) などで変換が必要。
+<span class="c1"># Note: 行列積の順序に注意。Control object の乗算は直列結合。</span>
+<span class="c1"># Sys2 * Sys1 は Out &lt;--- Sys2 &lt;--- Sys1 &lt;--- In</span>
+<span class="c1"># 数式: u = D * K * S * y</span>
+<span class="c1"># Code: K_mimo = D * K * S</span>
+<span class="c1"># しかし D, S は numpy array。control.ss(D) などで変換が必要。</span>
 
-K_mimo = D_actuation * K_modal_block * S_sensing
+<span class="n">K_mimo</span> <span class="o">=</span> <span class="n">D_actuation</span> <span class="o">*</span> <span class="n">K_modal_block</span> <span class="o">*</span> <span class="n">S_sensing</span>
 
-print(&quot;MIMO Controller States:&quot;, K_mimo.nstates)
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MIMO Controller States:&quot;</span><span class="p">,</span> <span class="n">K_mimo</span><span class="o">.</span><span class="n">nstates</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -463,71 +464,71 @@ MIMO Controller States: 6
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 閉ループシステム
-sys_cl = control.feedback(sys, K_mimo, sign=-1)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 閉ループシステム</span>
+<span class="n">sys_cl</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">feedback</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">K_mimo</span><span class="p">,</span> <span class="n">sign</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
-# --- Impulse Response ---
-u_impulse = np.zeros((3, n_samples))
-u_impulse[0, 100] = 100.0 * fs  # Impulse on Actuator 1
+<span class="c1"># --- Impulse Response ---</span>
+<span class="n">u_impulse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">))</span>
+<span class="n">u_impulse</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="n">fs</span>  <span class="c1"># Impulse on Actuator 1</span>
 
-resp_ol = control.forced_response(sys, T=t, U=u_impulse)
-resp_cl = control.forced_response(sys_cl, T=t, U=u_impulse)
+<span class="n">resp_ol</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">forced_response</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">u_impulse</span><span class="p">)</span>
+<span class="n">resp_cl</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">forced_response</span><span class="p">(</span><span class="n">sys_cl</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">u_impulse</span><span class="p">)</span>
 
-fig, axes = plt.subplots(3, 1, figsize=(10, 8), sharex=True)
-for i in range(3):
-    ax = axes[i]
-    ax.plot(t, resp_ol.outputs[i], label=&quot;Open Loop&quot;, alpha=0.6)
-    ax.plot(t, resp_cl.outputs[i], label=&quot;Closed Loop (Modal Control)&quot;, linewidth=2)
-    ax.set_ylabel(f&quot;SEN{i + 1}&quot;)
-    ax.grid(True)
-    if i == 0:
-        ax.legend(loc=&quot;upper right&quot;)
-axes[2].set_xlabel(&quot;Time [s]&quot;)
-axes[0].set_title(&quot;Impulse Response Comparison (Impulse on ACT1)&quot;)
-plt.show()
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">resp_ol</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Open Loop&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">resp_cl</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Closed Loop (Modal Control)&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SEN</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Impulse Response Comparison (Impulse on ACT1)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-# --- ASD Comparison ---
-# Ground Vibration Simulation
-np.random.seed(42)
-wn = np.random.normal(0, 1.0, (3, n_samples))
-b, a = signal.butter(1, 5.0, fs=fs, btype=&quot;low&quot;)
-dist = signal.lfilter(b, a, wn) * 50.0
+<span class="c1"># --- ASD Comparison ---</span>
+<span class="c1"># Ground Vibration Simulation</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">wn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">))</span>
+<span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+<span class="n">dist</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">wn</span><span class="p">)</span> <span class="o">*</span> <span class="mf">50.0</span>
 
-resp_ol_noise = control.forced_response(sys, T=t, U=dist)
-resp_cl_noise = control.forced_response(sys_cl, T=t, U=dist)
+<span class="n">resp_ol_noise</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">forced_response</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">dist</span><span class="p">)</span>
+<span class="n">resp_cl_noise</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">forced_response</span><span class="p">(</span><span class="n">sys_cl</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">dist</span><span class="p">)</span>
 
-tsd_ol = TimeSeriesDict.from_control(resp_ol_noise)
-for i in range(3):
-    tsd_ol[list(tsd_ol.keys())[i]].name = f&quot;SEN{i + 1}&quot;
-tsd_ol = TimeSeriesDict({ts.name: ts for ts in tsd_ol.values()})
-tsd_cl = TimeSeriesDict.from_control(resp_cl_noise)
-for i in range(3):
-    tsd_cl[list(tsd_cl.keys())[i]].name = f&quot;SEN{i + 1}&quot;
-tsd_cl = TimeSeriesDict({ts.name: ts for ts in tsd_cl.values()})
+<span class="n">tsd_ol</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">from_control</span><span class="p">(</span><span class="n">resp_ol_noise</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">tsd_ol</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">tsd_ol</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SEN</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">tsd_ol</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">({</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">ts</span> <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tsd_ol</span><span class="o">.</span><span class="n">values</span><span class="p">()})</span>
+<span class="n">tsd_cl</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">from_control</span><span class="p">(</span><span class="n">resp_cl_noise</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">tsd_cl</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">tsd_cl</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SEN</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">tsd_cl</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">({</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">ts</span> <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tsd_cl</span><span class="o">.</span><span class="n">values</span><span class="p">()})</span>
 
-fig, axes = plt.subplots(1, 3, figsize=(18, 5), sharey=True)
-for i in range(3):
-    ax = axes[i]
-    asd_ol = (
-        tsd_ol[f&quot;SEN{i + 1}&quot;].asd(fftlength=16, overlap=8, method=&quot;welch&quot;).crop(0.1, 10)
-    )
-    asd_cl = (
-        tsd_cl[f&quot;SEN{i + 1}&quot;].asd(fftlength=16, overlap=8, method=&quot;welch&quot;).crop(0.1, 10)
-    )
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">asd_ol</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">tsd_ol</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;SEN</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;welch&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">asd_cl</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">tsd_cl</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;SEN</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;welch&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="p">)</span>
 
-    ax.loglog(asd_ol, label=&quot;Open Loop&quot;, alpha=0.8)
-    ax.loglog(asd_cl, label=&quot;Closed Loop&quot;, linewidth=2)
-    ax.set_title(f&quot;Sensor {i + 1} ASD&quot;)
-    ax.set_xlabel(&quot;Frequency [Hz]&quot;)
-    ax.grid(True, which=&quot;both&quot;, alpha=0.5)
-    if i == 0:
-        ax.set_ylabel(r&quot;ASD [$\mathrm{m}/\sqrt{\mathrm{Hz}}$]&quot;)
-        ax.legend()
-plt.tight_layout()
-plt.show()
+    <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd_ol</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Open Loop&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd_cl</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Closed Loop&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sensor </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> ASD&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;ASD [$\mathrm</span><span class="si">{m}</span><span class="s2">/\sqrt{\mathrm</span><span class="si">{Hz}</span><span class="s2">}$]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-# センサーとアクチュエータの位置が異なっていても、
-# 適切なモード座標変換を行うことで有効なダンピングが得られています。
+<span class="c1"># センサーとアクチュエータの位置が異なっていても、</span>
+<span class="c1"># 適切なモード座標変換を行うことで有効なダンピングが得られています。</span>
 </pre></div>
 </div>
 </div>
@@ -553,7 +554,7 @@ plt.show()
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="case_transfer_function.html" class="btn btn-neutral float-left" title="チュートリアル: 伝達関数の測定" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../../reference/api/index.html" class="btn btn-neutral float-right" title="API リファレンス" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../gwexpy_for_gwpy_users_ja.html" class="btn btn-neutral float-right" title="GWexPy 機能一覧 (GWpyユーザー向け)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

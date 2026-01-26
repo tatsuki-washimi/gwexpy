@@ -72,6 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">リファレンス</span></p>
 <ul>
@@ -121,11 +122,11 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-import numpy as np
-from astropy import units as u
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
-from gwexpy import FrequencySeries, TimeSeries
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">TimeSeries</span>
 </pre></div>
 </div>
 </div>
@@ -135,31 +136,31 @@ from gwexpy import FrequencySeries, TimeSeries
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># 擬似データの作成
-df = 0.5 * u.Hz
-f_axis = np.arange(0, 500, df.value) * u.Hz
-data = np.exp(-f_axis.value / 100) + np.random.normal(0, 0.05, len(f_axis))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 擬似データの作成</span>
+<span class="n">df</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
+<span class="n">f_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">f_axis</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">f_axis</span><span class="p">))</span>
 
-# ピークを追加
-peak_freqs_true = [50, 60, 120, 125, 300] * u.Hz
-for f in peak_freqs_true:
-    idx = int(f.value / df.value)
-    data[idx] += 1.0
+<span class="c1"># ピークを追加</span>
+<span class="n">peak_freqs_true</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">300</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">peak_freqs_true</span><span class="p">:</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1.0</span>
 
-spec = FrequencySeries(data, df=df, unit=&quot;V/Hz&quot;)
+<span class="n">spec</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V/Hz&quot;</span><span class="p">)</span>
 
-# --- 基本的な検出 (しきい値のみ) ---
-# peaks は FrequencySeries オブジェクトとして返ってきます
-peaks, _ = spec.find_peaks(threshold=0.5)
+<span class="c1"># --- 基本的な検出 (しきい値のみ) ---</span>
+<span class="c1"># peaks は FrequencySeries オブジェクトとして返ってきます</span>
+<span class="n">peaks</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
-plt.figure(figsize=(10, 5))
-plt.plot(spec, label=&quot;Spectrum&quot;, alpha=0.7)
-plt.plot(peaks, &quot;x&quot;, color=&quot;red&quot;, label=&quot;Basic Peaks&quot;)
-plt.title(&quot;Basic Peak Detection&quot;)
-plt.xlabel(&quot;Frequency [Hz]&quot;)
-plt.ylabel(&quot;Amplitude [V/Hz]&quot;)
-plt.legend()
-plt.show()
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Spectrum&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Basic Peaks&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Basic Peak Detection&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude [V/Hz]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -177,19 +178,19 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dist_constraint = 20 * u.Hz
-peaks_adv, props = spec.find_peaks(threshold=0.5, distance=dist_constraint)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dist_constraint</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
+<span class="n">peaks_adv</span><span class="p">,</span> <span class="n">props</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="n">dist_constraint</span><span class="p">)</span>
 
-plt.figure(figsize=(10, 5))
-plt.plot(spec, label=&quot;Spectrum&quot;, alpha=0.7)
-plt.plot(peaks_adv, &quot;o&quot;, color=&quot;orange&quot;, label=&quot;Distance Constraint (20Hz)&quot;)
-plt.title(f&quot;Peak Detection with Distance Constraint ({dist_constraint})&quot;)
-plt.xlabel(&quot;Frequency [Hz]&quot;)
-plt.ylabel(&quot;Amplitude [V/Hz]&quot;)
-plt.legend()
-plt.show()
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Spectrum&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">peaks_adv</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Distance Constraint (20Hz)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peak Detection with Distance Constraint (</span><span class="si">{</span><span class="n">dist_constraint</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude [V/Hz]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-print(f&quot;Detected peaks: {peaks_adv.frequencies}&quot;)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detected peaks: </span><span class="si">{</span><span class="n">peaks_adv</span><span class="o">.</span><span class="n">frequencies</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -215,28 +216,28 @@ Detected peaks: [  5.   27.5  50.   71.5 125.  300. ] Hz
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fs = 1024.0
-t = np.arange(0, 2.0, 1 / fs)
-ts_data = np.random.normal(0, 0.1, len(t))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fs</span> <span class="o">=</span> <span class="mf">1024.0</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">ts_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
 
-# パルスを追加
-ts_data[int(0.5 * fs)] = 2.0
-ts_data[int(0.55 * fs)] = 1.8
-ts_data[int(1.2 * fs)] = 1.5
+<span class="c1"># パルスを追加</span>
+<span class="n">ts_data</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="n">ts_data</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.55</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1.8</span>
+<span class="n">ts_data</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="mf">1.2</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1.5</span>
 
-ts = TimeSeries(ts_data, sample_rate=fs, unit=&quot;counts&quot;)
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">ts_data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;counts&quot;</span><span class="p">)</span>
 
-# 0.1秒以内の連続したパルスは無視する設定
-peaks_t, _ = ts.find_peaks(height=0.5, distance=0.1 * u.s)
+<span class="c1"># 0.1秒以内の連続したパルスは無視する設定</span>
+<span class="n">peaks_t</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
 
-plt.figure(figsize=(10, 5))
-plt.plot(ts)
-plt.plot(peaks_t, &quot;v&quot;, color=&quot;red&quot;, label=&quot;Detected pulses (&gt;100ms apart)&quot;)
-plt.title(&quot;Pulse Detection in TimeSeries&quot;)
-plt.xlabel(&quot;Time [s]&quot;)
-plt.ylabel(&quot;Raw Counts&quot;)
-plt.legend()
-plt.show()
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">peaks_t</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detected pulses (&gt;100ms apart)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Pulse Detection in TimeSeries&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Raw Counts&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

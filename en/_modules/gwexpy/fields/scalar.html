@@ -45,12 +45,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/en/index.html">Detailed Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers Guide</a></li>
 </ul>
 
         </div>
@@ -805,7 +810,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        `~astropy.units.Quantity`</span>
-<span class="sd">            Wavelength values (λ = 2π / |k|). k=0 returns inf.</span>
+<span class="sd">            Wavelength values (:math:`\\lambda = 2\\pi / |k|`). k=0 returns inf.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -2253,6 +2258,7 @@
 <span class="sd">            Keyword arguments passed to :func:`~gwexpy.fields.signal.spectral_density`</span>
 <span class="sd">            or :func:`~gwexpy.fields.signal.compute_psd` (if point_or_region is used).</span>
 <span class="sd">            Common options:</span>
+
 <span class="sd">            - point_or_region : tuple or list, optional</span>
 <span class="sd">                If provided, computes PSD at specific spatial point(s) or region</span>
 <span class="sd">                average instead of full field. Returns FrequencySeries(List).</span>

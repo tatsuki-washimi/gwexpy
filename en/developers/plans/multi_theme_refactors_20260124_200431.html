@@ -19,7 +19,9 @@
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="作業計画書: QA検証 (Lint &amp; Test) - 2026/01/24" href="plan_QA_Verification_20260124.html" />
+    <link rel="prev" title="MainWindowロジックのリファクタリングとモジュール化計画書 (2026-01-23 21:08:50)" href="mainwindow_refactoring_plan_ja_20260123_2108.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,12 +48,55 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/en/index.html">Detailed Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/ja/index.html">詳細リファレンス</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developers Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#core-design-contracts">Core Design &amp; Contracts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#development-guides">Development Guides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#technical-analysis">Technical Analysis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#plans">Plans</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="REFACTORING_PLAN.html">TimeSeries Refactoring Plan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_health_improvement_plan_20260123.html">Core Code Health and Robustness Improvement Plan (2026-01-23 21:23:45)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_health_improvement_plan_ja_20260123_2123.html">コアコードの品質および堅牢性向上計画書 (2026-01-23 21:23:55)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="effort_quality_improvement.html">Estimate Effort: Core Quality Improvement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fft_documentation_plan_20260124_1350.html">Task Plan: FFT Specifications &amp; Conventions Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="handover_tutorial_cleanup_20260125.html">作業引継ぎ計画書: チュートリアル品質向上とAPI整合性修正</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mainwindow_refactoring_plan_20260123.html">Implementation Plan: MainWindow logic refactoring and modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mainwindow_refactoring_plan_ja_20260123_2108.html">MainWindowロジックのリファクタリングとモジュール化計画書 (2026-01-23 21:08:50)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">作業計画書: Multi-theme 安定化ロードマップ</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#objectives-goals">1. Objectives &amp; Goals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#detailed-roadmap-by-phase">2. Detailed Roadmap (by Phase)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#testing-verification-plan">3. Testing &amp; Verification Plan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#models-recommended-skills-and-effort-estimates">4. Models, Recommended Skills, and Effort Estimates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#approval-request">5. Approval Request</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plan_QA_Verification_20260124.html">作業計画書: QA検証 (Lint &amp; Test) - 2026/01/24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_docs_tutorials_v1.html">Documentation &amp; Tutorial Refinement Plan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_mypy_expansion_phase1_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 1: FrequencySeries)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_mypy_expansion_phase2_20260124.html">作業計画書: 型チェックカバレッジの拡大 (Phase 2: Spectrogram)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_packaging_readiness_v0.1.0b1_20260125.html">Packaging Readiness (PyPI Metadata &amp; Structure) 実行計画書</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_quality_improvement_20260124.html">Plan: Core Quality Improvement 2026-01-24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_quality_improvement_phase2_20260124.html">実装計画：コード品質の更なる向上（MyPy拡充・精密型定義・例外監査）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_refactor_exceptions_20260124_152245.html">作業計画書: 広範な例外処理のリファクタリング</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plan_static_analysis_cleanup_v1.html">Static Analysis &amp; Test Cleanup Plan (v1)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="repo_improvement_plan.html">タスク: リポジトリ品質改善</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stlt_implementation_plan.html">STLT (Short-Time Laplace Transform) 実装計画</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_coverage_expansion_plan_20260124.html">Task Plan: Enhancing Test Coverage for Physical Fields (Vector/Tensor)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#reports">Reports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#archive-hidden">Archive (Hidden)</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -68,6 +113,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developers Guide</a></li>
       <li class="breadcrumb-item active">作業計画書: Multi-theme 安定化ロードマップ</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/plans/multi_theme_refactors_20260124_200431.md" class="fa fa-github"> Edit on GitHub</a>
@@ -187,7 +233,10 @@
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mainwindow_refactoring_plan_ja_20260123_2108.html" class="btn btn-neutral float-left" title="MainWindowロジックのリファクタリングとモジュール化計画書 (2026-01-23 21:08:50)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plan_QA_Verification_20260124.html" class="btn btn-neutral float-right" title="作業計画書: QA検証 (Lint &amp; Test) - 2026/01/24" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
