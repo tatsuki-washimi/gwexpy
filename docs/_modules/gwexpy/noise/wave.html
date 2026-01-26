@@ -1006,7 +1006,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
                 <span class="n">ts_unit</span> <span class="o">=</span> <span class="n">unit</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
                 <span class="n">ts_unit</span> <span class="o">=</span> <span class="n">unit</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts_unit</span>
 
