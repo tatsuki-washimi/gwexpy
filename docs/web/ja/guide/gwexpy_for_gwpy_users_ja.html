@@ -1,0 +1,442 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GWexPy 機能一覧 (GWpyユーザー向け) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="API リファレンス" href="../reference/api/index.html" />
+    <link rel="prev" title="6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)" href="tutorials/case_active_damping.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWExPy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWExPy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">GWexPy 機能一覧 (GWpyユーザー向け)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gwpy">1. GWpy既存クラスの機能拡張 (軽微なもの)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#timeseries-frequencyseries-spectrogram">基本メソッドの拡張 (TimeSeries / FrequencySeries / Spectrogram)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gps-time">GPS Time 関連</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plotting">描画関連 (Plotting)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#timeserieslist-timeseriesdict">コレクションクラスの拡張 (TimeSeriesList / TimeSeriesDict)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">2. 新規クラスの導入</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#new-collections">新規コレクション (New Collections)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#seriesmatrix">マトリックス (SeriesMatrix)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fields">物理フィールド (Fields)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">その他</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">3. 高度な解析メソッド (単チャンネル)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy-noise">ノイズシミュレーション (<code class="docutils literal notranslate"><span class="pre">gwexpy.noise</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#timeseries">時系列解析 (TimeSeries)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#frequencyseries">周波数スペクトル解析 (FrequencySeries)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectrogram-special-transforms">時間周波数解析 (Spectrogram / Special Transforms)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">統計的推定・フィッティング</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">4. 高度な解析メソッド (多チャンネル)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy-timeseries-decomposition">成分分析 (<code class="docutils literal notranslate"><span class="pre">gwexpy.timeseries.decomposition</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">相関・統計解析</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">システム解析・制御</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#interop">5. 外部ツール連携 (Interop)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#i-o">データフォーマットI/O拡張</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gui">6. GUI アプリケーション</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/index.html">詳細リファレンス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWExPy ドキュメントへようこそ</a></li>
+      <li class="breadcrumb-item active">GWexPy 機能一覧 (GWpyユーザー向け)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/guide/gwexpy_for_gwpy_users_ja.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gwexpy-gwpy">
+<h1>GWexPy 機能一覧 (GWpyユーザー向け)<a class="headerlink" href="#gwexpy-gwpy" title="Link to this heading"></a></h1>
+<p>本ドキュメントでは、GWexPyでGWpyに対して拡張・追加された機能を網羅的にリストアップします。
+ここに含まれる機能は、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> をインポートすることで利用可能になります。</p>
+<section id="gwpy">
+<h2>1. GWpy既存クラスの機能拡張 (軽微なもの)<a class="headerlink" href="#gwpy" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>, <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> 等の基本クラスに対する、利便性向上のためのメソッド追加や機能強化です。</p>
+<section id="timeseries-frequencyseries-spectrogram">
+<h3>基本メソッドの拡張 (TimeSeries / FrequencySeries / Spectrogram)<a class="headerlink" href="#timeseries-frequencyseries-spectrogram" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>位相・角度</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">.phase(unwrap=False)</span></code>: 位相の計算</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.angle(unwrap=False)</span></code>: <code class="docutils literal notranslate"><span class="pre">.phase()</span></code> のエイリアス</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.radian(unwrap=False)</span></code>: ラジアン単位での位相</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.degree(unwrap=False)</span></code>: 度数法での位相</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">np.unwrap</span></code> のサポート</p></li>
+</ul>
+</li>
+<li><p><strong>リサンプリング・補間・編集</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">.interpolate(new_times,</span> <span class="pre">method='linear')</span></code>: データの補間</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.resample(rate)</span></code>: <code class="docutils literal notranslate"><span class="pre">scipy</span></code> または <code class="docutils literal notranslate"><span class="pre">obspy</span></code> (Lanczos) バックエンドを用いたリサンプリングの強化</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.decimate(factor)</span></code>: 間引き</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.tail(n)</span></code>: 末尾 <code class="docutils literal notranslate"><span class="pre">n</span></code> サンプルの抽出</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.crop(start,</span> <span class="pre">end)</span></code>: (<code class="docutils literal notranslate"><span class="pre">gwexpy.time.to_gps</span></code> による柔軟な時刻指定をサポート)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.append(other)</span></code>: 結合処理の強化</p></li>
+</ul>
+</li>
+<li><p><strong>前処理 (Preprocessing)</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">.impute(method=...)</span></code>: 欠損値補完 (線形補間, ffill, bfill)。<code class="docutils literal notranslate"><span class="pre">max_gap</span></code> 制約なども指定可能。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.standardize()</span></code>: 標準化 (Z-score normalization)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.whiten(method='pca'|'zca')</span></code>: 白色化 (Whitening)。<code class="docutils literal notranslate"><span class="pre">return_model=True</span></code> でモデルを取得可能。</p></li>
+</ul>
+</li>
+<li><p><strong>ピーク検出</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">.find_peaks(...)</span></code>: 信号内のピーク検出 (<code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code> ラッパー)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="gps-time">
+<h3>GPS Time 関連<a class="headerlink" href="#gps-time" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>GPS時刻のベクトル演算やフォーマット変換をサポートするユーティリティ群 (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.gps</span></code> 等で利用可能)。</p></li>
+</ul>
+</section>
+<section id="plotting">
+<h3>描画関連 (Plotting)<a class="headerlink" href="#plotting" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>日時軸</strong>: プロット時の横軸を自動的に日時 (datetime) 形式にフォーマットする機能。</p></li>
+<li><p><strong>一括描画</strong>: <code class="docutils literal notranslate"><span class="pre">Spectrogram.plot_summary()</span></code> などによる、スペクトログラムと時間平均ASDの同時プロット。</p></li>
+<li><p><strong>地図・全天図</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.GeoMap</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.SkyMap</span></code> による地図上へのデータプロット機能。</p></li>
+<li><p><strong>PairPlot</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.PairPlot</span></code> による多変量データのペアプロット（散布図行列/相関図）。</p></li>
+</ul>
+</section>
+<section id="timeserieslist-timeseriesdict">
+<h3>コレクションクラスの拡張 (TimeSeriesList / TimeSeriesDict)<a class="headerlink" href="#timeserieslist-timeseriesdict" title="Link to this heading"></a></h3>
+<p>GWpyに存在する <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> に対しても、一括処理機能を追加拡張しています。</p>
+<ul class="simple">
+<li><p>一括信号処理: <code class="docutils literal notranslate"><span class="pre">.fft_time_all()</span></code>, <code class="docutils literal notranslate"><span class="pre">.resample_all(rate)</span></code>, <code class="docutils literal notranslate"><span class="pre">.filter_all(*args)</span></code></p></li>
+<li><p>一括スライス: <code class="docutils literal notranslate"><span class="pre">.sel_all(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">.isel_all(...)</span></code></p></li>
+<li><p>算術演算のブロードキャスト</p></li>
+</ul>
+</section>
+</section>
+<section id="id1">
+<h2>2. 新規クラスの導入<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>多チャンネルデータ、行列データ、物理場などを扱うための新しいデータ構造です。</p>
+<section id="new-collections">
+<h3>新規コレクション (New Collections)<a class="headerlink" href="#new-collections" title="Link to this heading"></a></h3>
+<p>GWpyには標準実装されていない、周波数・時間周波数データのためのコレクションクラスです。GWpyの <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> に対する <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> の立ち位置になります。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code>, <code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code></p></li>
+</ul>
+</section>
+<section id="seriesmatrix">
+<h3>マトリックス (SeriesMatrix)<a class="headerlink" href="#seriesmatrix" title="Link to this heading"></a></h3>
+<p>データを「行列」の要素として持つ多次元データ構造です (Row, Col, Axis…)。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>: (Rows, Cols, Time)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code>: (Rows, Cols, Frequency)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code>: (Rows, Cols, Time, Frequency)</p></li>
+</ul>
+<p><strong>特徴・機能</strong>:</p>
+<ul class="simple">
+<li><p><strong>行列演算</strong>: 要素ごとの行列積 (<code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)、逆行列 (<code class="docutils literal notranslate"><span class="pre">.inv()</span></code>)、行列式 (<code class="docutils literal notranslate"><span class="pre">.det()</span></code>)、トレース (<code class="docutils literal notranslate"><span class="pre">.trace()</span></code>)、シュア補行列 (<code class="docutils literal notranslate"><span class="pre">.schur()</span></code>)。MIMOシステムの伝達関数解析などに強力。</p></li>
+<li><p><strong>統計処理</strong>: 行・列方向の平均・分散演算 (<code class="docutils literal notranslate"><span class="pre">.mean(axis)</span></code>, <code class="docutils literal notranslate"><span class="pre">.std(axis)</span></code> 等) により、センサーアレイ全体の統計量を一括計算。</p></li>
+<li><p><strong>バッチ処理</strong>: 各要素に対する信号処理（フィルタリング、リサンプリング、白色化など）の一括適用。</p></li>
+</ul>
+</section>
+<section id="fields">
+<h3>物理フィールド (Fields)<a class="headerlink" href="#fields" title="Link to this heading"></a></h3>
+<p>4次元 (時間/周波数 + 3次元空間/波数) の物理場を扱うクラスです。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> / <code class="docutils literal notranslate"><span class="pre">VectorField</span></code> / <code class="docutils literal notranslate"><span class="pre">TensorField</span></code></p></li>
+</ul>
+<p><strong>特徴・機能</strong>:</p>
+<ul class="simple">
+<li><p><strong>ドメイン管理</strong>: 時間/周波数軸 (<code class="docutils literal notranslate"><span class="pre">axis0</span></code>) と空間/波数軸 (<code class="docutils literal notranslate"><span class="pre">space_domain</span></code>) の状態を管理し、相互変換 (<code class="docutils literal notranslate"><span class="pre">.fft_time</span></code>, <code class="docutils literal notranslate"><span class="pre">.fft_space</span></code>) をサポート。</p></li>
+<li><p><strong>空間抽出</strong>: <code class="docutils literal notranslate"><span class="pre">.extract_points()</span></code> により任意の空間座標での時系列データを抽出・補間。</p></li>
+<li><p><strong>ベクトル・テンソル解析</strong>: 内積、外積、発散、回転などの物理演算と、座標変換（デカルト座標系など）。</p></li>
+<li><p><strong>シミュレーション</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy.noise.field</span></code> と連携したノイズ場の生成（等方性ノイズ、平面波など）。</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>その他<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">BifrequencyMap</span></code>: 2つの周波数軸を持つマップデータ (STLTGram等)。</p></li>
+</ul>
+</section>
+</section>
+<section id="id3">
+<h2>3. 高度な解析メソッド (単チャンネル)<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="gwexpy-noise">
+<h3>ノイズシミュレーション (<code class="docutils literal notranslate"><span class="pre">gwexpy.noise</span></code>)<a class="headerlink" href="#gwexpy-noise" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">from_asd(asd,</span> <span class="pre">...)</span></code>: ASD (振幅スペクトル密度) からの時系列生成</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">colored_noise(psd,</span> <span class="pre">...)</span></code>: 有色ノイズの生成</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">field.simulate(...)</span></code>: ノイズ場の生成</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pygwinc</span></code> 連携: <code class="docutils literal notranslate"><span class="pre">gwexpy.noise.gwinc_</span></code> を通じた干渉計ノイズバジェットモデルの利用。</p></li>
+</ul>
+</section>
+<section id="timeseries">
+<h3>時系列解析 (TimeSeries)<a class="headerlink" href="#timeseries" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.hilbert()</span></code>: ヒルベルト変換（解析信号）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.envelope()</span></code>: 包絡線 (<code class="docutils literal notranslate"><span class="pre">abs(hilbert)</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.demodulate(f)</span></code>: ロックインアンプ・復調</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.arima(order,</span> <span class="pre">...)</span></code>: AR/MA/ARMA/ARIMAモデル解析 (<code class="docutils literal notranslate"><span class="pre">statsmodels</span></code>, <code class="docutils literal notranslate"><span class="pre">pmdarima</span></code> ラッパー)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.ar(p)</span></code>, <code class="docutils literal notranslate"><span class="pre">.ma(q)</span></code>, <code class="docutils literal notranslate"><span class="pre">.arma(p,</span> <span class="pre">q)</span></code>: AR/MA/ARMAのショートカット</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.hurst()</span></code>: ハースト指数の計算</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.skewness()</span></code>: 歪度 (Skewness)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.kurtosis()</span></code>: 尖度 (Kurtosis)</p></li>
+</ul>
+</section>
+<section id="frequencyseries">
+<h3>周波数スペクトル解析 (FrequencySeries)<a class="headerlink" href="#frequencyseries" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.differentiate()</span></code>, <code class="docutils literal notranslate"><span class="pre">.integrate()</span></code>: 周波数ドメインでの微分・積分</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.differentiate_time()</span></code>, <code class="docutils literal notranslate"><span class="pre">.integrate_time()</span></code>: 周波数ドメインでの時間微分・積分（Displacement ↔ Velocity ↔ Acceleration 変換等）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.group_delay()</span></code>: 群遅延の計算</p></li>
+</ul>
+</section>
+<section id="spectrogram-special-transforms">
+<h3>時間周波数解析 (Spectrogram / Special Transforms)<a class="headerlink" href="#spectrogram-special-transforms" title="Link to this heading"></a></h3>
+<p>GWpyのスペクトログラムとQ変換に加えて、様々な時間周波数解析手法を提供します。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hht()</span></code>: ヒルベルト・ファン変換 (HHT)。EMD (Empirical Mode Decomposition) によるIMF分解と瞬時周波数解析。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stlt()</span></code>: 短時間ラプラス変換 (Short-Time Laplace Transform)。減衰定数 $\sigma$ を考慮した解析。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cepstrum()</span></code>: ケプストラム解析 (倒周波数)。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cwt()</span></code>: 連続ウェーブレット変換 (<code class="docutils literal notranslate"><span class="pre">pywt</span></code> ラッパー)。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>統計的推定・フィッティング<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Fitting (<code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code>)</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">FitResult</span></code>, <code class="docutils literal notranslate"><span class="pre">Model</span></code>: iminuitによるchi-square Fitting (実数、複素数) とMCMC解析</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> にも <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> 等のメソッドがMixされています。</p></li>
+</ul>
+</li>
+<li><p><strong>Bootstrap</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">bootstrap_spectrogram</span></code>: スペクトログラムのブートストラップ推定</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="id5">
+<h2>4. 高度な解析メソッド (多チャンネル)<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<section id="gwexpy-timeseries-decomposition">
+<h3>成分分析 (<code class="docutils literal notranslate"><span class="pre">gwexpy.timeseries.decomposition</span></code>)<a class="headerlink" href="#gwexpy-timeseries-decomposition" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PCA</span></code>: 主成分分析</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ICA</span></code>: 独立成分分析</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ZCA</span></code>: 白色化 (<code class="docutils literal notranslate"><span class="pre">.whiten(method='zca')</span></code> として利用)</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>相関・統計解析<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>相関指標</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">dCor</span></code>: 距離相関 (Distance Correlation)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MIC</span></code>: 最大情報係数 (Maximal Information Coefficient)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pearson</span></code>, <code class="docutils literal notranslate"><span class="pre">Kendall</span></code>: 基本的な相関係数</p></li>
+</ul>
+</li>
+<li><p><strong>Bruco</strong>:</p>
+<ul>
+<li><p>多チャンネルコヒーレンス探索によるノイズ源特定ツール (<code class="docutils literal notranslate"><span class="pre">gwexpy.analysis.bruco</span></code>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id7">
+<h3>システム解析・制御<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>MIMO / 状態空間モデル</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">python-control</span></code> 連携: <code class="docutils literal notranslate"><span class="pre">TimeSeries.from_control(response)</span></code>, <code class="docutils literal notranslate"><span class="pre">to_control_frd</span></code> などによる制御系設計ライブラリとの相互変換。</p></li>
+<li><p>行列クラス (<code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code>) を用いたMIMO伝達関数・時系列解析</p></li>
+</ul>
+</li>
+<li><p><strong>雑音注入試験解析</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.analysis.response</span></code>: 伝達関数推定や結合係数算出のための実験データ解析ツール</p></li>
+</ul>
+</li>
+<li><p><strong>行列演算</strong>:</p>
+<ul>
+<li><p>逆行列 (<code class="docutils literal notranslate"><span class="pre">.inv()</span></code>)、行列式 (<code class="docutils literal notranslate"><span class="pre">.det()</span></code>)、トレース (<code class="docutils literal notranslate"><span class="pre">.trace()</span></code>)、シュア補行列 (<code class="docutils literal notranslate"><span class="pre">.schur()</span></code>) などの基本操作。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="interop">
+<h2>5. 外部ツール連携 (Interop)<a class="headerlink" href="#interop" title="Link to this heading"></a></h2>
+<p>外部ライブラリとのオブジェクト相互変換機能です (<code class="docutils literal notranslate"><span class="pre">.to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">.from_*()</span></code>)。</p>
+<ul class="simple">
+<li><p><strong>Deep Learning / Array Libraries</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">PyTorch</span></code> (<code class="docutils literal notranslate"><span class="pre">Tensor</span></code>, <code class="docutils literal notranslate"><span class="pre">Dataset</span></code>/<code class="docutils literal notranslate"><span class="pre">DataLoader</span></code>): <code class="docutils literal notranslate"><span class="pre">to_torch</span></code>, <code class="docutils literal notranslate"><span class="pre">to_torch_dataset</span></code>等</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TensorFlow</span></code> (<code class="docutils literal notranslate"><span class="pre">Tensor</span></code>): <code class="docutils literal notranslate"><span class="pre">to_tf</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">JAX</span></code> (<code class="docutils literal notranslate"><span class="pre">Array</span></code>): <code class="docutils literal notranslate"><span class="pre">to_jax</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CuPy</span></code> (<code class="docutils literal notranslate"><span class="pre">ndarray</span></code>): <code class="docutils literal notranslate"><span class="pre">to_cupy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Dask</span></code> (<code class="docutils literal notranslate"><span class="pre">dask.array</span></code>): <code class="docutils literal notranslate"><span class="pre">to_dask</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Zarr</span></code>: <code class="docutils literal notranslate"><span class="pre">to_zarr</span></code> / <code class="docutils literal notranslate"><span class="pre">from_zarr</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>Data Structures</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">pandas</span></code> (<code class="docutils literal notranslate"><span class="pre">Series</span></code>/<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>): <code class="docutils literal notranslate"><span class="pre">to_pandas</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pandas_dataframe</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xarray</span></code> (<code class="docutils literal notranslate"><span class="pre">DataArray</span></code>): <code class="docutils literal notranslate"><span class="pre">to_xarray</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">polars</span></code> (<code class="docutils literal notranslate"><span class="pre">Series</span></code>/<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>): <code class="docutils literal notranslate"><span class="pre">to_polars_series</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SQLite</span></code>, <code class="docutils literal notranslate"><span class="pre">JSON</span></code>: 軽量な保存・読み込み</p></li>
+</ul>
+</li>
+<li><p><strong>Domain Specific</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Obspy</span></code> (Seismology): <code class="docutils literal notranslate"><span class="pre">Trace</span></code>, <code class="docutils literal notranslate"><span class="pre">Stream</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MNE</span></code> (EEG/MEG): <code class="docutils literal notranslate"><span class="pre">Raw</span></code>, <code class="docutils literal notranslate"><span class="pre">RawArray</span></code> (<code class="docutils literal notranslate"><span class="pre">to_mne</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Neo</span></code> (Electrophysiology): <code class="docutils literal notranslate"><span class="pre">AnalogSignal</span></code> (<code class="docutils literal notranslate"><span class="pre">to_neo</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Librosa</span></code> / <code class="docutils literal notranslate"><span class="pre">Pydub</span></code> (Audio): 音声データ変換</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SimPEG</span></code> (Geophysics): <code class="docutils literal notranslate"><span class="pre">Data</span></code> オブジェクト</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python-control</span></code>: <code class="docutils literal notranslate"><span class="pre">FrequencyResponseData</span></code> (FRD) 等</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ROOT</span></code> (CERN): <code class="docutils literal notranslate"><span class="pre">TGraph</span></code>, <code class="docutils literal notranslate"><span class="pre">TH1D</span></code>, <code class="docutils literal notranslate"><span class="pre">TH2D</span></code>, <code class="docutils literal notranslate"><span class="pre">TMultiGraph</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Specutils</span></code>: <code class="docutils literal notranslate"><span class="pre">Spectrum1D</span></code> (<code class="docutils literal notranslate"><span class="pre">to_specutils</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pyspeckit</span></code>: <code class="docutils literal notranslate"><span class="pre">Spectrum</span></code> (<code class="docutils literal notranslate"><span class="pre">to_pyspeckit</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Astropy</span></code>: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> (<code class="docutils literal notranslate"><span class="pre">to_astropy_timeseries</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Quantities</span></code>: <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> (<code class="docutils literal notranslate"><span class="pre">to_quantity</span></code>)</p></li>
+</ul>
+</li>
+</ul>
+<section id="i-o">
+<h3>データフォーマットI/O拡張<a class="headerlink" href="#i-o" title="Link to this heading"></a></h3>
+<p>GWpyが標準サポートする形式に加え、以下に対応（または拡張）しています。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ATS</span></code> (Metronix MTデータ)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GBD</span></code> (GRAPHTEC データロガー)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TDMS</span></code> (LabVIEW / NI)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MiniSEED</span></code>, <code class="docutils literal notranslate"><span class="pre">SAC</span></code>, <code class="docutils literal notranslate"><span class="pre">GSE2</span></code> (地震波データ, Obspy連携)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WIN</span></code> (地震波データ)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DTTXML</span></code> (LIGO Diagnostic Test Tools)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SDB</span></code> (気象計 Davis データ)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Midas</span></code> (PSI/DAQフォーマット)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Parquet</span></code>, <code class="docutils literal notranslate"><span class="pre">Feather</span></code>, <code class="docutils literal notranslate"><span class="pre">Pickle</span></code> (pandas連携)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WAV</span></code> (Audio, 拡張サポート)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ROOT</span></code> file (.root)</p></li>
+</ul>
+</section>
+</section>
+<section id="gui">
+<h2>6. GUI アプリケーション<a class="headerlink" href="#gui" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>pyaggui (<code class="docutils literal notranslate"><span class="pre">gwexpy.gui.pyaggui</span></code>)</strong>:</p>
+<ul>
+<li><p>DTT diaggui (C++, ROOT) を模したpyqt5ベースのGUIアプリケーション。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorials/case_active_damping.html" class="btn btn-neutral float-left" title="6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../reference/api/index.html" class="btn btn-neutral float-right" title="API リファレンス" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

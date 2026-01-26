@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScalarField &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="VectorField" href="VectorField.html" />
+    <link rel="prev" title="Array4D" href="Array4D.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWExPy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWExPy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guide/installation.html">インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html">API リファレンス</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">詳細リファレンス</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="TimeSeriesList.html">TimeSeriesList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FrequencySeries.html">FrequencySeries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FrequencySeriesDict.html">FrequencySeriesDict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FrequencySeriesList.html">FrequencySeriesList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FrequencySeriesMatrix.html">FrequencySeriesMatrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SpectrogramDict.html">SpectrogramDict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SpectrogramList.html">SpectrogramList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SpectrogramMatrix.html">SpectrogramMatrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Array2D.html">Array2D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Array4D.html">Array4D</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ScalarField</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">特徴</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">主要メソッド</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">コレクション</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="VectorField.html">VectorField</a></li>
+<li class="toctree-l3"><a class="reference internal" href="TensorField.html">TensorField</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FieldList.html">FieldList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FieldDict.html">FieldDict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Plot.html">Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Transform.html">Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ImputeTransform.html">ImputeTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="StandardizeTransform.html">StandardizeTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="WhitenTransform.html">WhitenTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PCATransform.html">PCATransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitting.html">gwexpy.fitting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Spectral.html">スペクトル推定</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FFT_Conventions.html">FFTの仕様とコンベンション</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Bruco.html">Bruco (Brute force coherence)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWExPy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="index.html">詳細リファレンス</a></li>
+      <li class="breadcrumb-item active">ScalarField</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/reference/ScalarField.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scalarfield">
+<h1>ScalarField<a class="headerlink" href="#scalarfield" title="Link to this heading"></a></h1>
+<p><strong>継承:</strong> <code class="docutils literal notranslate"><span class="pre">FieldBase</span></code>, <code class="docutils literal notranslate"><span class="pre">Array4D</span></code>, <code class="docutils literal notranslate"><span class="pre">AxisApiMixin</span></code>, <code class="docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <code class="docutils literal notranslate"><span class="pre">GwpyArray</span></code></p>
+<p>明示的なドメインメタデータを持つ4次元スカラー場クラスです。軸構造は常に <code class="docutils literal notranslate"><span class="pre">(axis0,</span> <span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code> を保持し、スライスしても軸は削除されず長さ1のまま残ります。時間/周波数と位置/波数のドメインを軸ごとに保持し、FFT操作後もドメインと単位の整合性を検証します。</p>
+<section id="id1">
+<h2>特徴<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>明示的なドメイン保持</strong>: <code class="docutils literal notranslate"><span class="pre">axis0_domain</span> <span class="pre">∈</span> <span class="pre">{time,</span> <span class="pre">frequency}</span></code> と空間軸の <code class="docutils literal notranslate"><span class="pre">space_domain</span> <span class="pre">∈</span> <span class="pre">{real,</span> <span class="pre">k}</span></code> を明示的に保持。</p></li>
+<li><p><strong>物理整合性を保つスライス</strong>: インデクシング操作を行っても4次元構造が維持され、軸メタデータが欠落しません。</p></li>
+<li><p><strong>単位とドメインの検証</strong>: コンストラクタおよび FFT 操作後にドメインと単位の整合性を自動検証。</p></li>
+<li><p><strong>信号処理機能</strong>: PSD、コヒーレンス、相互相関などの解析機能を内蔵。</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>主要メソッド<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="fft">
+<h3>FFT 操作<a class="headerlink" href="#fft" title="Link to this heading"></a></h3>
+<p>正規化や符号の定義などの数学的詳細は、<a class="reference internal" href="FFT_Conventions.html"><span class="std std-doc">FFTの仕様とコンベンション</span></a> を参照してください。</p>
+<section id="fft-time-nfft-none">
+<h4><code class="docutils literal notranslate"><span class="pre">fft_time(nfft=None)</span></code><a class="headerlink" href="#fft-time-nfft-none" title="Link to this heading"></a></h4>
+<p>時間軸の FFT を実行し、ドメインを <code class="docutils literal notranslate"><span class="pre">frequency</span></code> に更新。GWpy <code class="docutils literal notranslate"><span class="pre">TimeSeries.fft()</span></code> と同じ正規化（rfft/nfft + 非DC/非Nyquistの倍増）を適用。</p>
+</section>
+<section id="ifft-time-nout-none">
+<h4><code class="docutils literal notranslate"><span class="pre">ifft_time(nout=None)</span></code><a class="headerlink" href="#ifft-time-nout-none" title="Link to this heading"></a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">fft_time</span></code> の逆操作。<code class="docutils literal notranslate"><span class="pre">axis0_domain='time'</span></code> に戻し、保存された <code class="docutils literal notranslate"><span class="pre">_axis0_offset</span></code> を用いて時間軸を正確に復元。</p>
+</section>
+<section id="fft-space-axes-none-n-none">
+<h4><code class="docutils literal notranslate"><span class="pre">fft_space(axes=None,</span> <span class="pre">n=None)</span></code><a class="headerlink" href="#fft-space-axes-none-n-none" title="Link to this heading"></a></h4>
+<p>空間軸に対して符号付き両側 FFT を実行。ドメインを <code class="docutils literal notranslate"><span class="pre">real</span> <span class="pre">→</span> <span class="pre">k</span></code> に、軸名を <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">→</span> <span class="pre">kx</span></code> などに更新。波数は $k = 2\pi/\lambda$ として計算。</p>
+</section>
+<section id="ifft-space-axes-none-n-none">
+<h4><code class="docutils literal notranslate"><span class="pre">ifft_space(axes=None,</span> <span class="pre">n=None)</span></code><a class="headerlink" href="#ifft-space-axes-none-n-none" title="Link to this heading"></a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">k</span></code> ドメインの空間軸を実空間に戻し、<code class="docutils literal notranslate"><span class="pre">real</span></code> ドメインを復元。</p>
+</section>
+</section>
+<section id="id3">
+<h3>信号処理（インスタンスメソッド）<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<section id="filter-args-kwargs">
+<h4><code class="docutils literal notranslate"><span class="pre">filter(*args,</span> <span class="pre">**kwargs)</span></code><a class="headerlink" href="#filter-args-kwargs" title="Link to this heading"></a></h4>
+<p>時間軸（axis 0）に対してデジタルフィルタを適用します。<code class="docutils literal notranslate"><span class="pre">gwpy.signal.filter_design</span></code> で設計したフィルタを受け取ります。デフォルトでは位相歪みを防ぐため <code class="docutils literal notranslate"><span class="pre">filtfilt</span></code> を使用します。</p>
+</section>
+<section id="resample-rate-kwargs">
+<h4><code class="docutils literal notranslate"><span class="pre">resample(rate,</span> <span class="pre">**kwargs)</span></code><a class="headerlink" href="#resample-rate-kwargs" title="Link to this heading"></a></h4>
+<p>フィールドを時間軸方向にリサンプリングします。内部的に <code class="docutils literal notranslate"><span class="pre">scipy.signal.resample</span></code> を使用し、すべての軸メタデータと単位を保持します。</p>
+</section>
+</section>
+<section id="high-level-api">
+<h3>信号処理解析 (High-level API)<a class="headerlink" href="#high-level-api" title="Link to this heading"></a></h3>
+<p>以下の関数が <code class="docutils literal notranslate"><span class="pre">gwexpy.fields</span></code> から利用可能です：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">compute_psd(field,</span> <span class="pre">point_or_region,</span> <span class="pre">...)</span></code>: 指定した空間点または領域での Welch PSD 推定。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">coherence_map(field,</span> <span class="pre">ref_point,</span> <span class="pre">...)</span></code>: 基準点と断面内の各点とのコヒーレンスマップ。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compute_xcorr(field,</span> <span class="pre">point_a,</span> <span class="pre">point_b,</span> <span class="pre">...)</span></code>: 2点間の相互相関関数。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_delay_map(field,</span> <span class="pre">ref_point,</span> <span class="pre">...)</span></code>: 相関に基づく推定遅延マップの作成。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>デモデータ生成<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">make_demo_scalar_field(...)</span></code>: 汎用的な4Dデモフィールドの生成。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make_propagating_gaussian(...)</span></code>: 伝播するガウス波パケットのシミュレーション。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make_sinusoidal_wave(...)</span></code>: 平面波のシミュレーション。</p></li>
+</ul>
+</section>
+</section>
+<section id="id5">
+<h2>コレクション<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>複数の ScalarField を扱う場合は <code class="docutils literal notranslate"><span class="pre">gwexpy.fields.FieldList</span></code> / <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> を利用してください。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Array4D.html" class="btn btn-neutral float-left" title="Array4D" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="VectorField.html" class="btn btn-neutral float-right" title="VectorField" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analysis &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Noise" href="noise.html" />
+    <link rel="prev" title="Spectral" href="spectral.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWExPy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="timeseries.html">Time Series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="frequencyseries.html">Frequency Series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fields.html">Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spectral.html">Spectral</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.analysis.coupling.CouplingFunctionAnalysis"><code class="docutils literal notranslate"><span class="pre">CouplingFunctionAnalysis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.analysis.coupling.CouplingResult"><code class="docutils literal notranslate"><span class="pre">CouplingResult</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.analysis.coupling.PercentileThreshold"><code class="docutils literal notranslate"><span class="pre">PercentileThreshold</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.analysis.coupling.RatioThreshold"><code class="docutils literal notranslate"><span class="pre">RatioThreshold</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.analysis.coupling.SigmaThreshold"><code class="docutils literal notranslate"><span class="pre">SigmaThreshold</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.analysis.coupling.ThresholdStrategy"><code class="docutils literal notranslate"><span class="pre">ThresholdStrategy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy.analysis.coupling.estimate_coupling"><code class="docutils literal notranslate"><span class="pre">estimate_coupling()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="types.html">Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extra.html">fitting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extra.html#module-gwexpy.interop">interop</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html">Detailed Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWExPy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWExPy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Analysis</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/reference/api/analysis.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gwexpy.analysis.coupling">
+<span id="analysis"></span><h1>Analysis<a class="headerlink" href="#module-gwexpy.analysis.coupling" title="Link to this heading"></a></h1>
+<p>Coupling Function Analysis Module for gwexpy.</p>
+<p>Estimates the coupling function (CF) with flexible threshold strategies:
+- RatioThreshold: Mean power ratio.
+- SigmaThreshold: Statistical significance (Gaussian assumption).
+- PercentileThreshold: Data-driven percentile (Robust to non-Gaussianity).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingFunctionAnalysis">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.coupling.</span></span><span class="sig-name descname"><span class="pre">CouplingFunctionAnalysis</span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#CouplingFunctionAnalysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingFunctionAnalysis" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Analysis class to estimate Coupling Functions (CF).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingFunctionAnalysis.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_inj:</span> <span class="pre">~gwexpy.timeseries.collections.TimeSeriesDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_bkg:</span> <span class="pre">~gwexpy.timeseries.collections.TimeSeriesDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftlength:</span> <span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">witness:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frange:</span> <span class="pre">tuple[float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_witness:</span> <span class="pre">~gwexpy.analysis.coupling.ThresholdStrategy</span> <span class="pre">=</span> <span class="pre">&lt;gwexpy.analysis.coupling.RatioThreshold</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_target:</span> <span class="pre">~gwexpy.analysis.coupling.ThresholdStrategy</span> <span class="pre">=</span> <span class="pre">&lt;gwexpy.analysis.coupling.RatioThreshold</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs:</span> <span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.analysis.coupling.CouplingResult" title="gwexpy.analysis.coupling.CouplingResult"><span class="pre">CouplingResult</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#gwexpy.analysis.coupling.CouplingResult" title="gwexpy.analysis.coupling.CouplingResult"><span class="pre">CouplingResult</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#CouplingFunctionAnalysis.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingFunctionAnalysis.compute" title="Link to this definition"></a></dt>
+<dd><p>Compute Coupling Function(s) from TimeSeriesDicts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_inj</strong> (<a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesDict" title="gwexpy.timeseries.TimeSeriesDict"><em>TimeSeriesDict</em></a>) – Injection data (Witness + Targets).</p></li>
+<li><p><strong>data_bkg</strong> (<a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesDict" title="gwexpy.timeseries.TimeSeriesDict"><em>TimeSeriesDict</em></a>) – Background data (Witness + Targets).</p></li>
+<li><p><strong>fftlength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – FFT length in seconds.</p></li>
+<li><p><strong>witness</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – The name (key) of the witness channel.
+If None, the FIRST channel in <cite>data_inj</cite> is used.</p></li>
+<li><p><strong>frange</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Frequency range (fmin, fmax) to evaluate CF and CF upper limit.
+Values outside the range are set to NaN.</p></li>
+<li><p><strong>overlap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Overlap in seconds (default 0).</p></li>
+<li><p><strong>threshold_witness</strong> (<a class="reference internal" href="#gwexpy.analysis.coupling.ThresholdStrategy" title="gwexpy.analysis.coupling.ThresholdStrategy"><em>ThresholdStrategy</em></a>) – Strategy to determine if Witness is excited.</p></li>
+<li><p><strong>threshold_target</strong> (<a class="reference internal" href="#gwexpy.analysis.coupling.ThresholdStrategy" title="gwexpy.analysis.coupling.ThresholdStrategy"><em>ThresholdStrategy</em></a>) – Strategy to determine if Target is excited.</p></li>
+<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of jobs for parallel processing. None means 1 unless in a joblib.parallel_config context.
+-1 means using all processors.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.coupling.</span></span><span class="sig-name descname"><span class="pre">CouplingResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_witness_inj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_witness_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_target_inj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_target_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">witness_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cf_ul</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_witness_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_target_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftlength</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#CouplingResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Result object for a SINGLE Witness -&gt; Target pair.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.frequencies">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frequencies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">IndexLike</span></em><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.frequencies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(10,</span> <span class="pre">12)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Plot</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#CouplingResult.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.plot" title="Link to this definition"></a></dt>
+<dd><p>Create a diagnostic plot showing ASDs and the resulting CF.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.plot_cf">
+<span class="sig-name descname"><span class="pre">plot_cf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Plot</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#CouplingResult.plot_cf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.plot_cf" title="Link to this definition"></a></dt>
+<dd><p>Plot the Coupling Function and its Upper Limit.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.PercentileThreshold">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.coupling.</span></span><span class="sig-name descname"><span class="pre">PercentileThreshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percentile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#PercentileThreshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.PercentileThreshold" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gwexpy.analysis.coupling.ThresholdStrategy" title="gwexpy.analysis.coupling.ThresholdStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdStrategy</span></code></a></p>
+<p>Checks if P_inj &gt; factor * Percentile(P_bkg_segments).</p>
+<dl class="simple">
+<dt>Statistical Assumptions:</dt><dd><ul class="simple">
+<li><p>Uses the <strong>Empirical Distribution</strong> of the background PSDs.</p></li>
+<li><p>Does not assume Gaussianity; robust against outliers and non-stationary glitches.</p></li>
+</ul>
+</dd>
+<dt>Usage:</dt><dd><ul class="simple">
+<li><p>Requires <cite>raw_bkg</cite> (time series) to compute the distribution across time segments.</p></li>
+<li><p>Higher computational cost than <cite>SigmaThreshold</cite> but more reliable for real-world non-Gaussian data.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>percentile</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=95</em>) – The percentile of the background distribution (0-100).</p></li>
+<li><p><strong>factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=2.0</em>) – Multiplier for the percentile value.
+Threshold = factor * P_bkg_percentile</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.PercentileThreshold.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd_inj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#PercentileThreshold.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.PercentileThreshold.check" title="Link to this definition"></a></dt>
+<dd><p>Return a boolean mask where P_inj is considered ‘excess’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psd_inj</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – PSD of the injection data.</p></li>
+<li><p><strong>psd_bkg</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – PSD of the background data (usually mean or median).</p></li>
+<li><p><strong>raw_bkg</strong> (<a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em>, </em><em>optional</em>) – Raw background time series data. Required for PercentileThreshold
+to calculate the distribution of PSDs across segments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.PercentileThreshold.threshold">
+<span class="sig-name descname"><span class="pre">threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd_inj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#PercentileThreshold.threshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.PercentileThreshold.threshold" title="Link to this definition"></a></dt>
+<dd><p>Return the PSD threshold values used by this strategy.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.RatioThreshold">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.coupling.</span></span><span class="sig-name descname"><span class="pre">RatioThreshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ratio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#RatioThreshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.RatioThreshold" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gwexpy.analysis.coupling.ThresholdStrategy" title="gwexpy.analysis.coupling.ThresholdStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdStrategy</span></code></a></p>
+<p>Checks if P_inj &gt; ratio * P_bkg_mean.</p>
+<dl class="simple">
+<dt>Statistical Assumptions:</dt><dd><ul class="simple">
+<li><p>No specific statistical distribution is assumed.</p></li>
+<li><p>Tests if injection power exceeds the background level by a fixed factor.</p></li>
+</ul>
+</dd>
+<dt>Usage:</dt><dd><ul class="simple">
+<li><p>Best for simple, physical excess screening where precise statistical significance is less critical.</p></li>
+<li><p>Extremely fast as it requires no variance estimation.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.RatioThreshold.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd_inj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#RatioThreshold.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.RatioThreshold.check" title="Link to this definition"></a></dt>
+<dd><p>Return a boolean mask where P_inj is considered ‘excess’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psd_inj</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – PSD of the injection data.</p></li>
+<li><p><strong>psd_bkg</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – PSD of the background data (usually mean or median).</p></li>
+<li><p><strong>raw_bkg</strong> (<a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em>, </em><em>optional</em>) – Raw background time series data. Required for PercentileThreshold
+to calculate the distribution of PSDs across segments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.RatioThreshold.threshold">
+<span class="sig-name descname"><span class="pre">threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd_inj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#RatioThreshold.threshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.RatioThreshold.threshold" title="Link to this definition"></a></dt>
+<dd><p>Return the PSD threshold values used by this strategy.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.SigmaThreshold">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.coupling.</span></span><span class="sig-name descname"><span class="pre">SigmaThreshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#SigmaThreshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.SigmaThreshold" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gwexpy.analysis.coupling.ThresholdStrategy" title="gwexpy.analysis.coupling.ThresholdStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdStrategy</span></code></a></p>
+<p>Checks if P_inj &gt; P_bkg + sigma * std_error.</p>
+<dl class="simple">
+<dt>Statistical Assumptions:</dt><dd><ul class="simple">
+<li><p>Background Power Spectral Density (PSD) at each bin follows a Gaussian distribution.</p></li>
+<li><p>The parameter <cite>n_avg</cite> represents the number of independent averages (e.g., in Welch’s method).</p></li>
+<li><p>Assumes standard deviation of the noise reduces as <cite>1 / sqrt(n_avg)</cite>.</p></li>
+</ul>
+</dd>
+<dt>Meaning of Threshold:</dt><dd><ul class="simple">
+<li><p><cite>threshold = mean + sigma * (mean / sqrt(n_avg))</cite></p></li>
+<li><p>This is a <strong>statistical significance判定</strong> (significance test), NOT a physical upper limit.</p></li>
+<li><p>It identifies frequencies where the injection is statistically distinguishable from background variance.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method relies heavily on the Gaussian and stationary assumptions. It may be unreliable if:
+- The background contains significant non-Gaussian features (glitches, transients).
+- <cite>n_avg</cite> is small, where the central limit theorem has not yet converged.
+- There are strong spectral lines (non-stationary or deterministic signals).</p>
+</div>
+<p>In such cases, <cite>PercentileThreshold</cite> is recommended as it uses the empirical distribution.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.SigmaThreshold.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd_inj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#SigmaThreshold.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.SigmaThreshold.check" title="Link to this definition"></a></dt>
+<dd><p>Return a boolean mask where P_inj is considered ‘excess’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psd_inj</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – PSD of the injection data.</p></li>
+<li><p><strong>psd_bkg</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – PSD of the background data (usually mean or median).</p></li>
+<li><p><strong>raw_bkg</strong> (<a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em>, </em><em>optional</em>) – Raw background time series data. Required for PercentileThreshold
+to calculate the distribution of PSDs across segments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.SigmaThreshold.threshold">
+<span class="sig-name descname"><span class="pre">threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd_inj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#SigmaThreshold.threshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.SigmaThreshold.threshold" title="Link to this definition"></a></dt>
+<dd><p>Return the PSD threshold values used by this strategy.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.ThresholdStrategy">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.coupling.</span></span><span class="sig-name descname"><span class="pre">ThresholdStrategy</span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#ThresholdStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.ThresholdStrategy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Abstract base class for excess detection strategies.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.ThresholdStrategy.check">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd_inj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#ThresholdStrategy.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.ThresholdStrategy.check" title="Link to this definition"></a></dt>
+<dd><p>Return a boolean mask where P_inj is considered ‘excess’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psd_inj</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – PSD of the injection data.</p></li>
+<li><p><strong>psd_bkg</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – PSD of the background data (usually mean or median).</p></li>
+<li><p><strong>raw_bkg</strong> (<a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em>, </em><em>optional</em>) – Raw background time series data. Required for PercentileThreshold
+to calculate the distribution of PSDs across segments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.ThresholdStrategy.threshold">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd_inj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#ThresholdStrategy.threshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.ThresholdStrategy.threshold" title="Link to this definition"></a></dt>
+<dd><p>Return the PSD threshold values used by this strategy.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.analysis.coupling.estimate_coupling">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.coupling.</span></span><span class="sig-name descname"><span class="pre">estimate_coupling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_inj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesDict" title="gwexpy.timeseries.collections.TimeSeriesDict"><span class="pre">TimeSeriesDict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesDict" title="gwexpy.timeseries.collections.TimeSeriesDict"><span class="pre">TimeSeriesDict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftlength</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">witness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frange</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_witness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gwexpy.analysis.coupling.ThresholdStrategy" title="gwexpy.analysis.coupling.ThresholdStrategy"><span class="pre">ThresholdStrategy</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gwexpy.analysis.coupling.ThresholdStrategy" title="gwexpy.analysis.coupling.ThresholdStrategy"><span class="pre">ThresholdStrategy</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.analysis.coupling.CouplingResult" title="gwexpy.analysis.coupling.CouplingResult"><span class="pre">CouplingResult</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#gwexpy.analysis.coupling.CouplingResult" title="gwexpy.analysis.coupling.CouplingResult"><span class="pre">CouplingResult</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#estimate_coupling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.estimate_coupling" title="Link to this definition"></a></dt>
+<dd><p>Helper function to estimate CF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>frange</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Frequency range (fmin, fmax) to evaluate CF and CF upper limit.
+Values outside the range are set to NaN.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="spectral.html" class="btn btn-neutral float-left" title="Spectral" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="noise.html" class="btn btn-neutral float-right" title="Noise" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,216 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GWExPy Documentation &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Installation" href="guide/installation.html" />
+    <link rel="prev" title="GWExPy Documentation" href="../../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GWExPy Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/api/index.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/index.html">Detailed Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ja/index.html">GWExPy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">GWExPy Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gwexpy-documentation">
+<h1>GWExPy Documentation<a class="headerlink" href="#gwexpy-documentation" title="Link to this heading"></a></h1>
+<p>GWExPy extends GWpy with additional containers, interoperability helpers, and
+analysis utilities for time and frequency series.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guide/installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide/installation.html#basic-install">Basic install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/installation.html#development-install">Development install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/installation.html#optional-extras">Optional extras</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide/quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide/quickstart.html#time-utilities-and-auto-series">Time utilities and auto series</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide/tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide/tutorials/index.html#i-core-data-structures">I. Core Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/tutorials/index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/tutorials/index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/tutorials/index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/tutorials/index.html#v-specialized-tools">V. Specialized Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/tutorials/index.html#vi-case-studies">VI. Case Studies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide/gwexpy_for_gwpy_users_ja.html#gwpy">1. GWpy既存クラスの機能拡張 (軽微なもの)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/gwexpy_for_gwpy_users_ja.html#id1">2. 新規クラスの導入</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/gwexpy_for_gwpy_users_ja.html#id3">3. 高度な解析メソッド (単チャンネル)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/gwexpy_for_gwpy_users_ja.html#id5">4. 高度な解析メソッド (多チャンネル)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/gwexpy_for_gwpy_users_ja.html#interop">5. 外部ツール連携 (Interop)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/gwexpy_for_gwpy_users_ja.html#gui">6. GUI アプリケーション</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference/api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/api/timeseries.html">Time Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/api/frequencyseries.html">Frequency Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/api/spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/api/fields.html">Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/api/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/api/analysis.html">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/api/noise.html">Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/api/types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/api/extra.html">fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/api/extra.html#module-gwexpy.interop">interop</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Detailed Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/TimeSeries.html">TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/TimeSeriesDict.html">TimeSeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/TimeSeriesList.html">TimeSeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/FrequencySeries.html">FrequencySeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/FrequencySeriesDict.html">FrequencySeriesDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/FrequencySeriesList.html">FrequencySeriesList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/FrequencySeriesMatrix.html">FrequencySeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/Spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/SpectrogramDict.html">SpectrogramDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/SpectrogramList.html">SpectrogramList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/SpectrogramMatrix.html">SpectrogramMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/BifrequencyMap.html">BifrequencyMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/Array2D.html">Array2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/Plane2D.html">Plane2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/Array4D.html">Array4D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/ScalarField.html">ScalarField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/VectorField.html">VectorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/TensorField.html">TensorField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/FieldList.html">FieldList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/FieldDict.html">FieldDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/TimePlaneTransform.html">TimePlaneTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/Plot.html">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/Noise.html">Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/Pipeline.html">Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/Transform.html">Transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/ImputeTransform.html">ImputeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/StandardizeTransform.html">StandardizeTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/WhitenTransform.html">WhitenTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/PCATransform.html">PCATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/ICATransform.html">ICATransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/fitting.html">gwexpy.fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/Spectral.html">Spectral Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/FFT_Conventions.html">FFT Specifications and Conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/SeriesMatrix.html">SeriesMatrix</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="language">
+<h2>Language<a class="headerlink" href="#language" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="../ja/index.html">日本語 (Japanese)</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../index.html" class="btn btn-neutral float-left" title="GWExPy Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="guide/installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,381 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ノイズシミュレーション (Noise) &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="基本型 (Types)" href="types.html" />
+    <link rel="prev" title="解析ユーティリティ (Analysis)" href="analysis.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWExPy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWExPy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">API リファレンス</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="timeseries.html">時系列 (Time Series)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="frequencyseries.html">周波数系列 (Frequency Series)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spectrogram.html">スペクトログラム (Spectrogram)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fields.html">フィールド (Fields)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spectral.html">スペクトル解析 (Spectral)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis.html">解析ユーティリティ (Analysis)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ノイズシミュレーション (Noise)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="types.html">基本型 (Types)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extra.html">フィッティング (fitting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extra.html#interop">相互運用 (interop)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html">詳細リファレンス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWExPy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="index.html">API リファレンス</a></li>
+      <li class="breadcrumb-item active">ノイズシミュレーション (Noise)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/reference/api/noise.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="noise">
+<h1>ノイズシミュレーション (Noise)<a class="headerlink" href="#noise" title="Link to this heading"></a></h1>
+<p>gwexpy.noise - Noise generation and modeling.</p>
+<p>This module provides tools for generating and modeling noise spectra.</p>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<p>asd : Functions that return FrequencySeries (ASD)
+wave : Functions that return time-series waveforms (ndarray)</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.asd</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pygwinc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_asd</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">asd</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s1">&#39;aLIGO&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mf">1024.0</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span> <span class="o">=</span> <span class="n">from_asd</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">from_asd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../en/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../../en/reference/api/timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/noise/wave.html#from_asd"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Generate colored noise TimeSeries from an ASD (Amplitude Spectral Density).</p>
+<p>Uses FFT-based colored noise synthesis to produce a time-series with the
+spectral characteristics defined by the input ASD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>asd</strong> (<a class="reference internal" href="../../../en/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – The amplitude spectral density defining the noise spectrum.</p></li>
+<li><p><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Duration of the output time-series in seconds.</p></li>
+<li><p><strong>sample_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sample rate of the output time-series in Hz.</p></li>
+<li><p><strong>t0</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Start time of the output TimeSeries.</p></li>
+<li><p><strong>rng</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v2.4)"><em>numpy.random.Generator</em></a><em>, </em><em>optional</em>) – Random number generator instance. If None, a new default generator
+is created.</p></li>
+<li><p><strong>**kwargs</strong> – Additional arguments passed to TimeSeries constructor (e.g., name, channel, unit).
+If provided, these override values derived from the ASD.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The generated noise time-series as a gwexpy TimeSeries.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../en/reference/api/timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.asd</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pygwinc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_asd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">asd</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s1">&#39;aLIGO&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mf">1024.0</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span> <span class="o">=</span> <span class="n">from_asd</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">from_obspy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'displacement'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'velocity'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'acceleration'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'acceleration'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../../en/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/noise/obspy_.html#from_obspy"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Get standard noise models from ObsPy.</p>
+<p>This function returns the Amplitude Spectral Density (ASD) of seismic
+or infrasound noise models from ObsPy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – <p>The ObsPy model name. Supported models:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;NHNM&quot;</span></code>: New High Noise Model (Peterson 1993)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;NLNM&quot;</span></code>: New Low Noise Model (Peterson 1993)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;IDCH&quot;</span></code>: IDC Infrasound High Noise Model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;IDCL&quot;</span></code>: IDC Infrasound Low Noise Model</p></li>
+</ul>
+</p></li>
+<li><p><strong>frequencies</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Frequency array in Hz for interpolation. If not provided, the
+original model frequencies are used.</p></li>
+<li><p><strong>quantity</strong> (<em>{&quot;displacement&quot;</em><em>, </em><em>&quot;velocity&quot;</em><em>, </em><em>&quot;acceleration&quot;}</em><em>, </em><em>default &quot;acceleration&quot;</em>) – <p>Physical quantity of the ASD to return (for seismic models only):</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;acceleration&quot;</span></code>: Acceleration ASD [m/(s²·sqrt(Hz))]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;velocity&quot;</span></code>: Velocity ASD [m/(s·sqrt(Hz))]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;displacement&quot;</span></code>: Displacement ASD [m/sqrt(Hz)]</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&quot;strain&quot;</span></code> quantity is <strong>not supported</strong> for seismic noise
+models. Use <code class="docutils literal notranslate"><span class="pre">from_pygwinc</span></code> for strain-based detector noise.</p>
+</div>
+</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to FrequencySeries constructor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ASD as a FrequencySeries with appropriate units.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../en/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If ObsPy is not installed.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <cite>model</cite> is not one of the supported models.
+    If <cite>quantity</cite> is not one of the allowed values.
+    If <cite>quantity=”strain”</cite> is requested (not supported).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p><strong>Quantity Conversion (Seismic Models):</strong></p>
+<p>The NHNM and NLNM models are defined in terms of acceleration. Conversions
+to velocity and displacement are performed in the frequency domain:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">velocity</span> <span class="pre">=</span> <span class="pre">acceleration</span> <span class="pre">/</span> <span class="pre">(2πf)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">displacement</span> <span class="pre">=</span> <span class="pre">acceleration</span> <span class="pre">/</span> <span class="pre">(2πf)²</span></code></p></li>
+</ul>
+<p>At <code class="docutils literal notranslate"><span class="pre">f=0</span></code>, the conversion results in <code class="docutils literal notranslate"><span class="pre">NaN</span></code> to avoid division by zero.</p>
+<p><strong>Unit Table:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>acceleration</p></td>
+<td><p>m / (s² · sqrt(Hz))</p></td>
+</tr>
+<tr class="row-odd"><td><p>velocity</p></td>
+<td><p>m / (s · sqrt(Hz))</p></td>
+</tr>
+<tr class="row-even"><td><p>displacement</p></td>
+<td><p>m / sqrt(Hz)</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Infrasound Models:</strong></p>
+<p>For IDCH and IDCL models, the quantity parameter is ignored as these
+return pressure ASD in units of Pa/sqrt(Hz).</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.asd</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_obspy</span>
+</pre></div>
+</div>
+<p>Get acceleration ASD for NLNM:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">asd</span> <span class="o">=</span> <span class="n">from_obspy</span><span class="p">(</span><span class="s2">&quot;NLNM&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">asd</span><span class="o">.</span><span class="n">unit</span>
+<span class="go">Unit(&quot;m / (Hz(1/2) s2)&quot;)</span>
+</pre></div>
+</div>
+<p>Get displacement ASD:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">disp_asd</span> <span class="o">=</span> <span class="n">from_obspy</span><span class="p">(</span><span class="s2">&quot;NLNM&quot;</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s2">&quot;displacement&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">disp_asd</span><span class="o">.</span><span class="n">unit</span>
+<span class="go">Unit(&quot;m / Hz(1/2)&quot;)</span>
+</pre></div>
+</div>
+<p>Strain is not supported:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">from_obspy</span><span class="p">(</span><span class="s2">&quot;NLNM&quot;</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">ValueError</span>: <span class="n">quantity=&#39;strain&#39; is not supported for seismic noise models...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.noise.</span></span><span class="sig-name descname"><span class="pre">from_pygwinc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'strain'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'darm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'displacement'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strain'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../../en/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/noise/gwinc_.html#from_pygwinc"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Get detector noise ASD from pyGWINC.</p>
+<p>This function returns the Amplitude Spectral Density (ASD) of a
+gravitational wave detector noise model using pyGWINC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The pyGWINC model name (e.g., “aLIGO”, “Aplus”, “Voyager”).
+“A+” is automatically converted to “Aplus”.</p></li>
+<li><p><strong>frequencies</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Frequency array in Hz. If not provided, a default array is generated
+using <cite>fmin</cite>, <cite>fmax</cite>, and <cite>df</cite> from kwargs.</p></li>
+<li><p><strong>quantity</strong> (<em>{&quot;strain&quot;</em><em>, </em><em>&quot;darm&quot;</em><em>, </em><em>&quot;displacement&quot;}</em><em>, </em><em>default &quot;strain&quot;</em>) – <p>Physical quantity of the ASD to return:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;strain&quot;</span></code>: Strain ASD [1/sqrt(Hz)]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;darm&quot;</span></code>: Differential arm length ASD [m/sqrt(Hz)]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;displacement&quot;</span></code>: Deprecated alias for “darm”</p></li>
+</ul>
+</p></li>
+<li><p><strong>**kwargs</strong> – <p>Additional keyword arguments:</p>
+<ul>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">fmin</span></code><span class="classifier">float, default 10.0</span></dt><dd><p>Minimum frequency [Hz] for default frequency array.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">fmax</span></code><span class="classifier">float, default 4000.0</span></dt><dd><p>Maximum frequency [Hz] for default frequency array.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">df</span></code><span class="classifier">float, default 1.0</span></dt><dd><p>Frequency step [Hz] for default frequency array.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ASD as a FrequencySeries with appropriate units.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../en/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If pyGWINC is not installed.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <cite>quantity</cite> is not one of the allowed values.
+    If <cite>quantity=”darm”</cite> or <cite>“displacement”</cite> and arm length cannot be
+    retrieved from the IFO model.
+    If <cite>fmin &gt;= fmax</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p><strong>Quantity Definitions:</strong></p>
+<ul class="simple">
+<li><p><strong>Strain ASD</strong>: The detector’s sensitivity expressed as equivalent
+gravitational wave strain per sqrt(Hz).</p></li>
+<li><p><strong>DARM ASD</strong>: Differential Arm Length Motion ASD, related to strain
+by <code class="docutils literal notranslate"><span class="pre">darm</span> <span class="pre">=</span> <span class="pre">strain</span> <span class="pre">*</span> <span class="pre">L</span></code> where L is the arm length.</p></li>
+</ul>
+<p><strong>Arm Length Conversion:</strong></p>
+<p>For <code class="docutils literal notranslate"><span class="pre">quantity=&quot;darm&quot;</span></code> (or <code class="docutils literal notranslate"><span class="pre">&quot;displacement&quot;</span></code>), the strain ASD is
+multiplied by the arm length L obtained from <code class="docutils literal notranslate"><span class="pre">ifo.Infrastructure.Length</span></code>.</p>
+<p><strong>Frequency Array:</strong></p>
+<p>If <cite>frequencies</cite> is not provided, a uniform frequency array is generated:
+<code class="docutils literal notranslate"><span class="pre">np.arange(fmin,</span> <span class="pre">fmax</span> <span class="pre">+</span> <span class="pre">df,</span> <span class="pre">df)</span></code>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.asd</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pygwinc</span>
+</pre></div>
+</div>
+<p>Get strain ASD for aLIGO:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">asd</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s2">&quot;aLIGO&quot;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">asd</span><span class="o">.</span><span class="n">unit</span>
+<span class="go">Unit(&quot;1 / Hz(1/2)&quot;)</span>
+</pre></div>
+</div>
+<p>Get DARM ASD:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">darm_asd</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s2">&quot;aLIGO&quot;</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s2">&quot;darm&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">darm_asd</span><span class="o">.</span><span class="n">unit</span>
+<span class="go">Unit(&quot;m / Hz(1/2)&quot;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="analysis.html" class="btn btn-neutral float-left" title="解析ユーティリティ (Analysis)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="types.html" class="btn btn-neutral float-right" title="基本型 (Types)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,272 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FFTの仕様とコンベンション &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Bruco (Brute force coherence)" href="Bruco.html" />
+    <link rel="prev" title="スペクトル推定" href="Spectral.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWExPy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWExPy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guide/installation.html">インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html">API リファレンス</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">詳細リファレンス</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="TimeSeriesList.html">TimeSeriesList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FrequencySeries.html">FrequencySeries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FrequencySeriesDict.html">FrequencySeriesDict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FrequencySeriesList.html">FrequencySeriesList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FrequencySeriesMatrix.html">FrequencySeriesMatrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SpectrogramDict.html">SpectrogramDict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SpectrogramList.html">SpectrogramList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SpectrogramMatrix.html">SpectrogramMatrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Array2D.html">Array2D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Array4D.html">Array4D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ScalarField.html">ScalarField</a></li>
+<li class="toctree-l3"><a class="reference internal" href="VectorField.html">VectorField</a></li>
+<li class="toctree-l3"><a class="reference internal" href="TensorField.html">TensorField</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FieldList.html">FieldList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FieldDict.html">FieldDict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Plot.html">Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Transform.html">Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ImputeTransform.html">ImputeTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="StandardizeTransform.html">StandardizeTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="WhitenTransform.html">WhitenTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PCATransform.html">PCATransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitting.html">gwexpy.fitting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Spectral.html">スペクトル推定</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">FFTの仕様とコンベンション</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fft-fft-time">1. 時間方向のFFT (<code class="docutils literal notranslate"><span class="pre">fft_time</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fft-fft-space">2. 空間方向のFFT (<code class="docutils literal notranslate"><span class="pre">fft_space</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectral-density-compute-psd">3. スペクトル密度 (<code class="docutils literal notranslate"><span class="pre">spectral_density</span></code>, <code class="docutils literal notranslate"><span class="pre">compute_psd</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">4. 正規化一覧表</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Bruco.html">Bruco (Brute force coherence)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWExPy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="index.html">詳細リファレンス</a></li>
+      <li class="breadcrumb-item active">FFTの仕様とコンベンション</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/reference/FFT_Conventions.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="fft">
+<h1>FFTの仕様とコンベンション<a class="headerlink" href="#fft" title="Link to this heading"></a></h1>
+<p>このドキュメントでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> における高速フーリエ変換（FFT）の数学的定義、正規化（Normalization）、および符号の定義について詳述します。</p>
+<section id="fft-fft-time">
+<h2>1. 時間方向のFFT (<code class="docutils literal notranslate"><span class="pre">fft_time</span></code>)<a class="headerlink" href="#fft-fft-time" title="Link to this heading"></a></h2>
+<p>時間方向のFFTは時間軸（軸0）に対して適用されます。これは <code class="docutils literal notranslate"><span class="pre">gwpy</span></code> および標準的な重力波データ解析の手法との互換性を重視して設計されています。</p>
+<section id="normalization">
+<h3>正規化 (Normalization)<a class="headerlink" href="#normalization" title="Link to this heading"></a></h3>
+<p>順変換において <strong>$1/N$ 正規化</strong> が適用されます。これにより、正弦波 $A \sin(\omega t)$ の振幅は、得られた振幅スペクトル上で $A$ として現れます（片側スペクトルの補正係数考慮後）。
+逆変換（<code class="docutils literal notranslate"><span class="pre">ifft_time</span></code>）はこの正規化を解除します。</p>
+</section>
+<section id="id1">
+<h3>スペクトルの定義<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>タイプ</strong>: 片側スペクトル (<code class="docutils literal notranslate"><span class="pre">rfft</span></code>)。非負の周波数成分のみが返されます。</p></li>
+<li><p><strong>係数補正</strong>: 全パワーを維持するため、DC（直流）成分とナイキスト成分を除くすべてのビンが 2 倍されます。</p></li>
+<li><p><strong>周波数軸</strong>: $f = [0, 1/2dt]$。</p></li>
+</ul>
+</section>
+<section id="sign-convention">
+<h3>符号の定義 (Sign Convention)<a class="headerlink" href="#sign-convention" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>順変換 (Forward)</strong>: $X[k] = \frac{1}{N} \sum_{n=0}^{N-1} x[n] e^{-i 2\pi k n / N}$</p></li>
+<li><p><strong>逆変換 (Inverse)</strong>: $x[n] = \sum_{k=0}^{N/2} X[k] e^{i 2\pi k n / N}$ （ビンの重み付けを考慮）</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="fft-fft-space">
+<h2>2. 空間方向のFFT (<code class="docutils literal notranslate"><span class="pre">fft_space</span></code>)<a class="headerlink" href="#fft-fft-space" title="Link to this heading"></a></h2>
+<p>空間方向のFFTは空間軸（軸1, 2, 3）に対して適用されます。多次元格子上の物理フィールド解析向けに設計されています。</p>
+<section id="id2">
+<h3>正規化 (Normalization)<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p><strong>正規化なし</strong>。順変換では係数の適用を行わず、標準的な <code class="docutils literal notranslate"><span class="pre">numpy.fft.fftn</span></code> の挙動に従います。
+逆変換（<code class="docutils literal notranslate"><span class="pre">ifft_space</span></code>）において $1/N$ 正規化が適用されます。</p>
+</section>
+<section id="id3">
+<h3>スペクトルの定義<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>タイプ</strong>: 両側スペクトル。正負両方の波数成分が返されます。</p></li>
+<li><p><strong>波数軸</strong>: デフォルトでは <strong>角波数 (Angular wavenumber)</strong> $k = 2\pi / \lambda$ が生成されます。</p></li>
+<li><p><strong>配列の順序</strong>: ゼロ周波数（DC）成分がインデックス 0 に配置されます（fftshiftは行われません）。可視化の際に中心化が必要な場合は、外部で <code class="docutils literal notranslate"><span class="pre">numpy.fft.fftshift</span></code> を使用してください。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>符号の定義 (Sign Convention)<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>順変換 (Forward)</strong>: $X[\mathbf{k}] = \sum_{\mathbf{n}} x[\mathbf{n}] e^{-i 2\pi \sum k_j n_j / N_j}$</p></li>
+<li><p><strong>逆変換 (Inverse)</strong>: $x[n] = \frac{1}{\prod N_j} \sum_{\mathbf{k}} X[\mathbf{k}] e^{i 2\pi \sum k_j n_j / N_j}$</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="spectral-density-compute-psd">
+<h2>3. スペクトル密度 (<code class="docutils literal notranslate"><span class="pre">spectral_density</span></code>, <code class="docutils literal notranslate"><span class="pre">compute_psd</span></code>)<a class="headerlink" href="#spectral-density-compute-psd" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">spectral_density</span></code> メソッドは、Welch法（平均累加ピリオドグラム）を用いたパワースペクトル密度（PSD）推定を提供します。</p>
+<section id="scaling">
+<h3>スケーリング (Scaling)<a class="headerlink" href="#scaling" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Density</strong>: 単位周波数/波数分解能あたりのパワーを返します（$V^2 / \text{Hz}$ または $V^2 / [\text{unit}^{-1}]$）。</p></li>
+<li><p><strong>Spectrum</strong>: 各ビンにおけるトータルのパワーを返します（$V^2$）。</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>波数に関する注意<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">fft_space</span></code> が角波数 ($k = 2\pi/\lambda$) を使用するのに対し、<code class="docutils literal notranslate"><span class="pre">spectral_density(axis='x')</span></code> はデフォルトで <strong>角速度ではない波数</strong> ($f_k = 1/\lambda$) を生成します（<code class="docutils literal notranslate"><span class="pre">scipy.signal.welch</span></code> の仕様に準拠）。
+角波数に変換する場合は、得られた軸に $2\pi$ を乗じてください。</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>4. 正規化一覧表<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>メソッド</p></th>
+<th class="head text-left"><p>正規化 (順変換)</p></th>
+<th class="head text-left"><p>ドメイン</p></th>
+<th class="head text-left"><p>符号 ($ikx$)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">fft_time</span></code></p></td>
+<td class="text-left"><p>$1/N$</p></td>
+<td class="text-left"><p>片側 (One-sided)</p></td>
+<td class="text-left"><p>負 (Negative)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ifft_time</span></code></p></td>
+<td class="text-left"><p>$N$</p></td>
+<td class="text-left"><p>片側 (One-sided)</p></td>
+<td class="text-left"><p>正 (Positive)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">fft_space</span></code></p></td>
+<td class="text-left"><p>$1$</p></td>
+<td class="text-left"><p>両側 (Two-sided)</p></td>
+<td class="text-left"><p>負 (Negative)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ifft_space</span></code></p></td>
+<td class="text-left"><p>$1/N$</p></td>
+<td class="text-left"><p>両側 (Two-sided)</p></td>
+<td class="text-left"><p>正 (Positive)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">spectral_density</span></code></p></td>
+<td class="text-left"><p>Welch / $1/N^2$</p></td>
+<td class="text-left"><p>片側 (One-sided)</p></td>
+<td class="text-left"><p>N/A (絶対値2乗)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Spectral.html" class="btn btn-neutral float-left" title="スペクトル推定" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Bruco.html" class="btn btn-neutral float-right" title="Bruco (Brute force coherence)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

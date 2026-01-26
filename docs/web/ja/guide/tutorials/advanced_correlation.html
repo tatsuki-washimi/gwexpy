@@ -1,0 +1,515 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>統計的相関機能 &mdash; gwexpy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Bruco (Brute force coherence) Pythonチュートリアル" href="advanced_bruco.html" />
+    <link rel="prev" title="ARIMAモデルによる時系列予測" href="advanced_arima.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            gwexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWExPy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWExPy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../installation.html">インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="advanced_fitting.html">gwexpy.fitting: iminuit ベースのフィッティング機能</a></li>
+<li class="toctree-l4"><a class="reference internal" href="advanced_peak_detection.html">Peak Detection (ピーク検出)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="advanced_hht.html">Hilbert-Huang Transform (HHT) 解析チュートリアル</a></li>
+<li class="toctree-l4"><a class="reference internal" href="advanced_arima.html">ARIMAモデルによる時系列予測</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">統計的相関機能</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#高度な統計解析-(Advanced-Statistics)">高度な統計解析 (Advanced Statistics)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#v">V. 特殊ツール</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/api/index.html">API リファレンス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/index.html">詳細リファレンス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">gwexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWExPy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
+      <li class="breadcrumb-item active">統計的相関機能</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/guide/tutorials/advanced_correlation.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="統計的相関機能">
+<h1>統計的相関機能<a class="headerlink" href="#統計的相関機能" title="Link to this heading"></a></h1>
+<p>gwexpyでは、TimeSeriesオブジェクト間の統計的相関を簡単に計算できます。これはノイズハンティングや非線形結合の調査に役立ちます。</p>
+<p>サポートされている手法:</p>
+<ul class="simple">
+<li><p><strong>Pearson (PCC)</strong>: 線形相関。</p></li>
+<li><p><strong>Kendall (Ktau)</strong>: 順位相関（外れ値に強く、ノンパラメトリック）。</p></li>
+<li><p><strong>MIC</strong>: Maximal Information Coefficient（非線形関係に対してロバスト、<code class="docutils literal notranslate"><span class="pre">minepy</span></code>が必要）。</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">PairPlot</span><span class="p">,</span> <span class="n">Plot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
+</pre></div>
+</div>
+</div>
+<section id="ペアごとの相関">
+<h2>ペアごとの相関<a class="headerlink" href="#ペアごとの相関" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ダミーデータの作成</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># 線形関係</span>
+<span class="n">ts_a</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
+<span class="n">ts_b</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;B_Linear&quot;</span><span class="p">)</span>
+
+<span class="c1"># 非線形関係 (正弦波)</span>
+<span class="n">ts_c</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C_Sine&quot;</span><span class="p">)</span>
+
+<span class="c1"># ランダムノイズ</span>
+<span class="n">ts_d</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;D_Noise&quot;</span><span class="p">)</span>
+
+<span class="n">Plot</span><span class="p">(</span><span class="n">ts_a</span><span class="p">,</span> <span class="n">ts_b</span><span class="p">,</span> <span class="n">ts_c</span><span class="p">,</span> <span class="n">ts_d</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_guide_tutorials_advanced_correlation_3_0.png" src="../../../../_images/web_ja_guide_tutorials_advanced_correlation_3_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 可視化</span>
+<span class="n">pair</span> <span class="o">=</span> <span class="n">PairPlot</span><span class="p">([</span><span class="n">ts_a</span><span class="p">,</span> <span class="n">ts_b</span><span class="p">,</span> <span class="n">ts_c</span><span class="p">,</span> <span class="n">ts_d</span><span class="p">],</span> <span class="n">corner</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">pair</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_guide_tutorials_advanced_correlation_4_0.png" src="../../../../_images/web_ja_guide_tutorials_advanced_correlation_4_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;gwexpy.plot.pairplot.PairPlot at 0x70ba517bf620&gt;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;相関 A vs B (線形):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Pearson: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Kendall: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">ktau</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  MIC:     </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">mic</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  MIC:     (minepyがありません)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+相関 A vs B (線形):
+  Pearson: 0.986
+  Kendall: 0.893
+  MIC:     (minepyがありません)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;相関 A vs C (非線形・正弦波):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Pearson: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> (線形相関では構造を捉えきれない)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Kendall: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">ktau</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  MIC:     </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">mic</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> (非線形依存性を捉える)&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  MIC:     (minepyがありません)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+相関 A vs C (非線形・正弦波):
+  Pearson: -0.071 (線形相関では構造を捉えきれない)
+  Kendall: -0.053
+  MIC:     (minepyがありません)
+</pre></div></div>
+</div>
+</section>
+<section id="相関ベクトル-(ノイズハンティング)">
+<h2>相関ベクトル (ノイズハンティング)<a class="headerlink" href="#相関ベクトル-(ノイズハンティング)" title="Link to this heading"></a></h2>
+<p>ノイズ源を調査する際、ターゲットチャンネル（例：DARM）と数百の補助チャンネルとの間の相関を確認したいことがよくあります。 <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.correlation_vector</span></code> はこのランキングを効率的に計算します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 多数の補助チャンネルを持つMatrixを作成</span>
+<span class="n">n_channels</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_channels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;AUX-</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">)]</span>
+
+<span class="c1"># AUX-05とAUX-12に信号を注入</span>
+<span class="n">target_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">target_signal</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># 強い結合</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">target_signal</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># 非線形結合</span>
+
+<span class="n">matrix</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">channel_names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
+
+<span class="c1"># ターゲットチャンネル</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
+    <span class="n">target_signal</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TARGET&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 相関ベクトルを計算</span>
+<span class="c1"># 線形・非線形の両方を捉えるには &#39;mic&#39; を使用（遅いが強力）</span>
+<span class="c1"># 速度優先なら &#39;pearson&#39; を使用</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MICベクトルを計算中 (Top 5)...&quot;</span><span class="p">)</span>
+    <span class="n">df_mic</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">correlation_vector</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mic&quot;</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">df_mic</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;minepyがインストールされていないため、MICの例をスキップします。&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+MICベクトルを計算中 (Top 5)...
+   row  col channel  score
+0    0    0  AUX-00    NaN
+1    1    0  AUX-01    NaN
+2    2    0  AUX-02    NaN
+3    3    0  AUX-03    NaN
+4    4    0  AUX-04    NaN
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pearsonベクトルを計算中 (Top 5)...&quot;</span><span class="p">)</span>
+<span class="n">df_pcc</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">correlation_vector</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;pearson&quot;</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df_pcc</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Pearsonベクトルを計算中 (Top 5)...
+   row  col channel     score
+0    5    0  AUX-05  0.953698
+1   10    0  AUX-10  0.082508
+2    6    0  AUX-06 -0.064250
+3    8    0  AUX-08  0.056624
+4   18    0  AUX-18  0.056503
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ランキングの可視化 (Top 10)</span>
+<span class="n">df_plot</span> <span class="o">=</span> <span class="n">df_pcc</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># 降順にするために逆転</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">df_plot</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">df_plot</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;skyblue&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Absolute Correlation Score (Pearson)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Top 10 Correlated Channels&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_guide_tutorials_advanced_correlation_11_0.png" src="../../../../_images/web_ja_guide_tutorials_advanced_correlation_11_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="高度な統計解析-(Advanced-Statistics)">
+<h1>高度な統計解析 (Advanced Statistics)<a class="headerlink" href="#高度な統計解析-(Advanced-Statistics)" title="Link to this heading"></a></h1>
+<p>gwexpyは、相関だけでなく、データの分布形状や因果関係を調べるための高度な統計機能も提供しています。</p>
+<ul class="simple">
+<li><p><strong>Skewness (歪度)</strong>: 分布の非対称性。</p></li>
+<li><p><strong>Kurtosis (尖度)</strong>: 分布の裾の重さ（外れ値の多さ）。</p></li>
+<li><p><strong>Distance Correlation (dCor)</strong>: 非線形な依存関係の尺度。</p></li>
+<li><p><strong>Granger Causality</strong>: 時系列間の因果関係（予測への寄与）。</p></li>
+</ul>
+<section id="非ガウス性ノイズの検出-(Skewness-/-Kurtosis)">
+<h2>非ガウス性ノイズの検出 (Skewness / Kurtosis)<a class="headerlink" href="#非ガウス性ノイズの検出-(Skewness-/-Kurtosis)" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ガウスノイズと非ガウスノイズ（指数分布）の生成</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">gauss_noise</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Gaussian&quot;</span><span class="p">)</span>
+<span class="n">exp_noise</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Non-Gaussian&quot;</span>
+<span class="p">)</span>  <span class="c1"># 中心化</span>
+
+<span class="c1"># プロット</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">exp_noise</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Non-Gaussian&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gauss_noise</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Gaussian&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># 統計量の計算</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;Gaussian:     Skewness=</span><span class="si">{</span><span class="n">gauss_noise</span><span class="o">.</span><span class="n">skewness</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, Kurtosis=</span><span class="si">{</span><span class="n">gauss_noise</span><span class="o">.</span><span class="n">kurtosis</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;Non-Gaussian: Skewness=</span><span class="si">{</span><span class="n">exp_noise</span><span class="o">.</span><span class="n">skewness</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, Kurtosis=</span><span class="si">{</span><span class="n">exp_noise</span><span class="o">.</span><span class="n">kurtosis</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Note: ガウス分布はSkewness~0, Kurtosis~0 (Fisher定義) になります。&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_guide_tutorials_advanced_correlation_14_0.png" src="../../../../_images/web_ja_guide_tutorials_advanced_correlation_14_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Gaussian:     Skewness=0.117, Kurtosis=0.066
+Non-Gaussian: Skewness=1.981, Kurtosis=5.379
+Note: ガウス分布はSkewness~0, Kurtosis~0 (Fisher定義) になります。
+</pre></div></div>
+</div>
+</section>
+<section id="非線形依存性の検出-(Distance-Correlation)">
+<h2>非線形依存性の検出 (Distance Correlation)<a class="headerlink" href="#非線形依存性の検出-(Distance-Correlation)" title="Link to this heading"></a></h2>
+<p>先ほどの正弦波データ(<code class="docutils literal notranslate"><span class="pre">ts_c</span></code>)と線形データ(<code class="docutils literal notranslate"><span class="pre">ts_a</span></code>)の関係をdCorで見てみましょう。Pearson相関では捉えられなかった関係が検出できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">dcor_val</span> <span class="o">=</span> <span class="n">ts_a</span><span class="o">.</span><span class="n">distance_correlation</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Distance Correlation (A vs C): </span><span class="si">{</span><span class="n">dcor_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pearson Correlation  (A vs C): </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;dcorパッケージがインストールされていません。pip install dcor でインストールしてください。&quot;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Distance Correlation (A vs C): 0.381
+Pearson Correlation  (A vs C): -0.071
+</pre></div></div>
+</div>
+</section>
+<section id="因果関係の推定-(Granger-Causality)">
+<h2>因果関係の推定 (Granger Causality)<a class="headerlink" href="#因果関係の推定-(Granger-Causality)" title="Link to this heading"></a></h2>
+<p>ある時系列の過去の値が、別の時系列の未来の値を予測するのに役立つかどうかを検定します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 因果関係のあるデータを生成 (X -&gt; Y)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">x_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">y_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="c1"># YはXの1ステップ前の値に依存</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="n">y_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">y_val</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">x_val</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+
+<span class="n">ts_x</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">x_val</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cause (X)&quot;</span><span class="p">)</span>
+<span class="n">ts_y</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Effect (Y)&quot;</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># XがYの原因か？ (Yの予測にXが役立つか？) -&gt; p値が小さいはず</span>
+    <span class="n">p_xy</span> <span class="o">=</span> <span class="n">ts_y</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="n">ts_x</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="c1"># YがXの原因か？ -&gt; p値が大きいはず</span>
+    <span class="n">p_yx</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="n">ts_y</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Granger Causality X -&gt; Y (p-value): </span><span class="si">{</span><span class="n">p_xy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;(Significant)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p_xy</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Granger Causality Y -&gt; X (p-value): </span><span class="si">{</span><span class="n">p_yx</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;(Significant)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p_yx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;statsmodelsパッケージがインストールされていません。pip install statsmodels でインストールしてください。&quot;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Granger Causality X -&gt; Y (p-value): 0.0000 (Significant)
+Granger Causality Y -&gt; X (p-value): 0.0907
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/statsmodels/tsa/stattools.py:1556: FutureWarning: verbose is deprecated since functions should not print results
+  warnings.warn(
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="advanced_arima.html" class="btn btn-neutral float-left" title="ARIMAモデルによる時系列予測" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_bruco.html" class="btn btn-neutral float-right" title="Bruco (Brute force coherence) Pythonチュートリアル" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
