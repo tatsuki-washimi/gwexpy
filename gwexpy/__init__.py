@@ -14,6 +14,10 @@ warnings.filterwarnings("ignore", category=UserWarning, module="scipy")
 from astropy.utils.exceptions import AstropyWarning
 
 warnings.filterwarnings("ignore", category=AstropyWarning)
+# Suppress common warnings for tutorials
+warnings.filterwarnings("ignore", category=FutureWarning, module="sklearn")
+warnings.filterwarnings("ignore", category=FutureWarning, module="control")
+warnings.filterwarnings("ignore", message="Protobuf gencode version", category=UserWarning)
 
 from typing import TYPE_CHECKING, Any
 
