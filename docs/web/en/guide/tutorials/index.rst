@@ -42,7 +42,6 @@ Next-generation API for scalar, vector, and tensor fields.
    :caption: Fields API
 
    field_scalar_intro
-   field_scalar_signal
 
 IV. Advanced Signal Processing
 ------------------------------

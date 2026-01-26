@@ -34,8 +34,10 @@ To build docs locally:
 
 ```bash
 pip install -r docs/requirements.txt
-sphinx-build -b html docs docs/_build/html
+sphinx-build -b html docs docs/_build/html/docs
 ```
+
+Then open `docs/_build/html/docs/index.html` (English/Japanese are under `docs/_build/html/docs/web/`).
 
 ## Submitting changes
 
