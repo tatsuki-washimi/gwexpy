@@ -259,13 +259,13 @@
 <span class="c1"># =============================</span>
 
 <span class="c1"># Generic array-like (numpy-compatible)</span>
-<span class="n">ArrayLike</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="n">NumpyArrayLike</span>
+<span class="n">ArrayLike</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">NumpyArrayLike</span><span class="p">]</span>
 
 <span class="c1"># Index types (coordinate axes)</span>
-<span class="n">IndexLike</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">XIndex</span> <span class="o">|</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="n">IndexLike</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">XIndex</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
 
 <span class="c1"># Unit types</span>
-<span class="n">UnitLike</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">UnitBase</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+<span class="n">UnitLike</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">UnitBase</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
 
 <span class="c1"># Metadata types</span>
 <span class="n">MetaDataType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>  <span class="c1"># noqa: UP007</span>
