@@ -7,11 +7,15 @@ from typing import (
     Any,
     Literal,
     SupportsIndex,
-    TypeAlias,
     TypeVar,
     cast,
     overload,
 )
+
+try:
+    from typing import TypeAlias
+except ImportError:
+    from typing_extensions import TypeAlias
 
 import numpy as np
 import numpy.typing as npt

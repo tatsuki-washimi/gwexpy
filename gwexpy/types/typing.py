@@ -12,7 +12,12 @@ needs to implement the required methods and attributes.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Protocol, TypeAlias, Union, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, Union, runtime_checkable
+
+try:
+    from typing import TypeAlias
+except ImportError:
+    from typing_extensions import TypeAlias
 
 import numpy as np
 from astropy import units as u
