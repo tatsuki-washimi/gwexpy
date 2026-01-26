@@ -1,11 +1,13 @@
-### Prompt: “Purge legacy 4D field API and fully migrate to ScalarField”
+# Purge legacy 4D field API and fully migrate to ScalarField
+
+## Prompt: “Purge legacy 4D field API and fully migrate to ScalarField”
 
 You are working in the repository `tatsuki-washimi/gwexpy`.
 
 **Goal (non-negotiable):**
 Completely remove the legacy 4D field API from the codebase and documentation, and make `gwexpy.fields.ScalarField` (plus `FieldList` / `FieldDict` collections) the only supported field API. There must be **no remaining legacy field classes, modules, shims, aliases, docs pages, or tests**.
 
-#### Scope
+### Scope
 
 1. **Delete legacy code**
 
@@ -46,7 +48,7 @@ Completely remove the legacy 4D field API from the codebase and documentation, a
    * Make sure `ruff check`, `mypy .`, and `pytest` pass.
    * If removing the legacy API breaks types, fix types by migrating the calling code to `ScalarField`, not by reintroducing compatibility hacks.
 
-#### Implementation guidance
+### Implementation guidance
 
 * Prefer mechanical, repo-wide refactoring:
 
@@ -57,7 +59,7 @@ Completely remove the legacy 4D field API from the codebase and documentation, a
 
   * Either implement it properly in `ScalarField` (preferred), or remove the feature if it is unused and not aligned with the new API. Do not keep dead code.
 
-#### Acceptance criteria (must verify)
+### Acceptance criteria (must verify)
 
 1. A repository-wide search finds no legacy 4D field identifiers.
 2. The repository builds and tests cleanly:
@@ -68,7 +70,7 @@ Completely remove the legacy 4D field API from the codebase and documentation, a
 3. `gwexpy` public API exposes only the new field system; importing legacy symbols fails.
 4. Docs build cleanly (if docs build exists) and contain no legacy API mentions.
 
-#### Deliverables
+### Deliverables
 
 * A single PR/commit series that:
 
@@ -78,5 +80,3 @@ Completely remove the legacy 4D field API from the codebase and documentation, a
   * Includes a short CHANGELOG/Release note entry: “Removed legacy 4D field API; ScalarField is now the sole field API.”
 
 Proceed with the refactor now. Do not ask for confirmation; make reasonable decisions. If trade-offs exist, choose the option that reduces long-term maintenance and eliminates legacy surface area.
-
----

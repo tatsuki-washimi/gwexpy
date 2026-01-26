@@ -2,7 +2,7 @@
 =============================
 
 .. automodule:: gwexpy.analysis
+   :no-index:
    :members:
    :undoc-members:
    :show-inheritance:
-

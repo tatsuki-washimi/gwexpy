@@ -67,7 +67,7 @@ class GeneralizedLeastSquares:
     """
     Generalized Least Squares (GLS) cost function.
 
-    Minimizes χ² = r.T @ cov_inv @ r where r = y - model(x, **params).
+    Minimizes χ² = r.T @ cov_inv @ r where r = y - ``model(x, **params)``.
 
     This cost function accounts for correlations between data points
     through the inverse covariance matrix.
@@ -85,10 +85,9 @@ class GeneralizedLeastSquares:
         Model function with signature `model(x, *params) -> y`.
         The first argument must be `x`, followed by fit parameters.
 
-    Attributes
-    ----------
-    errordef : float
-        Error definition for Minuit. Set to `Minuit.LEAST_SQUARES` (= 1.0).
+    Notes
+    -----
+    `errordef` is set to `Minuit.LEAST_SQUARES` (= 1.0) for iminuit.
 
     Examples
     --------

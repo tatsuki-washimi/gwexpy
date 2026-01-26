@@ -4078,7 +4078,7 @@ Convert this `TimeSeries` into a LAL TimeSeries.
 
 ### `to_librosa`
 
-```python
+```text
 to_librosa(self, y_dtype: 'Any' = <class 'numpy.float32'>) -> 'Any'
 ```
 
@@ -4733,5 +4733,4 @@ To apply a zpk filter with file poles at 100 Hz, and five zeros at
 1 Hz (giving an overall DC gain of 1e-10)::
 
 >>> data2 = data.zpk([100]*5, [1]*5, 1e-10)
-
 

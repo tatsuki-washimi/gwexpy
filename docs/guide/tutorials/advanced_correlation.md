@@ -1,8 +1,8 @@
 # Nonlinear Correlation (dCor, MIC)
 
 This tutorial is currently only available in Japanese.
-Please see the [Japanese version](../../../ja/guide/tutorials/advanced_correlation.html).
+See `docs/ja/guide/tutorials/advanced_correlation.ipynb`.
 
 ---
 
-このチュートリアルの日本語版は [こちら](../../../ja/guide/tutorials/advanced_correlation.html) です。
+このチュートリアルの日本語版は `docs/ja/guide/tutorials/advanced_correlation.ipynb` を参照してください。

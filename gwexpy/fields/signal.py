@@ -396,10 +396,12 @@ def compute_psd(
         Input 4D field with axis0_domain='time'.
     point_or_region : tuple, list of tuples, or dict
         Spatial location(s) to extract:
+
         - Single point: ``(x, y, z)`` tuple of Quantities
         - Multiple points: list of ``(x, y, z)`` tuples
         - Region dict: ``{'x': slice or value, 'y': ..., 'z': ...}``
           If region, averages over all points in the region.
+
     nperseg : int, optional
         Length of each segment. Default is min(256, len(time_axis)).
     noverlap : int, optional

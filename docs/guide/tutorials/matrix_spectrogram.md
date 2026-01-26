@@ -1,8 +1,8 @@
 # Multi-channel Analysis with SpectrogramMatrix
 
 This tutorial is currently only available in Japanese.
-Please see the [Japanese version](../../../ja/guide/tutorials/matrix_spectrogram.html).
+See `docs/ja/guide/tutorials/matrix_spectrogram.ipynb`.
 
 ---
 
-このチュートリアルの日本語版は [こちら](../../../ja/guide/tutorials/matrix_spectrogram.html) です。
+このチュートリアルの日本語版は `docs/ja/guide/tutorials/matrix_spectrogram.ipynb` を参照してください。

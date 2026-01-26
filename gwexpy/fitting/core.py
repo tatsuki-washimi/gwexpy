@@ -165,7 +165,7 @@ class FitResult:
         """
         Fitted model function.
         Can be called as model(x) to use best-fit parameters,
-        or as model(x, **params) to use specific parameters.
+        or as ``model(x, **params)`` to use specific parameters.
         Returns a Quantity with units if the original data had units.
         """
 
@@ -555,7 +555,7 @@ class FitResult:
         probability is computed using the full covariance structure.
 
         For complex-valued data (e.g., Transfer Functions), the cost function
-        is computed using the magnitude of residuals or the Hermitian form 
+        is computed using the magnitude of residuals or the Hermitian form
         in the case of GLS, ensuring correct handling of real and imaginary parts.
 
         Parameters

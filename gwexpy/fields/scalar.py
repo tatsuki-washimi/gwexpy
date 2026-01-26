@@ -709,7 +709,7 @@ class ScalarField(FieldBase):
         Returns
         -------
         `~astropy.units.Quantity`
-            Wavelength values (λ = 2π / |k|). k=0 returns inf.
+            Wavelength values (:math:`\\lambda = 2\\pi / |k|`). k=0 returns inf.
 
         Raises
         ------
@@ -2094,6 +2094,7 @@ class ScalarField(FieldBase):
             Keyword arguments passed to :func:`~gwexpy.fields.signal.spectral_density`
             or :func:`~gwexpy.fields.signal.compute_psd` (if point_or_region is used).
             Common options:
+
             - point_or_region : tuple or list, optional
                 If provided, computes PSD at specific spatial point(s) or region
                 average instead of full field. Returns FrequencySeries(List).

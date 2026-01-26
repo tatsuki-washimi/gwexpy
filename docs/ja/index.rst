@@ -1,3 +1,5 @@
+:orphan:
+
 GWExPy ドキュメントへようこそ
 ==============================
 
@@ -10,6 +12,7 @@ GWExPy は GWpy を拡張し、時系列および周波数系列のための追�
    guide/installation
    guide/quickstart
    guide/tutorials/index
+   guide/gwexpy_for_gwpy_users_ja
 
 .. toctree::
    :maxdepth: 2
