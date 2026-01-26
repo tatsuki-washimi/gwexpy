@@ -5,6 +5,8 @@ gwexpy.timeseries.utils
 Utility functions for time series axis validation and extraction.
 """
 
+from __future__ import annotations
+
 from collections.abc import Sequence
 from typing import Any, TypedDict
 
