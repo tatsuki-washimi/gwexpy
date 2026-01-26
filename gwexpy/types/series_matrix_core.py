@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 
 import numpy as np
 from astropy import units as u
@@ -113,7 +113,7 @@ class SeriesMatrixCoreMixin:
             return self._x0
         except AttributeError:
             try:
-                xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
+                xindex = cast(Union[np.ndarray, u.Quantity, Index], self.xindex)
                 self._x0 = xindex[0]
             except (u.UnitConversionError, AttributeError):
                 logger.debug(
@@ -147,7 +147,7 @@ class SeriesMatrixCoreMixin:
     @property
     def xspan(self) -> tuple[u.Quantity, u.Quantity]:
         """Full extent of the sample axis as a tuple (start, end)."""
-        xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
+        xindex = cast(Union[np.ndarray, u.Quantity, Index], self.xindex)
         try:
             if hasattr(xindex, "regular") and xindex.regular:
                 return (xindex[0], xindex[-1] + self.dx)
@@ -187,7 +187,7 @@ class SeriesMatrixCoreMixin:
                 return 0 * cast(u.Unit, self.xunit)
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
                 return 0
-        xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
+        xindex = cast(Union[np.ndarray, u.Quantity, Index], self.xindex)
         return xindex[-1] - xindex[0]
 
     ##### rows/cols Information #####

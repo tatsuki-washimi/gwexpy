@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 
 import numpy as np
 from astropy import units as u
@@ -63,7 +63,7 @@ class SeriesMatrixAnalysisMixin:
 
     def crop(self, start=None, end=None, copy=False):
         """Crop the matrix to a specified range along the sample axis."""
-        xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
+        xindex = cast(Union[np.ndarray, u.Quantity, Index], self.xindex)
         xunit = getattr(xindex, "unit", None)
         xvalues = getattr(xindex, "value", np.asarray(xindex))
 
@@ -180,7 +180,7 @@ class SeriesMatrixAnalysisMixin:
             orig_len = target.shape[axis]
             sl = slice(-orig_len, None)
             new_data = out_full.value[out_full._get_axis_slice(axis, sl)]
-            out_xindex = cast(np.ndarray | u.Quantity | Index, out_full.xindex)
+            out_xindex = cast(Union[np.ndarray, u.Quantity, Index], out_full.xindex)
             new_xindex = out_xindex[sl]
             out_full = self.__class__(
                 **self._get_meta_for_constructor(new_data, new_xindex)
@@ -306,7 +306,7 @@ class SeriesMatrixAnalysisMixin:
         new_data = np.diff(self.value, n=n, axis=target_axis)
 
         if target_axis == self._x_axis_norm:
-            xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
+            xindex = cast(Union[np.ndarray, u.Quantity, Index], self.xindex)
             new_xindex = xindex[n:]
         else:
             new_xindex = self.xindex
@@ -355,7 +355,7 @@ class SeriesMatrixAnalysisMixin:
 
         # Update xindex
         dx = self.dx
-        xindex = cast(np.ndarray | u.Quantity | Index, self.xindex)
+        xindex = cast(Union[np.ndarray, u.Quantity, Index], self.xindex)
         x0 = xindex[0]
         n_before, n_after = pw
         new_x0 = x0 - n_before * dx
