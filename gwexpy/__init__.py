@@ -6,20 +6,23 @@ This package extends GWpy with additional functionality for
 gravitational wave and time-series data analysis.
 """
 
-import warnings
+from __future__ import annotations
 
+import warnings
+from typing import TYPE_CHECKING, Any
+
+from astropy.utils.exceptions import AstropyWarning
+
+# Keep docs/tutorial output readable by suppressing known noisy warnings.
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
 warnings.filterwarnings("ignore", category=UserWarning, module="gwpy")
 warnings.filterwarnings("ignore", category=UserWarning, module="scipy")
-from astropy.utils.exceptions import AstropyWarning
-
 warnings.filterwarnings("ignore", category=AstropyWarning)
-# Suppress common warnings for tutorials
 warnings.filterwarnings("ignore", category=FutureWarning, module="sklearn")
 warnings.filterwarnings("ignore", category=FutureWarning, module="control")
-warnings.filterwarnings("ignore", message="Protobuf gencode version", category=UserWarning)
-
-from typing import TYPE_CHECKING, Any
+warnings.filterwarnings(
+    "ignore", message="Protobuf gencode version", category=UserWarning
+)
 
 # Subpackages are available via namespace
 from . import (
