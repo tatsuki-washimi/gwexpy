@@ -341,6 +341,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
     def degree(self, unwrap: bool = False) -> Spectrogram:
         """
         Calculate the phase of this Spectrogram in degrees.
+
         Parameters
         ----------
         unwrap : bool, optional

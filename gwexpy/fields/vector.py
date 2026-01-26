@@ -176,7 +176,7 @@ class VectorField(FieldDict):
     def project(self, direction: VectorField) -> ScalarField:
         """Project the vector field onto a given direction.
 
-        Result is (self . direction) / |direction|.
+        Result is (self . direction) / norm(direction).
 
         Parameters
         ----------

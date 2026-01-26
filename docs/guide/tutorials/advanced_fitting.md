@@ -1,8 +1,8 @@
 # Data Fitting with iminuit
 
 This tutorial is currently only available in Japanese.
-Please see the [Japanese version](../../../ja/guide/tutorials/advanced_fitting.html).
+See `docs/ja/guide/tutorials/advanced_fitting.ipynb`.
 
 ---
 
-このチュートリアルの日本語版は [こちら](../../../ja/guide/tutorials/advanced_fitting.html) です。
+このチュートリアルの日本語版は `docs/ja/guide/tutorials/advanced_fitting.ipynb` を参照してください。

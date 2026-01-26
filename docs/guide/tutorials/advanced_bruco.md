@@ -1,8 +1,8 @@
 # Noise Hunting with Bruco
 
 This tutorial is currently only available in Japanese.
-Please see the [Japanese version](../../../ja/guide/tutorials/advanced_bruco.html).
+See `docs/ja/guide/tutorials/advanced_bruco.ipynb`.
 
 ---
 
-このチュートリアルの日本語版は [こちら](../../../ja/guide/tutorials/advanced_bruco.html) です。
+このチュートリアルの日本語版は `docs/ja/guide/tutorials/advanced_bruco.ipynb` を参照してください。

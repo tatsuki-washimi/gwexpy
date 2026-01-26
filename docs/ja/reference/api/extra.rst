@@ -2,15 +2,10 @@
 =========================
 
 .. automodule:: gwexpy.fitting
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   :no-index:
 
 相互運用 (interop)
 ==================
 
 .. automodule:: gwexpy.interop
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   :no-index:

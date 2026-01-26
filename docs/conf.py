@@ -1,6 +1,9 @@
 import os
 import sys
+import warnings
 from datetime import datetime
+
+from pygments.lexers.python import PythonLexer
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -84,6 +87,17 @@ source_suffix = {
     ".md": "markdown",
 }
 
+# MyST: enable heading anchors so internal markdown `#...` links work.
+myst_heading_anchors = 3
+
+# nbformat emits noisy warnings when notebooks omit cell IDs (valid for older nbformat).
+try:  # pragma: no cover
+    from nbformat.warnings import MissingIDFieldWarning
+
+    warnings.filterwarnings("ignore", category=MissingIDFieldWarning)
+except Exception:
+    pass
+
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
@@ -135,3 +149,7 @@ nitpick_ignore = [
     ("py:class", "torch.Tensor"),
     ("py:class", "torch.dtype"),
 ]
+
+
+def setup(app):
+    app.add_lexer("ipython3", PythonLexer)

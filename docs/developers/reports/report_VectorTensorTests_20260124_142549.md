@@ -5,6 +5,8 @@ llm_model: GPT-5 (Codex CLI)
 estimated_time: ~2h
 ---
 
+# Vector/Tensor Field Tests Expansion
+
 ## Summary
 - Reviewed `gwexpy/fields/vector.py` and `gwexpy/fields/tensor.py` to identify uncovered behaviors around complex norms, metadata preservation, and matrix helpers.
 - Extended `tests/fields/test_vectorfield.py` to cover unit propagation in `dot()`, ensure the cross-product inputs align with the basis components, verify `norm()` maintains axis metadata for complex-valued components, and raise on mismatched axis grids.

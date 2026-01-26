@@ -1,8 +1,8 @@
 # FrequencySeries Basics
 
 This tutorial is currently only available in Japanese.
-Please see the [Japanese version](../../../ja/guide/tutorials/intro_frequencyseries.html).
+See `docs/ja/guide/tutorials/intro_frequencyseries.ipynb`.
 
 ---
 
-このチュートリアルの日本語版は [こちら](../../../ja/guide/tutorials/intro_frequencyseries.html) です。
+このチュートリアルの日本語版は `docs/ja/guide/tutorials/intro_frequencyseries.ipynb` を参照してください。

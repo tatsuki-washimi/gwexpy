@@ -198,6 +198,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         """Convert to SpectrogramMatrix (N, Time, Freq).
 
         Validation follows SeriesMatrix base rules:
+
         - Shape must be identical across elements.
         - Times/frequencies are compared by converting to reference (first element)
           unit using .to_value(), then requiring np.array_equal (no tolerance).
@@ -536,6 +537,7 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         """Convert to SpectrogramMatrix.
 
         Validation follows SeriesMatrix base rules:
+
         - Shape must be identical across elements.
         - Times/frequencies are compared by converting to reference (first element)
           unit using .to_value(), then requiring np.array_equal (no tolerance).
