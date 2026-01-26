@@ -890,7 +890,7 @@ def from_asd(
             try:
                 unit = u.Unit(unit)
                 ts_unit = unit * (u.Hz**0.5)
-            except Exception:
+            except (TypeError, ValueError):
                 ts_unit = unit
         kwargs["unit"] = ts_unit
 

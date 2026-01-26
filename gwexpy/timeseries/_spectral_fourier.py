@@ -5,7 +5,7 @@ Standard Fourier-based spectral transform methods for TimeSeries.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, Literal, Union
+from typing import TYPE_CHECKING, Any, Literal, Union, cast
 
 try:
     from typing import TypeAlias
@@ -45,6 +45,9 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
     """
     Mixin class providing standard Fourier-based spectral transform methods.
     """
+
+    def _super_ts(self) -> TimeSeriesAttrs:
+        return cast(TimeSeriesAttrs, super())
 
     def _prepare_data_for_transform(
         self,
@@ -135,7 +138,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         """Internal method for standard GWpy FFT."""
         from gwexpy.frequencyseries import FrequencySeries as GWEXFrequencySeries
 
-        base_fs = super().fft(nfft=nfft, **kwargs)  # type: ignore[safe-super]
+        base_fs = self._super_ts().fft(nfft=nfft, **kwargs)
         if isinstance(base_fs, GWEXFrequencySeries):
             return base_fs
         return GWEXFrequencySeries(
@@ -241,27 +244,27 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
 
     def rfft(self, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("rfft")
-        return super().rfft(*args, **kwargs)  # type: ignore[safe-super]
+        return self._super_ts().rfft(*args, **kwargs)
 
     def psd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("psd")
         from gwexpy.frequencyseries import FrequencySeries
 
-        res = super().psd(*args, **kwargs)  # type: ignore[safe-super]
+        res = self._super_ts().psd(*args, **kwargs)
         return res.view(FrequencySeries)
 
     def asd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("asd")
         from gwexpy.frequencyseries import FrequencySeries
 
-        res = super().asd(*args, **kwargs)  # type: ignore[safe-super]
+        res = self._super_ts().asd(*args, **kwargs)
         return res.view(FrequencySeries)
 
     def csd(self, other: Any, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("csd")
         from gwexpy.frequencyseries import FrequencySeries
 
-        res = super().csd(other, *args, **kwargs)  # type: ignore[safe-super]
+        res = self._super_ts().csd(other, *args, **kwargs)
         # GWpy's csd sometimes returns incorrect units when inputs have different units
         target_unit = (
             self.unit * getattr(other, "unit", u.dimensionless_unscaled) / u.Hz
@@ -275,7 +278,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         self._check_regular("coherence")
         from gwexpy.frequencyseries import FrequencySeries
 
-        res = super().coherence(*args, **kwargs)  # type: ignore[safe-super]
+        res = self._super_ts().coherence(*args, **kwargs)
         return res.view(FrequencySeries)
 
     def spectrogram(self, *args: Any, **kwargs: Any) -> Spectrogram:
@@ -292,7 +295,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         """
         from gwexpy.spectrogram import Spectrogram
 
-        res = super().spectrogram(*args, **kwargs)  # type: ignore[safe-super]
+        res = self._super_ts().spectrogram(*args, **kwargs)
         return res.view(Spectrogram)
 
     def spectrogram2(self, *args: Any, **kwargs: Any) -> Spectrogram:

@@ -392,7 +392,7 @@ class CouplingResult:
                     p90 = spec.percentile(90)
                     p10_asd = p10**0.5
                     p90_asd = p90**0.5
-                except Exception:
+                except (RuntimeError, TypeError, ValueError):
                     logger.warning(
                         "Could not compute background percentiles for %s",
                         ts_bkg.name if ts_bkg is not None else "Target",
@@ -626,7 +626,7 @@ def _process_single_target(
             and "dimensionless"
             or (ts_tgt_inj.unit / ts_wit_inj.unit)
         )
-    except Exception:
+    except (AttributeError, TypeError, ValueError):
         logger.debug(
             "Automatic CF unit determination failed, falling back to dimensionless.",
             exc_info=True,

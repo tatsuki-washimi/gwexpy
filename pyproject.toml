@@ -174,7 +174,7 @@ ignore = [
 [tool.mypy]
 ignore_missing_imports = true
 check_untyped_defs = true
-exclude = "gwexpy/(gui/.*|spectrogram/.*)|tests/.*"
+exclude = "gwexpy/(gui/.*)|tests/.*"
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"

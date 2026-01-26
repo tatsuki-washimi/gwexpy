@@ -138,7 +138,7 @@ def determine_ylim(data_list, current_value=None, yscale=None):
             return (center / 10.0, center * 10.0)
 
         return (ymin, ymax)
-    except Exception:
+    except (AttributeError, TypeError, ValueError):
         pass
 
     return None
@@ -348,7 +348,7 @@ def determine_ylabel(data_list, current_value=None):
             if ref.meta.size > 0:
                 flat_meta = ref.meta.flat[0]
                 unit = flat_meta.unit
-        except Exception:
+        except (AttributeError, TypeError, ValueError):
             unit = None
 
     # Determine label: Name [Unit] if name exists, else Physical Type [Unit]

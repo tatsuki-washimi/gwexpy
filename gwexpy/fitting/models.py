@@ -106,7 +106,11 @@ def make_pol_func(n):
     for name in param_names:
         parameters.append(Parameter(name, Parameter.POSITIONAL_OR_KEYWORD))
 
-    pol_func.__signature__ = signature(lambda: None).replace(parameters=parameters)  # type: ignore[attr-defined]
+    setattr(
+        pol_func,
+        "__signature__",
+        signature(lambda: None).replace(parameters=parameters),
+    )
     pol_func.__doc__ = f"Polynomial of degree {n}: p0 + p1*x + ... + p{n}*x^{n}"
     return pol_func
 

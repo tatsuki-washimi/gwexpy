@@ -16,7 +16,7 @@ if not _SKIP_PYGMT:
 
         pygmt = _pygmt
         HAS_PYGMT = True
-    except Exception as exc:
+    except (ImportError, OSError, RuntimeError) as exc:
         HAS_PYGMT = False
         _PYGMT_IMPORT_ERROR = exc
 else:

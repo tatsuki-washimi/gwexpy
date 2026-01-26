@@ -256,5 +256,5 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             ) from exc
         try:
             return dcor.distance_correlation(x, y)
-        except Exception as exc:
+        except (TypeError, ValueError) as exc:
             raise RuntimeError("dcor failed to compute distance correlation.") from exc

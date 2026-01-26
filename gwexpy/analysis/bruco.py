@@ -848,7 +848,7 @@ class Bruco:
                             start = float(first_ts.t0.value)
                         if duration is None:
                             duration = int(round(first_ts.duration.value))
-                    except Exception as e:
+                    except (StopIteration, AttributeError, TypeError, ValueError) as e:
                         logger.debug(
                             f"Failed to infer start/duration from aux_data: {e}"
                         )
@@ -895,11 +895,11 @@ class Bruco:
                         f"Calculated df {df} does not match spectrum df {actual_df}"
                     )
 
-        except Exception as e:
+        except (OSError, RuntimeError, ValueError) as e:
             logger.error(
                 f"Failed to fetch or process target channel {self.target}: {e}"
             )
-            raise e
+            raise
 
         # Initialize Result container
         metadata = {
@@ -968,11 +968,7 @@ class Bruco:
 
                     # Apply preprocessing if callback provided
                     if preprocess_batch is not None:
-                        try:
-                            batch_dict = preprocess_batch(batch_dict)
-                        except Exception as e:
-                            logger.error(f"Preprocessing failed for batch: {e}")
-                            raise e
+                        batch_dict = preprocess_batch(batch_dict)
 
                     self._run_and_update_batch(
                         result,
@@ -1066,7 +1062,7 @@ class Bruco:
                     batch_dict = TimeSeriesDict.get(
                         batch_channels, start, end, allow_tape=True, nproc=nproc
                     )
-                except Exception as e:
+                except (OSError, RuntimeError, ValueError) as e:
                     logger.warning(
                         f"Batch fetch failed: {e}. Falling back to individual fetch."
                     )
@@ -1077,7 +1073,7 @@ class Bruco:
                             batch_dict[ch] = TimeSeries.get(
                                 ch, start, end, allow_tape=True
                             )
-                        except Exception as ch_err:
+                        except (OSError, RuntimeError, ValueError) as ch_err:
                             logger.warning(
                                 f"Failed to fetch individual channel {ch}: {ch_err}"
                             )
@@ -1090,11 +1086,7 @@ class Bruco:
 
                 # Apply preprocessing if callback provided
                 if preprocess_batch is not None:
-                    try:
-                        batch_dict = preprocess_batch(batch_dict)
-                    except Exception as e:
-                        logger.error(f"Preprocessing failed for batch: {e}")
-                        raise e
+                    batch_dict = preprocess_batch(batch_dict)
 
                 self._run_and_update_batch(
                     result,
@@ -1187,7 +1179,7 @@ class Bruco:
             for future in as_completed(futures):
                 try:
                     results.extend(future.result())
-                except Exception as exc:
+                except (RuntimeError, ValueError, TypeError) as exc:
                     logger.debug(f"Batch coherence failed: {exc}")
 
         return results
@@ -1267,7 +1259,7 @@ class Bruco:
 
             return (aux.name, final_coh)
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             logger.debug(
                 f"Coherence calculation failed for channel {getattr(aux, 'name', 'unknown')}: {e}"
             )
@@ -1305,7 +1297,7 @@ class Bruco:
                     target_cache,
                 )
                 results.append(res)
-            except Exception as exc:
+            except (RuntimeError, ValueError, TypeError) as exc:
                 logger.debug(f"Calculation failed for {aux.name}: {exc}")
                 results.append(None)
 
@@ -1382,7 +1374,7 @@ class Bruco:
                     final_coh = interp(target_frequencies)
 
             return (aux.name, final_coh)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             logger.debug(
                 f"Coherence calculation (fast engine) failed for channel {getattr(aux, 'name', 'unknown')}: {e}"
             )

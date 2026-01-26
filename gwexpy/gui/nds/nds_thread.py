@@ -6,7 +6,7 @@ try:
     import nds2
 
     _NDS2_IMPORT_ERROR = None
-except Exception as exc:  # pragma: no cover - depends on optional dependency
+except ImportError as exc:  # pragma: no cover - depends on optional dependency
     nds2 = None
     _NDS2_IMPORT_ERROR = exc
 from qtpy import QtCore
@@ -56,7 +56,7 @@ class NDSThread(QtCore.QThread):
                 if self.running:
                     self.dataReceived.emit(payload, "raw", True)
 
-        except Exception as e:
+        except (OSError, RuntimeError) as e:
             if self.running:  # Only log if not intentional stop
                 logger.error("NDSThread Error: %s", e, exc_info=True)
         finally:
@@ -65,7 +65,7 @@ class NDSThread(QtCore.QThread):
                     c = self.conn
                     self.conn = None  # Avoid double close
                     c.close()
-                except Exception:
+                except (OSError, RuntimeError):
                     logger.debug(
                         "Error while closing NDS connection in finally block.",
                         exc_info=True,
@@ -82,7 +82,7 @@ class NDSThread(QtCore.QThread):
                 c = self.conn
                 if c:
                     c.close()
-            except Exception:
+            except (OSError, RuntimeError):
                 logger.debug(
                     "Error while closing NDS connection in stop().", exc_info=True
                 )
@@ -126,6 +126,6 @@ class ChannelListWorker(QtCore.QThread):
 
             self.finished.emit(results, "")
 
-        except Exception as e:
+        except (OSError, RuntimeError) as e:
             logger.exception("Failed to fetch channel list.")
             self.finished.emit([], str(e))

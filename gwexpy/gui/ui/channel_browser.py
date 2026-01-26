@@ -84,7 +84,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         try:
             self.search_tree.clear()
             self.hier_tree.clear()
-        except Exception as e:
+        except (AttributeError, RuntimeError) as e:
             print(f"Error clearing trees: {e}")
 
         if self.current_source == "AUDIO":
@@ -137,7 +137,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             self.lbl_info.setText(f"Local PC Audio [{len(results)} channels]")
             self.populate_ui()
 
-        except Exception as e:
+        except (OSError, RuntimeError) as e:
             QtWidgets.QMessageBox.critical(self, "Error", str(e))
 
     # ... rest of methods ...

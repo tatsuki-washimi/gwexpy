@@ -21,76 +21,73 @@ def extract_xml_channels(filename: str) -> list:
     channels = []
     try:
         tree = ET.parse(filename)
-        root = tree.getroot()
+    except (ET.ParseError, OSError) as exc:
+        warnings.warn(f"XML parsing error in {filename}: {exc}")
+        return channels
 
-        # DTT XML typically stores parameters in <Param Name="MeasChn[i]" ...> and <Param Name="MeasActive[i]" ...>
-        # or similar structure within <LIGO_LW Name="TestParameters">
+    root = tree.getroot()
 
-        # We need to find the definition of channels.
-        # Structure is usually flattened arrays in Params or Columns in Table.
-        # But DTT 'restore' logic reads Params.
+    # DTT XML typically stores parameters in <Param Name="MeasChn[i]" ...> and <Param Name="MeasActive[i]" ...>
+    # or similar structure within <LIGO_LW Name="TestParameters">
 
-        # Let's search for flattened params first.
-        # In DTT XML, keys are like "MeasChn[0]", "MeasActive[0]" etc.
+    # We need to find the definition of channels.
+    # Structure is usually flattened arrays in Params or Columns in Table.
+    # But DTT 'restore' logic reads Params.
 
-        params = {}
-        for param in root.findall(".//Param"):
-            name_attr = param.get("Name")
-            if name_attr:
-                # Value is text content, or sometimes Type attribute + content
-                # DTT XML params usually have text content for value.
-                val = param.text
-                if val:
-                    val = val.strip()
-                params[name_attr] = val
+    # Let's search for flattened params first.
+    # In DTT XML, keys are like "MeasChn[0]", "MeasActive[0]" etc.
 
-        # Now reconstruct the list
-        # We look for MeasChn[i]
-        i = 0
-        while True:
-            key_name = f"MeasChn[{i}]"
-            # Note: Sometimes DTT uses specific formatting or nested params.
-            # But mostly it follows simple object serialization.
-            # Let's check simply.
+    params = {}
+    for param in root.findall(".//Param"):
+        name_attr = param.get("Name")
+        if name_attr:
+            # Value is text content, or sometimes Type attribute + content
+            # DTT XML params usually have text content for value.
+            val = param.text
+            if val:
+                val = val.strip()
+            params[name_attr] = val
 
-            # Alternative: in LIGO_LW, it might be separate.
-            # Let's try to match keys.
+    # Now reconstruct the list
+    # We look for MeasChn[i]
+    i = 0
+    while True:
+        key_name = f"MeasChn[{i}]"
+        # Note: Sometimes DTT uses specific formatting or nested params.
+        # But mostly it follows simple object serialization.
+        # Let's check simply.
 
-            if key_name not in params:
-                # Check if we exhausted sequential
-                # But maybe there are gaps? Usually not for arrays.
-                # Let's try up to 96 (max channels)
-                if i > 96:
-                    break
-                i += 1
-                continue
+        # Alternative: in LIGO_LW, it might be separate.
+        # Let's try to match keys.
 
-            name = params[key_name]
-            # Clean generic formatting if needed (sometimes "H1:..." sometimes just name)
-
-            # Active status
-            key_active = f"MeasActive[{i}]"
-            active = True  # Default
-            if key_active in params:
-                v = params[key_active]
-                # XML boolean might be 'true', '1', 'false', '0'
-                if v.lower() in ["false", "0"]:
-                    active = False
-
-            if name:  # Only add if name is not empty
-                channels.append({"name": name, "active": active})
-
+        if key_name not in params:
+            # Check if we exhausted sequential
+            # But maybe there are gaps? Usually not for arrays.
+            # Let's try up to 96 (max channels)
+            if i > 96:
+                break
             i += 1
+            continue
 
-        # If the loop yields nothing, maybe the format is different (e.g. Table based)
-        # But for 'TestParameters' restore, it is Param based.
+        name = params[key_name]
+        # Clean generic formatting if needed (sometimes "H1:..." sometimes just name)
 
-    except Exception as e:
-        # We use print here as a fallback, but in common utility
-        # it might be better to just let it raise or use warnings.
-        # For consistency with the GUI implementation:
-        print(f"XML Parsing Error: {e}")
-        pass
+        # Active status
+        key_active = f"MeasActive[{i}]"
+        active = True  # Default
+        if key_active in params:
+            v = params[key_active]
+            # XML boolean might be 'true', '1', 'false', '0'
+            if v.lower() in ["false", "0"]:
+                active = False
+
+        if name:  # Only add if name is not empty
+            channels.append({"name": name, "active": active})
+
+        i += 1
+
+    # If the loop yields nothing, maybe the format is different (e.g. Table based)
+    # But for 'TestParameters' restore, it is Param based.
 
     return channels
 
@@ -117,7 +114,7 @@ def load_dttxml_products(source):
 
     try:
         results = dttxml.DiagAccess(source).results
-    except Exception as e:
+    except (OSError, RuntimeError, ValueError) as e:
         warnings.warn(f"Failed to parse dttxml file: {e}")
         return {}
 
@@ -148,7 +145,7 @@ def load_dttxml_products(source):
                 return FrequencySeries(
                     data, df=1, f0=0, epoch=t0, name=name, unit=unit
                 )  # Fallback
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             warnings.warn(f"Failed to create gwexpy object for {name}: {e}")
             return {
                 "data": data,

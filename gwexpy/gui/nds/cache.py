@@ -95,7 +95,10 @@ class NDSDataCache(QtCore.QObject):
         if self.thread:
             try:
                 self.thread.dataReceived.disconnect(self._on_data_received)
-            except Exception: pass
+            except (TypeError, RuntimeError) as exc:
+                logger.debug("NDSThread signal already disconnected: %s", exc)
+            except Exception as exc:
+                logger.warning("Unexpected error disconnecting NDSThread: %s", exc)
             self.thread.stop()
             if not self.thread.wait(3000):
                 logger.warning("NDSThread did not stop in time, terminating.")
@@ -105,7 +108,10 @@ class NDSDataCache(QtCore.QObject):
         if self.sim_thread:
             try:
                 self.sim_thread.dataReceived.disconnect(self._on_data_received)
-            except Exception: pass
+            except (TypeError, RuntimeError) as exc:
+                logger.debug("SimulationThread signal already disconnected: %s", exc)
+            except Exception as exc:
+                logger.warning("Unexpected error disconnecting SimulationThread: %s", exc)
             self.sim_thread.stop()
             if not self.sim_thread.wait(3000):
                 self.sim_thread.terminate()
@@ -114,12 +120,6 @@ class NDSDataCache(QtCore.QObject):
         for ath in self.audio_threads.values():
             ath.stop()
             ath.wait(2000)
-        self.audio_threads = {}
-
-    def online_stop(self):
-        if self.thread: self.thread.stop(); self.thread.wait(2000); self.thread = None
-        if self.sim_thread: self.sim_thread.stop(); self.sim_thread.wait(2000); self.sim_thread = None
-        for ath in self.audio_threads.values(): ath.stop(); ath.wait(2000)
         self.audio_threads = {}
 
     def reset(self):

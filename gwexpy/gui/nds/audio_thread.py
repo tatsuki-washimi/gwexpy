@@ -54,7 +54,7 @@ class AudioThread(QtCore.QThread):
                 device=self.device_index, samplerate=self.sample_rate
             )
             working_rate = self.sample_rate
-        except Exception:
+        except (RuntimeError, ValueError):
             logger.debug("Requested sample rate check failed.", exc_info=True)
 
         # 2. Try default rate from device info
@@ -68,7 +68,7 @@ class AudioThread(QtCore.QThread):
                             device=self.device_index, samplerate=default_sr
                         )
                         working_rate = default_sr
-            except Exception:
+            except (RuntimeError, ValueError):
                 logger.debug(
                     "Failed to query device default samplerate.", exc_info=True
                 )
@@ -80,7 +80,7 @@ class AudioThread(QtCore.QThread):
                     sd.check_input_settings(device=self.device_index, samplerate=r)
                     working_rate = r
                     break
-                except Exception:
+                except (RuntimeError, ValueError):
                     pass
 
         if working_rate is not None and working_rate != self.sample_rate:
@@ -123,7 +123,7 @@ class AudioThread(QtCore.QThread):
                         ch_part = c.split("-CH")[-1]
                         ch_idx = int(ch_part)
                         max_ch = max(max_ch, ch_idx + 1)
-                except Exception:
+                except (IndexError, ValueError):
                     pass
 
             if max_ch == 0 and mic_channels:
@@ -161,7 +161,7 @@ class AudioThread(QtCore.QThread):
                                 "gps_start": gps_start,
                                 "step": 1.0 / self.sample_rate,
                             }
-                    except Exception:
+                    except (IndexError, TypeError, ValueError):
                         logger.error(
                             "AudioThread: Error processing channel %s.",
                             c,
@@ -184,7 +184,7 @@ class AudioThread(QtCore.QThread):
                 while self.running:
                     sd.sleep(100)
 
-        except Exception:
+        except (OSError, RuntimeError, ValueError):
             logger.exception("AudioThread Error during capture.")
             # If failed (e.g. no devices), just wait and keep thread alive until stopped
             while self.running:
