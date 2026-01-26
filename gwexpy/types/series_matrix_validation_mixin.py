@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 
 import numpy as np
 from astropy import units as u
@@ -93,8 +93,8 @@ class SeriesMatrixValidationMixin:
     def is_compatible_exact(self, other: Any) -> bool:
         """Check strict compatibility with another matrix."""
         base_unit = getattr(self.xindex, "unit", None)
-        lhs = cast(np.ndarray | u.Quantity | Index, self.xindex)
-        rhs = cast(np.ndarray | u.Quantity | Index, other.xindex)
+        lhs = cast(Union[np.ndarray, u.Quantity, Index], self.xindex)
+        rhs = cast(Union[np.ndarray, u.Quantity, Index], other.xindex)
         if base_unit is not None:
             try:
                 lhs = lhs.to_value(base_unit)
