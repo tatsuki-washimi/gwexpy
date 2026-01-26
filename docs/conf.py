@@ -24,7 +24,7 @@ extensions = [
 autosummary_generate = True
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "developers/**"]
 
 language = "en"
 locale_dirs = ["locales/"]
@@ -38,7 +38,8 @@ html_context = {
     "github_version": "main",
     "conf_py_path": "/docs/",
     "current_language": language,
-    "languages": [("en", "/gwexpy/en/"), ("ja", "/gwexpy/ja/")],
+    # GitHub Pages publishes docs under /gwexpy/; user-facing docs live in /docs/web/{en,ja}/.
+    "languages": [("en", "/gwexpy/docs/web/en/"), ("ja", "/gwexpy/docs/web/ja/")],
 }
 
 autodoc_mock_imports = [
