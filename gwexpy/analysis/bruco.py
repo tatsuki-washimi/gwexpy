@@ -5,7 +5,7 @@ import logging
 import os
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from typing import TypedDict
+from typing import TypedDict, Union
 
 try:
     from typing import TypeAlias
@@ -26,7 +26,7 @@ _BRUCO_BLOCK_BYTES_DEFAULT = 64 * 1024 * 1024
 _BRUCO_BLOCK_SIZE_MIN = 16
 _BRUCO_BLOCK_SIZE_MAX = 1024
 
-BrucoMetadataValue: TypeAlias = str | int | float | bool
+BrucoMetadataValue: TypeAlias = Union[str, int, float, bool]
 BrucoMetadata: TypeAlias = Mapping[str, BrucoMetadataValue]
 
 

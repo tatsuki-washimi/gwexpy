@@ -11,7 +11,7 @@ This module provides resampling functionality as a mixin class:
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, Union
 
 try:
     from typing import TypeAlias
@@ -27,8 +27,8 @@ from ._typing import TimeSeriesAttrs
 if TYPE_CHECKING:
     pass
 
-NumberLike: TypeAlias = int | float | np.number
-QuantityLike: TypeAlias = ArrayLike | u.Quantity
+NumberLike: TypeAlias = Union[int, float, np.number]
+QuantityLike: TypeAlias = Union[ArrayLike, u.Quantity]
 AggFunc: TypeAlias = Callable[[np.ndarray], float]
 
 
