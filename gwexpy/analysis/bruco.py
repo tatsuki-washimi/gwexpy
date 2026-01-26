@@ -5,7 +5,12 @@ import logging
 import os
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from typing import TypeAlias, TypedDict
+from typing import TypedDict
+
+try:
+    from typing import TypeAlias
+except ImportError:
+    from typing_extensions import TypeAlias
 
 import matplotlib.pyplot as plt
 import numpy as np
