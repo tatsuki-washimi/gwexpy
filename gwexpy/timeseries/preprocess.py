@@ -8,6 +8,7 @@ from typing import (
     Literal,
     SupportsIndex,
     TypeVar,
+    Union,
     cast,
     overload,
 )
@@ -38,7 +39,7 @@ TimeSeriesSequence = Sequence["TimeSeries"]
 
 NumericArray: TypeAlias = npt.NDArray[np.number[Any]]
 BoolArray: TypeAlias = npt.NDArray[np.bool_]
-SliceKey: TypeAlias = "SupportsIndex | slice | npt.NDArray[np.integer[Any]]"
+SliceKey: TypeAlias = Union[SupportsIndex, slice, npt.NDArray[np.integer[Any]]]
 BaseImputeMethod = Literal[
     "linear",
     "nearest",
@@ -50,7 +51,7 @@ BaseImputeMethod = Literal[
     "mean",
     "median",
 ]
-ImputeMethod = BaseImputeMethod | Literal["interpolate"]
+ImputeMethod = Union[BaseImputeMethod, Literal["interpolate"]]
 
 
 def _limit_mask(
