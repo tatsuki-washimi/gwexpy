@@ -142,7 +142,7 @@ class SpectralAccumulator:
 
             self._process_buffers()
 
-        except Exception:
+        except (KeyError, TypeError, ValueError):
             logger.exception("Error in add_chunk")
 
     def _process_buffers(self):
@@ -246,7 +246,7 @@ class SpectralAccumulator:
                             self.is_done = True
                             return
 
-        except Exception:
+        except (KeyError, TypeError, ValueError, RuntimeError):
             logger.exception("Error in _process_buffers")
 
     def _update_spectra(self, segment_map):
@@ -293,7 +293,7 @@ class SpectralAccumulator:
                     ts_a = segment_map[ch_a]
                     p = ts_a.psd(**fft_kwargs)
                     step_cache[key_a] = p
-                except Exception as e:
+                except (RuntimeError, ValueError) as e:
                     logger.error(f"PSD Error {ch_a}: {e}")
                     continue
             psd_a_new = step_cache.get(key_a)
@@ -308,7 +308,7 @@ class SpectralAccumulator:
                     try:
                         ts_b = segment_map[ch_b]
                         step_cache[key_b] = ts_b.psd(**fft_kwargs)
-                    except Exception:
+                    except (RuntimeError, ValueError):
                         pass
                 psd_b_new = step_cache.get(key_b)
                 if psd_b_new is not None:
@@ -321,7 +321,7 @@ class SpectralAccumulator:
                     ts_b = segment_map[ch_b]
                     csd_new = ts_a.csd(ts_b, **fft_kwargs)
                     self._accumulate(key_csd, csd_new, count, avg_type)
-                except Exception:
+                except (RuntimeError, ValueError):
                     pass
 
             # 4. Handle Spectrogram Updates (Per Segment)
@@ -379,7 +379,7 @@ class SpectralAccumulator:
                                 "f": spec_obj.frequencies.value,
                             }
                         )
-                    except Exception as e:
+                    except (AttributeError, RuntimeError, ValueError) as e:
                         logger.error(f"Spectrogram Update Error {ch_a}: {e}")
 
     def _accumulate(self, key, new_val, count, avg_type):
@@ -544,7 +544,7 @@ class SpectralAccumulator:
                     # print(f"DEBUG: Res {i} is None after calculation. GraphType: '{graph_type}'")
                     results.append(None)
 
-            except Exception as e:
+            except (RuntimeError, TypeError, ValueError) as e:
                 logger.error(f"Error computing result for {ch_a}: {e}")
                 results.append(None)
 

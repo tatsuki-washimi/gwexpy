@@ -104,7 +104,7 @@ def to_mth5(
                 # Fallback for even older MTH5
                 try:
                     st_group = mth5_obj.get_station(station)
-                except Exception:
+                except (AttributeError, KeyError):
                     st_group = mth5_obj.add_station(station)
 
         # Get or create run group
@@ -223,7 +223,7 @@ def from_mth5(
                     try:
                         st_group = mth5_obj.get_station(station, survey=s_name)
                         break
-                    except Exception:
+                    except (AttributeError, KeyError):
                         continue
                 if st_group is None:
                     raise KeyError(

@@ -64,7 +64,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Connect Export button
         if hasattr(res_tab, "btn_export"):
-            res_tab.btn_export.clicked.connect(self.export_data)
+            res_tab.btn_export.clicked.connect(lambda: self.export_data())
 
         # Connect New button (Phase 3)
         if hasattr(res_tab, "btn_new"):
@@ -259,7 +259,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 lambda results, err: self._on_preload_finished(key, results, err)
             )
             self._preload_worker.start()
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError) as e:
             logger.error(f"Preload Error: {e}")
 
     def _on_preload_finished(self, key, results, error):
@@ -707,7 +707,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Stage 4: Render graphs
         try:
             self._render_graphs(data_map, current_times)
-        except Exception:
+        except (RuntimeError, TypeError, ValueError):
             logger.exception("Error rendering graphs")
 
     def _collect_data_map(self):
@@ -816,7 +816,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if ts.t0.value < self.meas_start_gps:
                     try:
                         data_map[k] = ts.crop(start=self.meas_start_gps)
-                    except Exception:
+                    except (RuntimeError, ValueError):
                         del data_map[k]
 
     def _check_stop_condition(self, data_map):
@@ -853,7 +853,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     f"Req: {req_duration:.2f}s"
                 )
                 self.pause_animation()
-        except Exception as e:
+        except (AttributeError, StopIteration, TypeError, ValueError) as e:
             logger.debug(f"Error checking stop condition: {e}")
 
     def _render_graphs(self, data_map, current_times):
@@ -905,7 +905,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     info_root, is_streaming, is_time_axis, nds_window
                 )
 
-            except Exception as e:
+            except (RuntimeError, TypeError, ValueError) as e:
                 logger.warning(f"Error in update_graphs for Graph {plot_idx + 1}: {e}")
 
     def _update_panel_meta(self, info_root, data_map):
@@ -1030,7 +1030,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             t = Time(gps_time, format="gps", scale="utc")
             return t.isot.replace("T", " ")
-        except Exception:
+        except (TypeError, ValueError):
             return "?"
 
     def on_trace_channel_changed(self):
@@ -1183,11 +1183,11 @@ class MainWindow(QtWidgets.QMainWindow):
                         else:
                             curve.setVisible(False)
                             img.setVisible(False)
-                    except Exception as e:
+                    except (RuntimeError, TypeError, ValueError) as e:
                         print(
                             f"Error updating File Plot Graph {graph_idx + 1} Trace {t_idx}: {e}"
                         )
-            except Exception as e:
+            except (RuntimeError, TypeError, ValueError) as e:
                 print(f"Error in update_file_plot for Graph {graph_idx + 1}: {e}")
 
     def export_data(self):
@@ -1250,7 +1250,7 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.information(
                 self, "Export", f"Data exported to:\n{filename}"
             )
-        except Exception as e:
+        except (OSError, RuntimeError, ValueError) as e:
             logger.exception("Export failed")
             QtWidgets.QMessageBox.critical(
                 self, "Export Error", f"Failed to export data:\n{e}"
@@ -1605,7 +1605,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     if "time_span" in self.meas_controls:
                         self.meas_controls["time_span"].setValue(float(duration))
 
-            except Exception as e:
+            except (TypeError, ValueError) as e:
                 print(f"Time info extraction failed: {e}")
             # --- End Time Info Update ---
 
@@ -1676,7 +1676,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.is_loading_file = False
             self.update_file_plot()
-        except Exception as e:
+        except (OSError, RuntimeError, ValueError) as e:
             self.is_loading_file = False
             import traceback
 

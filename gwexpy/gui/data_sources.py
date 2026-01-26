@@ -150,7 +150,7 @@ class StubDataSource(SyntheticDataSource):
         try:
             payload = self._generate_payload()
             payload = self._apply_failure_mode(payload, mode)
-        except Exception as exc:
+        except (RuntimeError, TypeError, ValueError) as exc:
             msg = f"StubDataSource error: {exc}"
             logger.warning(msg)
             self.signal_error.emit(msg)

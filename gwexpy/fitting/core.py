@@ -646,7 +646,7 @@ class FitResult:
             except (ValueError, TypeError, ZeroDivisionError):
                 # Expected numerical errors
                 return -np.inf
-            except Exception:
+            except (AttributeError, RuntimeError):
                 # Unexpected errors - log full context but keep the walker alive
                 logger.exception("Unexpected error in MCMC log_prob")
                 return -np.inf

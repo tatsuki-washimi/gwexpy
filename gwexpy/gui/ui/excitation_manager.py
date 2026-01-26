@@ -131,7 +131,7 @@ class ExcitationManager:
                 # Inject (sum) into existing channel
                 try:
                     data_map[target] = data_map[target] + sig
-                except Exception as e:
+                except (TypeError, ValueError) as e:
                     logger.error(f"Injection Error for {target}: {e}")
             else:
                 # Create new channel

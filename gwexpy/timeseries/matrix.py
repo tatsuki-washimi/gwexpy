@@ -26,13 +26,13 @@ from .timeseries import TimeSeries
 from .utils import SeriesType
 
 
-class TimeSeriesMatrix(  # type: ignore
+class TimeSeriesMatrix(
     PhaseMethodsMixin,
     TimeSeriesMatrixCoreMixin,
-    TimeSeriesMatrixAnalysisMixin,  # type: ignore[misc]
+    TimeSeriesMatrixAnalysisMixin,
     TimeSeriesMatrixSpectralMixin,
     TimeSeriesMatrixInteropMixin,
-    SeriesMatrix,  # type: ignore[misc]
+    SeriesMatrix,
 ):
     """
     2D Matrix container for multiple TimeSeries objects sharing a common time axis.

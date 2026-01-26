@@ -22,11 +22,13 @@ from gwexpy.frequencyseries import FrequencySeries
 # Optional Numba import
 try:
     from numba import njit, prange
+    from numba.core.errors import NumbaError
 
     HAS_NUMBA = True
 except ImportError:
     HAS_NUMBA = False
     prange = range
+    NumbaError = RuntimeError
 
     # Create a dummy njit decorator that just returns the function
     def njit(*args, **kwargs):
@@ -406,7 +408,7 @@ def bootstrap_spectrogram(
             resampled_stats = _bootstrap_resample_jit(
                 data, all_indices, use_median, ignore_nan
             )
-        except Exception as e:
+        except NumbaError as e:
             # Numba can fail for various reasons (compilation, runtime)
             # Fallback to pure Python implementation
             warnings.warn(

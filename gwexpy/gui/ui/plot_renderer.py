@@ -97,7 +97,7 @@ class PlotRenderer:
                         is_time_axis,
                         graph_type,
                     )
-            except Exception as e:
+            except (RuntimeError, TypeError, ValueError) as e:
                 logger.warning(
                     f"Error updating Graph {plot_idx + 1} Trace {t_idx}: {e}"
                 )

@@ -2,7 +2,10 @@
 Utility functions for NDS connectivity.
 """
 
+import logging
 import time
+
+logger = logging.getLogger(__name__)
 
 
 def parse_server_string(server):
@@ -41,6 +44,7 @@ def gps_now():
         from gpstime import gpsnow
 
         return float(gpsnow())
-    except Exception:
+    except ImportError as exc:
+        logger.info("gpstime unavailable, using system time fallback: %s", exc)
         # Fallback: approximated GPS time using unix time.
         return time.time() - 315964800 + 18

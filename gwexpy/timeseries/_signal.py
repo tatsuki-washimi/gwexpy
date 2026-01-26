@@ -1371,7 +1371,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                     unit = num_unit
                 elif den_unit is not None:
                     unit = 1 / den_unit
-            except Exception:
+            except (TypeError, ValueError):
                 logger.debug(
                     "Failed to determine unit for transfer function.", exc_info=True
                 )

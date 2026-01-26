@@ -557,7 +557,7 @@ def create_measurement_tab():
             time_edit.setTime(t.time())
             date_edit.blockSignals(False)
             time_edit.blockSignals(False)
-        except Exception:
+        except (TypeError, ValueError):
             pass
 
     def sync_dt_to_gps():
@@ -573,7 +573,7 @@ def create_measurement_tab():
             gps_spin.blockSignals(True)
             gps_spin.setValue(gps)
             gps_spin.blockSignals(False)
-        except Exception:
+        except (TypeError, ValueError):
             pass
 
     gps_spin.valueChanged.connect(sync_gps_to_dt)

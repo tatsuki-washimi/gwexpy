@@ -594,7 +594,7 @@ class GraphPanel(QtWidgets.QFrame):
             curve = self.traces_items[t_idx]["curve"]
             try:
                 x_data, y_data = curve.getData()
-            except Exception:
+            except (RuntimeError, TypeError):
                 x_data, y_data = None, None
 
             # Snap logic for cursors (nearest data point)
@@ -656,7 +656,7 @@ class GraphPanel(QtWidgets.QFrame):
                 if not rb_type_delta.isChecked():
                     cursors["c2_v"].setValue(float(txt_x2.text()))
                     cursors["c2_h"].setValue(float(txt_y2.text()))
-            except Exception:
+            except (TypeError, ValueError):
                 pass
 
         for t in [txt_x1, txt_y1, txt_x2, txt_y2]:

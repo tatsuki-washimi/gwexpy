@@ -23,6 +23,13 @@ if TYPE_CHECKING:
 class TimeSeriesMatrixCoreMixin:
     """Core properties and application helpers for TimeSeriesMatrix."""
 
+    if TYPE_CHECKING:
+        _dx: u.Quantity | None
+        meta: MetaDataMatrix
+        size: int
+        shape: tuple[int, ...]
+        xunit: u.Unit | None
+
     # --- Properties mapping to SeriesMatrix attributes ---
 
     @property
@@ -65,8 +72,8 @@ class TimeSeriesMatrixCoreMixin:
 
         rate = value if isinstance(value, u.Quantity) else u.Quantity(value, "Hz")
         # Update dt/dx
-        new_dt = (1 / rate).to(cast("TimeSeriesMatrix", self).xunit or u.s)
-        cast("TimeSeriesMatrix", self)._dx = new_dt  # type: ignore[attr-defined]
+        new_dt = (1 / rate).to(self.xunit or u.s)
+        self._dx = new_dt
 
         # Rebuild xindex to preserve start and length
         length = cast("TimeSeriesMatrix", self).shape[-1]
@@ -75,11 +82,11 @@ class TimeSeriesMatrixCoreMixin:
             start = xindex[0]
             if not isinstance(start, u.Quantity):
                 start = u.Quantity(
-                    start, cast("TimeSeriesMatrix", self).xunit or new_dt.unit or u.s
+                    start, self.xunit or new_dt.unit or u.s
                 )
         else:
             start = u.Quantity(
-                0, cast("TimeSeriesMatrix", self).xunit or new_dt.unit or u.s
+                0, self.xunit or new_dt.unit or u.s
             )
 
         cast("TimeSeriesMatrix", self).xindex = Index.define(start, new_dt, length)
@@ -478,11 +485,11 @@ class TimeSeriesMatrixCoreMixin:
         )
 
     def _repr_string_(self: Any) -> str:
-        if self.size > 0:  # type: ignore[attr-defined]
-            u_meta = self.meta[0, 0].unit  # type: ignore[attr-defined]
+        if self.size > 0:
+            u_meta = self.meta[0, 0].unit
         else:
             u_meta = None
-        return f"<TimeSeriesMatrix shape={self.shape}, dt={self.dt}, unit={u_meta}>"  # type: ignore[attr-defined]
+        return f"<TimeSeriesMatrix shape={self.shape}, dt={self.dt}, unit={u_meta}>"
 
     def _get_meta_for_constructor(self: Any, data: Any, xindex: Any) -> dict[str, Any]:
         """Arguments to construct a TimeSeriesMatrix."""

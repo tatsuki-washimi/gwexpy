@@ -415,7 +415,7 @@ class SeriesMatrix(
                 # Compute resulting meta once
                 res_meta_obj = ufunc(*uniform_metas, **ufunc_kwargs)
                 result_meta = np.full((N, M), res_meta_obj, dtype=object)
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 # Optimize: vectorized meta-ufunc failed, use fallback
                 logger.exception(
                     "MetaData ufunc optimization failed; using element-wise calculation."
@@ -434,7 +434,7 @@ class SeriesMatrix(
                 else:
                     # Leverage MetaDataMatrix's vectorized ufunc support
                     result_meta = ufunc(*meta_matrices, **ufunc_kwargs)
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 # Fallback to loop if vectorized meta-ufunc fails
                 logger.exception(
                     "MetaData vectorized ufunc failed; falling back to loop."

@@ -27,7 +27,7 @@ def load_products(filename: str) -> dict:
             products = load_dttxml_products(filename)
             if products:
                 return products
-        except Exception:
+        except (OSError, RuntimeError, ValueError):
             logger.debug(
                 "DTT XML loader failed for %s, falling back to generic.",
                 filename,
@@ -70,7 +70,7 @@ def load_products(filename: str) -> dict:
         ts_dict = TimeSeriesDict.read(filename)
         products["TS"] = {str(k): v for k, v in ts_dict.items()}
         return products
-    except Exception:
+    except (OSError, RuntimeError, ValueError):
         logger.debug(
             "Automatic TimeSeriesDict.read failed for %s.", filename, exc_info=True
         )
@@ -85,7 +85,7 @@ def load_products(filename: str) -> dict:
                         from lalframe.utils.frtools import get_channels
 
                         channels = get_channels(filename)
-                    except Exception:
+                    except ImportError:
                         logger.debug(
                             "Failed to discover channels from %s using lalframe.",
                             filename,
@@ -109,7 +109,7 @@ def load_products(filename: str) -> dict:
 
                             products["TS"] = {str(k): v for k, v in ts_dict.items()}
                             return products
-                        except Exception:
+                        except (OSError, RuntimeError, ValueError):
                             logger.debug(
                                 "GWF read attempt failed with backend %s for %s",
                                 gw_fmt,
@@ -124,7 +124,7 @@ def load_products(filename: str) -> dict:
                 ts_dict = TimeSeriesDict.read(filename, format=fmt)
                 products["TS"] = {str(k): v for k, v in ts_dict.items()}
                 return products
-            except Exception:
+            except (OSError, RuntimeError, ValueError):
                 pass
 
     # 2. Try Single TimeSeries
@@ -132,7 +132,7 @@ def load_products(filename: str) -> dict:
         ts = TimeSeries.read(filename)
         products["TS"] = {ts.name or "Channel0": ts}
         return products
-    except Exception:
+    except (OSError, RuntimeError, ValueError):
         logger.debug(
             "Automatic TimeSeries.read failed for %s.", filename, exc_info=True
         )
@@ -146,7 +146,7 @@ def load_products(filename: str) -> dict:
                 ts = TimeSeries.read(filename, format=fmt)
                 products["TS"] = {ts.name or "Channel0": ts}
                 return products
-            except Exception:
+            except (OSError, RuntimeError, ValueError):
                 pass
 
     # 3. Try FrequencySeries Dict
@@ -154,13 +154,13 @@ def load_products(filename: str) -> dict:
         fs_dict = FrequencySeriesDict.read(filename)
         products["ASD"] = {str(k): v for k, v in fs_dict.items()}
         return products
-    except Exception:
+    except (OSError, RuntimeError, ValueError):
         if fmt:
             try:
                 fs_dict = FrequencySeriesDict.read(filename, format=fmt)
                 products["ASD"] = {str(k): v for k, v in fs_dict.items()}
                 return products
-            except Exception:
+            except (OSError, RuntimeError, ValueError):
                 pass
 
     # 4. Try Single FrequencySeries
@@ -168,13 +168,13 @@ def load_products(filename: str) -> dict:
         fs = FrequencySeries.read(filename)
         products["ASD"] = {fs.name or "Spectrum0": fs}
         return products
-    except Exception:
+    except (OSError, RuntimeError, ValueError):
         if fmt:
             try:
                 fs = FrequencySeries.read(filename, format=fmt)
                 products["ASD"] = {fs.name or "Spectrum0": fs}
                 return products
-            except Exception:
+            except (OSError, RuntimeError, ValueError):
                 pass
 
     # 5. Try Spectrogram
@@ -182,13 +182,13 @@ def load_products(filename: str) -> dict:
         spec = Spectrogram.read(filename)
         products["Spectrogram"] = {spec.name or "Spectrogram0": spec}
         return products
-    except Exception:
+    except (OSError, RuntimeError, ValueError):
         if fmt:
             try:
                 spec = Spectrogram.read(filename, format=fmt)
                 products["Spectrogram"] = {spec.name or "Spectrogram0": spec}
                 return products
-            except Exception:
+            except (OSError, RuntimeError, ValueError):
                 pass
 
     raise RuntimeError(f"Unsupported file format or failed to read file: {filename}")

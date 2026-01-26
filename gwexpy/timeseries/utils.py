@@ -67,8 +67,8 @@ def _coerce_t0_gps(t0: Any) -> u.Quantity | None:
 
     try:
         gps = to_gps(t0)
-    except Exception as e:
-        raise ValueError(f"Could not convert {t0} to GPS: {e}")
+    except (TypeError, ValueError) as e:
+        raise ValueError(f"Could not convert {t0} to GPS: {e}") from e
 
     if isinstance(gps, (np.ndarray, list)):
         gps_val = float(np.asarray(gps).flat[0])

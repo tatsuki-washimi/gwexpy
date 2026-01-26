@@ -10,7 +10,7 @@ def is_cupy_available():
 
         # Try to get device count to ensure driver is working
         return cupy.cuda.runtime.getDeviceCount() > 0
-    except Exception:
+    except (ImportError, AttributeError, RuntimeError):
         return False
 
 
@@ -18,7 +18,7 @@ def to_cupy(obj, dtype=None):
     cupy = require_optional("cupy")
     try:
         return cupy.asarray(obj, dtype=dtype)
-    except Exception as e:
+    except RuntimeError as e:
         # Catch CUDA driver errors which often manifest as CUDARuntimeError
         # or other system-level errors during initialization.
         msg = str(e)
@@ -27,7 +27,7 @@ def to_cupy(obj, dtype=None):
                 "CuPy is installed but CUDA driver is insufficient or not found. "
                 "GPU acceleration is not available in this environment."
             ) from e
-        raise e
+        raise
 
 
 def from_cupy(cls, array, t0, dt, unit=None):

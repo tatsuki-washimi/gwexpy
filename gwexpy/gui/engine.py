@@ -214,7 +214,7 @@ class Engine:
                                 freqs = spec.frequencies.value
                                 mask = (freqs >= start_f) & (freqs <= stop_f)
                                 spec = spec[:, mask]
-                        except Exception as e:
+                        except (AttributeError, IndexError, TypeError, ValueError) as e:
                             logger.error(f"Spectrogram crop failed: {e}")
                             # Fallback: return full
 
@@ -236,7 +236,7 @@ class Engine:
                 else:
                     results.append(None)
 
-            except Exception as e:
+            except (RuntimeError, TypeError, ValueError) as e:
                 logger.error(f"Calculation Error Trace {i}: {e}")
                 results.append(None)
 

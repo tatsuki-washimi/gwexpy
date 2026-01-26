@@ -32,7 +32,7 @@ def _calc_correlation_direct(ts, target, meth):
             sr = getattr(ts, "sample_rate", None)
             ts = GWExTimeSeries(ts.value, t0=ts.t0, sample_rate=sr, name=ts.name)
         return ts.correlation(target, method=meth)
-    except Exception:
+    except (AttributeError, TypeError, ValueError):
         logger.debug(
             "Correlation calculation failed for %s",
             getattr(ts, "name", "unknown"),
@@ -724,7 +724,7 @@ class TimeSeriesMatrixAnalysisMixin:
                         i, j, name = futures[fut]
                         try:
                             score = fut.result()
-                        except Exception:
+                        except (RuntimeError, TypeError, ValueError):
                             logger.debug(
                                 "Failed to retrieve parallel correlation result for %s",
                                 name,

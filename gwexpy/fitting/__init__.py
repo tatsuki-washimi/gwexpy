@@ -52,7 +52,7 @@ def __getattr__(name: str) -> Any:
     if name in ("fit_series", "FitResult", "Fitter"):
         try:
             from .core import FitResult, Fitter, fit_series
-        except Exception as exc:  # pragma: no cover
+        except ImportError as exc:  # pragma: no cover
             raise ImportError(
                 "gwexpy.fitting requires optional dependencies (e.g. iminuit) and a working numba setup."
             ) from exc
@@ -64,7 +64,7 @@ def __getattr__(name: str) -> Any:
     if name in ("GeneralizedLeastSquares", "GLS"):
         try:
             from .gls import GLS, GeneralizedLeastSquares
-        except Exception as exc:  # pragma: no cover
+        except ImportError as exc:  # pragma: no cover
             raise ImportError(
                 "gwexpy.fitting requires optional dependencies (e.g. iminuit)."
             ) from exc
@@ -72,7 +72,7 @@ def __getattr__(name: str) -> Any:
     if name == "fit_bootstrap_spectrum":
         try:
             from .highlevel import fit_bootstrap_spectrum
-        except Exception as exc:  # pragma: no cover
+        except ImportError as exc:  # pragma: no cover
             raise ImportError(
                 "gwexpy.fitting.highlevel requires optional dependencies."
             ) from exc
