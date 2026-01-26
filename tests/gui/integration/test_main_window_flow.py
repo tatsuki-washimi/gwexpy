@@ -17,6 +17,8 @@ def test_main_window_tab_navigation(qtbot, log_gui_action):
     window = MainWindow(enable_preload=False)
     qtbot.addWidget(window)
     window.show()
+    window.raise_()
+    window.activateWindow()
     qtbot.waitExposed(window)
 
     # Check initial tab (Input Tab - index 0)

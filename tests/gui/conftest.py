@@ -103,6 +103,8 @@ if QT_AVAILABLE:
 
         qtbot.addWidget(window)
         window.show()
+        window.raise_()
+        window.activateWindow()
         qtbot.waitExposed(window)
         return window
 

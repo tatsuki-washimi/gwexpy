@@ -24,6 +24,8 @@ def window(qtbot):
     win = MainWindow(enable_preload=False)
     qtbot.addWidget(win)
     win.show()
+    win.raise_()
+    win.activateWindow()
     qtbot.waitExposed(win)
     return win
 
