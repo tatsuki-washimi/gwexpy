@@ -31,9 +31,7 @@ def __getattr__(name):
 
 
 def __dir__():
-    return sorted(
-        set(globals().keys()) | set(dir(gwpy.plot)) | {"GeoMap", "SkyMap"}
-    )
+    return sorted(set(globals().keys()) | set(dir(gwpy.plot)) | {"GeoMap", "SkyMap"})
 
 
 if TYPE_CHECKING:  # pragma: no cover
