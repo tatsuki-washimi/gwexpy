@@ -761,7 +761,7 @@ def _normalize_input(
     raise TypeError(f"Unsupported data type for SeriesMatrix: {type(data)}")
 
 
-def _check_attribute_consistency(data_attrs: dict, meta: "MetaDataMatrix") -> None:
+def _check_attribute_consistency(data_attrs: dict, meta: MetaDataMatrix) -> None:
     """
     Validate that overlapping attributes between data_attrs and meta match.
     """
@@ -806,7 +806,7 @@ def _check_attribute_consistency(data_attrs: dict, meta: "MetaDataMatrix") -> No
 
 
 def _fill_missing_attributes(
-    data_attrs: dict, meta: "MetaDataMatrix"
+    data_attrs: dict, meta: MetaDataMatrix
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Fill missing unit/name/channel attributes from a MetaDataMatrix.
@@ -838,7 +838,7 @@ def _make_meta_matrix(
     units: np.ndarray | None,
     names: np.ndarray | None,
     channels: np.ndarray | None,
-) -> "MetaDataMatrix":
+) -> MetaDataMatrix:
     """Build a MetaDataMatrix from per-cell unit/name/channel arrays."""
     N, M = shape
     meta_array = np.empty((N, M), dtype=object)
@@ -853,7 +853,7 @@ def _make_meta_matrix(
 
 
 def _check_shape_consistency(
-    value_array: np.ndarray, meta_matrix: "MetaDataMatrix", xindex: np.ndarray | None
+    value_array: np.ndarray, meta_matrix: MetaDataMatrix, xindex: np.ndarray | None
 ) -> None:
     """Validate shape consistency among value array, metadata, and xindex."""
     N, M = value_array.shape[:2]
