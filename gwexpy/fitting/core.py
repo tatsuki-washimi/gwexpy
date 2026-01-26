@@ -37,7 +37,7 @@ class Fitter:
     def __init__(self, model: Any):
         self.model = model
 
-    def fit(self, series: Any, **kwargs: Any) -> "FitResult":
+    def fit(self, series: Any, **kwargs: Any) -> FitResult:
         """Fit the provided series to the model."""
         return fit_series(series, self.model, **kwargs)
 
