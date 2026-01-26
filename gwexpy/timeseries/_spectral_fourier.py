@@ -5,7 +5,7 @@ Standard Fourier-based spectral transform methods for TimeSeries.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, Union
 
 try:
     from typing import TypeAlias
@@ -22,8 +22,8 @@ if TYPE_CHECKING:
     from gwexpy.frequencyseries import FrequencySeries
     from gwexpy.spectrogram import Spectrogram
 
-NumberLike: TypeAlias = int | float | np.number
-WindowLike: TypeAlias = str | tuple[Any, ...] | npt.ArrayLike
+NumberLike: TypeAlias = Union[int, float, np.number]
+WindowLike: TypeAlias = Union[str, tuple[Any, ...], npt.ArrayLike]
 
 
 def _get_next_fast_len() -> Callable[[int], int]:

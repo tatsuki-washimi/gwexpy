@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, Union, cast
 
 try:
     from typing import TypeAlias
@@ -27,11 +27,11 @@ logger = logging.getLogger(__name__)
 
 from ._typing import TimeSeriesAttrs
 
-NumberLike: TypeAlias = int | float | np.number
-QuantityLike: TypeAlias = ArrayLike | u.Quantity
-PhaseLike: TypeAlias = (
-    Sequence[NumberLike] | NDArray[np.floating] | NDArray[np.complex128] | None
-)
+NumberLike: TypeAlias = Union[int, float, np.number]
+QuantityLike: TypeAlias = Union[ArrayLike, u.Quantity]
+PhaseLike: TypeAlias = Union[
+    Sequence[NumberLike], NDArray[np.floating], NDArray[np.complex128], None
+]
 
 try:
     import scipy.signal  # noqa: F401 - availability check

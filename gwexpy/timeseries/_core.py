@@ -10,7 +10,7 @@ This module contains the base TimeSeries class with essential functionality:
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Union
 
 try:
     from typing import TypeAlias
@@ -24,7 +24,7 @@ from numpy.typing import ArrayLike
 
 from gwexpy.types.mixin import RegularityMixin
 
-QuantityLike: TypeAlias = ArrayLike | u.Quantity
+QuantityLike: TypeAlias = Union[ArrayLike, u.Quantity]
 
 if TYPE_CHECKING:
     from gwexpy.timeseries.timeseries import TimeSeries
