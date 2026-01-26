@@ -53,6 +53,8 @@ def test_failure_modes_do_not_crash(qtbot, stub_source, gui_deps, caplog):
     window = MainWindow(enable_preload=False, data_backend=stub_source)
     qtbot.addWidget(window)
     window.show()
+    window.raise_()
+    window.activateWindow()
     qtbot.waitExposed(window)
 
     window.input_controls["ds_combo"].setCurrentText("NDS")

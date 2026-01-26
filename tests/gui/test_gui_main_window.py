@@ -18,6 +18,8 @@ def _make_window(qtbot):
     window = MainWindow(enable_preload=False)
     qtbot.addWidget(window)
     window.show()
+    window.raise_()
+    window.activateWindow()
     qtbot.waitExposed(window)
     return window
 
