@@ -437,6 +437,7 @@ Axis 2: frequency
     <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
     <span class="c1"># EMDの実行 (戻り値は辞書)</span>
     <span class="c1"># method=&quot;emd&quot; (標準EMD) または &quot;eemd&quot; (Ensemble EMD)</span>
     <span class="c1"># ここでは ts2 (Chirp信号を含む例) を使用します</span>
@@ -600,6 +601,7 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
     <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
     <span class="c1"># 3. fit_arima: ARIMA(1,0,0) フィッティングと予測</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">fit_arima</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
     <span class="n">resid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">residuals</span><span class="p">()</span>
@@ -631,6 +633,7 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
     <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
     <span class="c1"># 4. hurst / local_hurst: ハースト指数 (長距離相関の指標)</span>
     <span class="n">h_val</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">hurst</span><span class="p">()</span>
     <span class="n">h_detail</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">hurst</span><span class="p">(</span><span class="n">return_details</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># 詳細情報付き</span>
@@ -861,6 +864,7 @@ Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hu
     <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">)</span>
     <span class="n">ts_p</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pandas interop OK&quot;</span><span class="p">)</span>
@@ -873,6 +877,7 @@ Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hu
     <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
     <span class="n">xr</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
     <span class="n">ts_xr</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_xarray</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Xarray interop OK&quot;</span><span class="p">)</span>
@@ -1457,6 +1462,7 @@ SQLite interop OK: my_sensor
     <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
     <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span>
@@ -1595,6 +1601,7 @@ tensor([-6.3638e-01,  6.7641e-01,  1.1160e+00,  7.5920e-01,  7.8126e-01,
     <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
 
     <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span>
@@ -1695,6 +1702,7 @@ array([-0.63638168,  0.67641478,  1.11601357, ..., -0.94245798,
     <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
 
     <span class="n">_</span> <span class="o">=</span> <span class="n">obspy</span>
