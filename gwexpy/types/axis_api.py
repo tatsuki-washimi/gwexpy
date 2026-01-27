@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, cast
 
 from .axis import AxisDescriptor
+
+if TYPE_CHECKING:
+    from .mixin._protocols import AxisApiHost
 
 __all__ = ["AxisApiMixin"]
 
@@ -76,7 +80,9 @@ class AxisApiMixin(ABC):
         else:
             raise TypeError(f"Axis key must be int or str, got {type(key)}")
 
-    def rename_axes(self, mapping: dict[str, str], *, inplace=False):
+    def rename_axes(
+        self: AxisApiHost, mapping: dict[str, str], *, inplace: bool = False
+    ) -> Any:
         """Rename axes using a mapping of old names to new names.
 
         Parameters
@@ -178,7 +184,7 @@ class AxisApiMixin(ABC):
 
         return self.isel(isel_indexers)
 
-    def swapaxes(self, axis1, axis2):
+    def swapaxes(self: AxisApiHost, axis1: int | str, axis2: int | str) -> Any:
         idx1 = self._get_axis_index(axis1)
         idx2 = self._get_axis_index(axis2)
         if idx1 == idx2:
@@ -192,7 +198,8 @@ class AxisApiMixin(ABC):
         if not axes:
             axes = tuple(range(ndim))[::-1]
         elif len(axes) == 1 and isinstance(axes[0], (tuple, list)):
-            axes = axes[0]
+            axes = tuple(axes[0])
+        axes = tuple(axes)
 
         if len(axes) != ndim:
             raise ValueError("axes don't match array")
@@ -223,7 +230,8 @@ class AxisApiMixin(ABC):
         # We rely on subclass MRO to trigger numpy implementation.
         # But wait, if AxisApiMixin is first, super() is the next class (GwpyArray).
 
-        new_obj = super().transpose(*axes)
+        base = cast(Any, super())
+        new_obj = base.transpose(*axes)
         # new_obj is the transposed array (view).
         # We need to reorder metadata.
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 
@@ -49,13 +49,13 @@ class SignalAnalysisMixin:
                 else:
                     return uniform_filter1d(x, size=width)
 
-            re = _smooth(self.value.real)
-            im = _smooth(self.value.imag)
+            re = _smooth(self.value.real)  # type: ignore[attr-defined]
+            im = _smooth(self.value.imag)  # type: ignore[attr-defined]
             val = re + 1j * im
-            unit = self.unit
+            unit = self.unit  # type: ignore[attr-defined]
 
         elif method == "amplitude":
-            mag = np.abs(self.value)
+            mag = np.abs(self.value)  # type: ignore[attr-defined]
             if ignore_nan:
                 import pandas as pd
 
@@ -69,9 +69,9 @@ class SignalAnalysisMixin:
                 from scipy.ndimage import uniform_filter1d
 
                 val = uniform_filter1d(mag, size=width)
-            unit = self.unit
+            unit = self.unit  # type: ignore[attr-defined]
         elif method == "power":
-            pwr = np.abs(self.value) ** 2
+            pwr = np.abs(self.value) ** 2  # type: ignore[attr-defined]
             if ignore_nan:
                 import pandas as pd
 
@@ -85,10 +85,10 @@ class SignalAnalysisMixin:
                 from scipy.ndimage import uniform_filter1d
 
                 val = uniform_filter1d(pwr, size=width)
-            unit = self.unit**2
+            unit = self.unit**2  # type: ignore[attr-defined]
         elif method == "db":
             # To dB
-            mag = np.abs(self.value)
+            mag = np.abs(self.value)  # type: ignore[attr-defined]
             with np.errstate(divide="ignore"):
                 db = 20 * np.log10(mag)
             if ignore_nan:
@@ -118,18 +118,19 @@ class SignalAnalysisMixin:
         # But we want to return a new object of the same type.
 
         # Try to infer constructor args or copy metadata
-        self.copy()
+        self.copy()  # type: ignore[attr-defined]
         # Update data and unit
         # Note: gwpy series copy() is shallow-ish but creates new object.
         # Setting .value directly might be tricky if it's a property wrapper, but typically ok for bare arrays.
         # But changing unit usually requires creating new Quantity-like object or setting property.
 
         # A cleaner way for gwpy objects:
-        return self.__class__(
+        matrix_cls = cast(Any, self.__class__)
+        return matrix_cls(
             val,
             unit=unit,
-            name=self.name,
-            channel=self.channel,
+            name=self.name,  # type: ignore[attr-defined]
+            channel=self.channel,  # type: ignore[attr-defined]
             # Pass through extensive metadata if possible, but minimal set is safe
             **self._get_meta_for_constructor(),
         )
@@ -160,17 +161,17 @@ class SignalAnalysisMixin:
 
         # Prepare target array
         if method == "amplitude":
-            target = np.abs(self.value)
+            target = np.abs(self.value)  # type: ignore[attr-defined]
         elif method == "power":
-            target = np.abs(self.value) ** 2
+            target = np.abs(self.value) ** 2  # type: ignore[attr-defined]
         elif method == "db":
-            target = 20 * np.log10(np.abs(self.value))
+            target = 20 * np.log10(np.abs(self.value))  # type: ignore[attr-defined]
         else:
             raise ValueError(f"Unknown method {method}")
 
         if threshold is not None:
             if hasattr(threshold, "unit"):  # astropy.units.Quantity
-                current_unit = self.unit
+                current_unit = self.unit  # type: ignore[attr-defined]
                 if method == "power":
                     current_unit = current_unit**2
                 elif method == "db":
@@ -238,12 +239,14 @@ class SignalAnalysisMixin:
 
         if len(peaks_indices) == 0:
             # Return empty container of same type
-            return self[[]], props
+            series = cast(Any, self)
+            return series[[]], props
 
         # Use slicing to return subset (preserves type and metadata)
-        out = self[peaks_indices]
-        if self.name:
-            out.name = f"{self.name}_peaks"
+        series = cast(Any, self)
+        out = series[peaks_indices]
+        if self.name:  # type: ignore[attr-defined]
+            out.name = f"{self.name}_peaks"  # type: ignore[attr-defined]
         return out, props
 
 
