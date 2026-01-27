@@ -4,11 +4,12 @@ Utility functions for NDS connectivity.
 
 import logging
 import time
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 
-def parse_server_string(server: str | None) -> tuple[str, int]:
+def parse_server_string(server: Optional[str]) -> tuple[str, int]:
     """
     Parse 'host:port' string into (host, port).
     Handles comma-separated lists (takes first).

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 import numpy as np
 from gwpy.timeseries import TimeSeries
@@ -97,7 +97,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.nds_cache.signal_data.connect(self.on_nds_data)
         self.nds_latest_raw = None  # Stores latest DataBufferDict
         self.data_source = "SIM"  # SIM, FILE, NDS
-        self._preload_worker: ChannelListWorker | None = None
+        self._preload_worker: Optional[ChannelListWorker] = None
         self._reference_traces: dict[str, dict[str, Any]] = {}
 
         # Signal Generator
