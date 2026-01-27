@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ class Engine:
         graph_type: str (e.g., "Amplitude Spectral Density", "Coherence")
         active_traces: list of dicts [{'active': bool, 'ch_a': str, 'ch_b': str}, ...]
         """
-        results = []
+        results: list[tuple[Any, Any] | dict[str, Any] | None] = []
 
         if not data_map:
             return results

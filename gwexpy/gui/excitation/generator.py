@@ -149,7 +149,7 @@ class SignalGenerator:
 
             apply_filter = False
             btype = "band"
-            Wn = None
+            Wn: float | list[float] | None = None
 
             if f_low > 0:
                 if f_high > f_low and f_high < nyq:
