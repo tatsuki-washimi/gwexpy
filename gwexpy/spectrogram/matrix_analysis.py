@@ -20,6 +20,7 @@ class _SpectrogramMatrixLike(Protocol):
 
     def copy(self) -> _SpectrogramMatrixLike: ...
     def view(self, dtype: type) -> np.ndarray: ...
+    @property
     def real(self) -> _SpectrogramMatrixLike: ...
     def radian(self, unwrap: bool = False) -> Any: ...
 
@@ -51,9 +52,9 @@ class SpectrogramMatrixAnalysisMixin:
             val = np.unwrap(val, axis=-2)
 
         # If original was complex, Ensure new is real-valued to hold phase
-        if np.iscomplexobj(new):
-            # new.real is a method in SeriesMatrix types
-            new = new.real()
+        if np.iscomplexobj(new.view(np.ndarray)):
+            # new.real returns the real-valued view for SeriesMatrix types
+            new = new.real
 
         # Restore axis metadata in case copy/real dropped it
         new.times = self.times

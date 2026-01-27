@@ -35,10 +35,10 @@ class StatisticalMethodsMixin:
         dtype=None,
         out=None,
         keepdims=False,
-        *,
         where=True,
-        ignore_nan=True,
+        **kwargs,
     ):
+        ignore_nan = kwargs.pop("ignore_nan", True)
         return self._apply_stat_func(
             np.nanmean,
             np.mean,
@@ -48,6 +48,7 @@ class StatisticalMethodsMixin:
             out=out,
             keepdims=keepdims,
             where=where,
+            **kwargs,
         )
 
     def std(
@@ -57,10 +58,10 @@ class StatisticalMethodsMixin:
         out=None,
         ddof=0,
         keepdims=False,
-        *,
         where=True,
-        ignore_nan=True,
+        **kwargs,
     ):
+        ignore_nan = kwargs.pop("ignore_nan", True)
         return self._apply_stat_func(
             np.nanstd,
             np.std,
@@ -71,6 +72,7 @@ class StatisticalMethodsMixin:
             ddof=ddof,
             keepdims=keepdims,
             where=where,
+            **kwargs,
         )
 
     def var(
@@ -80,10 +82,10 @@ class StatisticalMethodsMixin:
         out=None,
         ddof=0,
         keepdims=False,
-        *,
         where=True,
-        ignore_nan=True,
+        **kwargs,
     ):
+        ignore_nan = kwargs.pop("ignore_nan", True)
         return self._apply_stat_func(
             np.nanvar,
             np.var,
@@ -94,6 +96,7 @@ class StatisticalMethodsMixin:
             ddof=ddof,
             keepdims=keepdims,
             where=where,
+            **kwargs,
         )
 
     def min(
@@ -103,8 +106,9 @@ class StatisticalMethodsMixin:
         keepdims=False,
         initial=None,
         where=True,
-        ignore_nan=True,
+        **kwargs,
     ):
+        ignore_nan = kwargs.pop("ignore_nan", True)
         return self._apply_stat_func(
             np.nanmin,
             np.min,
@@ -114,6 +118,7 @@ class StatisticalMethodsMixin:
             keepdims=keepdims,
             initial=initial,
             where=where,
+            **kwargs,
         )
 
     def max(
@@ -123,8 +128,9 @@ class StatisticalMethodsMixin:
         keepdims=False,
         initial=None,
         where=True,
-        ignore_nan=True,
+        **kwargs,
     ):
+        ignore_nan = kwargs.pop("ignore_nan", True)
         return self._apply_stat_func(
             np.nanmax,
             np.max,
@@ -134,6 +140,7 @@ class StatisticalMethodsMixin:
             keepdims=keepdims,
             initial=initial,
             where=where,
+            **kwargs,
         )
 
     def median(
@@ -142,13 +149,17 @@ class StatisticalMethodsMixin:
         out=None,
         overwrite_input=False,
         keepdims=False,
-        ignore_nan=True,
+        **kwargs,
     ):
+        ignore_nan = kwargs.pop("ignore_nan", True)
         # overwrite_input is only in median/nanmedian
-        kwargs = dict(
+        base_kwargs = dict(
             axis=axis, out=out, overwrite_input=overwrite_input, keepdims=keepdims
         )
-        return self._apply_stat_func(np.nanmedian, np.median, ignore_nan, **kwargs)
+        base_kwargs.update(kwargs)
+        return self._apply_stat_func(
+            np.nanmedian, np.median, ignore_nan, **base_kwargs
+        )
 
     def rms(self, axis=None, keepdims=False, ignore_nan=True):
         """Compute root-mean-square."""

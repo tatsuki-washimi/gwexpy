@@ -108,12 +108,11 @@ class TimeSeriesMatrixAnalysisMixin:
         dtype: Any = None,
         out: Any = None,
         keepdims: bool = False,
-        *,
         where: Any = True,
-        ignore_nan: bool = False,
         **kwargs: Any,
-    ) -> np.ndarray:
+    ) -> Any:
         """Compute mean along the specified axis."""
+        ignore_nan = kwargs.pop("ignore_nan", False)
         ax = self._resolve_axis(axis)
         func = np.nanmean if ignore_nan else np.mean
         return func(
@@ -128,17 +127,16 @@ class TimeSeriesMatrixAnalysisMixin:
 
     def std(
         self: Any,
-        axis: Any = "time",
-        dtype: Any = None,
-        out: Any = None,
-        ddof: int = 0,
-        keepdims: bool = False,
-        *,
-        where: Any = True,
-        ignore_nan: bool = False,
-        **kwargs: Any,
-    ) -> np.ndarray:
+        axis="time",
+        dtype=None,
+        out=None,
+        ddof=0,
+        keepdims=False,
+        where=True,
+        **kwargs,
+    ):
         """Compute standard deviation along the specified axis."""
+        ignore_nan = kwargs.pop("ignore_nan", False)
         ax = self._resolve_axis(axis)
         func = np.nanstd if ignore_nan else np.std
         return func(
@@ -175,10 +173,10 @@ class TimeSeriesMatrixAnalysisMixin:
         keepdims: bool = False,
         initial: Any = None,
         where: Any = True,
-        ignore_nan: bool = False,
         **kwargs: Any,
-    ) -> np.ndarray:
+    ) -> Any:
         """Compute minimum along the specified axis."""
+        ignore_nan = kwargs.pop("ignore_nan", False)
         ax = self._resolve_axis(axis)
         func = np.nanmin if ignore_nan else np.min
         return func(
@@ -198,10 +196,10 @@ class TimeSeriesMatrixAnalysisMixin:
         keepdims: bool = False,
         initial: Any = None,
         where: Any = True,
-        ignore_nan: bool = False,
         **kwargs: Any,
-    ) -> np.ndarray:
+    ) -> Any:
         """Compute maximum along the specified axis."""
+        ignore_nan = kwargs.pop("ignore_nan", False)
         ax = self._resolve_axis(axis)
         func = np.nanmax if ignore_nan else np.max
         return func(
