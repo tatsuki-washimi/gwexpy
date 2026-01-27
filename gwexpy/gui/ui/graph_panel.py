@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any
+
 import numpy as np
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -31,9 +35,9 @@ class GraphPanel(QtWidgets.QFrame):
             traces_items  # List of {'curve': ..., 'bar': ..., 'img': ...}
         )
 
-        self.trace_controls = []
-        self.graph_combo = None
-        self.display_y_combo = None
+        self.trace_controls: list[dict[str, Any]] = []
+        self.graph_combo: QtWidgets.QComboBox = QtWidgets.QComboBox()
+        self.display_y_combo: QtWidgets.QComboBox = QtWidgets.QComboBox()
 
         self._init_ui()
 
