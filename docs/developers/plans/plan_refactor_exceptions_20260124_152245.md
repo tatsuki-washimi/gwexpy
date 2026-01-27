@@ -1,7 +1,7 @@
 # 作業計画書: 広範な例外処理のリファクタリング
 
 **作成日時**: 2026-01-24 15:22:45
-**タスクファイル**: `.agent/tasks/task_refactor_exceptions_20260124_152151.md`
+**タスクファイル**: `docs/developers/plans/task_refactor_exceptions_20260124_152151.md`
 
 ---
 

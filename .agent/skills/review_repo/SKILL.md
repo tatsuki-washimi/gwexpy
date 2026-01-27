@@ -34,4 +34,4 @@ Evaluates the overall quality and structure of the repository and creates an imp
         *   **Overview**: Project scale and current state.
         *   **Strengths**: Points of good implementation and design.
         *   **Improvements (P1: High, P2: Med, P3: Low)**: Specific issues organized by priority.
-    *   Based on the report, save a "Markdown-formatted improvement task prompt" in the `.agent/` directory that is easy for the AI to understand.
+    *   Based on the report, save a "Markdown-formatted improvement task prompt" under `docs/developers/plans/` so it is tracked alongside other developer plans.

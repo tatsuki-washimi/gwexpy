@@ -2,7 +2,7 @@
 
 **統合日**: 2026-01-27
 **既存レポート参照**: `report_review_20260127.md`
-**新規詳細分析**: `repository_review_report.md`
+**新規詳細分析**: `docs/developers/reports/report_repository_quality_analysis_20260127.md`
 
 ---
 
@@ -17,7 +17,7 @@
 - ✓ Python 3.9 互換性: Union 型構文の問題（P1 として重要）
 - ○ MyPy 拡張: spectrogram/ モジュール除外（複雑な mixin 継承）
 
-**新規詳細分析（repository_review_report.md）の指摘**:
+**新規詳細分析（report_repository_quality_analysis_20260127.md）の指摘**:
 - `from __future__ import annotations` 採用率: 33%（P1 改善機会）
 - ワイルドカードインポート: 10件（P1 改善機会）
 - MyPy ignore_errors: 7モジュール（P1 削除推奨）
@@ -436,7 +436,7 @@ Phase C (次リリース):
 
 ### 既存レポート
 - `docs/developers/reports/report_review_20260127.md` - P1 Python 3.9 互換性
-- `.agent/repository_review_report.md` - 詳細品質分析
+- `docs/developers/reports/report_repository_quality_analysis_20260127.md` - 詳細品質分析
 
 ### 公式ドキュメント
 - [PEP 563 - Postponed Evaluation](https://www.python.org/dev/peps/pep-0563/)
