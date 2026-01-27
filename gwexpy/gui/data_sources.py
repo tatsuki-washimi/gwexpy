@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import TypedDict
 
 import numpy as np
 from qtpy import QtCore
@@ -8,6 +9,15 @@ from qtpy import QtCore
 from .nds.buffer import DataBufferDict
 
 logger = logging.getLogger(__name__)
+
+
+class PayloadPacket(TypedDict):
+    data: np.ndarray
+    gps_start: float
+    step: float
+
+
+Payload = dict[str, PayloadPacket]
 
 
 class BaseDataSource(QtCore.QObject):
@@ -91,14 +101,14 @@ class SyntheticDataSource(BaseDataSource):
         self.buffers.reset()
         self._current_time = 0.0
 
-    def emit_next(self) -> dict[str, dict[str, object]]:
+    def emit_next(self) -> Payload:
         payload = self._generate_payload()
         self.buffers.update_buffers(payload)
         self.signal_data.emit(self.buffers)
         self.signal_payload.emit(payload)
         return payload
 
-    def _generate_payload(self) -> dict[str, dict[str, object]]:
+    def _generate_payload(self) -> Payload:
         if not self.channels:
             logger.warning("SyntheticDataSource has no channels configured.")
             return {}
@@ -106,7 +116,7 @@ class SyntheticDataSource(BaseDataSource):
         step = 1.0 / self.sample_rate
         t0 = self._current_time
         t = t0 + np.arange(self.chunk_size) * step
-        payload: dict[str, dict[str, object]] = {}
+        payload: Payload = {}
         for idx, ch in enumerate(self.channels):
             freq = 0.2 * (idx + 1)
             data = np.sin(2.0 * np.pi * freq * t) + 0.1 * (idx + 1)
@@ -144,7 +154,7 @@ class StubDataSource(SyntheticDataSource):
     def fail_next(self, mode: str) -> None:
         self._next_failure = mode
 
-    def emit_next(self) -> dict[str, dict[str, object]]:
+    def emit_next(self) -> Payload:
         mode = self._next_failure or self.failure_mode
         self._next_failure = None
         try:
@@ -163,9 +173,9 @@ class StubDataSource(SyntheticDataSource):
 
     def _apply_failure_mode(
         self,
-        payload: dict[str, dict[str, object]],
+        payload: Payload,
         mode: str | None,
-    ) -> dict[str, dict[str, object]]:
+    ) -> Payload:
         if not mode:
             return payload
 
