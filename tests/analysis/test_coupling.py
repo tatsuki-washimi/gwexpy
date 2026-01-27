@@ -138,7 +138,7 @@ class TestEdgeCases:
     def test_negative_ratio_raises(self):
         """Test that negative ratio raises ValueError."""
         # RatioThreshold with ratio <= 0 should be invalid
-        strategy = RatioThreshold(ratio=-1.0)
+        RatioThreshold(ratio=-1.0)
         # The behavior depends on implementation - might raise or just return wrong results
 
     def test_sigma_threshold_with_uniform_psd(self, sample_psd_bkg):
