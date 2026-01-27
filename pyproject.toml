@@ -223,21 +223,7 @@ filterwarnings = [
 
 [[tool.mypy.overrides]]
 module = [
-]
-ignore_errors = true
-
-[[tool.mypy.overrides]]
-module = [
   "gwexpy.types.series_matrix_math",
   "gwexpy.types.series_matrix_validation_mixin",
 ]
 ignore_errors = false
-
-[[tool.mypy.overrides]]
-module = [
-  "gwexpy.types.mixin.mixin_legacy",
-  "gwexpy.types.mixin.signal_interop",
-  "gwexpy.types.axis_api",
-  "gwexpy.types.array3d",
-]
-ignore_errors = true
