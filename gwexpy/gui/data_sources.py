@@ -4,7 +4,7 @@ import logging
 from typing import Optional, TypedDict
 
 import numpy as np
-from qtpy import QtCore
+from qtpy.QtCore import QObject, QTimer, Signal  # type: ignore[attr-defined]
 
 from .nds.buffer import DataBufferDict
 
@@ -20,7 +20,7 @@ class PayloadPacket(TypedDict):
 Payload = dict[str, PayloadPacket]
 
 
-class BaseDataSource(QtCore.QObject):
+class BaseDataSource(QObject):
     """
     Minimal data-source interface used by the GUI.
 
@@ -30,9 +30,9 @@ class BaseDataSource(QtCore.QObject):
       - (optional) signal_error(str)
     """
 
-    signal_data = QtCore.Signal(object)
-    signal_payload = QtCore.Signal(object)
-    signal_error = QtCore.Signal(str)
+    signal_data = Signal(object)
+    signal_payload = Signal(object)
+    signal_error = Signal(str)
 
     def __init__(self) -> None:
         super().__init__()
@@ -80,14 +80,14 @@ class SyntheticDataSource(BaseDataSource):
         self.emit_interval_ms = int(emit_interval_ms)
         self.buffers = DataBufferDict(self.lookback)
         self._current_time = 0.0
-        self._timer: Optional[QtCore.QTimer] = None
+        self._timer: Optional[QTimer] = None
 
     def online_start(self, lookback: float = 30.0) -> None:
         super().online_start(lookback)
         self.buffers.lookback = self.lookback
         if self.auto_emit:
             if self._timer is None:
-                self._timer = QtCore.QTimer()
+                self._timer = QTimer()
                 self._timer.timeout.connect(self.emit_next)
             if not self._timer.isActive():
                 self._timer.start(self.emit_interval_ms)

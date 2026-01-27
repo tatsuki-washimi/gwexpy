@@ -5,27 +5,29 @@ Adapts NDSThread and DataBufferDict.
 
 from __future__ import annotations
 
-import os
 import logging
-from typing import Any, ClassVar, Iterable
+import os
+from collections.abc import Iterable
+from typing import Any, ClassVar
 
-from qtpy import QtCore
-from .nds_thread import NDSThread
+from qtpy.QtCore import QObject, Signal  # type: ignore[attr-defined]
+
 from .audio_thread import AudioThread
-from .sim_thread import SimulationThread
 from .buffer import DataBufferDict
+from .nds_thread import NDSThread
+from .sim_thread import SimulationThread
 from .util import parse_server_string
 
 logger = logging.getLogger(__name__)
 
 class ChannelListCache:
-    _instance: ClassVar["ChannelListCache" | None] = None
+    _instance: ClassVar[ChannelListCache | None] = None
     cache: dict[str, list[str] | None]
     is_fetching: dict[str, bool]
 
-    def __new__(cls) -> "ChannelListCache":
+    def __new__(cls) -> ChannelListCache:
         if cls._instance is None:
-            cls._instance = super(ChannelListCache, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
             cls._instance.cache = {}
             cls._instance.is_fetching = {}
         return cls._instance
@@ -40,10 +42,10 @@ class ChannelListCache:
     def has_channels(self, server_str: str) -> bool:
         return server_str in self.cache and self.cache[server_str] is not None
 
-class NDSDataCache(QtCore.QObject):
-    signal_data = QtCore.Signal(object)
-    signal_payload = QtCore.Signal(object)
-    signal_error = QtCore.Signal(str)
+class NDSDataCache(QObject):
+    signal_data = Signal(object)
+    signal_payload = Signal(object)
+    signal_error = Signal(str)
 
     def __init__(self) -> None:
         super().__init__()
@@ -75,8 +77,8 @@ class NDSDataCache(QtCore.QObject):
                 logger.info("NDSDataCache: NDS Thread already running.")
             else:
                 # Ensure old thread is fully dead and disconnected before starting new
-                self.online_stop() 
-                
+                self.online_stop()
+
                 host, port = parse_server_string(self.server)
                 logger.info(f"Starting NDSThread for {nds_chans} on {host}:{port}")
                 self.thread = NDSThread(nds_chans, host, port)
@@ -94,9 +96,9 @@ class NDSDataCache(QtCore.QObject):
         if self.sim_thread and self.sim_thread.isRunning():
             logger.info("NDSDataCache: Simulation Thread already running.")
             return
-        
+
         self.online_stop()
-        
+
         logger.info(f"Starting SimulationThread for {self.channels}")
         self.sim_thread = SimulationThread(self.channels, fs=fs)
         self.sim_thread.dataReceived.connect(self._on_data_received)
@@ -116,7 +118,7 @@ class NDSDataCache(QtCore.QObject):
                 logger.warning("NDSThread did not stop in time, terminating.")
                 self.thread.terminate()
             self.thread = None
-            
+
         if self.sim_thread:
             try:
                 self.sim_thread.dataReceived.disconnect(self._on_data_received)
@@ -128,7 +130,7 @@ class NDSDataCache(QtCore.QObject):
             if not self.sim_thread.wait(3000):
                 self.sim_thread.terminate()
             self.sim_thread = None
-            
+
         for ath in self.audio_threads.values():
             ath.stop()
             ath.wait(2000)
