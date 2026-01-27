@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .seriesmatrix_base import SeriesMatrix
 from .seriesmatrix_validation import (
     build_index_if_needed,

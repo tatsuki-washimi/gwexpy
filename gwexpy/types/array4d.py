@@ -1,5 +1,7 @@
 """4D Array with explicit axis management."""
 
+from __future__ import annotations
+
 import numpy as np
 from astropy.units import Quantity, dimensionless_unscaled
 from gwpy.types.array import Array as GwpyArray

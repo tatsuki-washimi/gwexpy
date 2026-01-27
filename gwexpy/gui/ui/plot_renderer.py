@@ -9,6 +9,8 @@ Inspired by DTT's TLGPlot architecture where rendering is separated from
 measurement logic.
 """
 
+from __future__ import annotations
+
 import logging
 
 import numpy as np

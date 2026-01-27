@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.timeseries.io.gwf.lalframe import (
     FRAME_LIBRARY,
     TimeSeries,

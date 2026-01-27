@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from astropy.time import Time
 from gwpy.time import from_gps as _gwpy_from_gps

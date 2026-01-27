@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.table.filters import (
     in_segmentlist,
     not_in_segmentlist,

@@ -2,6 +2,8 @@
 Thread for capturing PC Audio using sounddevice.
 """
 
+from __future__ import annotations
+
 import logging
 import time
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.utils.misc import (
     OrderedDict,
     gprint,

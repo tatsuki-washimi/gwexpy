@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.types.io.hdf5 import (
     ATTR_TYPE_MAP,
     Array,

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from astropy import units as u
 from gwpy.frequencyseries import FrequencySeries
@@ -116,7 +118,7 @@ class BifrequencyMap(Array2D):
             name=f"Projected: {self.name} x {input_spectrum.name}",
         )
 
-    def inverse(self, rcond=None) -> "BifrequencyMap":
+    def inverse(self, rcond=None) -> BifrequencyMap:
         """
         Calculate the (pseudo-)inverse of the BifrequencyMap.
 

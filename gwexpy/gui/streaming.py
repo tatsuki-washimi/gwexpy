@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import logging
 from collections import deque
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 import numpy as np
 from gwpy.timeseries import TimeSeries
@@ -411,7 +413,7 @@ class SpectralAccumulator:
         Return list of result tuples/dicts matching the active_traces structure.
         Compatible with Engine.compute output format.
         """
-        results: list[Optional[Union[tuple[Any, Any], dict[str, Any]]]] = []
+        results: list[Optional[tuple[Any, Any] | dict[str, Any]]] = []
         # print("DEBUG: get_results state keys:", list(self.state.keys()))
         for i, trace in enumerate(self.active_traces):
             if not trace.get("active", True):

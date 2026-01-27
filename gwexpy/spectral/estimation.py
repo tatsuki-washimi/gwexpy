@@ -11,6 +11,8 @@ NaN samples are rejected because FFT-based averaging propagates NaNs and
 invalidates the normalization; callers must pre-clean data instead.
 """
 
+from __future__ import annotations
+
 import os
 import warnings
 

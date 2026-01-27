@@ -5,6 +5,8 @@ Note: This module intentionally avoids importing optional/heavy dependencies
 (e.g. ligo.skymap) at import time because Sphinx autodoc imports `gwexpy`.
 """
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from .pairplot import PairPlot

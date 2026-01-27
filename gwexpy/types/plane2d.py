@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.types.array2d import Array2D as GwpyArray2D
 
 from .array2d import Array2D

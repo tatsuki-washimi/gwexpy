@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.time._tconvert import (
     DATE_STRINGS,
     Decimal,

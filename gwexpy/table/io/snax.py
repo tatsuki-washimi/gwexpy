@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.table.io.snax import (
     EventTable,
     read_table_hdf5,

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.utils.lal import (
     LAL_DETECTORS,
     LAL_NUMPY_FROM_TYPE_STR,

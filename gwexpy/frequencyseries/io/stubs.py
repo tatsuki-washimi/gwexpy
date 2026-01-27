@@ -2,6 +2,8 @@
 Placeholder readers for unsupported frequency-domain formats.
 """
 
+from __future__ import annotations
+
 from gwpy.io import registry as io_registry
 
 from ..collections import FrequencySeriesDict

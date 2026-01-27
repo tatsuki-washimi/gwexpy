@@ -5,6 +5,8 @@ gwexpy.timeseries.io
 Registrations for additional TimeSeries readers.
 """
 
+from __future__ import annotations
+
 # Readers are registered on import
 from . import (
     ats,  # noqa: F401

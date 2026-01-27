@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # Dynamic import from gwpy (PEP 562)
 import gwpy.astro
 

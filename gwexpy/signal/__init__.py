@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 # gwexpy.signal
 # Extends gwpy.signal with additional preprocessing and analysis utilities.
-
 # Local preprocessing module
 from . import preprocessing
 from .preprocessing import (

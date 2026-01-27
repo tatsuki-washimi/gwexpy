@@ -1,5 +1,7 @@
 """Collections for ScalarField objects in the `gwexpy.fields` namespace."""
 
+from __future__ import annotations
+
 import numpy as np
 from astropy import units as u
 
@@ -143,7 +145,7 @@ class FieldDict(dict):
         if validate:
             self._validate()
 
-    def copy(self) -> "FieldDict":
+    def copy(self) -> FieldDict:
         """Return a copy of this FieldDict."""
         return self.__class__({k: v.copy() for k, v in self.items()})
 

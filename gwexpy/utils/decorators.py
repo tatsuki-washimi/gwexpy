@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.utils.decorators import (
     DEPRECATED_FUNCTION_WARNING,
     deprecated_function,

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.timeseries.io.gwf.framel import (
     FRAME_LIBRARY,
     Segment,

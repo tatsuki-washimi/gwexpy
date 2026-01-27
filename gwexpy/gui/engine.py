@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import logging
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +65,7 @@ class Engine:
         graph_type: str (e.g., "Amplitude Spectral Density", "Coherence")
         active_traces: list of dicts [{'active': bool, 'ch_a': str, 'ch_b': str}, ...]
         """
-        results: list[Optional[Union[tuple[Any, Any], dict[str, Any]]]] = []
+        results: list[Optional[tuple[Any, Any] | dict[str, Any]]] = []
 
         if not data_map:
             return results

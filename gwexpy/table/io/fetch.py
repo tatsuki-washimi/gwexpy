@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.table.io.fetch import (
     Table,
     default_registry,

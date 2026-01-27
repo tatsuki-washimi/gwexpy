@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.table.io.hacr import (
     HACR_COLUMNS,
     HACR_DATABASE_PASSWD,

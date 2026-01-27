@@ -1,3 +1,4 @@
+from __future__ import annotations
 from gwpy.timeseries.io.cache import (
     FILE_LIKE,
     BytesIO,

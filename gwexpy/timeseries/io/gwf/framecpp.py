@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.timeseries.io.gwf.framecpp import (
     FRAME_LIBRARY,
     FRERR_NO_CHANNEL_OF_TYPE,

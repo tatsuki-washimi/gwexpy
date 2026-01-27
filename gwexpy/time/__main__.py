@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.time.__main__ import (
     argparse,
     datetime,

@@ -2,6 +2,8 @@
 gwexpy.io helpers and registration hooks.
 """
 
+from __future__ import annotations
+
 # Dynamic import from gwpy (PEP 562)
 import gwpy.io as _gwpy_io
 

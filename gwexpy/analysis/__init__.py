@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .bruco import Bruco, BrucoResult
 from .coupling import (
     CouplingFunctionAnalysis,

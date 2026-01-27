@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.timeseries.io.core import (
     io_cache,
     io_read_multi,
