@@ -81,13 +81,9 @@ class TimeSeriesMatrixCoreMixin:
         if xindex is not None and len(xindex) > 0:
             start = xindex[0]
             if not isinstance(start, u.Quantity):
-                start = u.Quantity(
-                    start, self.xunit or new_dt.unit or u.s
-                )
+                start = u.Quantity(start, self.xunit or new_dt.unit or u.s)
         else:
-            start = u.Quantity(
-                0, self.xunit or new_dt.unit or u.s
-            )
+            start = u.Quantity(0, self.xunit or new_dt.unit or u.s)
 
         cast("TimeSeriesMatrix", self).xindex = Index.define(start, new_dt, length)
 
