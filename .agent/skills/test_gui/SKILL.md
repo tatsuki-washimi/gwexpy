@@ -43,3 +43,48 @@ This skill helps in testing and debugging `gwexpy.gui`.
     # Then call the blocking function
     plt.show()
     ```
+
+## CI Stability Tips (2026-01 Addition)
+
+### Deprecated `waitForWindowShown` Migration
+
+The `qtbot.waitForWindowShown(window)` method is deprecated and should be replaced:
+
+```python
+# Old (deprecated)
+qtbot.waitForWindowShown(window)
+
+# New (recommended)
+qtbot.waitExposed(window, timeout=5000)
+```
+
+**Why**: `waitForWindowShown` may fail silently in headless CI environments. `waitExposed` provides explicit timeout control.
+
+### Suppressing Third-party Warnings
+
+Add warning filters to `pyproject.toml` to suppress noisy third-party deprecation warnings:
+
+```toml
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::DeprecationWarning:numpy",
+    "ignore::DeprecationWarning:pandas",
+    "ignore::FutureWarning:astropy",
+    "ignore:datetime.datetime.utcnow:DeprecationWarning",
+]
+```
+
+This keeps test output clean and focuses attention on actual test failures.
+
+### Window Visibility Best Practices
+
+For reliable window tests:
+
+```python
+def test_window_visibility(qtbot, main_window):
+    main_window.show()
+    main_window.raise_()
+    main_window.activateWindow()
+    qtbot.waitExposed(main_window, timeout=5000)
+    assert main_window.isVisible()
+```

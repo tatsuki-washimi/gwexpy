@@ -46,3 +46,39 @@ This skill consolidates specialized knowledge for resolving static analysis erro
 - Ensure `from __future__ import annotations` is present at the top of the file.
 - If strictly needed for runtime compatibility without future import, fallback to `typing.List`, `typing.Dict`, etc.
 - For `astropy.units.Quantity`, ensure correct usage of generics or string forward references if causing issues.
+
+### 8. Mixin `super()` Calls with Protocol (2026-01 Addition)
+
+**Symptoms**: `Call to abstract method ... via super() is unsafe` or `safe-super` errors when overriding methods in a Mixin.
+**Solution**:
+
+- Define a `Protocol` representing the expected base class interface.
+- Use `cast(ProtocolType, super())` to satisfy MyPy while preserving runtime behavior.
+- Example:
+
+  ```python
+  from typing import Protocol, cast
+
+  class HasFFT(Protocol):
+      def fft(self, nfft: int | None = ...) -> FrequencySeries: ...
+
+  class MyMixin:
+      def fft(self, nfft: int | None = None) -> FrequencySeries:
+          base = cast(HasFFT, super())
+          return base.fft(nfft)
+  ```
+
+### 9. MyPy Exclude List Reduction Strategy (2026-01 Addition)
+
+**Strategy**: Incrementally reduce the `exclude` list in `pyproject.toml` by:
+
+1. Identifying modules currently excluded (e.g., `gui/nds/`, `spectrogram/`).
+2. Running `mypy` with one module removed from exclude.
+3. Fixing errors (mostly missing annotations, uninitialized attributes).
+4. Committing the fix with a clear message.
+5. Repeating until the exclude list is minimal.
+
+**Tips**:
+- Start with smaller, simpler modules (lower dependency complexity).
+- Use `TypedDict` for structured dictionaries (e.g., payload, config).
+- Initialize optional attributes in `__init__` with type annotations.

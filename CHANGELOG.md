@@ -1,5 +1,29 @@
 # Changelog
 
+## [Unreleased]
+
+### Refactored
+
+- **Exception Handling**: Eliminated broad `except Exception` patterns in NDS, GUI, and IO modules. Replaced with specific exception types (`OSError`, `ValueError`, `KeyError`, etc.) for more predictable error handling and better debugging.
+- **GUI Architecture**: Improved separation of concerns between UI and core logic layers in GUI components.
+
+### Improved
+
+- **Type Safety**: Comprehensive type annotation expansion across the codebase:
+  - Added strict type hints to GUI (UI layer, NDS modules, streaming, engine).
+  - Enhanced `TimeSeriesMatrix` mixin with Protocol-based type-safe `super()` calls.
+  - Introduced `TypedDict` definitions for structured data in IO and GUI modules.
+  - Expanded MyPy coverage to include `gui/nds/` and `gui/ui/` directories.
+- **CI Stability**:
+  - Replaced deprecated `qtbot.waitForWindowShown()` with `qtbot.waitExposed()` in GUI tests.
+  - Added warning filters to suppress third-party deprecation warnings (NumPy, pandas) in test configuration.
+  - Refined MyPy exclude patterns for better coverage-exclusion balance.
+
+### Fixed
+
+- **GUI Tests**: Resolved flaky test issues related to window visibility timing.
+- **Type Errors**: Fixed various MyPy errors including uninitialized attributes and missing return type annotations.
+
 ## [0.1.0b1] - 2026-01-25
 
 ### Initial Public Release
