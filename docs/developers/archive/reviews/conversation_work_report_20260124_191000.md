@@ -40,5 +40,5 @@ This conversation focused on a comprehensive quality improvement campaign for th
 
 - **Comprehensive Report**: `docs/developers/reports/report_comprehensive_quality_improvement_20260124.md`
 - **Review Report**: `docs/developers/reports/repo_review_final_20260124.md`
-- **Future Tasks**: `.agent/tasks/task_post_review_improvements_20260124.md`
+- **Future Tasks**: `docs/developers/plans/task_post_review_improvements_20260124.md`
 - **Benchmark Script**: `devel/benchmark_fields.py`

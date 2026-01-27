@@ -2,8 +2,8 @@
 
 **作成日**: 2026-01-27 18:13:13 JST
 **最終更新**: 2026-01-27 (Claude Opus 4.5 WEEK 1-3 完了)
-**ファイル**: `integrated_work_plan_post_codex_20260127_181313.md`
-**参照**: `report_integrated_completion_20260127.md` + `comprehensive_improvement_plan.md`
+**ファイル**: `docs/developers/plans/plan_integrated_work_post_codex_20260127_181313.md`
+**参照**: `docs/developers/reports/report_integrated_completion_20260127.md` + `docs/developers/plans/plan_comprehensive_improvement_20260127.md`
 **ステータス**: 実行可能な優先度付きタスク
 **モード**: 並列実行（Claude Opus 4.5 & GPT5.2-Codex）
 
@@ -654,8 +654,8 @@ mypy gwexpy/ --ignore-missing-imports
 
 ### 既存ドキュメント
 - `report_integrated_completion_20260127.md` - Codex完了報告
-- `comprehensive_improvement_plan.md` - 元の詳細計画
-- `repository_review_report.md` - コード品質分析
+- `docs/developers/plans/plan_comprehensive_improvement_20260127.md` - 元の詳細計画
+- `docs/developers/reports/report_repository_quality_analysis_20260127.md` - コード品質分析
 
 ### PEP・公式ドキュメント
 - [PEP 563 - Postponed Evaluation](https://www.python.org/dev/peps/pep-0563/)
