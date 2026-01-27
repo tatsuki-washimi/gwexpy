@@ -223,14 +223,6 @@ filterwarnings = [
 
 [[tool.mypy.overrides]]
 module = [
-  "gwexpy.timeseries.pipeline",
-  "gwexpy.timeseries.io.win",
-  "gwexpy.timeseries.io.tdms",
-]
-ignore_errors = true
-
-[[tool.mypy.overrides]]
-module = [
 ]
 ignore_errors = true
 

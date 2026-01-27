@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 from astropy import units as u
@@ -233,8 +233,8 @@ class StandardizeTransform(Transform):
             stats = {k: self._compute_stats_ts(v) for k, v in data.items()}
             self.params = {"type": "dict", "stats": stats}
         elif isinstance(data, TimeSeriesList):
-            stats = [self._compute_stats_ts(v) for v in data]
-            self.params = {"type": "list", "stats": stats}
+            stats_list = [self._compute_stats_ts(v) for v in data]
+            self.params = {"type": "list", "stats": stats_list}
         else:
             raise TypeError(f"Unsupported type for StandardizeTransform: {type(data)}")
         return self
@@ -259,6 +259,7 @@ class StandardizeTransform(Transform):
         if self.params is None:
             self.fit(x)
 
+        assert self.params is not None
         params = copy.deepcopy(self.params)
         data, original = (
             _to_matrix_from_collection(x, align=self.align)
@@ -355,7 +356,7 @@ class WhitenTransform(Transform):
 
     def __init__(
         self,
-        method: str = "pca",
+        method: Literal["pca", "zca"] = "pca",
         eps: float = 1e-12,
         n_components: int | None = None,
         *,
@@ -370,6 +371,7 @@ class WhitenTransform(Transform):
         self.align = align
         self.model: WhiteningModel | None = None
         self._channel_names: list[str] | None = None
+        self._original_collection: TimeSeriesDict | TimeSeriesList | None = None
 
     def _to_matrix(self, x):
         if isinstance(x, TimeSeriesMatrix):
@@ -407,6 +409,7 @@ class WhitenTransform(Transform):
         """Apply whitening transform."""
         if self.model is None:
             self.fit(x)
+        assert self.model is not None
 
         mat_data = x
         original = None
@@ -420,8 +423,9 @@ class WhitenTransform(Transform):
         original = original or orig2
 
         X = mat_data.value.reshape(-1, mat_data.shape[-1]).T  # (time, features)
-        X_centered = X - self.model.mean
-        X_w = X_centered @ self.model.W.T
+        model = self.model
+        X_centered = X - model.mean
+        X_w = X_centered @ model.W.T
         new_val = X_w.T[:, None, :]
         new_mat = TimeSeriesMatrix(new_val, t0=mat_data.t0, dt=mat_data.dt)
         if self._channel_names:

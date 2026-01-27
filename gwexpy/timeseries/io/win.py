@@ -80,7 +80,7 @@ def _read_win_fixed(filename, century="20"):
                 flag = f"{buff[0]:02x}"
                 chanum = f"{buff[1]:02x}"
                 chanum = f"{flag}{chanum}"
-                datawide = buff[2] >> 4
+                datawide = float(buff[2] >> 4)
                 srate = int(buff[3])
                 xlen = (srate - 1) * datawide
                 if datawide == 0:
@@ -165,10 +165,10 @@ def _read_win_fixed(filename, century="20"):
                         raise NotImplementedError(msg)
 
     traces = []
-    for i in output.keys():
-        t = Trace(data=np.array(output[i], dtype=np.int32))
-        t.stats.channel = str(i)
-        t.stats.sampling_rate = float(srates[i])
+    for chan in output.keys():
+        t = Trace(data=np.array(output[chan], dtype=np.int32))
+        t.stats.channel = str(chan)
+        t.stats.sampling_rate = float(srates[chan])
         t.stats.starttime = start
         traces.append(t)
     return Stream(traces=traces)
