@@ -1,3 +1,5 @@
+from typing import Optional, Union
+
 import numpy as np
 import scipy.signal  # noqa: F401 - availability check
 
@@ -149,7 +151,7 @@ class SignalGenerator:
 
             apply_filter = False
             btype = "band"
-            Wn: float | list[float] | None = None
+            Wn: Optional[Union[float, list[float]]] = None
 
             if f_low > 0:
                 if f_high > f_low and f_high < nyq:

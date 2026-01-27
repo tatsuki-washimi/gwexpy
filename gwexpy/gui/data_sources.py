@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TypedDict
+from typing import Optional, TypedDict
 
 import numpy as np
 from qtpy import QtCore
@@ -63,7 +63,7 @@ class SyntheticDataSource(BaseDataSource):
 
     def __init__(
         self,
-        channels: list[str] | None = None,
+        channels: Optional[list[str]] = None,
         sample_rate: float = 128.0,
         chunk_size: int = 128,
         lookback: float = 30.0,
@@ -80,7 +80,7 @@ class SyntheticDataSource(BaseDataSource):
         self.emit_interval_ms = int(emit_interval_ms)
         self.buffers = DataBufferDict(self.lookback)
         self._current_time = 0.0
-        self._timer: QtCore.QTimer | None = None
+        self._timer: Optional[QtCore.QTimer] = None
 
     def online_start(self, lookback: float = 30.0) -> None:
         super().online_start(lookback)
@@ -132,11 +132,11 @@ class StubDataSource(SyntheticDataSource):
 
     def __init__(
         self,
-        channels: list[str] | None = None,
+        channels: Optional[list[str]] = None,
         sample_rate: float = 128.0,
         chunk_size: int = 128,
         lookback: float = 30.0,
-        failure_mode: str | None = None,
+        failure_mode: Optional[str] = None,
     ) -> None:
         super().__init__(
             channels=channels,
@@ -146,9 +146,9 @@ class StubDataSource(SyntheticDataSource):
             auto_emit=False,
         )
         self.failure_mode = failure_mode
-        self._next_failure: str | None = None
+        self._next_failure: Optional[str] = None
 
-    def set_failure_mode(self, mode: str | None) -> None:
+    def set_failure_mode(self, mode: Optional[str]) -> None:
         self.failure_mode = mode
 
     def fail_next(self, mode: str) -> None:
@@ -174,7 +174,7 @@ class StubDataSource(SyntheticDataSource):
     def _apply_failure_mode(
         self,
         payload: Payload,
-        mode: str | None,
+        mode: Optional[str],
     ) -> Payload:
         if not mode:
             return payload

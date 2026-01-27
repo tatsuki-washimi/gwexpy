@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from typing import Optional
+
 import numpy as np
 
 
-def normalize_series(val) -> tuple[np.ndarray, np.ndarray] | None:
+def normalize_series(val) -> Optional[tuple[np.ndarray, np.ndarray]]:
     """
     Normalize various data types (TimeSeries, FrequencySeries, dict) into (x, y) ndarrays.
     """

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
@@ -262,7 +262,7 @@ def create_measurement_tab():
     # for i, name in enumerate(default_sim): channel_states[i]['name'] = name # Removed
 
     # Callback for external updates (Main Window)
-    meas_callback: Callable[[], Any] | None = None
+    meas_callback: Optional[Callable[[], Any]] = None
 
     def on_widget_change():
         # Save current state immediately to model
