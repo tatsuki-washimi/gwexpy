@@ -45,7 +45,9 @@ dependencies = [
   "lalsuite",
   "gwdatafind",
   "gwosc",
+  "gpstime",
   "igwn-segments",
+  "ligo.skymap",
   "ligotimegps",
   "dqsegdb2",
   "dateparser",
@@ -79,7 +81,8 @@ gw = [
   "python-framel",
   "ldas-tools-framecpp",
   "gwinc",
-  "dttxml"
+  "dttxml",
+  "nptdms"
 ]
 stats = [
   "polars",
@@ -87,6 +90,7 @@ stats = [
   "statsmodels",
   "pmdarima",
   "mictools",
+  "minepy",
   "dcor",
   "hurst",
   "hurst-exponent",
@@ -102,14 +106,14 @@ geophysics = [
   "mt_metadata",
   "netCDF4",
 ]
-audio = ["librosa", "pydub", "torchaudio"]
+audio = ["librosa", "pydub"]
 bio = ["mne", "elephant", "neo"]
 interop = [
   "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "cupy",
-  "xarray", "quantities"
+  "xarray", "quantities", "simpeg"
 ]
 control = ["control"]
-gui = ["PyQt5", "pyqtgraph", "qtpy"]
+gui = ["PyQt5", "pyqtgraph", "qtpy", "sounddevice"]
 plot = ["pygmt"]
 analysis = [
     "PyEMD",
@@ -118,16 +122,16 @@ analysis = [
     "obspy"
 ]
 all = [
-    "pycbc", "nds2-client", "python-framel", "ldas-tools-framecpp", "gwinc", "dttxml",
-    "polars", "scikit-learn", "statsmodels", "pmdarima", "mictools", "dcor", "hurst", "hurst-exponent", "exp-hurst", "bottleneck",
+    "pycbc", "nds2-client", "python-framel", "ldas-tools-framecpp", "gwinc", "dttxml", "nptdms",
+    "polars", "scikit-learn", "statsmodels", "pmdarima", "mictools", "minepy", "dcor", "hurst", "hurst-exponent", "exp-hurst", "bottleneck",
     "iminuit", "emcee", "corner",
     "specutils", "pyspeckit",
     "obspy", "mth5", "mtpy", "mt_metadata", "netCDF4",
-    "librosa", "pydub", "torchaudio",
+    "librosa", "pydub",
     "mne", "elephant", "neo",
-    "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "cupy",
+    "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "cupy", "simpeg",
     "xarray", "quantities",
-    "control", "PyQt5", "pyqtgraph", "qtpy",
+    "control", "PyQt5", "pyqtgraph", "qtpy", "sounddevice",
     "pygmt",
     "PyEMD", "pywt"
 ]
@@ -181,6 +185,7 @@ addopts = "--import-mode=importlib"
 testpaths = ["tests"]
 pythonpath = ["."]
 norecursedirs = ["gwexpy/gui/reference-dtt"]
+qt_api = "pyqt5"
 markers = [
     "gui: GUI integration tests",
     "nds: NDS server connection tests",
@@ -221,7 +226,6 @@ module = [
   "gwexpy.timeseries.pipeline",
   "gwexpy.timeseries.io.win",
   "gwexpy.timeseries.io.tdms",
-  "gwexpy.io.dttxml_common",
 ]
 ignore_errors = true
 
