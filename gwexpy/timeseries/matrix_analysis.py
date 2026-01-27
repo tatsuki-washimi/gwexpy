@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 import numpy as np
 from astropy import units as u
@@ -43,6 +43,12 @@ def _calc_correlation_direct(ts, target, meth):
 
 class TimeSeriesMatrixAnalysisMixin:
     """Analysis and preprocessing methods for TimeSeriesMatrix."""
+
+    class _ResampleCropCapable(Protocol):
+        def resample(self, rate: Any, *args: Any, **kwargs: Any) -> Any: ...
+        def crop(
+            self, start: Any = None, end: Any = None, copy: bool = False
+        ) -> Any: ...
 
     def _resolve_axis(self: Any, axis):
         """Convert string axis to integer axis."""
@@ -390,7 +396,11 @@ class TimeSeriesMatrixAnalysisMixin:
         else:
             # Signal processing resampling (GWpy)
             self._check_regular("Signal processing resample")
-            return super().resample(rate, *args, **kwargs)  # type: ignore[misc]
+            parent = cast(
+                TimeSeriesMatrixAnalysisMixin._ResampleCropCapable,
+                super(),
+            )
+            return parent.resample(rate, *args, **kwargs)
 
     def impute(
         self: Any,
@@ -588,7 +598,11 @@ class TimeSeriesMatrixAnalysisMixin:
 
         start_float = _to_float(start)
         end_float = _to_float(end)
-        return super().crop(start=start_float, end=end_float, copy=copy)  # type: ignore[misc]
+        parent = cast(
+            TimeSeriesMatrixAnalysisMixin._ResampleCropCapable,
+            super(),
+        )
+        return parent.crop(start=start_float, end=end_float, copy=copy)
 
     def pca_fit(self, **kwargs: Any) -> Any:
         """Fit PCA."""
