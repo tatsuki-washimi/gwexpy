@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from collections import OrderedDict
+from typing import cast
+
 import numpy as np
 
 try:
     import pandas as pd
 except ImportError:
     pd = None
-from collections import OrderedDict
 
 from astropy import units as u
 from gwpy.types.array import Array
@@ -417,8 +419,13 @@ def _normalize_input(
         2,
     ):
         is_quantity = isinstance(data, u.Quantity)
-        base_unit = data.unit if is_quantity else u.dimensionless_unscaled
-        arr_raw = data.value if is_quantity else data
+        if is_quantity:
+            quantity_data = cast(u.Quantity, data)
+            base_unit = quantity_data.unit
+            arr_raw = quantity_data.value
+        else:
+            base_unit = u.dimensionless_unscaled
+            arr_raw = data
         if data.ndim == 1:
             arr = np.asarray(arr_raw).reshape(1, 1, -1)
             N, M = (1, 1)

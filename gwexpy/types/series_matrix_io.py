@@ -78,7 +78,9 @@ class SeriesMatrixIOMixin:
             xidx = self.xindex
             if isinstance(xidx, u.Quantity):
                 xidx = xidx.value
-            long_index = np.tile(xidx, N * M)
+            if xidx is None:
+                xidx = np.arange(K)
+            long_index = np.tile(np.asarray(xidx), N * M)
             val_list = []
             row_list = []
             col_list = []

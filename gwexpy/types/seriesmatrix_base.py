@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import warnings
 from collections import OrderedDict
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 from astropy import units as u
@@ -74,7 +74,7 @@ class SeriesMatrix(
         *,
         meta: MetaDataMatrix | np.ndarray | list | None = None,
         unit: object | None = None,
-        units: np.ndarray | None = None,
+        units: np.ndarray | object | None = None,
         names: np.ndarray | None = None,
         channels: np.ndarray | None = None,
         rows: MetaDataCollectionType = None,
@@ -95,8 +95,6 @@ class SeriesMatrix(
         if unit is not None:
             if units is not None:
                 raise ValueError("give only one of unit or units")
-            units = unit
-
             units = unit
 
         if xindex is not None and xunit is not None:
@@ -166,7 +164,9 @@ class SeriesMatrix(
                     )
 
         _check_shape_consistency(
-            value_array=value_array, meta_matrix=meta_matrix, xindex=xindex
+            value_array=value_array,
+            meta_matrix=meta_matrix,
+            xindex=cast(np.ndarray | None, xindex),
         )
 
         obj = np.asarray(value_array).view(cls)
@@ -216,8 +216,23 @@ class SeriesMatrix(
                 for inp in inputs
             ]
             try:
+                method_literal = cast(
+                    Literal[
+                        "__call__",
+                        "reduce",
+                        "reduceat",
+                        "accumulate",
+                        "outer",
+                        "at",
+                    ],
+                    method,
+                )
                 return np.ndarray.__array_ufunc__(
-                    self.view(np.ndarray), ufunc, method, *base_inputs, **kwargs
+                    self.view(np.ndarray),
+                    ufunc,
+                    method_literal,
+                    *base_inputs,
+                    **kwargs,
                 )
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
                 return NotImplemented
@@ -353,6 +368,7 @@ class SeriesMatrix(
         }
         ufunc_name = getattr(ufunc, "__name__", None)
         meta_passthrough = ufunc in meta_passthrough_ufuncs or ufunc_name in {"clip"}
+        result_dtype = np.dtype(self._value.dtype)
         try:
             probe_val_args = [v[0, 0] for v in value_arrays]
             probe_result = ufunc(*probe_val_args, **ufunc_kwargs)
@@ -373,11 +389,11 @@ class SeriesMatrix(
                 np.isclose,
             }
             if ufunc in boolean_ufuncs:
-                result_dtype = np.bool_
+                result_dtype = np.dtype(np.bool_)
             else:
                 result_dtype = np.asarray(probe_result).dtype
         except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-            result_dtype = self._value.dtype
+            result_dtype = np.dtype(self._value.dtype)
 
         # Vectorized value calculation
         try:

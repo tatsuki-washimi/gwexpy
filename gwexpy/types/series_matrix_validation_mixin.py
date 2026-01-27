@@ -97,8 +97,10 @@ class SeriesMatrixValidationMixin:
         rhs = cast(Union[np.ndarray, u.Quantity, Index], other.xindex)
         if base_unit is not None:
             try:
-                lhs = lhs.to_value(base_unit)
-                rhs = rhs.to_value(base_unit)
+                if isinstance(lhs, (u.Quantity, Index)):
+                    lhs = lhs.to_value(base_unit)
+                if isinstance(rhs, (u.Quantity, Index)):
+                    rhs = rhs.to_value(base_unit)
             except (u.UnitConversionError, AttributeError):
                 logger.debug(
                     "Automatic xindex conversion failed, using raw values.",
