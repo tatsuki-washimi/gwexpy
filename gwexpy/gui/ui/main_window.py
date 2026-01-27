@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from gwpy.timeseries import TimeSeries
@@ -26,6 +29,9 @@ from .tabs import (
     create_measurement_tab,
     create_result_tab,
 )
+
+if TYPE_CHECKING:
+    from ..nds.nds_thread import ChannelListWorker
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -91,6 +97,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.nds_cache.signal_data.connect(self.on_nds_data)
         self.nds_latest_raw = None  # Stores latest DataBufferDict
         self.data_source = "SIM"  # SIM, FILE, NDS
+        self._preload_worker: ChannelListWorker | None = None
+        self._reference_traces: dict[str, dict[str, Any]] = {}
 
         # Signal Generator
         self.sig_gen = SignalGenerator()

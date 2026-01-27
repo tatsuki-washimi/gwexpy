@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any, Callable
+
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
 
@@ -189,7 +193,7 @@ def create_input_tab():
 
     vbox.addStretch(1)
 
-    controls = {
+    controls: dict[str, Any] = {
         "ds_combo": ds_combo,
         "sim_dur": sim_dur_spin,
         "nds_win": nds_win_spin,
@@ -210,7 +214,7 @@ def create_measurement_tab():
     outer.setContentsMargins(10, 10, 10, 10)
     outer.setSpacing(10)
 
-    controls = {}
+    controls: dict[str, Any] = {}
 
     # Group: Measurement
     gb_meas, vb = _create_group("Measurement", "v")
@@ -258,7 +262,7 @@ def create_measurement_tab():
     # for i, name in enumerate(default_sim): channel_states[i]['name'] = name # Removed
 
     # Callback for external updates (Main Window)
-    meas_callback = None
+    meas_callback: Callable[[], Any] | None = None
 
     def on_widget_change():
         # Save current state immediately to model
@@ -636,7 +640,7 @@ def create_excitation_tab():
     outer.setContentsMargins(10, 10, 10, 10)
     outer.setSpacing(10)
 
-    controls = {}
+    controls: dict[str, Any] = {}
     controls["panels"] = []
 
     # Waveform items

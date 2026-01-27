@@ -1,4 +1,5 @@
 import fnmatch
+from typing import Any
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -344,7 +345,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         #        -> K1:ADS-DCU_ID
 
         # We need a recursive dict builder first
-        root = {}
+        root: dict[str, Any] = {}
 
         for name, rate, ctype in channels:
             # Heuristic splitting
