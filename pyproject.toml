@@ -178,7 +178,7 @@ ignore = [
 [tool.mypy]
 ignore_missing_imports = true
 check_untyped_defs = true
-exclude = "gwexpy/(gui/.*)|tests/.*"
+exclude = "gwexpy/gui/(?!nds/).*|tests/.*"
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
