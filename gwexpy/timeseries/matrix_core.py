@@ -85,7 +85,10 @@ class TimeSeriesMatrixCoreMixin:
         else:
             start = u.Quantity(0, self.xunit or new_dt.unit or u.s)
 
-        cast("TimeSeriesMatrix", self).xindex = Index.define(start, new_dt, length)
+        # Clear old xindex before creating new one to ensure proper memory management
+        ts_obj = cast("TimeSeriesMatrix", self)
+        ts_obj.xindex = None
+        ts_obj.xindex = Index.define(start, new_dt, length)
 
     def _get_series_kwargs(self: Any, xindex: Any, meta: Any) -> dict[str, Any]:
         return {

@@ -71,9 +71,14 @@ def build_index_if_needed(xindex, dx, x0, xunit, length):
         _dx = dx.to_value(_xunit) if isinstance(dx, u.Quantity) else dx
         _x0 = x0.to_value(_xunit) if isinstance(x0, u.Quantity) else x0
 
-        start = u.Quantity(_x0, _xunit)
-        step = u.Quantity(_dx, _xunit)
-        return Index.define(start, step, length)
+        # Create Index directly with scalar values to minimize Quantity object lifetime
+        try:
+            return Index.define(_x0, _dx, length, unit=_xunit)
+        except TypeError:
+            # Fallback: older versions may not support unit parameter
+            start = u.Quantity(_x0, _xunit)
+            step = u.Quantity(_dx, _xunit)
+            return Index.define(start, step, length)
     raise ValueError("xindex or (x0, dx) must be specified")
 
 
