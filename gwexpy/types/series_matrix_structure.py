@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
@@ -32,7 +32,7 @@ class SeriesMatrixStructureMixin:
         @xindex.setter
         def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...
 
-        def view(self, dtype: type[Any]) -> Any: ...
+        def view(self, dtype: Any = ..., type: type[Any] | None = ...) -> Any: ...
 
     def copy(self, order="C"):
         """Create a deep copy of this matrix."""
@@ -68,9 +68,22 @@ class SeriesMatrixStructureMixin:
             attrs=deepcopy(self.attrs),
         )
 
-    def astype(self, dtype, copy=True):
+    def astype(
+        self,
+        dtype,
+        order="K",
+        casting="unsafe",
+        subok=True,
+        copy=True,
+    ):
         """Cast matrix data to a specified type."""
-        new_val = self.value.astype(dtype, copy=copy)
+        new_val = self.value.astype(  # type: ignore[arg-type]
+            dtype,
+            order=order,
+            casting=casting,
+            subok=subok,
+            copy=cast(Any, copy),
+        )
         if not copy and new_val is self.value:
             return self
         matrix_cls = cast(type[Any], self.__class__)
@@ -85,6 +98,7 @@ class SeriesMatrixStructureMixin:
             attrs=self.attrs,
         )
 
+    @property
     def real(self):
         """Real part of the matrix."""
         matrix_cls = cast(type[Any], self.__class__)
@@ -99,6 +113,11 @@ class SeriesMatrixStructureMixin:
             attrs=self.attrs,
         )
 
+    @real.setter
+    def real(self, value) -> None:
+        self.value.real = value
+
+    @property
     def imag(self):
         """Imaginary part of the matrix."""
         matrix_cls = cast(type[Any], self.__class__)
@@ -112,6 +131,10 @@ class SeriesMatrixStructureMixin:
             epoch=self.epoch,
             attrs=self.attrs,
         )
+
+    @imag.setter
+    def imag(self, value) -> None:
+        self.value.imag = value
 
     def conj(self):
         """Complex conjugate of the matrix."""
@@ -154,10 +177,19 @@ class SeriesMatrixStructureMixin:
             new_val = np.transpose(self.value, axes)
             return new_val
 
-    def reshape(self, shape, order="C"):
+    def reshape(
+        self,
+        *shape,
+        order: Literal["A", "C", "F"] | None = "C",
+        copy: bool | None = None,
+    ):
         """Reshape the matrix dimensions."""
         # For SeriesMatrix, reshape usually only makes sense on (rows, cols)
         # while keeping sample axis size.
+        if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
+            shape = tuple(shape[0])
+        else:
+            shape = tuple(shape)
         nsamp = self._value.shape[2]
         if len(shape) == 2:
             target_shape = (shape[0], shape[1], nsamp)
@@ -170,9 +202,14 @@ class SeriesMatrixStructureMixin:
         else:
             raise ValueError("Reshape target must be 2D or 3D")
 
-        new_val = self._value.reshape(target_shape, order=order)
+        target_shape_int = tuple(int(s) for s in target_shape)
+        if copy is None:
+            new_val = self._value.reshape(target_shape_int, order=order)
+        else:
+            reshaped = self._value.reshape(target_shape_int, order=order)
+            new_val = np.array(reshaped, copy=copy)
         # Metadata must also be reshaped
-        new_meta = self.meta.value.reshape(target_shape[:2], order=order)
+        new_meta = np.asarray(self.meta).reshape(target_shape_int[:2], order=order)
 
         matrix_cls = cast(type[Any], self.__class__)
         return matrix_cls(

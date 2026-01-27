@@ -89,7 +89,7 @@ class SeriesMatrixMathMixin:
         """
         if not isinstance(other, type(self)):
             # If other is not a SeriesMatrix, try to use ndarray matmul
-            return np.matmul(self, other)
+            return np.matmul(self, other)  # type: ignore[call-overload]
 
         if self._value.shape[2] != other._value.shape[2]:
             raise ValueError("Sample axis length mismatch in matrix multiplication")
@@ -137,8 +137,14 @@ class SeriesMatrixMathMixin:
             attrs=getattr(self, "attrs", {}),
         )
 
-    def trace(self):
+    def trace(self, offset=0, axis1=0, axis2=1, dtype=None, out=None):
         """Compute the trace of the matrix (sum of diagonal elements)."""
+        if offset != 0 or axis1 != 0 or axis2 != 1:
+            raise NotImplementedError(
+                "trace currently supports only offset=0, axis1=0, axis2=1"
+            )
+        if out is not None:
+            raise NotImplementedError("trace does not support the 'out' argument")
         nrow, ncol, _ = self._value.shape
         if nrow != ncol:
             raise ValueError("trace requires a square matrix")
@@ -152,6 +158,8 @@ class SeriesMatrixMathMixin:
                 )
             diag_values.append(u.Quantity(self._value[i, i], u_ii).to_value(ref_unit))
         summed = np.sum(diag_values, axis=0)
+        if dtype is not None:
+            summed = np.asarray(summed, dtype=dtype)
 
         # Result is a Series. Need to find base Series class.
         series_cls = getattr(self, "series_class", None)
@@ -163,8 +171,15 @@ class SeriesMatrixMathMixin:
         name = f"trace({self.name})" if getattr(self, "name", "") else "trace"
         return series_cls(summed, xindex=self.xindex, unit=ref_unit, name=name)
 
-    def diagonal(self, output: str = "list"):
+    def diagonal(self, offset=0, axis1=0, axis2=1, **kwargs):
         """Extract diagonal elements from the matrix."""
+        output = kwargs.pop("output", "list")
+        if kwargs:
+            raise TypeError(f"Unexpected keyword arguments: {list(kwargs)}")
+        if offset != 0 or axis1 != 0 or axis2 != 1:
+            raise NotImplementedError(
+                "diagonal currently supports only offset=0, axis1=0, axis2=1"
+            )
         from .metadata import MetaDataDict
 
         nrow, ncol, nsamp = self._value.shape
@@ -417,4 +432,4 @@ class SeriesMatrixMathMixin:
 
     def abs(self):
         """Return the absolute value of the matrix element-wise."""
-        return np.abs(self)
+        return np.abs(self)  # type: ignore[call-overload]
