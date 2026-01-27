@@ -88,7 +88,7 @@ class FrequencySeries(
         `FrequencySeries`
             The phase of the series, in radians.
         """
-        val = np.angle(self.value)
+        val = np.angle(np.asarray(self.value))
         if unwrap:
             val = np.unwrap(val)
 

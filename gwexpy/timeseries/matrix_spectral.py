@@ -32,11 +32,15 @@ class TimeSeriesMatrixSpectralMixin:
 
         # Pass kwargs to rfft (like n)
         rfft_len = kwargs.get("n", n)
-        fs_data = np.fft.rfft(data, n=rfft_len, axis=-1)
+        if rfft_len is None:
+            rfft_len = n
+        rfft_len_int = int(rfft_len)
+        fs_data = np.fft.rfft(data, n=rfft_len_int, axis=-1)
 
         # Calculate frequencies
         freqs = (
-            np.fft.rfftfreq(rfft_len, d=cast("TimeSeriesMatrix", self).dt.value) * u.Hz
+            np.fft.rfftfreq(rfft_len_int, d=cast("TimeSeriesMatrix", self).dt.value)
+            * u.Hz
         )
 
         # Metadata logic: simplified for now, uses same meta for all

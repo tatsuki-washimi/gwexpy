@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 from astropy import units as u
 from gwpy.frequencyseries import FrequencySeries
@@ -454,6 +456,7 @@ class BifrequencyMap(Array2D):
         data_flat = self.value.flatten()
 
         # Map methods to NaN-safe functions
+        statistic_func: Any
         if method == "mean":
             statistic_func = np.nanmean
         elif method == "median":
@@ -472,8 +475,10 @@ class BifrequencyMap(Array2D):
         elif method == "percentile":
             p = kwargs.get("percentile", 50)
 
-            def statistic_func(x):
+            def _percentile(x: Any) -> Any:
                 return np.nanpercentile(x, p)
+
+            statistic_func = _percentile
         else:
             # Fallback for custom callables or unsupported strings (let binned_statistic handle)
             statistic_func = method
@@ -650,7 +655,7 @@ class BifrequencyMap(Array2D):
             indices = np.arange(n_slices)
 
         # Prepare list of (x, y) segments
-        segments = []
+        segments: list[np.ndarray] = []
 
         # Pre-compute grids if needed for speed, but loop is fine for plotting usually
         for i, val in enumerate(iter_axis_vals):
