@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.utils.sphinx.ex2rst import (
     METADATA,
     Path,

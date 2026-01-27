@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.table.io.ligolw import (
     GET_AS_EXCLUDE,
     LIGOLW_TABLES,

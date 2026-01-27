@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.utils.progress import (
     TQDM_BAR_FORMAT,
     progress_bar,

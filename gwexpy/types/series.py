@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.types.series import Series as GwpySeries
 
 from ._stats import StatisticalMethodsMixin

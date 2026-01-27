@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.timeseries.io.hdf5 import (
     SEC_UNIT,
     StateVector,

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.table.io.gstlal import (
     GET_COLUMN,
     GET_COLUMN_EXTRA,

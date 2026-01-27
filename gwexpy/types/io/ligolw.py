@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.types.io.ligolw import (
     Series,
     read_ligolw,

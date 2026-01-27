@@ -1,5 +1,7 @@
 """Interoperability with pyspeckit."""
 
+from __future__ import annotations
+
 from ._optional import require_optional
 from .base import to_plain_array
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.table.io.gwf import (
     FILE_LIKE,
     EventTable,

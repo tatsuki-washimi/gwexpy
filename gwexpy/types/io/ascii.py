@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.types.io.ascii import (
     Series,
     column_stack,

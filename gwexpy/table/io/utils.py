@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.table.io.utils import (
     EventTable,
     decorate_registered_reader,

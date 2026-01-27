@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 class IoNotImplementedError(NotImplementedError):
     """Exception raised when an I/O format is not fully implemented."""
 

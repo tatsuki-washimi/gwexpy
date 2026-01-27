@@ -6,6 +6,8 @@ from Excitation panels and injection into the data stream. It follows the DTT
 pattern of separating stimulus management from main UI logic.
 """
 
+from __future__ import annotations
+
 import logging
 
 import numpy as np

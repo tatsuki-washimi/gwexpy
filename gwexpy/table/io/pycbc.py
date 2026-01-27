@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.table.io.pycbc import (
     GET_COLUMN,
     META_COLUMNS,

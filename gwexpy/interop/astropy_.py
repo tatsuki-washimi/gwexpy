@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 def to_astropy_timeseries(ts, column="value", time_format="gps"):
     """
     ts: TimeSeries

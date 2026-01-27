@@ -3,6 +3,8 @@ Data buffer management for NDS data.
 Adapted from ndscope reference implementation.
 """
 
+from __future__ import annotations
+
 import numpy as np
 
 

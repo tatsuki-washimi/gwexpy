@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 def extract_channels(products: dict) -> list[str]:
     """
     Extract unique channel names from a dictionary of products.

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from astropy.units import dimensionless_unscaled
 from gwpy.types.array2d import Array2D as GwpyArray2D

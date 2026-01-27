@@ -1,5 +1,7 @@
 """gwexpy.types - Data type definitions and utilities."""
 
+from __future__ import annotations
+
 from .array import Array
 from .array2d import Array2D
 from .array3d import Array3D

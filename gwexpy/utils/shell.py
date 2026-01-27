@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.utils.shell import (
     PIPE,
     CalledProcessError,

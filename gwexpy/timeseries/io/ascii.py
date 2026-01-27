@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.timeseries.io.ascii import (
     StateVector,
     TimeSeries,

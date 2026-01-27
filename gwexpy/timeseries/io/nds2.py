@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.timeseries.io.nds2 import (
     Channel,
     Segment,

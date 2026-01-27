@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.timeseries.io.losc import (
     DQMASK_CHANNEL_REGEX,
     GWOSC_LOCATE_KWARGS,

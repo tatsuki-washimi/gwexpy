@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.types.sliceutils import (
     Integral,
     as_slice,

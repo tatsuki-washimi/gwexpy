@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.table.io.losc import (
     DEFAULT_GWOSC_URL,
     MISSING_DATA,

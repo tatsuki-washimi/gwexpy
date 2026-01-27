@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.timeseries.core import (
     GWOSC_DEFAULT_HOST,
     Channel,

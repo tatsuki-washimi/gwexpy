@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gwpy.utils.sphinx.zenodo import (
     DEFAULT_HITS,
     DEFAULT_ZENODO_URL,
