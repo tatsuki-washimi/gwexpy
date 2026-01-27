@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import warnings
 import xml.etree.ElementTree as ET
+from typing import TypedDict
 
 import numpy as np
 
@@ -13,12 +14,17 @@ from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.timeseries import TimeSeries
 
 
-def extract_xml_channels(filename: str) -> list:
+class ChannelInfo(TypedDict):
+    name: str
+    active: bool
+
+
+def extract_xml_channels(filename: str) -> list[ChannelInfo]:
     """
     Parse DTT XML to extract channel names and their Active status.
     Returns: list of dict {'name': str, 'active': bool}
     """
-    channels = []
+    channels: list[ChannelInfo] = []
     try:
         tree = ET.parse(filename)
     except (ET.ParseError, OSError) as exc:
@@ -37,7 +43,7 @@ def extract_xml_channels(filename: str) -> list:
     # Let's search for flattened params first.
     # In DTT XML, keys are like "MeasChn[0]", "MeasActive[0]" etc.
 
-    params = {}
+    params: dict[str, str | None] = {}
     for param in root.findall(".//Param"):
         name_attr = param.get("Name")
         if name_attr:
@@ -78,7 +84,7 @@ def extract_xml_channels(filename: str) -> list:
         if key_active in params:
             v = params[key_active]
             # XML boolean might be 'true', '1', 'false', '0'
-            if v.lower() in ["false", "0"]:
+            if v is not None and v.lower() in ["false", "0"]:
                 active = False
 
         if name:  # Only add if name is not empty
