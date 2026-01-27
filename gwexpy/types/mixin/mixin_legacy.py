@@ -77,8 +77,8 @@ class PhaseMethodsMixin:
             The phase of the data.
         """
         if deg:
-            return self.degree(unwrap=unwrap, **kwargs)
-        return self.radian(unwrap=unwrap, **kwargs)
+            return self.degree(unwrap=unwrap, **kwargs)  # type: ignore[attr-defined]
+        return self.radian(unwrap=unwrap, **kwargs)  # type: ignore[attr-defined]
 
     def angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any:
         """Alias for `phase(unwrap=unwrap, deg=deg)`."""

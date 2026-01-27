@@ -19,7 +19,7 @@ except ImportError:
 from qtpy import QtCore
 
 
-class AudioThread(QtCore.QThread):
+class AudioThread(QtCore.QThread):  # type: ignore[name-defined]
     # Signal to emit received data: (data_dict, trend_type, is_online)
     dataReceived = QtCore.Signal(object, str, bool)
     finished = QtCore.Signal()

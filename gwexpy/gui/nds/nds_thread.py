@@ -21,7 +21,7 @@ def _nds2_missing_message() -> str:
     return f"{base} ({_NDS2_IMPORT_ERROR})"
 
 
-class NDSThread(QtCore.QThread):
+class NDSThread(QtCore.QThread):  # type: ignore[name-defined]
     # Signal to emit received data: (data_dict, trend_type, is_online)
     dataReceived = QtCore.Signal(object, str, bool)
     finished = QtCore.Signal()
@@ -90,7 +90,7 @@ class NDSThread(QtCore.QThread):
                 )
 
 
-class ChannelListWorker(QtCore.QThread):
+class ChannelListWorker(QtCore.QThread):  # type: ignore[name-defined]
     finished = QtCore.Signal(list, str)  # results (list of tuples), error
 
     def __init__(self, server, port, pattern="*"):

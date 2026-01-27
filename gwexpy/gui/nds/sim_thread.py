@@ -9,7 +9,7 @@ from qtpy import QtCore
 logger = logging.getLogger(__name__)
 
 
-class SimulationThread(QtCore.QThread):
+class SimulationThread(QtCore.QThread):  # type: ignore[name-defined]
     dataReceived = QtCore.Signal(object, object, bool)
 
     def __init__(self, channels, fs=16384, chunk_sec=1.0):
