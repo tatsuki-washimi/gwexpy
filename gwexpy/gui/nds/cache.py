@@ -3,8 +3,12 @@ NDS Data Cache management.
 Adapts NDSThread and DataBufferDict.
 """
 
+from __future__ import annotations
+
 import os
 import logging
+from typing import Any, ClassVar, Iterable
+
 from qtpy import QtCore
 from .nds_thread import NDSThread
 from .audio_thread import AudioThread
@@ -15,41 +19,49 @@ from .util import parse_server_string
 logger = logging.getLogger(__name__)
 
 class ChannelListCache:
-    _instance = None
-    def __new__(cls):
+    _instance: ClassVar["ChannelListCache" | None] = None
+    cache: dict[str, list[str] | None]
+    is_fetching: dict[str, bool]
+
+    def __new__(cls) -> "ChannelListCache":
         if cls._instance is None:
             cls._instance = super(ChannelListCache, cls).__new__(cls)
             cls._instance.cache = {}
             cls._instance.is_fetching = {}
         return cls._instance
-    def get_channels(self, server_str): return self.cache.get(server_str)
-    def set_channels(self, server_str, channels):
+
+    def get_channels(self, server_str: str) -> list[str] | None:
+        return self.cache.get(server_str)
+
+    def set_channels(self, server_str: str, channels: list[str] | None) -> None:
         self.cache[server_str] = channels
         self.is_fetching[server_str] = False
-    def has_channels(self, server_str): return server_str in self.cache and self.cache[server_str] is not None
+
+    def has_channels(self, server_str: str) -> bool:
+        return server_str in self.cache and self.cache[server_str] is not None
 
 class NDSDataCache(QtCore.QObject):
     signal_data = QtCore.Signal(object)
     signal_payload = QtCore.Signal(object)
     signal_error = QtCore.Signal(str)
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self.channels = []
-        self.server = os.getenv("NDSSERVER", "localhost:31200")
-        self.lookback = 30.0
-        self.buffers = DataBufferDict(self.lookback)
-        self.thread = None
-        self.sim_thread = None
-        self.audio_threads = {}
+        self.channels: list[str] = []
+        self.server: str = os.getenv("NDSSERVER", "localhost:31200")
+        self.lookback: float = 30.0
+        self.buffers: DataBufferDict = DataBufferDict(self.lookback)
+        self.thread: NDSThread | None = None
+        self.sim_thread: SimulationThread | None = None
+        self.audio_threads: dict[str, AudioThread] = {}
 
-    def set_channels(self, channels):
+    def set_channels(self, channels: Iterable[str]) -> None:
         self.channels = list(set([c for c in channels if c]))
 
-    def set_server(self, server_env):
+    def set_server(self, server_env: str) -> None:
         self.server = server_env
 
-    def online_start(self, lookback=30.0):
+    def online_start(self, lookback: float = 30.0) -> None:
         self.lookback = lookback
         self.buffers.lookback = lookback
         if not self.channels:
@@ -76,7 +88,7 @@ class NDSDataCache(QtCore.QObject):
             # ... audio logic ...
             pass
 
-    def sim_start(self, lookback=30.0, fs=16384):
+    def sim_start(self, lookback: float = 30.0, fs: float = 16384) -> None:
         self.lookback = lookback
         self.buffers.lookback = lookback
         if self.sim_thread and self.sim_thread.isRunning():
@@ -90,7 +102,7 @@ class NDSDataCache(QtCore.QObject):
         self.sim_thread.dataReceived.connect(self._on_data_received)
         self.sim_thread.start()
 
-    def online_stop(self):
+    def online_stop(self) -> None:
         # Disconnect signals first to avoid callbacks during shutdown
         if self.thread:
             try:
@@ -122,11 +134,11 @@ class NDSDataCache(QtCore.QObject):
             ath.wait(2000)
         self.audio_threads = {}
 
-    def reset(self):
+    def reset(self) -> None:
         self.online_stop()
         self.buffers.reset()
 
-    def _on_data_received(self, payload, trend, is_online):
+    def _on_data_received(self, payload: Any, trend: Any, is_online: bool) -> None:
         logger.info("Cache received data payload")
         self.buffers.update_buffers(payload)
         self.signal_data.emit(self.buffers)
