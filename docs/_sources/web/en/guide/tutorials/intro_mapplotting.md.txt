@@ -1,8 +1,12 @@
 # Mapping on Geoid and Sky
 
-This tutorial is currently only available in Japanese.
-See `../../ja/guide/tutorials/intro_mapplotting.ipynb`.
+This tutorial is currently under translation. The English text will be published soon.
+
+For now, please refer to the Japanese version (links below).
+
+- Japanese page (HTML): `../../../ja/guide/tutorials/intro_mapplotting.html`
+- Japanese notebook (download): `../../../ja/guide/tutorials/intro_mapplotting.ipynb`
 
 ---
 
-このチュートリアルの日本語版は `../../ja/guide/tutorials/intro_mapplotting.ipynb` を参照してください。
+We appreciate your patience while the English tutorial is finalized.
