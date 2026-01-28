@@ -171,10 +171,17 @@
 <span class="sd">    &gt;&gt;&gt; # fs = from_control_frd(FrequencySeries, frd)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">omega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">frd</span><span class="o">.</span><span class="n">omega</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
+
+    <span class="c1"># NOTE:</span>
+    <span class="c1"># - control &gt;= 0.10 provides `frdata` (preferred)</span>
+    <span class="c1"># - control 0.10 also keeps `fresp` but emits a FutureWarning on access</span>
+    <span class="c1"># - older versions may not have `frdata`</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">frd</span><span class="p">,</span> <span class="s2">&quot;frdata&quot;</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">frd</span><span class="o">.</span><span class="n">frdata</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="c1"># Compatibility with older versions</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">frd</span><span class="p">,</span> <span class="s2">&quot;_fresp&quot;</span><span class="p">):</span>
+        <span class="c1"># Avoid triggering the `fresp` deprecation warning on newer control</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">frd</span><span class="o">.</span><span class="n">_fresp</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">frd</span><span class="o">.</span><span class="n">fresp</span><span class="p">)</span>
 
     <span class="c1"># Convert rad/s to Hz (standard for gwexpy)</span>
