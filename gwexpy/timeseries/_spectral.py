@@ -5,7 +5,6 @@ This module integrates modular spectral analysis functionality:
 - Fourier transforms (FFT, PSD, etc.)
 - Special transforms (HHT, EMD, Laplace, CWT)
 """
-
 from __future__ import annotations
 
 from ._spectral_fourier import TimeSeriesSpectralFourierMixin

@@ -4,7 +4,6 @@ gwexpy.signal.preprocessing.imputation
 
 Missing value imputation algorithms for signal processing.
 """
-
 from __future__ import annotations
 
 import numpy as np

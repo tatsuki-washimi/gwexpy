@@ -7,7 +7,6 @@ Interoperability with MTH5 (Magnetotelluric HDF5) format.
 Provides read/write functionality for magnetotelluric time series data.
 Requires the `mth5` package.
 """
-
 from __future__ import annotations
 
 import logging

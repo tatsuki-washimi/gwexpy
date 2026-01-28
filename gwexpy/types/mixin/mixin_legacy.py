@@ -4,7 +4,6 @@ gwexpy.types.mixin
 
 Common mixins for gwexpy types.
 """
-
 from __future__ import annotations
 
 from typing import Any

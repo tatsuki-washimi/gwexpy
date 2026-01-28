@@ -4,7 +4,6 @@ High-level fitting pipeline for spectral analysis.
 This module provides integrated workflows for common analysis patterns,
 combining bootstrap estimation, GLS fitting, and MCMC in a single API.
 """
-
 from __future__ import annotations
 
 from collections.abc import Callable

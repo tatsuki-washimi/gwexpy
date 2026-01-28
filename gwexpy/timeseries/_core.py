@@ -6,7 +6,6 @@ This module contains the base TimeSeries class with essential functionality:
 - Regularity checking (is_regular, _check_regular)
 - Peak finding
 """
-
 from __future__ import annotations
 
 from collections.abc import Iterable

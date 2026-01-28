@@ -7,7 +7,6 @@ This module provides signal processing functionality as a mixin class:
 - Demodulation: _build_phase_series, mix_down, baseband, lock_in
 - Cross-correlation: xcorr, transfer_function
 """
-
 from __future__ import annotations
 
 import logging

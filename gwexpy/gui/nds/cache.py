@@ -2,6 +2,7 @@
 NDS Data Cache management.
 Adapts NDSThread and DataBufferDict.
 """
+from __future__ import annotations
 
 from __future__ import annotations
 

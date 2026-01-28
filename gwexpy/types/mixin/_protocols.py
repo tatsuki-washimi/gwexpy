@@ -3,7 +3,6 @@
 These protocols define the structural requirements that mixins expect
 from their host classes, enabling MyPy to verify type safety.
 """
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable

@@ -5,7 +5,6 @@ This module provides utilities to handle window normalization and Equivalent Noi
 Bandwidth (ENBW) calculations, supporting both standard scientific approaches
 (as used in scipy.signal) and DTT (diaggui) compatible modes.
 """
-
 from __future__ import annotations
 
 import numpy as np

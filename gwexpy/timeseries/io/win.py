@@ -7,7 +7,6 @@ References:
       Technical Research Report, Earthquake Research Institute, the University of Tokyo, No. 26, pp. 31-36, 2020.
       https://www.eri.u-tokyo.ac.jp/GIHOU/archive/26_031-036.pdf
 """
-
 from __future__ import annotations
 
 import struct

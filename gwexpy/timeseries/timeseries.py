@@ -11,7 +11,6 @@ The implementation is modularized across several files:
 
 This module integrates all Mixins into a single TimeSeries class.
 """
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, cast
