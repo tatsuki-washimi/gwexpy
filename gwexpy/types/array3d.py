@@ -156,6 +156,8 @@ class Array3D(Array):
 
         for i, sl in enumerate(items_list):
             name, idx_arr = current_axes[i]
+            if idx_arr is None:
+                return self._to_plain(raw)
             if isinstance(sl, slice):
                 kept_axes.append((name, idx_arr[sl]))
             elif self._is_int_index(sl):

@@ -68,7 +68,7 @@ class SpectrogramMatrixAnalysisMixin:
             # metadata.copy() copies the array and provides new MetaData objects
             # Use temporary variable to satisfy type checker
             temp_meta = new.meta.copy()
-            for m in temp_meta.flat:
+            for m in temp_meta.reshape(-1):
                 # We already have new MetaData objects from meta.copy()
                 m.unit = u.rad
                 if m.name:
@@ -116,7 +116,7 @@ class SpectrogramMatrixAnalysisMixin:
 
         if new.meta is not None:
             # We already copied meta in radian(), but we need to change unit to deg
-            for m in new.meta.flat:
+            for m in new.meta.reshape(-1):
                 m.unit = u.deg
                 if m.name and "_phase" in m.name:
                     m.name = m.name.replace("_phase", "_phase_deg")

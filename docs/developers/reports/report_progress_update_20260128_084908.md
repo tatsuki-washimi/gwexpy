@@ -54,3 +54,25 @@
 - Address remaining MyPy errors in `gwexpy/spectrogram/matrix.py` and `gwexpy/analysis/response.py`.
 - Fix smaller typing issues in `_resampling.py`, `timeseries/utils.py`, `array3d.py`, `control_.py`, and `obspy_.py`.
 - Re-run `mypy .` to confirm reduced error count.
+
+---
+
+## Update (2026-01-28): Spectrogram MyPy Completed
+
+This session supersedes the earlier “Remaining MyPy Errors” section.
+
+## Results
+- `mypy .`: 0 errors (319 files)
+- `ruff check .`: clean
+
+## Key Changes
+- Enabled MyPy for `gwexpy/spectrogram/` (removed module-wide suppression and fixed remaining typing issues).
+- Standardized metadata iteration by replacing `.flat` usage with `.reshape(-1)` where needed.
+- Added minimal `# type: ignore[misc]` where ndarray multi-inheritance conflicts are structural.
+
+## Validation Notes
+- Full `pytest tests/` exceeded the execution time budget in this environment; basic import check for `gwexpy.spectrogram.matrix` succeeded.
+
+## Suggested Next Steps
+- Run `pytest tests/ -x` in CI or with a longer local timeout.
+- Proceed with P2 (coverage improvement) once tests are green.

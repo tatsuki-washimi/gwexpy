@@ -120,6 +120,7 @@ class SeriesMatrixIndexingMixin:
 
         if not isinstance(result, type(self)):
             result = result.view(type(self))
+        result = cast(SeriesMatrixIndexingMixin, result)
 
         if result.ndim < 3:
             # Ensure result preserves 3D SeriesMatrix structure (Row, Col, X).

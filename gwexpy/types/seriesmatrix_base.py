@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import warnings
 from collections import OrderedDict
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -54,7 +54,7 @@ class PerformanceWarning(RuntimeWarning):
     pass
 
 
-class SeriesMatrix(
+class SeriesMatrix(  # type: ignore[misc]
     RegularityMixin,
     InteropMixin,
     SeriesMatrixCoreMixin,
@@ -216,17 +216,7 @@ class SeriesMatrix(
                 for inp in inputs
             ]
             try:
-                method_literal = cast(
-                    Literal[
-                        "__call__",
-                        "reduce",
-                        "reduceat",
-                        "accumulate",
-                        "outer",
-                        "at",
-                    ],
-                    method,
-                )
+                method_literal = cast(Any, method)
                 return np.ndarray.__array_ufunc__(
                     self.view(np.ndarray),
                     ufunc,

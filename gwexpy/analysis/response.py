@@ -115,7 +115,7 @@ class ResponseFunctionResult:
         """
         # Find the step
         if step_index is None and freq is not None:
-            step_index = np.argmin(np.abs(self.injected_freqs - freq))
+            step_index = int(np.argmin(np.abs(self.injected_freqs - freq)))
         if step_index is None:
             raise ValueError("Must specify either step_index or freq.")
 
@@ -212,7 +212,7 @@ def detect_step_segments(
     peak_freqs_t = freqs[peak_indices]
 
     # SNR check
-    median_level = np.median(spec.value)
+    median_level = float(np.median(spec.value))
     if median_level == 0:
         median_level = 1e-30
     is_loud = peak_vals > (median_level * snr_threshold)

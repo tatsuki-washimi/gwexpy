@@ -26,7 +26,7 @@ from .timeseries import TimeSeries
 from .utils import SeriesType
 
 
-class TimeSeriesMatrix(
+class TimeSeriesMatrix(  # type: ignore[misc]
     PhaseMethodsMixin,
     TimeSeriesMatrixCoreMixin,
     TimeSeriesMatrixAnalysisMixin,
