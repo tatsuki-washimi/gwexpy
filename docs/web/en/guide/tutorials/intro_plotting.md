@@ -4,8 +4,8 @@ This tutorial is currently under translation. The English text will be published
 
 For now, please refer to the Japanese version (links below).
 
-- Japanese page (HTML): `../../../ja/guide/tutorials/intro_plotting.html`
-- Japanese notebook (download): `../../../ja/guide/tutorials/intro_plotting.ipynb`
+- Japanese page (HTML): :doc:`../../../ja/guide/tutorials/intro_plotting`
+- Japanese notebook (download): [intro_plotting.ipynb](../../../ja/guide/tutorials/intro_plotting.ipynb)
 
 ---
 

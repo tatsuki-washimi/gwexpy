@@ -4,8 +4,8 @@ This tutorial is currently under translation. The English text will be published
 
 For now, please refer to the Japanese version (links below).
 
-- Japanese page (HTML): `../../../ja/guide/tutorials/advanced_peak_detection.html`
-- Japanese notebook (download): `../../../ja/guide/tutorials/advanced_peak_detection.ipynb`
+- Japanese page (HTML): :doc:`../../../ja/guide/tutorials/advanced_peak_detection`
+- Japanese notebook (download): [advanced_peak_detection.ipynb](../../../ja/guide/tutorials/advanced_peak_detection.ipynb)
 
 ---
 
