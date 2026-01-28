@@ -1,8 +1,12 @@
 # Unit-aware Peak Detection
 
-This tutorial is currently only available in Japanese.
-See `../../ja/guide/tutorials/advanced_peak_detection.ipynb`.
+This tutorial is currently under translation. The English text will be published soon.
+
+For now, please refer to the Japanese version (links below).
+
+- Japanese page (HTML): `../../../ja/guide/tutorials/advanced_peak_detection.html`
+- Japanese notebook (download): `../../../ja/guide/tutorials/advanced_peak_detection.ipynb`
 
 ---
 
-このチュートリアルの日本語版は `../../ja/guide/tutorials/advanced_peak_detection.ipynb` を参照してください。
+We appreciate your patience while the English tutorial is finalized.
