@@ -2,11 +2,10 @@
 
 [![CI Status](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml/badge.svg)](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml)
 [![Documentation](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/docs.yml/badge.svg)](https://tatsuki-washimi.github.io/gwexpy/)
-[![PyPI version](https://img.shields.io/pypi/v/gwexpy.svg)](https://pypi.org/project/gwexpy/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
-**gwexpy** is an (unofficial) extension library for [**GWpy**](https://gwpy.github.io/), designed to facilitate advanced time-series analysis, matrix operations, and signal processing for experimental physics and gravitational wave data analysis.
+**gwexpy** (GWexpy) is an (unofficial) extension library for [**GWpy**](https://gwpy.github.io/), designed to facilitate advanced time-series analysis, matrix operations, and signal processing for experimental physics and gravitational wave data analysis.
 
 > [!IMPORTANT]
 > For full documentation, tutorials, and API reference, please visit:
@@ -32,11 +31,17 @@ See the [Features](https://tatsuki-washimi.github.io/gwexpy/en/index.html) page 
 ## Installation
 
 ```bash
-# Minimal installation
+# GWexpy is not published on PyPI yet (recommended)
+pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+
+# From a local checkout
 pip install .
 
 # With a specific extra (example)
 pip install ".[analysis]"
+
+# With a specific extra from GitHub
+pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 ```
 
 > [!NOTE]

@@ -1,18 +1,21 @@
 インストール
 ============
 
-GWExPy は Python 3.9+ を必要とし、GWpy, NumPy, SciPy, および Astropy に依存します。
+GWexpy は Python 3.9+ を必要とし、GWpy, NumPy, SciPy, および Astropy に依存します。
 
 基本インストール
 ----------------
 
+.. note::
+   GWexpy は現時点で PyPI からは提供されていません。推奨インストール方法は GitHub 経由です。
+
 .. code-block:: bash
+
+   # GitHub から直接 (推奨)
+   pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 
    # ローカルチェックアウトから
    pip install .
-
-   # GitHub から直接 (PyPIリリースが無い場合)
-   pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 
 開発用インストール
 ------------------
@@ -24,7 +27,7 @@ GWExPy は Python 3.9+ を必要とし、GWpy, NumPy, SciPy, および Astropy �
 オプション機能の追加
 --------------------
 
-GWExPy はドメイン固有の機能のためにオプションの依存関係を提供しています:
+GWexpy はドメイン固有の機能のためにオプションの依存関係を提供しています:
 
 - ``.[gw]`` : 重力波データ解析 (nds2, frames, noise models)
 - ``.[stats]`` : 統計解析 (polars, ARIMA, ICA/PCA)
@@ -45,6 +48,12 @@ GWExPy はドメイン固有の機能のためにオプションの依存関係�
 .. code-block:: bash
 
    pip install ".[gw,stats,plot]"
+
+GitHub から直接エクストラを指定してインストールすることもできます:
+
+.. code-block:: bash
+
+   pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 
 .. note::
    ``[gw]`` エクストラに含まれる ``nds2-client`` などの一部ライブラリは **PyPI では提供されていません**。

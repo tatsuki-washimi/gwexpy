@@ -7,9 +7,9 @@ from pygments.lexers.python import PythonLexer
 
 sys.path.insert(0, os.path.abspath(".."))
 
-project = "gwexpy"
-author = "gwexpy contributors"
-copyright = f"{datetime.now():%Y}, gwexpy contributors"
+project = "GWexpy"
+author = "GWexpy contributors"
+copyright = f"{datetime.now():%Y}, GWexpy contributors"
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -23,6 +23,15 @@ extensions = [
 
 autosummary_generate = True
 
+# Add a consistent download link on notebook pages.
+nbsphinx_prolog = r"""
+
+.. note::
+   This page was generated from a Jupyter Notebook.
+   `Download the notebook (.ipynb) <https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_.
+
+"""
+
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "developers/**"]
 
@@ -31,6 +40,10 @@ locale_dirs = ["locales/"]
 gettext_compact = False
 
 html_theme = "sphinx_rtd_theme"
+
+# User-facing site title/branding (package name remains `gwexpy`).
+html_title = "GWexpy Documentation"
+html_short_title = "GWexpy"
 html_context = {
     "display_github": True,
     "github_user": "tatsuki-washimi",

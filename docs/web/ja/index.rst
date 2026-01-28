@@ -1,9 +1,9 @@
 :orphan:
 
-GWExPy ドキュメントへようこそ
+GWexpy ドキュメントへようこそ
 ==============================
 
-GWExPy は GWpy を拡張し、時系列および周波数系列のための追加コンテナ、相互運用性ヘルパー、および分析ユーティリティを提供します。
+GWexpy は GWpy を拡張し、時系列および周波数系列のための追加コンテナ、相互運用性ヘルパー、および分析ユーティリティを提供します。
 
 .. toctree::
    :maxdepth: 2
@@ -18,7 +18,6 @@ GWExPy は GWpy を拡張し、時系列および周波数系列のための追�
    :maxdepth: 2
    :caption: リファレンス
 
-   reference/api/index
    reference/index
 
 
