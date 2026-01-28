@@ -77,7 +77,6 @@ dev = [
 ]
 gw = [
   "pycbc",
-  "nds2-client",
   "python-framel",
   "ldas-tools-framecpp",
   "gwinc",
@@ -122,7 +121,7 @@ analysis = [
     "obspy"
 ]
 all = [
-    "pycbc", "nds2-client", "python-framel", "ldas-tools-framecpp", "gwinc", "dttxml", "nptdms",
+    "pycbc", "python-framel", "ldas-tools-framecpp", "gwinc", "dttxml", "nptdms",
     "polars", "scikit-learn", "statsmodels", "pmdarima", "mictools", "minepy", "dcor", "hurst", "hurst-exponent", "exp-hurst", "bottleneck",
     "iminuit", "emcee", "corner",
     "specutils", "pyspeckit",
@@ -227,5 +226,4 @@ module = [
   "gwexpy.types.series_matrix_validation_mixin",
 ]
 ignore_errors = false
-
 
