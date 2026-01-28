@@ -313,8 +313,9 @@ properly accounting for frequency correlations in the spectral estimate.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The FrequencySeries class to instantiate.</p></li>
 <li><p><strong>frd</strong> (<em>control.FRD</em>) – Frequency response data from python-control.</p></li>
-<li><p><strong>frequency_unit</strong> (<em>{'Hz'</em><em>, </em><em>'rad/s'}</em><em>, </em><em>optional</em>) – Unit of the input FRD’s omega attribute.
-Default is ‘Hz’ (output will be in Hz).</p></li>
+<li><p><strong>frequency_unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Unit of the input FRD’s omega attribute.
+Either <code class="docutils literal notranslate"><span class="pre">'Hz'</span></code> or <code class="docutils literal notranslate"><span class="pre">'rad/s'</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">'Hz'</span></code>
+(output will be in Hz).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -658,8 +659,9 @@ Attempts to infer t0 and dt from the time_column.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fs</strong> (<a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) – Input frequency response data. Frequencies are assumed to be in Hz.</p></li>
-<li><p><strong>frequency_unit</strong> (<em>{'rad/s'</em><em>, </em><em>'Hz'}</em><em>, </em><em>optional</em>) – Unit for the frequency axis in the output FRD object.
-Default is ‘rad/s’ (standard for control.FRD).</p></li>
+<li><p><strong>frequency_unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Unit for the frequency axis in the output FRD object.
+Either <code class="docutils literal notranslate"><span class="pre">'rad/s'</span></code> or <code class="docutils literal notranslate"><span class="pre">'Hz'</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">'rad/s'</span></code>
+(standard for <code class="docutils literal notranslate"><span class="pre">control.FRD</span></code>).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

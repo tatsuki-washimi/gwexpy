@@ -98,9 +98,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    fs : FrequencySeries</span>
 <span class="sd">        Input frequency response data. Frequencies are assumed to be in Hz.</span>
-<span class="sd">    frequency_unit : {&#39;rad/s&#39;, &#39;Hz&#39;}, optional</span>
+<span class="sd">    frequency_unit : str, optional</span>
 <span class="sd">        Unit for the frequency axis in the output FRD object.</span>
-<span class="sd">        Default is &#39;rad/s&#39; (standard for control.FRD).</span>
+<span class="sd">        Either ``&#39;rad/s&#39;`` or ``&#39;Hz&#39;``. Default is ``&#39;rad/s&#39;``</span>
+<span class="sd">        (standard for ``control.FRD``).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -153,9 +154,10 @@
 <span class="sd">        The FrequencySeries class to instantiate.</span>
 <span class="sd">    frd : control.FRD</span>
 <span class="sd">        Frequency response data from python-control.</span>
-<span class="sd">    frequency_unit : {&#39;Hz&#39;, &#39;rad/s&#39;}, optional</span>
+<span class="sd">    frequency_unit : str, optional</span>
 <span class="sd">        Unit of the input FRD&#39;s omega attribute.</span>
-<span class="sd">        Default is &#39;Hz&#39; (output will be in Hz).</span>
+<span class="sd">        Either ``&#39;Hz&#39;`` or ``&#39;rad/s&#39;``. Default is ``&#39;Hz&#39;``</span>
+<span class="sd">        (output will be in Hz).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
