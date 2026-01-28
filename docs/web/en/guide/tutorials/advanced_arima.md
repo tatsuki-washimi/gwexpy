@@ -1,8 +1,12 @@
 # TimeSeries Forecasting with ARIMA
 
-This tutorial is currently only available in Japanese.
-See `../../ja/guide/tutorials/advanced_arima.ipynb`.
+This tutorial is currently under translation. The English text will be published soon.
+
+For now, please refer to the Japanese version (links below).
+
+- Japanese page (HTML): `../../../ja/guide/tutorials/advanced_arima.html`
+- Japanese notebook (download): `../../../ja/guide/tutorials/advanced_arima.ipynb`
 
 ---
 
-このチュートリアルの日本語版は `../../ja/guide/tutorials/advanced_arima.ipynb` を参照してください。
+We appreciate your patience while the English tutorial is finalized.

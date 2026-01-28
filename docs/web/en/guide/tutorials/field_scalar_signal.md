@@ -1,8 +1,12 @@
 # Signal Processing on Physical Fields
 
-This tutorial is currently only available in Japanese.
-See `../../ja/guide/tutorials/field_scalar_signal.md`.
+This tutorial is currently under translation. The English text will be published soon.
+
+For now, please refer to the Japanese version (links below).
+
+- Japanese page (HTML): `../../../ja/guide/tutorials/field_scalar_signal.html`
+- Japanese notebook is being prepared.
 
 ---
 
-このチュートリアルの日本語版は `../../ja/guide/tutorials/field_scalar_signal.md` を参照してください。
+We appreciate your patience while the English tutorial is finalized.

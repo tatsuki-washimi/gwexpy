@@ -1,8 +1,12 @@
 # Gravitational Wave Detector Noise Budget
 
-This tutorial is currently only available in Japanese.
-See `../../ja/guide/tutorials/case_noise_budget.ipynb`.
+This tutorial is currently under translation. The English text will be published soon.
+
+For now, please refer to the Japanese version (links below).
+
+- Japanese page (HTML): `../../../ja/guide/tutorials/case_noise_budget.html`
+- Japanese notebook (download): `../../../ja/guide/tutorials/case_noise_budget.ipynb`
 
 ---
 
-このチュートリアルの日本語版は `../../ja/guide/tutorials/case_noise_budget.ipynb` を参照してください。
+We appreciate your patience while the English tutorial is finalized.
