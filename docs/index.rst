@@ -3,8 +3,8 @@ GWExPy Documentation
 
 This is the documentation landing page.
 
-- `English <web/en/index.html>`_
-- `Japanese <web/ja/index.html>`_
+- :doc:`English <web/en/index>`
+- :doc:`Japanese <web/ja/index>`
 
 .. toctree::
    :hidden:

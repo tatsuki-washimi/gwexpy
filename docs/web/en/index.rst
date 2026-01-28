@@ -25,4 +25,4 @@ analysis utilities for time and frequency series.
 Language
 --------
 
-* `日本語 (Japanese) <../ja/index.html>`_
+* :doc:`日本語 (Japanese) <../ja/index>`

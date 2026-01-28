@@ -4,8 +4,8 @@ This tutorial is currently under translation. The English text will be published
 
 For now, please refer to the Japanese version (links below).
 
-- Japanese page (HTML): `../../../ja/guide/tutorials/matrix_frequencyseries.html`
-- Japanese notebook (download): `../../../ja/guide/tutorials/matrix_frequencyseries.ipynb`
+- Japanese page (HTML): :doc:`../../../ja/guide/tutorials/matrix_frequencyseries`
+- Japanese notebook (download): [matrix_frequencyseries.ipynb](../../../ja/guide/tutorials/matrix_frequencyseries.ipynb)
 
 ---
 

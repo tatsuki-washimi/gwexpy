@@ -4,7 +4,7 @@ This tutorial is currently under translation. The English text will be published
 
 For now, please refer to the Japanese version (links below).
 
-- Japanese page (HTML): `../../../ja/guide/tutorials/field_scalar_signal.html`
+- Japanese page (HTML): :doc:`../../../ja/guide/tutorials/field_scalar_signal`
 - Japanese notebook is being prepared.
 
 ---
