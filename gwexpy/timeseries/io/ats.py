@@ -2,6 +2,7 @@
 Metronix ATS format reader for gwexpy.
 Based on binary header parsing logic provided by user (ats2gwf.py).
 """
+
 from __future__ import annotations
 
 import datetime

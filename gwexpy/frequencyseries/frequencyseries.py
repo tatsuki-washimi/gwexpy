@@ -4,6 +4,7 @@ gwexpy.frequencyseries
 
 Extends gwpy.frequencyseries with matrix support and future extensibility.
 """
+
 from __future__ import annotations
 
 from enum import Enum

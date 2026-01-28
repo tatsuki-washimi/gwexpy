@@ -7,6 +7,7 @@ This module provides resampling functionality as a mixin class:
 - _resample_time_bin: Internal time-bin aggregation
 - stlt: Short-Time Laplace Transform
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable

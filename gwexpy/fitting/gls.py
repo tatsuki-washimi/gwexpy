@@ -5,6 +5,7 @@ This module provides a cost function class for fitting with a full
 covariance matrix, enabling χ² minimization that properly accounts
 for correlations between data points.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable

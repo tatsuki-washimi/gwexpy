@@ -7,6 +7,7 @@ This module provides statistical analysis functionality as a mixin class:
 - Time series modeling: fit_arima, hurst, local_hurst
 - Rolling statistics: rolling_mean, rolling_std, rolling_median, rolling_min, rolling_max
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, cast

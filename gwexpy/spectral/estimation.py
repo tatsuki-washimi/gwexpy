@@ -10,6 +10,7 @@ determined by dt and the FFT length: df = 1 / fftlength and f_N = 1 / (2 * dt).
 NaN samples are rejected because FFT-based averaging propagates NaNs and
 invalidates the normalization; callers must pre-clean data instead.
 """
+
 from __future__ import annotations
 
 import os

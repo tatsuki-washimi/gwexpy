@@ -9,6 +9,7 @@ The protocols here are structural (duck-typed), meaning a class need
 not explicitly inherit from them to be considered compatible—it just
 needs to implement the required methods and attributes.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Protocol, Union, runtime_checkable
