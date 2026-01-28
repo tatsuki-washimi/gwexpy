@@ -3,7 +3,6 @@ Statistical analysis and correlation mixin for TimeSeries.
 Provides skewed, kurtosis, Granger causality, distance correlation,
 and classic correlations (Pearson, Kendall, MIC).
 """
-
 from __future__ import annotations
 
 import warnings

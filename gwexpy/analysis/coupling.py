@@ -6,7 +6,6 @@ Estimates the coupling function (CF) with flexible threshold strategies:
 - SigmaThreshold: Statistical significance (Gaussian assumption).
 - PercentileThreshold: Data-driven percentile (Robust to non-Gaussianity).
 """
-
 from __future__ import annotations
 
 import logging

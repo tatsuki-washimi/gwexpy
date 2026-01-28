@@ -15,7 +15,6 @@ Examples
 >>> asd = from_pygwinc('aLIGO', fmin=4.0, fmax=1024.0, df=0.01)
 >>> noise = from_asd(asd, duration=128, sample_rate=2048, t0=0)
 """
-
 from __future__ import annotations
 
 # Import submodules for direct access
