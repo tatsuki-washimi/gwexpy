@@ -585,6 +585,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
                     valid_values = valid_values[non_nan_mask]
 
         # Bincount for aggregation
+        out_data: np.ndarray[Any, Any]
         if agg == "mean":
             if np.iscomplexobj(valid_values):
                 sums = np.bincount(

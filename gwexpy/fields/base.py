@@ -421,7 +421,7 @@ class FieldBase(Array4D):
         ani = FuncAnimation(fp.figure, update, frames=frames, interval=interval)
 
         # Attach figure to ani to prevent gc?
-        ani._fig = fp.figure
+        ani._fig = fp.figure  # type: ignore[attr-defined]
 
         # Close static plot to prevent display of empty frame 0 if using inline?
         # plt.close(fp.figure) # No, we need it open for animation display depending on backend

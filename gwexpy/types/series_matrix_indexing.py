@@ -24,6 +24,8 @@ class SeriesMatrixIndexingMixin:
         unit: u.Unit | None
         list_class: type[Any]
         series_class: type[Any] | None
+        ndim: int
+        shape: tuple[int, ...]
 
         @property
         def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...

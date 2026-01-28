@@ -95,7 +95,7 @@ def _extract_axis_info(ts: Any) -> AxisInfo:
     if axis is None:
         raise ValueError("times axis is required")
 
-    regular = False
+    regular: bool = False
     dt = None
     try:
         dt = ts.dt
@@ -106,13 +106,13 @@ def _extract_axis_info(ts: Any) -> AxisInfo:
         try:
             if isinstance(dt, u.Quantity):
                 val = dt.value
-                finite = np.isfinite(val)
-                zero = np.all(val == 0)
+                finite = bool(np.isfinite(val))
+                zero = bool(np.all(val == 0))
             else:
                 val = float(dt)
                 finite = np.isfinite(val)
                 zero = val == 0
-            regular = bool(finite and not zero)
+            regular = finite and not zero
         except (TypeError, ValueError):
             regular = False
 
@@ -226,7 +226,7 @@ def _extract_freq_axis_info(fs: Any) -> FreqAxisInfo:
     if freqs is None:
         raise ValueError("frequencies axis is required")
 
-    regular = False
+    regular: bool = False
     df = None
     try:
         df = fs.df
@@ -237,13 +237,13 @@ def _extract_freq_axis_info(fs: Any) -> FreqAxisInfo:
         try:
             if isinstance(df, u.Quantity):
                 val = df.value
-                finite = np.isfinite(val)
-                zero = np.all(val == 0)
+                finite = bool(np.isfinite(val))
+                zero = bool(np.all(val == 0))
             else:
                 val = float(df)
                 finite = np.isfinite(val)
                 zero = val == 0
-            regular = bool(finite and not zero)
+            regular = finite and not zero
         except (TypeError, ValueError):
             regular = False
 
