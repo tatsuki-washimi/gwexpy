@@ -94,10 +94,17 @@ def from_control_frd(cls, frd, frequency_unit: str = "Hz"):
     >>> # fs = from_control_frd(FrequencySeries, frd)
     """
     omega = np.asarray(frd.omega)
-    try:
+
+    # NOTE:
+    # - control >= 0.10 provides `frdata` (preferred)
+    # - control 0.10 also keeps `fresp` but emits a FutureWarning on access
+    # - older versions may not have `frdata`
+    if hasattr(frd, "frdata"):
         data = np.asarray(frd.frdata)
-    except AttributeError:
-        # Compatibility with older versions
+    elif hasattr(frd, "_fresp"):
+        # Avoid triggering the `fresp` deprecation warning on newer control
+        data = np.asarray(frd._fresp)
+    else:
         data = np.asarray(frd.fresp)
 
     # Convert rad/s to Hz (standard for gwexpy)
