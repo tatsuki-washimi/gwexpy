@@ -21,6 +21,9 @@ extensions = [
     "nbsphinx",
 ]
 
+# nbsphinx configuration
+nbsphinx_allow_errors = True  # Allow notebooks with execution errors to be included
+
 autosummary_generate = True
 
 # Add a consistent download link on notebook pages.
