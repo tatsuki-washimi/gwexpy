@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import warnings
 from collections import OrderedDict
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 import numpy as np
 from astropy import units as u
@@ -166,7 +166,7 @@ class SeriesMatrix(  # type: ignore[misc]
         _check_shape_consistency(
             value_array=value_array,
             meta_matrix=meta_matrix,
-            xindex=cast(np.ndarray | None, xindex),
+            xindex=cast(Optional[np.ndarray], xindex),
         )
 
         obj = np.asarray(value_array).view(cls)
