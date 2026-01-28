@@ -291,11 +291,27 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         )
 
     def imshow(self, **kwargs):
-        """Plot using imshow. Inherited from gwpy."""
+        """Plot using Matplotlib ``imshow`` (GWpy-compatible).
+
+        This method is provided for convenience and forwards arguments to
+        :meth:`gwpy.spectrogram.Spectrogram.imshow`.
+
+        Common keyword arguments include ``ax``, ``cmap``, ``norm`` (or
+        ``log=True`` in GWpy), and color scaling controls like ``vmin``/``vmax``.
+        For the full set of supported keywords, see the GWpy documentation.
+        """
         return super().imshow(**kwargs)
 
     def pcolormesh(self, **kwargs):
-        """Plot using pcolormesh. Inherited from gwpy."""
+        """Plot using Matplotlib ``pcolormesh`` (GWpy-compatible).
+
+        This method is provided for convenience and forwards arguments to
+        :meth:`gwpy.spectrogram.Spectrogram.pcolormesh`.
+
+        Common keyword arguments include ``ax``, ``cmap``, ``norm`` and
+        ``vmin``/``vmax``. For the full set of supported keywords, see the GWpy
+        documentation.
+        """
         return super().pcolormesh(**kwargs)
 
     def radian(self, unwrap: bool = False) -> Spectrogram:

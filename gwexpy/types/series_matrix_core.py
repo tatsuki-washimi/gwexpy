@@ -160,6 +160,16 @@ class SeriesMatrixCoreMixin:
 
     @property
     def xunit(self) -> u.Unit | None:
+        """Unit of the sample axis.
+
+        Precedence is:
+
+        1. ``dx.unit`` if ``dx`` is set (regular axis)
+        2. ``xindex.unit`` if ``xindex`` carries a unit
+        3. ``x0.unit`` if ``x0`` is set
+
+        If none are available, returns a dimensionless unit.
+        """
         # Priority: dx (regular), xindex (array), x0
         if hasattr(self, "_dx") and self._dx is not None:
             return self._dx.unit

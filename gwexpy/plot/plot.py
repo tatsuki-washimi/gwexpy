@@ -669,6 +669,31 @@ class Plot(BasePlot):
         # Final layout polish
 
     def plot_mmm(self, median, min_s, max_s, ax=None, **kwargs):
+        """Plot median line with a min/max envelope.
+
+        This is a convenience wrapper around :func:`gwexpy.plot.plot_mmm`.
+
+        Parameters
+        ----------
+        median : gwpy.types.Series
+            Median series to plot as a line.
+        min_s : gwpy.types.Series
+            Minimum series defining the lower envelope.
+        max_s : gwpy.types.Series
+            Maximum series defining the upper envelope.
+        ax : matplotlib.axes.Axes, optional
+            Target axes. If omitted, uses the current axes of this Plot.
+        **kwargs
+            Passed to ``ax.plot`` for the median line. Additional keys supported:
+
+            - ``alpha_fill``: opacity for the filled envelope
+            - ``label_fill``: label for the filled envelope
+
+        Returns
+        -------
+        list
+            The list of Line2D objects returned by ``ax.plot``.
+        """
         if ax is None:
             ax = self.gca()
         return plot_mmm(median, min_s, max_s, ax=ax, **kwargs)

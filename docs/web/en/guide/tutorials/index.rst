@@ -1,10 +1,10 @@
 Tutorials
 =========
 
-Learn how to use **GWExPy** through interactive examples.
+Learn how to use **GWexpy** through interactive examples.
 
 .. note::
-   These tutorials are generated from Jupyter Notebooks. You can click "View Code" or download them to run locally.
+   These tutorials are generated from Jupyter Notebooks. Use "Edit on GitHub" on each page to download the original `.ipynb` and run it locally.
 
 .. note::
    Entries marked "(Coming Soon)" currently point to Japanese-only content; use the links on each stub page to view the translated material.

@@ -151,6 +151,31 @@ class StatisticalMethodsMixin:
         keepdims=False,
         **kwargs,
     ):
+        """Compute the median.
+
+        Parameters
+        ----------
+        axis : int or None, optional
+            Axis along which to compute the median. If None, compute over the
+            flattened array.
+        out : ndarray, optional
+            Output array.
+        overwrite_input : bool, optional
+            If True, allow the input array to be modified by the calculation.
+        keepdims : bool, optional
+            If True, the reduced axes are left in the result as dimensions with
+            size one.
+        ignore_nan : bool, optional
+            If True (default), use ``numpy.nanmedian`` and ignore NaNs.
+        **kwargs
+            Passed to the underlying NumPy implementation.
+
+        Returns
+        -------
+        Any
+            The median value(s). If the object carries a unit, the result is
+            returned with the same unit where applicable.
+        """
         ignore_nan = kwargs.pop("ignore_nan", True)
         # overwrite_input is only in median/nanmedian
         base_kwargs = dict(

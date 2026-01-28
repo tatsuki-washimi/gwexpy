@@ -1,7 +1,7 @@
-GWExPy Documentation
+GWexpy Documentation
 ====================
 
-GWExPy extends GWpy with additional containers, interoperability helpers, and
+GWexpy extends GWpy with additional containers, interoperability helpers, and
 analysis utilities for time and frequency series.
 
 .. toctree::
@@ -16,7 +16,6 @@ analysis utilities for time and frequency series.
    :maxdepth: 2
    :caption: Reference
 
-   reference/api/index
    reference/index
 
 
