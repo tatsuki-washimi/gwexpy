@@ -157,9 +157,7 @@ class StatisticalMethodsMixin:
             axis=axis, out=out, overwrite_input=overwrite_input, keepdims=keepdims
         )
         base_kwargs.update(kwargs)
-        return self._apply_stat_func(
-            np.nanmedian, np.median, ignore_nan, **base_kwargs
-        )
+        return self._apply_stat_func(np.nanmedian, np.median, ignore_nan, **base_kwargs)
 
     def rms(self, axis=None, keepdims=False, ignore_nan=True):
         """Compute root-mean-square."""
