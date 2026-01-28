@@ -32,14 +32,18 @@ See the [Features](https://tatsuki-washimi.github.io/gwexpy/en/index.html) page 
 ## Installation
 
 ```bash
-# Recommended: Install with ALL optional dependencies
-pip install ".[all]"
-
 # Minimal installation
 pip install .
+
+# With a specific extra (example)
+pip install ".[analysis]"
 ```
 
-For domain-specific extras (e.g., `[gw]`, `[geophysics]`, `[fitting]`), see the [Installation Guide](https://tatsuki-washimi.github.io/gwexpy/en/index.html).
+> [!NOTE]
+> NDS/frames support (`[gw]` extra) depends on `nds2-client`, which is not published on PyPI.
+> Install it via Conda first (e.g., `conda install -c conda-forge nds2-client`) before adding `[gw]`.
+
+For other domain-specific extras (e.g., `[geophysics]`, `[fitting]`, `[analysis]`), see the [Installation Guide](https://tatsuki-washimi.github.io/gwexpy/en/index.html).
 
 ---
 
