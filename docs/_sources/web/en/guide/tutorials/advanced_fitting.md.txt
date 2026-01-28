@@ -4,8 +4,8 @@ This tutorial is currently under translation. The English text will be published
 
 For now, please refer to the Japanese version (links below).
 
-- Japanese page (HTML): `../../../ja/guide/tutorials/advanced_fitting.html`
-- Japanese notebook (download): `../../../ja/guide/tutorials/advanced_fitting.ipynb`
+- Japanese page (HTML): :doc:`../../../ja/guide/tutorials/advanced_fitting`
+- Japanese notebook (download): [advanced_fitting.ipynb](../../../ja/guide/tutorials/advanced_fitting.ipynb)
 
 ---
 

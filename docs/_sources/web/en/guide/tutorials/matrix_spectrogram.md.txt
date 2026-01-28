@@ -4,8 +4,8 @@ This tutorial is currently under translation. The English text will be published
 
 For now, please refer to the Japanese version (links below).
 
-- Japanese page (HTML): `../../../ja/guide/tutorials/matrix_spectrogram.html`
-- Japanese notebook (download): `../../../ja/guide/tutorials/matrix_spectrogram.ipynb`
+- Japanese page (HTML): :doc:`../../../ja/guide/tutorials/matrix_spectrogram`
+- Japanese notebook (download): [matrix_spectrogram.ipynb](../../../ja/guide/tutorials/matrix_spectrogram.ipynb)
 
 ---
 

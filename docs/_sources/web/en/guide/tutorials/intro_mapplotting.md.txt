@@ -4,8 +4,8 @@ This tutorial is currently under translation. The English text will be published
 
 For now, please refer to the Japanese version (links below).
 
-- Japanese page (HTML): `../../../ja/guide/tutorials/intro_mapplotting.html`
-- Japanese notebook (download): `../../../ja/guide/tutorials/intro_mapplotting.ipynb`
+- Japanese page (HTML): :doc:`../../../ja/guide/tutorials/intro_mapplotting`
+- Japanese notebook (download): [intro_mapplotting.ipynb](../../../ja/guide/tutorials/intro_mapplotting.ipynb)
 
 ---
 

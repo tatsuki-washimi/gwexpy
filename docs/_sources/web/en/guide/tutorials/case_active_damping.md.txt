@@ -4,8 +4,8 @@ This tutorial is currently under translation. The English text will be published
 
 For now, please refer to the Japanese version (links below).
 
-- Japanese page (HTML): `../../../ja/guide/tutorials/case_active_damping.html`
-- Japanese notebook (download): `../../../ja/guide/tutorials/case_active_damping.ipynb`
+- Japanese page (HTML): :doc:`../../../ja/guide/tutorials/case_active_damping`
+- Japanese notebook (download): [case_active_damping.ipynb](../../../ja/guide/tutorials/case_active_damping.ipynb)
 
 ---
 
