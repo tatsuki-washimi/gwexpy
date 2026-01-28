@@ -9,7 +9,7 @@ by calculating averaged ASDs for each stable frequency step.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -41,7 +41,7 @@ class ResponseFunctionResult:
     witness_name: str
     target_name: str
 
-    def plot(self, ax: Axes | None = None, **kwargs: object) -> Axes:
+    def plot(self, ax: Axes | None = None, **kwargs: Any) -> Axes:
         """
         Plot the Coupling Factor vs Injected Frequency (The Transfer Function).
         """
@@ -66,7 +66,7 @@ class ResponseFunctionResult:
         ax.legend()
         return ax
 
-    def plot_map(self, ax: Axes | None = None, **kwargs: object) -> Axes:
+    def plot_map(self, ax: Axes | None = None, **kwargs: Any) -> Axes:
         """
         Plot the 2D Response Map (Injected Freq vs Target Spectrum).
         Useful to check for non-linear couplings.

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
 
-from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
+from gwexpy.types.metadata import MetaData, MetaDataDict, MetaDataMatrix
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.seriesmatrix import SeriesMatrix
 
@@ -260,7 +260,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
                     # else: dimensionless
 
                 for idx in np.ndindex(meta_shape):
-                    old_meta = main.meta[idx]
+                    old_meta = cast(MetaData, main.meta[idx])
                     old_unit = (
                         old_meta.unit if old_meta.unit else u.dimensionless_unscaled
                     )
@@ -296,8 +296,8 @@ class SpectrogramMatrix(  # type: ignore[misc]
                         )
 
                     for idx in np.ndindex(meta_shape):
-                        m1 = main.meta[idx]
-                        m2 = other_sgm.meta[idx]
+                        m1 = cast(MetaData, main.meta[idx])
+                        m2 = cast(MetaData, other_sgm.meta[idx])
                         u1 = m1.unit if m1.unit else u.dimensionless_unscaled
                         u2 = m2.unit if m2.unit else u.dimensionless_unscaled
 
