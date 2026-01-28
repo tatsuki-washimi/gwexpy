@@ -272,7 +272,7 @@
 
     <span class="c1"># Collect data and freqs</span>
     <span class="n">data_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">freqs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">freqs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">st</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="p">,</span> <span class="s2">&quot;frequency&quot;</span><span class="p">):</span>
@@ -290,11 +290,13 @@
 
     <span class="c1"># If frequencies were not stored, create dummy</span>
     <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">f</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">freqs</span><span class="p">):</span>
-        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">freqs_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">freqs_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">tr0</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">station</span>
 
-    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs_out</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
 
 <span class="c1"># -----------------------------------------------------------------------------</span>
