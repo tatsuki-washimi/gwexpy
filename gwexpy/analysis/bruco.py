@@ -5,7 +5,7 @@ import logging
 import os
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from typing import TypedDict, Union
+from typing import Any, TypedDict, Union, cast
 
 try:
     from typing import TypeAlias
@@ -226,7 +226,7 @@ class BrucoResult:
             if block_coh_t.size == 0:
                 continue
 
-            open_slots = np.any(np.equal(self.top_channels, None), axis=1)
+            open_slots = np.any(np.equal(self.top_channels, cast(Any, None)), axis=1)
             block_max = np.max(block_coh_t, axis=1)
             needs_update = open_slots | (block_max > self.top_coherence[:, -1])
             if not np.any(needs_update):

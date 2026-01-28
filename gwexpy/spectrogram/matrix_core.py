@@ -18,9 +18,9 @@ class _SpectrogramMatrixCoreLike(Protocol):
     dx: u.Quantity | float | None
     _value: np.ndarray
     epoch: Any
-    rows: MetaDataDict
-    cols: MetaDataDict
-    meta: MetaDataMatrix
+    rows: MetaDataDict | None
+    cols: MetaDataDict | None
+    meta: MetaDataMatrix | None
     name: str | None
     unit: u.Unit | None
     _frequencies: Any  # Internal storage for frequencies
@@ -60,8 +60,17 @@ class SpectrogramMatrixCoreMixin:
     it must update xindex/frequencies in lockstep (design note; not scheduled).
     """
 
+    # Type stubs for mixin attributes (provided by SpectrogramMatrix)
+    xindex: Any
+    _value: np.ndarray
+    x0: Any
+    dx: Any
+    _frequencies: Any
+    _df: Any
+    _f0: Any
+
     @property
-    def _x_axis_index(self: _SpectrogramMatrixCoreLike) -> int:
+    def _x_axis_index(self) -> int:
         """
         Index of the time axis.
         For Spectrogram (Time, Freq), time is -2.
@@ -69,31 +78,31 @@ class SpectrogramMatrixCoreMixin:
         return -2
 
     @property
-    def times(self: _SpectrogramMatrixCoreLike) -> Any:
+    def times(self) -> Any:
         """Time array (xindex)."""
         return self.xindex
 
     @times.setter
-    def times(self: _SpectrogramMatrixCoreLike, value: Any) -> None:
+    def times(self, value: Any) -> None:
         self.xindex = value
 
     @property
-    def t0(self: _SpectrogramMatrixCoreLike) -> Any:
+    def t0(self) -> Any:
         """Start time (x0)."""
         return self.x0
 
     @property
-    def dt(self: _SpectrogramMatrixCoreLike) -> Any:
+    def dt(self) -> Any:
         """Time spacing (dx)."""
         return self.dx
 
     @property
-    def frequencies(self: _SpectrogramMatrixCoreLike) -> Any:
+    def frequencies(self) -> Any:
         """Frequency array (yindex)."""
         return getattr(self, "_frequencies", None)
 
     @frequencies.setter
-    def frequencies(self: _SpectrogramMatrixCoreLike, value: Any) -> None:
+    def frequencies(self, value: Any) -> None:
         """Set frequency array."""
         if value is None:
             self._frequencies = None
@@ -127,7 +136,7 @@ class SpectrogramMatrixCoreMixin:
 
     # Add y-axis specific properties (df, f0) similar to dx/x0
     @property
-    def f0(self: _SpectrogramMatrixCoreLike) -> Any:
+    def f0(self) -> Any:
         try:
             return self._f0
         except AttributeError:
@@ -138,7 +147,7 @@ class SpectrogramMatrixCoreMixin:
             return self._f0
 
     @property
-    def df(self: _SpectrogramMatrixCoreLike) -> Any:
+    def df(self) -> Any:
         try:
             return self._df
         except AttributeError:
@@ -158,9 +167,7 @@ class SpectrogramMatrixCoreMixin:
                 self._df = None
             return self._df
 
-    def _get_series_kwargs(
-        self: _SpectrogramMatrixCoreLike, xindex: Any, meta: Any
-    ) -> dict[str, Any]:
+    def _get_series_kwargs(self, xindex: Any, meta: Any) -> dict[str, Any]:
         """Arguments to construct a Spectrogram element."""
         return {
             "times": xindex,
@@ -170,9 +177,7 @@ class SpectrogramMatrixCoreMixin:
             "epoch": getattr(self, "epoch", None),
         }
 
-    def _get_meta_for_constructor(
-        self: _SpectrogramMatrixCoreLike, data: Any, xindex: Any
-    ) -> dict[str, Any]:
+    def _get_meta_for_constructor(self, data: Any, xindex: Any) -> dict[str, Any]:
         """Arguments to construct a SpectrogramMatrix."""
         return {
             "data": data,

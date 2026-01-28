@@ -5,6 +5,7 @@ from typing import Any
 import numpy as np
 from astropy import units as u
 
+from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.seriesmatrix import SeriesMatrix
 
@@ -14,7 +15,7 @@ from .matrix_core import SpectrogramMatrixCoreMixin
 from .spectrogram import Spectrogram
 
 
-class SpectrogramMatrix(
+class SpectrogramMatrix(  # type: ignore[misc]
     PhaseMethodsMixin,
     SpectrogramMatrixCoreMixin,
     SpectrogramMatrixAnalysisMixin,
@@ -118,8 +119,6 @@ class SpectrogramMatrix(
         obj.unit = unit  # logic for unit array vs scalar unit needed?
 
         # Setup MetaDataMatrix using rows/cols logic from previous implementation
-        from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
-
         def _entries_len(entries):
             return len(entries) if entries is not None else None
 
@@ -147,20 +146,20 @@ class SpectrogramMatrix(
             obj.meta = MetaDataMatrix(meta, shape=(nrow, ncol))
         else:
             # Fallback
-            obj.rows = None
-            obj.cols = None
-            obj.meta = None
+            obj.rows = None  # type: ignore[assignment]
+            obj.cols = None  # type: ignore[assignment]
+            obj.meta = None  # type: ignore[assignment]
 
         # Apply unit to metadata if needed (only if not explicitly set in meta)
         if unit is not None and obj.meta is not None:
-            for m in obj.meta.flat:
+            for m in obj.meta.reshape(-1):
                 # MetaData defaults to dimensionless_unscaled, so check for that too
                 if m.unit is None or m.unit == u.dimensionless_unscaled:
                     m.unit = unit
 
         # If no global unit was provided, infer it from metadata if consistent
         if obj.unit is None and obj.meta is not None:
-            meta_units = {m.unit for m in obj.meta.flat if m is not None}
+            meta_units = {m.unit for m in obj.meta.reshape(-1) if m is not None}
             if len(meta_units) == 1:
                 obj.unit = next(iter(meta_units))
 
@@ -344,7 +343,7 @@ class SpectrogramMatrix(
         def _infer_unit(meta):
             if meta is None:
                 return None
-            meta_units = {m.unit for m in meta.flat if m is not None}
+            meta_units = {m.unit for m in meta.reshape(-1) if m is not None}
             if len(meta_units) == 1:
                 return next(iter(meta_units))
             return None
@@ -567,7 +566,7 @@ class SpectrogramMatrix(
         if self.ndim == 3:  # (Batch, Time, Freq)
             if isinstance(key, (int, np.integer)):
                 is_single_element = True
-                r_idx = key
+                r_idx = int(key)
                 c_idx = 0
         elif self.ndim == 4:  # (Row, Col, Time, Freq)
             if isinstance(key, tuple) and len(key) >= 2:
@@ -576,7 +575,7 @@ class SpectrogramMatrix(
                     c, (int, np.integer)
                 ):
                     is_single_element = True
-                    r_idx, c_idx = r, c
+                    r_idx, c_idx = int(r), int(c)
 
         if is_single_element:
             # Return Spectrogram
@@ -628,7 +627,11 @@ class SpectrogramMatrix(
             if self.meta is not None:
                 # meta is (N, 1)
                 try:
-                    ret.meta = self.meta[main_key]
+                    sliced = self.meta[main_key]
+                    if isinstance(sliced, np.ndarray):
+                        ret.meta = sliced.view(MetaDataMatrix)  # type: ignore[assignment]
+                    else:
+                        ret.meta = sliced
                 except (IndexError, TypeError):
                     pass
         # 4D: (Row, Col, T, F) -> Slice row, maybe col
@@ -645,7 +648,11 @@ class SpectrogramMatrix(
                     # meta is (Row, Col)
                     # If key is simple tuple (slice, slice)
                     if isinstance(key, tuple) and len(key) <= 2:
-                        ret.meta = self.meta[key]
+                        sliced = self.meta[key]
+                        if isinstance(sliced, np.ndarray):
+                            ret.meta = sliced.view(MetaDataMatrix)  # type: ignore[assignment]
+                        else:
+                            ret.meta = sliced
                     else:
                         # complex slicing?
                         pass
@@ -708,7 +715,7 @@ class SpectrogramMatrix(
         if self.meta is None:
             return True, self.unit
         ref_unit = self.meta[0, 0].unit
-        for m in self.meta.flat:
+        for m in self.meta.reshape(-1):
             if m.unit is None:
                 continue
             if not m.unit.is_equivalent(ref_unit):

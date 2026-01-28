@@ -194,7 +194,7 @@ def _stream_to_spec(cls, st, unit=None, name_policy="id", **kwargs):
 
     # Collect data and freqs
     data_list = []
-    freqs = []
+    freqs: list[float] = []
 
     for tr in st:
         if hasattr(tr.stats, "frequency"):
@@ -212,11 +212,13 @@ def _stream_to_spec(cls, st, unit=None, name_policy="id", **kwargs):
 
     # If frequencies were not stored, create dummy
     if all(f == 0.0 for f in freqs):
-        freqs = np.arange(len(freqs), dtype=float)
+        freqs_out = np.arange(len(freqs), dtype=float)
+    else:
+        freqs_out = np.asarray(freqs, dtype=float)
 
     name = tr0.stats.station
 
-    return cls(data, t0=t0, dt=dt, frequencies=freqs, unit=unit, name=name)
+    return cls(data, t0=t0, dt=dt, frequencies=freqs_out, unit=unit, name=name)
 
 
 # -----------------------------------------------------------------------------

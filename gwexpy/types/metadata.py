@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 
@@ -543,7 +544,7 @@ class MetaDataMatrix(np.ndarray):
 
     @property
     def names(self):
-        flat = [m.name for m in self.flat]
+        flat = [m.name for m in self.reshape(-1)]
         return np.asarray(flat, dtype=object).reshape(self.shape)
 
     @names.setter
@@ -551,12 +552,14 @@ class MetaDataMatrix(np.ndarray):
         value = np.asarray(value)
         if value.shape != self.shape:
             value = value.reshape(self.shape)
-        for m, name in zip(self.flat, value.flat):
+        flat_iter = cast(Iterable[MetaData], self.reshape(-1))
+        value_iter = cast(Iterable[object], value.reshape(-1))
+        for m, name in zip(flat_iter, value_iter):
             m.name = name
 
     @property
     def units(self):
-        flat = [m.unit for m in self.flat]
+        flat = [m.unit for m in self.reshape(-1)]
         return np.asarray(flat, dtype=object).reshape(self.shape)
 
     @units.setter
@@ -564,12 +567,14 @@ class MetaDataMatrix(np.ndarray):
         value = np.asarray(value)
         if value.shape != self.shape:
             value = value.reshape(self.shape)
-        for m, unit in zip(self.flat, value.flat):
+        flat_iter = cast(Iterable[MetaData], self.reshape(-1))
+        value_iter = cast(Iterable[object], value.reshape(-1))
+        for m, unit in zip(flat_iter, value_iter):
             m.unit = unit
 
     @property
     def channels(self):
-        flat = [m.channel for m in self.flat]
+        flat = [m.channel for m in self.reshape(-1)]
         return np.asarray(flat, dtype=object).reshape(self.shape)
 
     @channels.setter
@@ -577,7 +582,9 @@ class MetaDataMatrix(np.ndarray):
         value = np.asarray(value)
         if value.shape != self.shape:
             value = value.reshape(self.shape)
-        for m, channel in zip(self.flat, value.flat):
+        flat_iter = cast(Iterable[MetaData], self.reshape(-1))
+        value_iter = cast(Iterable[object], value.reshape(-1))
+        for m, channel in zip(flat_iter, value_iter):
             m.channel = channel
 
     @classmethod

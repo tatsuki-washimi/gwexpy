@@ -1,7 +1,7 @@
 # 統合作業計画：Codex完了後の改善ロードマップ
 
 **作成日**: 2026-01-27 18:13:13 JST
-**最終更新**: 2026-01-27 (Claude Opus 4.5 WEEK 1-3 完了)
+**最終更新**: 2026-01-28 (Codex P1-C Phase 3 + P3: spectrogram MyPy エラー0 完了)
 **ファイル**: `docs/developers/plans/plan_integrated_work_post_codex_20260127_181313.md`
 **参照**: `docs/developers/reports/report_integrated_completion_20260127.md` + `docs/developers/plans/plan_comprehensive_improvement_20260127.md`
 **ステータス**: 実行可能な優先度付きタスク
@@ -17,21 +17,24 @@
 | WEEK 1 | P1-B: ワイルドカード廃止（10ファイル） | **Claude Opus 4.5** | WEEK 1 | 3-4h |
 | WEEK 2-3 | P1-C Phase 1: axis_api.py, array3d.py | **Claude Opus 4.5** | WEEK 2 | 2-3h |
 | WEEK 2-3 | P1-C Phase 2: signal_interop.py, series_matrix_core.py | **Claude Opus 4.5** | WEEK 3 | 3-4h |
-| WEEK 4+ | P1-C Phase 3: timeseries (pipeline, win, tdms) | **GPT5.2-Codex** | WEEK 4 | 4-6h |
+| WEEK 4+ | P1-C Phase 3: timeseries (pipeline, win, tdms)（完了） | **GPT5.2-Codex** | DONE | 4-6h |
 | WEEK 4+ | P2: カバレッジ向上（90%達成） | **Claude Opus 4.5** | WEEK 4+ | 4-6h |
+| WEEK 4+ | P3: spectrogram MyPy（エラー0）（完了） | **GPT5.2-Codex** | DONE | 4-8h |
 | 終了時 | 最終テスト・検証 | **GPT5.2-Codex** | 各フェーズ後 | 継続 |
 
 ---
 
 ## エグゼクティブサマリー
 
-Codex側で**例外処理・型安全性・CI安定化**の3軸が完了しました。
+Codex側で**例外処理・型安全性・CI安定化**の3軸に加え、P1-C Phase 3（timeseries）と P3（spectrogram）の MyPy 対応まで完了しました。
 
 ```
 ✅ Codex完了：
   - 例外処理: 3モジュール修正 ✓
   - MyPy拡張: gui/nds/, gui/ui/ をチェック対象に ✓
   - CI安定化: waitExposed置換 + 警告抑制 ✓
+  - P1-C Phase 3: timeseries (pipeline, win, tdms) ✓
+  - P3: spectrogram MyPy（エラー0） ✓
   - テスト: 2473 passed ✓
 
 ✅ Claude Opus 4.5 完了 (2026-01-27):
@@ -39,10 +42,8 @@ Codex側で**例外処理・型安全性・CI安定化**の3軸が完了しま�
   - ignore_errors 削除: types 4モジュール ✓
   - テスト: 2473 passed ✓
 
-⬜ 残りタスク（GPT5.2-Codex / 後続）:
-  - P1-C Phase 3: timeseries (pipeline, win, tdms) - Codex担当
-  - カバレッジ向上 (P2)
-  - spectrogram MyPy対応 (P3 - 後回し)
+⬜ 残りタスク:
+  - P2: カバレッジ向上（90%達成）
 ```
 
 ---
@@ -223,8 +224,8 @@ git commit -m "refactor: replace wildcard import in detector/io"
 ### 🟡 P1-C: MyPy `ignore_errors` 削除（段階的、WEEK 2-4）
 
 **担当**: 🔵 **Claude Opus 4.5** (Phase 1-2) / 🔴 **GPT5.2-Codex** (Phase 3)
-**現状**: 7モジュールで `ignore_errors = true`
-**目標**: 0（spectrogram/ 除外）
+**現状**: P1-C Phase 1-4 は完了（spectrogram を含めて `mypy .` が 0 errors）
+**目標**: 0（spectrogram を含めて `mypy .` が 0 errors）
 
 **対象モジュール（優先度順）**:
 
@@ -245,6 +246,11 @@ git commit -m "refactor: replace wildcard import in detector/io"
 5. gwexpy/timeseries/pipeline.py
 6. gwexpy/timeseries/io/win.py
 7. gwexpy/timeseries/io/tdms.py
+```
+
+#### Phase 4: spectrogram（HIGH優先度）（完了） - 🔴 GPT5.2-Codex
+```
+8. gwexpy/spectrogram/
 ```
 
 **理由（Phase 3 を Codex に割り当て）**:
@@ -286,12 +292,13 @@ git commit -m "refactor(types): enable mypy checks for axis_api"
 - ランタイムエラー削減
 - IDE サポート向上
 
-**工数**: 段階的（各モジュール 1-3時間 × 7 = 7-21時間）
+**工数**: 段階的（各モジュール 1-3時間 × 8 = 8-24時間）
 
 **推奨スケジュール**:
 - Week 2: Phase 1 完了（axis_api, array3d）
 - Week 3: Phase 2 完了（signal_interop, series_matrix_core）
-- Week 4+: Phase 3（余裕があれば）
+- Week 4: Phase 3 完了（timeseries）
+- Week 4+: Phase 4 完了（spectrogram を含めて MyPy エラー0）
 
 ---
 
@@ -333,18 +340,38 @@ pytest --cov=gwexpy tests/
 
 ---
 
-### 🟢 P3: Spectrogram MyPy 対応（後回し、参考情報）
+### ✅ P3: spectrogram MyPy（エラー0 / 完了）
 
-**担当**: 未定（次のメジャーリリース時に検討）
-**現状**: MyPy 除外中（複雑な Mixin 構造）
-**優先度**: 低（次のメジャーリリース）
+**担当**: 🔵 Claude Opus 4.5（主） / 🔴 GPT5.2-Codex（補助）
+**現状**: 完了（`mypy gwexpy/spectrogram` / `mypy .` ともに 0 errors）
+**達成**: `pyproject.toml` の spectrogram 抑制撤廃 + 最小限の型修正で収束
 
-**理由**:
-- 工数が大（16-32時間）
-- SpectrogramMatrix の Mixin 継承が複雑
-- Codexの最終報告でも「低優先度」と記載
+**方針**:
+- 禁止: `ignore_errors = true`（モジュール丸ごと抑制）
+- 許容: 最小限の `# type: ignore[misc]`（ndarray 多重継承など構造的衝突の止血）、狭い `cast()`、`TYPE_CHECKING` の Protocol
 
-**推奨**: 専用の リファクタリングプロジェクトとして実施
+**実装手順**:
+```bash
+# 1) spectrogram の MyPy 抑制を撤廃
+# - pyproject.toml の gwexpy.spectrogram.* override を削除
+
+# 2) spectrogram だけ先に回してエラーを固定化
+mypy gwexpy/spectrogram
+
+# 3) 最終ゲート
+ruff check .
+mypy .
+pytest tests/ -x
+```
+
+**完了条件**:
+- `mypy .` が 0 errors（spectrogram 含む）
+- `pyproject.toml` に spectrogram の `ignore_errors` が存在しない
+
+**実績（2026-01-28）**:
+- `mypy gwexpy/spectrogram`: 0 errors
+- `mypy .`: 0 errors
+- `ruff check .`: 0 errors
 
 ---
 
@@ -371,7 +398,7 @@ Thursday-Friday:
 WEEK 1 中：
   ✓ WEEK 1 完了後の Opus 作業をレビュー
   ✓ リグレッション確認（CI実行）
-  ✓ P1-C Phase 3 準備
+  ✓ P1-C Phase 3 完了（timeseries）
 
 工数: 継続的
 ```
@@ -400,9 +427,8 @@ Week 3:
 #### 🔴 GPT5.2-Codex（並列実行）
 ```
 Week 2-3：
-  ○ P2 準備（テストケース調査）
-  ○ Opus 作業のレビュー・検証
-  ○ P1-C Phase 3 の詳細分析
+  ✓ Opus 作業のレビュー・検証
+  ✓ P1-C Phase 3 実装（timeseries）
 
 工数: 2-3時間
 ```
@@ -417,6 +443,7 @@ Week 2-3：
 ```
 Week 4:
   ✓ P2: カバレッジ向上（テスト追加）
+  ✓ P3: spectrogram MyPy（エラー0）
   ✓ テスト結果分析 + コミット
 
 工数: 4-6時間
@@ -425,8 +452,7 @@ Week 4:
 #### 🔴 GPT5.2-Codex
 ```
 Week 4:
-  ○ P1-C Phase 3: timeseries (pipeline, win, tdms)
-  ○ MyPy確認 + テスト実行
+  ✓ MyPy確認 + テスト実行
   ✓ 最終テスト実行
   ✓ Opus 作業との統合テスト
 
@@ -452,6 +478,7 @@ Week 4:
 
 **WEEK 4+**:
 - ✓ types/, frequencyseries/, spectral/ のテスト追加（カバレッジ向上）
+- ✓ spectrogram MyPy（エラー0）
 
 #### ✅ GPT5.2-Codex の責務
 
@@ -460,7 +487,6 @@ Week 4:
 - ✓ CI/テスト実行による品質担保
 
 **WEEK 4+**:
-- ✓ timeseries/ モジュールの ignore_errors 削除（pipeline, win, tdms）
 - ✓ 最終統合テスト
 
 ### 💥 干渉ポイント（注意）
@@ -468,7 +494,7 @@ Week 4:
 | ポイント | 原因 | 対策 |
 |---------|------|------|
 | **pyproject.toml** | 両者が同時編集 | Opus が WEEK 1 に一度編集後、Codex は WEEK 4 に編集。編集前に git pull |
-| **gwexpy/timeseries/** | Opus P2, Codex P1-C Phase 3 | Codex はテストのみ編集、実装ファイルは Opus に任せる |
+| **gwexpy/spectrogram/** | P3（MyPy）完了後の微修正 | 追加変更は PR 単位で同期し、`ruff`/`mypy`/`pytest` を最終ゲートにする |
 | **MyPy設定** | ignore_errors を段階的削除 | コミット後に必ず git push、相手が pull 後に作業開始 |
 | **テスト実行** | 並列テスト競合 | 各フェーズ完了時に pytest/mypy を実行。別々の時間帯で実施推奨 |
 
@@ -670,7 +696,7 @@ mypy gwexpy/ --ignore-missing-imports
 |-----------|------|------|
 | `from __future__` 採用率 | 33% | ✅ 100% |
 | ワイルドカードインポート | 10件 | ✅ 0件 |
-| MyPy ignore_errors | 7モジュール | ✅ 0（spectrogram除外） |
+| MyPy ignore_errors | 0モジュール | ✅ 0（spectrogram含む） |
 | テスト合格 | 2473 passed | ✅ 2473+ passed |
 | MyPy エラー | 0 | ✅ 0 |
 | カバレッジ | 85% | ○ 90%（優先度低） |
@@ -697,6 +723,7 @@ mypy gwexpy/ --ignore-missing-imports
 【WEEK 4 開始前】
 - 全 Phase 2 コミットが完了していることを確認
 - P2 の詳細計画立案
+- P3 完了内容の確認（`ruff`/`mypy` の最終ゲート）
 ```
 
 ### 🔴 GPT5.2-Codex 向けの初期タスク
@@ -707,6 +734,10 @@ mypy gwexpy/ --ignore-missing-imports
 2. pytest tests/ -x で リグレッション確認
 3. mypy gwexpy/ で型チェック
 4. GitHub Issues または コメントでレビュー報告
+
+【WEEK 4+】
+1. P2（カバレッジ向上）でテスト追加/レビューを補助
+2. `ruff check .` / `mypy .` / `pytest tests/ -x` の最終ゲートを担当
 
 【WEEK 2-3 準備】
 - P2 テストケースの準備

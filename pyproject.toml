@@ -178,7 +178,7 @@ ignore = [
 [tool.mypy]
 ignore_missing_imports = true
 check_untyped_defs = true
-exclude = "gwexpy/gui/(ui|reference-dtt|test-data)/.*|tests/.*"
+exclude = "gwexpy/gui/(ui|reference-dtt|reference_ndscope|test-data)/.*|tests/.*"
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
@@ -227,3 +227,5 @@ module = [
   "gwexpy.types.series_matrix_validation_mixin",
 ]
 ignore_errors = false
+
+

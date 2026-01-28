@@ -12,7 +12,7 @@ from .matrix_analysis import FrequencySeriesMatrixAnalysisMixin
 from .matrix_core import FrequencySeriesMatrixCoreMixin
 
 
-class FrequencySeriesMatrix(
+class FrequencySeriesMatrix(  # type: ignore[misc]
     FrequencySeriesMatrixCoreMixin, FrequencySeriesMatrixAnalysisMixin, SeriesMatrix
 ):
     """

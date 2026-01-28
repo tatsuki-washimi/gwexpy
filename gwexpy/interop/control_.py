@@ -115,7 +115,7 @@ def from_control_frd(cls, frd, frequency_unit: str = "Hz"):
         is_regular = np.allclose(diffs, diffs[0], rtol=1e-6)
     else:
         is_regular = True
-        diffs = [1.0]
+        diffs = np.array([1.0])
 
     # Determine if this is a MIMO system
     is_matrix = data.ndim == 3 and (data.shape[0] > 1 or data.shape[1] > 1)
