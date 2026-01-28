@@ -26,9 +26,11 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
-    "import warnings\n",
+    "\n",
     "warnings.filterwarnings(\"ignore\", message=r\".*force_all_finite.*\", category=FutureWarning)\n",
     "warnings.filterwarnings(\"ignore\", category=FutureWarning, module=r\"sklearn\\..*\")\n",
     "warnings.filterwarnings(\"ignore\", category=FutureWarning, module=r\"pmdarima\\..*\")\n",
