@@ -5,7 +5,7 @@ from typing import Any, cast
 import numpy as np
 from astropy import units as u
 
-from gwexpy.types.metadata import MetaData, MetaDataDict, MetaDataMatrix
+from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.seriesmatrix import SeriesMatrix
 
