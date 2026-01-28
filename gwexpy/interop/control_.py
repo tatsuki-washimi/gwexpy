@@ -24,9 +24,10 @@ def to_control_frd(fs, frequency_unit: str = "rad/s"):
     ----------
     fs : FrequencySeries
         Input frequency response data. Frequencies are assumed to be in Hz.
-    frequency_unit : {'rad/s', 'Hz'}, optional
+    frequency_unit : str, optional
         Unit for the frequency axis in the output FRD object.
-        Default is 'rad/s' (standard for control.FRD).
+        Either ``'rad/s'`` or ``'Hz'``. Default is ``'rad/s'``
+        (standard for ``control.FRD``).
 
     Returns
     -------
@@ -76,9 +77,10 @@ def from_control_frd(cls, frd, frequency_unit: str = "Hz"):
         The FrequencySeries class to instantiate.
     frd : control.FRD
         Frequency response data from python-control.
-    frequency_unit : {'Hz', 'rad/s'}, optional
+    frequency_unit : str, optional
         Unit of the input FRD's omega attribute.
-        Default is 'Hz' (output will be in Hz).
+        Either ``'Hz'`` or ``'rad/s'``. Default is ``'Hz'``
+        (output will be in Hz).
 
     Returns
     -------
