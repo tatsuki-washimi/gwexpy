@@ -8,6 +8,7 @@ unit conversions (dB, Phase, Magnitude), and coordinate transformations (Log-Y).
 Inspired by DTT's TLGPlot architecture where rendering is separated from
 measurement logic.
 """
+
 from __future__ import annotations
 
 import logging

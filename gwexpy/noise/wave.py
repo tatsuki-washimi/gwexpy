@@ -17,6 +17,7 @@ Examples
 >>> noise = gaussian(duration=1.0, sample_rate=1024, std=0.1)
 >>> sweep = chirp(duration=1.0, sample_rate=1024, f0=10, f1=100)
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any

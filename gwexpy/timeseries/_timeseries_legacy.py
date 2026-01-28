@@ -16,6 +16,7 @@ This file now only contains:
 1. Base class imports and inheritance
 2. Helper functions and utilities used internally
 """
+
 from __future__ import annotations
 
 try:

@@ -5,6 +5,7 @@ This module implements the Response Function Model (RFM) based on
 Stepped Sine (Discrete) Injections. It prioritizes statistical significance
 by calculating averaged ASDs for each stable frequency step.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

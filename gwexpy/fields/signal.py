@@ -12,6 +12,7 @@ Key features:
 All functions preserve axis metadata and units, returning gwexpy-compatible
 data containers (FrequencySeries, TimeSeries, ScalarField).
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal

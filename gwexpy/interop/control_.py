@@ -6,6 +6,7 @@ Interoperability with the python-control library for control systems analysis.
 
 Provides conversion between FrequencySeries and control.FRD (Frequency Response Data).
 """
+
 from __future__ import annotations
 
 import numpy as np

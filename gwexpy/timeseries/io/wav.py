@@ -2,6 +2,7 @@
 WAV format reader for gwexpy.
 Wrapper around scipy.io.wavfile to support TimeSeriesDict and metadata.
 """
+
 from __future__ import annotations
 
 import numpy as np

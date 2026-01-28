@@ -7,6 +7,7 @@ This module provides interoperability with other libraries as a mixin class:
 - Domain Specific: obspy, astropy, mne, pydub, librosa
 - Computational: torch, tensorflow, jax, cupy, dask
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
