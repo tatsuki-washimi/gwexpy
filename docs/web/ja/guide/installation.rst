@@ -7,7 +7,7 @@ GWexpy は Python 3.9+ を必要とし、GWpy, NumPy, SciPy, および Astropy �
 ----------------
 
 .. note::
-   GWexpy は現時点で PyPI からは提供されていません。推奨インストール方法は GitHub 経由です。
+   GWexpy は現在、先行公開版として提供されています。近日中に PyPI への登録を予定していますが、現時点では GitHub からのインストールを推奨しています。
 
 .. code-block:: bash
 
