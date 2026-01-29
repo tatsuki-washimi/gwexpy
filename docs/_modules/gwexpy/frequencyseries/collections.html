@@ -242,6 +242,23 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseDict.read">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read data into a `FrequencySeriesDict`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        source : str, file-like</span>
+<span class="sd">            Source of data, either a file path or a file-like object.</span>
+<span class="sd">        *args</span>
+<span class="sd">            Arguments passed to the underlying reader.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Keyword arguments passed to the underlying reader.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        FrequencySeriesDict</span>
+<span class="sd">            A new dict containing the data read from the source.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">registry</span>
 
         <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -762,6 +779,23 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.read">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read data into a `FrequencySeriesList`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        source : str, file-like</span>
+<span class="sd">            Source of data, either a file path or a file-like object.</span>
+<span class="sd">        *args</span>
+<span class="sd">            Arguments passed to the underlying reader.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Keyword arguments passed to the underlying reader.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        FrequencySeriesList</span>
+<span class="sd">            A new list containing the data read from the source.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">registry</span>
 
         <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>

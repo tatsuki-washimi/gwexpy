@@ -93,14 +93,24 @@
 <h2>基本インストール<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>GWexpy は現在、先行公開版として提供されています。近日中に PyPI への登録を予定していますが、現時点では GitHub からのインストールを推奨しています。</p>
-</div>
+<p>GWexpy は現在 <strong>Pre-release (先行公開版)</strong> です。近日中に PyPI への登録を予定していますが、現時点では最新の機能や修正が含まれる GitHub からの直接インストールを推奨します。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># GitHub から直接 (推奨)</span>
 pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/tatsuki-washimi/gwexpy.git
-
-<span class="c1"># ローカルチェックアウトから</span>
-pip<span class="w"> </span>install<span class="w"> </span>.
 </pre></div>
+</div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>重力波データ解析 (LIGO/Virgo/KAGRA等) の機能を使用する場合</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">[gw]</span></code> エクストラに含まれる <code class="docutils literal notranslate"><span class="pre">nds2-client</span></code> や <code class="docutils literal notranslate"><span class="pre">python-framel</span></code> などの一部ライブラリは、システムの依存関係が複雑なため <strong>PyPI では提供されていません</strong>。
+これらの機能を使用するには、まず <strong>Conda (Miniforge/Anaconda)</strong> を用いて依存関係をインストールすることを強く推奨します:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. 外部依存関係のインストール</span>
+conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>python-nds2-client<span class="w"> </span>python-framel<span class="w"> </span>ldas-tools-framecpp
+
+<span class="c1"># 2. GWexpy のインストール (エクストラ指定)</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[gw] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
+</pre></div>
+</div>
 </div>
 </section>
 <section id="id3">

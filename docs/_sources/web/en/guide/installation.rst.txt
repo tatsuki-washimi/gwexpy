@@ -7,15 +7,26 @@ Basic install
 -------------
 
 .. note::
-   GWexpy is currently provided as a pre-release version. We plan to publish it on PyPI soon, but for now, we recommend installing via GitHub.
+   GWexpy is currently in **Pre-release**. We plan to publish it on PyPI soon, but for now, we recommend installing directly from GitHub to get the latest features and bug fixes.
 
-.. code-block:: bash
+   .. code-block:: bash
 
-   # From GitHub (recommended)
-   pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+      # From GitHub (recommended)
+      pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 
-   # From a local checkout
-   pip install .
+.. important::
+   **For Gravitational Wave Data Analysis (LIGO/Virgo/KAGRA, etc.)**
+
+   Some dependencies in the ``[gw]`` extra, such as ``nds2-client`` and ``python-framel``, are **not available on PyPI** due to complex system-level dependencies.
+   To use these features, we strongly recommend installing them via **Conda (Miniforge/Anaconda)** first:
+
+   .. code-block:: bash
+
+      # 1. Install external dependencies
+      conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
+
+      # 2. Install GWexpy with extras
+      pip install "gwexpy[gw] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 
 Development install
 -------------------

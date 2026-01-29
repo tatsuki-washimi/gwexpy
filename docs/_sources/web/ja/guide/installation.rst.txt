@@ -7,15 +7,26 @@ GWexpy は Python 3.9+ を必要とし、GWpy, NumPy, SciPy, および Astropy �
 ----------------
 
 .. note::
-   GWexpy は現在、先行公開版として提供されています。近日中に PyPI への登録を予定していますが、現時点では GitHub からのインストールを推奨しています。
+   GWexpy は現在 **Pre-release (先行公開版)** です。近日中に PyPI への登録を予定していますが、現時点では最新の機能や修正が含まれる GitHub からの直接インストールを推奨します。
 
-.. code-block:: bash
+   .. code-block:: bash
 
-   # GitHub から直接 (推奨)
-   pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+      # GitHub から直接 (推奨)
+      pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 
-   # ローカルチェックアウトから
-   pip install .
+.. important::
+   **重力波データ解析 (LIGO/Virgo/KAGRA等) の機能を使用する場合**
+
+   ``[gw]`` エクストラに含まれる ``nds2-client`` や ``python-framel`` などの一部ライブラリは、システムの依存関係が複雑なため **PyPI では提供されていません**。
+   これらの機能を使用するには、まず **Conda (Miniforge/Anaconda)** を用いて依存関係をインストールすることを強く推奨します:
+
+   .. code-block:: bash
+
+      # 1. 外部依存関係のインストール
+      conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
+
+      # 2. GWexpy のインストール (エクストラ指定)
+      pip install "gwexpy[gw] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 
 開発用インストール
 ------------------
