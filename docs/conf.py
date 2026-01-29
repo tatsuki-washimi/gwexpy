@@ -22,6 +22,8 @@ extensions = [
 ]
 
 # nbsphinx configuration
+# Default to skipping execution so docs builds don't require a registered Jupyter kernel.
+nbsphinx_execute = os.environ.get("NBS_EXECUTE", "never")
 nbsphinx_allow_errors = True  # Allow notebooks with execution errors to be included
 
 autosummary_generate = True
