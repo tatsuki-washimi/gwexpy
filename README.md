@@ -7,9 +7,15 @@
 
 **gwexpy** (GWexpy) is an (unofficial) extension library for [**GWpy**](https://gwpy.github.io/), designed to facilitate advanced time-series analysis, matrix operations, and signal processing for experimental physics and gravitational wave data analysis.
 
+## Documentation
+
 > [!IMPORTANT]
-> For full documentation, tutorials, and API reference, please visit:
-> **[https://tatsuki-washimi.github.io/gwexpy/](https://tatsuki-washimi.github.io/gwexpy/en/index.html)**
+> **Full documentation is available in both English and Japanese:**
+>
+> - **English:** [https://tatsuki-washimi.github.io/gwexpy/docs/web/en/](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/)
+> - **日本語:** [https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/](https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/)
+>
+> **19 comprehensive tutorials** covering everything from basic usage to advanced signal processing techniques are available in both languages.
 
 ---
 
@@ -24,7 +30,7 @@
 - **Interoperability**: Seamless conversion to PyTorch, TensorFlow, JAX, Dask, and Polars.
 - **Robust Serialization**: Full Pickle round-trip support for all data objects (e.g., `TimeSeriesMatrix`, `ScalarField`).
 
-See the [Features](https://tatsuki-washimi.github.io/gwexpy/en/index.html) page for details.
+See the [Features](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/) page for details.
 
 ---
 
@@ -48,7 +54,7 @@ pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.gi
 > NDS/frames support (`[gw]` extra) depends on `nds2-client`, which is not published on PyPI.
 > Install it via Conda first (e.g., `conda install -c conda-forge nds2-client`) before adding `[gw]`.
 
-For other domain-specific extras (e.g., `[geophysics]`, `[fitting]`, `[analysis]`), see the [Installation Guide](https://tatsuki-washimi.github.io/gwexpy/en/index.html).
+For other domain-specific extras (e.g., `[geophysics]`, `[fitting]`, `[analysis]`), see the [Installation Guide](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/guide/installation.html).
 
 ---
 
@@ -78,7 +84,7 @@ mat = TimeSeriesMatrix.from_list([series1, series2, series3])
 scores = mat.standardize().pca(n_components=2)
 ```
 
-For more complex examples, browse our [Tutorials](https://tatsuki-washimi.github.io/gwexpy/en/index.html).
+For more complex examples, browse our **[Tutorials](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/guide/tutorials/)** (available in [English](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/guide/tutorials/) and [日本語](https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/guide/tutorials/)).
 
 ---
 
