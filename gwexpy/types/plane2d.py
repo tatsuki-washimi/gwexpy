@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from gwpy.types.array2d import Array2D as GwpyArray2D
 
+from gwexpy.fitting.mixin import FittingMixin
+
 from .array2d import Array2D
 
 __all__ = ["Plane2D"]
 
 
-class Plane2D(Array2D):
+class Plane2D(FittingMixin, Array2D):
     """
     2D Array wrapper where the two axes are semantically significant as Axis 1 and Axis 2.
     """

@@ -23,7 +23,33 @@ class FittingMixin:
         fixed: Iterable[str] | None = None,
         **kwargs: Any,
     ) -> Any:
-        "Fit the series data to a model."
+        """
+        Fit the data to a model using iminuit.
+
+        Parameters
+        ----------
+        model : callable or str
+            The model function to fit. Can be a callable with signature
+            ``f(x, p1, p2, ...)`` or a string name of a pre-defined model.
+        x_range : tuple of float, optional
+            The (min, max) range of the x-axis to include in the fit.
+        sigma : array-like or scalar, optional
+            The errors or weights for the data points.
+        p0 : dict, optional
+            Initial guesses for the parameter values.
+        limits : dict, optional
+            Lower and upper bounds for parameters.
+        fixed : iterable of str, optional
+            Names of parameters to keep fixed during the fit.
+        **kwargs
+            Additional arguments passed to the fitting engine.
+
+        Returns
+        -------
+        FitResult
+            An object containing the fit results, including best-fit parameters,
+            errors, and plotting methods.
+        """
         from gwexpy.fitting import fit_series
 
         return fit_series(

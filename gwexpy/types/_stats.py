@@ -185,7 +185,23 @@ class StatisticalMethodsMixin:
         return self._apply_stat_func(np.nanmedian, np.median, ignore_nan, **base_kwargs)
 
     def rms(self, axis=None, keepdims=False, ignore_nan=True):
-        """Compute root-mean-square."""
+        """
+        Compute the Root Mean Square (RMS) value.
+
+        Parameters
+        ----------
+        axis : int or None, optional
+            Axis along which to compute RMS. If None, compute over the flattened array.
+        keepdims : bool, optional
+            If True, the reduced axes are left in the result as dimensions with size one.
+        ignore_nan : bool, optional
+            If True (default), NaNs are ignored during computation.
+
+        Returns
+        -------
+        Quantity or float
+            The RMS value(s). Returns `~astropy.units.Quantity` if the object has a unit.
+        """
         func = np.nanmean if ignore_nan else np.mean
         data = np.asarray(self)
         val = np.sqrt(func(np.square(data), axis=axis, keepdims=keepdims))
