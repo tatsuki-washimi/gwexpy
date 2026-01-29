@@ -21,14 +21,78 @@
 
 ## Key Features
 
-- **Advanced Containers**: `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and `LaplaceGram` for multivariate analysis.
-- **Spectral Analysis**: Enhanced CSD/Coherence matrix calculations and transient-friendly FFT.
-- **Signal Processing**: STLT, HHT, Peak Finding (unit-aware), and ARIMA.
-- **Preprocessing**: Robust alignment, imputation, and whitening for collections.
-- **Physics Models**: Built-in support for `gwinc` (detector noise) and `obspy` (earth noise).
-- **Expanded I/O**: Native support for `.gwf`, `.wav`, `.root` (vectorized), `.mseed`, `.win`, `.ats`, `.tdms`, `.gbd`, and more.
-- **Interoperability**: Seamless conversion to PyTorch, TensorFlow, JAX, Dask, and Polars.
-- **Robust Serialization**: Full Pickle round-trip support for all data objects (e.g., `TimeSeriesMatrix`, `ScalarField`).
+### 🔢 Advanced Data Structures
+
+**Matrix Types** - Multi-channel array operations
+- `TimeSeriesMatrix`, `FrequencySeriesMatrix`, `SpectrogramMatrix`: Multi-dimensional data handling (Rows × Cols × Time/Freq)
+- MIMO transfer function analysis and sensor array statistics
+- Matrix operations: inverse (`.inv()`), determinant (`.det()`), trace (`.trace()`), Schur complement (`.schur()`)
+
+**Physical Fields** - 4D space-time-frequency data
+- `ScalarField`, `VectorField`, `TensorField`: 4D physical fields (time/frequency + 3D space/wavenumber)
+- Automatic domain management with FFT transformations (`.fft_time()`, `.fft_space()`)
+- Spatial extraction and vector/tensor calculus
+
+**Enhanced Collections**
+- `FrequencySeriesList/Dict`, `SpectrogramList/Dict`: Collection classes for frequency-domain data
+- Batch processing across all elements (filtering, resampling, whitening)
+
+### 🎯 Advanced Analysis
+
+**Time-Frequency Analysis**
+- Hilbert-Huang Transform (HHT/EMD): Nonlinear and non-stationary signal decomposition
+- Short-Time Laplace Transform (STLT): Damping analysis with sigma-frequency representation
+- Continuous Wavelet Transform (CWT), Cepstrum analysis
+- Enhanced spectrograms with summary plotting
+
+**Statistical & ML Methods**
+- Principal/Independent Component Analysis (PCA/ICA)
+- ARIMA/AR/MA time series modeling (statsmodels/pmdarima integration)
+- Distance correlation, MIC (Maximal Information Coefficient), Kendall/Pearson correlation
+- Bootstrap estimation for spectrograms
+
+**Multi-Channel Analysis**
+- **Bruco**: Coherence-based noise hunting tool for identifying coupling channels
+- MIMO system identification with `python-control` integration
+- Enhanced CSD/Coherence matrix calculations
+- Transient-optimized FFT with flexible zero-padding
+
+**Preprocessing & Signal Processing**
+- Missing data imputation with customizable gap constraints
+- Whitening methods (PCA/ZCA)
+- Robust standardization and alignment
+- Unit-aware peak detection (scipy.signal.find_peaks wrapper)
+
+### 🔗 Extensive Interoperability
+
+**Machine Learning & Array Libraries** (30+ integrations)
+- Deep Learning: PyTorch (Tensor, Dataset/DataLoader), TensorFlow, JAX
+- Accelerated Computing: CuPy, Dask, Zarr
+- Data Science: pandas, xarray, polars, SQLite, JSON
+
+**Domain-Specific Tools**
+- Seismology: ObsPy (Trace/Stream)
+- Neuroscience: MNE (EEG/MEG), Neo (Electrophysiology)
+- Audio: Librosa, Pydub, Torchaudio
+- Control Systems: python-control (FRD, StateSpace)
+- Astronomy: Specutils, Pyspeckit, Astropy
+- Geophysics: SimPEG
+- Particle Physics: CERN ROOT (TGraph, TH1D, TH2D, TMultiGraph)
+
+### 📂 Expanded File Format Support
+
+Beyond standard GWpy formats (`.gwf`, `.hdf5`), gwexpy natively supports:
+- **Seismology**: MiniSEED, SAC, WIN, GSE2 (ObsPy integration)
+- **Instrumentation**: ATS (Metronix MT), TDMS (LabVIEW/NI), GBD (GRAPHTEC data logger)
+- **LIGO Tools**: DTTXML (Diagnostic Test Tools)
+- **General**: ROOT (.root), WAV (extended), Parquet, Feather, Pickle
+- **Meteorology**: SDB (Davis weather station)
+
+### 🔬 Physics Models & Simulation
+
+- **Detector Noise**: `gwinc` integration for gravitational wave detector sensitivity curves
+- **Noise Simulation**: Colored noise generation from ASD/PSD specifications
+- **Field Simulation**: Isotropic noise fields and plane wave propagation
 
 See the [Features](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/) page for details.
 
