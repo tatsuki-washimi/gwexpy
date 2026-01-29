@@ -215,17 +215,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">LIGOTimeGPS</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
-
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;Wswiglal-redir-stdio&quot;</span><span class="p">)</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>\<span class="n">nimport</span> <span class="n">logging</span>\<span class="n">n</span>\<span class="n">nimport</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>\<span class="n">nimport</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>\<span class="n">nfrom</span> <span class="n">astropy</span> <span class="kn">import</span><span class="w"> </span><span class="nn">units</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>\<span class="n">nfrom</span> <span class="n">gwpy</span><span class="o">.</span><span class="n">time</span> <span class="kn">import</span><span class="w"> </span><span class="nn">LIGOTimeGPS</span>\<span class="n">n</span>\<span class="n">nfrom</span> <span class="n">gwexpy</span><span class="o">.</span><span class="n">timeseries</span> <span class="kn">import</span><span class="w"> </span><span class="nn">TimeSeries</span>\<span class="n">n</span>\<span class="n">nwarnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>\<span class="s2">&quot;ignore</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">Wswiglal-redir-stdio</span><span class="se">\&quot;</span><span class="s2">)</span><span class="se">\n</span><span class="s2">warnings.filterwarnings(</span><span class="se">\&quot;</span><span class="s2">ignore</span><span class="se">\&quot;</span><span class="s2">, category=UserWarning)</span><span class="se">\n\n</span><span class="s2"># Suppress MTH5 redundant warnings</span><span class="se">\n</span><span class="s2">logging.getLogger(</span><span class="se">\&quot;</span><span class="s2">mth5.groups.base</span><span class="se">\&quot;</span><span class="s2">).setLevel(logging.ERROR)</span>
 </pre></div>
 </div>
 </div>
@@ -1665,6 +1655,10 @@ SimPEG FDEM data shape: (10,)
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mth5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mt_metadata&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 
     <span class="kn">import</span><span class="w"> </span><span class="nn">mth5</span>
 

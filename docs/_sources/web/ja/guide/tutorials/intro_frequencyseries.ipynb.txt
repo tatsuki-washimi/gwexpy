@@ -1039,58 +1039,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 7. 位相と群遅延の解析 (Phase & Group Delay)\n",
-    "\n",
-    "`FrequencySeries` クラスには、位相 (`phase`, `angle`) や群遅延 (`group_delay`) を計算する便利なメソッドが追加されています。"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 10,
-   "metadata": {
-    "execution": {
-     "iopub.execute_input": "2026-01-25T11:56:03.028831Z",
-     "iopub.status.busy": "2026-01-25T11:56:03.028695Z",
-     "iopub.status.idle": "2026-01-25T11:56:03.047879Z",
-     "shell.execute_reply": "2026-01-25T11:56:03.047411Z"
-    }
-   },
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "\n",
-      "Unwrapped Phase (rad) at 10Hz: -2.1575323101542567\n",
-      "Unwrapped Phase (deg) at 10Hz: -123.61749553494944\n",
-      "\n",
-      "Group Delay (s) at 10Hz: -1.9070915083932811\n"
-     ]
-    }
-   ],
-   "source": [
-    "# 単一チャンネルを取り出す\n",
-    "fs = spec\n",
-    "\n",
-    "# 位相の計算 (ラジアン)\n",
-    "phi = fs.phase(unwrap=True)\n",
-    "print(\"\\nUnwrapped Phase (rad) at 10Hz:\", phi.value[10])\n",
-    "\n",
-    "# 位相の計算 (度)\n",
-    "deg = fs.degree(unwrap=True)\n",
-    "print(\"Unwrapped Phase (deg) at 10Hz:\", deg.value[10])\n",
-    "\n",
-    "# 群遅延 (Group Delay) の計算\n",
-    "# Group Delay = -d(phi)/d(omega)\n",
-    "gd = fs.group_delay()\n",
-    "print(\"\\nGroup Delay (s) at 10Hz:\", gd.value[10])"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "## 8. Python Control Library との連携\n",
+    "## 7. Python Control Library との連携\n",
     "\n",
     "制御工学の分野で標準的な `control` ライブラリの **Frequency Response Data (FRD)** オブジェクトと相互変換が可能です。\n",
     "これにより、GWExPyで計測した伝達関数を、制御系の設計や解析に直接利用できます。"
@@ -1136,7 +1085,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 9. 求積和 (Quadrature Sum)\n",
+    "## 8. 求積和 (Quadrature Sum)\n",
     "\n",
     "直交位相の和を計算する機能です。"
    ]

@@ -981,46 +981,8 @@ outputs=1, inputs=1)
 </pre></div></div>
 </div>
 </section>
-<section id="7.-位相と群遅延の解析-(Phase-&amp;-Group-Delay)">
-<h2>7. 位相と群遅延の解析 (Phase &amp; Group Delay)<a class="headerlink" href="#7.-位相と群遅延の解析-(Phase-&-Group-Delay)" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> クラスには、位相 (<code class="docutils literal notranslate"><span class="pre">phase</span></code>, <code class="docutils literal notranslate"><span class="pre">angle</span></code>) や群遅延 (<code class="docutils literal notranslate"><span class="pre">group_delay</span></code>) を計算する便利なメソッドが追加されています。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 単一チャンネルを取り出す</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="n">spec</span>
-
-<span class="c1"># 位相の計算 (ラジアン)</span>
-<span class="n">phi</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Unwrapped Phase (rad) at 10Hz:&quot;</span><span class="p">,</span> <span class="n">phi</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span>
-
-<span class="c1"># 位相の計算 (度)</span>
-<span class="n">deg</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unwrapped Phase (deg) at 10Hz:&quot;</span><span class="p">,</span> <span class="n">deg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span>
-
-<span class="c1"># 群遅延 (Group Delay) の計算</span>
-<span class="c1"># Group Delay = -d(phi)/d(omega)</span>
-<span class="n">gd</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">group_delay</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Group Delay (s) at 10Hz:&quot;</span><span class="p">,</span> <span class="n">gd</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-Unwrapped Phase (rad) at 10Hz: -2.1575323101542567
-Unwrapped Phase (deg) at 10Hz: -123.61749553494944
-
-Group Delay (s) at 10Hz: -1.9070915083932811
-</pre></div></div>
-</div>
-</section>
-<section id="8.-Python-Control-Library-との連携">
-<h2>8. Python Control Library との連携<a class="headerlink" href="#8.-Python-Control-Library-との連携" title="Link to this heading"></a></h2>
+<section id="7.-Python-Control-Library-との連携">
+<h2>7. Python Control Library との連携<a class="headerlink" href="#7.-Python-Control-Library-との連携" title="Link to this heading"></a></h2>
 <p>制御工学の分野で標準的な <code class="docutils literal notranslate"><span class="pre">control</span></code> ライブラリの <strong>Frequency Response Data (FRD)</strong> オブジェクトと相互変換が可能です。 これにより、GWExPyで計測した伝達関数を、制御系の設計や解析に直接利用できます。</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -1051,8 +1013,8 @@ Group Delay (s) at 10Hz: -1.9070915083932811
 </div>
 </div>
 </section>
-<section id="9.-求積和-(Quadrature-Sum)">
-<h2>9. 求積和 (Quadrature Sum)<a class="headerlink" href="#9.-求積和-(Quadrature-Sum)" title="Link to this heading"></a></h2>
+<section id="8.-求積和-(Quadrature-Sum)">
+<h2>8. 求積和 (Quadrature Sum)<a class="headerlink" href="#8.-求積和-(Quadrature-Sum)" title="Link to this heading"></a></h2>
 <p>直交位相の和を計算する機能です。</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
@@ -1103,7 +1065,7 @@ Group Delay (s) at 10Hz: -1.9070915083932811
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_guide_tutorials_intro_frequencyseries_23_0.png" src="../../../../_images/web_ja_guide_tutorials_intro_frequencyseries_23_0.png" />
+<img alt="../../../../_images/web_ja_guide_tutorials_intro_frequencyseries_21_0.png" src="../../../../_images/web_ja_guide_tutorials_intro_frequencyseries_21_0.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1119,7 +1081,7 @@ Total (Sqrt Sum): 2.23606797749979
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_guide_tutorials_intro_frequencyseries_23_2.png" src="../../../../_images/web_ja_guide_tutorials_intro_frequencyseries_23_2.png" />
+<img alt="../../../../_images/web_ja_guide_tutorials_intro_frequencyseries_21_2.png" src="../../../../_images/web_ja_guide_tutorials_intro_frequencyseries_21_2.png" />
 </div>
 </div>
 </section>

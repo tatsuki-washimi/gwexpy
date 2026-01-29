@@ -52,12 +52,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="index.html#i-core-data-structures">I. Core Data Structures</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="intro_timeseries.html">TimeSeries Basics (Coming Soon)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries Basics (Coming Soon)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_spectrogram.html">Spectrogram Basics (Coming Soon)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_plotting.html">Plotting Basics (Coming Soon)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_mapplotting.html">Map Plotting Basics (Coming Soon)</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Interoperability Basics (Coming Soon)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_timeseries.html">TimeSeries Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_spectrogram.html">Spectrogram Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_plotting.html">Plotting Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_mapplotting.html">Map Plotting Basics</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Interoperability Basics</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
@@ -1239,6 +1239,10 @@ SimPEG FDEM data shape: (10,)
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mth5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mt_metadata&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 
     <span class="kn">import</span><span class="w"> </span><span class="nn">mth5</span>
 

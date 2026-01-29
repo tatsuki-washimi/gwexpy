@@ -110,16 +110,8 @@
 <h1>gwexpy TimeSeries 新機能チュートリアル<a class="headerlink" href="#gwexpy-TimeSeries-新機能チュートリアル" title="Link to this heading"></a></h1>
 <p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwpy</span></code> を拡張した <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスに追加された新しいメソッドとその使い方を解説します。</p>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は GWpy との高い互換性を維持しつつ、信号処理、統計解析、他ライブラリとの相互運用性を大幅に強化しています。</p>
-<section id="目次">
-<h2>目次<a class="headerlink" href="#目次" title="Link to this heading"></a></h2>
-<ol class="arabic simple">
-<li><p>環境セットアップ</p></li>
-<li><p>信号処理と復調 (Hilbert, Phase, Demodulation)</p></li>
-<li><p>スペクトル解析と相関 (FFT, Transfer Function, xcorr)</p></li>
-<li><p>統計・前処理 (Impute, Standardize, ARIMA, Hurst, Rolling)</p></li>
-<li><p>リサンプリングと再インデックス (asfreq, resample)</p></li>
-<li><p>相互運用性 (Pandas, Xarray, Torch, and more)</p></li>
-</ol>
+<section id="目次:nbsphinx-math:n1.-環境セットアップ:nbsphinx-math:n2.-信号処理と復調-(Hilbert,-Phase,-Demodulation):nbsphinx-math:n3.-スペクトル解析と相関-(FFT,-Transfer-Function,-xcorr):nbsphinx-math:n4.-ヒルベルト・ファン変換-(HHT):nbsphinx-math:n5.-統計・前処理-(Impute,-Standardize,-ARIMA,-Hurst,-Rolling):nbsphinx-math:n6.-リサンプリングと再インデックス-(asfreq,-resample):nbsphinx-math:n7.-関数によるフィッティング-(fit):nbsphinx-math:n8.-相互運用性-(Pandas,-Xarray,-Torch,-and-more)">
+<h2>目次:nbsphinx-math:<cite>n1</cite>. 環境セットアップ:nbsphinx-math:<cite>n2</cite>. 信号処理と復調 (Hilbert, Phase, Demodulation):nbsphinx-math:<cite>n3</cite>. スペクトル解析と相関 (FFT, Transfer Function, xcorr):nbsphinx-math:<cite>n4</cite>. ヒルベルト・ファン変換 (HHT):nbsphinx-math:<cite>n5</cite>. 統計・前処理 (Impute, Standardize, ARIMA, Hurst, Rolling):nbsphinx-math:<cite>n6</cite>. リサンプリングと再インデックス (asfreq, resample):nbsphinx-math:<cite>n7</cite>. 関数によるフィッティング (fit):nbsphinx-math:<cite>n8</cite>. 相互運用性 (Pandas, Xarray, Torch, and more)<a class="headerlink" href="#目次:nbsphinx-math:n1.-環境セットアップ:nbsphinx-math:n2.-信号処理と復調-(Hilbert,-Phase,-Demodulation):nbsphinx-math:n3.-スペクトル解析と相関-(FFT,-Transfer-Function,-xcorr):nbsphinx-math:n4.-ヒルベルト・ファン変換-(HHT):nbsphinx-math:n5.-統計・前処理-(Impute,-Standardize,-ARIMA,-Hurst,-Rolling):nbsphinx-math:n6.-リサンプリングと再インデックス-(asfreq,-resample):nbsphinx-math:n7.-関数によるフィッティング-(fit):nbsphinx-math:n8.-相互運用性-(Pandas,-Xarray,-Torch,-and-more)" title="Link to this heading"></a></h2>
 <p>## 1. 環境セットアップ</p>
 <p>まずは必要なライブラリをインポートし、デモ用のサンプルデータを生成します。</p>
 <div class="nbinput nblast docutils container">

@@ -7,7 +7,7 @@ Basic install
 -------------
 
 .. note::
-   GWexpy is not published on PyPI yet. The recommended install method is via GitHub.
+   GWexpy is currently provided as a pre-release version. We plan to publish it on PyPI soon, but for now, we recommend installing via GitHub.
 
 .. code-block:: bash
 
