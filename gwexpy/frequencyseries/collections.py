@@ -151,6 +151,23 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
 
     @classmethod
     def read(cls, source, *args, **kwargs):
+        """
+        Read data into a `FrequencySeriesDict`.
+
+        Parameters
+        ----------
+        source : str, file-like
+            Source of data, either a file path or a file-like object.
+        *args
+            Arguments passed to the underlying reader.
+        **kwargs
+            Keyword arguments passed to the underlying reader.
+
+        Returns
+        -------
+        FrequencySeriesDict
+            A new dict containing the data read from the source.
+        """
         from astropy.io import registry
 
         return registry.read(cls, source, *args, **kwargs)
@@ -557,6 +574,23 @@ class FrequencySeriesBaseList(list[_FS]):
 
     @classmethod
     def read(cls, source, *args, **kwargs):
+        """
+        Read data into a `FrequencySeriesList`.
+
+        Parameters
+        ----------
+        source : str, file-like
+            Source of data, either a file path or a file-like object.
+        *args
+            Arguments passed to the underlying reader.
+        **kwargs
+            Keyword arguments passed to the underlying reader.
+
+        Returns
+        -------
+        FrequencySeriesList
+            A new list containing the data read from the source.
+        """
         from astropy.io import registry
 
         return registry.read(cls, source, *args, **kwargs)

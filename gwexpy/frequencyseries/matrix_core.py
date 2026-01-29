@@ -51,6 +51,18 @@ class FrequencySeriesMatrixCoreMixin:
     def frequencies(self: _FrequencySeriesMatrixCoreLike, value: Any) -> None:
         self.xindex = value
 
+    @property
+    def xunit(self: _FrequencySeriesMatrixCoreLike) -> u.Unit | None:
+        """
+        The physical unit of the frequency axis.
+
+        Returns
+        -------
+        ~astropy.units.Unit
+            The unit of the frequencies.
+        """
+        return getattr(self.xindex, "unit", u.dimensionless_unscaled)
+
     def _repr_string_(self: _FrequencySeriesMatrixCoreLike) -> str:
         if self.size > 0:
             u_meta = self.meta[0, 0].unit
