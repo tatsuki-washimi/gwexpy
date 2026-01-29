@@ -1,0 +1,1592 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# GWExPy TimeSeries Interoperability Tutorial\n",
+    "\n",
+    "This notebook introduces the new interoperability features added to the `gwexpy` `TimeSeries` class.\n",
+    "`gwexpy` can seamlessly convert data to and from popular data science libraries such as Pandas, Xarray, PyTorch, and Astropy."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Table of Contents\n",
+    "\n",
+    "- 1. General Data Formats & Data Infrastructure\n",
+    "    - 1.1. NumPy [Original GWpy]\n",
+    "    - 1.2. Pandas Integration [Original GWpy]\n",
+    "    - 1.3. Polars [GWExPy New]\n",
+    "    - 1.4. Xarray Integration [Original GWpy]\n",
+    "    - 1.5. Dask Integration [GWExPy New]\n",
+    "    - 1.6. JSON / Python Dict (to_json) [GWExPy New]\n",
+    "- 2. Database & Storage Layer\n",
+    "    - 2.1. HDF5 [Original GWpy]\n",
+    "    - 2.2. SQLite [GWExPy New]\n",
+    "    - 2.3. Zarr [GWExPy New]\n",
+    "    - 2.4. netCDF4 [GWExPy New]\n",
+    "- 3. Computer Science, Machine Learning & Accelerated Computing\n",
+    "    - 3.1. PyTorch Integration [GWExPy New]\n",
+    "    - 3.2. CuPy (CUDA Acceleration) [GWExPy New]\n",
+    "    - 3.3. TensorFlow Integration [GWExPy New]\n",
+    "    - 3.4. JAX Integration [GWExPy New]\n",
+    "- 4. Astronomy & Gravitational Wave Physics\n",
+    "    - 4.1. PyCBC / LAL [Original GWpy]\n",
+    "    - 4.2. Astropy Integration [Original GWpy]\n",
+    "    - 4.3. Specutils Integration [GWExPy New]\n",
+    "    - 4.4. Pyspeckit Integration [GWExPy New]\n",
+    "- 5. Particle Physics & High Energy Physics\n",
+    "    - 5.1. CERN ROOT Integration [GWExPy New]\n",
+    "    - 5.2. Recovering from ROOT Objects (`from_root`)\n",
+    "- 6. Geophysics, Seismology & Electromagnetics\n",
+    "    - 6.1. ObsPy [Original GWpy]\n",
+    "    - 6.2. SimPEG Integration [GWExPy New]\n",
+    "    - 6.3. MTH5 / MTpy [GWExPy New]\n",
+    "- 7. Acoustics & Audio Analysis\n",
+    "    - 7.1. Librosa / Pydub [GWExPy New]\n",
+    "- 8. Medical & Biosignal Analysis\n",
+    "    - 8.1. MNE-Python [GWExPy New]\n",
+    "    - 8.2. Elephant / quantities Integration [GWExPy New]\n",
+    "    - 8.3. Neo [GWExPy New]\n",
+    "- 9. Summary"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'3'"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import os\n",
+    "\n",
+    "os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/gwpy/time/__init__.py:36: UserWarning: Wswiglal-redir-stdio:\n",
+      "\n",
+      "SWIGLAL standard output/error redirection is enabled in IPython.\n",
+      "This may lead to performance penalties. To disable locally, use:\n",
+      "\n",
+      "with lal.no_swig_redirect_standard_output_error():\n",
+      "    ...\n",
+      "\n",
+      "To disable globally, use:\n",
+      "\n",
+      "lal.swig_redirect_standard_output_error(False)\n",
+      "\n",
+      "Note however that this will likely lead to error messages from\n",
+      "LAL functions being either misdirected or lost when called from\n",
+      "Jupyter notebooks.\n",
+      "\n",
+      "To suppress this warning, use:\n",
+      "\n",
+      "import warnings\n",
+      "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
+      "import lal\n",
+      "\n",
+      "  from lal import LIGOTimeGPS\n"
+     ]
+    }
+   ],
+   "source": [
+    "import warnings\n",
+    "\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "from astropy import units as u\n",
+    "from gwpy.time import LIGOTimeGPS\n",
+    "\n",
+    "from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Create sample data\n",
+    "# Generate a 10-second, 100Hz sine wave\n",
+    "rate = 100 * u.Hz\n",
+    "dt = 1 / rate\n",
+    "t0 = LIGOTimeGPS(1234567890, 0)\n",
+    "duration = 10 * u.s\n",
+    "size = int(rate * duration)\n",
+    "times = np.arange(size) * dt.value\n",
+    "data = np.sin(2 * np.pi * 1.0 * times)  # 1Hz sine wave\n",
+    "\n",
+    "ts = TimeSeries(data, t0=t0, dt=dt, unit=\"V\", name=\"demo_signal\")\n",
+    "print(\"Original TimeSeries:\")\n",
+    "print(ts)\n",
+    "ts.plot(title=\"Original TimeSeries\");"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 1. General Data Formats & Data Infrastructure"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 1.1. NumPy <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
+    "\n",
+    "> **NumPy**: NumPy is the foundational library for numerical computing in Python, providing multidimensional arrays and fast mathematical operations.\n",
+    "> 📚 [NumPy Documentation](https://numpy.org/)\n",
+    "\n",
+    "You can obtain NumPy arrays via `TimeSeries.value` or `np.asarray(ts)`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 1.2. Pandas Integration <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
+    "\n",
+    "> **Pandas**: Pandas is a powerful library for data analysis and manipulation, providing flexible data structures through DataFrame and Series.\n",
+    "> 📚 [Pandas Documentation](https://pandas.pydata.org/)\n",
+    "\n",
+    "Using the `to_pandas()` method, you can convert `TimeSeries` to `pandas.Series`.\n",
+    "The index can be selected from `datetime` (UTC), `gps`, or `seconds` (Unix timestamp)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    # Convert to Pandas Series (default is datetime index)\n",
+    "    s_pd = ts.to_pandas(index=\"datetime\")\n",
+    "    print(\"\\n--- Converted to Pandas Series ---\")\n",
+    "    display(s_pd)\n",
+    "    s_pd.plot(title=\"Pandas Series\")\n",
+    "    plt.show()\n",
+    "    plt.close()\n",
+    "\n",
+    "    # Restore TimeSeries from Pandas Series\n",
+    "    ts_restored = TimeSeries.from_pandas(s_pd, unit=\"V\")\n",
+    "    print(\"\\n--- Restored TimeSeries from Pandas ---\")\n",
+    "    print(ts_restored)\n",
+    "\n",
+    "    del s_pd, ts_restored\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"Pandas is not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 1.3. Polars <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **Polars**: Polars is a high-performance DataFrame library implemented in Rust, excelling at large-scale data processing.\n",
+    "> 📚 [Polars Documentation](https://pola.rs/)\n",
+    "\n",
+    "You can convert to Polars DataFrame/Series with `to_polars()`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    import polars as pl\n",
+    "\n",
+    "    _ = pl\n",
+    "    # TimeSeries -> Polars DataFrame\n",
+    "    df_pl = ts.to_polars()\n",
+    "    print(\"--- Polars DataFrame ---\")\n",
+    "    print(df_pl.head())\n",
+    "\n",
+    "    # Plot using Polars/Matplotlib\n",
+    "    plt.figure()\n",
+    "    data_col = [c for c in df_pl.columns if c != \"time\"][0]\n",
+    "    plt.plot(df_pl[\"time\"], df_pl[data_col])\n",
+    "    plt.title(\"Polars Data Plot\")\n",
+    "    plt.show()\n",
+    "\n",
+    "    # Recover to TimeSeries\n",
+    "    from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "    ts_recovered = TimeSeries.from_polars(df_pl)\n",
+    "    print(\"Recovered from Polars:\", ts_recovered)\n",
+    "\n",
+    "    del df_pl, ts_recovered\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"Polars not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 1.4. Xarray Integration <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
+    "\n",
+    "> **xarray**: xarray is a library for multidimensional labeled arrays, widely used for manipulating NetCDF data and analyzing meteorological and earth science data.\n",
+    "> 📚 [xarray Documentation](https://docs.xarray.dev/)\n",
+    "\n",
+    "`xarray` is a powerful library for handling multidimensional labeled arrays. You can convert with `to_xarray()` while preserving metadata."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    # Convert to Xarray DataArray\n",
+    "    da = ts.to_xarray()\n",
+    "    print(\"\\n--- Converted to Xarray DataArray ---\")\n",
+    "    print(da)\n",
+    "    # Verify metadata (attrs) is preserved\n",
+    "    print(\"Attributes:\", da.attrs)\n",
+    "\n",
+    "    da.plot()\n",
+    "    plt.title(\"Xarray DataArray\")\n",
+    "    plt.show()\n",
+    "    plt.close()\n",
+    "\n",
+    "    # Restore\n",
+    "    ts_x = TimeSeries.from_xarray(da)\n",
+    "    print(\"\\n--- Restored TimeSeries from Xarray ---\")\n",
+    "    print(ts_x)\n",
+    "\n",
+    "    del da, ts_x\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"Xarray is not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 1.5. Dask Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **Dask**: Dask is a library for parallel computing that enables processing of large-scale data beyond NumPy/Pandas.\n",
+    "> 📚 [Dask Documentation](https://www.dask.org/)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "--- Converted to Dask Array ---\n",
+      "dask.array<array, shape=(1000,), dtype=float64, chunksize=(1000,), chunktype=numpy.ndarray>\n",
+      "Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,\n",
+      "            -0.18738131, -0.12533323, -0.06279052]\n",
+      "           unit: V,\n",
+      "           t0: 1234567890.0 1 / Hz,\n",
+      "           dt: 0.01 1 / Hz,\n",
+      "           name: None,\n",
+      "           channel: None)\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    import dask.array as da\n",
+    "\n",
+    "    _ = da\n",
+    "    # Convert to Dask Array\n",
+    "    dask_arr = ts.to_dask(chunks=\"auto\")\n",
+    "    print(\"\\n--- Converted to Dask Array ---\")\n",
+    "    print(dask_arr)\n",
+    "\n",
+    "    # Restore (compute=True loads immediately)\n",
+    "    ts_from_dask = TimeSeries.from_dask(dask_arr, t0=ts.t0, dt=ts.dt, unit=ts.unit)\n",
+    "    print(\"Recovered from Dask:\", ts_from_dask)\n",
+    "\n",
+    "    del dask_arr, ts_from_dask\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"Dask not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 1.6. JSON / Python Dict (to_json) <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **JSON**: JSON (JavaScript Object Notation) is a lightweight data exchange format supported by the Python standard library.\n",
+    "> 📚 [JSON Documentation](https://docs.python.org/3/library/json.html)\n",
+    "\n",
+    "You can output JSON-compatible dictionary format with `to_json()` or `to_dict()`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import json\n",
+    "\n",
+    "# TimeSeries -> JSON string\n",
+    "ts_json = ts.to_json()\n",
+    "print(\"--- JSON Representation (Partial) ---\")\n",
+    "print(ts_json[:500] + \"...\")\n",
+    "\n",
+    "# Plot data by loading back from JSON\n",
+    "ts_dict_temp = json.loads(ts_json)\n",
+    "plt.figure()\n",
+    "plt.plot(ts_dict_temp[\"data\"])\n",
+    "plt.title(\"Plot from JSON Data\")\n",
+    "plt.show()\n",
+    "\n",
+    "# Recover from JSON\n",
+    "from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "ts_recovered = TimeSeries.from_json(ts_json)\n",
+    "print(\"Recovered from JSON:\", ts_recovered)\n",
+    "\n",
+    "del ts_json, ts_dict_temp, ts_recovered"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 2. Database & Storage Layer"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 2.1. HDF5 <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
+    "\n",
+    "> **HDF5**: HDF5 is a hierarchical data format for efficiently storing and managing large-scale scientific data. It can be accessed from Python via the h5py library.\n",
+    "> 📚 [HDF5 Documentation](https://www.h5py.org/)\n",
+    "\n",
+    "Supports saving to HDF5 with `to_hdf5_dataset()`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    import tempfile\n",
+    "\n",
+    "    import h5py\n",
+    "\n",
+    "    with tempfile.NamedTemporaryFile(suffix=\".h5\") as tmp:\n",
+    "        # TimeSeries -> HDF5\n",
+    "        with h5py.File(tmp.name, \"w\") as f:\n",
+    "            ts.to_hdf5_dataset(f, \"dataset_01\")\n",
+    "\n",
+    "        # Read back and display\n",
+    "        with h5py.File(tmp.name, \"r\") as f:\n",
+    "            ds = f[\"dataset_01\"]\n",
+    "            print(\"--- HDF5 Dataset Info ---\")\n",
+    "            print(f\"Shape: {ds.shape}, Dtype: {ds.dtype}\")\n",
+    "            print(\"Attributes:\", dict(ds.attrs))\n",
+    "\n",
+    "            # Recover\n",
+    "            from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "            ts_recovered = TimeSeries.from_hdf5_dataset(f, \"dataset_01\")\n",
+    "            print(\"Recovered from HDF5:\", ts_recovered)\n",
+    "\n",
+    "            ts_recovered.plot()\n",
+    "            plt.title(\"Recovered from HDF5\")\n",
+    "            plt.show()\n",
+    "\n",
+    "            del ds, ts_recovered\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"h5py not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 2.2. SQLite <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **SQLite**: SQLite is a lightweight embedded SQL database engine included in the Python standard library.\n",
+    "> 📚 [SQLite Documentation](https://docs.python.org/3/library/sqlite3.html)\n",
+    "\n",
+    "Supports database persistence with `to_sqlite()`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import sqlite3\n",
+    "\n",
+    "conn = sqlite3.connect(\":memory:\")\n",
+    "\n",
+    "# TimeSeries -> SQLite\n",
+    "series_id = ts.to_sqlite(conn, series_id=\"test_series\")\n",
+    "print(f\"Saved to SQLite with ID: {series_id}\")\n",
+    "\n",
+    "# Verify data in SQL\n",
+    "cursor = conn.cursor()\n",
+    "row = cursor.execute(\"SELECT * FROM series WHERE series_id=?\", (series_id,)).fetchone()\n",
+    "print(\"Metadata from SQL:\", row)\n",
+    "\n",
+    "# Recover\n",
+    "from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "ts_recovered = TimeSeries.from_sqlite(conn, series_id)\n",
+    "print(\"Recovered from SQLite:\", ts_recovered)\n",
+    "\n",
+    "ts_recovered.plot()\n",
+    "plt.title(\"Recovered from SQLite\")\n",
+    "plt.show()\n",
+    "\n",
+    "del series_id, conn, cursor, ts_recovered"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 2.3. Zarr <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **Zarr**: Zarr is a storage format for chunked, compressed multidimensional arrays with excellent cloud storage integration.\n",
+    "> 📚 [Zarr Documentation](https://zarr.dev/)\n",
+    "\n",
+    "Supports cloud storage-friendly formats with `to_zarr()`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    import os\n",
+    "    import tempfile\n",
+    "\n",
+    "    import zarr\n",
+    "\n",
+    "    with tempfile.TemporaryDirectory() as tmpdir:\n",
+    "        store_path = os.path.join(tmpdir, \"test.zarr\")\n",
+    "        # TimeSeries -> Zarr\n",
+    "        ts.to_zarr(store_path, path=\"timeseries\")\n",
+    "\n",
+    "        # Read back\n",
+    "        z = zarr.open(store_path, mode=\"r\")\n",
+    "        ds = z[\"timeseries\"]\n",
+    "        print(\"--- Zarr Array Info ---\")\n",
+    "        print(ds.info)\n",
+    "\n",
+    "        # Recover\n",
+    "        from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "        ts_recovered = TimeSeries.from_zarr(store_path, \"timeseries\")\n",
+    "        print(\"Recovered from Zarr:\", ts_recovered)\n",
+    "\n",
+    "        ts_recovered.plot()\n",
+    "        plt.title(\"Recovered from Zarr\")\n",
+    "        plt.show()\n",
+    "\n",
+    "        del z, ds, ts_recovered\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"zarr not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 2.4. netCDF4 <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **netCDF4**: netCDF4 is a standard format for meteorological, oceanographic, and earth science data with self-describing data structures.\n",
+    "> 📚 [netCDF4 Documentation](https://unidata.github.io/netcdf4-python/)\n",
+    "\n",
+    "Supports meteorological and oceanographic data standards with `to_netcdf4()`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    import tempfile\n",
+    "\n",
+    "    import netCDF4\n",
+    "\n",
+    "    with tempfile.NamedTemporaryFile(suffix=\".nc\") as tmp:\n",
+    "        # TimeSeries -> netCDF4\n",
+    "        with netCDF4.Dataset(tmp.name, \"w\") as ds:\n",
+    "            ts.to_netcdf4(ds, \"my_signal\")\n",
+    "\n",
+    "        # Read back\n",
+    "        with netCDF4.Dataset(tmp.name, \"r\") as ds:\n",
+    "            v = ds.variables[\"my_signal\"]\n",
+    "            print(\"--- netCDF4 Variable Info ---\")\n",
+    "            print(v)\n",
+    "\n",
+    "            # Recover\n",
+    "            from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "            ts_recovered = TimeSeries.from_netcdf4(ds, \"my_signal\")\n",
+    "            print(\"Recovered from netCDF4:\", ts_recovered)\n",
+    "\n",
+    "            ts_recovered.plot()\n",
+    "            plt.title(\"Recovered from netCDF4\")\n",
+    "            plt.show()\n",
+    "\n",
+    "            del v, ts_recovered\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"netCDF4 not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 3. Computer Science, Machine Learning & Accelerated Computing"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 3.1. PyTorch Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **PyTorch**: PyTorch is a deep learning framework supporting dynamic computation graphs and GPU acceleration.\n",
+    "> 📚 [PyTorch Documentation](https://pytorch.org/)\n",
+    "\n",
+    "For deep learning preprocessing, you can directly convert `TimeSeries` to `torch.Tensor`. GPU transfer is also supported."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "--- Converted to PyTorch Tensor ---\n",
+      "Tensor shape: torch.Size([1000]), dtype: torch.float32\n",
+      "\n",
+      "--- Restored from Torch ---\n",
+      "TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,\n",
+      "            -0.18738131, -0.12533323, -0.06279052]\n",
+      "           unit: V,\n",
+      "           t0: 1234567890.0 1 / Hz,\n",
+      "           dt: 0.01 1 / Hz,\n",
+      "           name: None,\n",
+      "           channel: None)\n"
+     ]
+    }
+   ],
+   "source": [
+    "import os\n",
+    "\n",
+    "os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")\n",
+    "\n",
+    "try:\n",
+    "    import torch\n",
+    "\n",
+    "    # Convert to PyTorch Tensor\n",
+    "    tensor = ts.to_torch(dtype=torch.float32)\n",
+    "    print(\"\\n--- Converted to PyTorch Tensor ---\")\n",
+    "    print(f\"Tensor shape: {tensor.shape}, dtype: {tensor.dtype}\")\n",
+    "\n",
+    "    # Restore from Tensor (t0, dt must be specified separately)\n",
+    "    ts_torch = TimeSeries.from_torch(tensor, t0=ts.t0, dt=ts.dt, unit=\"V\")\n",
+    "    print(\"\\n--- Restored from Torch ---\")\n",
+    "    print(ts_torch)\n",
+    "\n",
+    "    del tensor, ts_torch\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"PyTorch is not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 3.2. CuPy (CUDA Acceleration) <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **CuPy**: CuPy is a NumPy-compatible GPU array library that enables high-speed computation using NVIDIA CUDA.\n",
+    "> 📚 [CuPy Documentation](https://cupy.dev/)\n",
+    "\n",
+    "You can convert to CuPy arrays for GPU-based computation."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from gwexpy.interop import is_cupy_available\n",
+    "\n",
+    "if is_cupy_available():\n",
+    "    import cupy as cp\n",
+    "\n",
+    "    # TimeSeries -> CuPy\n",
+    "    y_gpu = ts.to_cupy()\n",
+    "    print(\"--- CuPy Array (on GPU) ---\")\n",
+    "    print(y_gpu)\n",
+    "\n",
+    "    # Simple processing on GPU\n",
+    "    y_gpu_filt = y_gpu * 2.0\n",
+    "\n",
+    "    # Plot (must move to CPU for plotting)\n",
+    "    plt.figure()\n",
+    "    plt.plot(cp.asnumpy(y_gpu_filt))\n",
+    "    plt.title(\"CuPy Data (Moved to CPU for plot)\")\n",
+    "    plt.show()\n",
+    "\n",
+    "    # Recover\n",
+    "    from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "    ts_recovered = TimeSeries.from_cupy(y_gpu_filt, t0=ts.t0, dt=ts.dt)\n",
+    "    print(\"Recovered from CuPy:\", ts_recovered)\n",
+    "\n",
+    "    del y_gpu, y_gpu_filt, ts_recovered\n",
+    "\n",
+    "else:\n",
+    "    print(\"CuPy or CUDA driver not available.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 3.3. TensorFlow Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **TensorFlow**: TensorFlow is a machine learning platform developed by Google, excelling at large-scale production environments.\n",
+    "> 📚 [TensorFlow Documentation](https://www.tensorflow.org/)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "--- Converted to TensorFlow Tensor ---\n",
+      "Tensor shape: (1000,)\n",
+      "Tensor dtype: <dtype: 'float64'>\n",
+      "Recovered from TF: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,\n",
+      "            -0.18738131, -0.12533323, -0.06279052]\n",
+      "           unit: V,\n",
+      "           t0: 1234567890.0 1 / Hz,\n",
+      "           dt: 0.01 1 / Hz,\n",
+      "           name: None,\n",
+      "           channel: None)\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    import os\n",
+    "    import warnings\n",
+    "    os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")\n",
+    "    warnings.filterwarnings(\"ignore\", category=UserWarning, module=r\"google\\.protobuf\\..*\")\n",
+    "    warnings.filterwarnings(\"ignore\", category=UserWarning, message=r\"Protobuf gencode version.*\")\n",
+    "    import tensorflow as tf\n",
+    "\n",
+    "    _ = tf\n",
+    "    # Convert to TensorFlow Tensor\n",
+    "    tf_tensor = ts.to_tensorflow()\n",
+    "    print(\"\\n--- Converted to TensorFlow Tensor ---\")\n",
+    "    print(f\"Tensor shape: {tf_tensor.shape}\")\n",
+    "    print(f\"Tensor dtype: {tf_tensor.dtype}\")\n",
+    "\n",
+    "    # Restore\n",
+    "    ts_from_tensorflow = TimeSeries.from_tensorflow(\n",
+    "        tf_tensor, t0=ts.t0, dt=ts.dt, unit=ts.unit\n",
+    "    )\n",
+    "    print(\"Recovered from TF:\", ts_from_tensorflow)\n",
+    "\n",
+    "    del tf_tensor, ts_from_tensorflow\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"TensorFlow not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 3.4. JAX Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **JAX**: JAX is a high-performance numerical computing library developed by Google, featuring automatic differentiation and XLA compilation for acceleration.\n",
+    "> 📚 [JAX Documentation](https://jax.readthedocs.io/)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "WARNING:2026-01-25 20:56:36,683:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "--- Converted to JAX Array ---\n",
+      "Array shape: (1000,)\n",
+      "Recovered from JAX: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,\n",
+      "            -0.18738131, -0.12533323, -0.06279052]\n",
+      "           unit: V,\n",
+      "           t0: 1234567890.0 1 / Hz,\n",
+      "           dt: 0.01 1 / Hz,\n",
+      "           name: None,\n",
+      "           channel: None)\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    import os\n",
+    "\n",
+    "    os.environ[\"XLA_PYTHON_CLIENT_PREALLOCATE\"] = \"false\"\n",
+    "    import jax\n",
+    "\n",
+    "    _ = jax\n",
+    "    import jax.numpy as jnp\n",
+    "\n",
+    "    _ = jnp\n",
+    "    # Convert to JAX Array\n",
+    "    jax_arr = ts.to_jax()\n",
+    "    print(\"\\n--- Converted to JAX Array ---\")\n",
+    "    print(f\"Array shape: {jax_arr.shape}\")\n",
+    "\n",
+    "    # Restore\n",
+    "    ts_from_jax = TimeSeries.from_jax(jax_arr, t0=ts.t0, dt=ts.dt, unit=ts.unit)\n",
+    "    print(\"Recovered from JAX:\", ts_from_jax)\n",
+    "\n",
+    "    del jax_arr, ts_from_jax\n",
+    "except ImportError:\n",
+    "    print(\"JAX not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 4. Astronomy & Gravitational Wave Physics"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 4.1. PyCBC / LAL <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
+    "\n",
+    "> **LAL**: LAL (LIGO Algorithm Library) is the official analysis library for LIGO/Virgo, providing the foundation for gravitational wave analysis.\n",
+    "> 📚 [LAL Documentation](https://lscsoft.docs.ligo.org/lalsuite/)\n",
+    "\n",
+    "> **PyCBC**: PyCBC is a library for gravitational wave data analysis, used for signal searches and parameter estimation.\n",
+    "> 📚 [PyCBC Documentation](https://pycbc.org/)\n",
+    "\n",
+    "Provides compatibility with standard gravitational wave analysis tools."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 4.2. Astropy Integration <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
+    "\n",
+    "> **Astropy**: Astropy is a Python library for astronomy, supporting coordinate transformations, time system conversions, unit systems, and more.\n",
+    "> 📚 [Astropy Documentation](https://www.astropy.org/)\n",
+    "\n",
+    "Also supports interconversion with `astropy.timeseries.TimeSeries`, which is standard in the astronomy field."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    # Convert to Astropy TimeSeries\n",
+    "    ap_ts = ts.to_astropy_timeseries()\n",
+    "    print(\"\\n--- Converted to Astropy TimeSeries ---\")\n",
+    "    print(ap_ts[:5])\n",
+    "    fig, ax = plt.subplots()\n",
+    "    ax.plot(ap_ts.time.jd, ap_ts[\"value\"])\n",
+    "    plt.title(\"Astropy TimeSeries\")\n",
+    "    plt.show()\n",
+    "    plt.close()\n",
+    "\n",
+    "    # Restore\n",
+    "    ts_astro = TimeSeries.from_astropy_timeseries(ap_ts)\n",
+    "    print(\"\\n--- Restored from Astropy ---\")\n",
+    "    print(ts_astro)\n",
+    "\n",
+    "    del ap_ts, ts_astro\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"Astropy is not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 4.3. Specutils Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **specutils**: specutils is an Astropy-affiliated package for manipulating and analyzing astronomical spectral data.\n",
+    "> 📚 [specutils Documentation](https://specutils.readthedocs.io/)\n",
+    "\n",
+    "`FrequencySeries` can interconvert with `Spectrum1D` objects from the Astropy ecosystem spectral analysis library `specutils`.\n",
+    "Units and frequency axes are properly preserved."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "specutils Spectrum1D: Spectrum (length=100)\n",
+      "Flux=[0.76947961 0.77852583 0.20217518 ... 0.73100724 0.63882659\n",
+      "      0.18566241] Jy,  mean=0.43060 Jy\n",
+      "Spectral Axis=[ 10.          10.90909091  11.81818182 ...\n",
+      "                98.18181818  99.09090909 100.        ] Hz,  mean=55.00000 Hz\n",
+      "Spectral axis unit: Hz\n",
+      "Restored FrequencySeries unit: Jy\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    import specutils\n",
+    "\n",
+    "    _ = specutils\n",
+    "\n",
+    "    from gwexpy.frequencyseries import FrequencySeries\n",
+    "\n",
+    "    # FrequencySeries -> specutils.Spectrum1D\n",
+    "    fs = FrequencySeries(\n",
+    "        np.random.random(100), frequencies=np.linspace(10, 100, 100), unit=\"Jy\"\n",
+    "    )\n",
+    "    spec = fs.to_specutils()\n",
+    "    print(\"specutils Spectrum1D:\", spec)\n",
+    "    print(\"Spectral axis unit:\", spec.spectral_axis.unit)\n",
+    "\n",
+    "    # specutils.Spectrum1D -> FrequencySeries\n",
+    "    fs_rec = FrequencySeries.from_specutils(spec)\n",
+    "    print(\"Restored FrequencySeries unit:\", fs_rec.unit)\n",
+    "\n",
+    "    del fs, spec, fs_rec\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"specutils library not found. Skipping example.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 4.4. Pyspeckit Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **PySpecKit**: PySpecKit is a spectral analysis toolkit for radio astronomy, supporting spectral line fitting and more.\n",
+    "> 📚 [PySpecKit Documentation](https://pyspeckit.readthedocs.io/)\n",
+    "\n",
+    "`FrequencySeries` can also integrate with `Spectrum` objects from the general-purpose spectral analysis toolkit `pyspeckit`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "pyspeckit library not found. Skipping example.\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    import pyspeckit\n",
+    "\n",
+    "    _ = pyspeckit\n",
+    "    from gwexpy.frequencyseries import FrequencySeries\n",
+    "\n",
+    "    # FrequencySeries -> pyspeckit.Spectrum\n",
+    "    fs = FrequencySeries(np.random.random(100), frequencies=np.linspace(10, 100, 100))\n",
+    "    spec = fs.to_pyspeckit()\n",
+    "    print(\"pyspeckit Spectrum length:\", len(spec.data))\n",
+    "\n",
+    "    # pyspeckit.Spectrum -> FrequencySeries\n",
+    "    fs_rec = FrequencySeries.from_pyspeckit(spec)\n",
+    "    print(\"Restored FrequencySeries length:\", len(fs_rec))\n",
+    "\n",
+    "    del fs, spec, fs_rec\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"pyspeckit library not found. Skipping example.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 5. Particle Physics & High Energy Physics"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 5.1. CERN ROOT Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **ROOT**: ROOT is a data analysis framework for high-energy physics developed by CERN.\n",
+    "> 📚 [ROOT Documentation](https://root.cern/)\n",
+    "\n",
+    "Enhanced interoperability with **ROOT**, the standard tool in high-energy physics.\n",
+    "`gwexpy` Series objects can be quickly converted to ROOT's `TGraph`, `TH1D`, or `TH2D`, and you can create ROOT files.\n",
+    "Conversely, you can also restore `TimeSeries` and other objects from ROOT objects.\n",
+    "\n",
+    "**Note**: Using this feature requires `ROOT` (PyROOT) to be installed."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Created TGraph: signal with 1000 points\n",
+      "Created TH1D: signal with 1000 bins\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    import numpy as np\n",
+    "    import ROOT\n",
+    "\n",
+    "    from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "    # Prepare data\n",
+    "    t = np.linspace(0, 10, 1000)\n",
+    "    data = np.sin(2 * np.pi * 1.0 * t) + np.random.normal(0, 0.5, size=len(t))\n",
+    "    ts = TimeSeries(data, dt=t[1] - t[0], name=\"signal\")\n",
+    "\n",
+    "    # --- 1. Convert to TGraph ---\n",
+    "    # Vectorized high-speed conversion\n",
+    "    graph = ts.to_tgraph()\n",
+    "\n",
+    "    # Plot on ROOT canvas\n",
+    "    c1 = ROOT.TCanvas(\"c1\", \"TGraph Example\", 800, 600)\n",
+    "    graph.SetTitle(\"ROOT TGraph;GPS Time [s];Amplitude\")\n",
+    "    graph.Draw(\"AL\")\n",
+    "    c1.Draw()\n",
+    "    # c1.SaveAs(\"signal_graph.png\") # To save as an image\n",
+    "\n",
+    "    print(f\"Created TGraph: {graph.GetName()} with {graph.GetN()} points\")\n",
+    "\n",
+    "    # --- 2. Convert to TH1D (Histogram) ---\n",
+    "    # Convert as histogram (binning is automatic or can be specified)\n",
+    "    hist = ts.to_th1d()\n",
+    "\n",
+    "    c2 = ROOT.TCanvas(\"c2\", \"TH1D Example\", 800, 600)\n",
+    "    hist.SetTitle(\"ROOT TH1D;GPS Time [s];Amplitude\")\n",
+    "    hist.SetLineColor(ROOT.kRed)\n",
+    "    hist.Draw()\n",
+    "    c2.Draw()\n",
+    "\n",
+    "    print(f\"Created TH1D: {hist.GetName()} with {hist.GetNbinsX()} bins\")\n",
+    "\n",
+    "    del t, data, graph, hist, c1, c2\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"ROOT is not installed. Skipping ROOT examples.\")\n",
+    "except Exception as e:\n",
+    "    print(f\"An error occurred: {e}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 5.2. Recovering from ROOT Objects (`from_root`)\n",
+    "\n",
+    "> **ROOT**: ROOT is a data analysis framework for high-energy physics developed by CERN.\n",
+    "> 📚 [ROOT Documentation](https://root.cern/)\n",
+    "\n",
+    "You can load histograms and graphs from existing ROOT files and convert them back to `gwexpy` objects for easier analysis."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    if \"hist\" in locals() and hist:\n",
+    "        # ROOT TH1D -> TimeSeries\n",
+    "        # Reads histogram bin contents as time series data\n",
+    "        ts_restored = from_root(TimeSeries, hist)\n",
+    "\n",
+    "        print(f\"Restored TimeSeries: {ts_restored.name}\")\n",
+    "        print(ts_restored)\n",
+    "\n",
+    "        # Restore from TGraph similarly\n",
+    "        ts_from_graph = from_root(TimeSeries, graph)\n",
+    "        print(f\"Restored from TGraph: {len(ts_from_graph)} samples\")\n",
+    "\n",
+    "        del ts_restored, ts_from_graph\n",
+    "\n",
+    "except NameError:\n",
+    "    pass  # If hist or graph were not created\n",
+    "except ImportError:\n",
+    "    pass"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 6. Geophysics, Seismology & Electromagnetics"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 6.1. ObsPy <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
+    "\n",
+    "> **ObsPy**: ObsPy is a Python library for acquiring, processing, and analyzing seismological data, supporting formats like MiniSEED.\n",
+    "> 📚 [ObsPy Documentation](https://docs.obspy.org/)\n",
+    "\n",
+    "Supports interoperability with ObsPy, which is standard in seismology."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    import obspy\n",
+    "\n",
+    "    _ = obspy\n",
+    "    # TimeSeries -> ObsPy Trace\n",
+    "    tr = ts.to_obspy()\n",
+    "    print(\"--- ObsPy Trace ---\")\n",
+    "    print(tr)\n",
+    "\n",
+    "    # Plot using ObsPy\n",
+    "    tr.plot()\n",
+    "\n",
+    "    # Recover to TimeSeries\n",
+    "    from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "    ts_recovered = TimeSeries.from_obspy(tr)\n",
+    "    print(\"Recovered from ObsPy:\", ts_recovered)\n",
+    "\n",
+    "    del tr, ts_recovered\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"ObsPy not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ObsPy Trace: .signal.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:10.000000Z | 99.9 Hz, 1000 samples\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    import obspy\n",
+    "\n",
+    "    _ = obspy\n",
+    "    tr = ts.to_obspy()\n",
+    "    print(\"ObsPy Trace:\", tr)\n",
+    "\n",
+    "    del tr\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"ObsPy not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 6.2. SimPEG Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **SimPEG**: SimPEG is a simulation and estimation framework for geophysical inverse problems.\n",
+    "> 📚 [SimPEG Documentation](https://simpeg.xyz/)\n",
+    "\n",
+    "`gwexpy` supports integration with `SimPEG`, a forward modeling and inversion library for geophysics.\n",
+    "`TimeSeries` (TDEM) and `FrequencySeries` (FDEM) can be converted to `simpeg.data.Data` objects and vice versa."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "SimPEG TDEM data shape: (100,)\n",
+      "SimPEG FDEM data shape: (10,)\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    import numpy as np\n",
+    "    import simpeg\n",
+    "\n",
+    "    _ = simpeg\n",
+    "    from simpeg import maps\n",
+    "\n",
+    "    _ = maps\n",
+    "\n",
+    "    from gwexpy.frequencyseries import FrequencySeries\n",
+    "    from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "    # --- TimeSeries -> SimPEG (TDEM assumption) ---\n",
+    "    ts = TimeSeries(np.random.normal(size=100), dt=0.01, unit=\"A/m^2\")\n",
+    "    simpeg_data_td = ts.to_simpeg(location=np.array([0, 0, 0]))\n",
+    "    print(\"SimPEG TDEM data shape:\", simpeg_data_td.dobs.shape)\n",
+    "\n",
+    "    # --- FrequencySeries -> SimPEG (FDEM assumption) ---\n",
+    "    fs = FrequencySeries(\n",
+    "        np.random.normal(size=10) + 1j * 0.1, frequencies=np.logspace(0, 3, 10)\n",
+    "    )\n",
+    "    simpeg_data_fd = fs.to_simpeg(location=np.array([0, 0, 0]), orientation=\"z\")\n",
+    "    print(\"SimPEG FDEM data shape:\", simpeg_data_fd.dobs.shape)\n",
+    "\n",
+    "    del simpeg_data_td, simpeg_data_fd, fs\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"SimPEG library not found. Skipping example.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 6.3. MTH5 / MTpy <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **MTH5**: MTH5 is an HDF5-based data format for magnetotelluric (MT) data.\n",
+    "> 📚 [MTH5 Documentation](https://mth5.readthedocs.io/)\n",
+    "\n",
+    "Supports MTH5 storage for magnetotelluric method data."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    import tempfile\n",
+    "\n",
+    "    import mth5\n",
+    "\n",
+    "    _ = mth5\n",
+    "    with tempfile.NamedTemporaryFile(suffix=\".h5\") as tmp:\n",
+    "        from gwexpy.interop.mt_ import from_mth5, to_mth5\n",
+    "\n",
+    "        # TimeSeries -> MTH5\n",
+    "        # We need to provide station and run names for MTH5 structure\n",
+    "        to_mth5(ts, tmp.name, station=\"SITE01\", run=\"RUN01\")\n",
+    "        print(f\"Saved to MTH5 file: {tmp.name}\")\n",
+    "\n",
+    "        # Display structure info if needed, or just recover\n",
+    "        # Recover\n",
+    "        ts_recovered = from_mth5(tmp.name, \"SITE01\", \"RUN01\", ts.name or \"Ex\")\n",
+    "        print(\"Recovered from MTH5:\", ts_recovered)\n",
+    "\n",
+    "        ts_recovered.plot()\n",
+    "        plt.title(\"Recovered from MTH5\")\n",
+    "        plt.show()\n",
+    "\n",
+    "        del ts_recovered\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"mth5 not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 7. Acoustics & Audio Analysis"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 7.1. Librosa / Pydub <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **pydub**: pydub is a simple library for audio file manipulation (editing, conversion, effects).\n",
+    "> 📚 [pydub Documentation](https://github.com/jiaaro/pydub)\n",
+    "\n",
+    "> **librosa**: librosa is a library for audio and music analysis, providing features like spectral analysis and beat detection.\n",
+    "> 📚 [librosa Documentation](https://librosa.org/)\n",
+    "\n",
+    "Supports integration with audio processing libraries Librosa and Pydub."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    import librosa\n",
+    "\n",
+    "    _ = librosa\n",
+    "    import matplotlib.pyplot as plt\n",
+    "\n",
+    "    # TimeSeries -> Librosa (y, sr)\n",
+    "    y, sr = ts.to_librosa()\n",
+    "    print(f\"--- Librosa Data ---\\nSignal shape: {y.shape}, Sample rate: {sr}\")\n",
+    "\n",
+    "    # Plot using librosa style (matplotlib)\n",
+    "    plt.figure()\n",
+    "    plt.plot(y[:1000])  # Plot first 1000 samples\n",
+    "    plt.title(\"Librosa Audio Signal (Zoom)\")\n",
+    "    plt.show()\n",
+    "\n",
+    "    # Recover to TimeSeries\n",
+    "    from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "    ts_recovered = TimeSeries(y, dt=1.0 / sr)\n",
+    "    print(\"Recovered from Librosa:\", ts_recovered)\n",
+    "\n",
+    "    del y, sr\n",
+    "except ImportError:\n",
+    "    print(\"Librosa not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 8. Medical & Biosignal Analysis"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 8.1. MNE-Python <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **MNE**: MNE-Python is a library for analyzing EEG and MEG data, widely used in neuroscience research.\n",
+    "> 📚 [MNE Documentation](https://mne.tools/)\n",
+    "\n",
+    "Integration with MNE for electroencephalography (EEG/MEG) analysis packages."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    import mne\n",
+    "\n",
+    "    _ = mne\n",
+    "    # TimeSeries -> MNE Raw\n",
+    "    raw = ts.to_mne()\n",
+    "    print(\"--- MNE Raw ---\")\n",
+    "    print(raw)\n",
+    "\n",
+    "    # Display info\n",
+    "    print(raw.info)\n",
+    "\n",
+    "    # Recover to TimeSeries\n",
+    "    from gwexpy.timeseries import TimeSeries\n",
+    "\n",
+    "    ts_recovered = TimeSeries.from_mne(raw, channel=ts.name or \"ch0\")\n",
+    "    print(\"Recovered from MNE:\", ts_recovered)\n",
+    "\n",
+    "    del raw, ts_recovered\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"MNE not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    import mne\n",
+    "\n",
+    "    _ = mne\n",
+    "    raw = ts.to_mne()\n",
+    "    print(\"MNE Raw:\", raw)\n",
+    "\n",
+    "    del raw\n",
+    "except ImportError:\n",
+    "    print(\"MNE not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 8.2. Elephant / quantities Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "`gwexpy`'s `FrequencySeries` and `Spectrogram` can interconvert with `quantities.Quantity` objects.\n",
+    "This is useful for integration with Elephant and Neo.\n",
+    "\n",
+    "Note: Requires `pip install quantities` beforehand."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Quantities object: [ 15.81608925 752.98483078  24.72547363 144.51628594\n",
+      " 214.32932705 200.42267588 739.82568485 135.47985311\n",
+      " 640.01545789 559.50533316   5.69614253 200.02784218\n",
+      " 768.04102342 903.95362763 395.33110766 489.09599556\n",
+      " 180.3017241  426.32334648 574.85398845 820.69910971\n",
+      " 964.17971075 578.39473516 212.14270287 142.49981321\n",
+      " 731.86090217 311.377196   557.94520695 584.93105318\n",
+      "  40.80640136 631.68944016 836.03253181 329.13934202\n",
+      " 402.7914657   73.93266668  61.06459887 866.72322773\n",
+      " 453.00444668 497.81654835 576.19232129 390.48186662\n",
+      "  88.95723072 197.64563216 125.14799417 635.59725698\n",
+      " 435.48720445 463.36157347 718.48503157 943.63542519\n",
+      "  91.65132826 320.40017851 528.74706589 288.93260417\n",
+      " 683.23507876 606.7956871  413.8774318  250.05522479\n",
+      " 209.12606513 497.85663591 635.85855813 130.81356845\n",
+      " 707.52091187 130.21639147 325.76429004 952.1717244\n",
+      " 707.27537209 872.99294786 246.98162862 809.39348485\n",
+      " 722.67100602 372.64538896 222.55272929 335.34166876\n",
+      " 809.63936761 798.69696411  45.91659748 272.46810133\n",
+      " 464.05535142 466.21621639 956.4247953  956.44925196\n",
+      " 225.93556811 832.20650191 279.59647914 945.65024325\n",
+      " 920.82419018 695.11479443 961.78123501 267.099643\n",
+      "  31.41421421 716.3175536  317.37072499 841.58027036\n",
+      " 885.86855259 161.63614016 391.13172992 533.67246916\n",
+      " 429.88138345 325.70097236 431.24374014 932.7890833\n",
+      " 645.36612443] mV\n",
+      "Restored FrequencySeries unit: mV\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    import numpy as np\n",
+    "    import quantities as pq\n",
+    "\n",
+    "    _ = pq\n",
+    "    from gwexpy.frequencyseries import FrequencySeries\n",
+    "\n",
+    "    # Create FrequencySeries\n",
+    "    freqs = np.linspace(0, 100, 101)\n",
+    "    data_fs = np.random.random(101)\n",
+    "    fs = FrequencySeries(data_fs, frequencies=freqs, unit=\"V\")\n",
+    "\n",
+    "    # to_quantities\n",
+    "    q_obj = fs.to_quantities(units=\"mV\")\n",
+    "    print(\"Quantities object:\", q_obj)\n",
+    "\n",
+    "    # from_quantities\n",
+    "    fs_new = FrequencySeries.from_quantities(q_obj, frequencies=freqs)\n",
+    "    print(\"Restored FrequencySeries unit:\", fs_new.unit)\n",
+    "\n",
+    "    del freqs, data_fs, fs, q_obj, fs_new\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"quantities library not found. Skipping example.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 8.3. Neo <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "\n",
+    "> **Neo**: Neo is a data structure library for electrophysiology data (neuroscience), supporting input/output to various formats.\n",
+    "> 📚 [Neo Documentation](https://neo.readthedocs.io/)\n",
+    "\n",
+    "Supports conversion to Neo, a common standard for electrophysiological data."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    import neo\n",
+    "\n",
+    "    _ = neo\n",
+    "    # TimeSeries -> Neo AnalogSignal\n",
+    "    # to_neo is available in gwexpy.interop\n",
+    "    # Note: TimeseriesMatrix is preferred for multi-channel Neo conversion,\n",
+    "    # but we can convert single TimeSeries by wrapping it.\n",
+    "    from gwexpy.interop import from_neo, to_neo\n",
+    "\n",
+    "    _ = from_neo\n",
+    "    _ = to_neo\n",
+    "    # For single TimeSeries, we might need a Matrix wrapper or direct helper.\n",
+    "    # Assuming helper exists or using Matrix:\n",
+    "    from gwexpy.timeseries import TimeSeriesMatrix\n",
+    "\n",
+    "    tm = TimeSeriesMatrix(\n",
+    "        ts.value[None, None, :], t0=ts.t0, dt=ts.dt, channel_names=[ts.name]\n",
+    "    )\n",
+    "    sig = tm.to_neo()\n",
+    "\n",
+    "    print(\"--- Neo AnalogSignal ---\")\n",
+    "    print(sig)\n",
+    "\n",
+    "    # Display/Plot\n",
+    "    plt.figure()\n",
+    "    plt.plot(sig.times, sig)\n",
+    "    plt.title(\"Neo AnalogSignal Plot\")\n",
+    "    plt.show()\n",
+    "\n",
+    "    # Recover\n",
+    "    tm_recovered = TimeSeriesMatrix.from_neo(sig)\n",
+    "    ts_recovered = tm_recovered[0]\n",
+    "    print(\"Recovered from Neo:\", ts_recovered)\n",
+    "\n",
+    "    del tm, tm_recovered, sig, ts_recovered\n",
+    "\n",
+    "except ImportError:\n",
+    "    print(\"neo not installed.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 9. Summary\n",
+    "\n",
+    "`gwexpy` provides interoperability with a wide variety of domain-specific libraries, enabling seamless integration with existing ecosystems."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.10"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

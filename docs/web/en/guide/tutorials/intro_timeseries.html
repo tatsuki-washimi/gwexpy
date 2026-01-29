@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwexpy TimeSeries New Features TutorialThis notebook introduces the new methods added to the TimeSeries class in gwexpy, an extension of gwpy, and explains how to use them.gwexpy maintains high compatibility with GWpy while significantly enhancing signal processing, statistical analysis, and interoperability with other libraries.## Table of Contents1. Environment Setup2. Signal Processing and Demodulation (Hilbert, Phase, Demodulation)3. Spectral Analysis and Correlation (FFT, Transfer Function, xcorr)4. Statistics and Preprocessing (Impute, Standardize, ARIMA, Hurst, Rolling)5. Resampling and Reindexing (asfreq, resample)6. Interoperability (Pandas, Xarray, Torch, and more) &mdash; gwexpy  documentation</title>
+  <title>gwexpy TimeSeries New Features TutorialThis notebook introduces the new methods added to the TimeSeries class in gwexpy, an extension of gwpy, and explains how to use them.gwexpy maintains high compatibility with GWpy while significantly enhancing signal processing, statistical analysis, and interoperability with other libraries.## Table of Contents1. Environment Setup2. Signal Processing and Demodulation (Hilbert, Phase, Demodulation)3. Spectral Analysis and Correlation (FFT, Transfer Function, xcorr)4. Statistics and Preprocessing (Impute, Standardize, ARIMA, Hurst, Rolling)5. Resampling and Reindexing (asfreq, resample)6. Interoperability (Pandas, Xarray, Torch, and more) &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -23,7 +23,7 @@
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="FrequencySeries Basics" href="intro_frequencyseries.html" />
+    <link rel="next" title="Advanced Features and Operations of FrequencySeries" href="intro_frequencyseries.html" />
     <link rel="prev" title="Tutorials" href="index.html" /> 
 </head>
 
@@ -36,7 +36,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            gwexpy
+            GWexpy
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -47,7 +47,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWExPy Documentation</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
@@ -67,12 +67,11 @@
 <li class="toctree-l3"><a class="reference internal" href="index.html#vi-case-studies">VI. Case Studies</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/index.html">Detailed Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWExPy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
 </ul>
 
         </div>
@@ -81,7 +80,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">gwexpy</a>
+          <a href="../../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -89,7 +88,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html">GWExPy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
           <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
       <li class="breadcrumb-item active">gwexpy TimeSeries New Features TutorialThis notebook introduces the new methods added to the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> class in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>, an extension of <code class="docutils literal notranslate"><span class="pre">gwpy</span></code>, and explains how to use them.<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> maintains high compatibility with GWpy while significantly enhancing signal processing, statistical analysis, and interoperability with other libraries.## Table of Contents1. Environment Setup2. Signal Processing and Demodulation (Hilbert, Phase, Demodulation)3. Spectral Analysis and Correlation (FFT, Transfer Function, xcorr)4. Statistics and Preprocessing (Impute, Standardize, ARIMA, Hurst, Rolling)5. Resampling and Reindexing (asfreq, resample)6. Interoperability (Pandas, Xarray, Torch, and more)</li>
       <li class="wy-breadcrumbs-aside">
@@ -101,7 +100,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="gwexpy-TimeSeries-New-Features-TutorialThis-notebook-introduces-the-new-methods-added-to-the-TimeSeries-class-in-gwexpy,-an-extension-of-gwpy,-and-explains-how-to-use-them.gwexpy-maintains-high-compatibility-with-GWpy-while-significantly-enhancing-signal-processing,-statistical-analysis,-and-interoperability-with-other-libraries.##-Table-of-Contents1.-Environment-Setup2.-Signal-Processing-and-Demodulation-(Hilbert,-Phase,-Demodulation)3.-Spectral-Analysis-and-Correlation-(FFT,-Transfer-Function,-xcorr)4.-Statistics-and-Preprocessing-(Impute,-Standardize,-ARIMA,-Hurst,-Rolling)5.-Resampling-and-Reindexing-(asfreq,-resample)6.-Interoperability-(Pandas,-Xarray,-Torch,-and-more)">
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page was generated from a Jupyter Notebook.
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/guide/tutorials/intro_timeseries.ipynb">Download the notebook (.ipynb)</a>.</p>
+</div>
+<section id="gwexpy-TimeSeries-New-Features-TutorialThis-notebook-introduces-the-new-methods-added-to-the-TimeSeries-class-in-gwexpy,-an-extension-of-gwpy,-and-explains-how-to-use-them.gwexpy-maintains-high-compatibility-with-GWpy-while-significantly-enhancing-signal-processing,-statistical-analysis,-and-interoperability-with-other-libraries.##-Table-of-Contents1.-Environment-Setup2.-Signal-Processing-and-Demodulation-(Hilbert,-Phase,-Demodulation)3.-Spectral-Analysis-and-Correlation-(FFT,-Transfer-Function,-xcorr)4.-Statistics-and-Preprocessing-(Impute,-Standardize,-ARIMA,-Hurst,-Rolling)5.-Resampling-and-Reindexing-(asfreq,-resample)6.-Interoperability-(Pandas,-Xarray,-Torch,-and-more)">
 <h1>gwexpy TimeSeries New Features TutorialThis notebook introduces the new methods added to the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> class in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>, an extension of <code class="docutils literal notranslate"><span class="pre">gwpy</span></code>, and explains how to use them.<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> maintains high compatibility with GWpy while significantly enhancing signal processing, statistical analysis, and interoperability with other libraries.## Table of Contents1. Environment Setup2. Signal Processing and Demodulation (Hilbert, Phase, Demodulation)3. Spectral Analysis and Correlation (FFT, Transfer Function, xcorr)4. Statistics and Preprocessing (Impute, Standardize, ARIMA, Hurst, Rolling)5. Resampling and Reindexing (asfreq, resample)6. Interoperability (Pandas, Xarray, Torch, and more)<a class="headerlink" href="#gwexpy-TimeSeries-New-Features-TutorialThis-notebook-introduces-the-new-methods-added-to-the-TimeSeries-class-in-gwexpy,-an-extension-of-gwpy,-and-explains-how-to-use-them.gwexpy-maintains-high-compatibility-with-GWpy-while-significantly-enhancing-signal-processing,-statistical-analysis,-and-interoperability-with-other-libraries.##-Table-of-Contents1.-Environment-Setup2.-Signal-Processing-and-Demodulation-(Hilbert,-Phase,-Demodulation)3.-Spectral-Analysis-and-Correlation-(FFT,-Transfer-Function,-xcorr)4.-Statistics-and-Preprocessing-(Impute,-Standardize,-ARIMA,-Hurst,-Rolling)5.-Resampling-and-Reindexing-(asfreq,-resample)6.-Interoperability-(Pandas,-Xarray,-Torch,-and-more)" title="Link to this heading"></a></h1>
 <p>## 1. Environment SetupFirst, we import the necessary libraries and generate sample data for demonstration.</p>
 <div class="nbinput nblast docutils container">
@@ -147,9 +151,9 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate the analytic signal (Analytic Signal) の計算</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate the analytic signal</span>
 <span class="n">ts_analytic</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">hilbert</span><span class="p">()</span>
-<span class="c1"># Calculate the envelope (Envelope) の計算</span>
+<span class="c1"># Calculate the envelope</span>
 <span class="n">ts_env</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">envelope</span><span class="p">()</span>
 
 <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">ts2</span><span class="p">,</span> <span class="n">ts_env</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
@@ -405,20 +409,20 @@ Axis 2: frequency
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
     <span class="c1"># EMDExecute EMD (returns dictionary)</span>
-    <span class="c1"># method=&quot;emd&quot; (standard EMD) または &quot;eemd&quot; (Ensemble EMD)</span>
-    <span class="c1"># Here we use ts2 (Chirp信号を含む例)</span>
+    <span class="c1"># method=&quot;emd&quot; (standard EMD) or &quot;eemd&quot; (Ensemble EMD)</span>
+    <span class="c1"># Here we use ts2 (example with chirp signal)</span>
     <span class="n">imfs</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">emd</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;emd&quot;</span><span class="p">,</span> <span class="n">max_imf</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extracted IMFs: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">imfs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="c1"># IMFのPlot</span>
+    <span class="c1"># Plot IMFs</span>
     <span class="n">sorted_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
         <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">imfs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;IMF&quot;</span><span class="p">)],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">:])</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="s2">&quot;residual&quot;</span> <span class="ow">in</span> <span class="n">imfs</span><span class="p">:</span>
         <span class="n">sorted_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;residual&quot;</span><span class="p">)</span>
 
-    <span class="c1"># gwexpy.plot.Plot を使用して一括Plot</span>
+    <span class="c1"># gwexpy.plot.Plot for batch plotting</span>
     <span class="n">plot_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">ts2</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">imfs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">sorted_keys</span><span class="p">]</span>
     <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="o">*</span><span class="n">plot_data</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 
@@ -504,7 +508,7 @@ Extracted IMFs: [&#39;IMF1&#39;, &#39;IMF2&#39;, &#39;IMF3&#39;, &#39;residual&#
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Peak Detection (Find Peaks)</span>
-<span class="c1"># height, threshold, distance, prominence, width などのCan specify parameters such as</span>
+<span class="c1"># height, threshold, distance, prominence, width such asCan specify parameters such as</span>
 <span class="c1"># Can also specify thresholds with units</span>
 
 <span class="c1"># ts2 (Chirp + Sine) Find peaks in</span>
@@ -1650,13 +1654,13 @@ ObsPy interop OK: .Sensor 1..
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="intro_frequencyseries.html" class="btn btn-neutral float-right" title="FrequencySeries Basics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="intro_frequencyseries.html" class="btn btn-neutral float-right" title="Advanced Features and Operations of FrequencySeries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

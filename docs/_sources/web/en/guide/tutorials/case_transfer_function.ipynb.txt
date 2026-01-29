@@ -1,0 +1,250 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "cell-0",
+   "metadata": {},
+   "source": [
+    "# Tutorial: Transfer Function Measurement\n",
+    "\n",
+    "This tutorial demonstrates how to use `gwexpy` to estimate the transfer function of a system from measured data,\n",
+    "fit a physical model to the transfer function, and identify system parameters.\n",
+    "\n",
+    "**Scenario:**\n",
+    "We inject white noise into a mechanical vibration system (or electrical circuit) and measure its response.\n",
+    "From this input-output data, we will determine the system's resonance frequency $f_0$ and quality factor $Q$.\n",
+    "\n",
+    "**Workflow:**\n",
+    "1.  **Data generation**: Simulate an input signal (white noise) and the system output (resonant system response + measurement noise).\n",
+    "2.  **Transfer function estimation**: Calculate the transfer function and coherence from the input-output time series data and plot the Bode plot.\n",
+    "3.  **Model fitting**: Fit a theoretical model (such as a Lorentzian function) to the estimated transfer function to extract system parameters."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "from scipy import signal\n",
+    "\n",
+    "from gwexpy import TimeSeries\n",
+    "from gwexpy.plot import Plot"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-2",
+   "metadata": {},
+   "source": [
+    "## 1. Generating Experimental Data (Simulation)\n",
+    "\n",
+    "We will conduct a virtual experiment.\n",
+    "*   **System**: Second-order resonant system (harmonic oscillator)\n",
+    "    *   Resonance frequency $f_0 = 300$ Hz\n",
+    "    *   Quality factor $Q = 50$\n",
+    "*   **Input**: White noise\n",
+    "*   **Measurement**: Sampling frequency 2048 Hz, duration 60 seconds\n",
+    "\n",
+    "The output signal will also include measurement noise."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# --- Parameter Settings ---\n",
+    "fs = 2048.0  # Sampling frequency [Hz]\n",
+    "duration = 60.0  # Duration [s]\n",
+    "f0_true = 300.0  # True resonance frequency [Hz]\n",
+    "Q_true = 50.0  # True quality factor\n",
+    "\n",
+    "# --- Time axis and input signal ---\n",
+    "t = np.linspace(0, duration, int(duration * fs), endpoint=False)\n",
+    "input_data = np.random.normal(0, 1, size=len(t))  # White noise input\n",
+    "\n",
+    "# --- Physical System Simulation (using scipy.signal) ---\n",
+    "# Transfer function H(s) = w0^2 / (s^2 + (w0/Q)s + w0^2)\n",
+    "w0 = 2 * np.pi * f0_true\n",
+    "num = [w0**2]\n",
+    "den = [1, w0 / Q_true, w0**2]\n",
+    "system = signal.TransferFunction(num, den)\n",
+    "\n",
+    "# Calculate time response (lsim)\n",
+    "# Time steps for simulation\n",
+    "_, output_clean, _ = signal.lsim(system, U=input_data, T=t)\n",
+    "\n",
+    "# --- Add measurement noise ---\n",
+    "# Assume that the output has some noise (such as sensor noise)\n",
+    "measurement_noise = np.random.normal(0, 0.1, size=len(t))\n",
+    "output_data = output_clean + measurement_noise\n",
+    "\n",
+    "# --- Create gwexpy TimeSeries objects ---\n",
+    "ts_input = TimeSeries(input_data, t0=0, sample_rate=fs, name=\"Input\", unit=\"V\")\n",
+    "ts_output = TimeSeries(output_data, t0=0, sample_rate=fs, name=\"Output\", unit=\"V\")\n",
+    "\n",
+    "print(\"Input data shape:\", ts_input.shape)\n",
+    "print(\"Output data shape:\", ts_output.shape)\n",
+    "Plot(ts_input, ts_output, separate=True);"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-4",
+   "metadata": {},
+   "source": [
+    "## 2. Transfer Function Estimation\n",
+    "\n",
+    "From the input-output time series data `ts_input` and `ts_output`, we estimate the frequency response function (transfer function).\n",
+    "We use the `transfer_function` method of `gwexpy`.\n",
+    "\n",
+    "We also calculate the **coherence** to assess the reliability of the measurement.\n",
+    "Frequency bands where the coherence is close to 1 indicate that the input-output relationship is linear and the influence of noise is small."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# FFT settings: specify the segment length for averaging\n",
+    "fftlength = 2.0  # FFT every 2 seconds and average\n",
+    "\n",
+    "# Calculate transfer function (Output / Input)\n",
+    "tf = ts_input.transfer_function(ts_output, fftlength=fftlength)\n",
+    "\n",
+    "# Calculate coherence\n",
+    "coh = ts_input.coherence(ts_output, fftlength=fftlength) ** 0.5\n",
+    "\n",
+    "# --- Plotting (Bode Plot & Coherence) ---\n",
+    "fig, axes = plt.subplots(3, 1, figsize=(10, 10), sharex=True)\n",
+    "\n",
+    "# Magnitude\n",
+    "ax = axes[0]\n",
+    "ax.loglog(tf.abs(), label=\"Measured TF\")\n",
+    "ax.set_ylabel(\"Gain [V/V]\")\n",
+    "ax.set_title(\"Bode Plot: Magnitude\")\n",
+    "ax.grid(True, which=\"both\", alpha=0.5)\n",
+    "\n",
+    "# Phase\n",
+    "ax = axes[1]\n",
+    "ax.plot(tf.degree(), label=\"Measured Phase\")\n",
+    "ax.set_ylabel(\"Phase [deg]\")\n",
+    "ax.set_title(\"Bode Plot: Phase\")\n",
+    "ax.set_yticks(np.arange(-180, 181, 90))\n",
+    "ax.grid(True, which=\"both\", alpha=0.5)\n",
+    "\n",
+    "# Coherence\n",
+    "ax = axes[2]\n",
+    "ax.plot(coh, color=\"green\", label=\"Coherence\")\n",
+    "ax.set_ylabel(\"Coherence\")\n",
+    "ax.set_xlabel(\"Frequency [Hz]\")\n",
+    "ax.set_ylim(0, 1.1)\n",
+    "ax.set_xlim(10, 1000)\n",
+    "ax.grid(True, which=\"both\", alpha=0.5)\n",
+    "\n",
+    "plt.tight_layout()\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-6",
+   "metadata": {},
+   "source": [
+    "## 3. Model Fitting\n",
+    "\n",
+    "We fit a theoretical model to the obtained transfer function (especially around the resonance).\n",
+    "Here, we define a transfer function model for a harmonic oscillator and use least-squares fitting to determine the parameters ($A, f_0, Q$).\n",
+    "\n",
+    "Model equation (including gain $A$):\n",
+    "$$ H(f) = A \\cdot \\frac{f_0^2}{f_0^2 - f^2 + i (f f_0 / Q)} $$"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# --- Define model function for fitting ---\n",
+    "def resonator_model(f, amp, f0, Q):\n",
+    "    # f: frequency array\n",
+    "    # Parameters: amp(gain), f0(resonance frequency), Q(quality factor)\n",
+    "\n",
+    "    # Calculation formula (complex number)\n",
+    "    numerator = amp * (f0**2)\n",
+    "    denominator = (f0**2) - (f**2) + 1j * (f * f0 / Q)\n",
+    "    return numerator / denominator\n",
+    "\n",
+    "\n",
+    "# --- Perform fitting ---\n",
+    "# If we use all the data, fitting may be difficult due to the wide bandwidth,\n",
+    "# so we crop the data to around the resonance (100Hz ~ 500Hz).\n",
+    "tf_crop = tf.crop(100, 500)\n",
+    "\n",
+    "# Estimate initial values (determined by visual inspection or peak search)\n",
+    "# Here, we use f0=300 as the initial value since it appears to be around there\n",
+    "p0 = {\"amp\": 1.0, \"f0\": 300.0, \"Q\": 10.0}\n",
+    "\n",
+    "# Execute fitting\n",
+    "# The .fit() method of FrequencySeries fits both real and imaginary parts simultaneously for complex data\n",
+    "result = tf_crop.fit(resonator_model, p0=p0)\n",
+    "\n",
+    "print(result)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-8",
+   "metadata": {},
+   "source": [
+    "## 4. Verification of Results\n",
+    "\n",
+    "We verify the fitting results numerically and plot them overlaid on the measured data.\n",
+    "The `FitResult.plot()` method automatically generates a Bode plot (magnitude and phase) for complex data."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-9",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# --- Display results ---\n",
+    "print(\"--- Estimated Parameters ---\")\n",
+    "print(f\"Resonance Frequency (f0): {result.params['f0']:.4f} Hz (True: {f0_true})\")\n",
+    "print(f\"Quality Factor (Q):       {result.params['Q']:.4f}      (True: {Q_true})\")\n",
+    "print(f\"Gain (Amp):               {result.params['amp']:.4f}\")\n",
+    "\n",
+    "# --- Plotting ---\n",
+    "# result.plot() returns two Axes for magnitude and phase in the case of complex numbers\n",
+    "axes = result.plot()\n",
+    "plt.show()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3.9.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

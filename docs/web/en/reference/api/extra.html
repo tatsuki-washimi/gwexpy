@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fitting &mdash; gwexpy  documentation</title>
+  <title>fitting &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
@@ -20,7 +20,7 @@
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="Detailed Reference" href="../index.html" />
+    <link rel="next" title="Class Index" href="../classes.html" />
     <link rel="prev" title="Types" href="types.html" /> 
 </head>
 
@@ -33,7 +33,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            gwexpy
+            GWexpy
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -44,113 +44,31 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWExPy Documentation</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../guide/installation.html">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/tutorials/index.html">Tutorials</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="timeseries.html">Time Series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="frequencyseries.html">Frequency Series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="spectrogram.html">Spectrogram</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fields.html">Fields</a></li>
-<li class="toctree-l3"><a class="reference internal" href="spectral.html">Spectral</a></li>
-<li class="toctree-l3"><a class="reference internal" href="analysis.html">Analysis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="noise.html">Noise</a></li>
-<li class="toctree-l3"><a class="reference internal" href="types.html">Types</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">fitting</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fitting.enable_fitting_monkeypatch"><code class="docutils literal notranslate"><span class="pre">enable_fitting_monkeypatch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fitting.enable_series_fit"><code class="docutils literal notranslate"><span class="pre">enable_series_fit()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.fitting.fit_bootstrap_spectrum"><code class="docutils literal notranslate"><span class="pre">fit_bootstrap_spectrum()</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Reference</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="timeseries.html">Time Series</a></li>
+<li class="toctree-l4"><a class="reference internal" href="frequencyseries.html">Frequency Series</a></li>
+<li class="toctree-l4"><a class="reference internal" href="spectrogram.html">Spectrogram</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fields.html">Fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="spectral.html">Spectral</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html">Analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="noise.html">Noise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="types.html">Types</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">fitting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-gwexpy.interop">interop</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-gwexpy.interop">interop</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.TimeSeriesWindowDataset"><code class="docutils literal notranslate"><span class="pre">TimeSeriesWindowDataset</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_astropy_timeseries"><code class="docutils literal notranslate"><span class="pre">from_astropy_timeseries()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_control_frd"><code class="docutils literal notranslate"><span class="pre">from_control_frd()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_control_response"><code class="docutils literal notranslate"><span class="pre">from_control_response()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_cupy"><code class="docutils literal notranslate"><span class="pre">from_cupy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_dask"><code class="docutils literal notranslate"><span class="pre">from_dask()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_dict"><code class="docutils literal notranslate"><span class="pre">from_dict()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_hdf5"><code class="docutils literal notranslate"><span class="pre">from_hdf5()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_hdf5_frequencyseries"><code class="docutils literal notranslate"><span class="pre">from_hdf5_frequencyseries()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_jax"><code class="docutils literal notranslate"><span class="pre">from_jax()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_json"><code class="docutils literal notranslate"><span class="pre">from_json()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_mne"><code class="docutils literal notranslate"><span class="pre">from_mne()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_mne_raw"><code class="docutils literal notranslate"><span class="pre">from_mne_raw()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_neo"><code class="docutils literal notranslate"><span class="pre">from_neo()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_netcdf4"><code class="docutils literal notranslate"><span class="pre">from_netcdf4()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_obspy"><code class="docutils literal notranslate"><span class="pre">from_obspy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_obspy_trace"><code class="docutils literal notranslate"><span class="pre">from_obspy_trace()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_pandas_dataframe"><code class="docutils literal notranslate"><span class="pre">from_pandas_dataframe()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_pandas_frequencyseries"><code class="docutils literal notranslate"><span class="pre">from_pandas_frequencyseries()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_pandas_series"><code class="docutils literal notranslate"><span class="pre">from_pandas_series()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_polars_dataframe"><code class="docutils literal notranslate"><span class="pre">from_polars_dataframe()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_polars_dict"><code class="docutils literal notranslate"><span class="pre">from_polars_dict()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_polars_series"><code class="docutils literal notranslate"><span class="pre">from_polars_series()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_pydub"><code class="docutils literal notranslate"><span class="pre">from_pydub()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_pyspeckit"><code class="docutils literal notranslate"><span class="pre">from_pyspeckit()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_quantity"><code class="docutils literal notranslate"><span class="pre">from_quantity()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_root"><code class="docutils literal notranslate"><span class="pre">from_root()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_simpeg"><code class="docutils literal notranslate"><span class="pre">from_simpeg()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_specutils"><code class="docutils literal notranslate"><span class="pre">from_specutils()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_sqlite"><code class="docutils literal notranslate"><span class="pre">from_sqlite()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_tf"><code class="docutils literal notranslate"><span class="pre">from_tf()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_torch"><code class="docutils literal notranslate"><span class="pre">from_torch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_xarray"><code class="docutils literal notranslate"><span class="pre">from_xarray()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_xarray_frequencyseries"><code class="docutils literal notranslate"><span class="pre">from_xarray_frequencyseries()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.from_zarr"><code class="docutils literal notranslate"><span class="pre">from_zarr()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.is_cupy_available"><code class="docutils literal notranslate"><span class="pre">is_cupy_available()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.require_optional"><code class="docutils literal notranslate"><span class="pre">require_optional()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_astropy_timeseries"><code class="docutils literal notranslate"><span class="pre">to_astropy_timeseries()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_control_frd"><code class="docutils literal notranslate"><span class="pre">to_control_frd()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_cupy"><code class="docutils literal notranslate"><span class="pre">to_cupy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_dask"><code class="docutils literal notranslate"><span class="pre">to_dask()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_dict"><code class="docutils literal notranslate"><span class="pre">to_dict()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_hdf5"><code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_hdf5_frequencyseries"><code class="docutils literal notranslate"><span class="pre">to_hdf5_frequencyseries()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_jax"><code class="docutils literal notranslate"><span class="pre">to_jax()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_json"><code class="docutils literal notranslate"><span class="pre">to_json()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_librosa"><code class="docutils literal notranslate"><span class="pre">to_librosa()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_mne"><code class="docutils literal notranslate"><span class="pre">to_mne()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_mne_rawarray"><code class="docutils literal notranslate"><span class="pre">to_mne_rawarray()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_neo"><code class="docutils literal notranslate"><span class="pre">to_neo()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_netcdf4"><code class="docutils literal notranslate"><span class="pre">to_netcdf4()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_obspy"><code class="docutils literal notranslate"><span class="pre">to_obspy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_obspy_trace"><code class="docutils literal notranslate"><span class="pre">to_obspy_trace()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_pandas_dataframe"><code class="docutils literal notranslate"><span class="pre">to_pandas_dataframe()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_pandas_frequencyseries"><code class="docutils literal notranslate"><span class="pre">to_pandas_frequencyseries()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_pandas_series"><code class="docutils literal notranslate"><span class="pre">to_pandas_series()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_polars_dataframe"><code class="docutils literal notranslate"><span class="pre">to_polars_dataframe()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_polars_dict"><code class="docutils literal notranslate"><span class="pre">to_polars_dict()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_polars_frequencyseries"><code class="docutils literal notranslate"><span class="pre">to_polars_frequencyseries()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_polars_series"><code class="docutils literal notranslate"><span class="pre">to_polars_series()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_pydub"><code class="docutils literal notranslate"><span class="pre">to_pydub()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_pyspeckit"><code class="docutils literal notranslate"><span class="pre">to_pyspeckit()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_quantity"><code class="docutils literal notranslate"><span class="pre">to_quantity()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_simpeg"><code class="docutils literal notranslate"><span class="pre">to_simpeg()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_specutils"><code class="docutils literal notranslate"><span class="pre">to_specutils()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_sqlite"><code class="docutils literal notranslate"><span class="pre">to_sqlite()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_tf"><code class="docutils literal notranslate"><span class="pre">to_tf()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_tgraph"><code class="docutils literal notranslate"><span class="pre">to_tgraph()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_th1d"><code class="docutils literal notranslate"><span class="pre">to_th1d()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_th2d"><code class="docutils literal notranslate"><span class="pre">to_th2d()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_tmultigraph"><code class="docutils literal notranslate"><span class="pre">to_tmultigraph()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_torch"><code class="docutils literal notranslate"><span class="pre">to_torch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_torch_dataloader"><code class="docutils literal notranslate"><span class="pre">to_torch_dataloader()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_torch_dataset"><code class="docutils literal notranslate"><span class="pre">to_torch_dataset()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_xarray"><code class="docutils literal notranslate"><span class="pre">to_xarray()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_xarray_frequencyseries"><code class="docutils literal notranslate"><span class="pre">to_xarray_frequencyseries()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.to_zarr"><code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gwexpy.interop.write_root_file"><code class="docutils literal notranslate"><span class="pre">write_root_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../classes.html">Class Index</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html">Detailed Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWExPy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
 </ul>
 
         </div>
@@ -159,7 +77,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">gwexpy</a>
+          <a href="../../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -167,7 +85,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html">GWExPy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Reference</a></li>
           <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
       <li class="breadcrumb-item active">fitting</li>
       <li class="wy-breadcrumbs-aside">
@@ -1028,13 +947,13 @@ This only contains the data values, not the index.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="types.html" class="btn btn-neutral float-left" title="Types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../index.html" class="btn btn-neutral float-right" title="Detailed Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../classes.html" class="btn btn-neutral float-right" title="Class Index" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

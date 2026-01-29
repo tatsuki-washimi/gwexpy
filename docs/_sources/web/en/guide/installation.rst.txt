@@ -1,18 +1,21 @@
 Installation
 ============
 
-GWExPy requires Python 3.9+ and depends on GWpy, NumPy, SciPy, and Astropy.
+GWexpy requires Python 3.9+ and depends on GWpy, NumPy, SciPy, and Astropy.
 
 Basic install
 -------------
 
+.. note::
+   GWexpy is not published on PyPI yet. The recommended install method is via GitHub.
+
 .. code-block:: bash
+
+   # From GitHub (recommended)
+   pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 
    # From a local checkout
    pip install .
-
-   # From GitHub (no PyPI release)
-   pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 
 Development install
 -------------------
@@ -24,7 +27,7 @@ Development install
 Optional extras
 ---------------
 
-GWExPy exposes optional extras for domain-specific features:
+GWexpy exposes optional extras for domain-specific features:
 
 - ``.[gw]`` for GW data analysis (nds2, frames, noise models)
 - ``.[stats]`` for stats & signal analysis (polars, ARIMA, ICA/PCA)
@@ -45,6 +48,12 @@ Combine extras as needed, for example:
 .. code-block:: bash
 
    pip install ".[gw,stats,plot]"
+
+You can also install extras directly from GitHub:
+
+.. code-block:: bash
+
+   pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 
 .. note::
    The ``[gw]`` extra includes dependencies like ``nds2-client`` which are **not available on PyPI**.

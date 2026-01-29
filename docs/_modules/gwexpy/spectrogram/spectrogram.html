@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwexpy.spectrogram.spectrogram &mdash; gwexpy  documentation</title>
+  <title>gwexpy.spectrogram.spectrogram &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
@@ -30,7 +30,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            gwexpy
+            GWexpy
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -41,8 +41,8 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWExPy Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWExPy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
 </ul>
 
         </div>
@@ -51,7 +51,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">gwexpy</a>
+          <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -403,14 +403,30 @@
 <div class="viewcode-block" id="Spectrogram.imshow">
 <a class="viewcode-back" href="../../../web/ja/reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.imshow">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot using imshow. Inherited from gwpy.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot using Matplotlib ``imshow`` (GWpy-compatible).</span>
+
+<span class="sd">        This method is provided for convenience and forwards arguments to</span>
+<span class="sd">        :meth:`gwpy.spectrogram.Spectrogram.imshow`.</span>
+
+<span class="sd">        Common keyword arguments include ``ax``, ``cmap``, ``norm`` (or</span>
+<span class="sd">        ``log=True`` in GWpy), and color scaling controls like ``vmin``/``vmax``.</span>
+<span class="sd">        For the full set of supported keywords, see the GWpy documentation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Spectrogram.pcolormesh">
 <a class="viewcode-back" href="../../../web/ja/reference/api/spectrogram.html#gwexpy.spectrogram.Spectrogram.pcolormesh">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">pcolormesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot using pcolormesh. Inherited from gwpy.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot using Matplotlib ``pcolormesh`` (GWpy-compatible).</span>
+
+<span class="sd">        This method is provided for convenience and forwards arguments to</span>
+<span class="sd">        :meth:`gwpy.spectrogram.Spectrogram.pcolormesh`.</span>
+
+<span class="sd">        Common keyword arguments include ``ax``, ``cmap``, ``norm`` and</span>
+<span class="sd">        ``vmin``/``vmax``. For the full set of supported keywords, see the GWpy</span>
+<span class="sd">        documentation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -656,7 +672,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

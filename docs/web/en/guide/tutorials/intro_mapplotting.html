@@ -6,9 +6,10 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mapping on Geoid and Sky &mdash; gwexpy  documentation</title>
+  <title>Tutorial: Sky Map and Geographic Map Plotting &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
@@ -17,11 +18,13 @@
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="Interoperability with External Libraries" href="intro_interop.html" />
-    <link rel="prev" title="Advanced Plotting Features" href="intro_plotting.html" /> 
+    <link rel="next" title="GWExPy TimeSeries Interoperability Tutorial" href="intro_interop.html" />
+    <link rel="prev" title="gwexpy Plotting Introduction" href="intro_plotting.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -33,7 +36,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            gwexpy
+            GWexpy
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -44,7 +47,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWExPy Documentation</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
@@ -64,12 +67,11 @@
 <li class="toctree-l3"><a class="reference internal" href="index.html#vi-case-studies">VI. Case Studies</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/api/index.html">API Reference</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/index.html">Detailed Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWExPy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
 </ul>
 
         </div>
@@ -78,7 +80,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">gwexpy</a>
+          <a href="../../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -86,11 +88,11 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html">GWExPy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
           <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
-      <li class="breadcrumb-item active">Mapping on Geoid and Sky</li>
+      <li class="breadcrumb-item active">Tutorial: Sky Map and Geographic Map Plotting</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/guide/tutorials/intro_mapplotting.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/guide/tutorials/intro_mapplotting.ipynb" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -98,30 +100,171 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="mapping-on-geoid-and-sky">
-<h1>Mapping on Geoid and Sky<a class="headerlink" href="#mapping-on-geoid-and-sky" title="Link to this heading"></a></h1>
-<p>This tutorial is currently under translation. The English text will be published soon.</p>
-<p>For now, please refer to the Japanese version (links below).</p>
-<ul class="simple">
-<li><p>Japanese page (HTML): :doc:<code class="docutils literal notranslate"><span class="pre">../../../ja/guide/tutorials/intro_mapplotting</span></code></p></li>
-<li><p>Japanese notebook (download): <a class="reference internal" href="../../../ja/guide/tutorials/intro_mapplotting.html"><span class="std std-doc">intro_mapplotting.ipynb</span></a></p></li>
-</ul>
-<hr class="docutils" />
-<p>We appreciate your patience while the English tutorial is finalized.</p>
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page was generated from a Jupyter Notebook.
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/guide/tutorials/intro_mapplotting.ipynb">Download the notebook (.ipynb)</a>.</p>
+</div>
+<section id="Tutorial:-Sky-Map-and-Geographic-Map-Plotting">
+<h1>Tutorial: Sky Map and Geographic Map Plotting<a class="headerlink" href="#Tutorial:-Sky-Map-and-Geographic-Map-Plotting" title="Link to this heading"></a></h1>
+<p>This notebook demonstrates how to use <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.SkyMap</span></code> for all-sky HEALPix probability maps and <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.GeoMap</span></code> for geographic maps of detector locations.</p>
+<section id="1.-SkyMap:-All-Sky-Probability-Maps">
+<h2>1. SkyMap: All-Sky Probability Maps<a class="headerlink" href="#1.-SkyMap:-All-Sky-Probability-Maps" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SkyMap</span></code> is a specialized plotting class for displaying distributions on the celestial sphere. It integrates with <code class="docutils literal notranslate"><span class="pre">ligo.skymap</span></code> to easily handle HEALPix data.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">SkyMap</span>
+
+<span class="c1"># Create SkyMap with Mollweide projection (default)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">SkyMap</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">projection</span><span class="o">=</span><span class="s2">&quot;mollweide&quot;</span><span class="p">)</span>
+
+<span class="c1"># Add synthetic HEALPix data if ligo.skymap is available</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ligo.skymap</span>
+
+    <span class="n">_</span> <span class="o">=</span> <span class="n">ligo</span><span class="o">.</span><span class="n">skymap</span>
+    <span class="n">nside</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">npix</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">nside</span><span class="o">**</span><span class="mi">2</span>
+    <span class="c1"># Generate a dummy central peak</span>
+    <span class="n">map_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">npix</span><span class="p">)</span> <span class="o">-</span> <span class="n">npix</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">npix</span> <span class="o">//</span> <span class="mi">10</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_healpix</span><span class="p">(</span><span class="n">map_data</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ligo.skymap not installed.&quot;</span><span class="p">)</span>
+
+<span class="c1"># Mark some astronomical targets</span>
+<span class="c1"># Crab Nebula (RA: 83.63 deg, Dec: 22.01 deg)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">mark_target</span><span class="p">(</span><span class="mf">83.63</span><span class="p">,</span> <span class="mf">22.01</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Crab Nebula&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+
+<span class="c1"># Other targets</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">mark_target</span><span class="p">([</span><span class="mi">150</span><span class="p">,</span> <span class="mi">250</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Other Sources&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-GeoMap:-Geographic-Maps-with-PyGMT">
+<h2>2. GeoMap: Geographic Maps with PyGMT<a class="headerlink" href="#2.-GeoMap:-Geographic-Maps-with-PyGMT" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GeoMap</span></code> provides a Cartopy-like interface to <code class="docutils literal notranslate"><span class="pre">PyGMT</span></code>, allowing for high-quality geographic maps and easy placement of gravitational wave detectors.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeoMap</span>
+
+<span class="c1"># Create GeoMap with Robinson projection centered on 135E (Japan)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">gmap</span> <span class="o">=</span> <span class="n">GeoMap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;Robinson&quot;</span><span class="p">,</span> <span class="n">center_lon</span><span class="o">=</span><span class="mi">135</span><span class="p">)</span>
+
+    <span class="c1"># Add map features</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">add_coastlines</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">fill_continents</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;wheat&quot;</span><span class="p">)</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">fill_oceans</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightblue&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Plot standard detectors (KAGRA, LIGO, Virgo, GEO)</span>
+    <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;K1&quot;</span><span class="p">,</span> <span class="s2">&quot;H1&quot;</span><span class="p">,</span> <span class="s2">&quot;L1&quot;</span><span class="p">,</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span> <span class="s2">&quot;G1&quot;</span><span class="p">]:</span>
+        <span class="n">gmap</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Plot an arbitrary point</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">170.5</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="mf">23.6</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+    <span class="n">gmap</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="3.-Close-up-View-of-Japan-Region">
+<h2>3. Close-up View of Japan Region<a class="headerlink" href="#3.-Close-up-View-of-Japan-Region" title="Link to this heading"></a></h2>
+<p>In <code class="docutils literal notranslate"><span class="pre">GeoMap</span></code>, you can automatically zoom in to a specific country region by specifying an ISO 3166-1 alpha-2 country code (such as ‘JP’, ‘US’, etc.) in the <code class="docutils literal notranslate"><span class="pre">region</span></code> argument. You can also add a scale bar to the map using <code class="docutils literal notranslate"><span class="pre">add_scale_bar()</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeoMap</span>
+
+<span class="c1"># Display Japan region (specify region=&#39;JP&#39;)</span>
+<span class="c1"># Use Mercator projection for zoomed view, with detailed frame annotations (frame=&#39;afg&#39;)</span>
+<span class="n">geo_jp</span> <span class="o">=</span> <span class="n">GeoMap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;Mercator&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;JP&quot;</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;afg&quot;</span><span class="p">)</span>
+
+<span class="n">geo_jp</span><span class="o">.</span><span class="n">fill_oceans</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span><span class="p">)</span>
+<span class="n">geo_jp</span><span class="o">.</span><span class="n">fill_continents</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgray&quot;</span><span class="p">)</span>
+<span class="n">geo_jp</span><span class="o">.</span><span class="n">add_coastlines</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>  <span class="c1"># Draw coastlines with higher resolution</span>
+
+<span class="c1"># Plot KAGRA detector</span>
+<span class="n">geo_jp</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="s2">&quot;K1&quot;</span><span class="p">)</span>
+
+<span class="c1"># Add scale bar (500km width, at bottom-left with 0.5cm offset)</span>
+<span class="n">geo_jp</span><span class="o">.</span><span class="n">add_scale_bar</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="s2">&quot;500k&quot;</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s2">&quot;jBL&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="s2">&quot;0.5c/0.5c&quot;</span><span class="p">)</span>
+
+<span class="n">geo_jp</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<section id="Commonly-Used-ISO-Country-Codes-(alpha-2)">
+<h3>Commonly Used ISO Country Codes (alpha-2)<a class="headerlink" href="#Commonly-Used-ISO-Country-Codes-(alpha-2)" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Country</p></th>
+<th class="head"><p>ISO Code</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Japan</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">JP</span></code></p></td>
+<td><p>Location of KAGRA</p></td>
+</tr>
+<tr class="row-odd"><td><p>United States</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">US</span></code></p></td>
+<td><p>Location of LIGO (Hanford, Livingston)</p></td>
+</tr>
+<tr class="row-even"><td><p>Italy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IT</span></code></p></td>
+<td><p>Location of Virgo</p></td>
+</tr>
+<tr class="row-odd"><td><p>Germany</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DE</span></code></p></td>
+<td><p>Location of GEO600</p></td>
+</tr>
+<tr class="row-even"><td><p>India</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IN</span></code></p></td>
+<td><p>LIGO-India under construction</p></td>
+</tr>
+<tr class="row-odd"><td><p>Australia</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AU</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>United Kingdom</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GB</span></code></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="intro_plotting.html" class="btn btn-neutral float-left" title="Advanced Plotting Features" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="intro_interop.html" class="btn btn-neutral float-right" title="Interoperability with External Libraries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="intro_plotting.html" class="btn btn-neutral float-left" title="gwexpy Plotting Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="intro_interop.html" class="btn btn-neutral float-right" title="GWExPy TimeSeries Interoperability Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

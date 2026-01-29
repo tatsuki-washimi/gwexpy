@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>インストール &mdash; gwexpy  documentation</title>
+  <title>インストール &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="クイックスタート" href="quickstart.html" />
-    <link rel="prev" title="GWExPy ドキュメントへようこそ" href="../index.html" /> 
+    <link rel="prev" title="GWexpy ドキュメントへようこそ" href="../index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -33,7 +33,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            gwexpy
+            GWexpy
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -44,8 +44,8 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWExPy Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWExPy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">インストール</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id2">基本インストール</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id3">開発用インストール</a></li>
@@ -54,9 +54,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWexPy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/api/index.html">API リファレンス</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/index.html">詳細リファレンス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
 </ul>
 </li>
@@ -68,7 +67,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">gwexpy</a>
+          <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -76,7 +75,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">GWExPy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメントへようこそ</a></li>
       <li class="breadcrumb-item active">インストール</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/guide/installation.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -89,14 +88,18 @@
              
   <section id="id1">
 <h1>インストール<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
-<p>GWExPy は Python 3.9+ を必要とし、GWpy, NumPy, SciPy, および Astropy に依存します。</p>
+<p>GWexpy は Python 3.9+ を必要とし、GWpy, NumPy, SciPy, および Astropy に依存します。</p>
 <section id="id2">
 <h2>基本インストール<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># ローカルチェックアウトから</span>
-pip<span class="w"> </span>install<span class="w"> </span>.
-
-<span class="c1"># GitHub から直接 (PyPIリリースが無い場合)</span>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GWexpy は現時点で PyPI からは提供されていません。推奨インストール方法は GitHub 経由です。</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># GitHub から直接 (推奨)</span>
 pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/tatsuki-washimi/gwexpy.git
+
+<span class="c1"># ローカルチェックアウトから</span>
+pip<span class="w"> </span>install<span class="w"> </span>.
 </pre></div>
 </div>
 </section>
@@ -108,7 +111,7 @@ pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com
 </section>
 <section id="id4">
 <h2>オプション機能の追加<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
-<p>GWExPy はドメイン固有の機能のためにオプションの依存関係を提供しています:</p>
+<p>GWexpy はドメイン固有の機能のためにオプションの依存関係を提供しています:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">.[gw]</span></code> : 重力波データ解析 (nds2, frames, noise models)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.[stats]</span></code> : 統計解析 (polars, ARIMA, ICA/PCA)</p></li>
@@ -128,6 +131,10 @@ pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;.[gw,stats,plot]&quot;</span>
 </pre></div>
 </div>
+<p>GitHub から直接エクストラを指定してインストールすることもできます:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code class="docutils literal notranslate"><span class="pre">[gw]</span></code> エクストラに含まれる <code class="docutils literal notranslate"><span class="pre">nds2-client</span></code> などの一部ライブラリは <strong>PyPI では提供されていません</strong>。
@@ -144,14 +151,14 @@ pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="GWExPy ドキュメントへようこそ" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="GWexpy ドキュメントへようこそ" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="quickstart.html" class="btn btn-neutral float-right" title="クイックスタート" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, gwexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
