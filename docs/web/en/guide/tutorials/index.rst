@@ -3,6 +3,9 @@ Tutorials
 
 Learn how to use **GWexpy** through interactive examples.
 
+.. tip::
+   If you're new to GWexpy, we recommend starting with :doc:`../getting_started`.
+
 .. note::
    These tutorials are generated from Jupyter Notebooks. Use "Edit on GitHub" on each page to download the original `.ipynb` and run it locally.
 

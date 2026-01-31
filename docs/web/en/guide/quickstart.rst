@@ -3,6 +3,9 @@ Quickstart
 
 Create and analyze a simple time series.
 
+.. note::
+   For a more detailed learning path, see :doc:`getting_started`.
+
 .. code-block:: python
 
    import numpy as np
