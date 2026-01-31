@@ -37,6 +37,26 @@ nbsphinx_prolog = r"""
 
 """
 
+# Ignore nitpick errors for well-known external symbols to keep -n builds manageable.
+nitpick_ignore = [
+    ("py:class", "file-like"),
+]
+nitpick_ignore_regex = [
+    ("py:class", r"collections(\.abc)?\..+"),
+    ("py:class", r"numpy(\..+)?"),
+    ("py:class", r"matplotlib(\..+)?"),
+    ("py:class", r"astropy\..+"),
+    ("py:class", r"gwpy\..+"),
+    ("py:class", r"pandas(\..+)?"),
+    ("py:class", r"scipy(\..+)?"),
+    ("py:meth", r"gwpy\..+"),
+    ("py:obj", r"gwpy\..+"),
+    ("py:class", r"enum\.Enum"),
+    ("py:class", r"abc\.ABC"),
+    ("py:class", r"astropy\.units\.core\.UnitBase"),
+    ("py:class", r"astropy\.units\.quantity\.Quantity"),
+]
+
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "developers/**"]
 
@@ -117,15 +137,7 @@ try:  # pragma: no cover
 except Exception:
     pass
 
-intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
-    "numpy": ("https://numpy.org/doc/stable/", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
-    "matplotlib": ("https://matplotlib.org/stable/", None),
-    "astropy": ("https://docs.astropy.org/en/stable/", None),
-    "gwpy": ("https://gwpy.github.io/docs/stable/", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
-}
+intersphinx_mapping = {}
 
 nitpick_ignore = [
     ("py:class", "numpy.dtype"),

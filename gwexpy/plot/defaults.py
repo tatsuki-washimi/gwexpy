@@ -262,9 +262,6 @@ def determine_xlabel(data_list, current_value=None):
     if xunit is not None:
         # Check if time
         phys = getattr(xunit, "physical_type", None)
-        # if phys == 'time' or xunit == u.s:
-        #      # Delegate to gwpy/matplotlib default (especially for auto-gps)
-        #      return None
         if phys == "frequency" or xunit == u.Hz:
             return f"Frequency [{xunit}]"
     else:
@@ -274,8 +271,6 @@ def determine_xlabel(data_list, current_value=None):
             xunit = xi.unit
             # Retry logic
             phys = getattr(xunit, "physical_type", None)
-            # if phys == 'time' or xunit == u.s:
-            #      return None
             if phys == "frequency" or xunit == u.Hz:
                 return f"Frequency [{xunit}]"
 

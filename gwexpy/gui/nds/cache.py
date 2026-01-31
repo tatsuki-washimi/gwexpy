@@ -4,12 +4,10 @@ Adapts NDSThread and DataBufferDict.
 """
 from __future__ import annotations
 
-from __future__ import annotations
-
 import logging
 import os
 from collections.abc import Iterable
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Optional
 
 from qtpy.QtCore import QObject, Signal  # type: ignore[attr-defined]
 
@@ -21,9 +19,10 @@ from .util import parse_server_string
 
 logger = logging.getLogger(__name__)
 
+
 class ChannelListCache:
-    _instance: ClassVar[ChannelListCache | None] = None
-    cache: dict[str, list[str] | None]
+    _instance: ClassVar[Optional[ChannelListCache]] = None
+    cache: dict[str, Optional[list[str]]]
     is_fetching: dict[str, bool]
 
     def __new__(cls) -> ChannelListCache:
@@ -33,15 +32,16 @@ class ChannelListCache:
             cls._instance.is_fetching = {}
         return cls._instance
 
-    def get_channels(self, server_str: str) -> list[str] | None:
+    def get_channels(self, server_str: str) -> Optional[list[str]]:
         return self.cache.get(server_str)
 
-    def set_channels(self, server_str: str, channels: list[str] | None) -> None:
+    def set_channels(self, server_str: str, channels: Optional[list[str]]) -> None:
         self.cache[server_str] = channels
         self.is_fetching[server_str] = False
 
     def has_channels(self, server_str: str) -> bool:
         return server_str in self.cache and self.cache[server_str] is not None
+
 
 class NDSDataCache(QObject):
     signal_data = Signal(object)
@@ -54,8 +54,8 @@ class NDSDataCache(QObject):
         self.server: str = os.getenv("NDSSERVER", "localhost:31200")
         self.lookback: float = 30.0
         self.buffers: DataBufferDict = DataBufferDict(self.lookback)
-        self.thread: NDSThread | None = None
-        self.sim_thread: SimulationThread | None = None
+        self.thread: Optional[NDSThread] = None
+        self.sim_thread: Optional[SimulationThread] = None
         self.audio_threads: dict[str, AudioThread] = {}
 
     def set_channels(self, channels: Iterable[str]) -> None:

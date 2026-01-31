@@ -94,7 +94,7 @@ class TestSpectrogramMatrixExtra:
         # Values preserved (exact match)
         assert np.array_equal(loaded.view(np.ndarray), sgm_basic.view(np.ndarray))
 
-        # TODO: xindex/frequencies are not preserved in pickle round-trip
+        # Note: xindex/frequencies are not preserved in pickle round-trip.
         # This is a known limitation of numpy ndarray subclass pickling.
         # When __reduce_ex__ is not overridden, xindex becomes None after unpickling.
         # For now, we only assert that the loaded object is valid.

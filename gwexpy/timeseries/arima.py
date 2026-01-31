@@ -33,7 +33,7 @@ except ImportError:
     PMDARIMA_AVAILABLE = False
 
 try:
-    from typing import TYPE_CHECKING
+    from typing import TYPE_CHECKING, Optional
 
     if TYPE_CHECKING:
         from .timeseries import TimeSeries
@@ -269,14 +269,14 @@ def fit_arima(
     timeseries: TimeSeries,
     order: tuple[int, int, int] = (1, 0, 0),
     *,
-    seasonal_order: tuple[int, int, int, int] | None = None,
-    trend: str | None = "c",
+    seasonal_order: Optional[tuple[int, int, int, int]] = None,
+    trend: Optional[str] = "c",
     auto: bool = False,
-    auto_kwargs: dict | None = None,
-    method: str | None = None,
-    method_kwargs: dict | None = None,
+    auto_kwargs: Optional[dict] = None,
+    method: Optional[str] = None,
+    method_kwargs: Optional[dict] = None,
     nan_policy: str = "raise",
-    impute_kwargs: dict | None = None,
+    impute_kwargs: Optional[dict] = None,
     **kwargs,
 ) -> ArimaResult:
     """

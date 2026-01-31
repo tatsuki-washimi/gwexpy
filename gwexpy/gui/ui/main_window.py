@@ -338,8 +338,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # We can append "Exictation" and "Sum:..." implicitly if we want persistent selection.
         # But if we clear the combo, we lose the selection if it's not in the list.
         # Let's add 'Excitation' to the list if the module is theoretically available.
-        # if "Excitation" not in active_channels:
-        #      active_channels.append("Excitation")
 
         # Feature: Add channels defined in Excitation Tab (active ones) to the list
         if hasattr(self, "exc_controls") and "panels" in self.exc_controls:
@@ -1253,7 +1251,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     data.write(filename, format="gwf")
                 elif fmt == "csv":
                     data.write(filename, format="csv")
-                break  # Export first item for now (TODO: export all)
+                break  # Export first item for now; multi-item export not implemented.
 
             QtWidgets.QMessageBox.information(
                 self, "Export", f"Data exported to:\n{filename}"

@@ -91,8 +91,6 @@ class SpectralAccumulator:
         logger.info(
             f"SpectralAccumulator configured. FFT={self.fftlength}s, Stride={self.stride}s"
         )
-        # for i, t in enumerate(self.active_traces):
-        #     print(f"DEBUG: Trace {i} Config: Active={t.get('active')}, ChA='{t.get('ch_a')}', ChB='{t.get('ch_b')}'")
 
     def add_chunk(self, data_dict):
         """
@@ -281,7 +279,6 @@ class SpectralAccumulator:
             ch_b = trace.get("ch_b")
 
             if not ch_a or ch_a not in segment_map:
-                # if ch_a: print(f"DEBUG: Trace {i} ch_a '{ch_a}' NOT in segment_map")
                 continue
 
             # Keys for state storage (unique per channel)
@@ -387,12 +384,6 @@ class SpectralAccumulator:
 
     def _accumulate(self, key, new_val, count, avg_type):
         current_val = self.state.get(key)
-
-        # Debug accumulation (checking for NaNs or Zeros)
-        # if new_val is not None and key.startswith("K1:"):
-        #    v = new_val.value
-        #    if v.max() == 0:
-        #        print(f"DEBUG: Accumulate {key} - Incoming ZERO PSD")
 
         if current_val is None:
             self.state[key] = new_val
