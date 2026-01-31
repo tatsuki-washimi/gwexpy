@@ -20,15 +20,18 @@
 
 - **問題**: `Plot.show()` を実行すると、内部で `plt.close(self)` が呼ばれるため、その直後に `savefig()` 等の操作を行おうとするとエラーになる。
 - **検証結果**: `verify_deep_compatibility.py` にて ~~FAIL~~ → **PASS**
-- **原因**: Jupyter Notebook での二重描画を防ぐための処置（`plt.close(self)`）が無条件に適用されていた。
+- **原因**:
+  1. Jupyter Notebook での二重描画を防ぐための処置（`plt.close(self)`）が無条件に適用されていた
+  2. `plt.show()` がブロッキング呼び出しのため、ウィンドウを閉じるまで戻らない
 - **修正内容**:
   - `gwexpy/plot/plot.py` の `show()` メソッドに `close` パラメータを追加
-  - デフォルト `close=True`（既存動作を維持）
-  - `close=False` を指定すると、表示後も `savefig()` 等が可能
+  - `gwexpy/plot/plot.py` の `show()` メソッドに `block` パラメータを追加
+  - デフォルト `close=True, block=None`（既存動作を維持）
+  - `close=False, block=False` を指定すると、表示後も `savefig()` 等が可能
 - **使用例**:
   ```python
   plot = Plot(data)
-  plot.show(close=False)  # リソースを保持
+  plot.show(close=False, block=False)  # ノンブロッキング、リソース保持
   plot.savefig("output.png")  # これが動作する
   ```
 - **テスト**: `tests/test_compatibility_fixes.py::TestPlotShowClose`

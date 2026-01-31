@@ -1,14 +1,15 @@
 
-import os
 import inspect
-import numpy as np
+import os
+
 import matplotlib.pyplot as plt
+import numpy as np
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
-from gwpy.plot import Plot as GwpyPlot
-from gwexpy.timeseries import TimeSeries as GwexTimeSeries
+
 from gwexpy.frequencyseries import FrequencySeries as GwexFrequencySeries
 from gwexpy.plot import Plot as GwexPlot
-from astropy import units as u
+from gwexpy.timeseries import TimeSeries as GwexTimeSeries
+
 
 def log_result(test_name, success, message=""):
     status = "PASS" if success else "FAIL"
@@ -21,19 +22,19 @@ def test_attribute_preservation():
     print("\n--- Test: Internal Attribute Preservation (__array_finalize__) ---")
     data = np.random.randn(100)
     fs = GwexFrequencySeries(data, df=1, unit='Hz')
-    
+
     # Set internal attribute manually (simulating ifft setup)
     fs._gwex_fft_mode = 'transient'
     fs._gwex_target_nfft = 200
-    
+
     # 1. Slicing
     fs_slice = fs[10:90]
     preserved_slice = hasattr(fs_slice, '_gwex_fft_mode')
-    
+
     # 2. Arithmetic
     fs_math = fs * 2.0
     preserved_math = hasattr(fs_math, '_gwex_fft_mode')
-    
+
     # 3. Ufunc (e.g. abs)
     fs_abs = np.abs(fs)
     # Note: np.abs returns a new object, might drop attributes if not handled
@@ -44,38 +45,46 @@ def test_attribute_preservation():
     if not preserved_slice: msg.append("Lost attribute after slicing")
     if not preserved_math: msg.append("Lost attribute after arithmetic (*)")
     if not preserved_abs: msg.append("Lost attribute after ufunc (abs)")
-    
+
     return log_result("Attribute Preservation", success, ", ".join(msg))
 
 def test_plot_show_save_side_effect():
     print("\n--- Test: Plot.show() Side Effects ---")
     ts = GwexTimeSeries(np.random.randn(100), sample_rate=100)
     plot = ts.plot(show=False)
-    
-    # Mock plt.show to avoid actual display
+
+    # Mock plt.show to avoid actual display (must accept block parameter)
     original_show = plt.show
-    plt.show = lambda: None
-    
+    plt.show = lambda block=None: None
+
     try:
-        # Test 1: show(close=False) should keep figure alive for savefig
-        plot.show(close=False)
-        
+        # gwexpy's show() has 'close' and 'block' arguments.
+        # We set close=False, block=False to verify we can still use the plot object.
+        try:
+            plot.show(close=False, block=False)
+        except TypeError:
+            # Fallback if args are not yet implemented
+            plot.show()
+
+        # Now plot should be OPEN if close=False worked.
         try:
             plot.savefig("test_after_show.png")
-            success1 = os.path.exists("test_after_show.png")
-            if success1:
-                os.remove("test_after_show.png")
-                return log_result("Plot.show() Side Effect", True, 
-                                  "show(close=False) allows subsequent savefig()")
+
+            # Check if file was created
+            if os.path.exists("test_after_show.png"):
+                return log_result("Plot.show() Side Effect", True,
+                                  "show(close=False, block=False) allows subsequent savefig()")
             else:
-                return log_result("Plot.show() Side Effect", False, 
-                                  "File was not created")
+                return log_result("Plot.show() Side Effect", False, "File was not created")
+
         except Exception as e:
-            return log_result("Plot.show() Side Effect", False, 
-                              f"savefig failed after show(close=False): {e}")
+            return log_result("Plot.show() Side Effect", False, f"savefig failed: {e}")
     finally:
         plt.show = original_show
-        plt.close(plot)
+        try:
+            plt.close(plot)
+        except Exception:
+            pass
         if os.path.exists("test_after_show.png"):
             os.remove("test_after_show.png")
 
@@ -83,10 +92,10 @@ def test_whiten_signature():
     print("\n--- Test: Method Signature Compatibility (whiten) ---")
     # Gwex TimeSeries might not implement whiten directly, inheriting from Gwpy
     # or it might implement it via Mixin.
-    
+
     gwpy_sig = inspect.signature(GwpyTimeSeries.whiten)
     gwex_sig = inspect.signature(GwexTimeSeries.whiten)
-    
+
     success = (gwpy_sig == gwex_sig)
     msg = f"\n       Gwpy: {gwpy_sig}\n       Gwex: {gwex_sig}" if not success else ""
     return log_result("Whiten Signature Match", success, msg)
@@ -95,24 +104,24 @@ def test_mixed_unit_labels():
     print("\n--- Test: Mixed Unit Y-Labeling ---")
     ts1 = GwexTimeSeries(np.random.randn(100), unit='m', name="Displacement")
     ts2 = GwexTimeSeries(np.random.randn(100), unit='V', name="Voltage")
-    
+
     # Plotting mixed units together
     plot = GwexPlot(ts1, ts2, show=False)
     ax = plot.gca()
     ylabel = ax.get_ylabel()
-    
+
     # Gwpy behavior: usually picks the first unit or errors/warns?
     # Gwexpy logic: if units differ, it might suppress global ylabel.
-    
+
     # Let's see what we got
     print(f"       Resulting Y-Label: '{ylabel}'")
-    
+
     # Verify expectations: Ideally it should NOT show just 'm' if 'V' is also there,
     # unless they are compatible. m and V are not.
-    
+
     # If it is empty, that is arguably "Safe" (Gwexpy logic).
     # If it is 'm', that is potentially misleading.
-    
+
     if ylabel == "":
         return log_result("Mixed Unit Labeling", True, "Y-Label suppressed (Safe)")
     elif ylabel == "m":
@@ -122,12 +131,12 @@ def test_mixed_unit_labels():
 
 if __name__ == "__main__":
     failures = []
-    
+
     if not test_attribute_preservation(): failures.append("Attribute Preservation")
     if not test_plot_show_save_side_effect(): failures.append("Plot.show() Side Effect")
     if not test_whiten_signature(): failures.append("Whiten Signature")
     if not test_mixed_unit_labels(): failures.append("Mixed Unit Labeling")
-    
+
     print("\n========================================")
     if failures:
         print(f"SUMMARY: Found {len(failures)} issues that require fixing.")

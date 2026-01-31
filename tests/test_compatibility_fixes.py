@@ -91,7 +91,7 @@ class TestArrayFinalizeFrequencySeries:
 
 
 class TestPlotShowClose:
-    """Test Plot.show() close parameter."""
+    """Test Plot.show() close and block parameters."""
 
     def test_show_close_false_allows_savefig(self):
         """show(close=False) should allow subsequent savefig()."""
@@ -118,8 +118,8 @@ class TestPlotShowClose:
 
         plt.close(plot)
 
-    def test_show_signature_has_close_parameter(self):
-        """Verify show() method has close parameter."""
+    def test_show_signature_has_close_and_block_parameters(self):
+        """Verify show() method has close and block parameters."""
         import inspect
 
         from gwexpy.plot import Plot
@@ -127,9 +127,13 @@ class TestPlotShowClose:
         sig = inspect.signature(Plot.show)
         params = list(sig.parameters.keys())
 
+        # Check close parameter
         assert "close" in params
-        # Default should be True
         assert sig.parameters["close"].default is True
+
+        # Check block parameter
+        assert "block" in params
+        assert sig.parameters["block"].default is None
 
 
 class TestPlotReprPng:
