@@ -280,7 +280,6 @@ class TimePlaneTransform:
             )
 
         # 2. Slice (nearest case handled above)
-        # return self.plane(0, idx)
 
     def at_sigma(self, sigma):
         """

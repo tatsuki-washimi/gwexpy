@@ -54,20 +54,6 @@ def test_fft_linear_nfft_selection():
     assert np.isclose(fs.df.value, expected_df)
 
 
-# def test_fft_linear_too_short_raises():
-#    """
-#    If nfft provided is shorter than linear convolution requirement,
-#    implementation allows it (aliasing occurs).
-#    So we skip this test or update it to check for warning if implemented.
-#    """
-#    pass
-#    # data = np.ones(4)
-#    # ts = TimeSeries(data, sample_rate=4.0)
-#
-#    # with pytest.raises(ValueError, match="nfft.*must be >="):
-#    #    ts.fft(mode="transient", other_length=ts.size, nfft=ts.size)
-
-
 def test_fft_reflect_padding_smoke():
     data = np.arange(16, dtype=float)
     ts = TimeSeries(data, sample_rate=64.0)

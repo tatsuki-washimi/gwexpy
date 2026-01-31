@@ -8,7 +8,7 @@ version = "0.1.0b1"
 description = "A comprehensive Python package for Gravitational Wave experimental data analysis, extending GWpy with strict unit handling and advanced spectral methods."
 readme = "README.md"
 requires-python = ">=3.9"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Tatsuki Washimi", email = "tatsuki.washimi@example.com"}
 ]
@@ -66,6 +66,7 @@ dev = [
   "pytest",
   "pytest-cov",
   "pytest-qt",
+  "nbmake",
   "freezegun",
   "requests-mock",
   "ruff",
@@ -79,6 +80,7 @@ gw = [
   "pycbc",
   "python-framel",
   "ldas-tools-framecpp",
+  "nds2-client",
   "gwinc",
   "dttxml",
   "nptdms"
@@ -112,7 +114,7 @@ interop = [
   "xarray", "quantities", "simpeg"
 ]
 control = ["control"]
-gui = ["PyQt5", "pyqtgraph", "qtpy", "sounddevice"]
+gui = ["PyQt5", "pyqtgraph", "qtpy", "sounddevice", "nds2-client"]
 plot = ["pygmt"]
 analysis = [
     "PyEMD",
@@ -122,6 +124,7 @@ analysis = [
 ]
 all = [
     "pycbc", "python-framel", "ldas-tools-framecpp", "gwinc", "dttxml", "nptdms",
+    "nds2-client",
     "polars", "scikit-learn", "statsmodels", "pmdarima", "mictools", "minepy", "dcor", "hurst", "hurst-exponent", "exp-hurst", "bottleneck",
     "iminuit", "emcee", "corner",
     "specutils", "pyspeckit",
@@ -149,6 +152,15 @@ exclude = ["typings*", "tests*", "docs*", "examples*"]
 [tool.ruff]
 line-length = 88
 target-version = "py39"
+exclude = [
+  ".conda-envs",
+  ".conda-pkgs",
+  ".mypy_cache",
+  ".pytest_cache",
+  "dist",
+  "gwexpy.egg-info",
+  "htmlcov",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "UP"]
@@ -160,6 +172,10 @@ ignore = [
     "E702",
     # Allow long lines (many scientific expressions are naturally long)
     "E501",
+    # Python 3.9 compatibility: `X | Y` / `X | None` syntax is not supported.
+    # Keep `typing.Union` / `typing.Optional` in runtime annotations where needed.
+    "UP007",
+    "UP045",
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -226,4 +242,3 @@ module = [
   "gwexpy.types.series_matrix_validation_mixin",
 ]
 ignore_errors = false
-

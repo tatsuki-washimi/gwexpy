@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Literal, Union, cast
+from typing import TYPE_CHECKING, Any, Literal, Optional, Union, cast
 
 try:
     from typing import TypeAlias
@@ -67,7 +67,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
 
     def hilbert(
         self,
-        pad: NumberLike | u.Quantity = 0,
+        pad: Union[NumberLike, u.Quantity] = 0,
         pad_mode: str = "reflect",
         pad_value: float = 0.0,
         nan_policy: Literal["raise", "propagate"] = "raise",
@@ -333,7 +333,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
     def instantaneous_frequency(
         self,
         unwrap: bool = True,
-        smooth: NumberLike | u.Quantity | None = None,
+        smooth: Optional[Union[NumberLike, u.Quantity]] = None,
         **kwargs: Any,
     ) -> TimeSeriesSignalMixin:
         """
@@ -442,10 +442,10 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         self,
         *,
         phase: PhaseLike = None,
-        f0: NumberLike | u.Quantity | None = None,
-        fdot: NumberLike | u.Quantity = 0.0,
-        fddot: NumberLike | u.Quantity = 0.0,
-        phase_epoch: NumberLike | None = None,
+        f0: Optional[Union[NumberLike, u.Quantity]] = None,
+        fdot: Union[NumberLike, u.Quantity] = 0.0,
+        fddot: Union[NumberLike, u.Quantity] = 0.0,
+        phase_epoch: Optional[NumberLike] = None,
         phase0: float = 0.0,
         prefer_dt: bool = True,
     ) -> NDArray[np.floating]:
@@ -520,10 +520,10 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         self,
         *,
         phase: PhaseLike = None,
-        f0: NumberLike | u.Quantity | None = None,
-        fdot: NumberLike | u.Quantity = 0.0,
-        fddot: NumberLike | u.Quantity = 0.0,
-        phase_epoch: NumberLike | None = None,
+        f0: Optional[Union[NumberLike, u.Quantity]] = None,
+        fdot: Union[NumberLike, u.Quantity] = 0.0,
+        fddot: Union[NumberLike, u.Quantity] = 0.0,
+        phase_epoch: Optional[NumberLike] = None,
         phase0: float = 0.0,
         singlesided: bool = False,
         copy: bool = True,
@@ -566,8 +566,10 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
 
     def heterodyne(
         self,
-        phase: Sequence[NumberLike] | NDArray[np.floating] | NDArray[np.complex128],
-        stride: NumberLike | u.Quantity = 1.0,
+        phase: Union[
+            Sequence[NumberLike], NDArray[np.floating], NDArray[np.complex128]
+        ],
+        stride: Union[NumberLike, u.Quantity] = 1.0,
         *,
         singlesided: bool = False,
     ) -> TimeSeriesSignalMixin:
@@ -671,8 +673,8 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
 
     def demodulate(
         self,
-        f: NumberLike | u.Quantity,
-        stride: NumberLike | u.Quantity = 1.0,
+        f: Union[NumberLike, u.Quantity],
+        stride: Union[NumberLike, u.Quantity] = 1.0,
         phase: float = 0.0,
         deg: bool = True,
         exp: bool = False,
@@ -759,15 +761,15 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         self,
         *,
         phase: PhaseLike = None,
-        f0: NumberLike | u.Quantity | None = None,
-        fdot: NumberLike | u.Quantity = 0.0,
-        fddot: NumberLike | u.Quantity = 0.0,
-        phase_epoch: NumberLike | None = None,
+        f0: Optional[Union[NumberLike, u.Quantity]] = None,
+        fdot: Union[NumberLike, u.Quantity] = 0.0,
+        fddot: Union[NumberLike, u.Quantity] = 0.0,
+        phase_epoch: Optional[NumberLike] = None,
         phase0: float = 0.0,
-        lowpass: float | u.Quantity | None = None,
-        lowpass_kwargs: dict[str, Any] | None = None,
-        output_rate: NumberLike | u.Quantity | None = None,
-        resample_kwargs: dict[str, Any] | None = None,
+        lowpass: Optional[Union[float, u.Quantity]] = None,
+        lowpass_kwargs: Optional[dict[str, Any]] = None,
+        output_rate: Optional[Union[NumberLike, u.Quantity]] = None,
+        resample_kwargs: Optional[dict[str, Any]] = None,
         singlesided: bool = False,
     ) -> TimeSeriesSignalMixin:
         r"""
@@ -976,15 +978,15 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
 
     def lock_in(
         self,
-        f0: NumberLike | u.Quantity | None = None,
+        f0: Optional[Union[NumberLike, u.Quantity]] = None,
         *,
         phase: PhaseLike = None,
-        fdot: NumberLike | u.Quantity = 0.0,
-        fddot: NumberLike | u.Quantity = 0.0,
-        phase_epoch: NumberLike | None = None,
+        fdot: Union[NumberLike, u.Quantity] = 0.0,
+        fddot: Union[NumberLike, u.Quantity] = 0.0,
+        phase_epoch: Optional[NumberLike] = None,
         phase0: float = 0.0,
-        stride: NumberLike | u.Quantity | None = None,
-        bandwidth: NumberLike | u.Quantity | None = None,
+        stride: Optional[Union[NumberLike, u.Quantity]] = None,
+        bandwidth: Optional[Union[NumberLike, u.Quantity]] = None,
         singlesided: bool = True,
         output: Literal["complex", "amp_phase", "iq"] = "amp_phase",
         deg: bool = True,
@@ -1210,14 +1212,16 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         self,
         other: TimeSeries,
         mode: Literal["steady", "transient"] = "steady",
-        fftlength: NumberLike | None = None,
-        overlap: NumberLike | None = None,
-        window: str | ArrayLike | None = "hann",
+        fftlength: Optional[NumberLike] = None,
+        overlap: Optional[NumberLike] = None,
+        window: Optional[Union[str, ArrayLike]] = "hann",
         average: str = "mean",
         *,
-        method: Literal["gwpy", "csd_psd", "fft", "auto"] | None = None,  # Deprecated
-        fft_kwargs: dict[str, Any] | None = None,
-        downsample: NumberLike | None = None,
+        method: Optional[
+            Literal["gwpy", "csd_psd", "fft", "auto"]
+        ] = None,  # Deprecated
+        fft_kwargs: Optional[dict[str, Any]] = None,
+        downsample: Optional[NumberLike] = None,
         align: Literal["intersection", "none"] = "intersection",
         **kwargs: Any,
     ) -> Any:
@@ -1471,8 +1475,8 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         self,
         other: Any,
         *,
-        maxlag: float | None = None,
-        normalize: str | None = None,
+        maxlag: Optional[float] = None,
+        normalize: Optional[str] = None,
         mode: str = "full",
         demean: bool = True,
     ) -> TimeSeriesSignalMixin:

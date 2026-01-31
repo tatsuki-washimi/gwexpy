@@ -8,7 +8,7 @@ Utility functions for time series axis validation and extraction.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Any, TypedDict
+from typing import Any, Optional, TypedDict
 
 import numpy as np
 from astropy import units as u
@@ -28,8 +28,8 @@ __all__ = [
 class AxisInfo(TypedDict):
     regular: bool
     dt: Any
-    t0: u.Quantity | None
-    n: int | None
+    t0: Optional[u.Quantity]
+    n: Optional[int]
     times: Any
 
 
@@ -37,11 +37,11 @@ class FreqAxisInfo(TypedDict):
     regular: bool
     df: Any
     f0: Any
-    n: int | None
+    n: Optional[int]
     freqs: Any
 
 
-def _coerce_t0_gps(t0: Any) -> u.Quantity | None:
+def _coerce_t0_gps(t0: Any) -> Optional[u.Quantity]:
     """
     Normalize t0 to LIGO GPS seconds (Quantity, u.s).
 
@@ -141,7 +141,7 @@ def _extract_axis_info(ts: Any) -> AxisInfo:
 
 def _validate_common_axis(
     axis_infos: Sequence[AxisInfo], method_name: str
-) -> tuple[Any | None, int]:
+) -> tuple[Optional[Any], int]:
     """
     Validate that a list of axis infos share a common axis.
 
@@ -270,7 +270,7 @@ def _extract_freq_axis_info(fs: Any) -> FreqAxisInfo:
 
 def _validate_common_frequency_axis(
     axis_infos: Sequence[FreqAxisInfo], method_name: str
-) -> tuple[Any | None, Any | None, Any | None, int]:
+) -> tuple[Optional[Any], Optional[Any], Optional[Any], int]:
     """
     Validate common frequency axis across FrequencySeries results.
 
@@ -341,7 +341,7 @@ def _validate_common_frequency_axis(
     return ref_freqs, None, None, len(ref_vals)
 
 
-def _validate_common_epoch(epochs: Sequence[Any], method_name: str) -> Any | None:
+def _validate_common_epoch(epochs: Sequence[Any], method_name: str) -> Optional[Any]:
     """
     Validate that all epochs are identical.
 

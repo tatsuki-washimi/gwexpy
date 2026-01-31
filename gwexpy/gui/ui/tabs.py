@@ -259,7 +259,6 @@ def create_measurement_tab():
     # Default SIM channels Removed
     # channel_states initialized empty
     channel_states = [{"active": False, "name": ""} for _ in range(96)]
-    # for i, name in enumerate(default_sim): channel_states[i]['name'] = name # Removed
 
     # Callback for external updates (Main Window)
     meas_callback: Optional[Callable[[], Any]] = None

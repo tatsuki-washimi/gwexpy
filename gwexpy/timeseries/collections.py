@@ -757,15 +757,6 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             ts.prepend(*args, **kwargs)
         return self
 
-    # def update(self, *args, **kwargs) -> "TimeSeriesDict":
-    #     """
-    #     Update each TimeSeries in the dict (in-place).
-    #     Returns self.
-    #     """
-    #     for ts in self.values():
-    #         ts.update(*args, **kwargs)
-    #     return self
-
     def shift(self, *args, **kwargs) -> TimeSeriesDict:
         """
         Shift each TimeSeries in the dict.
@@ -1431,33 +1422,6 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         for ts in self:
             list.append(new_list, ts.crop(start=start, end=end, copy=copy))
         return new_list
-
-    # def append(self, *args, **kwargs) -> "TimeSeriesList":
-    #     """
-    #     Append to each TimeSeries in the list (in-place).
-    #     Returns self.
-    #     """
-    #     for ts in self:
-    #         ts.append(*args, **kwargs)
-    #     return self
-
-    # def prepend(self, *args, **kwargs) -> "TimeSeriesList":
-    #     """
-    #     Prepend to each TimeSeries in the list (in-place).
-    #     Returns self.
-    #     """
-    #     for ts in self:
-    #         ts.prepend(*args, **kwargs)
-    #     return self
-
-    # def update(self, *args, **kwargs) -> "TimeSeriesList":
-    #     """
-    #     Update each TimeSeries in the list (in-place).
-    #     Returns self.
-    #     """
-    #     for ts in self:
-    #         ts.update(*args, **kwargs)
-    #     return self
 
     def shift(self, *args, **kwargs) -> TimeSeriesList:
         """

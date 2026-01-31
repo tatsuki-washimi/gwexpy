@@ -20,7 +20,6 @@ def test_spectrogram_quantities():
     assert q.units == pq.V
     assert np.allclose(q.magnitude, data)
 
-    # from_quantities
     spec_new = Spectrogram.from_quantities(q, times=times, frequencies=freqs)
     assert isinstance(spec_new, Spectrogram)
     assert spec_new.unit == u.V

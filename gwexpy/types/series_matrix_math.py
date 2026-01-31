@@ -433,3 +433,46 @@ class SeriesMatrixMathMixin:
     def abs(self):
         """Return the absolute value of the matrix element-wise."""
         return np.abs(self)  # type: ignore[call-overload]
+
+    def angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any):
+        """
+        Return the element-wise complex phase angle of the matrix.
+
+        Notes
+        -----
+        - The phase is computed from the stored numeric values (not including units).
+        - Output units are radians by default, or degrees if ``deg=True``.
+        - If ``unwrap=True``, phase unwrapping is applied along the sample axis (axis=2).
+        """
+        if kwargs:
+            raise TypeError(f"Unexpected keyword arguments: {list(kwargs)}")
+
+        # Keep typing loose here: NumPy stubs don't always preserve ndarray-ness through
+        # angle/unwrap for our 3D (row, col, sample) arrays.
+        vals: Any = np.angle(self._value)
+        if unwrap:
+            vals = np.unwrap(vals, axis=2)
+
+        unit = u.deg if deg else u.rad
+        if deg:
+            vals = np.rad2deg(vals)
+
+        meta_arr = np.empty(self.meta.shape, dtype=object)
+        for i in range(self.meta.shape[0]):
+            for j in range(self.meta.shape[1]):
+                base_meta = self.meta[i, j]
+                meta_arr[i, j] = MetaData(
+                    unit=unit, name=base_meta.name, channel=base_meta.channel
+                )
+
+        matrix_cls = cast(type[Any], self.__class__)
+        return matrix_cls(
+            vals,
+            xindex=self.xindex,
+            rows=self.rows,
+            cols=self.cols,
+            meta=MetaDataMatrix(meta_arr),
+            name=f"{self.name}.angle" if getattr(self, "name", "") else "",
+            epoch=getattr(self, "epoch", 0.0),
+            attrs=getattr(self, "attrs", {}),
+        )

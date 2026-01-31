@@ -8,7 +8,7 @@ combining bootstrap estimation, GLS fitting, and MCMC in a single API.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Union
 
 import numpy as np
 
@@ -24,20 +24,20 @@ __all__ = ["fit_bootstrap_spectrum"]
 
 
 def fit_bootstrap_spectrum(
-    data_or_spectrogram: TimeSeries | Spectrogram,
+    data_or_spectrogram: Union[TimeSeries, Spectrogram],
     model_fn: Callable,
-    freq_range: tuple[float, float] | None = None,
+    freq_range: Optional[tuple[float, float]] = None,
     method: str = "median",
-    rebin_width: float | None = None,
-    block_size: int | None = None,
+    rebin_width: Optional[float] = None,
+    block_size: Optional[int] = None,
     ci: float = 0.68,
     window: str = "hann",
     nperseg: int = 16,
-    noverlap: int | None = None,
+    noverlap: Optional[int] = None,
     n_boot: int = 1000,
-    initial_params: dict[str, float] | None = None,
-    bounds: dict[str, tuple[float, float]] | None = None,
-    fixed: list | None = None,
+    initial_params: Optional[dict[str, float]] = None,
+    bounds: Optional[dict[str, tuple[float, float]]] = None,
+    fixed: Optional[list] = None,
     run_mcmc: bool = False,
     mcmc_walkers: int = 32,
     mcmc_steps: int = 5000,

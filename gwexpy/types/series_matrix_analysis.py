@@ -194,9 +194,7 @@ class SeriesMatrixAnalysisMixin:
                 return target
             # If shape differs, inplace fails for ndarray subclass usually?
             # SeriesMatrixAnalysisMixin implies it might fail or resize?
-            # The original code:
-            # if self.shape != out_data.shape: self.resize(...)
-            # But resize is destructive.
+            # The original code resized on shape mismatch, but resize is destructive.
             # Here we just return out_full if not same shape?
             pass
 
