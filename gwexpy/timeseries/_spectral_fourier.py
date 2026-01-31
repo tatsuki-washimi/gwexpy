@@ -243,6 +243,51 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         return fs
 
     def rfft(self, *args: Any, **kwargs: Any) -> FrequencySeries:
+        """Real-valued Fast Fourier Transform.
+
+        Compute the one-dimensional discrete Fourier Transform for real input.
+        This method delegates to GWpy's TimeSeries.rfft() and returns a
+        FrequencySeries with Hermitian symmetry.
+
+        Parameters
+        ----------
+        *args : tuple
+            Positional arguments passed to `gwpy.timeseries.TimeSeries.rfft`
+        **kwargs : dict
+            Keyword arguments passed to `gwpy.timeseries.TimeSeries.rfft`
+
+        Returns
+        -------
+        FrequencySeries
+            The FFT of the input, with Hermitian symmetry (only positive
+            frequencies). The output length is ``len(self) // 2 + 1``.
+
+        Raises
+        ------
+        ValueError
+            If the TimeSeries is not regularly sampled.
+
+        See Also
+        --------
+        numpy.fft.rfft : NumPy's real FFT function
+        TimeSeries.fft : Standard FFT with complex output (both pos/neg freqs)
+        FrequencySeries.ifft : Inverse FFT
+        gwpy.timeseries.TimeSeries.rfft : GWpy's rfft implementation
+
+        Notes
+        -----
+        For real-valued input, the FFT is Hermitian-symmetric, so only the
+        positive frequencies are stored to save memory. The output has length
+        ``n//2 + 1`` for input length ``n``.
+
+        Examples
+        --------
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> ts = TimeSeries([1.0, 2.0, 3.0, 4.0], sample_rate=1.0)
+        >>> fft = ts.rfft()
+        >>> print(fft.size)
+        3
+        """
         self._check_regular("rfft")
         return self._super_ts().rfft(*args, **kwargs)
 
