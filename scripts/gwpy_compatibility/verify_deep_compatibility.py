@@ -58,25 +58,25 @@ def test_plot_show_save_side_effect():
     plt.show = lambda block=None: None
 
     try:
-        # gwexpy's show() has 'close' and 'block' arguments.
-        # We set close=False, block=False to verify we can still use the plot object.
-        try:
-            plot.show(close=False, block=False)
-        except TypeError:
-            # Fallback if args are not yet implemented
-            plot.show()
+        # gwexpy's show() now supports 'close' and 'block' arguments.
+        # We set close=False and block=False to verify we can still use the plot object.
+        plot.show(close=False, block=False)
 
-        # Now plot should be OPEN if close=False worked.
+        # Now plot should be OPEN.
         try:
             plot.savefig("test_after_show.png")
-
-            # Check if file was created
-            if os.path.exists("test_after_show.png"):
-                return log_result("Plot.show() Side Effect", True,
-                                  "show(close=False, block=False) allows subsequent savefig()")
+            
+            # Use plt.fignum_exists to verify the figure is still managed by pyplot
+            # plot.number should exist if it's a standard Figure
+            is_active = False
+            if hasattr(plot, 'number'):
+                is_active = plt.fignum_exists(plot.number)
+            
+            if not is_active:
+                return log_result("Plot.show() Side Effect", False, "Figure was closed or detached despite close=False")
             else:
-                return log_result("Plot.show() Side Effect", False, "File was not created")
-
+                 return log_result("Plot.show() Side Effect", True, "Figure remained active and savefig worked")
+                 
         except Exception as e:
             return log_result("Plot.show() Side Effect", False, f"savefig failed: {e}")
     finally:
