@@ -71,6 +71,35 @@ class FrequencySeries(
 
         return super().__new__(cls, *args, **kwargs)
 
+    def __array_finalize__(self, obj: Any) -> None:
+        """Propagate gwexpy-specific attributes through NumPy operations.
+
+        This ensures that internal attributes (prefixed with `_gwex_`) are
+        preserved when slicing, arithmetic operations, or other NumPy
+        array manipulations create new instances.
+
+        Parameters
+        ----------
+        obj : object or None
+            The object from which this instance was created. None if called
+            from __new__.
+        """
+        super().__array_finalize__(obj)
+        if obj is None:
+            return
+
+        # Copy gwexpy internal attributes for FFT round-trip support
+        _gwex_attrs = (
+            "_gwex_fft_mode",
+            "_gwex_target_nfft",
+            "_gwex_pad_left",
+            "_gwex_pad_right",
+            "_gwex_original_n",
+        )
+        for attr in _gwex_attrs:
+            if hasattr(obj, attr):
+                setattr(self, attr, getattr(obj, attr))
+
     # --- Phase and Angle ---
 
     def phase(self, unwrap: bool = False) -> FrequencySeries:
