@@ -3,6 +3,9 @@
 
 簡単な時系列データの作成と解析を行います。
 
+.. note::
+   より詳しい学習パスは :doc:`getting_started` を参照してください。
+
 .. code-block:: python
 
    import numpy as np
