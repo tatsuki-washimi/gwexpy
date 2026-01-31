@@ -120,6 +120,23 @@ class TimeSeries(
                 kwargs["epoch"] = _coerce_t0_gps(kwargs["epoch"])
         return super().__new__(cls, data, *args, **kwargs)
 
+    def __array_finalize__(self, obj: Any) -> None:
+        """
+        Finalize the array after creation (slicing, view casting).
+
+        Ensures that attributes starting with `_gwex_` are propagated
+        from the parent object to the new view/instance.
+        """
+        super().__array_finalize__(obj)
+        if obj is None:
+            return
+
+        # Propagate custom _gwex_ attributes
+        for key, val in getattr(obj, "__dict__", {}).items():
+            if key.startswith("_gwex_") and key not in self.__dict__:
+                self.__dict__[key] = val
+
+
     # ===============================
     # Override methods from _core.py
     # (These take precedence over _LegacyTimeSeries versions)
