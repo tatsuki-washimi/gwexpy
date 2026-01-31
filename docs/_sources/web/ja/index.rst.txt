@@ -11,6 +11,8 @@ GWexpy は GWpy を拡張し、時系列および周波数系列のための追�
 
    guide/installation
    guide/quickstart
+   guide/getting_started
+   guide/scalarfield_slicing
    guide/tutorials/index
    guide/gwexpy_for_gwpy_users_ja
 

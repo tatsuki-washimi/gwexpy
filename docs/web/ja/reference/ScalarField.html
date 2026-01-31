@@ -48,6 +48,8 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../guide/installation.html">インストール</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/tutorials/index.html">チュートリアル</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">リファレンス</a><ul class="current">
@@ -191,57 +193,12 @@
 </section>
 </section>
 <section id="id5">
-<h2>スライス操作の詳細<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<h2>スライス操作<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> は、インデクシング操作を行っても常に4次元構造を維持します。これはNumPy配列やGWpyの標準的な挙動とは異なります。</p>
+<p>詳細は <a class="reference internal" href="../guide/scalarfield_slicing.html"><span class="std std-doc">スライス操作ガイド</span></a> を参照してください。</p>
+</section>
 <section id="id6">
-<h3>4次元構造の維持<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>は、インデクシング操作を行っても常に4次元構造を維持します。これはNumPy配列やGWpyの標準的な挙動とは異なります。</p>
-<p><strong>NumPy配列の場合</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(5, 5, 5)  # 次元が削減される</span>
-</pre></div>
-</div>
-<p><strong>ScalarFieldの場合</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)),</span> <span class="o">...</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(1, 5, 5, 5)  # 4次元を維持</span>
-</pre></div>
-</div>
-<p>この挙動により、以下のメリットがあります:</p>
-<ol class="arabic simple">
-<li><p><strong>軸メタデータの保持</strong>: <code class="docutils literal notranslate"><span class="pre">axis0_domain</span></code>, <code class="docutils literal notranslate"><span class="pre">space_domain</span></code>などが欠落しません</p></li>
-<li><p><strong>ブロードキャスト操作の一貫性</strong>: 常に4次元として扱えます</p></li>
-<li><p><strong>FFT操作の安全性</strong>: ドメイン情報を保持したままFFTを実行できます</p></li>
-</ol>
-</section>
-<section id="id7">
-<h3>次元を削減したい場合<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
-<p>明示的に次元を削減するには、<code class="docutils literal notranslate"><span class="pre">squeeze()</span></code>メソッドを使用します:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(5, 5, 5)  # 長さ1の軸が削除される</span>
-</pre></div>
-</div>
-</section>
-<section id="id8">
-<h3>スライスの例<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 時間方向の特定の時刻を抽出</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">snapshot</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span>  <span class="c1"># shape: (1, 5, 5, 5)</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 空間的な断面を抽出</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plane</span> <span class="o">=</span> <span class="n">field</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># shape: (n_time, 5, 5, 1)</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 特定の空間点の時系列</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">point_ts</span> <span class="o">=</span> <span class="n">field</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># shape: (n_time, 1, 1, 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># TimeSeries的に扱いたい場合はsqueeze</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">point_ts_1d</span> <span class="o">=</span> <span class="n">point_ts</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>  <span class="c1"># shape: (n_time,)</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="id9">
-<h2>コレクション<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<h2>コレクション<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
 <p>複数の ScalarField を扱う場合は <code class="docutils literal notranslate"><span class="pre">gwexpy.fields.FieldList</span></code> / <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> を利用してください。</p>
 </section>
 </section>

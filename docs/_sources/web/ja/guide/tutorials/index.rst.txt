@@ -3,6 +3,9 @@
 
 **GWexpy** の使い方を、対話的な例題（Jupyter Notebook）を通して学びます。
 
+.. tip::
+   初めての方は :doc:`../getting_started` から始めることを推奨します。
+
 .. note::
    これらのチュートリアルは Jupyter Notebook から生成されています。ローカルで実行するには、各ページ右上の "Edit on GitHub" から `.ipynb` を取得できます。
 

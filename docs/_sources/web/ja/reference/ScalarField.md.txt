@@ -58,57 +58,11 @@
 - `make_propagating_gaussian(...)`: 伝播するガウス波パケットのシミュレーション。
 - `make_sinusoidal_wave(...)`: 平面波のシミュレーション。
 
-## スライス操作の詳細
+## スライス操作
 
-### 4次元構造の維持
+`ScalarField` は、インデクシング操作を行っても常に4次元構造を維持します。これはNumPy配列やGWpyの標準的な挙動とは異なります。
 
-`ScalarField`は、インデクシング操作を行っても常に4次元構造を維持します。これはNumPy配列やGWpyの標準的な挙動とは異なります。
-
-**NumPy配列の場合**:
-```python
->>> import numpy as np
->>> arr = np.zeros((10, 5, 5, 5))
->>> arr[0].shape
-(5, 5, 5)  # 次元が削減される
-```
-
-**ScalarFieldの場合**:
-```python
->>> from gwexpy.fields import ScalarField
->>> field = ScalarField(np.zeros((10, 5, 5, 5)), ...)
->>> field[0].shape
-(1, 5, 5, 5)  # 4次元を維持
-```
-
-この挙動により、以下のメリットがあります:
-
-1. **軸メタデータの保持**: `axis0_domain`, `space_domain`などが欠落しません
-2. **ブロードキャスト操作の一貫性**: 常に4次元として扱えます
-3. **FFT操作の安全性**: ドメイン情報を保持したままFFTを実行できます
-
-### 次元を削減したい場合
-
-明示的に次元を削減するには、`squeeze()`メソッドを使用します:
-
-```python
->>> field[0].squeeze().shape
-(5, 5, 5)  # 長さ1の軸が削除される
-```
-
-### スライスの例
-
-```python
->>> # 時間方向の特定の時刻を抽出
->>> snapshot = field[100]  # shape: (1, 5, 5, 5)
-
->>> # 空間的な断面を抽出
->>> plane = field[:, :, :, 2]  # shape: (n_time, 5, 5, 1)
-
->>> # 特定の空間点の時系列
->>> point_ts = field[:, 2, 2, 2]  # shape: (n_time, 1, 1, 1)
->>> # TimeSeries的に扱いたい場合はsqueeze
->>> point_ts_1d = point_ts.squeeze()  # shape: (n_time,)
-```
+詳細は [スライス操作ガイド](../guide/scalarfield_slicing.rst) を参照してください。
 
 ## コレクション
 

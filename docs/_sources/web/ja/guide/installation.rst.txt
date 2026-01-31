@@ -67,10 +67,4 @@ GitHub から直接エクストラを指定してインストールすること�
    pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 
 .. note::
-   ``[gw]`` エクストラに含まれる ``nds2-client`` などの一部ライブラリは **PyPI では提供されていません**。
-   これらの機能を使用するには、まず **Conda** を用いて依存関係をインストールする必要があります:
-
-   .. code-block:: bash
-
-      conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
-      pip install ".[gw]"
+   ``[gw]`` エクストラを使用する場合は、上記の「基本インストール」セクションの important を参照してください。
