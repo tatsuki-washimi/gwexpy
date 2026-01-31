@@ -1,37 +1,40 @@
 Developers Guide
 ================
 
-Core Design & Contracts
------------------------
+Architecture & Design
+---------------------
 
 .. toctree::
    :maxdepth: 1
 
    contracts/numerical
-   gui/implementation_map
-   gui/reference_analysis
+   design/design_data/index
+   design/gui/implementation_map
+   design/gui/reference_analysis
 
-Development Guides
-------------------
+Compatibility & Verification
+----------------------------
 
 .. toctree::
    :maxdepth: 1
 
+   compatibility/gwpy/VERIFICATION_PLAN
+   compatibility/gwpy/gwpy_compatibility_report_20260131
+   compatibility/gwpy/COMPATIBILITY_CHECKLIST
+   compatibility/gwpy/FIX_REQUIRED_LIST
+
+Development Guidelines
+----------------------
+
+.. toctree::
+   :maxdepth: 1
+
+   guides/coding_standards
    guides/testing
    guides/gui_testing
 
-Technical Analysis
-------------------
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-
-   analysis/scalarfield_physics_review_20260120
-   analysis/dtt/*
-
-Plans
------
+Active Plans
+------------
 
 .. toctree::
    :maxdepth: 1
@@ -39,8 +42,8 @@ Plans
 
    plans/*
 
-Reports
--------
+Recent Reports
+--------------
 
 .. toctree::
    :maxdepth: 1
@@ -56,6 +59,8 @@ Archive (Hidden)
    :hidden:
    :glob:
 
+   analysis/*
    archive/plans/*
    archive/reports/*
    archive/reviews/*
+   archive/analysis/*
