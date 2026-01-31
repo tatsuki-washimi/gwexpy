@@ -38,24 +38,8 @@ nbsphinx_prolog = r"""
 """
 
 # Ignore nitpick errors for well-known external symbols to keep -n builds manageable.
-nitpick_ignore = [
-    ("py:class", "file-like"),
-]
-nitpick_ignore_regex = [
-    ("py:class", r"collections(\.abc)?\..+"),
-    ("py:class", r"numpy(\..+)?"),
-    ("py:class", r"matplotlib(\..+)?"),
-    ("py:class", r"astropy\..+"),
-    ("py:class", r"gwpy\..+"),
-    ("py:class", r"pandas(\..+)?"),
-    ("py:class", r"scipy(\..+)?"),
-    ("py:meth", r"gwpy\..+"),
-    ("py:obj", r"gwpy\..+"),
-    ("py:class", r"enum\.Enum"),
-    ("py:class", r"abc\.ABC"),
-    ("py:class", r"astropy\.units\.core\.UnitBase"),
-    ("py:class", r"astropy\.units\.quantity\.Quantity"),
-]
+nitpick_ignore = []
+nitpick_ignore_regex = []
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "developers/**"]
@@ -155,6 +139,7 @@ nitpick_ignore = [
     ("py:class", "MetaDataDictLike"),
     ("py:class", "Quantity"),
     ("py:class", "subset"),
+    ("py:class", "file-like"),
     ("py:class", "copy"),
     ("py:class", "self"),
     # Mixins (often not exported to top level documentation)
@@ -231,6 +216,22 @@ nitpick_ignore = [
 
 # Use regex patterns to suppress large categories of unresolved references
 nitpick_ignore_regex = [
+    # ----------------------------------------------------------------
+    # Standard library and well-known external libraries
+    # ----------------------------------------------------------------
+    (r"py:class", r"collections(\.abc)?\..+"),
+    (r"py:class", r"numpy(\..+)?"),
+    (r"py:class", r"matplotlib(\..+)?"),
+    (r"py:class", r"astropy\..+"),
+    (r"py:class", r"gwpy\..+"),
+    (r"py:class", r"pandas(\..+)?"),
+    (r"py:class", r"scipy(\..+)?"),
+    (r"py:meth", r"gwpy\..+"),
+    (r"py:obj", r"gwpy\..+"),
+    (r"py:class", r"enum\.Enum"),
+    (r"py:class", r"abc\.ABC"),
+    (r"py:class", r"astropy\.units\.core\.UnitBase"),
+    (r"py:class", r"astropy\.units\.quantity\.Quantity"),
     # ----------------------------------------------------------------
     # gwexpy internal mixins, private classes, TypeVars, base classes
     # ----------------------------------------------------------------
