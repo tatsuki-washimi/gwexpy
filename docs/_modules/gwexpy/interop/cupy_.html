@@ -76,7 +76,7 @@
 
 
 <div class="viewcode-block" id="is_cupy_available">
-<a class="viewcode-back" href="../../../web/en/reference/api/extra.html#gwexpy.interop.is_cupy_available">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.is_cupy_available">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_cupy_available</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if cupy is installed and functionally usable (CUDA environment is working).</span>
@@ -92,7 +92,7 @@
 
 
 <div class="viewcode-block" id="to_cupy">
-<a class="viewcode-back" href="../../../web/en/reference/api/extra.html#gwexpy.interop.to_cupy">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.to_cupy">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_cupy</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">cupy</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;cupy&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -111,7 +111,7 @@
 
 
 <div class="viewcode-block" id="from_cupy">
-<a class="viewcode-back" href="../../../web/en/reference/api/extra.html#gwexpy.interop.from_cupy">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_cupy">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_cupy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">cupy</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;cupy&quot;</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">cupy</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>

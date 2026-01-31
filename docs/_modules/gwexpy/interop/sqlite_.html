@@ -100,7 +100,7 @@
 
 
 <div class="viewcode-block" id="to_sqlite">
-<a class="viewcode-back" href="../../../web/en/reference/api/extra.html#gwexpy.interop.to_sqlite">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.to_sqlite">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_sqlite</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">series_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">_ensure_schema</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
 
@@ -144,7 +144,7 @@
 
 
 <div class="viewcode-block" id="from_sqlite">
-<a class="viewcode-back" href="../../../web/en/reference/api/extra.html#gwexpy.interop.from_sqlite">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_sqlite">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">series_id</span><span class="p">):</span>
     <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
     <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT t0, dt, unit, n FROM series WHERE series_id=?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">series_id</span><span class="p">,))</span>

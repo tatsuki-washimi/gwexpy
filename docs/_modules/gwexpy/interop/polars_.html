@@ -78,7 +78,7 @@
 
 
 <div class="viewcode-block" id="to_polars_series">
-<a class="viewcode-back" href="../../../web/en/reference/api/extra.html#gwexpy.interop.to_polars_series">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.to_polars_series">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_polars_series</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert TimeSeries or FrequencySeries to polars.Series.</span>
@@ -93,7 +93,7 @@
 
 
 <div class="viewcode-block" id="to_polars_dataframe">
-<a class="viewcode-back" href="../../../web/en/reference/api/extra.html#gwexpy.interop.to_polars_dataframe">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.to_polars_dataframe">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_polars_dataframe</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">index_column</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert TimeSeries to polars.DataFrame with a time column.</span>
@@ -122,7 +122,7 @@
 
 
 <div class="viewcode-block" id="from_polars_series">
-<a class="viewcode-back" href="../../../web/en/reference/api/extra.html#gwexpy.interop.from_polars_series">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_polars_series">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_polars_series</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create TimeSeries or FrequencySeries from polars.Series.&quot;&quot;&quot;</span>
     <span class="c1"># polars Series is basically just an array.</span>
@@ -131,7 +131,7 @@
 
 
 <div class="viewcode-block" id="to_polars_frequencyseries">
-<a class="viewcode-back" href="../../../web/en/reference/api/extra.html#gwexpy.interop.to_polars_frequencyseries">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.to_polars_frequencyseries">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_polars_frequencyseries</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">index_column</span><span class="o">=</span><span class="s2">&quot;frequency&quot;</span><span class="p">,</span> <span class="n">index_unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert FrequencySeries to polars.DataFrame.&quot;&quot;&quot;</span>
     <span class="n">pl</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;polars&quot;</span><span class="p">)</span>
@@ -146,7 +146,7 @@
 
 
 <div class="viewcode-block" id="from_polars_dataframe">
-<a class="viewcode-back" href="../../../web/en/reference/api/extra.html#gwexpy.interop.from_polars_dataframe">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_polars_dataframe">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_polars_dataframe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">index_column</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create TimeSeries from polars.DataFrame.</span>
@@ -221,7 +221,7 @@
 
 
 <div class="viewcode-block" id="to_polars_dict">
-<a class="viewcode-back" href="../../../web/en/reference/api/extra.html#gwexpy.interop.to_polars_dict">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.to_polars_dict">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_polars_dict</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">index_column</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;TimeSeriesDict -&gt; polars.DataFrame&quot;&quot;&quot;</span>
     <span class="n">pl</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;polars&quot;</span><span class="p">)</span>
@@ -256,7 +256,7 @@
 
 
 <div class="viewcode-block" id="from_polars_dict">
-<a class="viewcode-back" href="../../../web/en/reference/api/extra.html#gwexpy.interop.from_polars_dict">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_polars_dict">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_polars_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">index_column</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">unit_map</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;polars.DataFrame -&gt; TimeSeriesDict&quot;&quot;&quot;</span>
     <span class="n">tsd</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>

@@ -960,15 +960,6 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
-    <span class="c1"># def update(self, *args, **kwargs) -&gt; &quot;TimeSeriesDict&quot;:</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     Update each TimeSeries in the dict (in-place).</span>
-    <span class="c1">#     Returns self.</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     for ts in self.values():</span>
-    <span class="c1">#         ts.update(*args, **kwargs)</span>
-    <span class="c1">#     return self</span>
-
 <div class="viewcode-block" id="TimeSeriesDict.shift">
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.shift">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
@@ -1760,33 +1751,6 @@
             <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">new_list</span></div>
 
-
-    <span class="c1"># def append(self, *args, **kwargs) -&gt; &quot;TimeSeriesList&quot;:</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     Append to each TimeSeries in the list (in-place).</span>
-    <span class="c1">#     Returns self.</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     for ts in self:</span>
-    <span class="c1">#         ts.append(*args, **kwargs)</span>
-    <span class="c1">#     return self</span>
-
-    <span class="c1"># def prepend(self, *args, **kwargs) -&gt; &quot;TimeSeriesList&quot;:</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     Prepend to each TimeSeries in the list (in-place).</span>
-    <span class="c1">#     Returns self.</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     for ts in self:</span>
-    <span class="c1">#         ts.prepend(*args, **kwargs)</span>
-    <span class="c1">#     return self</span>
-
-    <span class="c1"># def update(self, *args, **kwargs) -&gt; &quot;TimeSeriesList&quot;:</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     Update each TimeSeries in the list (in-place).</span>
-    <span class="c1">#     Returns self.</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     for ts in self:</span>
-    <span class="c1">#         ts.update(*args, **kwargs)</span>
-    <span class="c1">#     return self</span>
 
 <div class="viewcode-block" id="TimeSeriesList.shift">
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.shift">[docs]</a>

@@ -1,0 +1,624 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwpy.types.array &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwpy.types.array</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwpy.types.array</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># Copyright (C) Duncan Macleod (2014-2020)</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of GWpy.</span>
+<span class="c1">#</span>
+<span class="c1"># GWpy is free software: you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># GWpy is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with GWpy.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">&quot;&quot;&quot;This module provides the `Array`.</span>
+
+<span class="sd">The `Array` structure provides the core array-with-metadata environment</span>
+<span class="sd">with the standard array methods wrapped to return instances of itself.</span>
+
+<span class="sd">Each sub-class of `Array` should override the `Array._metadata_slots`</span>
+<span class="sd">attribute, giving a list of the valid properties for these data. This is</span>
+<span class="sd">critical to being able to view data with this class, used when copying and</span>
+<span class="sd">transforming instances of the class.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">modf</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.utils.compat.numpycompat</span><span class="w"> </span><span class="kn">import</span> <span class="n">COPY_IF_NEEDED</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># astropy &lt; 6.1</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">minversion</span>
+    <span class="n">COPY_IF_NEEDED</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">minversion</span><span class="p">(</span><span class="n">numpy</span><span class="p">,</span> <span class="s2">&quot;2.0.0.dev&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Channel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..detector.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_unit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..time</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">Time</span><span class="p">,</span> <span class="n">to_gps</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">if_not_none</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Duncan Macleod &lt;duncan.macleod@ligo.org&gt;&quot;</span>
+
+<span class="n">numpy</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">65</span><span class="p">)</span>
+
+
+<span class="c1"># -- core Array ---------------------------------------------------------------</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Array</span><span class="p">(</span><span class="n">Quantity</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Array holding data with a unit, and other metadata</span>
+
+<span class="sd">    This `Array` holds the input data and a standard set of metadata</span>
+<span class="sd">    properties associated with GW data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    value : array-like</span>
+<span class="sd">        input data array</span>
+
+<span class="sd">    unit : `~astropy.units.Unit`, optional</span>
+<span class="sd">        physical unit of these data</span>
+
+<span class="sd">    epoch : `~gwpy.time.LIGOTimeGPS`, `float`, `str`, optional</span>
+<span class="sd">        GPS epoch associated with these data,</span>
+<span class="sd">        any input parsable by `~gwpy.time.to_gps` is fine</span>
+
+<span class="sd">    name : `str`, optional</span>
+<span class="sd">        descriptive title for this array</span>
+
+<span class="sd">    channel : `~gwpy.detector.Channel`, `str`, optional</span>
+<span class="sd">        source data stream for these data</span>
+
+<span class="sd">    dtype : `~numpy.dtype`, optional</span>
+<span class="sd">        input data type</span>
+
+<span class="sd">    copy : `bool`, optional, default: `False`</span>
+<span class="sd">        choose to copy the input data to new memory</span>
+
+<span class="sd">    subok : `bool`, optional, default: `True`</span>
+<span class="sd">        allow passing of sub-classes by the array generator</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    array : `Array`</span>
+<span class="sd">        a new array, with a view of the data, and all associated metadata</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    To create a new `Array` from a list of samples:</span>
+
+<span class="sd">        &gt;&gt;&gt; a = Array([1, 2, 3, 4, 5], &#39;m/s&#39;, name=&#39;my data&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; print(a)</span>
+<span class="sd">        Array([ 1., 2., 3., 4., 5.]</span>
+<span class="sd">              unit: Unit(&quot;m / s&quot;),</span>
+<span class="sd">              name: &#39;my data&#39;,</span>
+<span class="sd">              epoch: None,</span>
+<span class="sd">              channel: None)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#: list of new attributes defined in this class</span>
+    <span class="c1">#</span>
+    <span class="c1"># this is used in __array_finalize__ to create new instances of this</span>
+    <span class="c1"># object [http://docs.scipy.org/doc/numpy/user/basics.subclassing.html]</span>
+    <span class="n">_metadata_slots</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;epoch&#39;</span><span class="p">,</span> <span class="s1">&#39;channel&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Quantity attrs</span>
+                <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># new attrs</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># ndarray attrs</span>
+                <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new `Array`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pick dtype from input array</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">dtype</span>
+
+        <span class="c1"># parse unit with forgiveness</span>
+        <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">unit</span> <span class="o">=</span> <span class="n">parse_unit</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">parse_strict</span><span class="o">=</span><span class="s1">&#39;warn&#39;</span><span class="p">)</span>
+
+        <span class="c1"># create new array</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">copy</span><span class="o">=</span><span class="n">COPY_IF_NEEDED</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+            <span class="n">ndmin</span><span class="o">=</span><span class="n">ndmin</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># explicitly copy here to get ownership of the data,</span>
+        <span class="c1"># see (astropy/astropy#7244)</span>
+        <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># set new attributes</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">if</span> <span class="n">epoch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">epoch</span> <span class="o">=</span> <span class="n">epoch</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span>
+
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="c1"># -- object creation ------------------------</span>
+    <span class="c1"># methods here handle how these objects are created,</span>
+    <span class="c1"># mainly to do with making sure metadata attributes get</span>
+    <span class="c1"># properly reassigned from old to new</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># if the output of the function is a scalar, return it as a Quantity</span>
+        <span class="c1"># not whatever class this is</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_wrap_function</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Quantity</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__quantity_subclass__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+        <span class="c1"># this is required to allow in-place ufunc operations to return</span>
+        <span class="c1"># things that aren&#39;t basic quantities</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__array_finalize__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="c1"># format a new instance of this class starting from `obj`</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># call Quantity.__array_finalize__ to handle the units</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__array_finalize__</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="c1"># then update metadata</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__metadata_finalize__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__metadata_finalize__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># apply metadata from obj to self if creating a new object</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_slots</span><span class="p">:</span>
+            <span class="n">_attr</span> <span class="o">=</span> <span class="s1">&#39;_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">attr</span>  <span class="c1"># use private attribute (not property)</span>
+            <span class="c1"># if attribute is unset, default it to None, then update</span>
+            <span class="c1"># from obj if desired</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_attr</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="n">force</span>
+            <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_attr</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>  <span class="c1"># copy Quantities</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_attr</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)(</span><span class="n">val</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_attr</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="c1"># return scalar as a Quantity</span>
+        <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">new</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Quantity</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="c1"># -- display --------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">print_</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">print_</span> <span class="ow">is</span> <span class="nb">repr</span><span class="p">:</span>
+            <span class="n">opstr</span> <span class="o">=</span> <span class="s1">&#39;=&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">opstr</span> <span class="o">=</span> <span class="s1">&#39;: &#39;</span>
+
+        <span class="c1"># get prefix and suffix</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;)&#39;</span>
+        <span class="k">if</span> <span class="n">print_</span> <span class="ow">is</span> <span class="nb">repr</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;&lt;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+            <span class="n">suffix</span> <span class="o">+=</span> <span class="s1">&#39;&gt;&#39;</span>
+
+        <span class="n">indent</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+
+        <span class="c1"># format value</span>
+        <span class="n">arrstr</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">),</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39;, &#39;</span><span class="p">,</span>
+                                    <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">)</span>
+
+        <span class="c1"># format unit</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;unit&#39;</span><span class="p">,</span> <span class="n">print_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;dimensionless&#39;</span><span class="p">)]</span>
+
+        <span class="c1"># format other metadata</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_print_slots</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_slots</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">thisindent</span> <span class="o">=</span> <span class="n">indent</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">opstr</span><span class="p">))</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">((</span>
+                <span class="n">key</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">),</span>
+                <span class="n">print_</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">thisindent</span><span class="p">)),</span>
+            <span class="p">))</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;,</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">indent</span><span class="p">))</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="s1">&#39;</span><span class="si">{0}{1}{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">opstr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0}{1}</span><span class="se">\n</span><span class="si">{2}{3}{4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">prefix</span><span class="p">,</span> <span class="n">arrstr</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a representation of this object</span>
+
+<span class="sd">        This just represents each of the metadata objects appropriately</span>
+<span class="sd">        after the core data array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repr_helper</span><span class="p">(</span><span class="nb">repr</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a printable string format representation of this object</span>
+
+<span class="sd">        This just prints each of the metadata objects appropriately</span>
+<span class="sd">        after the core data array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repr_helper</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="c1"># -- Pickle helpers -------------------------</span>
+
+<div class="viewcode-block" id="Array.dumps">
+<a class="viewcode-back" href="../../../web/ja/reference/api/types.html#gwexpy.types.Array.dumps">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Quantity</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">dumps</span><span class="p">()</span></div>
+
+    <span class="n">dumps</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="o">.</span><span class="n">dumps</span><span class="o">.</span><span class="vm">__doc__</span>
+
+<div class="viewcode-block" id="Array.tostring">
+<a class="viewcode-back" href="../../../web/ja/reference/api/types.html#gwexpy.types.Array.tostring">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tostring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Quantity</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">tobytes</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
+    <span class="n">tostring</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="o">.</span><span class="n">tobytes</span><span class="o">.</span><span class="vm">__doc__</span>
+
+    <span class="c1"># -- new properties -------------------------</span>
+
+    <span class="c1"># name</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Name for this data set</span>
+
+<span class="sd">        :type: `str`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@name</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">if_not_none</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+    <span class="nd">@name</span><span class="o">.</span><span class="n">deleter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="c1"># epoch</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;GPS epoch associated with these data</span>
+
+<span class="sd">        :type: `~astropy.time.Time`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_epoch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">Time</span><span class="p">(</span><span class="o">*</span><span class="n">modf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_epoch</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gps&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;utc&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_epoch</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_epoch</span>
+
+    <span class="nd">@epoch</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">epoch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_epoch</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_epoch</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">to_gps</span><span class="p">(</span><span class="n">epoch</span><span class="p">)))</span>
+
+    <span class="nd">@epoch</span><span class="o">.</span><span class="n">deleter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_epoch</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="c1"># channel</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">channel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instrumental channel associated with these data</span>
+
+<span class="sd">        :type: `~gwpy.detector.Channel`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span>
+
+    <span class="nd">@channel</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="n">Channel</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="n">chan</span>
+        <span class="k">elif</span> <span class="n">chan</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="n">Channel</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+
+    <span class="nd">@channel</span><span class="o">.</span><span class="n">deleter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">channel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="c1"># unit - we override this to make the property less pedantic</span>
+    <span class="c1">#        astropy won&#39;t allow you to set a unit that it doesn&#39;t</span>
+    <span class="c1">#        recognise</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The physical unit of these data</span>
+
+<span class="sd">        :type: `~astropy.units.UnitBase`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@unit</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_unit&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="o">=</span> <span class="n">parse_unit</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="s2">&quot;Can&#39;t set attribute. To change the units of this </span><span class="si">%s</span><span class="s2">, use the &quot;</span>
+                <span class="s2">&quot;.to() instance method instead, otherwise use the &quot;</span>
+                <span class="s2">&quot;override_unit() instance method to forcefully set a new unit.&quot;</span>
+                <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="nd">@unit</span><span class="o">.</span><span class="n">deleter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="c1"># -- array methods --------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__array_ufunc__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__array_ufunc__</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># if a ufunc returns a scalar, return a Quantity</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Quantity</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">COPY_IF_NEEDED</span><span class="p">)</span>
+        <span class="c1"># otherwise return an array</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+<div class="viewcode-block" id="Array.abs">
+<a class="viewcode-back" href="../../../web/ja/reference/api/types.html#gwexpy.types.Array.abs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrap_function</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="nb">abs</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="o">.</span><span class="vm">__doc__</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrap_function</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">median</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">median</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">median</span><span class="o">.</span><span class="vm">__doc__</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_to_own_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">check_precision</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_to_own_unit</span><span class="p">(</span>
+                    <span class="n">value</span><span class="p">,</span> <span class="n">check_precision</span><span class="o">=</span><span class="n">check_precision</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_to_own_unit</span><span class="p">(</span>
+                <span class="n">value</span><span class="p">,</span> <span class="n">check_precision</span><span class="o">=</span><span class="n">check_precision</span><span class="p">)</span>
+    <span class="n">_to_own_unit</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">Quantity</span><span class="o">.</span><span class="n">_to_own_unit</span><span class="o">.</span><span class="vm">__doc__</span>
+
+<div class="viewcode-block" id="Array.override_unit">
+<a class="viewcode-back" href="../../../web/ja/reference/api/types.html#gwexpy.types.Array.override_unit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">override_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">parse_strict</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forcefully reset the unit of these data</span>
+
+<span class="sd">        Use of this method is discouraged in favour of `to()`,</span>
+<span class="sd">        which performs accurate conversions from one unit to another.</span>
+<span class="sd">        The method should really only be used when the original unit of the</span>
+<span class="sd">        array is plain wrong.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        unit : `~astropy.units.Unit`, `str`</span>
+<span class="sd">            the unit to force onto this array</span>
+<span class="sd">        parse_strict : `str`, optional</span>
+<span class="sd">            how to handle errors in the unit parsing, default is to</span>
+<span class="sd">            raise the underlying exception from `astropy.units`</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            if a `str` cannot be parsed as a valid unit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="o">=</span> <span class="n">parse_unit</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">parse_strict</span><span class="o">=</span><span class="n">parse_strict</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Array.flatten">
+<a class="viewcode-back" href="../../../web/ja/reference/api/types.html#gwexpy.types.Array.flatten">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a copy of the array collapsed into one dimension.</span>
+
+<span class="sd">        Any index information is removed as part of the flattening,</span>
+<span class="sd">        and the result is returned as a `~astropy.units.Quantity` array.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        order : {&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}, optional</span>
+<span class="sd">            &#39;C&#39; means to flatten in row-major (C-style) order.</span>
+<span class="sd">            &#39;F&#39; means to flatten in column-major (Fortran-</span>
+<span class="sd">            style) order. &#39;A&#39; means to flatten in column-major</span>
+<span class="sd">            order if `a` is Fortran *contiguous* in memory,</span>
+<span class="sd">            row-major order otherwise. &#39;K&#39; means to flatten</span>
+<span class="sd">            `a` in the order the elements occur in memory.</span>
+<span class="sd">            The default is &#39;C&#39;.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        y : `~astropy.units.Quantity`</span>
+<span class="sd">            A copy of the input array, flattened to one dimension.</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        ravel : Return a flattened array.</span>
+<span class="sd">        flat : A 1-D flat iterator over the array.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; a = Array([[1,2], [3,4]], unit=&#39;m&#39;, name=&#39;Test&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; a.flatten()</span>
+<span class="sd">        &lt;Quantity [1., 2., 3., 4.] m&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">Quantity</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Array.copy">
+<a class="viewcode-back" href="../../../web/ja/reference/api/types.html#gwexpy.types.Array.copy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_slots</span><span class="p">:</span>
+            <span class="n">old</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">slot</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">old</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">old</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+    <span class="n">copy</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">Quantity</span><span class="o">.</span><span class="n">copy</span><span class="o">.</span><span class="vm">__doc__</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
