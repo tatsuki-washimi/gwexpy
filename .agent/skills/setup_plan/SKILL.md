@@ -15,8 +15,7 @@ This skill initiates a workflow that consistently handles understanding requirem
 
 2. **AI Assistant Strategy Formulation**:
     * Call the following skills in order to analyze task characteristics:
-        * `suggest_model`: Propose the optimal LLM based on task difficulty.
-        * `suggest_skill`: Propose auxiliary skills to be used during development.
+        * `suggest_next`: Propose the optimal LLM and auxiliary skills based on task difficulty.
         * `estimate_effort`: Predict the required time and quota consumption.
 
 3. **Creation or Update of Plan**:

@@ -18,7 +18,7 @@ When high-level design decisions (API design, selection of complex physical logi
 
 ### 2. Trigger for Starting Work (Explicit Approval)
 - While discussing plans or designs, **do not modify the project's source code**, no matter how confident you are.
-- Update and share the implementation plan using `setup_plan` or `archive_plan`, and explicitly ask the user, "May I proceed with this plan?"
+- Update and share the implementation plan using `setup_plan` or `archive_work --plan`, and explicitly ask the user, "May I proceed with this plan?"
 - Only use coding tools (e.g., `write_to_file`) after receiving affirmative instructions from the user, such as "Proceed," "Go," or "Approved."
 
 ### 3. Permitted "Pre-work"
