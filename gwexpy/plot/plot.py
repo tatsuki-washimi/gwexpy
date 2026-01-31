@@ -698,13 +698,57 @@ class Plot(BasePlot):
             ax = self.gca()
         return plot_mmm(median, min_s, max_s, ax=ax, **kwargs)
 
-    def show(self, warn=True):
-        """Show the figure and close it to prevent double display."""
+    def show(self, warn: bool = True, close: bool = True) -> None:
+        """Show the figure.
+
+        Parameters
+        ----------
+        warn : bool, optional
+            Unused, kept for API compatibility. Default is True.
+        close : bool, optional
+            If True (default), close the figure after showing to free
+            resources and prevent double display in Jupyter.
+            Set to False if you need to call savefig() after show().
+
+        Examples
+        --------
+        >>> plot = Plot(data)
+        >>> plot.show(close=False)  # Keep figure alive
+        >>> plot.savefig("output.png")  # Still works
+
+        Notes
+        -----
+        In Jupyter notebooks, setting ``close=True`` prevents the figure
+        from being displayed twice (once by show() and once by the
+        notebook's automatic display).
+        """
         import matplotlib.pyplot as plt
 
         plt.show()
-        plt.close(self)
-        return None
+        if close:
+            plt.close(self)
+
+    def _repr_png_(self) -> bytes | None:
+        """Return PNG representation for Jupyter display.
+
+        This ensures the figure can be displayed in Jupyter notebooks
+        when _repr_html_ is disabled to prevent double plotting.
+
+        Returns
+        -------
+        bytes or None
+            PNG image data, or None if the figure has been closed.
+        """
+        from io import BytesIO
+
+        try:
+            buf = BytesIO()
+            self.savefig(buf, format="png", bbox_inches="tight")
+            buf.seek(0)
+            return buf.read()
+        except (ValueError, AttributeError):
+            # Figure may have been closed
+            return None
 
 
 def plot_summary(sg_collection, fmin=None, fmax=None, title="", **kwargs):
