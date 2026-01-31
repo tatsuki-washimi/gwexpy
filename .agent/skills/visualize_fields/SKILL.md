@@ -1,6 +1,6 @@
 ---
 name: visualize_fields
-description: 多次元フィールドデータ（Field4D/Matrix等）の抽出ロジックと描画APIを、物理的整合性を保ちながら実装する
+description: 多次元フィールドデータの描画API実装、およびプロット軸のスケール・目盛・表示範囲の診断・修正を行う
 ---
 
 # Visualize Fields Best Practices
@@ -37,3 +37,9 @@ Drawing methods called directly by the user.
 - [ ] **Coordinate Accuracy**: Do the values of the plotted axis correspond correctly to the physical axis of the original data via `nearest_index`?
 - [ ] **Dimensional Maintenance**: Are dimensions unexpectedly lost (Squeeze) through slicing operations, breaking the drawing logic?
 - [ ] **Memory Efficiency**: For large-scale data, are unnecessary copies (`copy=True`) avoided?
+
+## Debug Axes
+
+プロットの軸スケール（対数軸等）、目盛、表示範囲の不具合を診断・修正：
+
+詳細：[reference/debug_axes.md](reference/debug_axes.md)

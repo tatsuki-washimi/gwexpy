@@ -1,28 +1,53 @@
 ---
 name: prep_release
-description: バージョン更新、CHANGELOG整備、パッケージビルドなど、リリース前の準備を行う
+description: バージョン更新、CHANGELOG整備、パッケージビルド・公開など、リリース前・リリース時の準備を行う
 ---
 
 # Prepare Release
 
-This skill automates the steps required to prepare a new version release.
+リリース前後の包括的な準備・公開を自動化します。
 
-## Instructions
+## Quick Usage
 
-1.  **Update Version**:
-    *   Ask the user for the new version number (e.g. `0.4.1`).
-    *   Update `version` in `pyproject.toml`.
-    *   Update `__version__` variable in `gwexpy/__init__.py` if it exists.
+```bash
+/prep_release              # Interactive release preparation
+/prep_release --build      # Build only
+/prep_release --testpypi   # Upload to TestPyPI
+/prep_release --production # Upload to production PyPI
+```
 
-2.  **Update Changelog**:
-    *   Read `CHANGELOG.md`.
-    *   Create a new header for the new version with the current date.
-    *   Move "Unreleased" changes under this new header.
+## Release Workflow
 
-3.  **Build Package**:
-    *   Clean old distribution files: `rm -rf dist/ build/ *.egg-info`.
-    *   Run build command: `python -m build`.
-    *   Check if correct `.tar.gz` and `.whl` files are created in `dist/`.
+リリースプロセスは以下のステップで構成：
 
-4.  **Verify**:
-    *   (Optional) Run `twine check dist/*` to verify metadata validation if `twine` is available.
+1. **Versioning** - バージョン番号の更新
+2. **Changelog** - CHANGELOG.md の整備
+3. **Build** - パッケージのビルド
+4. **Verification** - メタデータ検証
+5. **Publish** - PyPI への公開
+
+## Modes
+
+### Build Mode (デフォルト)
+
+パッケージをビルドし、dist/ に生成：
+
+詳細：[reference/build.md](reference/build.md)
+
+### TestPyPI Mode
+
+テスト環境（TestPyPI）に公開：
+
+詳細：[reference/testpypi.md](reference/testpypi.md)
+
+### Production Mode
+
+本番 PyPI に公開：
+
+詳細はセキュリティ上の理由から省略。用途に応じて参照。
+
+## Steps
+
+1. [reference/versioning.md](reference/versioning.md) - バージョン更新
+2. [reference/changelog.md](reference/changelog.md) - CHANGELOG 整備
+3. [reference/build.md](reference/build.md) - パッケージビルド
