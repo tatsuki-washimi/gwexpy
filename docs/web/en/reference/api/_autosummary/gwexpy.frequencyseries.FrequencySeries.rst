@@ -1,0 +1,205 @@
+﻿gwexpy.frequencyseries.FrequencySeries
+======================================
+
+.. currentmodule:: gwexpy.frequencyseries
+
+.. autoclass:: FrequencySeries
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FrequencySeries.__init__
+      ~FrequencySeries.abs
+      ~FrequencySeries.all
+      ~FrequencySeries.angle
+      ~FrequencySeries.any
+      ~FrequencySeries.append
+      ~FrequencySeries.argmax
+      ~FrequencySeries.argmin
+      ~FrequencySeries.argpartition
+      ~FrequencySeries.argsort
+      ~FrequencySeries.astype
+      ~FrequencySeries.byteswap
+      ~FrequencySeries.choose
+      ~FrequencySeries.clip
+      ~FrequencySeries.compress
+      ~FrequencySeries.conj
+      ~FrequencySeries.conjugate
+      ~FrequencySeries.copy
+      ~FrequencySeries.crop
+      ~FrequencySeries.cumprod
+      ~FrequencySeries.cumsum
+      ~FrequencySeries.decompose
+      ~FrequencySeries.degree
+      ~FrequencySeries.diagonal
+      ~FrequencySeries.diff
+      ~FrequencySeries.differentiate
+      ~FrequencySeries.differentiate_time
+      ~FrequencySeries.dot
+      ~FrequencySeries.dump
+      ~FrequencySeries.dumps
+      ~FrequencySeries.ediff1d
+      ~FrequencySeries.fill
+      ~FrequencySeries.filter
+      ~FrequencySeries.filterba
+      ~FrequencySeries.find_peaks
+      ~FrequencySeries.fit
+      ~FrequencySeries.flatten
+      ~FrequencySeries.from_control_frd
+      ~FrequencySeries.from_cupy
+      ~FrequencySeries.from_hdf5_dataset
+      ~FrequencySeries.from_jax
+      ~FrequencySeries.from_lal
+      ~FrequencySeries.from_mne
+      ~FrequencySeries.from_obspy
+      ~FrequencySeries.from_pandas
+      ~FrequencySeries.from_polars
+      ~FrequencySeries.from_pycbc
+      ~FrequencySeries.from_pyspeckit
+      ~FrequencySeries.from_quantities
+      ~FrequencySeries.from_root
+      ~FrequencySeries.from_simpeg
+      ~FrequencySeries.from_specutils
+      ~FrequencySeries.from_tensorflow
+      ~FrequencySeries.from_torch
+      ~FrequencySeries.from_xarray
+      ~FrequencySeries.getfield
+      ~FrequencySeries.group_delay
+      ~FrequencySeries.idct
+      ~FrequencySeries.ifft
+      ~FrequencySeries.inject
+      ~FrequencySeries.insert
+      ~FrequencySeries.integrate
+      ~FrequencySeries.integrate_time
+      ~FrequencySeries.interpolate
+      ~FrequencySeries.is_compatible
+      ~FrequencySeries.is_contiguous
+      ~FrequencySeries.item
+      ~FrequencySeries.kurtosis
+      ~FrequencySeries.max
+      ~FrequencySeries.mean
+      ~FrequencySeries.median
+      ~FrequencySeries.min
+      ~FrequencySeries.nonzero
+      ~FrequencySeries.override_unit
+      ~FrequencySeries.pad
+      ~FrequencySeries.partition
+      ~FrequencySeries.phase
+      ~FrequencySeries.plot
+      ~FrequencySeries.prepend
+      ~FrequencySeries.prod
+      ~FrequencySeries.put
+      ~FrequencySeries.quadrature_sum
+      ~FrequencySeries.ravel
+      ~FrequencySeries.read
+      ~FrequencySeries.rebin
+      ~FrequencySeries.repeat
+      ~FrequencySeries.reshape
+      ~FrequencySeries.resize
+      ~FrequencySeries.rms
+      ~FrequencySeries.round
+      ~FrequencySeries.searchsorted
+      ~FrequencySeries.setfield
+      ~FrequencySeries.setflags
+      ~FrequencySeries.shift
+      ~FrequencySeries.skewness
+      ~FrequencySeries.smooth
+      ~FrequencySeries.sort
+      ~FrequencySeries.squeeze
+      ~FrequencySeries.std
+      ~FrequencySeries.step
+      ~FrequencySeries.sum
+      ~FrequencySeries.swapaxes
+      ~FrequencySeries.take
+      ~FrequencySeries.to
+      ~FrequencySeries.to_control_frd
+      ~FrequencySeries.to_cupy
+      ~FrequencySeries.to_db
+      ~FrequencySeries.to_device
+      ~FrequencySeries.to_hdf5_dataset
+      ~FrequencySeries.to_jax
+      ~FrequencySeries.to_lal
+      ~FrequencySeries.to_mne
+      ~FrequencySeries.to_obspy
+      ~FrequencySeries.to_pandas
+      ~FrequencySeries.to_polars
+      ~FrequencySeries.to_pycbc
+      ~FrequencySeries.to_pyspeckit
+      ~FrequencySeries.to_quantities
+      ~FrequencySeries.to_simpeg
+      ~FrequencySeries.to_specutils
+      ~FrequencySeries.to_string
+      ~FrequencySeries.to_tensorflow
+      ~FrequencySeries.to_tgraph
+      ~FrequencySeries.to_th1d
+      ~FrequencySeries.to_torch
+      ~FrequencySeries.to_value
+      ~FrequencySeries.to_xarray
+      ~FrequencySeries.tobytes
+      ~FrequencySeries.tofile
+      ~FrequencySeries.tolist
+      ~FrequencySeries.tostring
+      ~FrequencySeries.trace
+      ~FrequencySeries.transpose
+      ~FrequencySeries.update
+      ~FrequencySeries.value_at
+      ~FrequencySeries.var
+      ~FrequencySeries.view
+      ~FrequencySeries.write
+      ~FrequencySeries.zip
+      ~FrequencySeries.zpk
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FrequencySeries.T
+      ~FrequencySeries.base
+      ~FrequencySeries.cgs
+      ~FrequencySeries.channel
+      ~FrequencySeries.ctypes
+      ~FrequencySeries.data
+      ~FrequencySeries.device
+      ~FrequencySeries.df
+      ~FrequencySeries.dtype
+      ~FrequencySeries.dx
+      ~FrequencySeries.epoch
+      ~FrequencySeries.equivalencies
+      ~FrequencySeries.f0
+      ~FrequencySeries.flags
+      ~FrequencySeries.flat
+      ~FrequencySeries.frequencies
+      ~FrequencySeries.imag
+      ~FrequencySeries.info
+      ~FrequencySeries.is_regular
+      ~FrequencySeries.isscalar
+      ~FrequencySeries.itemset
+      ~FrequencySeries.itemsize
+      ~FrequencySeries.mT
+      ~FrequencySeries.name
+      ~FrequencySeries.nbytes
+      ~FrequencySeries.ndim
+      ~FrequencySeries.newbyteorder
+      ~FrequencySeries.ptp
+      ~FrequencySeries.real
+      ~FrequencySeries.shape
+      ~FrequencySeries.si
+      ~FrequencySeries.size
+      ~FrequencySeries.strides
+      ~FrequencySeries.unit
+      ~FrequencySeries.value
+      ~FrequencySeries.x0
+      ~FrequencySeries.xindex
+      ~FrequencySeries.xspan
+      ~FrequencySeries.xunit
+   
+   

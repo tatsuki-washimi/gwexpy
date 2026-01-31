@@ -27,6 +27,20 @@ nbsphinx_execute = os.environ.get("NBS_EXECUTE", "never")
 nbsphinx_allow_errors = True  # Allow notebooks with execution errors to be included
 
 autosummary_generate = True
+autosummary_imported_members = False
+
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'inherited-members': True,
+    'show-inheritance': True,
+    'member-order': 'bysource',
+}
+
+# Napoleon settings for NumPy/Google docstrings
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+napoleon_use_admonition_for_notes = True
 
 # Add a consistent download link on notebook pages.
 nbsphinx_prolog = r"""
