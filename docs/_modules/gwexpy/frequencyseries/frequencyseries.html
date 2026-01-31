@@ -148,6 +148,35 @@
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">__array_finalize__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Propagate gwexpy-specific attributes through NumPy operations.</span>
+
+<span class="sd">        This ensures that internal attributes (prefixed with `_gwex_`) are</span>
+<span class="sd">        preserved when slicing, arithmetic operations, or other NumPy</span>
+<span class="sd">        array manipulations create new instances.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        obj : object or None</span>
+<span class="sd">            The object from which this instance was created. None if called</span>
+<span class="sd">            from __new__.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__array_finalize__</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Copy gwexpy internal attributes for FFT round-trip support</span>
+        <span class="n">_gwex_attrs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;_gwex_fft_mode&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;_gwex_target_nfft&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;_gwex_pad_left&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;_gwex_pad_right&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;_gwex_original_n&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">_gwex_attrs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">))</span>
+
     <span class="c1"># --- Phase and Angle ---</span>
 
 <div class="viewcode-block" id="FrequencySeries.phase">

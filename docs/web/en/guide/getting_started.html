@@ -1,0 +1,202 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="ScalarField Slicing Guide" href="scalarfield_slicing.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#learning-path">Learning Path</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#installation">1. Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#quickstart">2. Quickstart</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#basic-data-structures-recommended-order">3. Basic Data Structures (Recommended Order)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#advanced-topics">4. Advanced Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#practical-examples">5. Practical Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy Documentation</a></li>
+      <li class="breadcrumb-item active">Getting Started</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/guide/getting_started.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
+<p>Welcome to GWexpy! This guide provides a learning path for getting started with GWexpy.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Basic Python 3.9+ knowledge</p></li>
+<li><p>NumPy fundamentals (array operations)</p></li>
+<li><p>(Optional) GWpy experience</p></li>
+</ul>
+</section>
+<section id="learning-path">
+<h2>Learning Path<a class="headerlink" href="#learning-path" title="Link to this heading"></a></h2>
+<section id="installation">
+<h3>1. Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
+<p>First, install GWexpy by following <a class="reference internal" href="installation.html"><span class="doc">Installation</span></a>.</p>
+</section>
+<section id="quickstart">
+<h3>2. Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading"></a></h3>
+<p>Learn the basics with <a class="reference internal" href="quickstart.html"><span class="doc">Quickstart</span></a>.</p>
+</section>
+<section id="basic-data-structures-recommended-order">
+<h3>3. Basic Data Structures (Recommended Order)<a class="headerlink" href="#basic-data-structures-recommended-order" title="Link to this heading"></a></h3>
+<p><strong>For Beginners</strong></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="tutorials/intro_timeseries.html"><span class="doc">gwexpy TimeSeries New Features Tutorial</span></a> - Time series basics</p></li>
+<li><p><a class="reference internal" href="tutorials/intro_frequencyseries.html"><span class="doc">Advanced Features and Operations of FrequencySeries</span></a> - Frequency series basics</p></li>
+<li><p><a class="reference internal" href="tutorials/intro_spectrogram.html"><span class="doc">SpectrogramList and SpectrogramDict Tutorial</span></a> - Spectrogram basics</p></li>
+<li><p><a class="reference internal" href="tutorials/intro_plotting.html"><span class="doc">gwexpy Plotting Introduction</span></a> - Plotting features</p></li>
+</ol>
+<p><strong>For GWpy Users</strong></p>
+<ul class="simple">
+<li><p>Check the GWpy compatibility guide for migration information</p></li>
+</ul>
+</section>
+<section id="advanced-topics">
+<h3>4. Advanced Topics<a class="headerlink" href="#advanced-topics" title="Link to this heading"></a></h3>
+<p><strong>Multi-channel &amp; Matrix Containers</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/matrix_timeseries.html"><span class="doc">TimeSeriesMatrix Tutorial</span></a> - Time series matrices</p></li>
+<li><p><a class="reference internal" href="tutorials/matrix_frequencyseries.html"><span class="doc">FrequencySeriesMatrix Tutorial</span></a> - Frequency series matrices</p></li>
+</ul>
+<p><strong>High-dimensional Fields (Field API)</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="doc">Introduction to ScalarField Class</span></a> - ScalarField introduction</p></li>
+<li><p><a class="reference internal" href="scalarfield_slicing.html"><span class="doc">ScalarField Slicing Guide</span></a> - Slicing guide (Important)</p></li>
+</ul>
+<p><strong>Advanced Signal Processing</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/advanced_fitting.html"><span class="doc">gwexpy.fitting: iminuit ベースのフィッティング機能</span></a> - Fitting methods</p></li>
+<li><p><a class="reference internal" href="tutorials/advanced_peak_detection.html"><span class="doc">Peak Detection</span></a> - Peak detection</p></li>
+<li><p><a class="reference internal" href="tutorials/advanced_hht.html"><span class="doc">Hilbert-Huang Transform (HHT) Analysis Tutorial</span></a> - Hilbert-Huang Transform</p></li>
+<li><p><a class="reference internal" href="tutorials/advanced_arima.html"><span class="doc">Time Series Forecasting with ARIMA Models</span></a> - ARIMA models</p></li>
+<li><p><a class="reference internal" href="tutorials/advanced_correlation.html"><span class="doc">Statistical Correlation Features</span></a> - Correlation analysis</p></li>
+</ul>
+</section>
+<section id="practical-examples">
+<h3>5. Practical Examples<a class="headerlink" href="#practical-examples" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/case_noise_budget.html"><span class="doc">Noise Budgeting and Multi-Channel Correlation Analysis</span></a> - Noise budget analysis</p></li>
+<li><p><a class="reference internal" href="tutorials/case_transfer_function.html"><span class="doc">Tutorial: Transfer Function Measurement</span></a> - Transfer function calculation</p></li>
+<li><p><a class="reference internal" href="tutorials/case_active_damping.html"><span class="doc">Active Damping for 6-DOF Active Vibration Isolation System (Non-Collocated Configuration)</span></a> - Active damping</p></li>
+</ul>
+</section>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Complete tutorial list: <a class="reference internal" href="tutorials/index.html"><span class="doc">Tutorials</span></a></p></li>
+<li><p>API Reference: <a class="reference internal" href="../reference/index.html"><span class="doc">Reference</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="scalarfield_slicing.html" class="btn btn-neutral float-right" title="ScalarField Slicing Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
