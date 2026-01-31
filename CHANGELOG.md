@@ -1,10 +1,14 @@
 # Changelog
 
-## [0.1.0b1] - TBD
+## [0.1.0b1] - 2026-02-01
 
 ### Initial Public Release
 
 - This is the first public beta release of `gwexpy`. All previous development history (up to internal version 0.4.0) is consolidated here.
+
+### Important Notes
+
+- **gwpy Compatibility**: This release is compatible with `gwpy>=3.0.0,<4.0.0`. gwpy 4.0.0 introduced breaking API changes that are not yet supported. Users should ensure they have gwpy 3.x installed.
 
 ### Refactored
 
