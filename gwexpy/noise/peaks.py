@@ -33,10 +33,16 @@ def lorentzian_line(
     **kwargs: Any,
 ) -> FrequencySeries:
     """
-    Generate a Lorentzian peak (ASD).
+    Generate a Lorentzian peak (ASD form, Peak Normalization).
+
     Formula: ASD(f) = A * gamma / sqrt( (f-f0)^2 + gamma^2 )
 
-    This profile peaks at 'amplitude' when f = f0.
+    This implementation uses **Peak Normalization** where the profile peaks
+    exactly at `amplitude` when f = f0. This differs from the physics
+    convention of Area Normalization (where the integral is A).
+
+    This form is suitable for modeling spectral lines in ASD (Amplitude
+    Spectral Density) where the peak height is known.
 
     Parameters
     ----------

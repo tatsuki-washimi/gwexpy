@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import numpy as np
@@ -10,6 +11,8 @@ from astropy import units as u
 from ..frequencyseries import FrequencySeries
 from .colored import power_law
 from .peaks import lorentzian_line
+
+logger = logging.getLogger(__name__)
 
 
 def schumann_resonance(
@@ -122,6 +125,10 @@ def geomagnetic_background(
 
         if amplitude_1hz < 1e-9:  # Likely Tesla
             # Convert to pT for the default unit
+            logger.info(
+                f"geomagnetic_background: amplitude_1hz={amplitude_1hz} < 1e-9 detected. "
+                "Assuming unit is Tesla and converting to pT for default output."
+            )
             amplitude_1hz *= 1e12
 
     return power_law(

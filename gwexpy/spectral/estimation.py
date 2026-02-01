@@ -13,15 +13,18 @@ invalidates the normalization; callers must pre-clean data instead.
 
 from __future__ import annotations
 
+import logging
 import os
 import warnings
+from typing import Any
 
 import numpy as np
 from scipy.signal import get_window
 
-from gwexpy.frequencyseries import FrequencySeries
+from ..frequencyseries import FrequencySeries
 
-# Optional Numba import
+logger = logging.getLogger(__name__)
+
 try:
     from numba import njit, prange
     from numba.core.errors import NumbaError
@@ -301,8 +304,10 @@ def bootstrap_spectrogram(
     window : str or array, optional
     nperseg : int, optional
     noverlap : int, optional
-    block_size : int, optional
-        Size of blocks for block bootstrap. If None, perform standard bootstrap.
+    block_size : int or 'auto', optional
+        Size of blocks for block bootstrap.
+        If 'auto', estimates size based on overlap ratio (ceil(duration/stride)).
+        If None, perform standard bootstrap with analytical VIF correction.
     rebin_width : float, optional
         Width to rebin frequencies (in Hz) before bootstrapping.
     return_map : bool, optional
@@ -372,6 +377,19 @@ def bootstrap_spectrogram(
     if avg not in {"median", "mean"}:
         raise ValueError("method must be 'median' or 'mean'.")
 
+    # Check for non-stationarity (basic heuristic)
+    # Spectral data is typically non-negative (PSD/ASD)
+    segment_avgs = np.nanmean(data, axis=1)
+    if n_time > 4:
+        # Check if segment averages vary significantly
+        std_avg = np.nanstd(segment_avgs)
+        mean_avg = np.nanmean(segment_avgs)
+        if mean_avg > 0 and (std_avg / mean_avg) > 0.5:
+            logger.warning(
+                "Significant variation in segment levels detected (std/mean > 0.5). "
+                "Bootstrap results on non-stationary data may be biased."
+            )
+
     # 1. Frequency Rebinning
     if rebin_width is not None and rebin_width > 0:
         df = (
@@ -405,6 +423,16 @@ def bootstrap_spectrogram(
     use_median = avg == "median"
 
     # 2. Block Bootstrap
+    if block_size == "auto":
+        ratio = _infer_overlap_ratio(spectrogram)
+        if ratio is not None and ratio > 1.0:
+            block_size = int(np.ceil(ratio))
+            logger.info(
+                f"Auto-selected block_size={block_size} based on overlap ratio {ratio:.2f}"
+            )
+        else:
+            block_size = None
+
     if block_size is not None and block_size > 1:
         if block_size >= n_time:
             # Just one block? or simple bootstrap of blocks?
